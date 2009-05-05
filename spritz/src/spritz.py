@@ -1,4 +1,4 @@
-#!/usr/bin/python2 -tt
+#!/usr/bin/python2 -O
 # -*- coding: iso-8859-1 -*-
 #    It was: Yum Exteder (yumex) - A GUI for yum
 #    Copyright (C) 2006 Tim Lauridsen < tim<AT>yum-extender<DOT>org > 
@@ -42,180 +42,1046 @@ from entropy.misc import TimeScheduled, ParallelTask
 import gtk, gobject
 from etpgui.widgets import UI, Controller, SpritzConsole
 from etpgui import *
-from spritz_setup import SpritzConf, const, fakeoutfile, fakeinfile, cleanMarkupString
+from spritz_setup import SpritzConf, const, fakeoutfile, fakeinfile, \
+    cleanMarkupString
 from misc import SpritzQueue
 from views import *
 import filters
 from dialogs import *
+from progress import ProgressTotal, SpritzProgress
 
-class ProgressTotal:
+class SpritzApplicationEventsMixin:
 
-    def __init__(self, widget):
-        self.progress = widget
-        self.steps = []
-        self.nowProgres = 0.0
-        self.numSteps = 0
-        self.currentStep = 0
-        self.stepError = False
-        self.lastFrac = -1
-        self.clear()
+    def on_console_click(self, widget, event):
+        self.console_menu.popup( None, None, None, event.button, event.time )
+        return True
 
-    def setup(self, steps):
-        self.steps = steps
-        self.numSteps = len(steps)
-        self.currentStep = 0
-        self.nowProgress = 0.0
-        self.stepError = False
-        self.clear()
+    def on_dbBackupButton_clicked(self, widget):
+        self.show_wait_window()
+        self.startWorking()
+        status, err_msg = self.Equo.backup_database(etpConst['etpdatabaseclientfilepath'])
+        self.endWorking()
+        if not status:
+            self.hide_wait_window()
+            okDialog( self.ui.main, "%s: %s" % (_("Error during backup"),err_msg,) )
+            return
+        okDialog( self.ui.main, "%s" % (_("Backup complete"),) )
+        self.fillPreferencesDbBackupPage()
+        self.dbBackupView.queue_draw()
+        self.hide_wait_window()
 
-    def hide(self):
-        self.progress.hide()
+    def on_dbRestoreButton_clicked(self, widget):
+        model, myiter = self.dbBackupView.get_selection().get_selected()
+        if myiter == None: return
+        dbpath = model.get_value(myiter, 0)
+        self.show_wait_window()
+        self.startWorking()
+        status, err_msg = self.Equo.restore_database(dbpath, etpConst['etpdatabaseclientfilepath'])
+        self.endWorking()
+        self.Equo.reopen_client_repository()
+        self.resetSpritzCacheStatus()
+        self.addPackages()
+        if not status:
+            self.hide_wait_window()
+            okDialog( self.ui.main, "%s: %s" % (_("Error during restore"),err_msg,) )
+            return
+        self.fillPreferencesDbBackupPage()
+        self.dbBackupView.queue_draw()
+        self.hide_wait_window()
+        okDialog( self.ui.main, "%s" % (_("Restore complete"),) )
 
-    def show(self):
-        self.progress.show()
+    def on_dbDeleteButton_clicked(self, widget):
+        model, myiter = self.dbBackupView.get_selection().get_selected()
+        if myiter == None: return
+        dbpath = model.get_value(myiter, 0)
+        try:
+            if os.path.isfile(dbpath) and os.access(dbpath,os.W_OK):
+                os.remove(dbpath)
+        except OSError, e:
+            okDialog( self.ui.main, "%s: %s" % (_("Error during removal"),e,) )
+            return
+        self.fillPreferencesDbBackupPage()
+        self.dbBackupView.queue_draw()
 
-    def next(self):
-        now = 0.0
-        if self.currentStep < self.numSteps:
-            self.currentStep += 1
-            for i in xrange(0, self.currentStep):
-                now += self.steps[i]
-                self.nowProgress = now
-                self.setAbsProgress(now)
+    def on_updateAdvSelected_clicked( self, widget ):
+
+        if not self.etpbase.selected_advisory_item:
+            return
+
+        key, affected, data = self.etpbase.selected_advisory_item
+        if not affected:
+            okDialog( self.ui.main, _("The chosen package is not vulnerable") )
+            return
+        atoms = set()
+        for mykey in data['affected']:
+            affected_data = data['affected'][mykey][0]
+            atoms |= set(affected_data['unaff_atoms'])
+
+        rc = self.add_atoms_to_queue(atoms, always_ask = True)
+        if rc: okDialog( self.ui.main, _("Packages in Advisory have been queued.") )
+
+    def on_updateAdvAll_clicked( self, widget ):
+
+        adv_data = self.Advisories.get_advisories_metadata()
+        atoms = set()
+        for key in adv_data:
+            affected = self.Advisories.is_affected(key)
+            if not affected:
+                continue
+            for mykey in adv_data[key]['affected']:
+                affected_data = adv_data[key]['affected'][mykey][0]
+                atoms |= set(affected_data['unaff_atoms'])
+
+        rc = self.add_atoms_to_queue(atoms, always_ask = True)
+        if rc: okDialog( self.ui.main, _("Packages in all Advisories have been queued.") )
+
+    def on_advInfoButton_clicked( self, widget ):
+        if self.etpbase.selected_advisory_item:
+            self.loadAdvInfoMenu(self.etpbase.selected_advisory_item)
+
+    def on_pkgInfoButton_clicked( self, widget ):
+        if self.etpbase.selected_treeview_item:
+            self.loadPkgInfoMenu(self.etpbase.selected_treeview_item)
+
+    def on_filesDelete_clicked( self, widget ):
+        identifier, source, dest = self.__get_Edit_filename()
+        if not identifier:
+            return True
+        self.Equo.FileUpdates.remove_file(identifier)
+        self.filesView.populate(self.Equo.FileUpdates.scandata)
+
+    def on_filesMerge_clicked( self, widget ):
+        identifier, source, dest = self.__get_Edit_filename()
+        if not identifier:
+            return True
+        self.Equo.FileUpdates.merge_file(identifier)
+        self.filesView.populate(self.Equo.FileUpdates.scandata)
+
+    def on_mergeFiles_clicked( self, widget ):
+        self.Equo.FileUpdates.scanfs(dcache = True)
+        keys = self.Equo.FileUpdates.scandata.keys()
+        for key in keys:
+            self.Equo.FileUpdates.merge_file(key)
+            # it's cool watching it runtime
+            self.filesView.populate(self.Equo.FileUpdates.scandata)
+
+    def on_deleteFiles_clicked( self, widget ):
+        self.Equo.FileUpdates.scanfs(dcache = True)
+        keys = self.Equo.FileUpdates.scandata.keys()
+        for key in keys:
+            self.Equo.FileUpdates.remove_file(key)
+            # it's cool watching it runtime
+            self.filesView.populate(self.Equo.FileUpdates.scandata)
+
+    def on_filesEdit_clicked( self, widget ):
+        identifier, source, dest = self.__get_Edit_filename()
+        if not identifier:
+            return True
+        self.runEditor(source)
+
+    def on_filesView_row_activated( self, widget, iterator, path ):
+        self.on_filesViewChanges_clicked(widget)
+
+    def on_filesViewChanges_clicked( self, widget ):
+        identifier, source, dest = self.__get_Edit_filename()
+        if not identifier:
+            return True
+        randomfile = entropy.tools.get_random_temp_file()+".diff"
+        diffcmd = "diff -Nu "+dest+" "+source+" > "+randomfile
+        os.system(diffcmd)
+        self.runEditor(randomfile, delete = True)
+
+    def on_shiftUp_clicked( self, widget ):
+        idx, repoid, iterdata = self.__getSelectedRepoIndex()
+        if idx != None:
+            path = iterdata[0].get_path(iterdata[1])[0]
+            if path > 0 and idx > 0:
+                idx -= 1
+                self.Equo.shift_repository(repoid, idx)
+                # get next iter
+                prev = iterdata[0].get_iter(path-1)
+                self.repoView.store.swap(iterdata[1],prev)
+
+    def on_shiftDown_clicked( self, widget ):
+        idx, repoid, iterdata = self.__getSelectedRepoIndex()
+        if idx != None:
+            next = iterdata[0].iter_next(iterdata[1])
+            if next:
+                idx += 1
+                self.Equo.shift_repository(repoid, idx)
+                self.repoView.store.swap(iterdata[1],next)
+
+    def on_mirrorDown_clicked( self, widget ):
+        selection = self.repoMirrorsView.view.get_selection()
+        urldata = selection.get_selected()
+        # get text
+        if urldata[1] != None:
+            next = urldata[0].iter_next(urldata[1])
+            if next:
+                self.repoMirrorsView.store.swap(urldata[1],next)
+
+    def on_mirrorUp_clicked( self, widget ):
+        selection = self.repoMirrorsView.view.get_selection()
+        urldata = selection.get_selected()
+        # get text
+        if urldata[1] != None:
+            path = urldata[0].get_path(urldata[1])[0]
+            if path > 0:
+                # get next iter
+                prev = urldata[0].get_iter(path-1)
+                self.repoMirrorsView.store.swap(urldata[1],prev)
+
+    def on_repoMirrorAdd_clicked( self, widget ):
+        text = inputBox(self.addrepo_ui.addRepoWin, _("Insert URL"), _("Enter a download mirror, HTTP or FTP")+"   ")
+        # call liststore and tell to add
+        if text:
+            # validate url
+            if not (text.startswith("http://") or text.startswith("ftp://") or text.startswith("file://")):
+                okDialog( self.addrepo_ui.addRepoWin, _("You must enter either a HTTP or a FTP url.") )
+            else:
+                self.repoMirrorsView.add(text)
+
+    def on_repoMirrorRemove_clicked( self, widget ):
+        selection = self.repoMirrorsView.view.get_selection()
+        urldata = selection.get_selected()
+        if urldata[1] != None:
+            self.repoMirrorsView.remove(urldata)
+
+    def on_repoMirrorEdit_clicked( self, widget ):
+        selection = self.repoMirrorsView.view.get_selection()
+        urldata = selection.get_selected()
+        # get text
+        if urldata[1] != None:
+            text = self.repoMirrorsView.get_text(urldata)
+            self.repoMirrorsView.remove(urldata)
+            text = inputBox(self.addrepo_ui.addRepoWin, _("Insert URL"), _("Enter a download mirror, HTTP or FTP")+"   ", input_text = text)
+            # call liststore and tell to add
+            self.repoMirrorsView.add(text)
+
+    def on_addRepo_clicked( self, widget ):
+        self.addrepo_ui.repoSubmit.show()
+        self.addrepo_ui.repoSubmitEdit.hide()
+        self.addrepo_ui.repoInsert.show()
+        self.addrepo_ui.repoidEntry.set_editable(True)
+        self.addrepo_ui.repodbcformatEntry.set_active(0)
+        self.addrepo_ui.repoidEntry.set_text("")
+        self.addrepo_ui.repoDescEntry.set_text("")
+        self.addrepo_ui.repodbEntry.set_text("")
+        self.addrepo_ui.addRepoWin.show()
+        self.repoMirrorsView.populate()
+
+    def on_repoSubmitEdit_clicked( self, widget ):
+        repodata = self.__getRepodata()
+        errors = self.__validateRepoSubmit(repodata, edit = True)
+        if errors:
+            msg = "%s: %s" % (_("Wrong entries, errors"),', '.join(errors),)
+            okDialog( self.addrepo_ui.addRepoWin, msg )
             return True
         else:
+            disable = False
+            repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
+            if repo_excluded.has_key(repodata['repoid']):
+                disable = True
+            self.Equo.remove_repository(repodata['repoid'], disable = disable)
+            if not disable:
+                self.Equo.add_repository(repodata)
+            self.resetSpritzCacheStatus()
+
+            self.setupRepoView()
+            self.addrepo_ui.addRepoWin.hide()
+            msg = "%s '%s' %s" % (_("You should press the button"),_("Regenerate Cache"),_("now"))
+            okDialog( self.ui.main, msg )
+
+    def on_repoSubmit_clicked( self, widget ):
+        repodata = self.__getRepodata()
+        # validate
+        errors = self.__validateRepoSubmit(repodata)
+        if not errors:
+            self.Equo.add_repository(repodata)
+            self.resetSpritzCacheStatus()
+            self.setupRepoView()
+            self.addrepo_ui.addRepoWin.hide()
+            msg = "%s '%s' %s" % (_("You should press the button"),_("Update Repositories"),_("now"))
+            okDialog( self.ui.main, msg )
+        else:
+            msg = "%s: %s" % (_("Wrong entries, errors"),', '.join(errors),)
+            okDialog( self.addrepo_ui.addRepoWin, msg )
+
+    def on_addRepoWin_delete_event(self, widget, path):
+        return True
+
+    def on_repoCancel_clicked( self, widget ):
+        self.addrepo_ui.addRepoWin.hide()
+
+    def on_repoInsert_clicked( self, widget ):
+        text = inputBox(self.addrepo_ui.addRepoWin, _("Insert Repository"), _("Insert Repository identification string")+"   ")
+        if text:
+            if (text.startswith("repository|")) and (len(text.split("|")) == 5):
+                current_branch = self.Equo.SystemSettings['repositories']['branch']
+                current_product = self.Equo.SystemSettings['repositories']['product']
+                repoid, repodata = const_extract_cli_repo_params(text, current_branch, current_product)
+                self.__loadRepodata(repodata)
+            else:
+                okDialog( self.addrepo_ui.addRepoWin, _("This Repository identification string is malformed") )
+
+    def on_removeRepo_clicked( self, widget ):
+        # get selected repo
+        selection = self.repoView.view.get_selection()
+        repodata = selection.get_selected()
+        # get text
+        if repodata[1] != None:
+            repoid = self.repoView.get_repoid(repodata)
+            if repoid == self.Equo.SystemSettings['repositories']['default_repository']:
+                okDialog( self.ui.main, _("You! Why do you want to remove the main repository ?"))
+                return True
+            self.Equo.remove_repository(repoid)
+            self.resetSpritzCacheStatus()
+            self.setupRepoView()
+            msg = "%s '%s' %s '%s' %s" % (_("You must now either press the"),_("Update Repositories"),_("or the"),_("Regenerate Cache"),_("now"))
+            okDialog( self.ui.main, msg )
+
+    def on_repoEdit_clicked( self, widget ):
+        self.addrepo_ui.repoSubmit.hide()
+        self.addrepo_ui.repoSubmitEdit.show()
+        self.addrepo_ui.repoInsert.hide()
+        self.addrepo_ui.repoidEntry.set_editable(False)
+        # get selection
+        selection = self.repoView.view.get_selection()
+        repostuff = selection.get_selected()
+        if repostuff[1] != None:
+            repoid = self.repoView.get_repoid(repostuff)
+            repodata = self.Equo.get_repository_settings(repoid)
+            self.__loadRepodata(repodata)
+            self.addrepo_ui.addRepoWin.show()
+
+    def on_terminal_clear_activate(self, widget):
+        self.output.text_written = []
+        self.console.reset()
+
+    def on_terminal_copy_activate(self, widget):
+        self.clipboard.clear()
+        self.clipboard.set_text(''.join(self.output.text_written))
+
+    def on_Preferences_toggled(self, widget, toggle = True):
+        self.ui.preferencesSaveButton.set_sensitive(toggle)
+        self.ui.preferencesRestoreButton.set_sensitive(toggle)
+
+    def on_preferencesSaveButton_clicked(self, widget):
+        sure = questionDialog(self.ui.main, _("Are you sure ?"))
+        if not sure:
+            return
+        for config_file in self.Preferences:
+            for name, setting, mytype, fillfunc, savefunc, wgwrite, wgread in self.Preferences[config_file]:
+                if mytype == list:
+                    savefunc(config_file, name, setting, mytype, wgwrite, wgread)
+                else:
+                    data = wgread()
+                    result = savefunc(config_file, name, setting, mytype, data)
+                    if not result:
+                        errorMessage(
+                            self.ui.main,
+                            cleanMarkupString("%s: %s") % (_("Error saving parameter"),name,),
+                            _("An issue occured while saving a preference"),
+                            "%s %s: %s" % (_("Parameter"),name,_("not saved"),),
+                        )
+        initconfig_entropy_constants(etpConst['systemroot'])
+        # re-read configprotect
+        self.resetSpritzCacheStatus()
+        self.addPackages()
+        self.Equo.reload_repositories_config()
+        self.setupPreferences()
+
+    def on_preferencesRestoreButton_clicked(self, widget):
+        self.setupPreferences()
+
+    def on_configProtectNew_clicked(self, widget):
+        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
+        if not data:
+            return
+        self.configProtectModel.append([data])
+
+    def on_configProtectMaskNew_clicked(self, widget):
+        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
+        if not data:
+            return
+        self.configProtectMaskModel.append([data])
+
+    def on_configProtectSkipNew_clicked(self, widget):
+        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
+        if not data:
+            return
+        self.configProtectSkipModel.append([data])
+
+    def on_configProtectDelete_clicked(self, widget):
+        model, myiter = self.configProtectView.get_selection().get_selected()
+        if myiter:
+            model.remove(myiter)
+
+    def on_configProtectMaskDelete_clicked(self, widget):
+        model, myiter = self.configProtectMaskView.get_selection().get_selected()
+        if myiter:
+            model.remove(myiter)
+
+    def on_configProtectSkipDelete_clicked(self, widget):
+        model, myiter = self.configProtectSkipView.get_selection().get_selected()
+        if myiter:
+            model.remove(myiter)
+
+    def on_configProtectEdit_clicked(self, widget):
+        model, myiter = self.configProtectView.get_selection().get_selected()
+        if myiter:
+            item = model.get_value( myiter, 0 )
+            data = inputBox( self.ui.main, _("New"), _("Please edit the selected path"), input_text = item)
+            if not data:
+                return
+            model.remove(myiter)
+            self.configProtectModel.append([data])
+
+    def on_configProtectMaskEdit_clicked(self, widget):
+        model, myiter = self.configProtectMaskView.get_selection().get_selected()
+        if myiter:
+            item = model.get_value( myiter, 0 )
+            data = inputBox( self.ui.main, _("New"), _("Please edit the selected path"), input_text = item)
+            if not data:
+                return
+            model.remove(myiter)
+            self.configProtectMaskModel.append([data])
+
+    def on_configProtectSkipEdit_clicked(self, widget):
+        model, myiter = self.configProtectSkipView.get_selection().get_selected()
+        if myiter:
+            item = model.get_value( myiter, 0 )
+            data = inputBox( self.ui.main, _("New"), _("Please edit the selected path"), input_text = item)
+            if not data:
+                return
+            model.remove(myiter)
+            self.configProtectSkipModel.append([data])
+
+    def on_installPackageItem_activate(self, widget = None, fn = None):
+
+        if (widget and self.isWorking) or self.isBusy:
+            return
+
+        if not fn:
+            mypattern = '*'+etpConst['packagesext']
+            fn = FileChooser(pattern = mypattern)
+        if not fn:
+            return
+        elif not os.access(fn,os.R_OK):
+            return
+
+        msg = "%s: %s. %s" % (
+            _("You have chosen to install this package"),
+            os.path.basename(fn),
+            _("Are you supa sure?"),
+        )
+        rc = questionDialog(self.ui.main, msg)
+        if not rc:
+            return
+
+        self.pkgView.store.clear()
+
+        newrepo = os.path.basename(fn)
+        # we have it !
+        status, atomsfound = self.Equo.add_tbz2_to_repos(fn)
+        if status != 0:
+            errtxt = _("is not a valid Entropy package")
+            if status == -3:
+                errtxt = _("is not compiled with the same architecture of the system")
+            mytxt = "%s %s. %s." % (
+                os.path.basename(fn),
+                errtxt,
+                _("Cannot install"),
+            )
+            okDialog(self.ui.main, mytxt)
+            return
+
+        def clean_n_quit(newrepo):
+            self.Equo.remove_repository(newrepo)
+            self.resetSpritzCacheStatus()
+            self.Equo.reopen_client_repository()
+            # regenerate packages information
+            self.setupSpritz()
+
+        if not atomsfound:
+            clean_n_quit(newrepo)
+            return
+
+        pkgs = []
+        for idpackage, atom in atomsfound:
+            yp, new = self.etpbase.getPackageItem((idpackage,newrepo,),True)
+            yp.action = 'i'
+            yp.queued = 'i'
+            pkgs.append(yp)
+
+        busyCursor(self.ui.main)
+        status, myaction = self.queue.add(pkgs)
+        if status != 0:
+            for obj in pkgs:
+                obj.queued = None
+            clean_n_quit(newrepo)
+            normalCursor(self.ui.main)
+            return
+
+        normalCursor(self.ui.main)
+        self.setPage('output')
+
+        try:
+            rc = self.processPackageQueue(self.queue.packages, remove_repos = [newrepo])
+        except:
+            if self.do_debug:
+                entropy.tools.print_traceback()
+                import pdb; pdb.set_trace()
+            else:
+                raise
+
+        self.resetQueueProgressBars()
+        if rc:
+            self.queue.clear()
+            self.queueView.refresh()
+            return True
+        else: # not done
+            clean_n_quit(newrepo)
             return False
 
-    def _percent(self, total, now):
-       if total == 0:
-           percent = 0
-       else:
-           percent = (now*100L)/total
-       return percent
+    def on_PageButton_changed( self, widget, page ):
 
-    def clear( self ):
-        self.progress.set_fraction(0)
-        self.progress.set_text(" ")
-        self.lastFrac = -1
+        ''' Left Side Toolbar Handler'''
+        # do not put here actions for 'packages' and 'output' but use on_PageButton_pressed
+        if page == "filesconf":
+            self.populateFilesUpdate()
+        elif page == "glsa":
+            self.populateAdvisories(None,'affected')
+        elif page == "group":
+            self.populateCategories()
+        self.setNotebookPage(const.PAGES[page])
 
-    def setProgress(self, now, total, prefix = None):
-        relStep = float(now)/float(total)
-        curStep = self.steps[self.currentStep]
-        absStep = curStep * relStep
-        absProgress = self.nowProgress + absStep
-        self.setAbsProgress(absProgress, prefix)
+    def on_queueReviewAndInstall_clicked(self, widget):
+        self.switchNotebookPage("queue")
 
-    def setAbsProgress( self, now, prefix = None ):
-        if (now == self.lastFrac) or (now >= 1.0) or (now < 0.0):
-            return
-        self.gtkLoop()
-        self.lastFrac = now+0.01
-        percent = long(self._percent(1, now))
-        self.progress.set_fraction(now)
-        if prefix:
-            text = "%s : %3i%%" % (prefix, percent)
+    def on_pkgFilter_toggled(self,rb,action):
+        ''' Package Type Selection Handler'''
+        if not rb.get_active(): return
+
+        rb.grab_add()
+        self.lastPkgPB = action
+
+        # Only show add/remove all when showing updates
+        if action == 'updates': self.ui.updatesButtonbox.show()
+        else: self.ui.updatesButtonbox.hide()
+
+        if action == "masked":
+            self.setupMaskedPackagesWarningBox()
+            self.ui.maskedWarningBox.show()
         else:
-            text = "%3i%%" % (percent,)
-        self.progress.set_text( text )
+            self.ui.maskedWarningBox.hide()
 
-    def gtkLoop(self):
-        while gtk.events_pending():
-           gtk.main_iteration()
+        if action == "pkgsets": self.ui.pkgsetsButtonBox.show()
+        else: self.ui.pkgsetsButtonBox.hide()
 
-class SpritzProgress:
+        if action == "queued": self.ui.queueReviewAndInstallBox.show()
+        else: self.ui.queueReviewAndInstallBox.hide()
 
-    def __init__( self, ui, set_page_func, parent ):
-        self.ui = ui
-        self.set_page_func = set_page_func
-        self.parent = parent
-        self.ui.progressMainLabel.set_text( "" )
-        self.ui.progressSubLabel.set_text( "" )
-        self.ui.progressExtraLabel.set_text( "" )
-        self.total = ProgressTotal( self.ui.totalProgressBar )
-        self.ui.progressBar.set_fraction( 0 )
-        self.ui.progressBar.set_text( " " )
-        self.lastFrac = -1
+        self.addPackages()
+        rb.grab_remove()
 
-    def show( self ):
-        def run():
-            self.ui.progressBox.show()
-            self.set_page_func( 'output' )
-            self.lastFrac = -1
-        gobject.timeout_add(0, run)
+    def on_repoRefresh_clicked(self, widget):
+        repos = self.repoView.get_selected()
+        if not repos:
+            okDialog( self.ui.main, _("Please select at least one repository") )
+            return
+        return self.do_repo_refresh(repos)
 
-    def reset_progress( self ):
-        def run():
-            self.lastFrac = -1
-            self.ui.progressBar.set_fraction( 0 )
-            self.ui.progressBar.set_text(" ")
-        gobject.timeout_add(0, run)
+    def do_repo_refresh(self, repos):
+        self.setPage('output')
+        self.ui.main.queue_draw()
+        self.uiLock(True)
+        try:
+            self.gtk_loop()
+            self.startWorking()
+            status = self.updateRepositories(repos)
+            self.endWorking()
+            self.progress.reset_progress()
+            self.resetSpritzCacheStatus()
+            self.setupRepoView()
+            self.setupSpritz()
+            self.setupAdvisories()
+            self.setPage('repos')
+            if status:
+                self.showNoticeBoard()
+        finally:
+            self.uiLock(False)
 
-    def hide( self, clean=False ):
-        def run():
-            self.ui.progressBox.hide()
-            if clean:
-                self.ui.progressMainLabel.set_text( "" )
-                self.ui.progressSubLabel.set_text( "" )
-                self.ui.progressExtraLabel.set_text( "" )
-                self.ui.progressBar.set_fraction( 0 )
-                self.ui.progressBar.set_text( " " )
-        gobject.timeout_add(0, run)
+    def on_cacheButton_clicked(self,widget):
+        self.repoView.get_selected()
+        self.setPage('output')
+        self.cleanEntropyCaches(alone = True)
+        self.setPage('repos')
 
-    def setTotal( self, now, total ):
-        def run(now, total):
-            self.total.setProgress( now, total )
-        gobject.timeout_add(0, run, now, total)
+    def on_repoDeSelect_clicked(self,widget):
+        self.repoView.deselect_all()
 
-    def set_progress( self, frac, text=None ):
-        def run(frac, text):
-            if frac == self.lastFrac: return
-            if frac > 1 or frac == 0.0: return
-            if frac >= 0 and frac <= 1:
-                self.ui.progressBar.set_fraction( frac )
+    def on_queueProcess_clicked( self, widget ):
+        """ Process Queue Button Handler """
+        if self.queue.total() == 0: # Check there are any packages in the queue
+            self.setStatus(_('No packages in queue'))
+            return
+
+        fetch_only = self.ui.queueProcessFetchOnly.get_active()
+        download_sources = self.ui.queueProcessDownloadSource.get_active()
+
+        rc = True
+        try:
+            rc = self.processPackageQueue(self.queue.packages,
+                fetch_only = fetch_only, download_sources = download_sources)
+        except:
+            if self.do_debug:
+                entropy.tools.print_traceback()
+                import pdb; pdb.set_trace()
+            else: raise
+        self.resetQueueProgressBars()
+        if rc and not fetch_only:
+            self.queue.clear()       # Clear package queue
+            self.queueView.refresh() # Refresh Package Queue
+        #if fetch_only:
+        #    self.setPage('queue')
+
+    def on_queueSave_clicked( self, widget ):
+        fn = FileChooser(action = gtk.FILE_CHOOSER_ACTION_SAVE, buttons = (gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE,gtk.RESPONSE_OK))
+        if fn:
+            pkgdata = self.queue.get().copy()
+            for key in pkgdata.keys():
+                if pkgdata[key]: pkgdata[key] = [x.matched_atom for x in pkgdata[key]]
+            self.Equo.dumpTools.dumpobj(fn,pkgdata,True)
+
+    def on_queueOpen_clicked( self, widget ):
+        fn = FileChooser()
+        if fn:
+
+            try:
+                pkgdata = self.Equo.dumpTools.loadobj(fn, complete_path = True)
+            except:
+                return
+
+            if not isinstance(pkgdata,dict):
+                return
+
+            collected_items = []
+            for key in pkgdata.keys():
+                for pkg in pkgdata[key]:
+                    try:
+                        yp, new = self.etpbase.getPackageItem(pkg,True)
+                    except:
+                        okDialog( self.ui.main,
+                            _("Queue is too old. Cannot load.") )
+                        return
+                    collected_items.append((key,yp))
+
+            for key, pkg in collected_items:
+                pkg.queued = key
+                self.queue.packages[key].append(pkg)
+
+            self.queueView.refresh()
+
+    def on_queueClean_clicked(self, widget):
+        self.resetSpritzCacheStatus()
+        self.addPackages()
+
+    def on_adv_doubleclick( self, widget, iterator, path ):
+        """ Handle selection of row in package view (Show Descriptions) """
+        ( model, iterator ) = widget.get_selection().get_selected()
+        if model != None and iterator != None:
+            data = model.get_value( iterator, 0 )
+            if data:
+                self.loadAdvInfoMenu(data)
+
+    def on_pkg_doubleclick( self, widget, iterator, path ):
+        """ Handle selection of row in package view (Show Descriptions) """
+        objs = self.pkgView.collect_selected_items()
+        for obj in objs:
+            self.loadPkgInfoMenu(obj)
+
+    def on_license_double_clicked( self, widget, iterator, path ):
+        """ Handle selection of row in package view (Show Descriptions) """
+        ( model, iterator ) = widget.get_selection().get_selected()
+        if model != None and iterator != None:
+            license_identifier = model.get_value( iterator, 0 )
+            found = False
+            license_text = ''
+            if license_identifier:
+                repoid = self.pkgProperties_selected.matched_atom[1]
+                if type(repoid) is int:
+                    dbconn = self.Equo.clientDbconn
+                else:
+                    dbconn = self.Equo.open_repository(repoid)
+                if dbconn.isLicensedataKeyAvailable(license_identifier):
+                    license_text = dbconn.retrieveLicenseText(license_identifier)
+                    found = True
+            if found:
+                # prepare textview
+                mybuffer = gtk.TextBuffer()
+                mybuffer.set_text(license_text)
+                xml_licread = gtk.glade.XML( const.GLADE_FILE, 'textReadWindow',domain="entropy" )
+                read_dialog = xml_licread.get_widget( "textReadWindow" )
+                okReadButton = xml_licread.get_widget( "okReadButton" )
+                okReadButton.connect( 'clicked', self.destroy_read_license_dialog )
+                licenseView = xml_licread.get_widget( "readTextView" )
+                licenseView.set_buffer(mybuffer)
+                read_dialog.set_title(license_identifier+" license text")
+                read_dialog.show_all()
+                self.read_license_dialog = read_dialog
+
+    def destroy_read_license_dialog( self, widget ):
+        self.read_license_dialog.destroy()
+
+    def on_select_clicked(self,widget):
+        ''' Package Add All button handler '''
+        self.show_wait_window()
+        self.setBusy()
+        self.startWorking()
+        busyCursor(self.wait_ui.waitWindow)
+        self.pkgView.selectAll()
+        self.endWorking()
+        self.unsetBusy()
+        normalCursor(self.wait_ui.waitWindow)
+        self.hide_wait_window()
+
+    def on_deselect_clicked(self,widget):
+        ''' Package Remove All button handler '''
+        self.on_clear_clicked(widget)
+        self.show_wait_window()
+        self.setBusy()
+        self.pkgView.deselectAll()
+        self.hide_wait_window()
+        self.unsetBusy()
+
+    def on_skipMirror_clicked(self,widget):
+        # set the working mirror as failing
+        self.Equo.MirrorStatus.add_failing_working_mirror(75)
+        self.skipMirrorNow = True
+
+    def on_abortQueue_clicked(self,widget):
+        msg = _("You have chosen to interrupt the processing. Are you sure you want to do it ?")
+        rc = questionDialog(self.ui.main, msg)
+        if rc: self.abortQueueNow = True
+
+    def on_search_clicked(self,widget):
+        self.etpbase.setFilter(filters.spritzFilter.processFilters)
+        ''' Search entry+button handler'''
+        txt = self.ui.pkgFilter.get_text()
+        flt = filters.spritzFilter.get('KeywordFilter')
+        if txt != '':
+            flt.activate()
+            lst = txt.split()
+            flt.setKeys(lst)
+            self.ui.pkgClr.show()
+        else:
+            flt.activate(False)
+        action = self.lastPkgPB
+        rb = self.packageRB[action]
+        self.on_pkgFilter_toggled(rb,action)
+
+    def on_clear_clicked(self,widget):
+        self.etpbase.setFilter()
+        ''' Search Clear button handler'''
+        self.ui.pkgFilter.set_text("")
+        self.on_search_clicked(None)
+        self.ui.pkgClr.hide()
+
+    def on_comps_cursor_changed(self, widget):
+        self.setBusy()
+        """ Handle selection of row in Comps Category  view  """
+        ( model, iterator ) = widget.get_selection().get_selected()
+        if model != None and iterator != None:
+            myid = model.get_value( iterator, 0 )
+            self.populateCategoryPackages(myid)
+        self.unsetBusy()
+
+    def on_FileQuit( self, widget ):
+        self.quit()
+
+    def on_HelpAbout( self, widget = None ):
+        about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,SpritzConf.branding_title)
+        about.show()
+
+    def on_notebook1_switch_page(self, widget, page, page_num):
+        if page_num == const.PREF_PAGES['ugc']:
+            self.load_ugc_repositories()
+        elif page_num == const.PREF_PAGES['colors']:
+            self.load_color_settings()
+
+    def on_ugcLoginButton_clicked(self, widget):
+        if self.Equo.UGC == None: return
+        model, myiter = self.ugcRepositoriesView.get_selection().get_selected()
+        if (myiter == None) or (model == None): return
+        obj = model.get_value( myiter, 0 )
+        if obj:
+            #logged_data = self.Equo.UGC.read_login(obj['repoid'])
+            self.Equo.UGC.login(obj['repoid'], force = True)
+            self.load_ugc_repositories()
+
+    def on_ugcClearLoginButton_clicked(self, widget):
+        if self.Equo.UGC == None: return
+        model, myiter = self.ugcRepositoriesView.get_selection().get_selected()
+        if (myiter == None) or (model == None): return
+        obj = model.get_value( myiter, 0 )
+        if obj:
+            if not self.Equo.UGC.is_repository_eapi3_aware(obj['repoid']): return
+            logged_data = self.Equo.UGC.read_login(obj['repoid'])
+            if logged_data: self.Equo.UGC.remove_login(obj['repoid'])
+            self.load_ugc_repositories()
+
+    def on_ugcClearCacheButton_clicked(self, widget):
+        if self.Equo.UGC == None: return
+        repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
+        avail_repos = self.Equo.SystemSettings['repositories']['available']
+        for repoid in list(set(avail_repos.keys()+repo_excluded.keys())):
+            self.Equo.UGC.UGCCache.clear_cache(repoid)
+            self.setStatus("%s: %s ..." % (_("Cleaning UGC cache of"),repoid,))
+        self.setStatus("%s" % (_("UGC cache cleared"),))
+
+    def on_ugcClearCredentialsButton_clicked(self, widget):
+        if self.Equo.UGC == None: return
+        repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
+        avail_repos = self.Equo.SystemSettings['repositories']['available']
+        for repoid in list(set(avail_repos.keys()+repo_excluded.keys())):
+            if not self.Equo.UGC.is_repository_eapi3_aware(repoid): continue
+            logged_data = self.Equo.UGC.read_login(repoid)
+            if logged_data: self.Equo.UGC.remove_login(repoid)
+        self.load_ugc_repositories()
+        self.setStatus("%s" % (_("UGC credentials cleared"),))
+
+    def on_bannerEventBox_button_release_event(self, widget, event):
+        if self.ad_url != None:
+            self.load_url(self.ad_url)
+
+    def on_bannerEventBox_enter_notify_event(self, widget, event):
+        busyCursor(self.ui.main, cur = gtk.gdk.Cursor(gtk.gdk.HAND2))
+
+    def on_bannerEventBox_leave_notify_event(self, widget, event):
+        busyCursor(self.ui.main, cur = CURRENT_CURSOR)
+
+    def on_repoManagerMenuItem_activate(self, widget):
+        mymenu = RepositoryManagerMenu(self.Equo, self.ui.main)
+        rc = mymenu.load()
+        if not rc: del mymenu
+
+    def on_noticeBoardMenuItem_activate(self, widget):
+        self.showNoticeBoard()
+
+    def on_pkgsetAddButton_clicked(self, widget):
+
+        current_sets = self.Equo.package_set_list()
+        def fake_callback(s):
+            if (s not in current_sets) and (" " not in s) and (not s.startswith(etpConst['packagesetprefix'])):
+                return True
+            return False
+
+        def lv_callback(atom):
+            c_id, c_rc = self.Equo.clientDbconn.atomMatch(atom)
+            if c_id != -1: return True
+            c_id, c_rc = self.Equo.atom_match(atom)
+            if c_id != -1: return True
+            return False
+
+        input_params = [
+            ('name',_("Package Set name"),fake_callback,False),
+            ('atoms',('list',(_('Package atoms'),[],),),lv_callback,False)
+        ]
+
+        data = self.Equo.inputBox(
+            _('Choose what Package Set you want to add'),
+            input_params,
+            cancel_button = True
+        )
+        if data == None: return
+
+        rc, msg = self.Equo.add_user_package_set(data.get("name"), data.get("atoms"))
+        if rc != 0:
+            okDialog(self.ui.main,"%s: %s" % (_("Error"),msg,))
+            return
+
+        self.etpbase.clearPackagesSingle("pkgsets")
+        self.addPackages()
+
+    def on_pkgsetRemoveButton_clicked(self, widget):
+
+        def mymf(m):
+            set_from, set_name, set_deps = m
+            if set_from == etpConst['userpackagesetsid']:
+                return set_name
+            return 0
+        avail_pkgsets = [x for x in map(mymf,self.Equo.package_set_list()) if x != 0]
+
+        def fake_callback(s):
+            return s
+        input_params = [
+            ('pkgset',('combo',(_('Removable Package Set'),avail_pkgsets),),fake_callback,False)
+        ]
+
+        data = self.Equo.inputBox(
+            _('Choose what Package Set you want to remove'),
+            input_params,
+            cancel_button = True
+        )
+        if data == None: return
+        x_id,set_name = data.get("pkgset")
+
+        rc, msg = self.Equo.remove_user_package_set(set_name)
+        if rc != 0:
+            okDialog(self.ui.main,"%s: %s" % (_("Error"),msg,))
+            return
+
+        self.etpbase.clearPackagesSingle("pkgsets")
+        self.addPackages()
+
+    def on_deptestButton_clicked(self, widget):
+
+        self.switchNotebookPage("output")
+        self.uiLock(True)
+        self.startWorking()
+        deps_not_matched = self.Equo.dependencies_test()
+        if not deps_not_matched:
+            okDialog(self.ui.main,_("No missing dependencies found."))
+            self.switchNotebookPage("preferences")
+            self.uiLock(False)
+            self.endWorking()
+            self.progress.reset_progress()
+            return
+
+        found_deps = set()
+        not_all = False
+        for dep in deps_not_matched:
+            match = self.Equo.atom_match(dep)
+            if match[0] != -1:
+                found_deps.add(dep)
+                continue
             else:
-                self.ui.progressBar.set_fraction( 0 )
-            if text != None:
-                self.ui.progressBar.set_text( text )
-            self.lastFrac = frac
-            self.gtkLoop()
+                iddep = self.Equo.clientDbconn.searchDependency(dep)
+                if iddep == -1: continue
+                c_idpackages = self.Equo.clientDbconn.searchIdpackageFromIddependency(iddep)
+                for c_idpackage in c_idpackages:
+                    key, slot = self.Equo.clientDbconn.retrieveKeySlot(c_idpackage)
+                    key_slot = "%s:%s" % (key,slot,)
+                    match = self.Equo.atom_match(key, matchSlot = slot)
+                    cmpstat = 0
+                    if match[0] != -1:
+                        cmpstat = self.Equo.get_package_action(match)
+                    if cmpstat != 0:
+                        found_deps.add(key_slot)
+                        continue
+                    else:
+                        not_all = True
+                continue
+            not_all = True
 
-        gobject.timeout_add(0, run, frac, text)
+        if not found_deps:
+            okDialog(self.ui.main,_("Missing dependencies found, but none of them are on the repositories."))
+            self.switchNotebookPage("preferences")
+            self.uiLock(False)
+            self.endWorking()
+            self.progress.reset_progress()
+            return
 
-    def set_text(self, text):
-        def run(text):
-            self.ui.progressBar.set_text( text )
-        gobject.timeout_add(0, run, text)
+        if not_all:
+            okDialog(self.ui.main,_("Some missing dependencies have not been matched, others are going to be added to the queue."))
+        else:
+            okDialog(self.ui.main,_("All the missing dependencies are going to be added to the queue"))
 
-    def set_mainLabel( self, text ):
-        def run(text):
-            self.ui.progressMainLabel.set_markup( "<b>%s</b>" % (text,) )
-            self.ui.progressSubLabel.set_text( "" )
-            self.ui.progressExtraLabel.set_text( "" )
-        gobject.timeout_add(0, run, text)
+        rc = self.add_atoms_to_queue(found_deps)
+        if rc: self.switchNotebookPage("queue")
+        else: self.switchNotebookPage("preferences")
+        self.uiLock(False)
+        self.endWorking()
+        self.progress.reset_progress()
 
-    def set_subLabel( self, text ):
-        def run(text):
-            mytxt = unicode(text)
-            if len(mytxt) > 80:
-                mytxt = mytxt[:80].strip()+"..."
-            self.ui.progressSubLabel.set_markup( "%s" % (cleanMarkupString(mytxt),) )
-            self.ui.progressExtraLabel.set_text( "" )
-        gobject.timeout_add(0, run, text)
+    def on_libtestButton_clicked(self, widget):
 
-    def set_extraLabel( self, text ):
-        def run(text):
-            mytxt = unicode(text)
-            if len(mytxt) > 80:
-                mytxt = mytxt[:80].strip()+"..."
-            self.ui.progressExtraLabel.set_markup( "<span size=\"small\">%s</span>" % cleanMarkupString(mytxt) )
-            self.lastFrac = -1
-        gobject.timeout_add(0, run, text)
+        def do_start():
+            self.switchNotebookPage("output")
+            self.startWorking()
+            self.uiLock(True)
+            self.ui.abortQueue.show()
 
-    def gtkLoop(self):
-        while gtk.events_pending():
-           gtk.main_iteration()
+        def do_stop():
+            self.endWorking()
+            self.ui.abortQueue.hide()
+            self.uiLock(False)
+            self.progress.reset_progress()
 
-class SpritzApplication(Controller):
+        def task_bombing():
+            if self.abortQueueNow:
+                self.abortQueueNow = False
+                mytxt = _("Aborting queue tasks.")
+                self.ui.abortQueue.hide()
+                raise QueueError('QueueError %s' % (mytxt,))
+
+        do_start()
+
+        packages_matched, broken_execs = {},set()
+        self.libtest_abort = False
+        def exec_task():
+            try:
+                x, y, z = self.Equo.libraries_test(task_bombing_func = task_bombing)
+                packages_matched.update(x)
+                broken_execs.update(y)
+            except QueueError:
+                self.libtest_abort = True
+
+        t = ParallelTask(exec_task)
+        t.start()
+        while t.isAlive():
+            time.sleep(0.2)
+            self.gtk_loop()
+
+        if self.do_debug and self.libtest_abort:
+            print "on_libtestButton_clicked: scan abort"
+        if self.do_debug:
+            print "on_libtestButton_clicked: done scanning"
+
+        if self.libtest_abort:
+            do_stop()
+            okDialog(self.ui.main,_("Libraries test aborted"))
+            return
+
+        matches = set()
+        for key in packages_matched.keys():
+            matches |= packages_matched[key]
+
+        if broken_execs:
+            okDialog(self.ui.main,_("Some broken packages have not been matched, others are going to be added to the queue."))
+        else:
+            okDialog(self.ui.main,_("All the broken packages are going to be added to the queue"))
+
+        rc = self.add_atoms_to_queue([], matches = matches)
+        if rc: self.switchNotebookPage("queue")
+        else: self.switchNotebookPage("preferences")
+
+        do_stop()
+
+    def on_color_reset(self, widget):
+        # get parent
+        parent = widget.get_parent()
+        if parent == None: return
+        col_button = [x for x in parent.get_children() if isinstance(x,gtk.ColorButton)][0]
+        setting = self.colorSettingsReverseMap.get(col_button)
+        if setting == None: return
+        default_color = SpritzConf.default_colors_config.get(setting)
+        col_button.set_color(gtk.gdk.color_parse(default_color))
+        self.on_Preferences_toggled(None,True)
+        setattr(SpritzConf,setting,default_color)
+
+    def on_ui_color_set(self, widget):
+        key = self.colorSettingsReverseMap.get(widget)
+        if not hasattr(SpritzConf,key):
+            print "WARNING: no %s in SpritzConf" % (key,)
+            return
+        w_col = widget.get_color().to_string()
+        self.on_Preferences_toggled(None,True)
+        setattr(SpritzConf,key,w_col)
+
+
+class SpritzApplication(Controller, SpritzApplicationEventsMixin):
 
     def __init__(self):
 
@@ -230,7 +1096,10 @@ class SpritzApplication(Controller):
         # check if we'are running in safe mode
         if self.Equo.safe_mode:
             reason = etpConst['safemodereasons'].get(self.Equo.safe_mode)
-            okDialog( None, "%s: %s. %s" % (_("Entropy is running in safe mode"),reason,_("Please fix as soon as possible"),) )
+            okDialog( None, "%s: %s. %s" % (
+                _("Entropy is running in safe mode"), reason,
+                _("Please fix as soon as possible"),)
+            )
             self.safe_mode_txt = _("Safe Mode")
 
         self.isBusy = False
@@ -244,16 +1113,16 @@ class SpritzApplication(Controller):
         Controller.__init__( self, ui, addrepo_ui, wait_ui )
         self.ui.main.maximize()
 
-        # Setup GUI
-        self.setupGUI()
-        self.packagesInstall()
+    def init(self):
+        self.setup_gui()
+        self.warn_repositories()
+        self.packages_install()
 
     def quit(self, widget = None, event = None, sysexit = True ):
         if self.ugcTask != None:
             self.ugcTask.kill()
             while self.ugcTask.isAlive():
                 time.sleep(0.2)
-        ''' Main destroy Handler '''
         self.Equo.destroy()
 
         if sysexit:
@@ -264,7 +1133,7 @@ class SpritzApplication(Controller):
         try: gtk.main_quit()
         except RuntimeError: pass
 
-    def gtkLoop(self):
+    def gtk_loop(self):
         while gtk.events_pending():
            gtk.main_iteration()
 
@@ -272,7 +1141,7 @@ class SpritzApplication(Controller):
         import subprocess
         subprocess.call(['xdg-open',url])
 
-    def setupGUI(self):
+    def setup_gui(self):
 
         self.clipboard = gtk.Clipboard()
         self.pty = pty.openpty()
@@ -291,15 +1160,18 @@ class SpritzApplication(Controller):
         self.onInstall = False
         self.queue = SpritzQueue(self)
         self.etpbase.connect_queue(self.queue)
-        self.queueView = EntropyQueueView(self.ui.queueView,self.queue)
-        self.pkgView = EntropyPackageView(self.ui.viewPkg, self.queueView, self.ui, self.etpbase, self.ui.main, self)
+        self.queueView = EntropyQueueView(self.ui.queueView, self.queue)
+        self.pkgView = EntropyPackageView(self.ui.viewPkg, self.queueView,
+            self.ui, self.etpbase, self.ui.main, self)
         self.filesView = EntropyFilesView(self.ui.filesView)
-        self.advisoriesView = EntropyAdvisoriesView(self.ui.advisoriesView, self.ui, self.etpbase)
+        self.advisoriesView = EntropyAdvisoriesView(self.ui.advisoriesView,
+            self.ui, self.etpbase)
         self.queue.connect_objects(self.Equo, self.etpbase, self.pkgView, self.ui)
         #self.catView = SpritzCategoryView(self.ui.tvCategory)
         self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
         self.catsView.etpbase = self.etpbase
-        self.catPackages = EntropyPackageView(self.ui.tvCatPackages,self.queueView, self.ui, self.etpbase, self.ui.main, self)
+        self.catPackages = EntropyPackageView(self.ui.tvCatPackages,
+            self.queueView, self.ui, self.etpbase, self.ui.main, self)
         self.repoView = EntropyRepoView(self.ui.viewRepo, self.ui, self)
         self.repoMirrorsView = EntropyRepositoryMirrorsView(self.addrepo_ui.mirrorsView)
         # Left Side Toolbar
@@ -363,7 +1235,6 @@ class SpritzApplication(Controller):
         self.console_menu = self.console_menu_xml.get_widget( "terminalMenu" )
         self.console_menu_xml.signal_autoconnect(self)
 
-        ''' Setup the GUI'''
         self.ui.main.set_title( "%s %s %s" % (SpritzConf.branding_title, const.__spritz_version__, self.safe_mode_txt) )
         self.ui.main.connect( "delete_event", self.quit )
         self.ui.notebook.set_show_tabs( False )
@@ -422,20 +1293,37 @@ class SpritzApplication(Controller):
         self.setupPreferences()
 
         self.setupUgc()
-        #self.setupAds()
 
     def show_wait_window(self):
         self.ui.main.set_sensitive(False)
         self.wait_ui.waitWindow.show_all()
         self.wait_ui.waitWindow.queue_draw()
         self.ui.main.queue_draw()
-        self.gtkLoop()
+        self.gtk_loop()
 
     def hide_wait_window(self):
         self.wait_ui.waitWindow.hide()
         self.ui.main.set_sensitive(True)
 
-    def packagesInstall(self):
+    def warn_repositories(self):
+        all_repos = self.Equo.SystemSettings['repositories']['order']
+        valid_repos = self.Equo.validRepositories
+        invalid_repos = [x for x in all_repos if x not in valid_repos]
+        invalid_repos = [x for x in invalid_repos if \
+            (self.Equo.get_repository_revision(x) == -1)]
+        if invalid_repos:
+            mydialog = ConfirmationDialog(self.ui.main, invalid_repos,
+                top_text = _("The repositories listed below are configured but not available. They should be downloaded."),
+                sub_text = _("If you don't do this now, you won't be able to use them."), # the repositories
+                simpleList = True)
+            mydialog.okbutton.set_label(_("Download now"))
+            mydialog.cancelbutton.set_label(_("Skip"))
+            rc = mydialog.run()
+            mydialog.destroy()
+            if rc == -5:
+                self.do_repo_refresh(invalid_repos)
+
+    def packages_install(self):
 
         packages_install = os.getenv("SPRITZ_PACKAGES")
         if packages_install:
@@ -558,88 +1446,11 @@ class SpritzApplication(Controller):
         mytxt = "<span foreground='#084670'>%s</span>" % (_("Some configuration options are critical for the health of your System. Be careful."),)
         self.ui.preferencesLabel.set_markup(mytxt)
 
-    def setupAds(self):
-        self.ui.bannerEventBox.add(self.ad_pix)
-        self.ui.adsLabel.set_markup("<small><b>%s</b></small>" % (_("Advertisement"),))
-        self.ad_url = 'http://www.silkbit.com'
-        self.ui.bannerEventBox.show_all()
-        self.adTask = TimeScheduled(60, self.spawnAdRotation)
-        self.adTask.set_delay_before(True)
-        self.adTask.start()
-
     def setupUgc(self):
         self.ugcTask = TimeScheduled(30, self.spawnUgcUpdate)
         self.ugcTask.set_delay_before(True)
         if "--nougc" not in sys.argv:
             self.ugcTask.start()
-
-    def spawnAdRotation(self):
-        if self.do_debug: print "entering ad rotation"
-        try:
-            self.ad_rotation()
-        except:
-            pass
-        if self.do_debug: print "quitting ad rotation"
-
-    def ad_rotation(self):
-
-        if self.isWorking or self.disable_ugc:
-            return
-
-        tries = 5
-        while tries:
-
-            ads_data = entropy.tools.get_remote_data(self.ad_list_url)
-            if not ads_data:
-                tries -= 1
-                continue
-
-            ads_data = [x.strip() for x in ads_data if x.strip() and x.split() > 1]
-
-            length = len(ads_data)
-            myrand = int(random.random()*length)
-            if length > 1:
-                while (myrand == self.previous_ad_index):
-                    if self.do_debug: print "ad loop",myrand
-                    myrand = int(random.random()*length)
-
-            mydata = ads_data[myrand].split()
-            mypix_url = os.path.join(self.ad_uri_dir,mydata[0])
-            myurl = ' '.join(mydata[1:])
-
-            pix_tmp_path = entropy.tools.get_random_temp_file()
-            fetchConn = self.Equo.urlFetcher(mypix_url, pix_tmp_path, resume = False)
-            rc = fetchConn.download()
-            if rc in ("-1","-2","-3","-4"):
-                tries -= 1
-                continue
-
-            # load the image
-            try:
-                myadpix = gtk.image_new_from_file(pix_tmp_path)
-            except:
-                tries -= 1
-                continue
-
-            gtk.gdk.threads_enter()
-
-            self.ui.bannerEventBox.remove(self.ad_pix)
-            self.ad_pix = myadpix
-            self.ui.bannerEventBox.add(self.ad_pix)
-            self.ui.bannerEventBox.show_all()
-            self.ad_url = myurl
-
-            if self.previous_ad_image_path != None:
-                if os.path.isfile(self.previous_ad_image_path) and os.access(self.previous_ad_image_path,os.W_OK):
-                    try:
-                        os.remove(self.previous_ad_image_path)
-                    except (OSError,IOError,):
-                        pass
-            self.previous_ad_image_path = pix_tmp_path
-            self.previous_ad_index = myrand
-
-            gtk.gdk.threads_leave()
-            break
 
     def spawnUgcUpdate(self):
         self.ugcTask.set_delay(300)
@@ -689,58 +1500,6 @@ class SpritzApplication(Controller):
             mymtime = entropy.tools.get_file_unix_mtime(mypath)
             mytime = entropy.tools.convert_unix_time_to_human_time(mymtime)
             self.dbBackupStore.append( (mypath,os.path.basename(mypath),mytime,) )
-
-    def on_console_click(self, widget, event):
-        self.console_menu.popup( None, None, None, event.button, event.time )
-        return True
-
-    def on_dbBackupButton_clicked(self, widget):
-        self.show_wait_window()
-        self.startWorking()
-        status, err_msg = self.Equo.backup_database(etpConst['etpdatabaseclientfilepath'])
-        self.endWorking()
-        if not status:
-            self.hide_wait_window()
-            okDialog( self.ui.main, "%s: %s" % (_("Error during backup"),err_msg,) )
-            return
-        okDialog( self.ui.main, "%s" % (_("Backup complete"),) )
-        self.fillPreferencesDbBackupPage()
-        self.dbBackupView.queue_draw()
-        self.hide_wait_window()
-
-
-    def on_dbRestoreButton_clicked(self, widget):
-        model, myiter = self.dbBackupView.get_selection().get_selected()
-        if myiter == None: return
-        dbpath = model.get_value(myiter, 0)
-        self.show_wait_window()
-        self.startWorking()
-        status, err_msg = self.Equo.restore_database(dbpath, etpConst['etpdatabaseclientfilepath'])
-        self.endWorking()
-        self.Equo.reopen_client_repository()
-        self.resetSpritzCacheStatus()
-        self.addPackages()
-        if not status:
-            self.hide_wait_window()
-            okDialog( self.ui.main, "%s: %s" % (_("Error during restore"),err_msg,) )
-            return
-        self.fillPreferencesDbBackupPage()
-        self.dbBackupView.queue_draw()
-        self.hide_wait_window()
-        okDialog( self.ui.main, "%s" % (_("Restore complete"),) )
-
-    def on_dbDeleteButton_clicked(self, widget):
-        model, myiter = self.dbBackupView.get_selection().get_selected()
-        if myiter == None: return
-        dbpath = model.get_value(myiter, 0)
-        try:
-            if os.path.isfile(dbpath) and os.access(dbpath,os.W_OK):
-                os.remove(dbpath)
-        except OSError, e:
-            okDialog( self.ui.main, "%s: %s" % (_("Error during removal"),e,) )
-            return
-        self.fillPreferencesDbBackupPage()
-        self.dbBackupView.queue_draw()
 
     def setupPreferences(self):
 
@@ -1079,13 +1838,11 @@ class SpritzApplication(Controller):
         if do_busy:
             busyCursor(self.ui.main)
         self.ui.progressVBox.grab_add()
-        #gtkEventThread.startProcessing()
 
     def endWorking(self):
         self.isWorking = False
         self.ui.progressVBox.grab_remove()
         normalCursor(self.ui.main)
-        #gtkEventThread.endProcessing()
 
     def setupSpritz(self):
         msg = _('Generating metadata. Please wait.')
@@ -1217,7 +1974,7 @@ class SpritzApplication(Controller):
             time.sleep(0.2)
             if self.do_debug:
                 print "updateRepositories: update thread still alive"
-            self.gtkLoop()
+            self.gtk_loop()
         rc = self.__repo_update_rc
 
         if repoConn.syncErrors or (rc != 0):
@@ -1446,7 +2203,7 @@ class SpritzApplication(Controller):
                     time.sleep(0.2)
                     if self.do_debug:
                         print "processPackageQueue: QueueExecutor thread still alive"
-                    self.gtkLoop()
+                    self.gtk_loop()
 
                 e,i = self.my_inst_errors
                 if self.do_debug:
@@ -1571,38 +2328,6 @@ class SpritzApplication(Controller):
             return identifier, source, destination
         return 0,None,None
 
-    def on_updateAdvSelected_clicked( self, widget ):
-
-        if not self.etpbase.selected_advisory_item:
-            return
-
-        key, affected, data = self.etpbase.selected_advisory_item
-        if not affected:
-            okDialog( self.ui.main, _("The chosen package is not vulnerable") )
-            return
-        atoms = set()
-        for mykey in data['affected']:
-            affected_data = data['affected'][mykey][0]
-            atoms |= set(affected_data['unaff_atoms'])
-
-        rc = self.add_atoms_to_queue(atoms, always_ask = True)
-        if rc: okDialog( self.ui.main, _("Packages in Advisory have been queued.") )
-
-    def on_updateAdvAll_clicked( self, widget ):
-
-        adv_data = self.Advisories.get_advisories_metadata()
-        atoms = set()
-        for key in adv_data:
-            affected = self.Advisories.is_affected(key)
-            if not affected:
-                continue
-            for mykey in adv_data[key]['affected']:
-                affected_data = adv_data[key]['affected'][mykey][0]
-                atoms |= set(affected_data['unaff_atoms'])
-
-        rc = self.add_atoms_to_queue(atoms, always_ask = True)
-        if rc: okDialog( self.ui.main, _("Packages in all Advisories have been queued.") )
-
     def add_atoms_to_queue(self, atoms, always_ask = False, matches = set()):
 
         self.show_wait_window()
@@ -1656,142 +2381,6 @@ class SpritzApplication(Controller):
         self.unsetBusy()
         return rc
 
-
-    def on_advInfoButton_clicked( self, widget ):
-        if self.etpbase.selected_advisory_item:
-            self.loadAdvInfoMenu(self.etpbase.selected_advisory_item)
-
-    def on_pkgInfoButton_clicked( self, widget ):
-        if self.etpbase.selected_treeview_item:
-            self.loadPkgInfoMenu(self.etpbase.selected_treeview_item)
-
-    def on_filesDelete_clicked( self, widget ):
-        identifier, source, dest = self.__get_Edit_filename()
-        if not identifier:
-            return True
-        self.Equo.FileUpdates.remove_file(identifier)
-        self.filesView.populate(self.Equo.FileUpdates.scandata)
-
-    def on_filesMerge_clicked( self, widget ):
-        identifier, source, dest = self.__get_Edit_filename()
-        if not identifier:
-            return True
-        self.Equo.FileUpdates.merge_file(identifier)
-        self.filesView.populate(self.Equo.FileUpdates.scandata)
-
-    def on_mergeFiles_clicked( self, widget ):
-        self.Equo.FileUpdates.scanfs(dcache = True)
-        keys = self.Equo.FileUpdates.scandata.keys()
-        for key in keys:
-            self.Equo.FileUpdates.merge_file(key)
-            # it's cool watching it runtime
-            self.filesView.populate(self.Equo.FileUpdates.scandata)
-
-    def on_deleteFiles_clicked( self, widget ):
-        self.Equo.FileUpdates.scanfs(dcache = True)
-        keys = self.Equo.FileUpdates.scandata.keys()
-        for key in keys:
-            self.Equo.FileUpdates.remove_file(key)
-            # it's cool watching it runtime
-            self.filesView.populate(self.Equo.FileUpdates.scandata)
-
-    def on_filesEdit_clicked( self, widget ):
-        identifier, source, dest = self.__get_Edit_filename()
-        if not identifier:
-            return True
-        self.runEditor(source)
-
-    def on_filesView_row_activated( self, widget, iterator, path ):
-        self.on_filesViewChanges_clicked(widget)
-
-    def on_filesViewChanges_clicked( self, widget ):
-        identifier, source, dest = self.__get_Edit_filename()
-        if not identifier:
-            return True
-        randomfile = entropy.tools.get_random_temp_file()+".diff"
-        diffcmd = "diff -Nu "+dest+" "+source+" > "+randomfile
-        os.system(diffcmd)
-        self.runEditor(randomfile, delete = True)
-
-    def on_shiftUp_clicked( self, widget ):
-        idx, repoid, iterdata = self.__getSelectedRepoIndex()
-        if idx != None:
-            path = iterdata[0].get_path(iterdata[1])[0]
-            if path > 0 and idx > 0:
-                idx -= 1
-                self.Equo.shift_repository(repoid, idx)
-                # get next iter
-                prev = iterdata[0].get_iter(path-1)
-                self.repoView.store.swap(iterdata[1],prev)
-
-    def on_shiftDown_clicked( self, widget ):
-        idx, repoid, iterdata = self.__getSelectedRepoIndex()
-        if idx != None:
-            next = iterdata[0].iter_next(iterdata[1])
-            if next:
-                idx += 1
-                self.Equo.shift_repository(repoid, idx)
-                self.repoView.store.swap(iterdata[1],next)
-
-    def on_mirrorDown_clicked( self, widget ):
-        selection = self.repoMirrorsView.view.get_selection()
-        urldata = selection.get_selected()
-        # get text
-        if urldata[1] != None:
-            next = urldata[0].iter_next(urldata[1])
-            if next:
-                self.repoMirrorsView.store.swap(urldata[1],next)
-
-    def on_mirrorUp_clicked( self, widget ):
-        selection = self.repoMirrorsView.view.get_selection()
-        urldata = selection.get_selected()
-        # get text
-        if urldata[1] != None:
-            path = urldata[0].get_path(urldata[1])[0]
-            if path > 0:
-                # get next iter
-                prev = urldata[0].get_iter(path-1)
-                self.repoMirrorsView.store.swap(urldata[1],prev)
-
-    def on_repoMirrorAdd_clicked( self, widget ):
-        text = inputBox(self.addrepo_ui.addRepoWin, _("Insert URL"), _("Enter a download mirror, HTTP or FTP")+"   ")
-        # call liststore and tell to add
-        if text:
-            # validate url
-            if not (text.startswith("http://") or text.startswith("ftp://") or text.startswith("file://")):
-                okDialog( self.addrepo_ui.addRepoWin, _("You must enter either a HTTP or a FTP url.") )
-            else:
-                self.repoMirrorsView.add(text)
-
-    def on_repoMirrorRemove_clicked( self, widget ):
-        selection = self.repoMirrorsView.view.get_selection()
-        urldata = selection.get_selected()
-        if urldata[1] != None:
-            self.repoMirrorsView.remove(urldata)
-
-    def on_repoMirrorEdit_clicked( self, widget ):
-        selection = self.repoMirrorsView.view.get_selection()
-        urldata = selection.get_selected()
-        # get text
-        if urldata[1] != None:
-            text = self.repoMirrorsView.get_text(urldata)
-            self.repoMirrorsView.remove(urldata)
-            text = inputBox(self.addrepo_ui.addRepoWin, _("Insert URL"), _("Enter a download mirror, HTTP or FTP")+"   ", input_text = text)
-            # call liststore and tell to add
-            self.repoMirrorsView.add(text)
-
-    def on_addRepo_clicked( self, widget ):
-        self.addrepo_ui.repoSubmit.show()
-        self.addrepo_ui.repoSubmitEdit.hide()
-        self.addrepo_ui.repoInsert.show()
-        self.addrepo_ui.repoidEntry.set_editable(True)
-        self.addrepo_ui.repodbcformatEntry.set_active(0)
-        self.addrepo_ui.repoidEntry.set_text("")
-        self.addrepo_ui.repoDescEntry.set_text("")
-        self.addrepo_ui.repodbEntry.set_text("")
-        self.addrepo_ui.addRepoWin.show()
-        self.repoMirrorsView.populate()
-
     def __loadRepodata(self, repodata):
         self.addrepo_ui.repoidEntry.set_text(repodata['repoid'])
         self.addrepo_ui.repoDescEntry.set_text(repodata['description'])
@@ -1808,28 +2397,6 @@ class SpritzApplication(Controller):
                 break
             idx += 1
         self.addrepo_ui.repodbEntry.set_text(repodata['plain_database'])
-
-    def on_repoSubmitEdit_clicked( self, widget ):
-        repodata = self.__getRepodata()
-        errors = self.__validateRepoSubmit(repodata, edit = True)
-        if errors:
-            msg = "%s: %s" % (_("Wrong entries, errors"),', '.join(errors),)
-            okDialog( self.addrepo_ui.addRepoWin, msg )
-            return True
-        else:
-            disable = False
-            repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
-            if repo_excluded.has_key(repodata['repoid']):
-                disable = True
-            self.Equo.remove_repository(repodata['repoid'], disable = disable)
-            if not disable:
-                self.Equo.add_repository(repodata)
-            self.resetSpritzCacheStatus()
-
-            self.setupRepoView()
-            self.addrepo_ui.addRepoWin.hide()
-            msg = "%s '%s' %s" % (_("You should press the button"),_("Regenerate Cache"),_("now"))
-            okDialog( self.ui.main, msg )
 
     def resetSpritzCacheStatus(self):
         self.catPackages.clear()
@@ -1889,405 +2456,6 @@ class SpritzApplication(Controller):
         repodata['ssl_service_port'] = self.addrepo_ui.repodbPortSSL.get_text()
         return repodata
 
-    def on_repoSubmit_clicked( self, widget ):
-        repodata = self.__getRepodata()
-        # validate
-        errors = self.__validateRepoSubmit(repodata)
-        if not errors:
-            self.Equo.add_repository(repodata)
-            self.resetSpritzCacheStatus()
-            self.setupRepoView()
-            self.addrepo_ui.addRepoWin.hide()
-            msg = "%s '%s' %s" % (_("You should press the button"),_("Update Repositories"),_("now"))
-            okDialog( self.ui.main, msg )
-        else:
-            msg = "%s: %s" % (_("Wrong entries, errors"),', '.join(errors),)
-            okDialog( self.addrepo_ui.addRepoWin, msg )
-
-    def on_addRepoWin_delete_event(self, widget, path):
-        return True
-
-    def on_repoCancel_clicked( self, widget ):
-        self.addrepo_ui.addRepoWin.hide()
-
-    def on_repoInsert_clicked( self, widget ):
-        text = inputBox(self.addrepo_ui.addRepoWin, _("Insert Repository"), _("Insert Repository identification string")+"   ")
-        if text:
-            if (text.startswith("repository|")) and (len(text.split("|")) == 5):
-                current_branch = self.Equo.SystemSettings['repositories']['branch']
-                current_product = self.Equo.SystemSettings['repositories']['product']
-                repoid, repodata = const_extract_cli_repo_params(text, current_branch, current_product)
-                self.__loadRepodata(repodata)
-            else:
-                okDialog( self.addrepo_ui.addRepoWin, _("This Repository identification string is malformed") )
-
-    def on_removeRepo_clicked( self, widget ):
-        # get selected repo
-        selection = self.repoView.view.get_selection()
-        repodata = selection.get_selected()
-        # get text
-        if repodata[1] != None:
-            repoid = self.repoView.get_repoid(repodata)
-            if repoid == self.Equo.SystemSettings['repositories']['default_repository']:
-                okDialog( self.ui.main, _("You! Why do you want to remove the main repository ?"))
-                return True
-            self.Equo.remove_repository(repoid)
-            self.resetSpritzCacheStatus()
-            self.setupRepoView()
-            msg = "%s '%s' %s '%s' %s" % (_("You must now either press the"),_("Update Repositories"),_("or the"),_("Regenerate Cache"),_("now"))
-            okDialog( self.ui.main, msg )
-
-    def on_repoEdit_clicked( self, widget ):
-        self.addrepo_ui.repoSubmit.hide()
-        self.addrepo_ui.repoSubmitEdit.show()
-        self.addrepo_ui.repoInsert.hide()
-        self.addrepo_ui.repoidEntry.set_editable(False)
-        # get selection
-        selection = self.repoView.view.get_selection()
-        repostuff = selection.get_selected()
-        if repostuff[1] != None:
-            repoid = self.repoView.get_repoid(repostuff)
-            repodata = self.Equo.get_repository_settings(repoid)
-            self.__loadRepodata(repodata)
-            self.addrepo_ui.addRepoWin.show()
-
-    def on_terminal_clear_activate(self, widget):
-        self.output.text_written = []
-        self.console.reset()
-
-    def on_terminal_copy_activate(self, widget):
-        self.clipboard.clear()
-        self.clipboard.set_text(''.join(self.output.text_written))
-
-    def on_Preferences_toggled(self, widget, toggle = True):
-        self.ui.preferencesSaveButton.set_sensitive(toggle)
-        self.ui.preferencesRestoreButton.set_sensitive(toggle)
-
-    def on_preferencesSaveButton_clicked(self, widget):
-        sure = questionDialog(self.ui.main, _("Are you sure ?"))
-        if not sure:
-            return
-        for config_file in self.Preferences:
-            for name, setting, mytype, fillfunc, savefunc, wgwrite, wgread in self.Preferences[config_file]:
-                if mytype == list:
-                    savefunc(config_file, name, setting, mytype, wgwrite, wgread)
-                else:
-                    data = wgread()
-                    result = savefunc(config_file, name, setting, mytype, data)
-                    if not result:
-                        errorMessage(
-                            self.ui.main,
-                            cleanMarkupString("%s: %s") % (_("Error saving parameter"),name,),
-                            _("An issue occured while saving a preference"),
-                            "%s %s: %s" % (_("Parameter"),name,_("not saved"),),
-                        )
-        initconfig_entropy_constants(etpConst['systemroot'])
-        # re-read configprotect
-        self.resetSpritzCacheStatus()
-        self.addPackages()
-        self.Equo.reload_repositories_config()
-        self.setupPreferences()
-
-    def on_preferencesRestoreButton_clicked(self, widget):
-        self.setupPreferences()
-
-    def on_configProtectNew_clicked(self, widget):
-        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
-        if not data:
-            return
-        self.configProtectModel.append([data])
-
-    def on_configProtectMaskNew_clicked(self, widget):
-        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
-        if not data:
-            return
-        self.configProtectMaskModel.append([data])
-
-    def on_configProtectSkipNew_clicked(self, widget):
-        data = inputBox( self.ui.main, _("New"), _("Please insert a new path"))
-        if not data:
-            return
-        self.configProtectSkipModel.append([data])
-
-    def on_configProtectDelete_clicked(self, widget):
-        model, myiter = self.configProtectView.get_selection().get_selected()
-        if myiter:
-            model.remove(myiter)
-
-    def on_configProtectMaskDelete_clicked(self, widget):
-        model, myiter = self.configProtectMaskView.get_selection().get_selected()
-        if myiter:
-            model.remove(myiter)
-
-    def on_configProtectSkipDelete_clicked(self, widget):
-        model, myiter = self.configProtectSkipView.get_selection().get_selected()
-        if myiter:
-            model.remove(myiter)
-
-    def on_configProtectEdit_clicked(self, widget):
-        model, myiter = self.configProtectView.get_selection().get_selected()
-        if myiter:
-            item = model.get_value( myiter, 0 )
-            data = inputBox( self.ui.main, _("New"), _("Please edit the selected path"), input_text = item)
-            if not data:
-                return
-            model.remove(myiter)
-            self.configProtectModel.append([data])
-
-    def on_configProtectMaskEdit_clicked(self, widget):
-        model, myiter = self.configProtectMaskView.get_selection().get_selected()
-        if myiter:
-            item = model.get_value( myiter, 0 )
-            data = inputBox( self.ui.main, _("New"), _("Please edit the selected path"), input_text = item)
-            if not data:
-                return
-            model.remove(myiter)
-            self.configProtectMaskModel.append([data])
-
-    def on_configProtectSkipEdit_clicked(self, widget):
-        model, myiter = self.configProtectSkipView.get_selection().get_selected()
-        if myiter:
-            item = model.get_value( myiter, 0 )
-            data = inputBox( self.ui.main, _("New"), _("Please edit the selected path"), input_text = item)
-            if not data:
-                return
-            model.remove(myiter)
-            self.configProtectSkipModel.append([data])
-
-    def on_installPackageItem_activate(self, widget = None, fn = None):
-
-        if (widget and self.isWorking) or self.isBusy:
-            return
-
-        if not fn:
-            mypattern = '*'+etpConst['packagesext']
-            fn = FileChooser(pattern = mypattern)
-        if not fn:
-            return
-        elif not os.access(fn,os.R_OK):
-            return
-
-        msg = "%s: %s. %s" % (
-            _("You have chosen to install this package"),
-            os.path.basename(fn),
-            _("Are you supa sure?"),
-        )
-        rc = questionDialog(self.ui.main, msg)
-        if not rc:
-            return
-
-        self.pkgView.store.clear()
-
-        newrepo = os.path.basename(fn)
-        # we have it !
-        status, atomsfound = self.Equo.add_tbz2_to_repos(fn)
-        if status != 0:
-            errtxt = _("is not a valid Entropy package")
-            if status == -3:
-                errtxt = _("is not compiled with the same architecture of the system")
-            mytxt = "%s %s. %s." % (
-                os.path.basename(fn),
-                errtxt,
-                _("Cannot install"),
-            )
-            okDialog(self.ui.main, mytxt)
-            return
-
-        def clean_n_quit(newrepo):
-            self.Equo.remove_repository(newrepo)
-            self.resetSpritzCacheStatus()
-            self.Equo.reopen_client_repository()
-            # regenerate packages information
-            self.setupSpritz()
-
-        if not atomsfound:
-            clean_n_quit(newrepo)
-            return
-
-        pkgs = []
-        for idpackage, atom in atomsfound:
-            yp, new = self.etpbase.getPackageItem((idpackage,newrepo,),True)
-            yp.action = 'i'
-            yp.queued = 'i'
-            pkgs.append(yp)
-
-        busyCursor(self.ui.main)
-        status, myaction = self.queue.add(pkgs)
-        if status != 0:
-            for obj in pkgs:
-                obj.queued = None
-            clean_n_quit(newrepo)
-            normalCursor(self.ui.main)
-            return
-
-        normalCursor(self.ui.main)
-        self.setPage('output')
-
-        try:
-            rc = self.processPackageQueue(self.queue.packages, remove_repos = [newrepo])
-        except:
-            if self.do_debug:
-                entropy.tools.print_traceback()
-                import pdb; pdb.set_trace()
-            else:
-                raise
-
-        self.resetQueueProgressBars()
-        if rc:
-            self.queue.clear()
-            self.queueView.refresh()
-            return True
-        else: # not done
-            clean_n_quit(newrepo)
-            return False
-
-
-    def on_PageButton_changed( self, widget, page ):
-
-        ''' Left Side Toolbar Handler'''
-        # do not put here actions for 'packages' and 'output' but use on_PageButton_pressed
-        if page == "filesconf":
-            self.populateFilesUpdate()
-        elif page == "glsa":
-            self.populateAdvisories(None,'affected')
-        elif page == "group":
-            self.populateCategories()
-        self.setNotebookPage(const.PAGES[page])
-
-    def on_queueReviewAndInstall_clicked(self, widget):
-        self.switchNotebookPage("queue")
-
-    def on_pkgFilter_toggled(self,rb,action):
-        ''' Package Type Selection Handler'''
-        if not rb.get_active(): return
-
-        rb.grab_add()
-        self.lastPkgPB = action
-
-        # Only show add/remove all when showing updates
-        if action == 'updates': self.ui.updatesButtonbox.show()
-        else: self.ui.updatesButtonbox.hide()
-
-        if action == "masked":
-            self.setupMaskedPackagesWarningBox()
-            self.ui.maskedWarningBox.show()
-        else:
-            self.ui.maskedWarningBox.hide()
-
-        if action == "pkgsets": self.ui.pkgsetsButtonBox.show()
-        else: self.ui.pkgsetsButtonBox.hide()
-
-        if action == "queued": self.ui.queueReviewAndInstallBox.show()
-        else: self.ui.queueReviewAndInstallBox.hide()
-
-        self.addPackages()
-        rb.grab_remove()
-
-    def on_repoRefresh_clicked(self,widget):
-        repos = self.repoView.get_selected()
-        if not repos:
-            okDialog( self.ui.main, _("Please select at least one repository") )
-            return
-        self.setPage('output')
-        self.ui.main.queue_draw()
-        self.uiLock(True)
-        try:
-            self.gtkLoop()
-            self.startWorking()
-            status = self.updateRepositories(repos)
-            self.endWorking()
-            self.progress.reset_progress()
-            self.resetSpritzCacheStatus()
-            self.setupRepoView()
-            self.setupSpritz()
-            self.setupAdvisories()
-            self.setPage('repos')
-            if status:
-                self.showNoticeBoard()
-        finally:
-            self.uiLock(False)
-
-    def on_cacheButton_clicked(self,widget):
-        self.repoView.get_selected()
-        self.setPage('output')
-        self.cleanEntropyCaches(alone = True)
-        self.setPage('repos')
-
-    def on_repoDeSelect_clicked(self,widget):
-        self.repoView.deselect_all()
-
-    def on_queueProcess_clicked( self, widget ):
-        """ Process Queue Button Handler """
-        if self.queue.total() == 0: # Check there are any packages in the queue
-            self.setStatus(_('No packages in queue'))
-            return
-
-        fetch_only = self.ui.queueProcessFetchOnly.get_active()
-        download_sources = self.ui.queueProcessDownloadSource.get_active()
-
-        rc = True
-        try:
-            rc = self.processPackageQueue(self.queue.packages, fetch_only = fetch_only, download_sources = download_sources)
-        except:
-            if self.do_debug:
-                entropy.tools.print_traceback()
-                import pdb; pdb.set_trace()
-            else: raise
-        self.resetQueueProgressBars()
-        if rc and not fetch_only:
-            self.queue.clear()       # Clear package queue
-            self.queueView.refresh() # Refresh Package Queue
-        #if fetch_only:
-        #    self.setPage('queue')
-
-    def on_queueSave_clicked( self, widget ):
-        fn = FileChooser(action = gtk.FILE_CHOOSER_ACTION_SAVE, buttons = (gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE,gtk.RESPONSE_OK))
-        if fn:
-            pkgdata = self.queue.get().copy()
-            for key in pkgdata.keys():
-                if pkgdata[key]: pkgdata[key] = [x.matched_atom for x in pkgdata[key]]
-            self.Equo.dumpTools.dumpobj(fn,pkgdata,True)
-
-    def on_queueOpen_clicked( self, widget ):
-        fn = FileChooser()
-        if fn:
-
-            try:
-                pkgdata = self.Equo.dumpTools.loadobj(fn, complete_path = True)
-            except:
-                return
-
-            if not isinstance(pkgdata,dict):
-                return
-
-            collected_items = []
-            for key in pkgdata.keys():
-                for pkg in pkgdata[key]:
-                    try:
-                        yp, new = self.etpbase.getPackageItem(pkg,True)
-                    except:
-                        okDialog( self.ui.main, _("Queue is too old. Cannot load.") )
-                        return
-                    collected_items.append((key,yp))
-
-            for key, pkg in collected_items:
-                pkg.queued = key
-                self.queue.packages[key].append(pkg)
-
-            self.queueView.refresh()
-
-    def on_queueClean_clicked(self, widget):
-        self.resetSpritzCacheStatus()
-        self.addPackages()
-
-    def on_adv_doubleclick( self, widget, iterator, path ):
-        """ Handle selection of row in package view (Show Descriptions) """
-        ( model, iterator ) = widget.get_selection().get_selected()
-        if model != None and iterator != None:
-            data = model.get_value( iterator, 0 )
-            if data:
-                self.loadAdvInfoMenu(data)
-
     def loadAdvInfoMenu(self, item):
         my = SecurityAdvisoryMenu(self.ui.main)
         my.load(item)
@@ -2306,77 +2474,6 @@ class SpritzApplication(Controller):
                 continue
             break
 
-    def on_pkg_doubleclick( self, widget, iterator, path ):
-        """ Handle selection of row in package view (Show Descriptions) """
-        objs = self.pkgView.collect_selected_items()
-        for obj in objs:
-            self.loadPkgInfoMenu(obj)
-
-    def on_license_double_clicked( self, widget, iterator, path ):
-        """ Handle selection of row in package view (Show Descriptions) """
-        ( model, iterator ) = widget.get_selection().get_selected()
-        if model != None and iterator != None:
-            license_identifier = model.get_value( iterator, 0 )
-            found = False
-            license_text = ''
-            if license_identifier:
-                repoid = self.pkgProperties_selected.matched_atom[1]
-                if type(repoid) is int:
-                    dbconn = self.Equo.clientDbconn
-                else:
-                    dbconn = self.Equo.open_repository(repoid)
-                if dbconn.isLicensedataKeyAvailable(license_identifier):
-                    license_text = dbconn.retrieveLicenseText(license_identifier)
-                    found = True
-            if found:
-                # prepare textview
-                mybuffer = gtk.TextBuffer()
-                mybuffer.set_text(license_text)
-                xml_licread = gtk.glade.XML( const.GLADE_FILE, 'textReadWindow',domain="entropy" )
-                read_dialog = xml_licread.get_widget( "textReadWindow" )
-                okReadButton = xml_licread.get_widget( "okReadButton" )
-                okReadButton.connect( 'clicked', self.destroy_read_license_dialog )
-                licenseView = xml_licread.get_widget( "readTextView" )
-                licenseView.set_buffer(mybuffer)
-                read_dialog.set_title(license_identifier+" license text")
-                read_dialog.show_all()
-                self.read_license_dialog = read_dialog
-
-    def destroy_read_license_dialog( self, widget ):
-        self.read_license_dialog.destroy()
-
-    def on_select_clicked(self,widget):
-        ''' Package Add All button handler '''
-        self.show_wait_window()
-        self.setBusy()
-        self.startWorking()
-        busyCursor(self.wait_ui.waitWindow)
-        self.pkgView.selectAll()
-        self.endWorking()
-        self.unsetBusy()
-        normalCursor(self.wait_ui.waitWindow)
-        self.hide_wait_window()
-
-    def on_deselect_clicked(self,widget):
-        ''' Package Remove All button handler '''
-        self.on_clear_clicked(widget)
-        self.show_wait_window()
-        self.setBusy()
-        self.pkgView.deselectAll()
-        self.hide_wait_window()
-        self.unsetBusy()
-
-
-    def on_skipMirror_clicked(self,widget):
-        # set the working mirror as failing
-        self.Equo.MirrorStatus.add_failing_working_mirror(75)
-        self.skipMirrorNow = True
-
-    def on_abortQueue_clicked(self,widget):
-        msg = _("You have chosen to interrupt the processing. Are you sure you want to do it ?")
-        rc = questionDialog(self.ui.main, msg)
-        if rc: self.abortQueueNow = True
-
     def queue_bombing(self):
         if self.abortQueueNow:
             self.abortQueueNow = False
@@ -2388,320 +2485,6 @@ class SpritzApplication(Controller):
             self.skipMirrorNow = False
             mytxt = _("Skipping current mirror.")
             raise OnlineMirrorError('OnlineMirrorError %s' % (mytxt,))
-
-    def on_search_clicked(self,widget):
-        self.etpbase.setFilter(filters.spritzFilter.processFilters)
-        ''' Search entry+button handler'''
-        txt = self.ui.pkgFilter.get_text()
-        flt = filters.spritzFilter.get('KeywordFilter')
-        if txt != '':
-            flt.activate()
-            lst = txt.split()
-            flt.setKeys(lst)
-            self.ui.pkgClr.show()
-        else:
-            flt.activate(False)
-        action = self.lastPkgPB
-        rb = self.packageRB[action]
-        self.on_pkgFilter_toggled(rb,action)
-
-    def on_clear_clicked(self,widget):
-        self.etpbase.setFilter()
-        ''' Search Clear button handler'''
-        self.ui.pkgFilter.set_text("")
-        self.on_search_clicked(None)
-        self.ui.pkgClr.hide()
-
-    def on_comps_cursor_changed(self, widget):
-        self.setBusy()
-        """ Handle selection of row in Comps Category  view  """
-        ( model, iterator ) = widget.get_selection().get_selected()
-        if model != None and iterator != None:
-            myid = model.get_value( iterator, 0 )
-            self.populateCategoryPackages(myid)
-        self.unsetBusy()
-
-    def on_FileQuit( self, widget ):
-        self.quit()
-
-    def on_HelpAbout( self, widget = None ):
-        about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,SpritzConf.branding_title)
-        about.show()
-
-    def on_notebook1_switch_page(self, widget, page, page_num):
-        if page_num == const.PREF_PAGES['ugc']:
-            self.load_ugc_repositories()
-        elif page_num == const.PREF_PAGES['colors']:
-            self.load_color_settings()
-
-    def on_ugcLoginButton_clicked(self, widget):
-        if self.Equo.UGC == None: return
-        model, myiter = self.ugcRepositoriesView.get_selection().get_selected()
-        if (myiter == None) or (model == None): return
-        obj = model.get_value( myiter, 0 )
-        if obj:
-            #logged_data = self.Equo.UGC.read_login(obj['repoid'])
-            self.Equo.UGC.login(obj['repoid'], force = True)
-            self.load_ugc_repositories()
-
-    def on_ugcClearLoginButton_clicked(self, widget):
-        if self.Equo.UGC == None: return
-        model, myiter = self.ugcRepositoriesView.get_selection().get_selected()
-        if (myiter == None) or (model == None): return
-        obj = model.get_value( myiter, 0 )
-        if obj:
-            if not self.Equo.UGC.is_repository_eapi3_aware(obj['repoid']): return
-            logged_data = self.Equo.UGC.read_login(obj['repoid'])
-            if logged_data: self.Equo.UGC.remove_login(obj['repoid'])
-            self.load_ugc_repositories()
-
-    def on_ugcClearCacheButton_clicked(self, widget):
-        if self.Equo.UGC == None: return
-        repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
-        avail_repos = self.Equo.SystemSettings['repositories']['available']
-        for repoid in list(set(avail_repos.keys()+repo_excluded.keys())):
-            self.Equo.UGC.UGCCache.clear_cache(repoid)
-            self.setStatus("%s: %s ..." % (_("Cleaning UGC cache of"),repoid,))
-        self.setStatus("%s" % (_("UGC cache cleared"),))
-
-    def on_ugcClearCredentialsButton_clicked(self, widget):
-        if self.Equo.UGC == None: return
-        repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
-        avail_repos = self.Equo.SystemSettings['repositories']['available']
-        for repoid in list(set(avail_repos.keys()+repo_excluded.keys())):
-            if not self.Equo.UGC.is_repository_eapi3_aware(repoid): continue
-            logged_data = self.Equo.UGC.read_login(repoid)
-            if logged_data: self.Equo.UGC.remove_login(repoid)
-        self.load_ugc_repositories()
-        self.setStatus("%s" % (_("UGC credentials cleared"),))
-
-    def on_bannerEventBox_button_release_event(self, widget, event):
-        if self.ad_url != None:
-            self.load_url(self.ad_url)
-
-    def on_bannerEventBox_enter_notify_event(self, widget, event):
-        busyCursor(self.ui.main, cur = gtk.gdk.Cursor(gtk.gdk.HAND2))
-
-    def on_bannerEventBox_leave_notify_event(self, widget, event):
-        busyCursor(self.ui.main, cur = CURRENT_CURSOR)
-
-    def on_repoManagerMenuItem_activate(self, widget):
-        mymenu = RepositoryManagerMenu(self.Equo, self.ui.main)
-        rc = mymenu.load()
-        if not rc: del mymenu
-
-    def on_noticeBoardMenuItem_activate(self, widget):
-        self.showNoticeBoard()
-
-    def on_pkgsetAddButton_clicked(self, widget):
-
-        current_sets = self.Equo.package_set_list()
-        def fake_callback(s):
-            if (s not in current_sets) and (" " not in s) and (not s.startswith(etpConst['packagesetprefix'])):
-                return True
-            return False
-
-        def lv_callback(atom):
-            c_id, c_rc = self.Equo.clientDbconn.atomMatch(atom)
-            if c_id != -1: return True
-            c_id, c_rc = self.Equo.atom_match(atom)
-            if c_id != -1: return True
-            return False
-
-        input_params = [
-            ('name',_("Package Set name"),fake_callback,False),
-            ('atoms',('list',(_('Package atoms'),[],),),lv_callback,False)
-        ]
-
-        data = self.Equo.inputBox(
-            _('Choose what Package Set you want to add'),
-            input_params,
-            cancel_button = True
-        )
-        if data == None: return
-
-        rc, msg = self.Equo.add_user_package_set(data.get("name"), data.get("atoms"))
-        if rc != 0:
-            okDialog(self.ui.main,"%s: %s" % (_("Error"),msg,))
-            return
-
-        self.etpbase.clearPackagesSingle("pkgsets")
-        self.addPackages()
-
-    def on_pkgsetRemoveButton_clicked(self, widget):
-
-        def mymf(m):
-            set_from, set_name, set_deps = m
-            if set_from == etpConst['userpackagesetsid']:
-                return set_name
-            return 0
-        avail_pkgsets = [x for x in map(mymf,self.Equo.package_set_list()) if x != 0]
-
-        def fake_callback(s):
-            return s
-        input_params = [
-            ('pkgset',('combo',(_('Removable Package Set'),avail_pkgsets),),fake_callback,False)
-        ]
-
-        data = self.Equo.inputBox(
-            _('Choose what Package Set you want to remove'),
-            input_params,
-            cancel_button = True
-        )
-        if data == None: return
-        x_id,set_name = data.get("pkgset")
-
-        rc, msg = self.Equo.remove_user_package_set(set_name)
-        if rc != 0:
-            okDialog(self.ui.main,"%s: %s" % (_("Error"),msg,))
-            return
-
-        self.etpbase.clearPackagesSingle("pkgsets")
-        self.addPackages()
-
-    def on_deptestButton_clicked(self, widget):
-        self.switchNotebookPage("output")
-        self.uiLock(True)
-        self.startWorking()
-        deps_not_matched = self.Equo.dependencies_test()
-        if not deps_not_matched:
-            okDialog(self.ui.main,_("No missing dependencies found."))
-            self.switchNotebookPage("preferences")
-            self.uiLock(False)
-            self.endWorking()
-            self.progress.reset_progress()
-            return
-
-        found_deps = set()
-        not_all = False
-        for dep in deps_not_matched:
-            match = self.Equo.atom_match(dep)
-            if match[0] != -1:
-                found_deps.add(dep)
-                continue
-            else:
-                iddep = self.Equo.clientDbconn.searchDependency(dep)
-                if iddep == -1: continue
-                c_idpackages = self.Equo.clientDbconn.searchIdpackageFromIddependency(iddep)
-                for c_idpackage in c_idpackages:
-                    key, slot = self.Equo.clientDbconn.retrieveKeySlot(c_idpackage)
-                    key_slot = "%s:%s" % (key,slot,)
-                    match = self.Equo.atom_match(key, matchSlot = slot)
-                    cmpstat = 0
-                    if match[0] != -1:
-                        cmpstat = self.Equo.get_package_action(match)
-                    if cmpstat != 0:
-                        found_deps.add(key_slot)
-                        continue
-                    else:
-                        not_all = True
-                continue
-            not_all = True
-
-        if not found_deps:
-            okDialog(self.ui.main,_("Missing dependencies found, but none of them are on the repositories."))
-            self.switchNotebookPage("preferences")
-            self.uiLock(False)
-            self.endWorking()
-            self.progress.reset_progress()
-            return
-
-        if not_all:
-            okDialog(self.ui.main,_("Some missing dependencies have not been matched, others are going to be added to the queue."))
-        else:
-            okDialog(self.ui.main,_("All the missing dependencies are going to be added to the queue"))
-
-        rc = self.add_atoms_to_queue(found_deps)
-        if rc: self.switchNotebookPage("queue")
-        else: self.switchNotebookPage("preferences")
-        self.uiLock(False)
-        self.endWorking()
-        self.progress.reset_progress()
-
-    def on_libtestButton_clicked(self, widget):
-
-        def do_start():
-            self.switchNotebookPage("output")
-            self.startWorking()
-            self.uiLock(True)
-            self.ui.abortQueue.show()
-
-        def do_stop():
-            self.endWorking()
-            self.ui.abortQueue.hide()
-            self.uiLock(False)
-            self.progress.reset_progress()
-
-        def task_bombing():
-            if self.abortQueueNow:
-                self.abortQueueNow = False
-                mytxt = _("Aborting queue tasks.")
-                self.ui.abortQueue.hide()
-                raise QueueError('QueueError %s' % (mytxt,))
-
-        do_start()
-
-        packages_matched, broken_execs = {},set()
-        self.libtest_abort = False
-        def exec_task():
-            try:
-                x, y, z = self.Equo.libraries_test(task_bombing_func = task_bombing)
-                packages_matched.update(x)
-                broken_execs.update(y)
-            except QueueError:
-                self.libtest_abort = True
-
-        t = ParallelTask(exec_task)
-        t.start()
-        while t.isAlive():
-            time.sleep(0.2)
-            self.gtkLoop()
-
-        if self.do_debug and self.libtest_abort:
-            print "on_libtestButton_clicked: scan abort"
-        if self.do_debug:
-            print "on_libtestButton_clicked: done scanning"
-
-        if self.libtest_abort:
-            do_stop()
-            okDialog(self.ui.main,_("Libraries test aborted"))
-            return
-
-        matches = set()
-        for key in packages_matched.keys():
-            matches |= packages_matched[key]
-
-        if broken_execs:
-            okDialog(self.ui.main,_("Some broken packages have not been matched, others are going to be added to the queue."))
-        else:
-            okDialog(self.ui.main,_("All the broken packages are going to be added to the queue"))
-
-        rc = self.add_atoms_to_queue([], matches = matches)
-        if rc: self.switchNotebookPage("queue")
-        else: self.switchNotebookPage("preferences")
-
-        do_stop()
-
-    def on_color_reset(self, widget):
-        # get parent
-        parent = widget.get_parent()
-        if parent == None: return
-        col_button = [x for x in parent.get_children() if isinstance(x,gtk.ColorButton)][0]
-        setting = self.colorSettingsReverseMap.get(col_button)
-        if setting == None: return
-        default_color = SpritzConf.default_colors_config.get(setting)
-        col_button.set_color(gtk.gdk.color_parse(default_color))
-        self.on_Preferences_toggled(None,True)
-        setattr(SpritzConf,setting,default_color)
-
-    def on_ui_color_set(self, widget):
-        key = self.colorSettingsReverseMap.get(widget)
-        if not hasattr(SpritzConf,key):
-            print "WARNING: no %s in SpritzConf" % (key,)
-            return
-        w_col = widget.get_color().to_string()
-        self.on_Preferences_toggled(None,True)
-        setattr(SpritzConf,key,w_col)
 
     def load_ugc_repositories(self):
         self.ugcRepositoriesModel.clear()
@@ -2731,6 +2514,7 @@ if __name__ == "__main__":
         except gobject.GError:
             pass
         mainApp = SpritzApplication()
+        mainApp.init()
         gobject.threads_init()
         gtk.gdk.threads_enter()
         gtk.main()

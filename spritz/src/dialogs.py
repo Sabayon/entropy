@@ -5124,6 +5124,7 @@ class ConfirmationDialog:
         self.bottomTitle = self.xml.get_widget( "bottomTitle" )
         self.bottomData = self.xml.get_widget( "bottomData" )
         self.cancelbutton = self.xml.get_widget( "cancelbutton2" )
+        self.okbutton = self.xml.get_widget( "okbutton2" )
         self.bottomtext = self.xml.get_widget( "bottomTitle" )
         self.lowerhbox = self.xml.get_widget( "hbox63" )
 
@@ -5179,7 +5180,7 @@ class ConfirmationDialog:
     def setup_simple_view(self, view ):
         model = gtk.TreeStore( gobject.TYPE_STRING )
         view.set_model( model )
-        self.create_text_column( _( "Package" ), view, 0 )
+        self.create_text_column( _( "Item" ), view, 0 )
         return model
 
     def create_text_column( self, hdr, view, colno, min_width=0, max_width=0 ):
