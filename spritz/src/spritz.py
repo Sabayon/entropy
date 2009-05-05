@@ -49,88 +49,73 @@ import filters
 from dialogs import *
 
 class ProgressTotal:
-    def __init__( self, widget ):
+
+    def __init__(self, widget):
         self.progress = widget
         self.steps = []
         self.nowProgres = 0.0
-        self.numSteps=0
-        self.currentStep=0 
+        self.numSteps = 0
+        self.currentStep = 0
         self.stepError = False
         self.lastFrac = -1
         self.clear()
 
-    def setup( self, steps ):
+    def setup(self, steps):
         self.steps = steps
-        self.numSteps=len( steps )
-        self.currentStep=0 
+        self.numSteps = len(steps)
+        self.currentStep = 0
         self.nowProgress = 0.0
         self.stepError = False
         self.clear()
 
-    def hide( self ):
+    def hide(self):
         self.progress.hide()
 
-    def show( self ):
+    def show(self):
         self.progress.show()
 
-    def next( self ):
+    def next(self):
         now = 0.0
         if self.currentStep < self.numSteps:
             self.currentStep += 1
-            for i in range( 0, self.currentStep ):
+            for i in xrange(0, self.currentStep):
                 now += self.steps[i]
                 self.nowProgress = now
-                self.setAbsProgress( now )
+                self.setAbsProgress(now)
             return True
         else:
             return False
 
-    def _percent( self, total, now ):
+    def _percent(self, total, now):
        if total == 0:
            percent = 0
        else:
-           percent = ( now*100L )/total
+           percent = (now*100L)/total
        return percent
 
     def clear( self ):
-        self.progress.set_fraction( 0 )
-        self.progress.set_text( " " )
+        self.progress.set_fraction(0)
+        self.progress.set_text(" ")
         self.lastFrac = -1
 
-    def setProgress( self, now, total, prefix=None ):
-        relStep = float( now )/float( total )
-        if self.currentStep < self.numSteps:
-            curStep =self.steps[self.currentStep]
-            absStep = curStep * relStep
-            absProgress = self.nowProgress + absStep
-            self.setAbsProgress( absProgress, prefix )
-        else: # This should not happen but it does sometimes.
-            if not self.stepError:
-                print "=" * 60
-                print "Something stranged has happend in the ProgressTotal: (setProgress)"
-                print "Dumping some vars for debug"
-                print self.steps
-                print self.currentStep
-                print self.numSteps
-                print now
-                print total
-                print "-" * 60
-                traceback.print_stack( file=sys.stdout )
-                print "=" * 60
-                self.stepError = True # Only dump vars first time.
-        return False
+    def setProgress(self, now, total, prefix = None):
+        relStep = float(now)/float(total)
+        curStep = self.steps[self.currentStep]
+        absStep = curStep * relStep
+        absProgress = self.nowProgress + absStep
+        self.setAbsProgress(absProgress, prefix)
 
-    def setAbsProgress( self, now, prefix=None ):
+    def setAbsProgress( self, now, prefix = None ):
         if (now == self.lastFrac) or (now >= 1.0) or (now < 0.0):
             return
         self.gtkLoop()
         self.lastFrac = now+0.01
-        procent = long( self._percent( 1, now ) )
-        self.progress.set_fraction( now )
+        percent = long(self._percent(1, now))
+        self.progress.set_fraction(now)
         if prefix:
-            text = "%s : %3i%%" % ( prefix, procent )
+            text = "%s : %3i%%" % (prefix, percent)
         else:
-            text = "%3i%%" % procent
+            text = "%3i%%" % (percent,)
         self.progress.set_text( text )
 
     def gtkLoop(self):
