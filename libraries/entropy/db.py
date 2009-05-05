@@ -1811,13 +1811,13 @@ class LocalRepository:
             return not is_lic_avail(mylicense)
 
         def my_mm(mylicense):
-            lic_data = licenses_data.get(mylicense,u'')
-            try:
-                # support both utf8 and str input
-                if isinstance(lic_data, unicode):
+            lic_data = licenses_data.get(mylicense,'')
+            # support both utf8 and str input
+            if isinstance(lic_data, unicode): # encode to str
+                try:
                     lic_data = lic_data.encode('raw_unicode_escape')
-            except UnicodeDecodeError:
-                lic_data = lic_data.encode('utf-8')
+                except (UnicodeDecodeError,):
+                    lic_data = lic_data.encode('utf-8')
             return (mylicense, buffer(lic_data), 0,)
 
         with self.WriteLock:
