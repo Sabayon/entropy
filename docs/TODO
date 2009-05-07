@@ -8,6 +8,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
         -> next kernel 2.6.30
 
     - Spritz codebase refactoring:
+        - show wait dialog on close
         - fileupdates: show changes button using internal viewer
         - simple mode vs extended mode
         - view mode menu for the main treeview
@@ -21,8 +22,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
     - server-side: old branch remote packages move (when a branch is dropped,
         remote packages should be moved to another location)
-    - server-side: on repo package moves, add --deps option which will also
-        move all the available packages that are dependencies
 
   1.0_beta1:
 
