@@ -60,17 +60,22 @@ class MyRepositoryManager(RepositoryManagerMenu):
 class ManagerApplication:
 
     def __init__(self):
+        self.Equo = Equo()
         self.ui = None
         self.progressLogWrite = sys.stdout
         self.output = sys.stdout
-        self.Equo = Equo()
         self.progress = None
         self.Equo.connect_to_gui(self)
+
+    def init(self):
         mymenu = MyRepositoryManager(self.Equo, None)
         rc = mymenu.load()
         if not rc:
             del mymenu
             raise SystemExit(1)
+
+    def destroy(self):
+        self.Equo.destroy()
 
     def dummy_func(self, *args, **kwargs):
         pass
@@ -83,6 +88,7 @@ if __name__ == "__main__":
         except gobject.GError:
             pass
         mainApp = ManagerApplication()
+        mainApp.init()
         gobject.threads_init()
         gtk.gdk.threads_enter()
         gtk.main()
@@ -90,11 +96,11 @@ if __name__ == "__main__":
         Equo.destroy()
     except SystemExit:
         print "Quit by User"
-        Equo.destroy()
+        mainApp.destroy()
         raise SystemExit(0)
     except KeyboardInterrupt:
         print "Quit by User (KeyboardInterrupt)"
-        Equo.destroy()
+        mainApp.destroy()
         raise SystemExit(0)
     except: # catch other exception and write it to the logger.
         my = ExceptionDialog()
