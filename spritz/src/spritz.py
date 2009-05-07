@@ -798,6 +798,7 @@ class SpritzApplicationEventsMixin:
         self.unsetBusy()
 
     def on_FileQuit( self, widget ):
+        self.show_wait_window()
         self.quit()
 
     def on_HelpAbout( self, widget = None ):
@@ -1130,6 +1131,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
             raise SystemExit(0)
 
     def exitNow(self):
+        self.show_wait_window()
         try: gtk.main_quit()
         except RuntimeError: pass
 
