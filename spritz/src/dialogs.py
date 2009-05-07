@@ -977,8 +977,10 @@ class RepositoryManagerMenu(MenuSkel):
 
     def service_status_message(self, e):
         self.entropyTools.print_traceback()
-        gobject.timeout_add(0, okDialog, self.sm_ui.repositoryManager,
-            unicode(e), title = _("Communication error"))
+        def do_ok():
+            okDialog(self.sm_ui.repositoryManager, unicode(e),
+                title = _("Communication error"))
+        gobject.timeout_add(0, do_ok)
 
     def get_available_repositories(self):
         with self.BufferLock:
@@ -1487,7 +1489,7 @@ class RepositoryManagerMenu(MenuSkel):
                 self.on_repoManagerInstalledPackages_clicked(None,
                     categories = categories, world = world)
             gobject.timeout_add(0, self.categories_updates_data_view, data,
-                categories, expand = True, reload_function = reload_function)
+                categories, True, reload_function)
 
         if status:
             t = ParallelTask(task, queue_id, categories, world)
@@ -1616,7 +1618,7 @@ class RepositoryManagerMenu(MenuSkel):
             def reload_function():
                 self.on_repoManagerPkgInfo_clicked(None, atoms = atoms, clear = clear)
             gobject.timeout_add(0, self.categories_updates_data_view, data,
-                categories, expand = True, reload_function = reload_function)
+                categories, True, reload_function)
 
         if status:
             t = ParallelTask(task, categories, atoms)
@@ -1780,7 +1782,7 @@ class RepositoryManagerMenu(MenuSkel):
             def reload_func():
                 self.run_package_search(search_type, search_string, repoid)
             gobject.timeout_add(0, self.entropy_available_packages_data_view,
-                data, repoid, reload_func = reload_func)
+                data, repoid, reload_func)
         else:
             self.service_status_message(data)
 
@@ -2874,8 +2876,8 @@ class RepositoryManagerMenu(MenuSkel):
                     pass
         else:
             # back from pause, schedule refresh
-            gobject.timeout_add(0, self.update_output_view, force = True,
-                queue_id = self.paused_queue_id)
+            gobject.timeout_add(0, self.update_output_view, True,
+                self.paused_queue_id)
             self.paused_queue_id = None
         self.output_pause = not self.output_pause
 
@@ -3090,11 +3092,9 @@ class RepositoryManagerMenu(MenuSkel):
 
         self.set_notebook_page(self.notebook_pages['output'])
         if data.get('full'):
-            gobject.timeout_add(0, self.update_output_view, force = True,
-                queue_id = queue_id, n_bytes = 0)
+            gobject.timeout_add(0, self.update_output_view, True, queue_id, 0)
         else:
-            gobject.timeout_add(0, self.update_output_view, force = True,
-                queue_id = queue_id)
+            gobject.timeout_add(0, self.update_output_view, True, queue_id)
 
 
     def on_repoManagerPinboardRefreshButton_clicked(self, widget):
@@ -3236,7 +3236,7 @@ class RepositoryManagerMenu(MenuSkel):
             repo_info = self.get_available_repositories()
             if repo_info:
                 gobject.timeout_add(0, self.load_available_repositories,
-                    repo_info = repo_info)
+                    repo_info)
 
         if status:
             t = ParallelTask(task)
@@ -3281,7 +3281,7 @@ class RepositoryManagerMenu(MenuSkel):
                 self.on_repoManagerAvailablePackagesButton_clicked(widget,
                     repoid = data['repoid'])
             gobject.timeout_add(0, self.entropy_available_packages_data_view,
-                repo_data, data['repoid'], reload_func = reload_func)
+                repo_data, data['repoid'], reload_func)
 
         if status:
             t = ParallelTask(task, repo_data, data)
