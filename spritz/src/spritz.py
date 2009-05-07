@@ -1,8 +1,6 @@
 #!/usr/bin/python2 -O
 # -*- coding: iso-8859-1 -*-
-#    It was: Yum Exteder (yumex) - A GUI for yum
-#    Copyright (C) 2006 Tim Lauridsen < tim<AT>yum-extender<DOT>org > 
-#    Now is: Spritz (Entropy Interface)
+#    Spritz (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
 #    This program is free software; you can redistribute it and/or modify
@@ -1108,14 +1106,21 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
 
         # Create and ui object contains the widgets.
         ui = UI( const.GLADE_FILE , 'main', 'entropy' )
+        ui.main.hide()
         addrepo_ui = UI( const.GLADE_FILE , 'addRepoWin', 'entropy' )
         wait_ui = UI( const.GLADE_FILE , 'waitWindow', 'entropy' )
         # init the Controller Class to connect signals.
         Controller.__init__( self, ui, addrepo_ui, wait_ui )
-        self.ui.main.maximize()
 
     def init(self):
+
+        self.show_wait_window()
         self.setup_gui()
+        # show UI
+        self.ui.main.maximize()
+        self.ui.main.show()
+        self.hide_wait_window()
+
         self.warn_repositories()
         self.packages_install()
 
