@@ -1519,7 +1519,7 @@ class MatchMixin:
 
         self.Cacher.sync(wait = True)
         done = f(match, dry_run)
-        if done:
+        if done and not dry_run:
             self.SystemSettings.clear()
 
         # clear atomMatch cache anyway
