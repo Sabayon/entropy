@@ -5274,6 +5274,7 @@ Install+Removal</property>
                 </child>
               </widget>
               <packing>
+                <property name="expand">False</property>
                 <property name="position">4</property>
               </packing>
             </child>
@@ -12236,7 +12237,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
     </child>
   </widget>
   <widget class="GtkWindow" id="packageMaskWindow">
-    <property name="width_request">640</property>
+    <property name="width_request">630</property>
     <property name="height_request">300</property>
     <property name="title" translatable="yes">Package Masking</property>
     <property name="window_position">GTK_WIN_POS_CENTER</property>
