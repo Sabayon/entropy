@@ -5126,7 +5126,7 @@ class TextReadDialog(MenuSkel):
         ok_read.connect( 'clicked', self.ok_button )
         txt_view = xml_read.get_widget( "readTextView" )
         txt_view.set_buffer(mybuffer)
-        self.__read_dialog.set_title(license_identifier+" license text")
+        self.__read_dialog.set_title(title)
         self.__read_dialog.show_all()
         self.done_reading = False
 
