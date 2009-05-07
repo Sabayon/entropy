@@ -429,15 +429,16 @@ class QAInterface:
                 mydep = mybuffer.pop()
                 continue
 
-            mymatch = dbconn.atomMatch(mydep)
+            my_idpackage, my_rc = dbconn.atomMatch(mydep)
             if atoms:
                 matchcache.add(mydep)
             else:
-                matchcache.add(mymatch[0])
+                matchcache.add(my_idpackage)
 
-            if mymatch[0] != -1:
-                owndeps = dbconn.retrieveDependencies(mymatch[0])
-                for owndep in owndeps: mybuffer.push(owndep)
+            if my_idpackage != -1:
+                owndeps = dbconn.retrieveDependencies(my_idpackage)
+                for owndep in owndeps:
+                    mybuffer.push(owndep)
 
             depcache.add(mydep)
             mydep = mybuffer.pop()
