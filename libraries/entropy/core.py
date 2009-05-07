@@ -207,6 +207,11 @@ class SystemSettings(Singleton):
                 'user_live_mask': 12,
             },
             'backed_up': {},
+            # package masking, live
+            'live_packagemasking': {
+                'unmask_matches': set(),
+                'mask_matches': set(),
+            },
         }
 
         self.__setup_const()
@@ -333,17 +338,6 @@ class SystemSettings(Singleton):
         # merge universal keywords
         for keyword in self.__data['keywords']['universal']:
             etpConst['keywords'].add(keyword)
-
-        # live package masking / unmasking
-        self.__data.update(
-            {
-                'live_packagemasking': {
-                    'unmask_matches': set(),
-                    'mask_matches': set(),
-                },
-            }
-        )
-
 
         # plugins support
         for plugin_id in sorted(self.__plugins):
