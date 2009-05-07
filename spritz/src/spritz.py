@@ -142,14 +142,14 @@ class SpritzApplicationEventsMixin:
             self.loadPkgInfoMenu(self.etpbase.selected_treeview_item)
 
     def on_filesDelete_clicked( self, widget ):
-        identifier, source, dest = self.__get_Edit_filename()
+        identifier, source, dest = self._get_Edit_filename()
         if not identifier:
             return True
         self.Equo.FileUpdates.remove_file(identifier)
         self.filesView.populate(self.Equo.FileUpdates.scandata)
 
     def on_filesMerge_clicked( self, widget ):
-        identifier, source, dest = self.__get_Edit_filename()
+        identifier, source, dest = self._get_Edit_filename()
         if not identifier:
             return True
         self.Equo.FileUpdates.merge_file(identifier)
@@ -161,7 +161,7 @@ class SpritzApplicationEventsMixin:
         for key in keys:
             self.Equo.FileUpdates.merge_file(key)
             # it's cool watching it runtime
-            self.filesView.populate(self.Equo.FileUpdates.scandata)
+        self.filesView.populate(self.Equo.FileUpdates.scandata)
 
     def on_deleteFiles_clicked( self, widget ):
         self.Equo.FileUpdates.scanfs(dcache = True)
@@ -169,10 +169,10 @@ class SpritzApplicationEventsMixin:
         for key in keys:
             self.Equo.FileUpdates.remove_file(key)
             # it's cool watching it runtime
-            self.filesView.populate(self.Equo.FileUpdates.scandata)
+        self.filesView.populate(self.Equo.FileUpdates.scandata)
 
     def on_filesEdit_clicked( self, widget ):
-        identifier, source, dest = self.__get_Edit_filename()
+        identifier, source, dest = self._get_Edit_filename()
         if not identifier:
             return True
         self.runEditor(source)
@@ -180,7 +180,7 @@ class SpritzApplicationEventsMixin:
     def on_filesView_row_activated( self, widget, iterator, path ):
         self.on_filesViewChanges_clicked(widget)
 
-    def on_filesViewChanges_clicked( self, widget ):
+     def on_filesViewChanges_clicked( self, widget ):
         identifier, source, dest = self.__get_Edit_filename()
         if not identifier:
             return True
@@ -190,7 +190,7 @@ class SpritzApplicationEventsMixin:
         self.runEditor(randomfile, delete = True)
 
     def on_shiftUp_clicked( self, widget ):
-        idx, repoid, iterdata = self.__getSelectedRepoIndex()
+        idx, repoid, iterdata = self._get_selected_repo_index()
         if idx != None:
             path = iterdata[0].get_path(iterdata[1])[0]
             if path > 0 and idx > 0:
@@ -201,7 +201,7 @@ class SpritzApplicationEventsMixin:
                 self.repoView.store.swap(iterdata[1],prev)
 
     def on_shiftDown_clicked( self, widget ):
-        idx, repoid, iterdata = self.__getSelectedRepoIndex()
+        idx, repoid, iterdata = self._get_selected_repo_index()
         if idx != None:
             next = iterdata[0].iter_next(iterdata[1])
             if next:
@@ -269,8 +269,8 @@ class SpritzApplicationEventsMixin:
         self.repoMirrorsView.populate()
 
     def on_repoSubmitEdit_clicked( self, widget ):
-        repodata = self.__getRepodata()
-        errors = self.__validateRepoSubmit(repodata, edit = True)
+        repodata = self._get_repo_data()
+        errors = self._validate_repo_submit(repodata, edit = True)
         if errors:
             msg = "%s: %s" % (_("Wrong entries, errors"),', '.join(errors),)
             okDialog( self.addrepo_ui.addRepoWin, msg )
@@ -291,9 +291,9 @@ class SpritzApplicationEventsMixin:
             okDialog( self.ui.main, msg )
 
     def on_repoSubmit_clicked( self, widget ):
-        repodata = self.__getRepodata()
+        repodata = self._get_repo_data()
         # validate
-        errors = self.__validateRepoSubmit(repodata)
+        errors = self._validate_repo_submit(repodata)
         if not errors:
             self.Equo.add_repository(repodata)
             self.resetSpritzCacheStatus()
@@ -318,7 +318,7 @@ class SpritzApplicationEventsMixin:
                 current_branch = self.Equo.SystemSettings['repositories']['branch']
                 current_product = self.Equo.SystemSettings['repositories']['product']
                 repoid, repodata = const_extract_cli_repo_params(text, current_branch, current_product)
-                self.__loadRepodata(repodata)
+                self._load_repo_data(repodata)
             else:
                 okDialog( self.addrepo_ui.addRepoWin, _("This Repository identification string is malformed") )
 
@@ -349,7 +349,7 @@ class SpritzApplicationEventsMixin:
         if repostuff[1] != None:
             repoid = self.repoView.get_repoid(repostuff)
             repodata = self.Equo.get_repository_settings(repoid)
-            self.__loadRepodata(repodata)
+            self._load_repo_data(repodata)
             self.addrepo_ui.addRepoWin.show()
 
     def on_terminal_clear_activate(self, widget):
@@ -2285,7 +2285,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
 
 ####### events
 
-    def __getSelectedRepoIndex( self ):
+    def _get_selected_repo_index( self ):
         selection = self.repoView.view.get_selection()
         repodata = selection.get_selected()
         # get text
@@ -2311,7 +2311,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
             except OSError:
                 pass
 
-    def __get_Edit_filename(self):
+    def _get_Edit_filename(self):
         selection = self.filesView.view.get_selection()
         model, iterator = selection.get_selected()
         if model != None and iterator != None:
@@ -2375,7 +2375,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.unsetBusy()
         return rc
 
-    def __loadRepodata(self, repodata):
+    def _load_repo_data(self, repodata):
         self.addrepo_ui.repoidEntry.set_text(repodata['repoid'])
         self.addrepo_ui.repoDescEntry.set_text(repodata['description'])
         self.addrepo_ui.repodbPort.set_text(str(repodata['service_port']))
@@ -2408,7 +2408,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.Equo.SystemSettings.clear()
         self.Equo.close_all_repositories()
 
-    def __validateRepoSubmit(self, repodata, edit = False):
+    def _validate_repo_submit(self, repodata, edit = False):
         errors = []
         if not repodata['repoid']:
             errors.append(_('No Repository Identifier'))
@@ -2439,7 +2439,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
                 errors.append(_("Secure Services Port not valid"))
         return errors
 
-    def __getRepodata(self):
+    def _get_repo_data(self):
         repodata = {}
         repodata['repoid'] = self.addrepo_ui.repoidEntry.get_text()
         repodata['description'] = self.addrepo_ui.repoDescEntry.get_text()
