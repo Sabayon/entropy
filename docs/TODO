@@ -8,13 +8,11 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
         -> next kernel 2.6.30
 
     - Spritz codebase refactoring:
-        - show wait dialog on close
         - fileupdates: show changes button using internal viewer
         - simple mode vs extended mode
         - view mode menu for the main treeview
         - Implement entropy:// URI handler
         - Smart applications desktop handler
-        - try unmasking more than one package
 
     Only if possible:
     - server side upload digest verification (ditch crappy handlers?)
