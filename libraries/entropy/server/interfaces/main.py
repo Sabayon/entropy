@@ -1265,10 +1265,14 @@ class Server(Singleton,TextInterface):
         return status, data
 
 
-    def move_packages(self, matches, to_repo, from_repo = None, ask = True, do_copy = False, new_tag = None):
+    def move_packages(self, matches, to_repo, from_repo = None, ask = True,
+        do_copy = False, new_tag = None, pull_deps = False):
 
-        if from_repo == None: from_repo = self.default_repository
+        if from_repo == None:
+            from_repo = self.default_repository
         switched = set()
+
+        my_matches = list(matches)
 
         # avoid setting __default__ as default server repo
         if etpConst['clientserverrepoid'] in (to_repo,from_repo):
@@ -1281,9 +1285,10 @@ class Server(Singleton,TextInterface):
             )
             return switched
 
-        if not matches and from_repo:
-            dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = from_repo)
-            matches = set( \
+        if not my_matches and from_repo:
+            dbconn = self.open_server_repository(read_only = True,
+                no_upload = True, repo = from_repo)
+            my_matches = set( \
                 [(x,from_repo) for x in \
                     dbconn.listAllIdpackages()]
             )
@@ -1311,29 +1316,63 @@ class Server(Singleton,TextInterface):
         )
 
         new_tag_string = ''
-        if new_tag != None: new_tag_string = "[%s: %s]" % (darkgreen(_("new tag")),brown(new_tag),)
-        for match in matches:
-            repo = match[1]
-            dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
+        if new_tag != None:
+            new_tag_string = "[%s: %s]" % (darkgreen(_("new tag")),
+                brown(new_tag),)
+
+        myQA = self.QA()
+        branch = self.SystemSettings['repositories']['branch']
+        pull_deps_matches = []
+        for idpackage, repo in my_matches:
+            dbconn = self.open_server_repository(read_only = True,
+                no_upload = True, repo = repo)
             self.updateProgress(
                 "[%s=>%s|%s] %s " % (
                         darkgreen(repo),
                         darkred(to_repo),
-                        brown(self.SystemSettings['repositories']['branch']),
-                        blue(dbconn.retrieveAtom(match[0])),
+                        brown(branch),
+                        blue(dbconn.retrieveAtom(idpackage)),
                 ) + new_tag_string,
                 importance = 0,
                 type = "info",
                 header = brown("    # ")
             )
+            # do we want to pull in also package dependencies?
+            if pull_deps:
+                dep_idpackages = myQA._get_deep_dependency_list(dbconn,
+                    idpackage)
+                for dep_idpackage in dep_idpackages:
 
+                    my_dep_match = (dep_idpackage, repo,)
+                    if my_dep_match in pull_deps_matches:
+                        continue
+                    if my_dep_match in my_matches:
+                        continue
+
+                    pull_deps_matches.append(my_dep_match)
+                    self.updateProgress(
+                        "[%s=>%s|%s|%s] %s" % (
+                            darkgreen(repo),
+                            darkred(to_repo),
+                            brown(branch),
+                            bold(_("dependency")),
+                            purple(dbconn.retrieveAtom(dep_idpackage)),
+                        ),
+                        importance = 0,
+                        type = "info",
+                        header = darkgreen("    << ")
+                    )
+
+        if pull_deps:
+            # put deps first!
+            my_matches = pull_deps_matches + my_matches
 
         if ask:
             rc = self.askQuestion(_("Would you like to continue ?"))
             if rc == "No":
                 return switched
 
-        for idpackage, repo in matches:
+        for idpackage, repo in my_matches:
             dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
             match_branch = dbconn.retrieveBranch(idpackage)
             match_atom = dbconn.retrieveAtom(idpackage)
@@ -1342,7 +1381,7 @@ class Server(Singleton,TextInterface):
                 "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(to_repo),
-                        brown(self.SystemSettings['repositories']['branch']),
+                        brown(branch),
                         blue(_("switching")),
                         darkgreen(match_atom),
                 ),
@@ -1360,7 +1399,7 @@ class Server(Singleton,TextInterface):
                     "[%s=>%s|%s] %s: %s -> %s" % (
                             darkgreen(repo),
                             darkred(to_repo),
-                            brown(self.SystemSettings['repositories']['branch']),
+                            brown(branch),
                             bold(_("cannot switch, package not found, skipping")),
                             darkgreen(),
                             red(from_file),
@@ -1375,7 +1414,8 @@ class Server(Singleton,TextInterface):
                 match_category = dbconn.retrieveCategory(idpackage)
                 match_name = dbconn.retrieveName(idpackage)
                 match_version = dbconn.retrieveVersion(idpackage)
-                tagged_package_filename = self.entropyTools.create_package_filename(match_category, match_name, match_version, new_tag)
+                tagged_package_filename = self.entropyTools.create_package_filename(
+                    match_category, match_name, match_version, new_tag)
                 to_file = os.path.join(self.get_local_upload_directory(to_repo),match_branch,tagged_package_filename)
             else:
                 to_file = os.path.join(self.get_local_upload_directory(to_repo),match_branch,package_filename)
@@ -1393,7 +1433,7 @@ class Server(Singleton,TextInterface):
                         "[%s=>%s|%s] %s: %s" % (
                                 darkgreen(repo),
                                 darkred(to_repo),
-                                brown(self.SystemSettings['repositories']['branch']),
+                                brown(branch),
                                 blue(_("moving file")),
                                 darkgreen(os.path.basename(from_item)),
                         ),
@@ -1409,7 +1449,7 @@ class Server(Singleton,TextInterface):
                 "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(to_repo),
-                        brown(self.SystemSettings['repositories']['branch']),
+                        brown(branch),
                         blue(_("loading data from source database")),
                         darkgreen(repo),
                 ),
@@ -1429,7 +1469,7 @@ class Server(Singleton,TextInterface):
                 "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(to_repo),
-                        brown(self.SystemSettings['repositories']['branch']),
+                        brown(branch),
                         blue(_("injecting data to destination database")),
                         darkgreen(to_repo),
                 ),
@@ -1447,7 +1487,7 @@ class Server(Singleton,TextInterface):
                     "[%s=>%s|%s] %s: %s" % (
                             darkgreen(repo),
                             darkred(to_repo),
-                            brown(self.SystemSettings['repositories']['branch']),
+                            brown(branch),
                             blue(_("removing entry from source database")),
                             darkgreen(repo),
                     ),
@@ -1465,7 +1505,7 @@ class Server(Singleton,TextInterface):
                 "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(to_repo),
-                        brown(self.SystemSettings['repositories']['branch']),
+                        brown(branch),
                         blue(_("successfully handled atom")),
                         darkgreen(match_atom),
                 ),
@@ -1473,7 +1513,7 @@ class Server(Singleton,TextInterface):
                 type = "info",
                 header = blue(" @@ ")
             )
-            switched.add(match)
+            switched.add((idpackage, repo,))
 
         return switched
 
