@@ -716,21 +716,8 @@ class SpritzApplicationEventsMixin:
                     license_text = dbconn.retrieveLicenseText(license_identifier)
                     found = True
             if found:
-                # prepare textview
-                mybuffer = gtk.TextBuffer()
-                mybuffer.set_text(license_text)
-                xml_licread = gtk.glade.XML( const.GLADE_FILE, 'textReadWindow',domain="entropy" )
-                read_dialog = xml_licread.get_widget( "textReadWindow" )
-                okReadButton = xml_licread.get_widget( "okReadButton" )
-                okReadButton.connect( 'clicked', self.destroy_read_license_dialog )
-                licenseView = xml_licread.get_widget( "readTextView" )
-                licenseView.set_buffer(mybuffer)
-                read_dialog.set_title(license_identifier+" license text")
-                read_dialog.show_all()
-                self.read_license_dialog = read_dialog
-
-    def destroy_read_license_dialog( self, widget ):
-        self.read_license_dialog.destroy()
+                mytitle = "%s -- %s" % (license_identifier, _("license text"),)
+                TextReadDialog(mytitle, license_text)
 
     def on_select_clicked(self,widget):
         ''' Package Add All button handler '''

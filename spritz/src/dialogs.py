@@ -5112,6 +5112,38 @@ class MaskedPackagesDialog(MenuSkel):
     def destroy( self ):
         return self.window.destroy()
 
+class TextReadDialog(MenuSkel):
+
+
+    def __init__(self, title, text):
+
+        mybuffer = gtk.TextBuffer()
+        mybuffer.set_text(text)
+        xml_read = gtk.glade.XML(const.GLADE_FILE, 'textReadWindow',
+            domain="entropy")
+        self.__read_dialog = xml_read.get_widget( "textReadWindow" )
+        ok_read = xml_read.get_widget( "okReadButton" )
+        ok_read.connect( 'clicked', self.ok_button )
+        txt_view = xml_read.get_widget( "readTextView" )
+        txt_view.set_buffer(mybuffer)
+        self.__read_dialog.set_title(license_identifier+" license text")
+        self.__read_dialog.show_all()
+        self.done_reading = False
+
+    def ok_button(self, widget):
+        self.done_reading = True
+        self.__read_dialog.destroy()
+
+    def run( self ):
+        """ you don't have to run this if you're looking for non-blocking d. """
+        while not self.done_reading:
+            time.sleep(0.1)
+            while gtk.events_pending():
+                gtk.main_iteration()
+            continue
+
+
+
 class ConfirmationDialog:
 
     def __init__( self, parent, pkgs, top_text = None, bottom_text = None, bottom_data = None, sub_text = None, cancel = True, simpleList = False, simpleDict = False ):
