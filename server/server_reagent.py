@@ -51,6 +51,7 @@ def repositories(options):
 
     repoid = None
     repoid_dest = None
+    pull_deps = False
     if not options: cmd = ""
     else: cmd = options[0]
     myopts = []
@@ -62,6 +63,8 @@ def repositories(options):
                 repoid = opt
             elif repoid_dest == None:
                 repoid_dest = opt
+            elif opt == "--deps":
+                pull_deps = True
             else:
                 myopts.append(opt)
         elif cmd == "default":
@@ -227,9 +230,11 @@ def repositories(options):
             if not matches:
                 return 1
         if cmd == "move":
-            rc = Entropy.move_packages(matches, repoid_dest, repoid)
+            rc = Entropy.move_packages(matches, repoid_dest, repoid,
+                pull_deps = pull_deps)
         elif cmd == "copy":
-            rc = Entropy.move_packages(matches, repoid_dest, repoid, do_copy = True)
+            rc = Entropy.move_packages(matches, repoid_dest, repoid,
+                do_copy = True, pull_deps = pull_deps)
         if rc:
             return 0
         return 1
