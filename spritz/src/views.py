@@ -1651,41 +1651,6 @@ class EntropyAdvisoriesView:
         self.view.set_property('enable-search',True)
 
 
-class CategoriesView:
-
-    def __init__( self, treeview, qview):
-
-        self.view = treeview
-        self.model = self.setup_view()
-        self.queue = qview.queue
-        self.queueView = qview
-        self.etpbase = None # it will se set later
-        self.currentCategory = None
-        self.icon_theme = gtk.icon_theme_get_default()
-
-
-    def setup_view( self ):
-        """ Setup Group View  """
-        model = gtk.ListStore(gobject.TYPE_STRING)
-        self.view.set_model( model )
-
-        column = gtk.TreeViewColumn(None, None)
-        category = gtk.CellRendererText()
-        column.pack_start(category, False)
-        column.add_attribute(category, 'markup', 0)
-        self.view.append_column( column )
-        self.view.set_headers_visible(False)
-
-        return model
-
-    def populate(self,data):
-        self.model.clear()
-        for cat in data:
-            self.model.append([cat])
-
-    def clear(self):
-        self.model.clear()
-
 class EntropyRepoView:
     """ 
     This class controls the repo TreeView

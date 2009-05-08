@@ -32,9 +32,6 @@ class EntropyPackages:
         self.filterCallback = None
         self._packages = {}
         self.pkgCache = {}
-        self.currentCategory = None
-        self._categoryPackages = {}
-        self.categories = set()
         self.unmaskingPackages = set()
         self.selected_treeview_item = None
         self.selected_advisory_item = None
@@ -47,7 +44,6 @@ class EntropyPackages:
         self._packages.clear()
         self.selected_treeview_item = None
         self.selected_advisory_item = None
-        self._categoryPackages.clear()
         self.unmaskingPackages.clear()
 
     def clearPackagesSingle(self, mask):
@@ -55,7 +51,6 @@ class EntropyPackages:
             del self._packages[mask]
         self.selected_treeview_item = None
         self.selected_advisory_item = None
-        self._categoryPackages.clear()
         self.unmaskingPackages.clear()
 
     def clearCache(self):
@@ -70,32 +65,6 @@ class EntropyPackages:
         if self._packages.has_key(mask) and not force:
             return
         self._packages[mask] = self._getPackages(mask)
-
-    def setCategoryPackages(self,pkgdict = {}):
-        self._categoryPackages = pkgdict
-
-    def getPackagesByCategory(self,cat=None):
-        if not cat: cat =  self.currentCategory
-        else: self.currentCategory = cat
-        if not self._categoryPackages.has_key(cat): self.populateCategory(cat)
-        return self._categoryPackages[cat]
-
-    def populateCategory(self, category):
-
-        self.getAllPackages()
-        catsdata = self.Entropy.list_repo_packages_in_category(category)
-        catsdata.extend([(x,0) for x in self.Entropy.list_installed_packages_in_category(category)])
-        pkgsdata = []
-        def mymf(pkgdata):
-            try:
-                yp, new = self.getPackageItem(pkgdata,True)
-            except RepositoryError:
-                return 0
-            return yp
-        self._categoryPackages[category] = [x for x in map(mymf,catsdata) if type(x) != int]
-
-    def populateCategories(self):
-        self.categories = self.Entropy.list_repo_categories()
 
     def getPackages(self,flt):
         if flt == 'all': return self.getAllPackages()
@@ -416,9 +385,3 @@ class EntropyPackages:
 
         return matched_data
 
-    def getCategories(self):
-        catlist = []
-        for cat in self.categories:
-            catlist.append(cat)
-        catlist.sort()
-        return catlist

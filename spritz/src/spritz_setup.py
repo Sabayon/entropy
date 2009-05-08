@@ -68,29 +68,20 @@ class const:
     # ads
     plain_ad_pix = PIXMAPS_PATH+'/ad.png'
 
-    # package categories
-    PACKAGE_CATEGORIES = [
-        "None",
-        "Groups",
-        "RPM Groups",
-        "Age"]
-
     DAY_IN_SECONDS = 86400
     # Page -> Notebook page numbers
     PAGE_REPOS = 0
     PAGE_PKG = 1
     PAGE_OUTPUT = 2
-    PAGE_GROUP = 3
-    PAGE_QUEUE = 4
-    PAGE_FILESCONF = 5
-    PAGE_GLSA = 6
-    PAGE_PREFERENCES = 7
+    PAGE_QUEUE = 3
+    PAGE_FILESCONF = 4
+    PAGE_GLSA = 5
+    PAGE_PREFERENCES = 6
     PAGES = {
        'packages'  : PAGE_PKG,
        'repos'     : PAGE_REPOS,
        'output'    : PAGE_OUTPUT,
        'queue'     : PAGE_QUEUE,
-       'group'     : PAGE_GROUP,
        'filesconf' : PAGE_FILESCONF,
        'glsa'      : PAGE_GLSA,
        'preferences': PAGE_PREFERENCES

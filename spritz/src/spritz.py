@@ -575,8 +575,6 @@ class SpritzApplicationEventsMixin:
             self.populateFilesUpdate()
         elif page == "glsa":
             self.populateAdvisories(None,'affected')
-        elif page == "group":
-            self.populateCategories()
         self.setNotebookPage(const.PAGES[page])
 
     def on_queueReviewAndInstall_clicked(self, widget):
@@ -797,15 +795,6 @@ class SpritzApplicationEventsMixin:
         self.ui.pkgFilter.set_text("")
         self.on_search_clicked(None)
         self.ui.pkgClr.hide()
-
-    def on_comps_cursor_changed(self, widget):
-        self.setBusy()
-        """ Handle selection of row in Comps Category  view  """
-        ( model, iterator ) = widget.get_selection().get_selected()
-        if model != None and iterator != None:
-            myid = model.get_value( iterator, 0 )
-            self.populateCategoryPackages(myid)
-        self.unsetBusy()
 
     def on_FileQuit( self, widget ):
         self.show_wait_window()
@@ -1188,11 +1177,6 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.advisoriesView = EntropyAdvisoriesView(self.ui.advisoriesView,
             self.ui, self.etpbase)
         self.queue.connect_objects(self.Equo, self.etpbase, self.pkgView, self.ui)
-        #self.catView = SpritzCategoryView(self.ui.tvCategory)
-        self.catsView = CategoriesView(self.ui.tvComps,self.queueView)
-        self.catsView.etpbase = self.etpbase
-        self.catPackages = EntropyPackageView(self.ui.tvCatPackages,
-            self.queueView, self.ui, self.etpbase, self.ui.main, self)
         self.repoView = EntropyRepoView(self.ui.viewRepo, self.ui, self)
         self.repoMirrorsView = EntropyRepositoryMirrorsView(self.addrepo_ui.mirrorsView)
         # Left Side Toolbar
@@ -1293,7 +1277,6 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.skipMirrorNow = False
         self.abortQueueNow = False
         self.doProgress = False
-        self.categoryOn = False
         self.isWorking = False
         self.lastPkgPB = "updates"
         self.Equo.connect_to_gui(self)
@@ -1412,8 +1395,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
 
     def setupPageButtons(self):
         # Setup Vertical Toolbar
-        self.createButton( _( "Packages" ), "button-packages.png", 'packages',True )
-        self.createButton( _( "Package Categories" ), "button-group.png", 'group')
+        self.createButton( _( "Packages" ), "button-packages.png", 'packages', True )
         self.createButton( _( "Security Advisories" ), "button-glsa.png", 'glsa' )
         self.createButton( _( "Repository Selection" ), "button-repo.png", 'repos' )
         self.createButton( _( "Configuration Files" ), "button-conf.png", 'filesconf' )
@@ -2294,16 +2276,6 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.disable_ugc = False
         return state
 
-    def populateCategories(self):
-        self.setBusy()
-        self.etpbase.populateCategories()
-        self.catsView.populate(self.etpbase.getCategories())
-        self.unsetBusy()
-
-    def populateCategoryPackages(self, cat):
-        pkgs = self.etpbase.getPackagesByCategory(cat)
-        self.catPackages.populate(pkgs,self.ui.tvCatPackages)
-
     def uiLock(self, lock):
         self.ui.content.set_sensitive(not lock)
         self.ui.menubar.set_sensitive(not lock)
@@ -2423,8 +2395,6 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.addrepo_ui.repodbEntry.set_text(repodata['plain_database'])
 
     def resetSpritzCacheStatus(self):
-        self.catPackages.clear()
-        self.catsView.clear()
         self.pkgView.clear()
         self.etpbase.clearPackages()
         self.etpbase.clearCache()
