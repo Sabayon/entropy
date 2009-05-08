@@ -1137,11 +1137,13 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.packages_install()
 
     def quit(self, widget = None, event = None, sysexit = True ):
-        if self.ugcTask != None:
-            self.ugcTask.kill()
-            while self.ugcTask.isAlive():
-                time.sleep(0.2)
-        self.Equo.destroy()
+        if hasattr(self,'ugcTask'):
+            if self.ugcTask != None:
+                self.ugcTask.kill()
+                while self.ugcTask.isAlive():
+                    time.sleep(0.2)
+        if hasattr(self,'Equo'):
+            self.Equo.destroy()
 
         if sysexit:
             self.exitNow()
