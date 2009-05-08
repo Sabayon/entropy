@@ -1375,6 +1375,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.setupPkgRadio(self.ui.rbAvailable,"available",_('Show available Packages'))
         self.setupPkgRadio(self.ui.rbInstalled,"installed",_('Show Installed Packages'))
         self.setupPkgRadio(self.ui.rbMasked,"masked",_('Show Masked Packages'))
+        self.setupPkgRadio(self.ui.rbAll,"all",_('Show All Packages'))
         self.setupPkgRadio(self.ui.rbPkgSets,"pkgsets",_('Show Package Sets'))
         self.setupPkgRadio(self.ui.rbPkgQueued,"queued",_('Show Queued Packages'))
 
@@ -1397,6 +1398,8 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
                 pix = self.ui.rbPackageSetsImage
             elif tag == "queued":
                 pix = self.ui.rbQueuedImage
+            elif tag == "all":
+                pix = self.ui.rbAllImage
             pix.set_from_pixbuf( p )
             pix.show()
         except gobject.GError:
@@ -2096,7 +2099,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.uiLock(True)
         action = self.lastPkgPB
         if action == 'all':
-            masks = ['installed','available']
+            masks = ['installed','available','masked','updates']
         else:
             masks = [action]
 
