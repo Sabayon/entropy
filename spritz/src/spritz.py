@@ -180,14 +180,30 @@ class SpritzApplicationEventsMixin:
     def on_filesView_row_activated( self, widget, iterator, path ):
         self.on_filesViewChanges_clicked(widget)
 
-     def on_filesViewChanges_clicked( self, widget ):
-        identifier, source, dest = self.__get_Edit_filename()
+    def on_filesViewChanges_clicked( self, widget ):
+        import commands
+        identifier, source, dest = self._get_Edit_filename()
         if not identifier:
             return True
-        randomfile = entropy.tools.get_random_temp_file()+".diff"
-        diffcmd = "diff -Nu "+dest+" "+source+" > "+randomfile
-        os.system(diffcmd)
-        self.runEditor(randomfile, delete = True)
+        diffcmd = "diff -Nu "+dest+" "+source
+
+        mybuffer = gtk.TextBuffer()
+        red_tt = mybuffer.create_tag("red", foreground = "red")
+        green_tt = mybuffer.create_tag("green", foreground = "darkgreen")
+
+        for line in commands.getoutput(diffcmd).split("\n"):
+            myiter = mybuffer.get_end_iter()
+            if line.startswith("+"):
+                mybuffer.insert_with_tags(myiter, line+"\n", green_tt)
+            elif line.startswith("-"):
+                mybuffer.insert_with_tags(myiter, line+"\n", red_tt)
+            else:
+                mybuffer.insert(myiter, line+"\n")
+        TextReadDialog(dest, mybuffer)
+
+    def on_filesViewRefresh_clicked( self, widget ):
+        self.Equo.FileUpdates.scanfs(dcache = False)
+        self.filesView.populate(self.Equo.FileUpdates.scandata)
 
     def on_shiftUp_clicked( self, widget ):
         idx, repoid, iterdata = self._get_selected_repo_index()

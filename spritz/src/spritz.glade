@@ -2091,6 +2091,20 @@
                             <property name="position">1</property>
                           </packing>
                         </child>
+                        <child>
+                          <widget class="GtkButton" id="filesViewRefresh">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">True</property>
+                            <property name="label" translatable="yes">gtk-refresh</property>
+                            <property name="use_stock">True</property>
+                            <property name="response_id">0</property>
+                            <signal name="clicked" handler="on_filesViewRefresh_clicked"/>
+                          </widget>
+                          <packing>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
                       </widget>
                       <packing>
                         <property name="expand">False</property>
@@ -8102,6 +8116,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                 <property name="editable">False</property>
                 <property name="wrap_mode">GTK_WRAP_WORD</property>
+                <property name="cursor_visible">False</property>
                 <property name="accepts_tab">False</property>
               </widget>
             </child>
