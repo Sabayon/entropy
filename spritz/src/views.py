@@ -115,6 +115,7 @@ class NameSortPackageViewModelInjector(EntropyPackageViewModelInjector):
 
     def __init__(self, *args, **kwargs):
         EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+        self.reverse = False
 
     def inject(self, packages, pkgsets):
 
@@ -129,7 +130,7 @@ class NameSortPackageViewModelInjector(EntropyPackageViewModelInjector):
                     if po not in categories[set_name]:
                         categories[set_name].append(po)
 
-        cats = sorted(categories)
+        cats = sorted(categories, reverse = self.reverse)
         orig_cat_desc = _("No description")
         for category in cats:
 
@@ -181,12 +182,18 @@ class NameSortPackageViewModelInjector(EntropyPackageViewModelInjector):
                 return 0
             map(fm, packages)
 
-            letters = sorted(categories)
+            letters = sorted(categories, reverse = self.reverse)
             for letter in letters:
 
                 for po in categories[letter]:
                     self.model.append( None, (po,) )
 
+
+class NameRevSortPackageViewModelInjector(NameSortPackageViewModelInjector):
+
+    def __init__(self, *args, **kwargs):
+        NameSortPackageViewModelInjector.__init__(self, *args, **kwargs)
+        self.reverse = True
 
 class EntropyPackageView:
 

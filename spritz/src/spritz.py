@@ -1313,14 +1313,17 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.avail_pkg_sorters = {
             'default': DefaultPackageViewModelInjector,
             'name_az': NameSortPackageViewModelInjector,
+            'name_za': NameRevSortPackageViewModelInjector,
         }
         self.pkg_sorters_desc = {
             'default': (None, _("Default packages sorting"),),
             'name_az': (None, _("Sort by name [A-Z]"),),
+            'name_za': (None, _("Sort by name [Z-A]"),),
         }
         self.pkg_sorters_id = {
             0: 'default',
-            1: 'name_az'
+            1: 'name_az',
+            2: 'name_za',
         }
 
         # setup package sorter
