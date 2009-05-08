@@ -1080,6 +1080,16 @@ class SpritzApplicationEventsMixin:
         self.on_Preferences_toggled(None,True)
         setattr(SpritzConf,key,w_col)
 
+    def on_pkgSorter_changed(self, widget):
+        model = widget.get_model()
+        sort_id = widget.get_active()
+        if sort_id == -1:
+            return
+        sort_id_name = self.pkg_sorters_id.get(sort_id)
+        sorter = self.avail_pkg_sorters.get(sort_id_name)
+        self.pkgView.change_model_injector(sorter)
+        self.addPackages()
+
 
 class SpritzApplication(Controller, SpritzApplicationEventsMixin):
 
@@ -1295,8 +1305,39 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.resetProgressText()
         self.pkgProperties_selected = None
         self.setupPreferences()
-
+        self.setup_pkg_sorter()
         self.setupUgc()
+
+    def setup_pkg_sorter(self):
+
+        self.avail_pkg_sorters = {
+            'default': DefaultPackageViewModelInjector,
+            'name_az': NameSortPackageViewModelInjector,
+        }
+        self.pkg_sorters_desc = {
+            'default': (None, _("Default packages sorting"),),
+            'name_az': (None, _("Sort by name [A-Z]"),),
+        }
+        self.pkg_sorters_id = {
+            0: 'default',
+            1: 'name_az'
+        }
+
+        # setup package sorter
+        sorter_model = gtk.ListStore(gobject.TYPE_STRING)
+        sorter = self.ui.pkgSorter
+        sorter.set_model(sorter_model)
+        sorter_cell = gtk.CellRendererText()
+        sorter.pack_start(sorter_cell, True)
+        sorter.add_attribute(sorter_cell, 'text', 0)
+        first = True
+        for s_id in sorted(self.pkg_sorters_id):
+            s_id_name = self.pkg_sorters_id.get(s_id)
+            s_id_desc = self.pkg_sorters_desc.get(s_id_name)[1]
+            item = sorter_model.append( (s_id_desc,) )
+            if first:
+                sorter.set_active_iter(item)
+                first = False
 
     def show_wait_window(self):
         self.ui.main.set_sensitive(False)

@@ -21,44 +21,172 @@ import time
 import gtk
 import gobject
 from spritz_setup import const, cleanMarkupString, SpritzConf
-from etpgui.widgets import UI,CellRendererStars
+from etpgui.widgets import UI, CellRendererStars
 from packages import DummyEntropyPackage
 from entropyapi import Equo
 from etpgui import *
-from entropy.i18n import _,_LOCALE
+from entropy.i18n import _, _LOCALE
 from dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog
 from entropy.exceptions import *
 from entropy.const import *
 from entropy.misc import ParallelTask
 
-TOGGLE_WIDTH = 12
+class EntropyPackageViewModelInjector:
 
-class SpritzCategoryView:
-    def __init__( self, treeview):
-        self.view = treeview
-        self.model = self.setup_view()
+    def __init__(self, model, entropy, etpbase, dummy_cats):
+        self.model = model
+        self.entropy = entropy
+        self.etpbase = etpbase
+        self.dummy_cats = dummy_cats
 
-    def setup_view( self ):
-        """ Setup Category View  """
-        model = gtk.TreeStore( gobject.TYPE_STRING,gobject.TYPE_STRING )
-        self.view.set_model( model )
-        cell1 = gtk.CellRendererText()
-        column1= gtk.TreeViewColumn( _( "Categories" ), cell1, markup=0 )
-        column1.set_resizable( True )
-        column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
-        column1.set_fixed_width( 150 )
+    def inject(self, packages, pkgsets):
+        raise NotImplementedError
 
-        self.view.append_column( column1 )
-        self.view.set_headers_visible(False)
-        return model
 
-    def populate(self,data,tree=False):
-        self.model.clear()
-        if tree:
-            data.populate(self.model)
+class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
+
+    def __init__(self, *args, **kwargs):
+        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+
+    def inject(self, packages, pkgsets):
+
+        categories = {}
+        cat_descs = {}
+        if pkgsets:
+            for po in packages:
+                for set_name in po.set_names:
+                    if not categories.has_key(set_name):
+                        categories[set_name] = []
+                    cat_descs[set_name] = po.set_cat_namedesc
+                    if po not in categories[set_name]:
+                        categories[set_name].append(po)
         else:
-            for el in data:
-                self.model.append(None,[el,el])
+            def fm(po):
+                mycat = po.cat
+                if not categories.has_key(mycat):
+                    categories[mycat] = []
+                categories[mycat].append(po)
+                return 0
+            map(fm,packages)
+
+        cats = sorted(categories)
+        orig_cat_desc = _("No description")
+        for category in cats:
+
+            cat_desc = orig_cat_desc
+            cat_desc_data = self.entropy.get_category_description_data(category)
+            if cat_desc_data.has_key(_LOCALE):
+                cat_desc = cat_desc_data[_LOCALE]
+            elif cat_desc_data.has_key('en'):
+                cat_desc = cat_desc_data['en']
+            elif cat_descs.get(category):
+                cat_desc = cat_descs.get(category)
+
+            cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category, 
+                cleanMarkupString(cat_desc),)
+            mydummy = DummyEntropyPackage(namedesc = cat_text,
+                dummy_type = SpritzConf.dummy_category, onlyname = category)
+            mydummy.color = SpritzConf.color_package_category
+            if pkgsets:
+                set_data = self.entropy.package_set_match(category)[0]
+                if not set_data:
+                    continue
+
+                set_from, set_name, set_deps = set_data
+                mydummy.set_category = category
+                mydummy.set_from = set_from
+
+                mydummy.set_matches, mydummy.set_installed_matches, \
+                    mydummy.set_install_incomplete, \
+                    mydummy.set_remove_incomplete = \
+                        self.etpbase._pkg_get_pkgset_matches_installed_matches(
+                            set_deps)
+
+                mydummy.namedesc = "<b><big>%s</big></b>\n<small>%s</small>" % (
+                    category, cleanMarkupString(
+                        self.etpbase._pkg_get_pkgset_set_from_desc(set_from)),
+                )
+            self.dummy_cats[category] = mydummy
+            parent = self.model.append( None, (mydummy,) )
+            for po in categories[category]:
+                self.model.append( parent, (po,) )
+
+class NameSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+
+    def __init__(self, *args, **kwargs):
+        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+
+    def inject(self, packages, pkgsets):
+
+        categories = {}
+        cat_descs = {}
+        if pkgsets:
+            for po in packages:
+                for set_name in po.set_names:
+                    if not categories.has_key(set_name):
+                        categories[set_name] = []
+                    cat_descs[set_name] = po.set_cat_namedesc
+                    if po not in categories[set_name]:
+                        categories[set_name].append(po)
+
+        cats = sorted(categories)
+        orig_cat_desc = _("No description")
+        for category in cats:
+
+            cat_desc = orig_cat_desc
+            cat_desc_data = self.entropy.get_category_description_data(category)
+            if cat_desc_data.has_key(_LOCALE):
+                cat_desc = cat_desc_data[_LOCALE]
+            elif cat_desc_data.has_key('en'):
+                cat_desc = cat_desc_data['en']
+            elif cat_descs.get(category):
+                cat_desc = cat_descs.get(category)
+
+            cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category, 
+                cleanMarkupString(cat_desc),)
+            mydummy = DummyEntropyPackage(namedesc = cat_text,
+                dummy_type = SpritzConf.dummy_category, onlyname = category)
+            mydummy.color = SpritzConf.color_package_category
+
+            set_data = self.entropy.package_set_match(category)[0]
+            if not set_data:
+                continue
+
+            set_from, set_name, set_deps = set_data
+            mydummy.set_category = category
+            mydummy.set_from = set_from
+
+            mydummy.set_matches, mydummy.set_installed_matches, \
+                mydummy.set_install_incomplete, \
+                mydummy.set_remove_incomplete = \
+                    self.etpbase._pkg_get_pkgset_matches_installed_matches(
+                        set_deps)
+
+            mydummy.namedesc = "<b><big>%s</big></b>\n<small>%s</small>" % (
+                category, cleanMarkupString(
+                    self.etpbase._pkg_get_pkgset_set_from_desc(set_from)),
+            )
+            self.dummy_cats[category] = mydummy
+            parent = self.model.append( None, (mydummy,) )
+            for po in categories[category]:
+                self.model.append( parent, (po,) )
+
+        else:
+
+            def fm(po):
+                myinitial = po.onlyname.lower()[0]
+                if not categories.has_key(myinitial):
+                    categories[myinitial] = []
+                categories[myinitial].append(po)
+                return 0
+            map(fm, packages)
+
+            letters = sorted(categories)
+            for letter in letters:
+
+                for po in categories[letter]:
+                    self.model.append( None, (po,) )
+
 
 class EntropyPackageView:
 
@@ -225,16 +353,27 @@ class EntropyPackageView:
         self.pkgset_remove.set_image(self.img_pkgset_remove)
         self.pkgset_undoremove.set_image(self.img_pkgset_undoremove)
 
+        # set default model injector
+        self.change_model_injector(DefaultPackageViewModelInjector)
+
         # start view refresher
         t = ParallelTask(self.view_refresher)
         t.start()
 
+    def change_model_injector(self, injector):
+        if not issubclass(injector, EntropyPackageViewModelInjector):
+            raise AttributeError("wrong sorter")
+        self.Injector = injector(self.store, self.Equo, self.etpbase,
+            self.dummyCats)
+
     def view_refresher(self):
+        def do_refresh():
+            self.view.queue_draw()
+            self.do_refresh_view = False
         try:
             while 1:
                 if self.do_refresh_view:
-                    self.view.queue_draw()
-                    self.do_refresh_view = False
+                    gobject.timeout_add(0, do_refresh)
                 time.sleep(0.1)
         except:
             pass
@@ -996,9 +1135,6 @@ class EntropyPackageView:
         store = gtk.TreeStore( gobject.TYPE_PYOBJECT )
         self.view.get_selection().set_mode( gtk.SELECTION_MULTIPLE )
         self.view.set_model( store )
-        # 1 == identifier, don't duplicate it
-        # Drag & drop? here we are, future!
-        #self.view.enable_model_drag_source(gtk.gdk.BUTTON1_MASK, [('text/plain', gtk.TARGET_SAME_APP,1,)], gtk.gdk.ACTION_DEFAULT)
 
         myheight = 35
         # selection pixmap
@@ -1098,7 +1234,7 @@ class EntropyPackageView:
     def clear(self):
         self.store.clear()
 
-    def populate(self, pkgs, widget = None, empty = False, pkgsets = False): 
+    def populate(self, pkgs, widget = None, empty = False, pkgsets = False):
         self.dummyCats.clear()
         self.clear()
         search_col = 0
@@ -1108,61 +1244,13 @@ class EntropyPackageView:
         widget.set_model(self.store)
 
         if empty:
-
             for po in pkgs:
                 self.store.append( None, (po,) )
             widget.set_property('headers-visible',False)
             widget.set_property('enable-search',False)
-
         else:
-
-            categories = {}
-            cat_descs = {}
-            if pkgsets:
-                for po in pkgs:
-                    for set_name in po.set_names:
-                        if not categories.has_key(set_name):
-                            categories[set_name] = []
-                        cat_descs[set_name] = po.set_cat_namedesc
-                        if po not in categories[set_name]:
-                            categories[set_name].append(po)
-            else:
-                def fm(po):
-                    mycat = po.cat
-                    if not categories.has_key(mycat):
-                        categories[mycat] = []
-                    categories[mycat].append(po)
-                    return 0
-                map(fm,pkgs)
-
-            cats = sorted(categories.keys())
-            orig_cat_desc = _("No description")
-            for category in cats:
-
-                cat_desc = orig_cat_desc
-                cat_desc_data = self.Equo.get_category_description_data(category)
-                if cat_desc_data.has_key(_LOCALE):
-                    cat_desc = cat_desc_data[_LOCALE]
-                elif cat_desc_data.has_key('en'):
-                    cat_desc = cat_desc_data['en']
-                elif cat_descs.get(category):
-                    cat_desc = cat_descs.get(category)
-
-                cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(cat_desc),)
-                mydummy = DummyEntropyPackage(namedesc = cat_text, dummy_type = SpritzConf.dummy_category, onlyname = category)
-                mydummy.color = SpritzConf.color_package_category
-                if pkgsets:
-                    set_data = self.Equo.package_set_match(category)[0]
-                    if not set_data: continue
-                    set_from, set_name, set_deps = set_data
-                    mydummy.set_category = category
-                    mydummy.set_from = set_from
-                    mydummy.set_matches, mydummy.set_installed_matches, mydummy.set_install_incomplete, mydummy.set_remove_incomplete = self.etpbase._pkg_get_pkgset_matches_installed_matches(set_deps)
-                    mydummy.namedesc = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(self.etpbase._pkg_get_pkgset_set_from_desc(set_from)),)
-                self.dummyCats[category] = mydummy
-                parent = self.store.append( None, (mydummy,) )
-                for po in categories[category]:
-                    self.store.append( parent, (po,) )
+            # current injectors fills the model
+            self.Injector.inject(pkgs, pkgsets)
 
             widget.set_search_column( search_col )
             widget.set_search_equal_func(self.atom_search)
@@ -1652,9 +1740,7 @@ class EntropyAdvisoriesView:
 
 
 class EntropyRepoView:
-    """ 
-    This class controls the repo TreeView
-    """
+
     def __init__( self, widget, ui, spritz_app):
         self.view = widget
         self.headers = [_('Repository'),_('Filename')]
