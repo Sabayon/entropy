@@ -5115,20 +5115,26 @@ class MaskedPackagesDialog(MenuSkel):
 class TextReadDialog(MenuSkel):
 
 
-    def __init__(self, title, text):
+    def __init__(self, title, text, read_only = True):
 
-        mybuffer = gtk.TextBuffer()
-        mybuffer.set_text(text)
+        txt_buffer = text
+        if not isinstance(text, gtk.TextBuffer):
+            txt_buffer = gtk.TextBuffer()
+            txt_buffer.set_text(text)
+
         xml_read = gtk.glade.XML(const.GLADE_FILE, 'textReadWindow',
             domain="entropy")
         self.__read_dialog = xml_read.get_widget( "textReadWindow" )
         ok_read = xml_read.get_widget( "okReadButton" )
         ok_read.connect( 'clicked', self.ok_button )
         txt_view = xml_read.get_widget( "readTextView" )
-        txt_view.set_buffer(mybuffer)
+        txt_view.set_buffer(txt_buffer)
         self.__read_dialog.set_title(title)
         self.__read_dialog.show_all()
         self.done_reading = False
+        if not read_only:
+            txt_view.set_editable(True)
+            txt_view.set_cursor_visible(True)
 
     def ok_button(self, widget):
         self.done_reading = True
