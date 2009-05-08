@@ -31,6 +31,7 @@ def inject(options):
 
     mytbz2s = []
     for opt in options:
+        opt = os.path.realpath(opt)
         if not os.path.isfile(opt) or not opt.endswith(etpConst['packagesext']):
             print_error(darkred(" * ")+bold(opt)+red(" is invalid."))
             return 1
