@@ -5115,26 +5115,56 @@ class MaskedPackagesDialog(MenuSkel):
 class TextReadDialog(MenuSkel):
 
 
-    def __init__(self, title, text, read_only = True):
+    def __init__(self, title, text, read_only = True, rw_save_path = None):
 
-        txt_buffer = text
+        self.rw_save_path = rw_save_path
+        self.txt_buffer = text
         if not isinstance(text, gtk.TextBuffer):
-            txt_buffer = gtk.TextBuffer()
-            txt_buffer.set_text(text)
+            self.txt_buffer = gtk.TextBuffer()
+            self.txt_buffer.set_text(text)
+        if not read_only and (rw_save_path == None):
+            raise AttributeError("rw_save_path must be vaild if not read_only")
 
         xml_read = gtk.glade.XML(const.GLADE_FILE, 'textReadWindow',
             domain="entropy")
         self.__read_dialog = xml_read.get_widget( "textReadWindow" )
         ok_read = xml_read.get_widget( "okReadButton" )
         ok_read.connect( 'clicked', self.ok_button )
-        txt_view = xml_read.get_widget( "readTextView" )
-        txt_view.set_buffer(txt_buffer)
+        ok_save = xml_read.get_widget("okSaveButton")
+        ok_cancel = xml_read.get_widget("okCancelButton")
+        self.txt_view = xml_read.get_widget( "readTextView" )
+        self.txt_view.set_buffer(self.txt_buffer)
         self.__read_dialog.set_title(title)
         self.__read_dialog.show_all()
         self.done_reading = False
+
+        ok_save.hide()
+        ok_cancel.hide()
         if not read_only:
-            txt_view.set_editable(True)
-            txt_view.set_cursor_visible(True)
+            self.txt_view.set_editable(True)
+            self.txt_view.set_cursor_visible(True)
+            ok_read.hide()
+            ok_save.connect( 'clicked', self.ok_save_button )
+            ok_cancel.connect( 'clicked', self.ok_cancel_button )
+            ok_save.show()
+            ok_cancel.show()
+
+    def get_content(self):
+        start = self.txt_buffer.get_start_iter()
+        end = self.txt_buffer.get_end_iter()
+        return self.txt_buffer.get_text(start, end)
+
+    def ok_save_button(self, widget):
+        source_f = open(self.rw_save_path+".etp_tmp","w")
+        cont = self.get_content()
+        source_f.write(cont)
+        source_f.flush()
+        source_f.close()
+        os.rename(self.rw_save_path+".etp_tmp", self.rw_save_path)
+        self.ok_button(widget)
+
+    def ok_cancel_button(self, widget):
+        self.ok_button(widget)
 
     def ok_button(self, widget):
         self.done_reading = True
