@@ -175,6 +175,15 @@ class SpritzApplicationEventsMixin:
         identifier, source, dest = self._get_Edit_filename()
         if not identifier:
             return True
+
+        """
+        if not os.access(source, os.R_OK | os.W_OK | os.F_OK):
+            return
+        source_f = open(source)
+        txt = source_f.read()
+        source_f.close()
+        TextReadDialog(source, txt, read_only = False, rw_save_path = source)
+        """
         self.runEditor(source)
 
     def on_filesView_row_activated( self, widget, iterator, path ):
