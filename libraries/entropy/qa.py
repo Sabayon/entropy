@@ -443,9 +443,8 @@ class QAInterface:
             depcache.add(mydep)
             mydep = mybuffer.pop()
 
-        if atoms and -1 in matchcache:
-            matchcache.discard(-1)
-
+        # always discard -1 in set
+        matchcache.discard(-1)
         return matchcache
 
 class ErrorReportInterface:
