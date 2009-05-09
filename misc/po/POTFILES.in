@@ -80,7 +80,6 @@
 ../spritz/src/spritz.py
 ../spritz/src/spritz_setup.py
 ../spritz/src/views.py
-../spritz/src/vte-demo.py
 ../spritz/src/etpgui/__init__.py
 ../spritz/src/etpgui/packages.py
 ../spritz/src/etpgui/widgets.py
