@@ -14,7 +14,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
     Only if possible:
     - server side upload digest verification (ditch crappy handlers?)
-    - remove db.WriteLock?
 
     - server-side: old branch remote packages move (when a branch is dropped,
         remote packages should be moved to another location)
