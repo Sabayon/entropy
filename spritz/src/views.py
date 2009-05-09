@@ -39,8 +39,18 @@ class EntropyPackageViewModelInjector:
         self.etpbase = etpbase
         self.dummy_cats = dummy_cats
 
-    def inject(self, packages, pkgsets):
+    def pkgset_inject(self, packages):
         raise NotImplementedError
+
+    def packages_inject(self, packages):
+        raise NotImplementedError
+
+    def inject(self, packages, pkgsets):
+        if pkgsets:
+            self.pkgset_inject(packages)
+        else:
+            self.packages_inject(packages)
+
 
 
 class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
@@ -48,26 +58,17 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
     def __init__(self, *args, **kwargs):
         EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
 
-    def inject(self, packages, pkgsets):
+    def pkgset_inject(self, packages):
 
         categories = {}
         cat_descs = {}
-        if pkgsets:
-            for po in packages:
-                for set_name in po.set_names:
-                    if not categories.has_key(set_name):
-                        categories[set_name] = []
-                    cat_descs[set_name] = po.set_cat_namedesc
-                    if po not in categories[set_name]:
-                        categories[set_name].append(po)
-        else:
-            def fm(po):
-                mycat = po.cat
-                if not categories.has_key(mycat):
-                    categories[mycat] = []
-                categories[mycat].append(po)
-                return 0
-            map(fm,packages)
+        for po in packages:
+            for set_name in po.set_names:
+                if not categories.has_key(set_name):
+                    categories[set_name] = []
+                cat_descs[set_name] = po.set_cat_namedesc
+                if po not in categories[set_name]:
+                    categories[set_name].append(po)
 
         cats = sorted(categories)
         orig_cat_desc = _("No description")
@@ -87,68 +88,6 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
             mydummy = DummyEntropyPackage(namedesc = cat_text,
                 dummy_type = SpritzConf.dummy_category, onlyname = category)
             mydummy.color = SpritzConf.color_package_category
-            if pkgsets:
-                set_data = self.entropy.package_set_match(category)[0]
-                if not set_data:
-                    continue
-
-                set_from, set_name, set_deps = set_data
-                mydummy.set_category = category
-                mydummy.set_from = set_from
-
-                mydummy.set_matches, mydummy.set_installed_matches, \
-                    mydummy.set_install_incomplete, \
-                    mydummy.set_remove_incomplete = \
-                        self.etpbase._pkg_get_pkgset_matches_installed_matches(
-                            set_deps)
-
-                mydummy.namedesc = "<b><big>%s</big></b>\n<small>%s</small>" % (
-                    category, cleanMarkupString(
-                        self.etpbase._pkg_get_pkgset_set_from_desc(set_from)),
-                )
-            self.dummy_cats[category] = mydummy
-            parent = self.model.append( None, (mydummy,) )
-            for po in categories[category]:
-                self.model.append( parent, (po,) )
-
-class NameSortPackageViewModelInjector(EntropyPackageViewModelInjector):
-
-    def __init__(self, *args, **kwargs):
-        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
-        self.reverse = False
-
-    def inject(self, packages, pkgsets):
-
-        categories = {}
-        cat_descs = {}
-        if pkgsets:
-            for po in packages:
-                for set_name in po.set_names:
-                    if not categories.has_key(set_name):
-                        categories[set_name] = []
-                    cat_descs[set_name] = po.set_cat_namedesc
-                    if po not in categories[set_name]:
-                        categories[set_name].append(po)
-
-        cats = sorted(categories, reverse = self.reverse)
-        orig_cat_desc = _("No description")
-        for category in cats:
-
-            cat_desc = orig_cat_desc
-            cat_desc_data = self.entropy.get_category_description_data(category)
-            if cat_desc_data.has_key(_LOCALE):
-                cat_desc = cat_desc_data[_LOCALE]
-            elif cat_desc_data.has_key('en'):
-                cat_desc = cat_desc_data['en']
-            elif cat_descs.get(category):
-                cat_desc = cat_descs.get(category)
-
-            cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category, 
-                cleanMarkupString(cat_desc),)
-            mydummy = DummyEntropyPackage(namedesc = cat_text,
-                dummy_type = SpritzConf.dummy_category, onlyname = category)
-            mydummy.color = SpritzConf.color_package_category
-
             set_data = self.entropy.package_set_match(category)[0]
             if not set_data:
                 continue
@@ -172,21 +111,65 @@ class NameSortPackageViewModelInjector(EntropyPackageViewModelInjector):
             for po in categories[category]:
                 self.model.append( parent, (po,) )
 
-        else:
+    def packages_inject(self, packages):
 
-            def fm(po):
-                myinitial = po.onlyname.lower()[0]
-                if not categories.has_key(myinitial):
-                    categories[myinitial] = []
-                categories[myinitial].append(po)
-                return 0
-            map(fm, packages)
+        categories = {}
+        cat_descs = {}
 
-            letters = sorted(categories, reverse = self.reverse)
-            for letter in letters:
+        def fm(po):
+            mycat = po.cat
+            if not categories.has_key(mycat):
+                categories[mycat] = []
+            categories[mycat].append(po)
+            return 0
+        map(fm,packages)
 
-                for po in categories[letter]:
-                    self.model.append( None, (po,) )
+        cats = sorted(categories)
+        orig_cat_desc = _("No description")
+        for category in cats:
+
+            cat_desc = orig_cat_desc
+            cat_desc_data = self.entropy.get_category_description_data(category)
+            if cat_desc_data.has_key(_LOCALE):
+                cat_desc = cat_desc_data[_LOCALE]
+            elif cat_desc_data.has_key('en'):
+                cat_desc = cat_desc_data['en']
+            elif cat_descs.get(category):
+                cat_desc = cat_descs.get(category)
+
+            cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,
+                cleanMarkupString(cat_desc),)
+            mydummy = DummyEntropyPackage(namedesc = cat_text,
+                dummy_type = SpritzConf.dummy_category, onlyname = category)
+            mydummy.color = SpritzConf.color_package_category
+            self.dummy_cats[category] = mydummy
+            parent = self.model.append( None, (mydummy,) )
+            for po in categories[category]:
+                self.model.append( parent, (po,) )
+
+
+class NameSortPackageViewModelInjector(DefaultPackageViewModelInjector):
+
+    def __init__(self, *args, **kwargs):
+        DefaultPackageViewModelInjector.__init__(self, *args, **kwargs)
+        self.reverse = False
+
+    def packages_inject(self, packages):
+
+        categories = {}
+
+        def fm(po):
+            myinitial = po.onlyname.lower()[0]
+            if not categories.has_key(myinitial):
+                categories[myinitial] = []
+            categories[myinitial].append(po)
+            return 0
+        map(fm, packages)
+
+        letters = sorted(categories, reverse = self.reverse)
+        for letter in letters:
+            for po in categories[letter]:
+                self.model.append( None, (po,) )
 
 
 class NameRevSortPackageViewModelInjector(NameSortPackageViewModelInjector):
@@ -194,6 +177,69 @@ class NameRevSortPackageViewModelInjector(NameSortPackageViewModelInjector):
     def __init__(self, *args, **kwargs):
         NameSortPackageViewModelInjector.__init__(self, *args, **kwargs)
         self.reverse = True
+
+class DownloadSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+
+    def __init__(self, *args, **kwargs):
+        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+
+    def packages_inject(self, packages):
+
+        def mycmp(obj_a, obj_b):
+            eq = 0
+            d1 = obj_a.downloads
+            d2 = obj_b.downloads
+            if d1 == d2:
+                return 0
+            if d1 < d2:
+                return 1
+            return -1
+
+        packages.sort(mycmp)
+        for po in packages:
+            self.model.append( None, (po,) )
+
+class VoteSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+
+    def __init__(self, *args, **kwargs):
+        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+
+    def packages_inject(self, packages):
+
+        def mycmp(obj_a, obj_b):
+            eq = 0
+            d1 = obj_a.voteint
+            d2 = obj_b.voteint
+            if d1 == d2:
+                return 0
+            if d1 < d2:
+                return 1
+            return -1
+
+        packages.sort(mycmp)
+        for po in packages:
+            self.model.append( None, (po,) )
+
+class RepoSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+
+    def __init__(self, *args, **kwargs):
+        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+
+    def packages_inject(self, packages):
+
+        def mycmp(obj_a, obj_b):
+            eq = 0
+            d1 = obj_a.repoid
+            d2 = obj_b.repoid
+            if d1 == d2:
+                return 0
+            if d1 < d2:
+                return 1
+            return -1
+
+        packages.sort(mycmp)
+        for po in packages:
+            self.model.append( None, (po,) )
 
 class EntropyPackageView:
 
@@ -1156,7 +1202,8 @@ class EntropyPackageView:
         self.view.append_column( column1 )
         column1.set_clickable( False )
 
-        self.create_text_column( _( "Package" ), 'namedesc' , size=300, expand = True, set_height = myheight)
+        self.create_text_column( _( "Package" ), 'namedesc' , size = 300,
+            expand = True, set_height = myheight, clickable = True)
 
         # vote event box
         cell2 = CellRendererStars()
@@ -1168,9 +1215,11 @@ class EntropyPackageView:
         column2.set_fixed_width( self.stars_col_size )
         column2.set_expand(False)
         column2.set_sort_column_id( -1 )
+        column2.set_clickable(True)
         self.view.append_column( column2 )
 
-        self.create_text_column( _( "Repository" ), 'repoid', size = 130, set_height = myheight)
+        self.create_text_column( _( "Repository" ), 'repoid', size = 130,
+            set_height = myheight, clickable = True)
 
         return store
 
@@ -1289,7 +1338,8 @@ class EntropyPackageView:
         except gobject.GError:
             pass
 
-    def create_text_column( self, hdr, property, size, sortcol = None, expand = False, set_height = 0):
+    def create_text_column( self, hdr, property, size, sortcol = None,
+            expand = False, set_height = 0, clickable = False):
         """
         Create a TreeViewColumn with text and set
         the sorting properties and add it to the view
@@ -1304,6 +1354,7 @@ class EntropyPackageView:
         column.set_fixed_width( size )
         column.set_expand(expand)
         column.set_sort_column_id( -1 )
+        column.set_clickable(clickable)
         self.view.append_column( column )
         return column
 

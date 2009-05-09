@@ -1314,21 +1314,33 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
             'default': DefaultPackageViewModelInjector,
             'name_az': NameSortPackageViewModelInjector,
             'name_za': NameRevSortPackageViewModelInjector,
+            'downloads': DownloadSortPackageViewModelInjector,
+            'votes': VoteSortPackageViewModelInjector,
+            'repository': RepoSortPackageViewModelInjector,
         }
         self.pkg_sorters_desc = {
-            'default': (None, _("Default packages sorting"),),
-            'name_az': (None, _("Sort by name [A-Z]"),),
-            'name_za': (None, _("Sort by name [Z-A]"),),
+            'default': _("Default packages sorting"),
+            'name_az': _("Sort by name [A-Z]"),
+            'name_za': _("Sort by name [Z-A]"),
+            'downloads': _("Sort by downloads"),
+            'votes': _("Sort by votes"),
+            'repository': _("Sort by repository"),
         }
         self.pkg_sorters_id = {
             0: 'default',
             1: 'name_az',
             2: 'name_za',
+            3: 'downloads',
+            4: 'votes',
+            5: 'repository',
         }
         self.pkg_sorters_img_ids = {
             0: gtk.STOCK_PRINT_PREVIEW,
             1: gtk.STOCK_SORT_DESCENDING,
             2: gtk.STOCK_SORT_ASCENDING,
+            3: gtk.STOCK_GOTO_BOTTOM,
+            4: gtk.STOCK_INFO,
+            5: gtk.STOCK_CONNECT,
         }
 
         # setup package sorter
@@ -1347,7 +1359,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         first = True
         for s_id in sorted(self.pkg_sorters_id):
             s_id_name = self.pkg_sorters_id.get(s_id)
-            s_id_desc = self.pkg_sorters_desc.get(s_id_name)[1]
+            s_id_desc = self.pkg_sorters_desc.get(s_id_name)
             stock_img_id = self.pkg_sorters_img_ids.get(s_id)
             item = sorter_model.append( (stock_img_id, s_id_desc,) )
             if first:
