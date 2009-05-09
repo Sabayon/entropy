@@ -1325,19 +1325,31 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
             1: 'name_az',
             2: 'name_za',
         }
+        self.pkg_sorters_img_ids = {
+            0: gtk.STOCK_PRINT_PREVIEW,
+            1: gtk.STOCK_SORT_DESCENDING,
+            2: gtk.STOCK_SORT_ASCENDING,
+        }
 
         # setup package sorter
-        sorter_model = gtk.ListStore(gobject.TYPE_STRING)
+        sorter_model = gtk.ListStore(gobject.TYPE_STRING, gobject.TYPE_STRING)
         sorter = self.ui.pkgSorter
         sorter.set_model(sorter_model)
+
+        sorter_img_cell = gtk.CellRendererPixbuf()
+        sorter.pack_start(sorter_img_cell, True)
+        sorter.add_attribute(sorter_img_cell, 'stock-id', 0)
+
         sorter_cell = gtk.CellRendererText()
         sorter.pack_start(sorter_cell, True)
-        sorter.add_attribute(sorter_cell, 'text', 0)
+        sorter.add_attribute(sorter_cell, 'text', 1)
+
         first = True
         for s_id in sorted(self.pkg_sorters_id):
             s_id_name = self.pkg_sorters_id.get(s_id)
             s_id_desc = self.pkg_sorters_desc.get(s_id_name)[1]
-            item = sorter_model.append( (s_id_desc,) )
+            stock_img_id = self.pkg_sorters_img_ids.get(s_id)
+            item = sorter_model.append( (stock_img_id, s_id_desc,) )
             if first:
                 sorter.set_active_iter(item)
                 first = False
