@@ -1353,7 +1353,7 @@ class Server(Singleton,TextInterface):
                     self.updateProgress(
                         "[%s|%s] %s" % (
                             brown(branch),
-                            bold(_("dependency")),
+                            blue(_("dependency")),
                             purple(dbconn.retrieveAtom(dep_idpackage)),
                         ),
                         importance = 0,
