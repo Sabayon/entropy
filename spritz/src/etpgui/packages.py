@@ -417,6 +417,18 @@ class EntropyPackage:
         if not atom: return None
         return EquoIntf.UGC.UGCCache.get_package_vote(self.getRepoId(),self.entropyTools.dep_getkey(atom))
 
+    def getUGCPackageVoteInt(self):
+        if self.pkgset:
+            return 0
+        atom = self.getName()
+        if not atom:
+            return 0
+        vote = EquoIntf.UGC.UGCCache.get_package_vote(self.getRepoId(),self.entropyTools.dep_getkey(atom))
+        if not isinstance(vote, float):
+            return 0
+        return int(vote)
+
+
     def getUGCPackageVoted(self):
         return self.voted
 
@@ -524,6 +536,7 @@ class EntropyPackage:
     syspkg = property(fget=getSysPkg)
     install_status = property(fget=getInstallStatus)
     vote = property(fget=getUGCPackageVote)
+    voteint = property(fget=getUGCPackageVoteInt)
     voted = property(fget=getUGCPackageVoted)
     downloads = property(fget=getUGCPackageDownloads)
     user_unmasked = property(fget=isUserUnmasked)
