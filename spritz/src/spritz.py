@@ -1128,7 +1128,8 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.show_wait_window()
         self.setup_gui()
         # show UI
-        self.ui.main.maximize()
+        if "--nomaximize" not in sys.argv:
+            self.ui.main.maximize()
         self.ui.main.show()
         self.hide_wait_window()
 
@@ -1333,6 +1334,14 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
             3: 'downloads',
             4: 'votes',
             5: 'repository',
+        }
+        self.pkg_sorters_id_inverse = {
+            'default': 0,
+            'name_az': 1,
+            'name_za': 2,
+            'downloads': 3,
+            'votes': 4,
+            'repository': 5,
         }
         self.pkg_sorters_img_ids = {
             0: gtk.STOCK_PRINT_PREVIEW,

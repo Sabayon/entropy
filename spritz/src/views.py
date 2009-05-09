@@ -203,22 +203,25 @@ class VoteSortPackageViewModelInjector(EntropyPackageViewModelInjector):
 
     def __init__(self, *args, **kwargs):
         EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+        self.reverse = False
 
     def packages_inject(self, packages):
 
-        def mycmp(obj_a, obj_b):
-            eq = 0
-            d1 = obj_a.voteint
-            d2 = obj_b.voteint
-            if d1 == d2:
-                return 0
-            if d1 < d2:
-                return 1
-            return -1
-
-        packages.sort(mycmp)
+        data = {}
         for po in packages:
-            self.model.append( None, (po,) )
+            vote = po.voteint
+            d_obj = data.setdefault(vote, [])
+            d_obj.append(po)
+
+        for vote in sorted(data, reverse = self.reverse):
+            for po in data[vote]:
+                self.model.append( None, (po,) )
+
+class VoteRevSortPackageViewModelInjector(VoteSortPackageViewModelInjector):
+
+    def __init__(self, *args, **kwargs):
+        VoteSortPackageViewModelInjector.__init__(self, *args, **kwargs)
+        self.reverse = True
 
 class RepoSortPackageViewModelInjector(EntropyPackageViewModelInjector):
 
@@ -329,10 +332,8 @@ class EntropyPackageView:
         treeview.set_fixed_height_mode(True)
         self.view = treeview
         self.view.connect("button-press-event", self.on_view_button_press)
-        #self.view.connect("button-release-event", self.load_menu)
         self.view.connect("enter-notify-event",self.treeview_enter_notify)
         self.view.connect("leave-notify-event",self.treeview_leave_notify)
-        #self.view.connect("button-press-event", self.load_properties_button)
         self.store = self.setupView()
         self.dummyCats = {}
         self.queue = qview.queue
@@ -406,16 +407,28 @@ class EntropyPackageView:
         self.pkgset_remove.set_image(self.img_pkgset_remove)
         self.pkgset_undoremove.set_image(self.img_pkgset_undoremove)
 
+        self.model_injector_rotation = {
+            'package': [NameSortPackageViewModelInjector,
+                NameRevSortPackageViewModelInjector,
+                DownloadSortPackageViewModelInjector,
+                DefaultPackageViewModelInjector],
+            'vote': [VoteSortPackageViewModelInjector,
+                VoteRevSortPackageViewModelInjector],
+            'repository': [RepoSortPackageViewModelInjector],
+        }
+
         # set default model injector
         self.change_model_injector(DefaultPackageViewModelInjector)
 
         # start view refresher
-        t = ParallelTask(self.view_refresher)
-        t.start()
+        # XXX if people won't complain, keep this disabled
+        #t = ParallelTask(self.view_refresher)
+        #t.start()
 
     def change_model_injector(self, injector):
         if not issubclass(injector, EntropyPackageViewModelInjector):
             raise AttributeError("wrong sorter")
+        self.__current_model_injector_class = injector
         self.Injector = injector(self.store, self.Equo, self.etpbase,
             self.dummyCats)
 
@@ -517,13 +530,13 @@ class EntropyPackageView:
         return items
 
     def on_view_button_press(self, widget, event):
-        objs = self.collect_selected_items(widget)
 
         try:
             row, column, x, y = widget.get_path_at_pos(int(event.x),int(event.y))
         except TypeError:
             return True
 
+        objs = self.collect_selected_items(widget)
         col_title = column.get_title()
         if (col_title == self.pkgcolumn_text_rating) and len(objs) < 2:
             self.load_menu(widget,event, objs = objs)
@@ -1183,6 +1196,39 @@ class EntropyPackageView:
         normalCursor(self.main_window)
         self.view.queue_draw()
 
+    def __do_change_sorting_by_column(self, options):
+        current = self.__current_model_injector_class
+        new = options[0]
+        if current in options:
+            try:
+                new = options[options.index(current)+1]
+            except IndexError:
+                new = options[0] # make explicit
+
+        if new == self.__current_model_injector_class:
+            return
+        self.change_model_injector(new)
+        if self.Spritz != None:
+            sorter = self.Spritz.ui.pkgSorter
+            for sort_name, sort_class in self.Spritz.avail_pkg_sorters.items():
+                if sort_class == new:
+                    sort_id = self.Spritz.pkg_sorters_id_inverse.get(sort_name)
+                    sorter.set_active(sort_id)
+                    break
+            self.Spritz.addPackages()
+
+    def on_package_column_clicked(self, widget):
+        options = self.model_injector_rotation['package']
+        self.__do_change_sorting_by_column(options)
+
+    def on_vote_column_clicked(self, widget):
+        options = self.model_injector_rotation['vote']
+        self.__do_change_sorting_by_column(options)
+
+    def on_repository_column_clicked(self, widget):
+        options = self.model_injector_rotation['repository']
+        self.__do_change_sorting_by_column(options)
+
     def setupView( self ):
 
         store = gtk.TreeStore( gobject.TYPE_PYOBJECT )
@@ -1203,7 +1249,8 @@ class EntropyPackageView:
         column1.set_clickable( False )
 
         self.create_text_column( _( "Package" ), 'namedesc' , size = 300,
-            expand = True, set_height = myheight, clickable = True)
+            expand = True, set_height = myheight, clickable = True,
+            click_cb = self.on_package_column_clicked)
 
         # vote event box
         cell2 = CellRendererStars()
@@ -1216,10 +1263,12 @@ class EntropyPackageView:
         column2.set_expand(False)
         column2.set_sort_column_id( -1 )
         column2.set_clickable(True)
+        column2.connect("clicked", self.on_vote_column_clicked)
         self.view.append_column( column2 )
 
         self.create_text_column( _( "Repository" ), 'repoid', size = 130,
-            set_height = myheight, clickable = True)
+            set_height = myheight, clickable = True,
+            click_cb = self.on_repository_column_clicked)
 
         return store
 
@@ -1339,7 +1388,7 @@ class EntropyPackageView:
             pass
 
     def create_text_column( self, hdr, property, size, sortcol = None,
-            expand = False, set_height = 0, clickable = False):
+            expand = False, set_height = 0, clickable = False, click_cb = None):
         """
         Create a TreeViewColumn with text and set
         the sorting properties and add it to the view
@@ -1355,6 +1404,8 @@ class EntropyPackageView:
         column.set_expand(expand)
         column.set_sort_column_id( -1 )
         column.set_clickable(clickable)
+        if callable(click_cb):
+            column.connect("clicked", click_cb)
         self.view.append_column( column )
         return column
 
