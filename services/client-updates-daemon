@@ -56,6 +56,7 @@ from entropy.client.interfaces import Client
 from entropy.transceivers import urlFetcher
 from entropy.const import etpConst
 from entropy.core import SystemSettings as SysSet
+from entropy.misc import ParallelTask
 from entropy.output import TextInterface, nocolor
 nocolor()
 
@@ -76,11 +77,10 @@ for xopt in sys.argv:
             continue
 
 def write_output(*args, **kwargs):
-    message = args[0]
+    message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + args[0]
     global PREVIOUS_PROGRESS
     if PREVIOUS_PROGRESS == message:
         return
-    message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + message
     PREVIOUS_PROGRESS = message
     DAEMON_LOG.write(message)
     DAEMON_LOG.flush()
@@ -112,7 +112,6 @@ class DaemonUrlFetcher(urlFetcher):
             self.daemon_last_avg = myavg
 
 
-
 class Entropy(Client):
 
     def init_singleton(self):
@@ -132,6 +131,7 @@ class UpdatesDaemon(dbus.service.Object):
 
     def __init__(self):
 
+        gobject.threads_init()
         if not entropyTools.is_user_in_entropy_group():
             raise PermissionDenied('insufficient permissions')
         self.__alive = False
@@ -187,7 +187,9 @@ class UpdatesDaemon(dbus.service.Object):
             return self.__alive
         with self.__fetch_mutex:
             self.__trigger_oncall_updater = False
-            self.__run_fetcher()
+            task = ParallelTask(self.__run_fetcher)
+            task.start()
+            #self.__run_fetcher()
         return self.__alive
 
     def quit_service_watchdog(self):
@@ -199,7 +201,9 @@ class UpdatesDaemon(dbus.service.Object):
 
     def run_fetcher(self):
         with self.__fetch_mutex:
-            self.__run_fetcher()
+            task = ParallelTask(self.__run_fetcher)
+            task.start()
+            #self.__run_fetcher()
         return self.__alive
 
     def __run_sync(self, repos, entropy):
@@ -280,7 +284,13 @@ class UpdatesDaemon(dbus.service.Object):
 
             if repos_to_up:
 
-                self.signal_updating()
+                self.do_alert(
+                    _("Repositories to update"),
+                    unicode(repos_to_up),
+                    urgency = 'critical'
+                )
+
+                gobject.timeout_add(0, self.signal_updating)
                 repos = repos_to_up.keys()
                 rc_fetch = self.__run_sync(repos, entropy)
                 if rc_fetch != 0:
@@ -306,10 +316,11 @@ class UpdatesDaemon(dbus.service.Object):
                         _("updates available."),),
                     urgency = 'critical'
                 )
-                self.__system_db_hash = entropy.clientDbconn.database_checksum()
+                self.__system_db_hash = entropy.clientDbconn.database_checksum(
+                    do_order = True, strict = False)
                 self.__updates = update[:]
                 del self.__updates_atoms[:]
-                self.signal_updates()
+                gobject.timeout_add(0, self.signal_updates)
 
             return 0
 
@@ -356,7 +367,8 @@ class UpdatesDaemon(dbus.service.Object):
     def get_updates(self):
 
         entropy = Entropy()
-        curr_hash = entropy.clientDbconn.database_checksum()
+        curr_hash = entropy.clientDbconn.database_checksum(
+            do_order = True, strict = False)
         if curr_hash == self.__system_db_hash:
             return self.__updates
 
