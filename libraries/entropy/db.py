@@ -383,7 +383,7 @@ class LocalRepository:
                 _("valid database path needed"),) )
 
         self.Cacher = EntropyCacher()
-        self.WriteLock = self.threading.Lock()
+        self.__write_mutex = self.threading.Lock()
         self.dbapi2 = dbapi2
         # setup output interface
         self.OutputInterface = OutputInterface
@@ -1353,7 +1353,7 @@ class LocalRepository:
             if manual_dep in etpData['dependencies']: continue
             etpData['dependencies'][manual_dep] = etpConst['spm']['mdepend_id']
 
-        with self.WriteLock:
+        with self.__write_mutex:
 
             self.cursor.execute("""
             INSERT into baseinfo VALUES (%s,?,?,?,?,?,?,?,?,?,?,?)""" % (
@@ -1521,7 +1521,7 @@ class LocalRepository:
                 # store addPackage action
                 self._write_rss_for_removed_package(idpackage)
 
-        with self.WriteLock:
+        with self.__write_mutex:
 
             r_tup = (idpackage,)*20
             self.cursor.executescript("""
@@ -1572,27 +1572,27 @@ class LocalRepository:
             self.commitChanges()
 
     def removeMirrorEntries(self, mirrorname):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM mirrorlinks WHERE mirrorname = (?)
             """,(mirrorname,))
 
     def addMirrors(self, mirrorname, mirrorlist):
-        with self.WriteLock:
+        with self.__write_mutex:
             data = [(mirrorname, x,) for x in mirrorlist]
             self.cursor.executemany("""
             INSERT into mirrorlinks VALUES (?,?)
             """, data)
 
     def addCategory(self, category):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             INSERT into categories VALUES (NULL,?)
             """, (category,))
             return self.cursor.lastrowid
 
     def addProtect(self, protect):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             INSERT into configprotectreference VALUES (NULL,?)
             """, (protect,))
@@ -1600,57 +1600,57 @@ class LocalRepository:
 
 
     def addSource(self, source):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             INSERT into sourcesreference VALUES (NULL,?)
             """, (source,))
             return self.cursor.lastrowid
 
     def addDependency(self, dependency):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('INSERT into dependenciesreference VALUES (NULL,?)', (dependency,))
             return self.cursor.lastrowid
 
     def addKeyword(self, keyword):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('INSERT into keywordsreference VALUES (NULL,?)', (keyword,))
             return self.cursor.lastrowid
 
     def addUseflag(self, useflag):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('INSERT into useflagsreference VALUES (NULL,?)', (useflag,))
             return self.cursor.lastrowid
 
     def addEclass(self, eclass):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('INSERT into eclassesreference VALUES (NULL,?)', (eclass,))
             return self.cursor.lastrowid
 
     def addNeeded(self, needed):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('INSERT into neededreference VALUES (NULL,?)', (needed,))
             return self.cursor.lastrowid
 
     def addLicense(self, pkglicense):
         if not self.entropyTools.is_valid_string(pkglicense):
             pkglicense = ' ' # workaround for broken license entries
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('INSERT into licenses VALUES (NULL,?)', (pkglicense,))
             return self.cursor.lastrowid
 
     def addCompileFlags(self, chost, cflags, cxxflags):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('INSERT into flags VALUES (NULL,?,?,?)', (chost,cflags,cxxflags,))
             return self.cursor.lastrowid
 
     def setSystemPackage(self, idpackage, do_commit = True):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('INSERT into systempackages VALUES (?)', (idpackage,))
             if do_commit:
                 self.commitChanges()
 
     def setInjected(self, idpackage, do_commit = True):
-        with self.WriteLock:
+        with self.__write_mutex:
             if not self.isInjected(idpackage):
                 self.cursor.execute('INSERT into injected VALUES (?)', (idpackage,))
             if do_commit:
@@ -1658,17 +1658,17 @@ class LocalRepository:
 
     # date expressed the unix way
     def setDateCreation(self, idpackage, date):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('UPDATE extrainfo SET datecreation = (?) WHERE idpackage = (?)', (str(date), idpackage,))
             self.commitChanges()
 
     def setDigest(self, idpackage, digest):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('UPDATE extrainfo SET digest = (?) WHERE idpackage = (?)', (digest, idpackage,))
             self.commitChanges()
 
     def setSignatures(self, idpackage, signatures):
-        with self.WriteLock:
+        with self.__write_mutex:
             sha1, sha256, sha512 = signatures['sha1'], signatures['sha256'], \
                 signatures['sha512']
             self.cursor.execute("""
@@ -1677,7 +1677,7 @@ class LocalRepository:
             """, (sha1, sha256, sha512, idpackage))
 
     def setDownloadURL(self, idpackage, url):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('UPDATE extrainfo SET download = (?) WHERE idpackage = (?)', (url, idpackage,))
             self.commitChanges()
 
@@ -1687,12 +1687,12 @@ class LocalRepository:
         if (catid == -1):
             # create category
             catid = self.addCategory(category)
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('UPDATE baseinfo SET idcategory = (?) WHERE idpackage = (?)', (catid, idpackage,))
             self.commitChanges()
 
     def setCategoryDescription(self, category, description_data):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('DELETE FROM categoriesdescription WHERE category = (?)', (category,))
             for locale in description_data:
                 mydesc = description_data[locale]
@@ -1702,33 +1702,33 @@ class LocalRepository:
             self.commitChanges()
 
     def setName(self, idpackage, name):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('UPDATE baseinfo SET name = (?) WHERE idpackage = (?)', (name, idpackage,))
             self.commitChanges()
 
     def setDependency(self, iddependency, dependency):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('UPDATE dependenciesreference SET dependency = (?) WHERE iddependency = (?)', (dependency, iddependency,))
             self.commitChanges()
 
     def setAtom(self, idpackage, atom):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('UPDATE baseinfo SET atom = (?) WHERE idpackage = (?)', (atom, idpackage,))
             self.commitChanges()
 
     def setSlot(self, idpackage, slot):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('UPDATE baseinfo SET slot = (?) WHERE idpackage = (?)', (slot, idpackage,))
             self.commitChanges()
 
     def removeLicensedata(self, license_name):
         if not self.doesTableExist("licensedata"):
             return
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('DELETE FROM licensedata WHERE licensename = (?)', (license_name,))
 
     def removeDependencies(self, idpackage):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("DELETE FROM dependencies WHERE idpackage = (?)", (idpackage,))
             self.commitChanges()
 
@@ -1752,7 +1752,7 @@ class LocalRepository:
 
         # do not place inside the with statement, otherwise there'll be an obvious lockup
         deps = [x for x in map(mymf, depdata) if type(x) != int]
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.executemany('INSERT into dependencies VALUES (?,?,?)', deps)
 
     def insertManualDependencies(self, idpackage, manual_deps):
@@ -1762,13 +1762,13 @@ class LocalRepository:
         return self.insertDependencies(idpackage, mydict)
 
     def removeContent(self, idpackage):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("DELETE FROM content WHERE idpackage = (?)", (idpackage,))
             self.commitChanges()
 
     def insertContent(self, idpackage, content, already_formatted = False):
 
-        with self.WriteLock:
+        with self.__write_mutex:
             if already_formatted:
                 self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',((idpackage, x, y,) for a, x, y in content))
                 return
@@ -1777,30 +1777,30 @@ class LocalRepository:
             self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',map(my_cmap, content))
 
     def insertAutomergefiles(self, idpackage, automerge_data):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.executemany('INSERT INTO automergefiles VALUES (?,?,?)',
                 ((idpackage, x, y,) for x, y in automerge_data))
 
     def removeAutomergefiles(self, idpackage):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('DELETE FROM automergefiles WHERE idpackage = (?)', (idpackage,))
 
     def removeSignatures(self, idpackage):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('DELETE FROM packagesignatures WHERE idpackage = (?)', (idpackage,))
 
     def removeSpmPhases(self, idpackage):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('DELETE FROM packagespmphases WHERE idpackage = (?)', (idpackage,))
 
     def insertChangelog(self, category, name, changelog_txt):
-        with self.WriteLock:
+        with self.__write_mutex:
             mytxt = changelog_txt.encode('raw_unicode_escape')
             self.cursor.execute('DELETE FROM packagechangelogs WHERE category = (?) AND name = (?)', (category, name,))
             self.cursor.execute('INSERT INTO packagechangelogs VALUES (?,?,?)', (category, name, buffer(mytxt),))
 
     def removeChangelog(self, category, name):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('DELETE FROM packagechangelogs WHERE category = (?) AND name = (?)', (category, name,))
 
     def insertLicenses(self, licenses_data):
@@ -1820,14 +1820,14 @@ class LocalRepository:
                     lic_data = lic_data.encode('utf-8')
             return (mylicense, buffer(lic_data), 0,)
 
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.executemany('INSERT into licensedata VALUES (?,?,?)',map(my_mm, list(set(filter(my_mf, mylicenses)))))
 
     def insertConfigProtect(self, idpackage, idprotect, mask = False):
 
         mytable = 'configprotect'
         if mask: mytable += 'mask'
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('INSERT into %s VALUES (?,?)' % (mytable,), (idpackage, idprotect,))
 
     def insertMirrors(self, mirrors):
@@ -1848,7 +1848,7 @@ class LocalRepository:
                 idkeyword = self.addKeyword(key)
             mydata.add((idpackage, idkeyword,))
 
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.executemany('INSERT into keywords VALUES (?,?)', mydata)
 
     def insertUseflags(self, idpackage, useflags):
@@ -1861,11 +1861,11 @@ class LocalRepository:
                 iduseflag = self.addUseflag(flag)
             mydata.add((idpackage, iduseflag,))
 
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.executemany('INSERT into useflags VALUES (?,?)', mydata)
 
     def insertSignatures(self, idpackage, signatures):
-        with self.WriteLock:
+        with self.__write_mutex:
             sha1, sha256, sha512 = signatures['sha1'], signatures['sha256'], \
                 signatures['sha512']
             self.cursor.execute("""
@@ -1873,7 +1873,7 @@ class LocalRepository:
             """, (idpackage, sha1, sha256, sha512))
 
     def insertSpmPhases(self, idpackage, phases):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             INSERT INTO packagespmphases VALUES (?,?)
             """, (idpackage,phases,))
@@ -1890,7 +1890,7 @@ class LocalRepository:
                 idsource = self.addSource(source)
             mydata.add((idpackage, idsource,))
 
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.executemany('INSERT into sources VALUES (?,?)', mydata)
 
     def insertConflicts(self, idpackage, conflicts):
@@ -1899,7 +1899,7 @@ class LocalRepository:
             for conflict in conflicts:
                 yield (idpackage, conflict,)
 
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.executemany('INSERT into conflicts VALUES (?,?)', myiter())
 
     def insertMessages(self, idpackage, messages):
@@ -1908,7 +1908,7 @@ class LocalRepository:
             for message in messages:
                 yield (idpackage, message,)
 
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.executemany('INSERT into messages VALUES (?,?)', myiter())
 
     def insertProvide(self, idpackage, provides):
@@ -1917,7 +1917,7 @@ class LocalRepository:
             for atom in provides:
                 yield (idpackage, atom,)
 
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.executemany('INSERT into provide VALUES (?,?)', myiter())
 
     def insertNeeded(self, idpackage, neededs):
@@ -1930,7 +1930,7 @@ class LocalRepository:
                 idneeded = self.addNeeded(needed)
             mydata.add((idpackage, idneeded, elfclass))
 
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.executemany('INSERT into needed VALUES (?,?,?)', mydata)
 
     def insertEclasses(self, idpackage, eclasses):
@@ -1943,15 +1943,15 @@ class LocalRepository:
                 idclass = self.addEclass(eclass)
             mydata.add((idpackage, idclass,))
 
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.executemany('INSERT into eclasses VALUES (?,?)', mydata)
 
     def insertOnDiskSize(self, idpackage, mysize):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('INSERT into sizes VALUES (?,?)', (idpackage, mysize,))
 
     def insertTrigger(self, idpackage, trigger):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('INSERT into triggers VALUES (?,?)', (idpackage, buffer(trigger),))
 
     def insertPortageCounter(self, idpackage, counter, branch, injected):
@@ -1962,7 +1962,7 @@ class LocalRepository:
                 # special cases
                 counter = self.getNewNegativeCounter()
 
-            with self.WriteLock:
+            with self.__write_mutex:
                 try:
                     self.cursor.execute(
                     'INSERT into counters VALUES '
@@ -2002,7 +2002,7 @@ class LocalRepository:
     def insertCounter(self, idpackage, counter, branch = None):
         if not branch: branch = self.db_branch
         if not branch: branch = self.SystemSettings['repositories']['branch']
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM counters 
             WHERE (counter = (?) OR 
@@ -2012,7 +2012,7 @@ class LocalRepository:
             self.commitChanges()
 
     def setTrashedCounter(self, counter):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('DELETE FROM trashedcounters WHERE counter = (?)', (counter,))
             self.cursor.execute('INSERT INTO trashedcounters VALUES (?)', (counter,))
             self.commitChanges()
@@ -2026,7 +2026,7 @@ class LocalRepository:
             branchstring = ', branch = (?)'
             insertdata.insert(1, branch)
 
-        with self.WriteLock:
+        with self.__write_mutex:
             try:
                 self.cursor.execute('UPDATE counters SET counter = (?) '+branchstring+' WHERE idpackage = (?)', insertdata)
                 self.commitChanges()
@@ -2069,37 +2069,37 @@ class LocalRepository:
         self.cleanupChangelogs()
 
     def cleanupUseflags(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM useflagsreference 
             WHERE idflag NOT IN (SELECT idflag FROM useflags)""")
 
     def cleanupSources(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM sourcesreference 
             WHERE idsource NOT IN (SELECT idsource FROM sources)""")
 
     def cleanupEclasses(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM eclassesreference 
             WHERE idclass NOT IN (SELECT idclass FROM eclasses)""")
 
     def cleanupNeeded(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM neededreference 
             WHERE idneeded NOT IN (SELECT idneeded FROM needed)""")
 
     def cleanupDependencies(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM dependenciesreference 
             WHERE iddependency NOT IN (SELECT iddependency FROM dependencies)""")
 
     def cleanupChangelogs(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM packagechangelogs 
             WHERE category || "/" || name NOT IN 
@@ -2439,31 +2439,31 @@ class LocalRepository:
 
     # mainly used to restore a previous table, used by reagent in --initialize
     def bumpTreeUpdatesActions(self, updates):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('DELETE FROM treeupdatesactions')
             self.cursor.executemany('INSERT INTO treeupdatesactions VALUES (?,?,?,?,?)', updates)
             self.commitChanges()
 
     def removeTreeUpdatesActions(self, repository):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('DELETE FROM treeupdatesactions WHERE repository = (?)', (repository,))
             self.commitChanges()
 
     def insertTreeUpdatesActions(self, updates, repository):
-        with self.WriteLock:
+        with self.__write_mutex:
             myupdates = [[repository]+list(x) for x in updates]
             self.cursor.executemany('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', myupdates)
             self.commitChanges()
 
     def setRepositoryUpdatesDigest(self, repository, digest):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('DELETE FROM treeupdates where repository = (?)', (repository,)) # doing it for safety
             self.cursor.execute('INSERT INTO treeupdates VALUES (?,?)', (repository, digest,))
 
     def addRepositoryUpdatesActions(self, repository, actions, branch):
 
         mytime = str(self.entropyTools.get_current_unix_time())
-        with self.WriteLock:
+        with self.__write_mutex:
             myupdates = [
                 (repository, x, branch, mytime,) for x in actions \
                 if not self.doesTreeupdatesActionExist(repository, x, branch)
@@ -2492,7 +2492,7 @@ class LocalRepository:
                 except (UnicodeDecodeError, UnicodeEncodeError,):
                     continue
 
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.executemany('INSERT INTO packagesets VALUES (?,?)', mysets)
 
     def retrievePackageSets(self):
@@ -3217,7 +3217,7 @@ class LocalRepository:
             return
         if self.isLicenseAccepted(license_name):
             return
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('INSERT INTO licenses_accepted VALUES (?)', (license_name,))
             self.commitChanges()
 
@@ -3735,7 +3735,7 @@ class LocalRepository:
         if my_idpackage != -1: return False
 
         # otherwise, update the old one (set the new branch)
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             UPDATE baseinfo SET branch = (?) 
             WHERE idpackage = (?)""", (tobranch, idpackage,))
@@ -3813,7 +3813,7 @@ class LocalRepository:
         return added_ids, removed_ids
 
     def uniformBranch(self, branch):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('UPDATE baseinfo SET branch = (?)', (branch,))
             self.commitChanges()
             self.clearCache()
@@ -4057,19 +4057,19 @@ class LocalRepository:
 #
 
     def updateInstalledTableSource(self, idpackage, source):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             UPDATE installedtable SET source = (?) WHERE idpackage = (?)
             """, (source, idpackage,))
 
     def addPackageToInstalledTable(self, idpackage, repoid, source = 0):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('INSERT into installedtable VALUES (?,?,?)',
                 (idpackage, repoid, source,))
             # self.commitChanges()
 
     def retrievePackageFromInstalledTable(self, idpackage):
-        with self.WriteLock:
+        with self.__write_mutex:
             try:
                 self.cursor.execute("""
                 SELECT repositoryname FROM installedtable 
@@ -4079,13 +4079,13 @@ class LocalRepository:
                 return 'Not available'
 
     def removePackageFromInstalledTable(self, idpackage):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM installedtable
             WHERE idpackage = (?)""", (idpackage,))
 
     def removePackageFromDependsTable(self, idpackage):
-        with self.WriteLock:
+        with self.__write_mutex:
             try:
                 self.cursor.execute('DELETE FROM dependstable WHERE idpackage = (?)', (idpackage,))
                 return 0
@@ -4093,7 +4093,7 @@ class LocalRepository:
                 return 1 # need reinit
 
     def createDependsTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.executescript("""
                 DROP TABLE IF EXISTS dependstable;
                 CREATE TABLE dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );
@@ -4104,7 +4104,7 @@ class LocalRepository:
             self.commitChanges()
 
     def sanitizeDependsTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('DELETE FROM dependstable where iddependency = -1')
             self.commitChanges()
 
@@ -4123,12 +4123,12 @@ class LocalRepository:
         return True
 
     def createXpakTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('CREATE TABLE xpakdata ( idpackage INTEGER PRIMARY KEY, data BLOB );')
             self.commitChanges()
 
     def storeXpakMetadata(self, idpackage, blob):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('INSERT into xpakdata VALUES (?,?)', (int(idpackage), buffer(blob),))
             self.commitChanges()
 
@@ -4143,13 +4143,13 @@ class LocalRepository:
             return ""
 
     def createCountersTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("CREATE TABLE IF NOT EXISTS counters ( counter INTEGER, idpackage INTEGER PRIMARY KEY, branch VARCHAR );")
 
     def dropAllIndexes(self):
         self.cursor.execute('SELECT name FROM SQLITE_MASTER WHERE type = "index"')
         indexes = self.fetchall2set(self.cursor.fetchall())
-        with self.WriteLock:
+        with self.__write_mutex:
             for index in indexes:
                 if not index.startswith("sqlite"):
                     self.cursor.execute('DROP INDEX IF EXISTS %s' % (index,))
@@ -4191,7 +4191,7 @@ class LocalRepository:
 
     def createPackagesetsIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 try:
                     self.cursor.execute('CREATE INDEX IF NOT EXISTS packagesetsindex ON packagesets ( setname )')
                     self.commitChanges()
@@ -4200,7 +4200,7 @@ class LocalRepository:
 
     def createAutomergefilesIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 try:
                     self.cursor.execute("""
                         CREATE INDEX IF NOT EXISTS automergefiles_idpackage 
@@ -4215,7 +4215,7 @@ class LocalRepository:
 
     def createNeededIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.executescript("""
                     CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( library );
                     CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed ( idneeded );
@@ -4225,17 +4225,17 @@ class LocalRepository:
 
     def createMessagesIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS messagesindex ON messages ( idpackage )')
 
     def createCompileFlagsIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS flagsindex ON flags ( chost,cflags,cxxflags )')
 
     def createUseflagsIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.executescript("""
                     CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idpackage ON useflags ( idpackage );
                     CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idflag ON useflags ( idflag );
@@ -4244,7 +4244,7 @@ class LocalRepository:
 
     def createContentIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.executescript("""
                     CREATE INDEX IF NOT EXISTS contentindex_couple ON content ( idpackage );
                     CREATE INDEX IF NOT EXISTS contentindex_file ON content ( file );
@@ -4252,12 +4252,12 @@ class LocalRepository:
 
     def createConfigProtectReferenceIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS configprotectreferenceindex ON configprotectreference ( protect )')
 
     def createBaseinfoIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.executescript("""
                     CREATE INDEX IF NOT EXISTS baseindex_atom ON baseinfo ( atom );
                     CREATE INDEX IF NOT EXISTS baseindex_branch_name ON baseinfo ( name,branch );
@@ -4269,22 +4269,22 @@ class LocalRepository:
         if self.indexing:
             if not self.doesTableExist("licensedata"):
                 return
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS licensedataindex ON licensedata ( licensename )')
 
     def createLicensesIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS licensesindex ON licenses ( license )')
 
     def createCategoriesIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS categoriesindex_category ON categories ( category )')
 
     def createKeywordsIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.executescript("""
                     CREATE INDEX IF NOT EXISTS keywordsreferenceindex ON keywordsreference ( keywordname );
                     CREATE INDEX IF NOT EXISTS keywordsindex_idpackage ON keywords ( idpackage );
@@ -4293,7 +4293,7 @@ class LocalRepository:
 
     def createDependenciesIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.executescript("""
                     CREATE INDEX IF NOT EXISTS dependenciesindex_idpackage ON dependencies ( idpackage );
                     CREATE INDEX IF NOT EXISTS dependenciesindex_iddependency ON dependencies ( iddependency );
@@ -4302,7 +4302,7 @@ class LocalRepository:
 
     def createCountersIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.executescript("""
                     CREATE INDEX IF NOT EXISTS countersindex_idpackage ON counters ( idpackage );
                     CREATE INDEX IF NOT EXISTS countersindex_counter ON counters ( counter );
@@ -4310,7 +4310,7 @@ class LocalRepository:
 
     def createSourcesIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.executescript("""
                     CREATE INDEX IF NOT EXISTS sourcesindex_idpackage ON sources ( idpackage );
                     CREATE INDEX IF NOT EXISTS sourcesindex_idsource ON sources ( idsource );
@@ -4319,7 +4319,7 @@ class LocalRepository:
 
     def createProvideIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.executescript("""
                     CREATE INDEX IF NOT EXISTS provideindex_idpackage ON provide ( idpackage );
                     CREATE INDEX IF NOT EXISTS provideindex_atom ON provide ( atom );
@@ -4327,7 +4327,7 @@ class LocalRepository:
 
     def createConflictsIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.executescript("""
                     CREATE INDEX IF NOT EXISTS conflictsindex_idpackage ON conflicts ( idpackage );
                     CREATE INDEX IF NOT EXISTS conflictsindex_atom ON conflicts ( conflict );
@@ -4335,13 +4335,13 @@ class LocalRepository:
 
     def createExtrainfoIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( description )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex_pkgindex ON extrainfo ( idpackage )')
 
     def createEclassesIndex(self):
         if self.indexing:
-            with self.WriteLock:
+            with self.__write_mutex:
                 self.cursor.executescript("""
                     CREATE INDEX IF NOT EXISTS eclassesindex_idpackage ON eclasses ( idpackage );
                     CREATE INDEX IF NOT EXISTS eclassesindex_idclass ON eclasses ( idclass );
@@ -4379,7 +4379,7 @@ class LocalRepository:
                         )
                     continue
                 # insert id+counter
-                with self.WriteLock:
+                with self.__write_mutex:
                     try:
                         self.cursor.execute(
                                 'INSERT into counters VALUES '
@@ -4406,17 +4406,17 @@ class LocalRepository:
         if not self.doesTableExist("treeupdates"):
             self.createTreeupdatesTable()
         # treeupdates
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("DELETE FROM treeupdates WHERE repository = (?)", (repository,))
             self.commitChanges()
 
     def resetTreeupdatesDigests(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('UPDATE treeupdates SET digest = "-1"')
             self.commitChanges()
 
     def migrateCountersTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self._migrateCountersTable()
 
     def _migrateCountersTable(self):
@@ -4430,26 +4430,26 @@ class LocalRepository:
         self.commitChanges()
 
     def createInstalledTableSource(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('ALTER TABLE installedtable ADD source INTEGER;')
             self.cursor.execute("""
             UPDATE installedtable SET source = (?)
             """, (etpConst['install_sources']['unknown'],))
 
     def createPackagechangelogsTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('CREATE TABLE packagechangelogs ( category VARCHAR, name VARCHAR, changelog BLOB, PRIMARY KEY (category, name));')
 
     def createAutomergefilesTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('CREATE TABLE automergefiles ( idpackage INTEGER, configfile VARCHAR, md5 VARCHAR );')
 
     def createPackagesignaturesTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('CREATE TABLE packagesignatures ( idpackage INTEGER PRIMARY KEY, sha1 VARCHAR, sha256 VARCHAR, sha512 VARCHAR );')
 
     def createPackagespmphases(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute("""
                 CREATE TABLE packagespmphases (
                     idpackage INTEGER PRIMARY KEY,
@@ -4458,36 +4458,36 @@ class LocalRepository:
             """)
 
     def createPackagesetsTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('CREATE TABLE packagesets ( setname VARCHAR, dependency VARCHAR );')
 
     def createCategoriesdescriptionTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('CREATE TABLE categoriesdescription ( category VARCHAR, locale VARCHAR, description VARCHAR );')
 
     def createTreeupdatesTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('CREATE TABLE treeupdates ( repository VARCHAR PRIMARY KEY, digest VARCHAR );')
 
     def createLicensedataTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('CREATE TABLE licensedata ( licensename VARCHAR UNIQUE, text BLOB, compressed INTEGER );')
 
     def createLicensesAcceptedTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('CREATE TABLE licenses_accepted ( licensename VARCHAR UNIQUE );')
 
     def createTrashedcountersTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('CREATE TABLE trashedcounters ( counter INTEGER );')
 
     def createInstalledTable(self):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('DROP TABLE IF EXISTS installedtable;')
             self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER PRIMARY KEY, repositoryname VARCHAR, source INTEGER );')
 
     def addDependsRelationToDependsTable(self, iterable):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.executemany('INSERT into dependstable VALUES (?,?)', iterable)
             if (self.entropyTools.is_user_in_entropy_group()) and \
                 (self.dbname.startswith(etpConst['serverdbid'])):
@@ -4530,7 +4530,7 @@ class LocalRepository:
         self.sanitizeDependsTable()
 
     def moveCountersToBranch(self, to_branch):
-        with self.WriteLock:
+        with self.__write_mutex:
             self.cursor.execute('UPDATE counters SET branch = (?)', to_branch)
             self.commitChanges()
             self.clearCache()
