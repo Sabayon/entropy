@@ -980,6 +980,7 @@ class RepositoryManagerMenu(MenuSkel):
         def do_ok():
             okDialog(self.sm_ui.repositoryManager, unicode(e),
                 title = _("Communication error"))
+            return False
         gobject.idle_add(do_ok)
 
     def get_available_repositories(self):
@@ -1027,6 +1028,7 @@ class RepositoryManagerMenu(MenuSkel):
                 if not self.repos_loaded:
                     self.repos_loaded = True
                     self.uiLock(False)
+                return False
 
             gobject.idle_add(task, repo_info)
 
@@ -1054,6 +1056,7 @@ class RepositoryManagerMenu(MenuSkel):
             gobject.idle_add(self.fill_queue_view, queue)
 
     def fill_queue_view(self, queue):
+
         self.QueueStore.clear()
         keys = queue.keys()
 
@@ -1099,6 +1102,8 @@ class RepositoryManagerMenu(MenuSkel):
                 item['from'] = "errored"
                 self.QueueStore.append((item,item['queue_ts'],))
 
+        return False
+
     def update_pinboard_view(self, force = False):
 
         with self.BufferLock:
@@ -1115,6 +1120,7 @@ class RepositoryManagerMenu(MenuSkel):
             def task(pindata):
                 self.fill_pinboard_view(pindata)
                 self.PinboardData = pindata.copy()
+                return False
             gobject.idle_add(task, pindata)
 
     def fill_pinboard_view(self, pinboard_data):
@@ -1171,6 +1177,8 @@ class RepositoryManagerMenu(MenuSkel):
                 mytxt.append(my)
 
             for txt in mytxt: self.std_output.write(txt)
+
+        return False
 
     def load_queue_info_menu(self, obj):
         my = SmQueueMenu(self.window)
@@ -1335,6 +1343,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.show_data_view()
         self.debug_print("glsa_data_view","done unmasking widgets")
         self.debug_print("glsa_data_view","exit")
+        return False
 
     def retrieve_entropy_idpackage_data_and_show(self, idpackage, repoid):
 
@@ -1488,6 +1497,7 @@ class RepositoryManagerMenu(MenuSkel):
             def reload_function():
                 self.on_repoManagerInstalledPackages_clicked(None,
                     categories = categories, world = world)
+                return False
             gobject.idle_add(self.categories_updates_data_view, data,
                 categories, True, reload_function)
 
@@ -1881,7 +1891,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         if reload_func == None:
             def reload_func():
-                pass
+                return False
 
         with self.BufferLock:
             try:
@@ -1906,7 +1916,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         if reload_func == None:
             def reload_func():
-                pass
+                return False
 
         with self.BufferLock:
             try:
@@ -1930,7 +1940,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         if reload_func == None:
             def reload_func():
-                pass
+                return False
 
         with self.BufferLock:
             try:
@@ -2159,6 +2169,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.fill_mirror_updates_view(repo_data)
         self.set_notebook_page(self.notebook_pages['data'])
         self.show_data_view()
+        return False
 
     def entropy_database_updates_data_view(self, data):
 
@@ -2294,6 +2305,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.fill_db_updates_view(data)
         self.set_notebook_page(self.notebook_pages['data'])
         self.show_data_view()
+        return False
 
 
     def fill_db_updates_view(self, data):
@@ -2605,6 +2617,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         self.set_notebook_page(self.notebook_pages['data'])
         self.show_data_view()
+        return False
 
 
     def categories_updates_data_view(self, data, categories, expand = False, reload_function = None):
@@ -2612,6 +2625,7 @@ class RepositoryManagerMenu(MenuSkel):
         if reload_function == None:
             def reload_function():
                 self.on_repoManagerCategoryUpdButton_clicked(None, categories = categories, expand = True)
+                return False
 
         self.clear_data_view()
         self.show_data_view_buttons_cat('categories_updates')
@@ -2696,6 +2710,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         self.set_notebook_page(self.notebook_pages['data'])
         self.show_data_view()
+        return False
 
     def on_repoManagerQueueDown_clicked(self, widget):
 
@@ -3001,8 +3016,10 @@ class RepositoryManagerMenu(MenuSkel):
         self.set_notebook_page(self.notebook_pages['data'])
         if data['atoms'] and data['use']:
             if parallel:
-                gobject.idle_add(self.run_enable_uses_for_atoms,
-                    data['atoms'], data['use'], load_view)
+                def do_add():
+                    self.run_enable_uses_for_atoms(data['atoms'], data['use'], load_view)
+                    return False
+                gobject.idle_add(do_add)
             else:
                 return self.run_enable_uses_for_atoms(data['atoms'], data['use'], load_view)
 
@@ -3012,8 +3029,10 @@ class RepositoryManagerMenu(MenuSkel):
         self.set_notebook_page(self.notebook_pages['data'])
         if data['atoms'] and data['use']:
             if parallel:
-                gobject.idle_add(self.run_disable_uses_for_atoms,
-                    data['atoms'], data['use'], load_view)
+                def do_remove():
+                    self.run_disable_uses_for_atoms(data['atoms'], data['use'], load_view)
+                    return False
+                gobject.idle_add(do_remove)
             else:
                 return self.run_disable_uses_for_atoms(data['atoms'], data['use'], load_view)
 

@@ -112,6 +112,7 @@ class SpritzProgress:
             self.ui.progressBox.show()
             self.set_page_func( 'output' )
             self.lastFrac = -1
+            return False
         gobject.idle_add(run)
 
     def reset_progress( self ):
@@ -119,6 +120,7 @@ class SpritzProgress:
             self.lastFrac = -1
             self.ui.progressBar.set_fraction( 0 )
             self.ui.progressBar.set_text(" ")
+            return False
         gobject.idle_add(run)
 
     def hide( self, clean=False ):
@@ -130,11 +132,13 @@ class SpritzProgress:
                 self.ui.progressExtraLabel.set_text( "" )
                 self.ui.progressBar.set_fraction( 0 )
                 self.ui.progressBar.set_text( " " )
+            return False
         gobject.idle_add(run)
 
     def setTotal( self, now, total ):
         def run(now, total):
             self.total.setProgress( now, total )
+            return False
         gobject.idle_add(run, now, total)
 
     def set_progress( self, frac, text=None ):
@@ -149,12 +153,13 @@ class SpritzProgress:
                 self.ui.progressBar.set_text( text )
             self.lastFrac = frac
             self.gtk_loop()
-
+            return False
         gobject.idle_add(run, frac, text)
 
     def set_text(self, text):
         def run(text):
             self.ui.progressBar.set_text( text )
+            return False
         gobject.idle_add(run, text)
 
     def set_mainLabel( self, text ):
@@ -162,6 +167,7 @@ class SpritzProgress:
             self.ui.progressMainLabel.set_markup( "<b>%s</b>" % (text,) )
             self.ui.progressSubLabel.set_text( "" )
             self.ui.progressExtraLabel.set_text( "" )
+            return False
         gobject.idle_add(run, text)
 
     def set_subLabel( self, text ):
@@ -171,6 +177,7 @@ class SpritzProgress:
                 mytxt = mytxt[:80].strip()+"..."
             self.ui.progressSubLabel.set_markup( "%s" % (cleanMarkupString(mytxt),) )
             self.ui.progressExtraLabel.set_text( "" )
+            return False
         gobject.idle_add(run, text)
 
     def set_extraLabel( self, text ):
@@ -180,6 +187,7 @@ class SpritzProgress:
                 mytxt = mytxt[:80].strip()+"..."
             self.ui.progressExtraLabel.set_markup( "<span size=\"small\">%s</span>" % cleanMarkupString(mytxt) )
             self.lastFrac = -1
+            return False
         gobject.idle_add(run, text)
 
     def gtk_loop(self):
