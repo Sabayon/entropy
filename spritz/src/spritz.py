@@ -2274,11 +2274,11 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
                             selected_by_user = selected_by_user)
                     except QueueError:
                         self.my_inst_abort = True
-                        e, i = 1 ,None
+                        e, i = 1, None
                     except:
                         entropy.tools.print_traceback()
                         e, i = 1, None
-                    self.my_inst_errors = (e,i,)
+                    self.my_inst_errors = (e, i,)
 
                 t = ParallelTask(run_tha_bstrd)
                 t.start()
