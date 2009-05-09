@@ -80,6 +80,7 @@ def write_output(*args, **kwargs):
     global PREVIOUS_PROGRESS
     if PREVIOUS_PROGRESS == message:
         return
+    message = time.strftime('[%H:%M:%S %d/%m/%Y %Z]') + " " + message
     PREVIOUS_PROGRESS = message
     DAEMON_LOG.write(message)
     DAEMON_LOG.flush()
@@ -143,6 +144,7 @@ class UpdatesDaemon(dbus.service.Object):
         self.__fetch_mutex = Lock()
         self.__updates = []
         self.__updates_atoms = []
+        self.__system_db_hash = None
 
         # start dbus service
         object_path = "/notifier"
@@ -263,13 +265,12 @@ class UpdatesDaemon(dbus.service.Object):
 
             rc_fetch = 0
             entropy = Entropy()
+            entropy.SystemSettings.clear()
             # entropy resources locked?
             locked = entropy._resources_run_check_lock()
             if locked:
                 if DAEMON_DEBUG:
                     write_output("__run_fetcher: resources locked, skipping")
-                entropy.destroy()
-                del entropy
                 return rc_fetch
 
             if DAEMON_DEBUG:
@@ -279,6 +280,7 @@ class UpdatesDaemon(dbus.service.Object):
 
             if repos_to_up:
 
+                self.signal_updating()
                 repos = repos_to_up.keys()
                 rc_fetch = self.__run_sync(repos, entropy)
                 if rc_fetch != 0:
@@ -294,8 +296,6 @@ class UpdatesDaemon(dbus.service.Object):
                 entropyTools.print_traceback(f = DAEMON_LOG)
                 msg = "%s: %s" % (_("Updates: error"), err,)
                 self.do_alert(_("Updates: error"), msg)
-                entropy.destroy()
-                del entropy
                 return 1
 
             if update:
@@ -306,12 +306,11 @@ class UpdatesDaemon(dbus.service.Object):
                         _("updates available."),),
                     urgency = 'critical'
                 )
+                self.__system_db_hash = entropy.clientDbconn.database_checksum()
                 self.__updates = update[:]
                 del self.__updates_atoms[:]
                 self.signal_updates()
 
-            entropy.destroy()
-            del entropy
             return 0
 
     # compare repos status for updates
@@ -355,6 +354,22 @@ class UpdatesDaemon(dbus.service.Object):
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = 'av')
     def get_updates(self):
+
+        entropy = Entropy()
+        curr_hash = entropy.clientDbconn.database_checksum()
+        if curr_hash == self.__system_db_hash:
+            return self.__updates
+
+        try:
+            update, remove, fine = entropy.calculate_world_updates()
+        except Exception, err:
+            entropyTools.print_traceback(f = DAEMON_LOG)
+            msg = "get_updates: %s: %s" % (_("Updates: error"), err,)
+            self.do_alert(_("Updates: error"), msg)
+            return self.__updates
+
+        self.__updates = update[:]
+        self.__system_db_hash = curr_hash
         return self.__updates
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
@@ -391,6 +406,13 @@ class UpdatesDaemon(dbus.service.Object):
     def signal_updates(self):
         if DAEMON_DEBUG:
             write_output("signal_updates: updates available!")
+
+    # signal sent when daemon is updating the repositories
+    @dbus.service.signal(dbus_interface = 'org.entropy.Client',
+        signature = '')
+    def signal_updating(self):
+        if DAEMON_DEBUG:
+            write_output("signal_updating: updating repos!")
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal.SIG_DFL)
