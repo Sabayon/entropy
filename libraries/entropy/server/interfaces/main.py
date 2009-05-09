@@ -1351,16 +1351,14 @@ class Server(Singleton,TextInterface):
 
                     pull_deps_matches.append(my_dep_match)
                     self.updateProgress(
-                        "[%s=>%s|%s|%s] %s" % (
-                            darkgreen(repo),
-                            darkred(to_repo),
+                        "[%s|%s] %s" % (
                             brown(branch),
                             bold(_("dependency")),
                             purple(dbconn.retrieveAtom(dep_idpackage)),
                         ),
                         importance = 0,
                         type = "info",
-                        header = darkgreen("    << ")
+                        header = purple("    >> ")
                     )
 
         if pull_deps:
