@@ -420,29 +420,12 @@ class EntropyPackageView:
         # set default model injector
         self.change_model_injector(DefaultPackageViewModelInjector)
 
-        # start view refresher
-        # XXX if people won't complain, keep this disabled
-        #t = ParallelTask(self.view_refresher)
-        #t.start()
-
     def change_model_injector(self, injector):
         if not issubclass(injector, EntropyPackageViewModelInjector):
             raise AttributeError("wrong sorter")
         self.__current_model_injector_class = injector
         self.Injector = injector(self.store, self.Equo, self.etpbase,
             self.dummyCats)
-
-    def view_refresher(self):
-        def do_refresh():
-            self.view.queue_draw()
-            self.do_refresh_view = False
-        try:
-            while 1:
-                if self.do_refresh_view:
-                    gobject.timeout_add(0, do_refresh)
-                time.sleep(0.1)
-        except:
-            pass
 
     def treeview_enter_notify(self, widget, event):
         self.main_window.window.set_cursor(gtk.gdk.Cursor(gtk.gdk.CROSSHAIR))
