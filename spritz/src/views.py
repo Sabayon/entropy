@@ -1180,6 +1180,7 @@ class EntropyPackageView:
         self.view.queue_draw()
 
     def __do_change_sorting_by_column(self, options):
+        busyCursor(self.main_window)
         current = self.__current_model_injector_class
         new = options[0]
         if current in options:
@@ -1199,6 +1200,7 @@ class EntropyPackageView:
                     sorter.set_active(sort_id)
                     break
             self.Spritz.addPackages()
+        normalCursor(self.main_window)
 
     def on_package_column_clicked(self, widget):
         options = self.model_injector_rotation['package']

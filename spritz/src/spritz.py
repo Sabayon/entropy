@@ -1081,6 +1081,7 @@ class SpritzApplicationEventsMixin:
         setattr(SpritzConf,key,w_col)
 
     def on_pkgSorter_changed(self, widget):
+        busyCursor(self.ui.main)
         model = widget.get_model()
         sort_id = widget.get_active()
         if sort_id == -1:
@@ -1089,6 +1090,7 @@ class SpritzApplicationEventsMixin:
         sorter = self.avail_pkg_sorters.get(sort_id_name)
         self.pkgView.change_model_injector(sorter)
         self.addPackages()
+        normalCursor(self.ui.main)
 
 
 class SpritzApplication(Controller, SpritzApplicationEventsMixin):
