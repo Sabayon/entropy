@@ -189,6 +189,7 @@ class EntropyApplet:
         self.__dbus_interface = "org.entropy.Client"
         self.__dbus_path = "/notifier"
         self.__signal_name = "signal_updates"
+        self.__updating_signal_name = "signal_updating"
         self._dbus_service_available = self.setup_dbus()
 
         if etp_applet_config.settings['APPLET_ENABLED'] and \
@@ -214,6 +215,10 @@ class EntropyApplet:
                 )
                 self.__entropy_dbus_object.connect_to_signal(
                     self.__signal_name, self.new_updates_signal,
+                    dbus_interface = self.__dbus_interface
+                )
+                self.__entropy_dbus_object.connect_to_signal(
+                    self.__updating_signal_name, self.updating_signal,
                     dbus_interface = self.__dbus_interface
                 )
             except dbus.exceptions.DBusException, e:
@@ -281,6 +286,16 @@ class EntropyApplet:
             self.show_alert(_("Your Sabayon is up-to-date"),
                 _("No updates available at this time, cool!")
             )
+
+    def updating_signal(self):
+        if not etp_applet_config.settings['APPLET_ENABLED']:
+            return
+
+        # all fine, no updates
+        self.update_tooltip(_("Repositories are being updated"))
+        self.show_alert(_("Sabayon repositories status"),
+            _("Repositories are being updated automatically")
+        )
 
     def do_first_check(self):
 
