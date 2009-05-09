@@ -1513,6 +1513,9 @@ class Server(Singleton,TextInterface):
             )
             switched.add((idpackage, repo,))
 
+        # just run this to make dev aware
+        self.dependencies_test(to_repo)
+
         return switched
 
 
