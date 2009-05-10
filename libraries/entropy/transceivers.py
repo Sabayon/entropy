@@ -1111,7 +1111,8 @@ class FtpServerHandler:
         self.critical_files = critical_files
         self.handlers_data = handlers_data.copy()
 
-    def handler_verify_upload(self, local_filepath, uri, counter, maxcount, tries):
+    def handler_verify_upload(self, local_filepath, uri, counter, maxcount,
+            tries, remote_md5 = None):
 
         crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
 
@@ -1129,6 +1130,68 @@ class FtpServerHandler:
             header = red(" @@ "),
             back = True
         )
+
+        valid_remote_md5 = True
+        # if remote server supports MD5 commands, remote_md5 is filled
+        if isinstance(remote_md5, basestring):
+            valid_md5 = self.entropyTools.is_valid_md5(remote_md5)
+            ckres = False
+            if valid_md5: # seems valid
+                ckres = self.entropyTools.compare_md5(local_filepath,
+                    remote_md5)
+            if ckres:
+                self.Entropy.updateProgress(
+                    "[%s|#%s|(%s/%s)] %s: %s: %s" % (
+                        blue(crippled_uri),
+                        darkgreen(str(tries)),
+                        blue(str(counter)),
+                        bold(str(maxcount)),
+                        blue(_("digest verification")),
+                        os.path.basename(local_filepath),
+                        darkgreen(_("so far, so good!")),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = red(" @@ ")
+                )
+                return True
+            # ouch!
+            elif not valid_md5:
+                # mmmh... malformed md5, try with handlers
+                self.Entropy.updateProgress(
+                    "[%s|#%s|(%s/%s)] %s: %s: %s" % (
+                        blue(crippled_uri),
+                        darkgreen(str(tries)),
+                        blue(str(counter)),
+                        bold(str(maxcount)),
+                        blue(_("digest verification")),
+                        os.path.basename(local_filepath),
+                        bold(_("malformed md5 provided to function")),
+                    ),
+                    importance = 0,
+                    type = "warning",
+                    header = brown(" @@ ")
+                )
+            else: # it's really bad!
+                self.Entropy.updateProgress(
+                    "[%s|#%s|(%s/%s)] %s: %s: %s" % (
+                        blue(crippled_uri),
+                        darkgreen(str(tries)),
+                        blue(str(counter)),
+                        bold(str(maxcount)),
+                        blue(_("digest verification")),
+                        os.path.basename(local_filepath),
+                        bold(_("remote md5 is invalid")),
+                    ),
+                    importance = 0,
+                    type = "warning",
+                    header = brown(" @@ ")
+                )
+                valid_remote_md5 = False
+
+        if not self.use_handlers:
+            # handlers usage is disabled
+            return valid_remote_md5 # always valid
 
         checksum = self.Entropy.get_remote_package_checksum(
             self.repo,
@@ -1150,8 +1213,8 @@ class FtpServerHandler:
                 type = "info",
                 header = red(" @@ ")
             )
-            return True
-        elif isinstance(checksum,bool) and not checksum:
+            return valid_remote_md5
+        elif isinstance(checksum, bool) and not checksum:
             self.Entropy.updateProgress(
                 "[%s|#%s|(%s/%s)] %s: %s: %s" % (
                     blue(crippled_uri),
@@ -1167,7 +1230,7 @@ class FtpServerHandler:
                 header = brown(" @@ ")
             )
             return False
-        elif len(checksum) == 32:
+        elif self.entropyTools.is_valid_md5(checksum):
             # valid? checking
             ckres = self.entropyTools.compare_md5(local_filepath,checksum)
             if ckres:
@@ -1217,7 +1280,7 @@ class FtpServerHandler:
                 type = "warning",
                 header = brown(" @@ ")
             )
-            return True
+            return valid_remote_md5
 
     def go(self):
 
@@ -1306,8 +1369,12 @@ class FtpServerHandler:
                         header = red(" @@ ")
                     )
                     rc = syncer(*myargs)
-                    if rc and self.use_handlers and not self.download:
-                        rc = self.handler_verify_upload(mypath, uri, counter, maxcount, tries)
+                    if rc and not self.download:
+                        # try with "SITE MD5 command first"
+                        # proftpd's mod_md5 supports it
+                        remote_md5 = ftp.get_file_md5(os.path.basename(mypath))
+                        rc = self.handler_verify_upload(mypath, uri,
+                            counter, maxcount, tries, remote_md5 = remote_md5)
                     if rc:
                         self.Entropy.updateProgress(
                             "[%s|#%s|(%s/%s)] %s %s: %s" % (
