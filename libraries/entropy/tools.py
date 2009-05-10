@@ -2390,6 +2390,12 @@ def is_valid_path(path):
         return False
     return True
 
+def is_valid_md5(myhash):
+    if re.findall(r'(?i)(?<![a-z0-9])[a-f0-9]{32}(?![a-z0-9])', myhash):
+        return True
+    return False
+
+
 def open_buffer():
     try:
         import cStringIO as stringio
