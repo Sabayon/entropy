@@ -976,6 +976,17 @@ class FtpInterface:
         rc = self.__ftpconn.rename(fromfile,tofile)
         return rc
 
+    def get_file_md5(self, filename):
+        # PROFTPD with mod_md5 supports it!
+        try:
+            rc_data = self.__ftpconn.sendcmd("SITE MD5 %s" % (filename,))
+        except self.ftplib.error_perm:
+            return None # not supported
+        try:
+            return rc_data.split("\n")[0].split("\t")[0].split("-")[1]
+        except (IndexError, TypeError,): # wrong output
+            return None
+
     def get_file_size(self, filename):
         return self.__ftpconn.size(filename)
 
