@@ -1363,7 +1363,8 @@ class Server(Singleton,TextInterface):
 
         if pull_deps:
             # put deps first!
-            my_matches = pull_deps_matches + my_matches
+            my_matches = pull_deps_matches + [x for x in my_matches if x not \
+                in pull_deps_matches]
 
         if ask:
             rc = self.askQuestion(_("Would you like to continue ?"))
