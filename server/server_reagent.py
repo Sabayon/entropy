@@ -224,7 +224,7 @@ def repositories(options):
                 if match in matches:
                     print_warning(  brown(" * ") + \
                         red("%s: " % (_("Package"),) ) + bold(package) + \
-                        red(" %s " % (_("already pulled in"),)) )
+                        red(" %s " % (_("already pulled in"),))
                     )
                 elif (match[1] == repoid):
                     matches.append(match)
