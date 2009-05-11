@@ -213,7 +213,7 @@ class VoteSortPackageViewModelInjector(EntropyPackageViewModelInjector):
             d_obj = data.setdefault(vote, [])
             d_obj.append(po)
 
-        for vote in sorted(data, reverse = self.reverse):
+        for vote in sorted(data, reverse = not self.reverse):
             for po in data[vote]:
                 self.model.append( None, (po,) )
 
