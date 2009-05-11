@@ -385,9 +385,14 @@ class SpritzQueue:
             if runQueue:
                 icache = set([x.matched_atom for x in self.packages[actions[0]]+self.packages[actions[1]]+self.packages[actions[2]]])
                 my_icache = set()
-                self.etpbase.getRawPackages('updates')
+
+                # load packages in cache
+                self.etpbase.getRawPackages('installed')
                 self.etpbase.getRawPackages('available')
                 self.etpbase.getRawPackages('reinstallable')
+                self.etpbase.getRawPackages('updates')
+                self.etpbase.getRawPackages('masked')
+
                 for matched_atom in runQueue:
                     if matched_atom in my_icache:
                         continue
@@ -403,7 +408,6 @@ class SpritzQueue:
             if removalQueue:
                 my_rcache = set()
                 rcache = set([x.matched_atom[0] for x in self.packages['r']])
-                self.etpbase.getRawPackages('installed')
                 for idpackage in removalQueue:
                     if idpackage in my_rcache:
                         continue
