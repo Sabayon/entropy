@@ -1358,7 +1358,7 @@ class RepositoryManagerMenu(MenuSkel):
                 return
 
         if not package_data: return
-        pkg = packages.EntropyPackage((idpackage,repoid,), True, remote = package_data)
+        pkg = packages.EntropyPackage((idpackage,repoid,), remote = package_data)
         mymenu = PkgInfoMenu(self.Entropy, pkg, self.window)
         mymenu.load(remote = True)
 

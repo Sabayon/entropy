@@ -300,7 +300,7 @@ class UpdatesDaemon(dbus.service.Object):
                         rc_fetch,))
 
             try:
-                update, remove, fine = entropy.calculate_world_updates()
+                update, remove, fine, spm_fine = entropy.calculate_world_updates()
                 del fine, remove
             except Exception, err:
                 entropyTools.print_traceback(f = DAEMON_LOG)
@@ -373,7 +373,7 @@ class UpdatesDaemon(dbus.service.Object):
             return self.__updates
 
         try:
-            update, remove, fine = entropy.calculate_world_updates()
+            update, remove, fine, spm_fine = entropy.calculate_world_updates()
         except Exception, err:
             entropyTools.print_traceback(f = DAEMON_LOG)
             msg = "get_updates: %s: %s" % (_("Updates: error"), err,)

@@ -789,7 +789,7 @@ class EntropyPackageView:
 
         for obj in self.selected_objs:
             if obj.installed_match:
-                iobj, new = self.etpbase.getPackageItem(obj.installed_match,True)
+                iobj, new = self.etpbase.getPackageItem(obj.installed_match)
                 new_objs.append(iobj)
                 just_show_objs.append(obj)
             else:
@@ -975,7 +975,7 @@ class EntropyPackageView:
         objs = []
         for match in exp_matches:
             try:
-                yp, new = self.etpbase.getPackageItem(match,True)
+                yp, new = self.etpbase.getPackageItem(match)
             except RepositoryError:
                 return
             if add and yp.queued != None:
@@ -984,7 +984,7 @@ class EntropyPackageView:
 
         set_objs = []
         for pkgset in pkgsets:
-            yp, new = self.etpbase.getPackageItem(pkgset,True)
+            yp, new = self.etpbase.getPackageItem(pkgset)
             set_objs.append(yp)
 
         return pkgsets, exp_matches, objs, set_objs, exp_atoms
@@ -1028,7 +1028,7 @@ class EntropyPackageView:
                 if item.set_category: myset = "%s%s" % (etpConst['packagesetprefix'],item.set_category,)
                 else: myset = item.matched_atom
 
-                yp, new = self.etpbase.getPackageItem(myset,True)
+                yp, new = self.etpbase.getPackageItem(myset)
                 yp.queued = c_action
 
                 for pkgset in pkgsets:
@@ -1054,7 +1054,7 @@ class EntropyPackageView:
                 continue
             mymatch = self.Equo.atom_match(key, matchSlot = slot)
             if mymatch[0] == -1: continue
-            yp, new = self.etpbase.getPackageItem(mymatch,True)
+            yp, new = self.etpbase.getPackageItem(mymatch)
             repo_objs.append(yp)
 
         q_cache = {}
@@ -1085,7 +1085,7 @@ class EntropyPackageView:
                 if item.set_category: myset = "%s%s" % (etpConst['packagesetprefix'],item.set_category,)
                 else: myset = item.matched_atom
 
-                yp, new = self.etpbase.getPackageItem(myset,True)
+                yp, new = self.etpbase.getPackageItem(myset)
                 yp.queued = c_action
 
                 for pkgset in pkgsets:

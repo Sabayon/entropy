@@ -2170,17 +2170,21 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.setBusy()
         bootstrap = False
         if (self.Equo.get_world_update_cache(empty_deps = False) == None):
+            if self.do_debug:
+                print "addPackages: bootstrap True due to empty world cache"
             bootstrap = True
             self.setPage('output')
         elif (self.Equo.get_available_packages_cache() == None) and \
             (('available' in masks) or ('updates' in masks)):
+            if self.do_debug:
+                print "addPackages: bootstrap True due to empty avail cache"
             bootstrap = True
             self.setPage('output')
         self.progress.total.hide()
 
-        #for flt in masks:
-        #    self.etpbase.clearPackagesSingle(flt)
         if bootstrap:
+            if self.do_debug:
+                print "addPackages: bootstrap is enabled, clearing ALL cache"
             self.etpbase.clearCache()
             self.startWorking()
 
@@ -2420,9 +2424,12 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
             return
 
         resolved = []
-        self.etpbase.getPackages('updates')
+
+        self.etpbase.getPackages('installed')
         self.etpbase.getPackages('available')
         self.etpbase.getPackages('reinstallable')
+        self.etpbase.getPackages('updates')
+
         for match in matches:
             resolved.append(self.etpbase.getPackageItem(match,True)[0])
 

@@ -341,7 +341,7 @@ class SpritzQueue:
         pkgs = []
         self.etpbase.getRawPackages('masked')
         for match in masks:
-            pkg, new = self.etpbase.getPackageItem(match,True)
+            pkg, new = self.etpbase.getPackageItem(match)
             pkgs.append(pkg)
 
         self.Spritz.hide_wait_window()
@@ -399,11 +399,10 @@ class SpritzQueue:
                     my_icache.add(matched_atom)
                     if matched_atom in icache:
                         continue
-                    dep_pkg, new = self.etpbase.getPackageItem(matched_atom,True)
+                    dep_pkg, new = self.etpbase.getPackageItem(matched_atom)
                     if not dep_pkg:
                         continue
                     install_todo.append(dep_pkg)
-
 
             if removalQueue:
                 my_rcache = set()
@@ -415,7 +414,7 @@ class SpritzQueue:
                     if idpackage in rcache:
                         continue
                     mymatch = (idpackage,0)
-                    rem_pkg, new = self.etpbase.getPackageItem(mymatch,True)
+                    rem_pkg, new = self.etpbase.getPackageItem(mymatch)
                     if not rem_pkg:
                         continue
                     remove_todo.append(rem_pkg)
@@ -493,7 +492,7 @@ class SpritzQueue:
                 my_rcache.add(idpackage)
                 if idpackage in r_cache:
                     continue
-                rem_pkg, new = self.etpbase.getPackageItem((idpackage,0),True)
+                rem_pkg, new = self.etpbase.getPackageItem((idpackage,0))
                 if not rem_pkg:
                     continue
                 todo.append(rem_pkg)

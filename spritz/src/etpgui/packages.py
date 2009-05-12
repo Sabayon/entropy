@@ -53,13 +53,12 @@ class DummyEntropyPackage:
 class EntropyPackage:
 
     import entropy.tools as entropyTools
-    def __init__(self, matched_atom, avail, remote = None, pkgset = None):
+    def __init__(self, matched_atom, remote = None, pkgset = None):
 
         self.pkgset = pkgset
         self.queued = None
         self.action = None
         self.dummy_type = None
-        self.available = avail
         self.do_purge = False
         self.masked = None
         self.voted = 0

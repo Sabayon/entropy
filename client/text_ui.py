@@ -190,7 +190,8 @@ def worldUpdate(onlyfetch = False, replay = False, resume = False,
     if not resume:
 
         print_info(red(" @@ ")+blue("%s..." % (_("Calculating System Updates"),) ))
-        update, remove, fine = Equo.calculate_world_updates(empty_deps = replay)
+        update, remove, fine, spm_fine = Equo.calculate_world_updates(
+            empty_deps = replay)
 
         if (etpUi['verbose'] or etpUi['pretend']):
             print_info(red(" @@ ")+darkgreen("%s:\t\t" % (_("Packages matching update"),) )+bold(str(len(update))))

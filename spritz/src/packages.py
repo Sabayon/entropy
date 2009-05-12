@@ -55,6 +55,7 @@ class EntropyPackages:
 
     def clearCache(self):
         self.pkgCache.clear()
+        self._packages[mask].clear()
         self.selected_treeview_item = None
         self.selected_advisory_item = None
 
@@ -90,24 +91,24 @@ class EntropyPackages:
         self.populateSingle(flt)
         return self._packages[flt]
 
-    def getPackageItem(self, pkgdata, avail):
+    def getPackageItem(self, pkgdata):
         new = False
-        if self.pkgCache.has_key((pkgdata,avail)):
-            yp = self.pkgCache[(pkgdata,avail)]
-        else:
+        yp = self.pkgCache.get(pkgdata)
+        if yp is None:
             new = True
             pkgset = None
-            if isinstance(pkgdata,basestring): # package set
+            if isinstance(pkgdata, basestring): # package set
                 pkgset = True
-            yp = EntropyPackage(pkgdata, avail, pkgset = pkgset)
-            self.pkgCache[(pkgdata,avail)] = yp
+            yp = EntropyPackage(pkgdata, pkgset = pkgset)
+            self.pkgCache[pkgdata] = yp
         return yp, new
 
     def _pkg_get_installed(self):
+
         gp_call = self.getPackageItem
         def fm(idpackage):
             try:
-                yp, new = gp_call((idpackage,0),True)
+                yp, new = gp_call((idpackage,0))
             except RepositoryError:
                 return 0
             yp.action = 'r'
@@ -126,7 +127,7 @@ class EntropyPackages:
         # Get the rest of the available packages.
         def fm(match):
             try:
-                yp, new = gp_call(match,True)
+                yp, new = gp_call(match)
             except RepositoryError:
                 return 0
             yp.action = 'i'
@@ -134,16 +135,12 @@ class EntropyPackages:
         return [x for x in map(fm,self.Entropy.calculate_available_packages()) if type(x) != int]
 
     def _pkg_get_updates(self):
-        # this is required to make all the package options
-        # to work correclty (for eg: remove)
-        self._pkg_get_installed()
-        self._pkg_get_reinstallable()
 
         gp_call = self.getPackageItem
         cdb_atomMatch = self.Entropy.clientDbconn.atomMatch
         def fm(match):
             try:
-                yp, new = gp_call(match,True)
+                yp, new = gp_call(match)
             except RepositoryError:
                 return 0
             key, slot = yp.keyslot
@@ -152,14 +149,18 @@ class EntropyPackages:
             yp.action = 'u'
             yp.color = SpritzConf.color_update
             return yp
-        updates, remove, fine = self.Entropy.calculate_world_updates()
-        return [x for x in map(fm,updates) if type(x) != int]
+        updates, remove, fine, spm_fine = self.Entropy.calculate_world_updates()
+
+        # we need to cache these too on getPackageItem
+        map(fm, spm_fine)
+
+        return [x for x in map(fm, updates) if type(x) != int]
 
     def _pkg_get_reinstallable(self):
         def fm(match):
             idpackage, matched = match
             try:
-                yp, new = self.getPackageItem(matched,True)
+                yp, new = self.getPackageItem(matched)
             except RepositoryError:
                 return 0
             yp.installed_match = (idpackage,0)
@@ -175,7 +176,7 @@ class EntropyPackages:
         def fm(match):
             match, idreason = match
             try:
-                yp, new = gp_call(match,True)
+                yp, new = gp_call(match)
             except RepositoryError:
                 return 0
             action = gmp_action(match)
@@ -261,11 +262,11 @@ class EntropyPackages:
             for match in set_matches:
                 # set dependency
                 if match[1] == None:
-                    yp, new = gp_call(match[0],True)
+                    yp, new = gp_call(match[0])
                     yp.action = "i"
                 else:
                     try:
-                        yp, new = gp_call(match,True)
+                        yp, new = gp_call(match)
                     except RepositoryError:
                         broken = True
                         break
