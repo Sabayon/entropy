@@ -21,6 +21,7 @@
 '''
 
 import os
+import sys
 import shutil
 import subprocess
 from entropy.client.interfaces import Client
@@ -102,7 +103,11 @@ class FileUpdates:
         counter = 0
         name_cache = set()
         client_conf_protect = self.Entropy.get_system_config_protect()
+
         for path in client_conf_protect:
+
+            # this avoids encoding issues hands down
+            path = path.encode(sys.getfilesystemencoding())
             # it's a file?
             scanfile = False
             if os.path.isfile(path):
