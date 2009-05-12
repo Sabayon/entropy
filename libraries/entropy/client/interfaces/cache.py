@@ -179,9 +179,7 @@ class CacheMixin:
         if branch == None:
             branch = self.SystemSettings['repositories']['branch']
 
-        sys_settings_plg_id = \
-            etpConst['system_settings_plugins_ids']['client_plugin']
-        misc_settings = self.SystemSettings[sys_settings_plg_id]['misc']
+        misc_settings = self.SystemSettings[self.sys_settings_client_plugin_id]['misc']
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
         if self.xcache:
             if db_digest == None: db_digest = self.all_repositories_checksum()

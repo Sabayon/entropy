@@ -1244,6 +1244,8 @@ class CalculatorsMixin:
                 branch = branch, db_digest = db_digest)
             if cached != None: return cached
 
+        misc_settings = self.SystemSettings[self.sys_settings_client_plugin_id]['misc']
+        ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
         update = []
         remove = []
         fine = []
