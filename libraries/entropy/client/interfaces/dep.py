@@ -922,8 +922,12 @@ class CalculatorsMixin:
 
         client_keyslots = set()
         def mymf(idpackage):
-            if idpackage == clientmatch[0]: return 0
-            return self.clientDbconn.retrieveKeySlot(idpackage)
+            if idpackage == clientmatch[0]:
+                return 0
+            ks = self.clientDbconn.retrieveKeySlot(idpackage)
+            if ks is None:
+                return 0
+            return ks
         client_keyslots = set([x for x in map(mymf,client_idpackages) if x != 0])
 
         # all the packages in repo_side should be pulled in too
