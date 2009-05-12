@@ -1233,27 +1233,21 @@ class CalculatorsMixin:
         return available
 
     def calculate_world_updates(self, empty_deps = False, branch = None,
-            ignore_spm_downgrades = None, use_cache = True):
+            use_cache = True):
 
         if branch == None:
             branch = self.SystemSettings['repositories']['branch']
 
-        if ignore_spm_downgrades == None:
-            sys_set_plg_id = \
-                etpConst['system_settings_plugins_ids']['client_plugin']
-            client_sys_settings = self.SystemSettings[sys_set_plg_id]['misc']
-            ignore_spm_downgrades = client_sys_settings['ignore_spm_downgrades']
-
         db_digest = self.all_repositories_checksum()
         if use_cache and self.xcache:
             cached = self.get_world_update_cache(empty_deps = empty_deps,
-                branch = branch, db_digest = db_digest,
-                    ignore_spm_downgrades = ignore_spm_downgrades)
+                branch = branch, db_digest = db_digest)
             if cached != None: return cached
 
         update = []
         remove = []
         fine = []
+        spm_fine = []
 
         # get all the installed packages
         idpackages = self.clientDbconn.listAllIdpackages(order_by = 'atom')
@@ -1323,6 +1317,8 @@ class CalculatorsMixin:
                     if cl_revision == 9999 and ignore_spm_downgrades:
                         # no difference, we're ignoring revision 9999
                         fine.append(cl_atom)
+                        if (m_idpackage,repoid) not in update:
+                            spm_fine.append((m_idpackage,repoid))
                         continue
                     else:
                         if (m_idpackage,repoid) not in update:
@@ -1361,13 +1357,13 @@ class CalculatorsMixin:
             c_hash = self.get_world_update_cache_hash(db_digest, empty_deps,
                 branch, ignore_spm_downgrades)
             data = {
-                'r': (update, remove, fine,),
+                'r': (update, remove, fine, spm_fine,),
                 'empty_deps': empty_deps,
             }
             self.Cacher.push("%s%s" % (etpCache['world_update'],c_hash,),
                 data, async = False)
 
-        return update, remove, fine
+        return update, remove, fine, spm_fine
 
     def check_package_update(self, atom, deep = False):
 
@@ -1409,7 +1405,8 @@ class CalculatorsMixin:
     def get_world_queue(self, empty_deps = False, branch = None):
         if branch == None:
             branch = self.SystemSettings['repositories']['branch']
-        update, remove, fine = self.calculate_world_updates(empty_deps = empty_deps, branch = branch)
+        update, remove, fine, spm_fine = self.calculate_world_updates(
+            empty_deps = empty_deps, branch = branch)
         del fine
         data = {}
         data['removed'] = list(remove)
@@ -1418,7 +1415,8 @@ class CalculatorsMixin:
         status = -1
         if update:
             # calculate install+removal queues
-            install, removal, status = self.get_install_queue(update, empty_deps, deep_deps = False)
+            install, removal, status = self.get_install_queue(
+                update, empty_deps, deep_deps = False)
             # update data['removed']
             data['removed'] = [x for x in data['removed'] if x not in removal]
             data['runQueue'] += install

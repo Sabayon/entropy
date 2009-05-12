@@ -86,8 +86,8 @@ class CacheMixin:
         # we can barely ignore any exception from here
         # especially cases where client db does not exist
         try:
-            update, remove, fine = self.calculate_world_updates()
-            del fine, remove
+            update, remove, fine, spm_fine = self.calculate_world_updates()
+            del fine, spm_fine, remove
             if do_install_queue:
                 self.get_install_queue(update, False, False)
             self.calculate_available_packages()
@@ -174,18 +174,25 @@ class CacheMixin:
         return self.Cacher.pop("%s%s" % (etpCache['world_available'],myhash))
 
     def get_world_update_cache(self, empty_deps, branch = None,
-        db_digest = None, ignore_spm_downgrades = False):
+        db_digest = None):
 
         if branch == None:
             branch = self.SystemSettings['repositories']['branch']
+
+        sys_settings_plg_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
+        misc_settings = self.SystemSettings[sys_settings_plg_id]['misc']
+        ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
         if self.xcache:
             if db_digest == None: db_digest = self.all_repositories_checksum()
             c_hash = "%s%s" % (etpCache['world_update'],
-                self.get_world_update_cache_hash(db_digest, empty_deps, branch, ignore_spm_downgrades),)
+                self.get_world_update_cache_hash(db_digest, empty_deps, branch,
+                    ignore_spm_downgrades),)
             disk_cache = self.Cacher.pop(c_hash)
             if disk_cache != None:
                 try:
-                    return disk_cache['r']
+                    if len(disk_cache['r']) == 4:
+                        return disk_cache['r']
                 except (KeyError, TypeError):
                     return None
 
