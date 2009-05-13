@@ -613,8 +613,20 @@ class Package:
         tag = self.infoDict['versiontag']
         if (tag == slot) and tag: slot = "0"
 
+        def do_rm_path_atomic(xpath):
+            for my_el in os.listdir(xpath):
+                my_el = os.path.join(xpath, my_el)
+                try:
+                    os.remove(my_el)
+                except OSError:
+                    pass
+            try:
+                os.rmdir(xpath)
+            except OSError:
+                pass
+
         if os.path.isdir(remove_path):
-            shutil.rmtree(remove_path,True)
+            do_rm_path_atomic(remove_path)
 
         if others_installed:
 
@@ -625,16 +637,7 @@ class Package:
                 mydir = portdb_dir+myatom
                 if not os.path.isdir(mydir):
                     continue
-                for my_el in os.listdir(mydir):
-                    my_el = os.path.join(mydir, my_el)
-                    try:
-                        os.remove(my_el)
-                    except OSError:
-                        pass
-                try:
-                    os.rmdir(mydir)
-                except OSError:
-                    pass
+                do_rm_path_atomic(mydir)
 
         else:
 
