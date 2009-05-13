@@ -603,23 +603,41 @@ class Package:
         except:
             return -1 # no Spm support ??
 
-        portDbDir = Spm.get_vdb_path()
-        removePath = portDbDir+atom
+        portdb_dir = Spm.get_vdb_path()
+        remove_path = portdb_dir+atom
         key = self.entropyTools.dep_getkey(atom)
         others_installed = Spm.search_keys(key)
+        if atom in others_installed:
+            others_installed.remove(atom)
         slot = self.infoDict['slot']
         tag = self.infoDict['versiontag']
         if (tag == slot) and tag: slot = "0"
-        if os.path.isdir(removePath):
-            shutil.rmtree(removePath,True)
-        elif others_installed:
+
+        if os.path.isdir(remove_path):
+            shutil.rmtree(remove_path,True)
+
+        if others_installed:
+
             for myatom in others_installed:
                 myslot = Spm.get_installed_package_slot(myatom)
                 if myslot != slot:
                     continue
-                shutil.rmtree(portDbDir+myatom,True)
+                mydir = portdb_dir+myatom
+                if not os.path.isdir(mydir):
+                    continue
+                for my_el in os.listdir(mydir):
+                    my_el = os.path.join(mydir, my_el)
+                    try:
+                        os.remove(my_el)
+                    except OSError:
+                        pass
+                try:
+                    os.rmdir(mydir)
+                except OSError:
+                    pass
 
-        if not others_installed:
+        else:
+
             world_file = Spm.get_world_file()
             world_file_tmp = world_file+".entropy.tmp"
             if os.access(world_file,os.W_OK) and os.path.isfile(world_file):
@@ -638,7 +656,7 @@ class Package:
                 new.flush()
                 new.close()
                 old.close()
-                shutil.move(world_file_tmp,world_file)
+                os.rename(world_file_tmp,world_file)
 
         return 0
 
