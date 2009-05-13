@@ -988,6 +988,16 @@ class Package:
                         header = darkred("   ## ")
                     )
 
+            user_inst_source = etpConst['install_sources']['user']
+            if self.infoDict['install_source'] != user_inst_source:
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "Not updating Portage world file for: %s" % (self.infoDict['atom'],)
+                )
+                # only user selected packages in Portage world file
+                return 0
+
             # add to Portage world
             # key: key
             # slot: self.infoDict['slot']
