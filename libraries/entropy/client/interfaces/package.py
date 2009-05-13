@@ -891,15 +891,15 @@ class Package:
             Spm = self.Entropy.Spm()
         except:
             return -1 # no Portage support
-        portDbDir = Spm.get_vdb_path()
-        if os.path.isdir(portDbDir):
+        portdb_dir = Spm.get_vdb_path()
+        if os.path.isdir(portdb_dir):
 
             # extract xpak from unpackDir+etpConst['packagecontentdir']+"/"+package
             key = self.infoDict['category']+"/"+self.infoDict['name']
             atomsfound = set()
-            dbdirs = os.listdir(portDbDir)
+            dbdirs = os.listdir(portdb_dir)
             if self.infoDict['category'] in dbdirs:
-                catdirs = os.listdir(portDbDir+"/"+self.infoDict['category'])
+                catdirs = os.listdir(portdb_dir+"/"+self.infoDict['category'])
                 dirsfound = set([self.infoDict['category']+"/"+x for x in catdirs if \
                     key == self.entropyTools.dep_getkey(self.infoDict['category']+"/"+x)])
                 atomsfound.update(dirsfound)
@@ -915,7 +915,7 @@ class Package:
                         pkgToRemove = atom
                         break
                 if (pkgToRemove):
-                    removePath = portDbDir+pkgToRemove
+                    removePath = portdb_dir+pkgToRemove
                     shutil.rmtree(removePath,True)
                     try:
                         os.rmdir(removePath)
@@ -935,9 +935,9 @@ class Package:
                 else:
                     copypath = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
 
-                if not os.path.isdir(portDbDir+self.infoDict['category']):
-                    os.makedirs(portDbDir+self.infoDict['category'],0755)
-                destination = portDbDir+self.infoDict['category']+"/"+self.infoDict['name']+"-"+self.infoDict['version']
+                if not os.path.isdir(portdb_dir+self.infoDict['category']):
+                    os.makedirs(portdb_dir+self.infoDict['category'],0755)
+                destination = portdb_dir+self.infoDict['category']+"/"+self.infoDict['name']+"-"+self.infoDict['version']
                 if os.path.isdir(destination):
                     shutil.rmtree(destination)
 
