@@ -388,8 +388,6 @@ def const_default_settings(rootdir):
         'branch': "4",
          # default allowed package keywords
         'keywords': set([etpSys['arch'],"~"+etpSys['arch']]),
-        # Gentoo compatibility (/var/db/pkg + Portage availability)
-        'gentoo-compat': True,
         # allow multiple packages in single scope server-side?
         # this makes possible to have multiple versions of packages
         # and handle the removal through expiration (using creation date)

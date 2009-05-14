@@ -1379,19 +1379,18 @@ class MiscMixin:
         tar.close()
 
         # appending xpak metadata
-        if etpConst['gentoo-compat']:
-            import entropy.xpak as xpak
-            Spm = self.Spm()
+        import entropy.xpak as xpak
+        Spm = self.Spm()
 
-            gentoo_name = self.entropyTools.remove_tag(pkgname)
-            gentoo_name = self.entropyTools.remove_entropy_revision(gentoo_name)
-            if portdbPath == None:
-                dbdir = Spm.get_vdb_path()+"/"+pkgcat+"/"+gentoo_name+"/"
-            else:
-                dbdir = portdbPath+"/"+pkgcat+"/"+gentoo_name+"/"
-            if os.path.isdir(dbdir):
-                tbz2 = xpak.tbz2(dirpath)
-                tbz2.recompose(dbdir)
+        gentoo_name = self.entropyTools.remove_tag(pkgname)
+        gentoo_name = self.entropyTools.remove_entropy_revision(gentoo_name)
+        if portdbPath == None:
+            dbdir = Spm.get_vdb_path()+"/"+pkgcat+"/"+gentoo_name+"/"
+        else:
+            dbdir = portdbPath+"/"+pkgcat+"/"+gentoo_name+"/"
+        if os.path.isdir(dbdir):
+            tbz2 = xpak.tbz2(dirpath)
+            tbz2.recompose(dbdir)
 
         if edb:
             self.inject_entropy_database_into_package(dirpath, pkgdata)

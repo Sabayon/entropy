@@ -44,7 +44,6 @@ class Trigger:
         self.pkgdata = pkgdata
         self.prepared = False
         self.triggers = set()
-        self.gentoo_compat = etpConst['gentoo-compat']
 	self.package_action = package_action
 
         '''
@@ -53,25 +52,24 @@ class Trigger:
         self.MODULEDB_DIR="/var/lib/module-rebuild/"
         self.INITSERVICES_DIR="/var/lib/init.d/"
 
-        ''' portage stuff '''
-        if self.gentoo_compat:
-            try:
-                Spm = self.Entropy.Spm()
-                self.Spm = Spm
-            except Exception, e:
-                self.entropyTools.print_traceback()
-                mytxt = darkred("%s, %s: %s, %s !") % (
-                    _("Portage interface can't be loaded"),
-                    _("Error"),
-                    e,
-                    _("please fix"),
-                )
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 0,
-                    header = bold(" !!! ")
-                )
-                self.gentoo_compat = False
+        self.spm_support = True
+        try:
+            Spm = self.Entropy.Spm()
+            self.Spm = Spm
+        except Exception, e:
+            self.entropyTools.print_traceback()
+            mytxt = darkred("%s, %s: %s, %s !") % (
+                _("Portage interface can't be loaded"),
+                _("Error"),
+                e,
+                _("please fix"),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                header = bold(" !!! ")
+            )
+            self.spm_support = False
 
         self.phase = phase
         # validate phase
@@ -102,7 +100,7 @@ class Trigger:
 
         functions = []
         # Gentoo hook
-        if self.gentoo_compat:
+        if self.spm_support:
             while 1:
                 if self.pkgdata['spm_phases'] != None:
                     if etpConst['spm']['postinst_phase'] not \
@@ -163,7 +161,7 @@ class Trigger:
         functions = []
 
         # Portage phases
-        if self.gentoo_compat:
+        if self.spm_support:
             while 1:
                 if self.pkgdata['spm_phases'] != None:
                     if etpConst['spm']['preinst_phase'] not \
@@ -215,7 +213,7 @@ class Trigger:
         functions = []
 
         # Gentoo hook
-        if self.gentoo_compat:
+        if self.spm_support:
 
             while 1:
                 if self.pkgdata['spm_phases'] != None:

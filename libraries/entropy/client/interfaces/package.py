@@ -287,13 +287,12 @@ class Package:
                 os._exit(0)
 
         # unpack xpak ?
-        if etpConst['gentoo-compat']:
-            if os.path.isdir(self.infoDict['xpakpath']):
-                shutil.rmtree(self.infoDict['xpakpath'])
-            try:
-                os.rmdir(self.infoDict['xpakpath'])
-            except OSError:
-                pass
+        if os.path.isdir(self.infoDict['xpakpath']):
+            shutil.rmtree(self.infoDict['xpakpath'])
+        try:
+            os.rmdir(self.infoDict['xpakpath'])
+        except OSError:
+            pass
 
             # create data dir where we'll unpack the xpak
             os.makedirs(self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'],0755)
@@ -423,10 +422,9 @@ class Package:
             self.__remove_package_from_database()
 
         # Handle spm database
-        if etpConst['gentoo-compat']:
-            spm_atom = self.entropyTools.remove_tag(self.infoDict['removeatom'])
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing from Spm: "+str(spm_atom))
-            self.__remove_package_from_spm_database(spm_atom)
+        spm_atom = self.entropyTools.remove_tag(self.infoDict['removeatom'])
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing from Spm: "+str(spm_atom))
+        self.__remove_package_from_spm_database(spm_atom)
 
         self.__remove_content_from_system(protected_removable_config_files)
         return 0
@@ -597,7 +595,7 @@ class Package:
     '''
     def __remove_package_from_spm_database(self, atom):
 
-        # handle gentoo-compat
+        # handle spm support
         try:
             Spm = self.Entropy.Spm()
         except:
@@ -846,18 +844,12 @@ class Package:
             )
             self.infoDict['removeidpackage'] = -1 # disabling database removal
 
-            if etpConst['gentoo-compat']:
-                self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
-                    "Removing Entropy and Spm database entry for %s" % (self.infoDict['removeatom'],)
-                )
-            else:
-                self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
-                    "Removing Entropy (only) database entry for %s" % (self.infoDict['removeatom'],)
-                )
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "Removing Entropy and Spm database entry for %s" % (
+                    self.infoDict['removeatom'],)
+            )
 
             self.Entropy.updateProgress(
                                     blue(_("Cleaning old package files...")),
@@ -867,14 +859,12 @@ class Package:
                                 )
             self.__remove_package()
 
-        rc = 0
-        if etpConst['gentoo-compat']:
-            self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
-                "Installing new Spm database entry: %s" % (self.infoDict['atom'],)
-            )
-            rc = self._install_package_into_spm_database(newidpackage)
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "Installing new Spm database entry: %s" % (self.infoDict['atom'],)
+        )
+        rc = self._install_package_into_spm_database(newidpackage)
 
         return rc
 
@@ -884,7 +874,7 @@ class Package:
     '''
     def _install_package_into_spm_database(self, newidpackage):
 
-        # handle gentoo-compat
+        # handle spm support
         try:
             Spm = self.Entropy.Spm()
         except:
@@ -2250,18 +2240,21 @@ class Package:
         self.infoDict['imagedir'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']+"/"+etpConst['entropyimagerelativepath']
 
         # spm xpak data
-        if etpConst['gentoo-compat']:
-            self.infoDict['xpakpath'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']+"/"+etpConst['entropyxpakrelativepath']
-            if not self.infoDict['merge_from']:
-                self.infoDict['xpakstatus'] = None
-                self.infoDict['xpakdir'] = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
-            else:
-                self.infoDict['xpakstatus'] = True
-                portdbdir = 'var/db/pkg' # XXX hard coded ?
-                portdbdir = os.path.join(self.infoDict['merge_from'],portdbdir)
-                portdbdir = os.path.join(portdbdir,self.infoDict['category'])
-                portdbdir = os.path.join(portdbdir,self.infoDict['name']+"-"+self.infoDict['version'])
-                self.infoDict['xpakdir'] = portdbdir
+        self.infoDict['xpakpath'] = etpConst['entropyunpackdir'] + "/" + \
+            self.infoDict['download'] + "/" + \
+            etpConst['entropyxpakrelativepath']
+        if not self.infoDict['merge_from']:
+            self.infoDict['xpakstatus'] = None
+            self.infoDict['xpakdir'] = self.infoDict['xpakpath'] + "/" + \
+                etpConst['entropyxpakdatarelativepath']
+        else:
+            self.infoDict['xpakstatus'] = True
+            portdbdir = 'var/db/pkg' # XXX hard coded ?
+            portdbdir = os.path.join(self.infoDict['merge_from'], portdbdir)
+            portdbdir = os.path.join(portdbdir, self.infoDict['category'])
+            portdbdir = os.path.join(portdbdir, self.infoDict['name'] + "-" + \
+                self.infoDict['version'])
+            self.infoDict['xpakdir'] = portdbdir
 
         # compare both versions and if they match, disable removeidpackage
         if self.infoDict['removeidpackage'] != -1:
@@ -2301,19 +2294,14 @@ class Package:
         if (self.infoDict['removeidpackage'] != -1):
             self.infoDict['steps'].append("postremove")
         self.infoDict['steps'].append("postinstall")
-        if not etpConst['gentoo-compat']: # otherwise spm triggers will show that
-            self.infoDict['steps'].append("showmessages")
-        else:
-            self.infoDict['steps'].append("logmessages")
+        self.infoDict['steps'].append("logmessages")
         self.infoDict['steps'].append("cleanup")
 
         self.infoDict['triggers']['install'] = dbconn.getTriggerInfo(idpackage)
         self.infoDict['triggers']['install']['accept_license'] = self.infoDict['accept_license']
         self.infoDict['triggers']['install']['unpackdir'] = self.infoDict['unpackdir']
         self.infoDict['triggers']['install']['imagedir'] = self.infoDict['imagedir']
-        if etpConst['gentoo-compat']:
-            #self.infoDict['triggers']['install']['xpakpath'] = self.infoDict['xpakpath']
-            self.infoDict['triggers']['install']['xpakdir'] = self.infoDict['xpakdir']
+        self.infoDict['triggers']['install']['xpakdir'] = self.infoDict['xpakdir']
 
         return 0
 

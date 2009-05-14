@@ -782,7 +782,6 @@ def getinfo(dict = False):
     # variables
     info['User protected directories'] = SysSettings[sys_set_client_plg_id]['misc']['configprotect']
     info['Collision Protection'] = SysSettings[sys_set_client_plg_id]['misc']['collisionprotect']
-    info['Gentoo Compatibility'] = etpConst['gentoo-compat']
     info['Entropy Log Level'] = SysSettings['system']['log_level']
     info['Current branch'] = SysSettings['repositories']['branch']
     info['Entropy configuration directory'] = etpConst['confdir']

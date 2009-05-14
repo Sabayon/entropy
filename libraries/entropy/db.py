@@ -833,28 +833,25 @@ class LocalRepository:
     # this is the place to add extra actions support
     def runTreeUpdatesActions(self, actions):
 
-        # just run fixpackages if gentoo-compat is enabled
-        if etpConst['gentoo-compat']:
-
-            mytxt = "%s: %s, %s." % (
-                bold(_("SPM")),
-                blue(_("Running fixpackages")),
-                red(_("it could take a while")),
-            )
-            self.updateProgress(
-                mytxt,
-                importance = 1,
-                type = "warning",
-                header = darkred(" * ")
-            )
-            if self.clientDatabase:
-                try:
-                    spm = self.ServiceInterface.Spm()
-                    spm.run_fixpackages()
-                except:
-                    pass
-            else:
-                self.ServiceInterface.SpmService.run_fixpackages()
+        mytxt = "%s: %s, %s." % (
+            bold(_("SPM")),
+            blue(_("Running fixpackages")),
+            red(_("it could take a while")),
+        )
+        self.updateProgress(
+            mytxt,
+            importance = 1,
+            type = "warning",
+            header = darkred(" * ")
+        )
+        if self.clientDatabase:
+            try:
+                spm = self.ServiceInterface.Spm()
+                spm.run_fixpackages()
+            except:
+                pass
+        else:
+            self.ServiceInterface.SpmService.run_fixpackages()
 
         spm_moves = set()
         quickpkg_atoms = set()
