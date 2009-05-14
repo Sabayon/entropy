@@ -772,6 +772,11 @@ def main():
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue. Your hard disk is probably faulty."),) ))
         raise SystemExit(101)
 
+    except SystemError, e: # becoming from entropy.db
+
+        print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
+        raise SystemExit(1)
+
     except SystemExit:
         raise
 
