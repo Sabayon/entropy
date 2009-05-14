@@ -2317,10 +2317,9 @@ class Server:
 
         crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
         myqueue = []
-        for itemdata in download_queue:
-            x = itemdata[0]
-            hash_file = x+etpConst['packagesmd5fileext']
-            myqueue.append(x)
+        for package in download_queue:
+            hash_file = package + etpConst['packagesmd5fileext']
+            myqueue.append(package)
             myqueue.append(hash_file)
 
         ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
@@ -2340,7 +2339,8 @@ class Server:
         )
         errors, m_fine_uris, m_broken_uris = downloader.go()
         if errors:
-            my_broken_uris = [(self.entropyTools.extract_ftp_host_from_uri(x[0]),x[1]) for x in m_broken_uris]
+            my_broken_uris = [(self.entropyTools.extract_ftp_host_from_uri(x), y,) \
+                for x, y in m_broken_uris]
             reason = my_broken_uris[0][1]
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s: %s, %s: %s" % (
@@ -2499,16 +2499,32 @@ class Server:
             try:
 
                 if removal:
-                    self._sync_run_removal_queue(removal, self.SystemSettings['repositories']['branch'], repo)
+                    self._sync_run_removal_queue(removal,
+                        self.SystemSettings['repositories']['branch'], repo)
+
                 if copy:
-                    self._sync_run_copy_queue(copy, self.SystemSettings['repositories']['branch'], repo)
+                    self._sync_run_copy_queue(copy,
+                        self.SystemSettings['repositories']['branch'], repo)
+
                 if upload or download:
                     mirrors_tainted = True
+
                 if upload:
-                    d_errors, m_fine_uris, m_broken_uris = self._sync_run_upload_queue(uri, upload, self.SystemSettings['repositories']['branch'], repo)
-                    if d_errors: mirror_errors = True
+                    d_errors, m_fine_uris, \
+                        m_broken_uris = self._sync_run_upload_queue(
+                            uri, upload,
+                            self.SystemSettings['repositories']['branch'], repo)
+
+                    if d_errors:
+                        mirror_errors = True
+
                 if download:
-                    d_errors, m_fine_uris, m_broken_uris = self._sync_run_download_queue(uri, download, self.SystemSettings['repositories']['branch'], repo)
+                    my_downlist = [x[0] for x in download]
+                    d_errors, m_fine_uris, \
+                        m_broken_uris = self._sync_run_download_queue(
+                            uri, my_downlist,
+                            self.SystemSettings['repositories']['branch'], repo)
+
                     if d_errors: mirror_errors = True
                 if not mirror_errors:
                     successfull_mirrors.add(uri)
