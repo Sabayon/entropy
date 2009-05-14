@@ -50,19 +50,25 @@ def inject(options):
 
 def repositories(options):
 
+    valid_repos = Entropy.get_available_repositories()
     repoid = None
     repoid_dest = None
     pull_deps = False
+    invalid_repos = False
     if not options: cmd = ""
     else: cmd = options[0]
     myopts = []
     for opt in options[1:]:
         if cmd in ["enable","disable"]:
+            if opt not in valid_repos:
+                invalid_repos = True
             repoid = opt
         elif cmd in ["move","copy"]:
             if repoid == None:
                 repoid = opt
             elif repoid_dest == None:
+                if opt not in valid_repos:
+                    invalid_repos = True
                 repoid_dest = opt
             elif opt == "--deps":
                 pull_deps = True
@@ -78,6 +84,10 @@ def repositories(options):
 
     if cmd in ["enable","disable","copy","move","default"] and not repoid:
         print_error(darkred(" !!! ")+red(_("No valid repositories specified.")))
+        return 2
+
+    if invalid_repos:
+        print_error(darkred(" !!! ")+red(_("Invalid repositories specified.")))
         return 2
 
     if cmd == "enable":
