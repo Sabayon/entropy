@@ -31,7 +31,7 @@ from entropy.i18n import _
 from entropy.misc import TimeScheduled, ParallelTask
 from entropy.core import SystemSettings
 
-class urlFetcher:
+class UrlFetcher:
 
     def __init__(self, url, path_to_save, checksum = True,
             show_speed = True, resume = True,
@@ -401,7 +401,7 @@ class MultipleUrlFetcher:
     def __init__(self, url_path_list, checksum = True,
             show_speed = True, resume = True,
             abort_check_func = None, disallow_redirect = False,
-            OutputInterface = None, urlFetcherClass = None):
+            OutputInterface = None, UrlFetcherClass = None):
         """
             @param url_path_list list [(url,path_to_save,),...]
             @param checksum bool return checksum data
@@ -412,7 +412,7 @@ class MultipleUrlFetcher:
             @param disallow_redirect bool disable automatic HTTP redirect
             @param OutputInterface TextInterface instance used to
                 print instance output through a common interface
-            @param urlFetcherClass, urlFetcher instance/interface used
+            @param UrlFetcherClass, urlFetcher instance/interface used
         """
         self.__system_settings = SystemSettings()
         self.__url_path_list = url_path_list
@@ -438,9 +438,9 @@ class MultipleUrlFetcher:
             mytxt = _("Output interface passed doesn't have the updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
-        self.urlFetcher = urlFetcherClass
-        if self.urlFetcher == None:
-            self.urlFetcher = urlFetcher
+        self.__url_fetcher = UrlFetcherClass
+        if self.__url_fetcher == None:
+            self.__url_fetcher = UrlFetcher
 
 
     def __handle_threads_stop(self):
@@ -470,7 +470,7 @@ class MultipleUrlFetcher:
 
         for url, path_to_save in self.__url_path_list:
             th_id += 1
-            downloader = self.urlFetcher(url, path_to_save,
+            downloader = self.__url_fetcher(url, path_to_save,
                 checksum = self.__checksum, show_speed = self.__show_speed,
                 resume = self.__resume, abort_check_func = self.__abort_check_func,
                 disallow_redirect = self.__disallow_redirect,

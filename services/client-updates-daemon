@@ -53,7 +53,7 @@ from entropy.exceptions import PermissionDenied, RepositoryError, \
     MissingParameter
 import entropy.tools as entropyTools
 from entropy.client.interfaces import Client
-from entropy.transceivers import urlFetcher
+from entropy.transceivers import UrlFetcher
 from entropy.const import etpConst
 from entropy.core import SystemSettings as SysSet
 from entropy.misc import ParallelTask
@@ -87,7 +87,7 @@ def write_output(*args, **kwargs):
     if DAEMON_DEBUG:
         TEXT.updateProgress(*args, **kwargs)
 
-class DaemonUrlFetcher(urlFetcher):
+class DaemonUrlFetcher(UrlFetcher):
 
     daemon_last_avg = 100
     __average = 0

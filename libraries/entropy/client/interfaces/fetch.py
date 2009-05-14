@@ -74,7 +74,7 @@ class FetchersMixin:
         # load class
         fetchConn = self.MultipleUrlFetcher(url_path_list, resume = resume,
             abort_check_func = fetch_file_abort_function, OutputInterface = self,
-            urlFetcherClass = self.urlFetcher, checksum = checksum)
+            UrlFetcherClass = self.urlFetcher, checksum = checksum)
         try:
             data = fetchConn.download()
         except KeyboardInterrupt:

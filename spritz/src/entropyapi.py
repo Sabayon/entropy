@@ -27,7 +27,7 @@ import gobject
 # Entropy Imports
 from entropy.const import *
 from entropy.client.interfaces import Client as EquoInterface
-from entropy.transceivers import urlFetcher
+from entropy.transceivers import UrlFetcher
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 
@@ -333,7 +333,7 @@ class Equo(EquoInterface):
             parent = None
         return inputDialog(parent, title, input_parameters, cancel = cancel_button)
 
-class GuiUrlFetcher(urlFetcher):
+class GuiUrlFetcher(UrlFetcher):
 
     gui_last_avg = 100
 
