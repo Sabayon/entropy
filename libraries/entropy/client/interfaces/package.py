@@ -422,11 +422,11 @@ class Package:
             )
             self.__remove_package_from_database()
 
-        # Handle gentoo database
+        # Handle spm database
         if etpConst['gentoo-compat']:
-            gentooAtom = self.entropyTools.remove_tag(self.infoDict['removeatom'])
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing from Portage: "+str(gentooAtom))
-            self.__remove_package_from_gentoo_database(gentooAtom)
+            spm_atom = self.entropyTools.remove_tag(self.infoDict['removeatom'])
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing from Spm: "+str(spm_atom))
+            self.__remove_package_from_spm_database(spm_atom)
 
         self.__remove_content_from_system(protected_removable_config_files)
         return 0
@@ -591,11 +591,11 @@ class Package:
 
 
     '''
-    @description: remove package entry from Gentoo database
-    @input gentoo package atom (cat/name+ver):
+    @description: remove package entry from Spm database
+    @input spm package atom (cat/name+ver):
     @output: 0 = all fine, <0 = error!
     '''
-    def __remove_package_from_gentoo_database(self, atom):
+    def __remove_package_from_spm_database(self, atom):
 
         # handle gentoo-compat
         try:
@@ -802,10 +802,6 @@ class Package:
             self.Entropy.clear_dump_cache(etpCache['world_available'])
 
 
-    '''
-    @description: install unpacked files, update database and also update gentoo db if requested
-    @output: 0 = all fine, >0 = error!
-    '''
     def __install_package(self):
 
         # clear on-disk cache
@@ -840,7 +836,7 @@ class Package:
         )
         newidpackage = self._install_package_into_database()
 
-        # remove old files and gentoo stuff
+        # remove old files and spm stuff
         if self.infoDict['removeidpackage'] != -1:
             # doing a diff removal
             self.Entropy.clientLog.log(
@@ -854,7 +850,7 @@ class Package:
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
-                    "Removing Entropy and Gentoo database entry for %s" % (self.infoDict['removeatom'],)
+                    "Removing Entropy and Spm database entry for %s" % (self.infoDict['removeatom'],)
                 )
             else:
                 self.Entropy.clientLog.log(
@@ -876,9 +872,9 @@ class Package:
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
-                "Installing new Gentoo database entry: %s" % (self.infoDict['atom'],)
+                "Installing new Spm database entry: %s" % (self.infoDict['atom'],)
             )
-            rc = self._install_package_into_gentoo_database(newidpackage)
+            rc = self._install_package_into_spm_database(newidpackage)
 
         return rc
 
@@ -886,7 +882,7 @@ class Package:
     @description: inject the database information into the Gentoo database
     @output: 0 = all fine, !=0 = error!
     '''
-    def _install_package_into_gentoo_database(self, newidpackage):
+    def _install_package_into_spm_database(self, newidpackage):
 
         # handle gentoo-compat
         try:
@@ -912,7 +908,7 @@ class Package:
                 pkgToRemove = ''
                 for atom in atomsfound:
                     atomslot = Spm.get_installed_package_slot(atom)
-                    # get slot from gentoo db
+                    # get slot from spm db
                     if atomslot == self.infoDict['slot']:
                         pkgToRemove = atom
                         break
@@ -963,7 +959,7 @@ class Package:
                         counter = int(f.readline().strip())
                         f.close()
                     except:
-                        # need file recreation, parse gentoo tree
+                        # need file recreation, parse spm tree
                         counter = Spm.refill_counter()
                 else:
                     counter = Spm.refill_counter()
@@ -1064,7 +1060,7 @@ class Package:
         # always set data['injected'] to False
         # installed packages database SHOULD never have more than one package for scope (key+slot)
         data['injected'] = False
-        data['counter'] = -1 # gentoo counter will be set in self._install_package_into_gentoo_database()
+        data['counter'] = -1 # spm counter will be set in self._install_package_into_spm_database()
 
         idpackage, rev, x = self.Entropy.clientDbconn.handlePackage(
             etpData = data, forcedRevision = data['revision'],
@@ -2253,7 +2249,7 @@ class Package:
         self.infoDict['unpackdir'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']
         self.infoDict['imagedir'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']+"/"+etpConst['entropyimagerelativepath']
 
-        # gentoo xpak data
+        # spm xpak data
         if etpConst['gentoo-compat']:
             self.infoDict['xpakpath'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']+"/"+etpConst['entropyxpakrelativepath']
             if not self.infoDict['merge_from']:
@@ -2305,7 +2301,7 @@ class Package:
         if (self.infoDict['removeidpackage'] != -1):
             self.infoDict['steps'].append("postremove")
         self.infoDict['steps'].append("postinstall")
-        if not etpConst['gentoo-compat']: # otherwise gentoo triggers will show that
+        if not etpConst['gentoo-compat']: # otherwise spm triggers will show that
             self.infoDict['steps'].append("showmessages")
         else:
             self.infoDict['steps'].append("logmessages")
