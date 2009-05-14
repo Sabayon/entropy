@@ -737,36 +737,44 @@ def main():
         raise SystemExit(rc)
 
     except SystemDatabaseError:
+
         reset_cache()
         print_error(darkred(" * ")+red(_("Installed Packages Database not found or corrupted. Please generate it using 'equo database' tools")))
         raise SystemExit(101)
 
     except OnlineMirrorError, e:
+
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
         raise SystemExit(101)
 
     except RepositoryError, e:
+
         reset_cache()
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
         raise SystemExit(101)
 
     except FtpError, e:
+
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
         raise SystemExit(101)
 
     except PermissionDenied, e:
+
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
         raise SystemExit(1)
 
     except FileNotFound, e:
+
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
         raise SystemExit(1)
 
     except SPMError, e:
+
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
         raise SystemExit(1)
 
     except dbapi2Exceptions['OperationalError'], e:
+
         if unicode(e).find("disk I/O error") == -1:
             raise
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue. Your hard disk is probably faulty."),) ))
@@ -781,11 +789,13 @@ def main():
         raise
 
     except IOError, e:
+
         reset_cache()
         if e.errno != 32:
             raise
 
     except OSError, e:
+
         if e.errno == 28:
             entropyTools.print_exception()
             print_error(darkred(_("Your hard drive is full! Next time remember to have a look at it before starting. I'm sorry, there's nothing I can do for you. It's your fault :-(")))
