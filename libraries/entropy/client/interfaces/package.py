@@ -1759,33 +1759,6 @@ class Package:
             self.Entropy.clientLog.write(">>>  "+msg)
         return 0
 
-    def messages_step(self):
-        self.error_on_not_prepared()
-        # get messages
-        if self.infoDict['messages']:
-            self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
-                "Message from %s:" % (self.infoDict['atom'],)
-            )
-            mytxt = "%s:" % (darkgreen(_("Compilation messages")),)
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "warning",
-                header = brown("   ## ")
-            )
-        for msg in self.infoDict['messages']:
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,msg)
-            self.Entropy.updateProgress(
-                msg,
-                importance = 0,
-                type = "warning",
-                header = brown("   ## ")
-            )
-        if self.infoDict['messages']:
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"End message.")
-
     def postinstall_step(self):
         self.error_on_not_prepared()
         pkgdata = self.infoDict['triggers'].get('install')
@@ -1975,9 +1948,6 @@ class Package:
             self.Entropy.setTitle(self.xterm_title)
             return self.remove_step()
 
-        def do_showmessages():
-            return self.messages_step()
-
         def do_logmessages():
             return self.logmessages_step()
 
@@ -2021,7 +1991,6 @@ class Package:
             "remove_conflicts": do_remove_conflicts,
             "install": do_install,
             "remove": do_remove,
-            "showmessages": do_showmessages,
             "logmessages": do_logmessages,
             "cleanup": do_cleanup,
             "postinstall": do_postinstall,
