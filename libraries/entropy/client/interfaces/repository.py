@@ -1411,7 +1411,8 @@ class Repository:
         upd_rc = 0
         try:
             upd_rc = old_dbconn.alignDatabases(dbconn, output_header = "\t")
-        except (self.dbapi2.OperationalError,self.dbapi2.IntegrityError,):
+        except (self.dbapi2.OperationalError, self.dbapi2.IntegrityError,
+            self.dbapi2.DatabaseError,):
             pass
         old_dbconn.closeDB()
         dbconn.closeDB()
