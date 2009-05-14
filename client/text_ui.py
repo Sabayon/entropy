@@ -756,7 +756,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                 installedVer = '-1'
                 installedTag = ''
                 installedRev = 0
-                installedRepo = _('Not available')
+                installedRepo = None
                 pkginstalled = Equo.clientDbconn.atomMatch(Equo.entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
                 if (pkginstalled[1] == 0):
                     # found an installed package
@@ -772,12 +772,14 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 
                 action = 0
                 repoSwitch = False
-                if reponame != installedRepo:
+                if (reponame != installedRepo) and (installedRepo is not None):
                     repoSwitch = True
                 if repoSwitch:
                     flags = darkred(" [")
                 else:
                     flags = " ["
+                if installedRepo is None:
+                    installedRepo = _('Not available')
                 pkgcmp = Equo.entropyTools.entropy_compare_versions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
                 if (pkgcmp == 0):
                     pkgsToReinstall += 1
