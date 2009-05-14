@@ -1831,9 +1831,9 @@ class Server:
     def _show_sync_queues(self, upload, download, removal, copy, metainfo, branch):
 
         # show stats
-        for itemdata in upload:
-            package = darkgreen(os.path.basename(itemdata[0]))
-            size = blue(self.entropyTools.bytes_into_human(itemdata[1]))
+        for package, size in upload:
+            package = darkgreen(os.path.basename(package))
+            size = blue(self.entropyTools.bytes_into_human(size))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
@@ -1845,9 +1845,9 @@ class Server:
                 type = "info",
                 header = red("    # ")
             )
-        for itemdata in download:
-            package = darkred(os.path.basename(itemdata[0]))
-            size = blue(self.entropyTools.bytes_into_human(itemdata[1]))
+        for package, size in download:
+            package = darkred(os.path.basename(package))
+            size = blue(self.entropyTools.bytes_into_human(size))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
@@ -1859,9 +1859,9 @@ class Server:
                 type = "info",
                 header = red("    # ")
             )
-        for itemdata in copy:
-            package = darkblue(os.path.basename(itemdata[0]))
-            size = blue(self.entropyTools.bytes_into_human(itemdata[1]))
+        for package, size in copy:
+            package = darkblue(os.path.basename(package))
+            size = blue(self.entropyTools.bytes_into_human(size))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
@@ -1873,9 +1873,9 @@ class Server:
                 type = "info",
                 header = red("    # ")
             )
-        for itemdata in removal:
-            package = brown(os.path.basename(itemdata[0]))
-            size = blue(self.entropyTools.bytes_into_human(itemdata[1]))
+        for package, size in removal:
+            package = brown(os.path.basename(package))
+            size = blue(self.entropyTools.bytes_into_human(size))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
