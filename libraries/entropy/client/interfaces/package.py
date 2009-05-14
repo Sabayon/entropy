@@ -607,6 +607,8 @@ class Package:
         remove_path = portdb_dir+atom
         key = self.entropyTools.dep_getkey(atom)
         others_installed = Spm.search_keys(key)
+        if others_installed is None:
+            others_installed = []
         if atom in others_installed:
             others_installed.remove(atom)
         slot = self.infoDict['slot']
