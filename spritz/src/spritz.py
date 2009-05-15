@@ -1180,7 +1180,6 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
             sys.stderr = self.output
             sys.stdin = self.input
 
-        self.onInstall = False
         self.queue = SpritzQueue(self)
         self.etpbase.connect_queue(self.queue)
         self.queueView = EntropyQueueView(self.ui.queueView, self.queue)
@@ -2264,7 +2263,6 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
 
             if install_queue or removal_queue:
 
-                self.onInstall = True
                 # activate UI lock
                 self.uiLock(True)
 
@@ -2307,7 +2305,6 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
                 if self.do_debug:
                     print "processPackageQueue: unlocking gui?"
                 self.uiLock(False)
-                self.onInstall = False
                 if self.do_debug:
                     print "processPackageQueue: gui unlocked"
 
