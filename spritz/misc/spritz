@@ -1,10 +1,11 @@
-#!/usr/bin/python -O
+#!/usr/bin/python2 -O
 import sys, os
-spritz_path = " /usr/lib/entropy/spritz/spritz.py " + ' '.join(sys.argv[1:])
-su_cmd = "xterm -e \"su -c '"+spritz_path+"'\""
 if "--debug" in sys.argv:
     os.environ['SPRITZ_DEBUG'] = "1"
     sys.argv.remove("--debug")
+
+spritz_path = " /usr/lib/entropy/spritz/spritz.py " + ' '.join(sys.argv[1:])
+su_cmd = "xterm -e \"su -c '"+spritz_path+"'\""
 
 def setup_env():
     global spritz_path, su_cmd
