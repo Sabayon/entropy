@@ -20,13 +20,15 @@ entropy-install:
 	mkdir -p $(DESTDIR)/etc/entropy
 	mkdir -p $(DESTDIR)/etc/env.d
 	mkdir -p $(DESTDIR)/etc/init.d
+	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/services
+
 	cp libraries $(DESTDIR)/$(LIBDIR)/entropy/ -Ra
 	install -m 755 services/repository-admin-daemon $(DESTDIR)/usr/sbin/
 	install -m 755 services/repository-services-daemon.example $(DESTDIR)/usr/sbin/
 	install -m 755 misc/entropy.sh $(DESTDIR)/usr/sbin/
 	install -m 755 services/repository_admin $(DESTDIR)/etc/init.d/
 	install -m 755 services/repository_services $(DESTDIR)/etc/init.d/
-	install -m 755 services/smartapp_wrapper
+	install -m 755 services/smartapp_wrapper $(DESTDIR)/$(LIBDIR)/entropy/services/
 
 	install -m 644 conf/entropy.conf $(DESTDIR)/etc/entropy/
 	install -m 644 conf/fsdirs.conf $(DESTDIR)/etc/entropy/
