@@ -532,7 +532,7 @@ class SpritzApplicationEventsMixin:
 
         pkgs = []
         for idpackage, atom in atomsfound:
-            yp, new = self.etpbase.getPackageItem((idpackage,newrepo,),True)
+            yp, new = self.etpbase.getPackageItem((idpackage,newrepo,))
             yp.action = 'i'
             yp.queued = 'i'
             pkgs.append(yp)
@@ -691,7 +691,7 @@ class SpritzApplicationEventsMixin:
             for key in pkgdata.keys():
                 for pkg in pkgdata[key]:
                     try:
-                        yp, new = self.etpbase.getPackageItem(pkg,True)
+                        yp, new = self.etpbase.getPackageItem(pkg)
                     except:
                         okDialog( self.ui.main,
                             _("Queue is too old. Cannot load.") )
@@ -1408,15 +1408,51 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
     def packages_install(self):
 
         packages_install = os.getenv("SPRITZ_PACKAGES")
+        atoms_install = []
+        do_fetch = False
+        if "--fetch" in sys.argv:
+            do_fetch = True
+            sys.argv.remove("--fetch")
+
+        if "--install" in sys.argv:
+            atoms_install.extend(sys.argv[sys.argv.index("--install")+1:])
+
         if packages_install:
-            packages_install = [x for x in packages_install.split(";") if os.path.isfile(x)]
+            packages_install = [x for x in packages_install.split(";") \
+                if os.path.isfile(x)]
+
         for arg in sys.argv:
             if arg.endswith(etpConst['packagesext']) and os.path.isfile(arg):
                 arg = os.path.realpath(arg)
                 packages_install.append(arg)
+
         if packages_install:
+
             fn = packages_install[0]
             self.on_installPackageItem_activate(None,fn)
+
+        elif atoms_install: # --install <atom1> <atom2> ... support
+
+            rc = self.add_atoms_to_queue(atoms_install)
+            if not rc:
+                return
+            self.setPage('output')
+
+            try:
+                rc = self.processPackageQueue(self.queue.packages,
+                    fetch_only = do_fetch)
+            except:
+                if self.do_debug:
+                    entropy.tools.print_traceback()
+                    import pdb; pdb.set_trace()
+                else:
+                    raise
+
+            self.resetQueueProgressBars()
+            if rc:
+                self.queue.clear()
+                self.queueView.refresh()
+
         else:
             self.showNoticeBoard()
 
@@ -2428,7 +2464,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.etpbase.getPackages('updates')
 
         for match in matches:
-            resolved.append(self.etpbase.getPackageItem(match,True)[0])
+            resolved.append(self.etpbase.getPackageItem(match)[0])
 
         rc = True
 
