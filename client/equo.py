@@ -206,7 +206,6 @@ myopts_extended = [
     None,
     (1,'smart',2,_('handles extended functionalities')),
     (2,'application',1,_('make a smart application for the provided atoms (experimental)')),
-    (3,'--empty',2,_('pull all the dependencies in, regardless their state')),
     (2,'package',2,_('make a smart package for the provided atoms (multiple packages into one file)')),
     (2,'quickpkg',1,_('recreate an Entropy package from your System')),
     (3,'--savedir',1,_('save new packages into the specified directory')),

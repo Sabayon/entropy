@@ -542,15 +542,6 @@ handles extended functionalities
 
 make a smart application for the provided atoms (experimental)
 
-=over
-
-
-=item B<--empty>
-
-pull all the dependencies in, regardless their state
-
-=back
-
 
 =item B<package>
 

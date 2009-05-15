@@ -327,6 +327,7 @@ def const_default_settings(rootdir):
         'setsconffilename': "sets.conf",
         'cachedumpext': ".dmp",
         'packagesext': ".tbz2",
+        'smartappsext': ".esa",
         # Extension of the file that contains the checksum
         # of its releated package file
         'packagesmd5fileext': ".md5",
