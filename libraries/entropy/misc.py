@@ -32,34 +32,40 @@ from entropy.core import SystemSettings
 class Lifo:
 
     def __init__(self):
-        self.__counter = -1
         self.__buf = {}
-        self.__lock = threading.Lock()
 
     def push(self, item):
-        with self.__lock:
-            self.__counter += 1
-            self.__buf[self.__counter] = item
+        try:
+            idx = max(self.__buf)+1
+        except ValueError:
+            idx = 0
+        self.__buf[idx] = item
 
     def clear(self):
-        with self.__lock:
-            self.__counter = -1
-            self.__buf.clear()
+        self.__buf.clear()
 
     def is_filled(self):
-        if self.__counter == -1:
-            return False
-        return True
+        if self.__buf:
+            return True
+        return False
+
+    def discard(self, entry):
+        for key, buf_entry in self.__buf.items():
+            # identity is generally faster, so try
+            # this first
+            if entry is buf_entry:
+                self.__buf.pop(key)
+                continue
+            if entry == buf_entry:
+                self.__buf.pop(key)
+                continue
 
     def pop(self):
-        with self.__lock:
-            if self.__counter == -1:
-                return None
-            self.__counter -= 1
-            try:
-                return self.__buf.pop(self.__counter+1)
-            except KeyError:
-                pass
+        try:
+            idx = max(self.__buf)
+        except ValueError:
+            return None
+        return self.__buf.pop(idx)
 
 class TimeScheduled(threading.Thread):
 
