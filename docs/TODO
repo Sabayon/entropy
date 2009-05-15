@@ -7,9 +7,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - Spritz codebase refactoring (Sulfur):
         - simple mode vs extended mode
         - Implement entropy:// URI handler
-    - Smart applications desktop handler
-
-    - urlfetcher UT with file://
 
   1.0_beta1:
 
@@ -17,4 +14,5 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
         -> next kernel 2.6.30
         -> split kernel sources from kernel bins?
 
-    - Documentation (NLnet Milestone 7)
+    - entropy.server split
+    - Documentation + code style cleanup (NLnet Milestone 7)
