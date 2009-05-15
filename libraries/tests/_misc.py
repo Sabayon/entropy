@@ -44,3 +44,9 @@ def get_test_package_atom2():
 
 def get_test_package_atom3():
     return "app-admin/apache-tools-2.2.11"
+
+def get_random_file():
+    return get_test_generic_package("random_file")
+
+def get_random_file_md5():
+    return get_test_generic_package("random_file.md5")
