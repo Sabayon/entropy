@@ -27,12 +27,15 @@ for arg in sys.argv[1:]:
     if arg.startswith(entropy_uri_pfx):
         uri_data = arg[len(entropy_uri_pfx):]
         for atom in uri_data.split(";"):
+            if atom.endswith("/"):
+                atom = atom[:-1]
             atoms.append(atom)
     elif arg == "--fetch":
         atoms.append(arg)
 
 if atoms:
     args = [spritz_path, spritz_install_arg] + atoms
+    print ' '.join(args)
     rc = os.system(' '.join(args))
     raise SystemExit(rc)
 
