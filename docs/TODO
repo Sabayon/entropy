@@ -10,7 +10,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - Smart applications desktop handler
 
     - urlfetcher UT with file://
-    - linked list for dep calculation?
 
   1.0_beta1:
 
