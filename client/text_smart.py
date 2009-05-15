@@ -468,39 +468,12 @@ def smartgenerator(matched_atoms):
 
     # now create the bash script for each binary_execs
     os.makedirs(pkg_data_dir+"/wrp")
-    sh_script = """
-#!/bin/sh
-cd $1
-MYPYP=$(find $PWD/lib/python2.4/site-packages/ -type d -printf %p: 2> /dev/null)
-MYPYP2=$(find $PWD/lib/python2.5/site-packages/ -type d -printf %p: 2> /dev/null)
-MYPYP3=$(find $PWD/lib/python2.6/site-packages/ -type d -printf %p: 2> /dev/null)
-export PYTHONPATH=$MYPYP:$MYPYP2:$MYPYP3:$PYTHONPATH
-export PATH=$PWD:$PWD/sbin:$PWD/bin:$PWD/usr/bin:$PWD/usr/sbin:$PWD/usr/X11R6/bin:$PWD/libexec:$PWD/usr/local/bin:$PWD/usr/local/sbin:$PATH
-export LD_LIBRARY_PATH=$PWD/lib:$PWD/lib64:$PWD/usr/lib:$PWD/usr/lib64:$PWD/usr/lib/nss:$PWD/usr/lib/nspr:$PWD/usr/lib64/nss:$PWD/usr/lib64/nspr:$PWD/usr/qt/3/lib:$PWD/usr/qt/3/lib64:$PWD/usr/kde/3.5/lib:$PWD/usr/kde/3.5/lib64:$LD_LIBRARY_PATH
-export KDEDIRS=$PWD/usr/kde/3.5:$PWD/usr:$KDEDIRS
-export PERL5LIB=$PWD/usr/lib/perl5:$PWD/share/perl5:$PWD/usr/lib/perl5/5.8.1:$PWD/usr/lib/perl5/5.8.2:$PWD/usr/lib/perl5/5.8.3:$PWD/usr/lib/perl5/5.8.4:$PWD/usr/lib/perl5/5.8.5:$PWD/usr/lib/perl5/5.8.6:$PWD/usr/lib/perl5/5.8.7:$PWD/usr/lib/perl5/5.8.8:$PWD/usr/lib/perl5/5.8.9:$PWD/usr/lib/perl5/5.8.10
-export MANPATH=$PWD/share/man:$MANPATH
-export GUILE_LOAD_PATH=$PWD/share/:$GUILE_LOAD_PATH
-export SCHEME_LIBRARY_PATH=$PWD/share/slib:$SCHEME_LIBRARY_PATH
-# Setup pango
-PANGODIR=$PWD/usr/lib/pango
-if [ -d "$PANGODIR" ]; then
-    MYPANGODIR=$(find $PWD/usr/lib/pango -name modules)
-    if [ -n "$MYPANGODIR" ]; then
-        export PANGO_RC_FILE=$PWD/etc/pango/pangorc
-        echo "[Pango]" > $PANGO_RC_FILE
-        echo "ModulesPath=${MYPANGODIR}" >> $PANGO_RC_FILE
-        echo "ModuleFiles=${PWD}/etc/pango/pango.modules" >> $PANGO_RC_FILE
-        pango-querymodules > ${PWD}/etc/pango/pango.modules
-    fi
-fi
-$2
-"""
+    wrapper_file = os.path.join(etpConst['installdir'],"services/smartapp_wrapper")
+    if not os.path.isfile(wrapper_file):
+        wrapper_file = "../services/smartapp_wrapper"
+
     wrapper_path = pkg_data_dir+"/wrp/wrapper"
-    f = open(wrapper_path,"w")
-    f.write(sh_script)
-    f.flush()
-    f.close()
+    shutil.copy2(wrapper_file, wrapper_path)
     # chmod
     os.chmod(wrapper_path,0755)
 
@@ -530,7 +503,7 @@ int main() {
         os.system("cd %s/; g++ -Wall %s.cc -o %s.exe" % (pkg_data_dir,item,item,))
         os.remove(item_cc)
 
-    smartpath = "%s/%s-%s%s" % (etpConst['smartappsdir'],pkgname,etpConst['currentarch'],etpConst['packagesext'],)
+    smartpath = "%s/%s-%s%s" % (etpConst['smartappsdir'],pkgname,etpConst['currentarch'],etpConst['smartappsext'],)
     print_info(darkgreen(" * ")+red("%s: " % (_("Compressing smart application"),))+bold(atom))
     print_info("\t%s" % (smartpath,))
     Equo.entropyTools.compress_tar_bz2(smartpath, pkgtmpdir)

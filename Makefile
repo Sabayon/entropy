@@ -26,6 +26,7 @@ entropy-install:
 	install -m 755 misc/entropy.sh $(DESTDIR)/usr/sbin/
 	install -m 755 services/repository_admin $(DESTDIR)/etc/init.d/
 	install -m 755 services/repository_services $(DESTDIR)/etc/init.d/
+	install -m 755 services/smartapp_wrapper
 
 	install -m 644 conf/entropy.conf $(DESTDIR)/etc/entropy/
 	install -m 644 conf/fsdirs.conf $(DESTDIR)/etc/entropy/
