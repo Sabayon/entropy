@@ -930,6 +930,11 @@ class MiscMixin:
     def get_branch_from_download_relative_uri(self, db_download_uri):
         return db_download_uri.split("/")[2]
 
+    def swap_branch_in_download_relative_uri(self, new_branch, db_download_uri):
+        cur_branch = self.get_branch_from_download_relative_uri(db_download_uri)
+        return db_download_uri.replace("/%s/" % (cur_branch,),
+            "/%s/" % (new_branch,))
+
     def unused_packages_test(self, dbconn = None):
         if dbconn == None: dbconn = self.clientDbconn
         return [x for x in dbconn.retrieveUnusedIdpackages() if self.validate_package_removal(x)]

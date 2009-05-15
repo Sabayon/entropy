@@ -519,6 +519,17 @@ def database(options):
             return 1
         return 0
 
+    elif (options[0] == "flushback"):
+
+        if (len(options) < 2):
+            print_error(brown(" * ")+red(_("Not enough parameters")))
+            return 1
+
+        from_branches = options[1:]
+        status = Entropy.flushback_packages(from_branches)
+        if status:
+            return 0
+        return 1
 
     elif (options[0] == "remove"):
 

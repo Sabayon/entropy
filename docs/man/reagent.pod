@@ -167,6 +167,10 @@ synchronize the database
 =back
 
 
+=item B<flushback [branches]>
+
+flush back old branches packages to current branch
+
 =item B<remove>
 
 remove the provided atoms from the current repository database

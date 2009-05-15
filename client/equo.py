@@ -271,6 +271,7 @@ myopts_extended = [
                 (4,'--repo=<repo>',2,_('(re)create the database for the specified repository')),
             (3,'bump',3,_('manually force a revision bump for the current repository database')),
                 (4,'--sync',3,_('synchronize the database')),
+            (3,'flushback [branches]',1,_('flush back old branches packages to current branch')),
             (3,'remove',3,_('remove the provided atoms from the current repository database')),
                 (4,'--branch=<branch>',1,_('choose on what branch operating')),
             (3,'multiremove',2,_('remove the provided injected atoms (all if no atom specified)')),

@@ -1264,6 +1264,269 @@ class Server(Singleton,TextInterface):
         )
         return status, data
 
+    def flushback_packages(self, from_branches, repo = None, ask = True):
+        """
+        When creating a new branch, for space reasons, packages are not
+        moved to a new location. This works fine until old branch is removed.
+        To avoid inconsistences, before deciding to do that, all the packages
+        in the old branch should be flushed back to the the currently configured
+        branch.
+
+        @param from_branches -- list of branches to move packages from
+        @type from_branches -- list
+        @param repo -- repository to work on
+        @type repo -- str
+        @param ask -- user interactivity
+        @type ask -- bool
+
+        @return status
+        """
+
+        status = True
+        if repo == None:
+            repo = self.default_repository
+        branch = self.SystemSettings['repositories']['branch']
+
+        if branch in from_branches:
+            from_branches = [x for x in from_branches if x != branch]
+
+        self.updateProgress(
+            "[%s=>%s|%s] %s" % (
+                darkgreen(', '.join(from_branches)),
+                darkred(branch),
+                brown(repo),
+                blue(_("flushing back selected packages from branches")),
+            ),
+            importance = 2,
+            type = "info",
+            header = red(" @@ ")
+        )
+
+        dbconn = self.open_server_repository(read_only = True,
+            no_upload = True, repo = repo)
+
+        idpackage_map = dict(((x,[],) for x in from_branches))
+        idpackages = dbconn.listAllIdpackages(order_by = 'atom')
+        for idpackage in idpackages:
+            download_url = dbconn.retrieveDownloadURL(idpackage)
+            url_br = self.ClientService.get_branch_from_download_relative_uri(
+                download_url)
+            if url_br in from_branches:
+                idpackage_map[url_br].append(idpackage)
+
+        mapped_branches = [x for x in idpackage_map if idpackage_map[x]]
+        if not mapped_branches:
+            self.updateProgress(
+                "[%s=>%s|%s] %s !" % (
+                    darkgreen(', '.join(from_branches)),
+                    darkred(branch),
+                    brown(repo),
+                    blue(_("nothing to do")),
+                ),
+                importance = 0,
+                type = "warning",
+                header = blue(" @@ ")
+            )
+            return status
+
+
+        all_fine = True
+        tmp_down_dir = self.entropyTools.get_random_temp_file()
+        os.makedirs(tmp_down_dir)
+
+        download_queue = {}
+        local_up_dir = self.get_local_upload_directory(repo)
+        local_basedir = os.path.join(local_up_dir, branch)
+        dbconn = self.open_server_repository(read_only = False,
+            no_upload = True, repo = repo)
+
+        def generate_queue(branch, repo, from_branch, down_q, idpackage_map):
+
+            self.updateProgress(
+                "[%s=>%s|%s] %s" % (
+                    darkgreen(from_branch),
+                    darkred(branch),
+                    brown(repo),
+                    brown(_("these are the packages that will be flushed")),
+                ),
+                importance = 1,
+                type = "info",
+                header = brown(" @@ ")
+            )
+
+
+            for idpackage in idpackage_map[from_branch]:
+                atom = dbconn.retrieveAtom(idpackage)
+                self.updateProgress(
+                    "[%s=>%s|%s] %s" % (
+                        darkgreen(from_branch),
+                        darkred(branch),
+                        brown(repo),
+                        purple(atom),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = blue("  # ")
+                )
+                pkg_fp = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
+                pkg_fp = os.path.join(tmp_down_dir, pkg_fp)
+                down_q.append((pkg_fp, idpackage,))
+
+
+        for from_branch in sorted(mapped_branches):
+
+            download_queue[from_branch] = []
+            all_fine = False
+            generate_queue(branch, repo, from_branch,
+                download_queue[from_branch], idpackage_map)
+
+            if ask:
+                rc = self.askQuestion(_("Would you like to continue ?"))
+                if rc == "No":
+                    continue
+
+            remote_relative_path = self.get_remote_packages_relative_path(repo)
+
+            for uri in self.get_remote_mirrors(repo):
+
+                crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+                ftp_basedir = os.path.join(remote_relative_path, from_branch)
+
+                downloader_queue = [x[0] for x in download_queue[from_branch]]
+                downloader = self.MirrorsService.FtpServerHandler(
+                    self.FtpInterface,
+                    self,
+                    [uri],
+                    downloader_queue,
+                    critical_files = downloader_queue,
+                    use_handlers = True,
+                    ftp_basedir = ftp_basedir,
+                    local_basedir = tmp_down_dir,
+                    download = True,
+                    repo = repo
+                )
+
+                errors, m_fine_uris, m_broken_uris = downloader.go()
+
+                if errors:
+                    my_broken_uris = [
+                        (self.entropyTools.extract_ftp_host_from_uri(x), y,) \
+                        for x, y in m_broken_uris]
+
+                    reason = my_broken_uris[0][1]
+
+                    self.updateProgress(
+                        "[%s=>%s|%s] %s, %s: %s" % (
+                            darkgreen(from_branch),
+                            darkred(branch),
+                            brown(repo),
+                            blue(_("download errors")),
+                            blue(_("reason")),
+                            reason,
+                        ),
+                        importance = 1,
+                        type = "error",
+                        header = darkred(" !!! ")
+                    )
+                    # continuing if possible
+                    continue
+
+                all_fine = True
+
+                self.updateProgress(
+                    "[%s=>%s|%s] %s: %s" % (
+                        darkgreen(from_branch),
+                        darkred(branch),
+                        brown(repo),
+                        blue(_("download completed successfully")),
+                        darkgreen(crippled_uri),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = darkgreen(" * ")
+                )
+
+        if not all_fine:
+            self.updateProgress(
+                "[%s=>%s|%s] %s" % (
+                    darkgreen(', '.join(from_branches)),
+                    darkred(branch),
+                    brown(repo),
+                    blue(_("error downloading packages from mirrors")),
+                ),
+                importance = 2,
+                type = "error",
+                header = darkred(" !!! ")
+            )
+            return False
+
+        tmp_db_path = self.entropyTools.get_random_temp_file()
+        for from_branch in sorted(mapped_branches):
+
+            self.updateProgress(
+                "[%s=>%s|%s] %s: %s" % (
+                    darkgreen(from_branch),
+                    darkred(branch),
+                    brown(repo),
+                    blue(_("working on branch")),
+                    darkgreen(from_branch),
+                ),
+                importance = 1,
+                type = "info",
+                header = brown(" @@ ")
+            )
+
+            down_queue = download_queue[from_branch]
+            for package_path, idpackage in down_queue:
+
+                self.updateProgress(
+                    "[%s=>%s|%s|%s] %s: %s" % (
+                        darkgreen(from_branch),
+                        darkred(branch),
+                        brown(repo),
+                        dbconn.retrieveAtom(idpackage),
+                        blue(_("updating package")),
+                        darkgreen(os.path.basename(package_path)),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = brown("   "),
+                    back = True
+                )
+
+                # move files to upload
+                package_name = os.path.basename(package_path)
+                new_package_path = os.path.join(local_basedir, package_name)
+                shutil.move(package_path, new_package_path)
+
+                # update database
+                download_url = dbconn.retrieveDownloadURL(idpackage)
+                download_url = self.ClientService.swap_branch_in_download_relative_uri(
+                    branch, download_url)
+                dbconn.setDownloadURL(idpackage, download_url)
+                dbconn.switchBranch(idpackage, branch)
+                dbconn.commitChanges()
+
+                self.updateProgress(
+                    "[%s=>%s|%s|%s] %s: %s" % (
+                        darkgreen(from_branch),
+                        darkred(branch),
+                        brown(repo),
+                        dbconn.retrieveAtom(idpackage),
+                        blue(_("package flushed")),
+                        darkgreen(os.path.basename(package_path)),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = brown("   ")
+                )
+
+        try:
+            os.rmdir(tmp_down_dir)
+        except OSError:
+            pass
+
+        return True
 
     def move_packages(self, matches, to_repo, from_repo = None, ask = True,
         do_copy = False, new_tag = None, pull_deps = False):

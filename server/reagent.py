@@ -75,6 +75,7 @@ myopts = [
             (3,'--repo=<repo>',2,_('(re)create the database for the specified repository')),
         (2,'bump',4,_('manually force a revision bump for the current repository database')),
             (3,'--sync',3,_('synchronize the database')),
+        (2,'flushback [branches]',2,_('flush back old branches packages to current branch')),
         (2,'remove',4,_('remove the provided atoms from the current repository database')),
         (2,'multiremove',3,_('remove the provided injected atoms (all if no atom specified)')),
         (2,'create-empty-database',2,_('create an empty repository database in the provided path')),
