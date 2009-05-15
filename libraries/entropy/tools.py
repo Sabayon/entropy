@@ -1937,9 +1937,10 @@ def spliturl(url):
     import urlparse
     return urlparse.urlsplit(url)
 
-# tar.bz2 compress function...
-def compressTarBz2(storepath,pathtocompress):
-    return subprocess.call("cd \""+pathtocompress+"\" && tar cjf \""+storepath+"\" .", "&> /dev/null", shell = True)
+def compressTarBz2(storepath, pathtocompress):
+    cmd = "cd \""+pathtocompress+"\" && tar cjf \""+storepath+"\" " + \
+        ". &> /dev/null"
+    return subprocess.call(cmd, shell = True)
 
 def spawn_function(f, *args, **kwds):
 
