@@ -2050,6 +2050,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
     def updateRepositories(self, repos):
 
         self.disable_ugc = True
+        """
         # set steps
         progress_step = float(1)/(len(repos))
         step = progress_step
@@ -2058,8 +2059,10 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
             myrange.append(step)
             progress_step += step
         myrange.append(step)
-
         self.progress.total.setup( myrange )
+        """
+        self.progress.total.hide()
+
         self.progress.set_mainLabel(_('Initializing Repository module...'))
         forceUpdate = self.ui.forceRepoUpdate.get_active()
 
