@@ -141,7 +141,7 @@ def package(options):
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
 
-    elif (options[0] == "world"):
+    elif (options[0] in ("world","upgrade",)):
         status, rc = worldUpdate(onlyfetch = equoRequestOnlyFetch,
             replay = (equoRequestReplay or equoRequestEmptyDeps),
             resume = equoRequestResume,

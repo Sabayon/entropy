@@ -96,7 +96,7 @@ myopts = [
     None,
     (1,'hop <branch>',1,_('upgrade your distribution to a new release (branch)')),
     None,
-    (1,'world',2,_('update system with the latest available packages')),
+    (1,'world (or upgrade)',1,_('update system with the latest available packages')),
     (2,'--ask',2,_('ask before making any changes')),
     (2,'--fetch',2,_('just download packages')),
     (2,'--pretend',1,_('only show what would be done')),
@@ -509,7 +509,7 @@ def main():
         elif options[0] == "moo":
             do_moo()
 
-        elif options[0] in ("install", "remove", "config", "world",
+        elif options[0] in ("install", "remove", "config", "world", "upgrade",
             "deptest", "unusedpackages", "libtest", "source", "hop"):
 
             import text_ui

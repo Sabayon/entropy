@@ -136,7 +136,7 @@ print description too (w/--quiet)
 
 upgrade your distribution to a new release (branch)
 
-=item B<world>
+=item B<world (or upgrade)>
 
 update system with the latest available packages
 
