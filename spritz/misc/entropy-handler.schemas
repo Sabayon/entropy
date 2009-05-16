@@ -1,0 +1,37 @@
+<gconfschemafile>
+	<schemalist>
+		<schema>
+			<key>/schemas/desktop/gnome/url-handlers/entropy/command</key>
+			<applyto>/desktop/gnome/url-handlers/entropy/command</applyto>
+			<owner>entropy-handler</owner>
+			<type>string</type>
+			<default>spritz-uri-handler %s</default>
+			<locale name="C">
+				<short>Entropy packages install URI handler</short>
+				<long>The handler of entropy://package-1.2.3 to make packages installation utterly easy</long>
+			</locale>
+		</schema>
+		<schema>
+			<key>/schemas/desktop/gnome/url-handlers/entropy/needs_terminal</key>
+			<applyto>/desktop/gnome/url-handlers/entropy/needs_terminal</applyto>
+			<owner>entropy-handler</owner>
+			<type>bool</type>
+			<default>false</default>
+			<locale name="C">
+				<short>Entropy URI handler terminal setting</short>
+				<long>Indicates if Entropy URI handler needs a terminal</long>
+			</locale>
+		</schema>
+		<schema>
+			<key>/schemas/desktop/gnome/url-handlers/entropy/enabled</key>
+			<applyto>/desktop/gnome/url-handlers/entropy/enabled</applyto>
+			<owner>entropy-handler</owner>
+			<type>bool</type>
+			<default>true</default>
+			<locale name="C">
+				<short>Enable Entropy URI handler</short>
+				<long>Indicates if Entropy URI handler should be enabled</long>
+			</locale>
+		</schema>
+	</schemalist>
+</gconfschemafile>
