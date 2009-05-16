@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-15 23:51+0200\n"
+"POT-Creation-Date: 2009-05-16 20:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2937,7 +2937,7 @@ msgid "Injecting downloaded dump"
 msgstr ""
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1431
-#: ../../libraries/entropy/db.py:3831 ../../spritz/src/spritz.glade.h:293
+#: ../../libraries/entropy/db.py:3831 ../../spritz/src/spritz.glade.h:290
 msgid "please wait"
 msgstr ""
 
@@ -9351,37 +9351,25 @@ msgid "emerge --sync ? (o;"
 msgstr ""
 
 #: ../../spritz/src/spritz.glade.h:287
-msgid "gtk-refresh"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:288
-msgid "gtk-save"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:289
-msgid "gtk-undo"
-msgstr ""
-
-#: ../../spritz/src/spritz.glade.h:290
 msgid "http://www.sabayon.org"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:291
+#: ../../spritz/src/spritz.glade.h:288
 msgid "kB/sec"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:292
+#: ../../spritz/src/spritz.glade.h:289
 msgid "localhost"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:294
+#: ../../spritz/src/spritz.glade.h:291
 msgid "root"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:295
+#: ../../spritz/src/spritz.glade.h:292
 msgid "type your password here"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:296
+#: ../../spritz/src/spritz.glade.h:293
 msgid "type your username here"
 msgstr ""
