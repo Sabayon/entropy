@@ -28,7 +28,6 @@ install:
 	mkdir -p $(DESTDIR)/etc
 	mkdir -p $(DESTDIR)/etc/pam.d
 	install -m644 COPYING $(DESTDIR)/$(LIBDIR)/entropy/spritz/.
-	install -m644 $(MISCDIR)/entropy-handler.schemas $(DESTDIR)/$(LIBDIR)/entropy/spritz/misc/.
 	install -m755 $(MISCDIR)/entropy-repo-manager $(DESTDIR)/usr/bin/.
 	install -m755 $(MISCDIR)/spritz $(DESTDIR)/usr/bin/.
 	install -m755 $(MISCDIR)/spritz-uri-handler $(DESTDIR)/usr/bin/.
