@@ -287,16 +287,27 @@ class Equo(EquoInterface):
                 myfunc(count_str+text)
 
         if not back and hasattr(self,'progressLog'):
-            if callable(self.progressLog):
-                self.progressLog(count_str+text)
+
+            def update_gui():
+                if callable(self.progressLog):
+                    self.progressLog(count_str+text)
+                return False
+            gobject.timeout_add(0, update_gui)
+
         elif not back:
             print count_str+text
 
     def cycleDone(self):
-        self.progress.total.next()
+        def update_gui():
+            self.progress.total.next()
+            return False
+        gobject.timeout_add(0, update_gui)
 
     def setTotalCycles(self, total):
-        self.progress.total.setup( range(total) )
+        def update_gui():
+            self.progress.total.setup( range(total) )
+            return False
+        gobject.timeout_add(0, update_gui)
 
     # @input question: question to do
     #
