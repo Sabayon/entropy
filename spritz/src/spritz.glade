@@ -2024,7 +2024,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="label" translatable="yes">gtk-refresh</property>
+                            <property name="label">gtk-refresh</property>
                             <property name="use_stock">True</property>
                             <property name="response_id">0</property>
                             <signal name="clicked" handler="on_filesViewRefresh_clicked"/>
@@ -8060,7 +8060,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
               <widget class="GtkButton" id="okCancelButton">
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-undo</property>
+                <property name="label">gtk-undo</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
               </widget>
@@ -8069,7 +8069,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
               <widget class="GtkButton" id="okSaveButton">
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="label" translatable="yes">gtk-save</property>
+                <property name="label">gtk-save</property>
                 <property name="use_stock">True</property>
                 <property name="response_id">0</property>
               </widget>
