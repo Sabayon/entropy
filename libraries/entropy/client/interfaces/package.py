@@ -1371,6 +1371,16 @@ class Package:
                 elif os.path.dirname(tofile) in newmask:
                     protected = False
                     in_mask = False
+                else:
+                    tofile_testdir = os.path.dirname(tofile)
+                    old_tofile_testdir = None
+                    while tofile_testdir != old_tofile_testdir:
+                        if tofile_testdir in newmask:
+                            protected = False
+                            in_mask = False
+                            break
+                        old_tofile_testdir = tofile_testdir
+                        tofile_testdir = os.path.dirname(tofile_testdir)
 
             if not os.path.lexists(tofile):
                 protected = False # file doesn't exist
