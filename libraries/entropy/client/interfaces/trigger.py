@@ -1398,9 +1398,15 @@ class Trigger:
             # having a running system without a bootloader, at least, grub.
             grub.write("default=0\ntimeout=10\n")
 
+        cmdline = ''
+        if os.access("/proc/cmdline", os.R_OK):
+            cmdline_f = open("/proc/cmdline","r")
+            cmdline = " "+cmdline_f.readline().strip()
+            cmdline_f.close()
+
         grub.write(self.__get_entropy_kernel_grub_line(kernel))
         grub.write("\troot "+boot_dev+"\n")
-        grub.write("\tkernel "+kernel+"\n")
+        grub.write("\tkernel "+kernel+cmdline+"\n")
         if initramfs:
             grub.write("\tinitrd "+initramfs+"\n")
         grub.write("\tsavedefault\n")
