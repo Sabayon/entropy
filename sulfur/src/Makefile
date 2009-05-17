@@ -9,4 +9,4 @@ clean:
 install:
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/spritz
 	install -m755 *.py $(DESTDIR)/$(PKGDIR)/.
-	install -m644 spritz.glade $(DESTDIR)/$(PKGDIR)/.
+	install -m644 sulfur.glade $(DESTDIR)/$(PKGDIR)/.

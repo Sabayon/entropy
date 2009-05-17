@@ -1,7 +1,6 @@
+#!/usr/bin/python2 -O
 # -*- coding: iso-8859-1 -*-
-#    It was: Yum Exteder (yumex) - A GUI for yum
-#    Copyright (C) 2006 Tim Lauridsen < tim<AT>yum-extender<DOT>org > 
-#    Now is: Spritz (Entropy Interface)
+#    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
 #    This program is free software; you can redistribute it and/or modify
@@ -20,9 +19,9 @@
 
 import gobject
 import gtk
-from spritz_setup import cleanMarkupString
+from sulfur_setup import cleanMarkupString
 
-class ProgressTotal:
+class _Total:
 
     def __init__(self, widget):
         self.progress = widget
@@ -93,7 +92,7 @@ class ProgressTotal:
         while gtk.events_pending():
            gtk.main_iteration()
 
-class SpritzProgress:
+class Base:
 
     def __init__( self, ui, set_page_func, parent ):
         self.ui = ui
@@ -102,7 +101,7 @@ class SpritzProgress:
         self.ui.progressMainLabel.set_text( "" )
         self.ui.progressSubLabel.set_text( "" )
         self.ui.progressExtraLabel.set_text( "" )
-        self.total = ProgressTotal( self.ui.totalProgressBar )
+        self.total = _Total( self.ui.totalProgressBar )
         self.ui.progressBar.set_fraction( 0 )
         self.ui.progressBar.set_text( " " )
         self.lastFrac = -1

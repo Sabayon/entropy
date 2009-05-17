@@ -1,7 +1,7 @@
-#!/usr/bin/python -tt
+#!/usr/bin/python2 -O
 # -*- coding: iso-8859-1 -*-
-#    Yum Exteder (yumex) - A GUI for yum
-#    Copyright (C) 2005 Tim Lauridsen < tla<AT>rasmil<DOT>DK > 
+#    Sulfur (Entropy Interface)
+#    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 
 # Filtering action class
 
-class SpritzFiltering:
+class Filtering:
     def __init__(self):
         self.filters = []
 
@@ -46,15 +46,15 @@ class SpritzFiltering:
         return None
 
 
-# Abstact Filter Classes
+# Abstact BaseFilter Classes
 
-class SpritzFilter:
+class BaseFilter:
     def __init__(self):
         self.name = self.getName()
         self._state = False
 
     def getName(self):
-        return "SpritzFilter"
+        return "BaseFilter"
 
     def process(self,po):
         raise NotImplementedError()
@@ -65,9 +65,9 @@ class SpritzFilter:
 
 # Filters
 
-class KeywordFilter(SpritzFilter):
+class KeywordFilter(BaseFilter):
     def __init__(self):
-        SpritzFilter.__init__(self)
+        BaseFilter.__init__(self)
         self.keywordList = []
         self.fields = ['name']#, 'description']
 
@@ -95,5 +95,5 @@ class KeywordFilter(SpritzFilter):
         else:
             return True
 
-spritzFilter = SpritzFiltering()
-spritzFilter.registerFilter(KeywordFilter())
+Filter = Filtering()
+Filter.registerFilter(KeywordFilter())

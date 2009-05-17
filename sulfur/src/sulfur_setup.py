@@ -1,7 +1,7 @@
-#!/usr/bin/python -tt
+#!/usr/bin/python2 -O
 # -*- coding: iso-8859-1 -*-
-#    Yum Exteder (yumex) - A GUI for yum
-#    Copyright (C) 2006 Tim Lauridsen < tim<AT>yum-extender<DOT>org > 
+#    Sulfur (Entropy Interface)
+#    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -28,10 +28,10 @@ class const:
     __spritz_version__   = etpConst['entropyversion']
     # Paths
     MAIN_PATH = os.path.abspath( os.path.dirname( sys.argv[0] ) )
-    GLADE_FILE = MAIN_PATH+'/spritz.glade'
+    GLADE_FILE = MAIN_PATH+'/sulfur.glade'
     if not os.path.isfile(GLADE_FILE):
         MAIN_PATH = '/usr/lib/entropy/spritz'
-        GLADE_FILE = MAIN_PATH+'/spritz.glade'
+        GLADE_FILE = MAIN_PATH+'/sulfur.glade'
     if MAIN_PATH == '/usr/lib/entropy/spritz':
         PIXMAPS_PATH = '/usr/share/pixmaps/spritz'
     else:
@@ -111,7 +111,7 @@ class const:
                              0.3) # get package Lists
 
     CREDITS = (
-           (('Spritz Package Manager - %s' % __spritz_version__),
+           (('Sulfur Package Manager - %s' % __spritz_version__),
            ('Copyright 2007-2009','Fabio Erculiani')),
 
            (_("Programming:"),
@@ -138,7 +138,7 @@ class const:
           )
 
 
-class SpritzConf:
+class SulfurConf:
     """ Yum Extender Config Setting"""
     autorefresh = True
     recentdays = 14
@@ -173,7 +173,7 @@ class SpritzConf:
     filelist = True
     changelog = False
     disable_repo_page = False
-    branding_title = 'Spritz Package Manager'
+    branding_title = 'Sulfur'
     dummy_empty = 0
     dummy_category = 1
 
@@ -214,24 +214,24 @@ class SpritzConf:
     def getconf():
 
         config_data = {
-            "color_console_font": SpritzConf.color_console_font,
-            "color_normal": SpritzConf.color_normal,
-            "color_install": SpritzConf.color_install,
-            "color_update": SpritzConf.color_update,
-            "color_remove": SpritzConf.color_remove,
-            "color_reinstall": SpritzConf.color_reinstall,
-            "color_title": SpritzConf.color_title,
-            "color_title2": SpritzConf.color_title2,
-            "color_pkgdesc": SpritzConf.color_pkgdesc,
-            "color_pkgsubtitle": SpritzConf.color_pkgsubtitle,
-            "color_subdesc": SpritzConf.color_subdesc,
-            "color_error": SpritzConf.color_error,
-            "color_good": SpritzConf.color_good,
-            "color_background_good": SpritzConf.color_background_good,
-            "color_background_error": SpritzConf.color_background_error,
-            "color_good_on_color_background": SpritzConf.color_good_on_color_background,
-            "color_error_on_color_background": SpritzConf.color_error_on_color_background,
-            "color_package_category": SpritzConf.color_package_category,
+            "color_console_font": SulfurConf.color_console_font,
+            "color_normal": SulfurConf.color_normal,
+            "color_install": SulfurConf.color_install,
+            "color_update": SulfurConf.color_update,
+            "color_remove": SulfurConf.color_remove,
+            "color_reinstall": SulfurConf.color_reinstall,
+            "color_title": SulfurConf.color_title,
+            "color_title2": SulfurConf.color_title2,
+            "color_pkgdesc": SulfurConf.color_pkgdesc,
+            "color_pkgsubtitle": SulfurConf.color_pkgsubtitle,
+            "color_subdesc": SulfurConf.color_subdesc,
+            "color_error": SulfurConf.color_error,
+            "color_good": SulfurConf.color_good,
+            "color_background_good": SulfurConf.color_background_good,
+            "color_background_error": SulfurConf.color_background_error,
+            "color_good_on_color_background": SulfurConf.color_good_on_color_background,
+            "color_error_on_color_background": SulfurConf.color_error_on_color_background,
+            "color_package_category": SulfurConf.color_package_category,
         }
         return config_data
 
@@ -241,7 +241,7 @@ class SpritzConf:
         def do_save():
             if not os.path.isdir(os.path.dirname(const.SETTINGS_FILE)):
                 os.makedirs(os.path.dirname(const.SETTINGS_FILE))
-            myxml = entropyTools.xml_from_dict_extended(SpritzConf.getconf())
+            myxml = entropyTools.xml_from_dict_extended(SulfurConf.getconf())
             try:
                 f = open(const.SETTINGS_FILE,"w")
             except (IOError,OSError,), e:
@@ -275,22 +275,22 @@ class SpritzConf:
     @staticmethod
     # update config reading it from user settings
     def update():
-        saved_conf = SpritzConf.read()
-        validators = SpritzConf.getconf_validators()
+        saved_conf = SulfurConf.read()
+        validators = SulfurConf.getconf_validators()
         if not saved_conf: return
         if not isinstance(saved_conf,dict): return
         for key, val in saved_conf.items():
-            if not hasattr(SpritzConf,key): continue
+            if not hasattr(SulfurConf,key): continue
             vf = validators.get(key)
             if not callable(vf):
-                sys.stderr.write("WARNING: SpritzConf, no callable validator for %s" % (key,))
+                sys.stderr.write("WARNING: SulfurConf, no callable validator for %s" % (key,))
                 continue
             valid = vf(val)
             if not valid: continue
-            setattr(SpritzConf,key,val)
+            setattr(SulfurConf,key,val)
 
-SpritzConf.default_colors_config = SpritzConf.getconf()
-SpritzConf.update()
+SulfurConf.default_colors_config = SulfurConf.getconf()
+SulfurConf.update()
 
 def cleanMarkupString(msg):
     import gobject

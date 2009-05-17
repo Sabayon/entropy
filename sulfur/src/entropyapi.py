@@ -1,7 +1,7 @@
-#!/usr/bin/python -tt
+#!/usr/bin/python2 -O
 # -*- coding: iso-8859-1 -*-
-#    Yum Exteder (yumex) - A GUI for yum
-#    Copyright (C) 2006 Tim Lauridsen < tim<AT>yum-extender<DOT>org > 
+#    Sulfur (Entropy Interface)
+#    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 import gtk
 import sys
 import time
-from spritz_setup import const
+from sulfur_setup import const
 from dialogs import questionDialog, LicenseDialog, okDialog, choiceDialog, inputDialog
 import gobject
 
@@ -31,17 +31,11 @@ from entropy.transceivers import UrlFetcher
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 
-'''
-
-   Classes reimplementation for use with a GUI
-
-'''
-
 class QueueExecutor:
 
-    def __init__(self, SpritzApplication):
-        self.Spritz = SpritzApplication
-        self.Entropy = SpritzApplication.Equo
+    def __init__(self, SulfurApplication):
+        self.Sulfur = SulfurApplication
+        self.Entropy = SulfurApplication.Equo
         self.__on_lic_request = False
         self.__on_lic_rc = None
 
@@ -53,7 +47,7 @@ class QueueExecutor:
 
             self.__on_lic_request = True
             def do_handle():
-                dialog = LicenseDialog(self.Spritz, self.Entropy, licenses)
+                dialog = LicenseDialog(self.Sulfur, self.Entropy, licenses)
                 accept = dialog.run()
                 dialog.destroy()
                 self.__on_lic_rc = accept,licenses
@@ -73,12 +67,12 @@ class QueueExecutor:
             selected_by_user = set()
 
         # unmask packages
-        for match in self.Spritz.etpbase.unmaskingPackages:
+        for match in self.Sulfur.etpbase.unmaskingPackages:
             result = self.Entropy.unmask_match(match)
             if not result or self.Entropy.is_match_masked(match):
                 dbconn = self.Entropy.open_repository(match[1])
                 atom = dbconn.retrieveAtom(match[0])
-                okDialog( self.Spritz.ui.main, "%s: %s" % (_("Error enabling masked package"),atom) )
+                okDialog( self.Sulfur.ui.main, "%s: %s" % (_("Error enabling masked package"),atom) )
                 return -2,1
 
         removalQueue = []
@@ -109,9 +103,9 @@ class QueueExecutor:
         myrange.append(step)
         self.Entropy.progress.total.setup( myrange )
 
-        self.Spritz.skipMirrorNow = False
-        self.Spritz.ui.skipMirror.show()
-        self.Spritz.ui.abortQueue.show()
+        self.Sulfur.skipMirrorNow = False
+        self.Sulfur.ui.skipMirror.show()
+        self.Sulfur.ui.abortQueue.show()
         # first fetch all
         fetchqueue = 0
         mykeys = {}
@@ -124,12 +118,12 @@ class QueueExecutor:
 
         for packageInfo in runQueue:
 
-            self.Spritz.queue_bombing()
+            self.Sulfur.queue_bombing()
 
             fetchqueue += 1
             Package = self.Entropy.Package()
             metaopts = {}
-            metaopts['fetch_abort_function'] = self.Spritz.mirror_bombing
+            metaopts['fetch_abort_function'] = self.Sulfur.mirror_bombing
             Package.prepare(packageInfo,fetch_action,metaopts)
 
             myrepo = Package.infoDict['repository']
@@ -161,7 +155,7 @@ class QueueExecutor:
             t = ParallelTask(spawn_ugc)
             t.start()
 
-        self.Spritz.ui.skipMirror.hide()
+        self.Sulfur.ui.skipMirror.hide()
 
         if fetch_only or download_sources:
             return 0,0
@@ -172,7 +166,7 @@ class QueueExecutor:
         currentremovalqueue = 0
         for rem_data in removalQueue:
 
-            self.Spritz.queue_bombing()
+            self.Sulfur.queue_bombing()
 
             idpackage = rem_data[0]
             currentremovalqueue += 1
@@ -201,17 +195,17 @@ class QueueExecutor:
             del metaopts
             del Package
 
-        self.Spritz.skipMirrorNow = False
-        self.Spritz.ui.skipMirror.show()
+        self.Sulfur.skipMirrorNow = False
+        self.Sulfur.ui.skipMirror.show()
         totalqueue = len(runQueue)
         currentqueue = 0
         for packageInfo in runQueue:
             currentqueue += 1
 
-            self.Spritz.queue_bombing()
+            self.Sulfur.queue_bombing()
 
             metaopts = {}
-            metaopts['fetch_abort_function'] = self.Spritz.mirror_bombing
+            metaopts['fetch_abort_function'] = self.Sulfur.mirror_bombing
             metaopts['removeconfig'] = False
 
             if packageInfo in selected_by_user:
@@ -238,8 +232,8 @@ class QueueExecutor:
             del metaopts
             del Package
 
-        self.Spritz.ui.skipMirror.hide()
-        self.Spritz.ui.abortQueue.hide()
+        self.Sulfur.ui.skipMirror.hide()
+        self.Sulfur.ui.abortQueue.hide()
 
         return 0,0
 
@@ -256,13 +250,13 @@ class Equo(EquoInterface):
         if "--debug" in sys.argv:
             self.UGC.quiet = False
 
-    def connect_to_gui(self, spritz_app):
-        self.progress = spritz_app.progress
+    def connect_to_gui(self, application):
+        self.progress = application.progress
         self.urlFetcher = GuiUrlFetcher
         self.nocolor()
-        self.progressLog = spritz_app.progressLogWrite
-        self.output = spritz_app.output
-        self.ui = spritz_app.ui
+        self.progressLog = application.progressLogWrite
+        self.output = application.output
+        self.ui = application.ui
 
     def updateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
 

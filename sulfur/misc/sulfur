@@ -1,14 +1,14 @@
 #!/usr/bin/python2 -O
 import sys, os
 if "--debug" in sys.argv:
-    os.environ['SPRITZ_DEBUG'] = "1"
+    os.environ['SULFUR_DEBUG'] = "1"
     sys.argv.remove("--debug")
 
-spritz_path = " /usr/lib/entropy/spritz/spritz.py " + ' '.join(sys.argv[1:])
-su_cmd = "xterm -e \"su -c '"+spritz_path+"'\""
+sulfur_path = " /usr/lib/entropy/sulfur/sulfur.py " + ' '.join(sys.argv[1:])
+su_cmd = "xterm -e \"su -c '"+sulfur_path+"'\""
 
 def setup_env():
-    global spritz_path, su_cmd
+    global sulfur_path, su_cmd
     pathenv = os.getenv("PATH")
     if os.path.isfile("/etc/profile.env"):
         f = open("/etc/profile.env")
@@ -30,20 +30,20 @@ def setup_env():
         for item in path:
             itempath = os.path.join(item,'kdesu')
             if os.access(itempath,os.X_OK):
-                su_cmd = itempath+' "'+spritz_path+'"'
+                su_cmd = itempath+' "'+sulfur_path+'"'
                 break
     else:
         if os.access('/usr/bin/gksu',os.X_OK):
-            su_cmd = '/usr/bin/gksu "'+spritz_path+'"'
+            su_cmd = '/usr/bin/gksu "'+sulfur_path+'"'
 
 
 
 setup_env()
 tbz2s = [x for x in sys.argv[1:] if x.endswith(".tbz2")]
 if tbz2s:
-    os.environ['SPRITZ_PACKAGES'] = ';'.join(tbz2s)
+    os.environ['SULFUR_PACKAGES'] = ';'.join(tbz2s)
 if os.getuid() == 0:
-    rc = os.system(spritz_path)
+    rc = os.system(sulfur_path)
 else:
     rc = os.system(su_cmd)
 raise SystemExit(rc)

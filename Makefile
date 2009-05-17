@@ -1,6 +1,6 @@
 PKGNAME = entropy
 PYTHON = python2
-SUBDIRS = client conf docs entropy-notification-applet handlers libraries misc/po misc server spritz
+SUBDIRS = client conf docs entropy-notification-applet handlers libraries misc/po misc server sulfur
 SERVER_INSPKGS = reagent.py activator.py server_reagent.py server_activator.py repository-admin-daemon repository-services-daemon.example server_query.py
 
 all:
@@ -96,9 +96,9 @@ notification-applet-install:
 
 	make DESTDIR="$(DESTDIR)" -C entropy-notification-applet install
 
-spritz-install:
+sulfur-install:
 
-	make DESTDIR="$(DESTDIR)" -C spritz install
+	make DESTDIR="$(DESTDIR)" -C sulfur install
 
 pylzma-install:
 
@@ -109,4 +109,4 @@ pycompile-all:
 
 	$(PYTHON) -c "import compileall; compileall.compile_dir('$(DESTDIR)/$(LIBDIR)/entropy', force = True, quiet = True)"
 
-install: entropy-install entropy-server-install equo-install notification-applet-install spritz-install pycompile-all updates-daemon-install
+install: entropy-install entropy-server-install equo-install notification-applet-install sulfur-install pycompile-all updates-daemon-install

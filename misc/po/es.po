@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-16 20:11+0200\n"
+"POT-Creation-Date: 2009-05-17 10:23+0200\n"
 "PO-Revision-Date: 2009-04-08 23:46-0000\n"
 "Last-Translator: Daniel Halens Rodriguez <daniel.halens@sabayonlinux.org>\n"
 "Language-Team:  <es@li.org>\n"
@@ -339,7 +339,7 @@ msgstr "base de datos"
 #: ../../libraries/entropy/server/interfaces/main.py:3035
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1521
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1854
-#: ../../spritz/src/dialogs.py:2084
+#: ../../sulfur/src/dialogs.py:2083
 msgid "download"
 msgstr "descargado"
 
@@ -526,8 +526,8 @@ msgstr "Preparándose para copiar los paquetes seleccionados a"
 #. note
 #: ../../libraries/entropy/server/interfaces/main.py:1573
 #: ../../libraries/entropy/client/services/system/methods.py:98
-#: ../../spritz/src/dialogs.py:782 ../../spritz/src/dialogs.py:3128
-#: ../../spritz/src/spritz.glade.h:125
+#: ../../sulfur/src/dialogs.py:781 ../../sulfur/src/dialogs.py:3127
+#: ../../sulfur/src/sulfur.glade.h:125
 msgid "Note"
 msgstr "Nota"
 
@@ -707,8 +707,8 @@ msgstr "revisión"
 #: ../../client/text_rescue.py:291 ../../client/text_rescue.py:304
 #: ../../client/text_ui.py:908 ../../client/text_ui.py:909
 #: ../../client/text_ui.py:911 ../../client/text_ui.py:912
-#: ../../spritz/src/dialogs.py:5649 ../../spritz/src/misc.py:88
-#: ../../spritz/src/misc.py:372 ../../spritz/src/spritz.py:1908
+#: ../../sulfur/src/dialogs.py:5648 ../../sulfur/src/misc.py:88
+#: ../../sulfur/src/misc.py:372 ../../sulfur/src/sulfur.py:1909
 msgid "Attention"
 msgstr "Atención"
 
@@ -1111,7 +1111,7 @@ msgstr "el método de compresión de la base de datos pasado es incorrecto"
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1348
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1376
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1840
-#: ../../spritz/src/dialogs.py:2082
+#: ../../sulfur/src/dialogs.py:2081
 msgid "upload"
 msgstr "subida"
 
@@ -1435,7 +1435,7 @@ msgid "cannot convert stream into object"
 msgstr "no se pudo convertir el flujo en un objeto"
 
 #: ../../libraries/entropy/client/services/ugc/commands.py:601
-#: ../../spritz/src/spritz.glade.h:245
+#: ../../sulfur/src/sulfur.glade.h:245
 msgid "User Generated Content"
 msgstr "Contenido Generado por el Usuario"
 
@@ -1465,12 +1465,12 @@ msgid "repository does not support EAPI3"
 msgstr "el repositorio no soporta EAPI3"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:132
-#: ../../spritz/src/dialogs.py:198 ../../spritz/src/spritz.glade.h:246
+#: ../../sulfur/src/dialogs.py:198 ../../sulfur/src/sulfur.glade.h:246
 msgid "Username"
 msgstr "Nombre de Usuario"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:133
-#: ../../spritz/src/spritz.glade.h:145
+#: ../../sulfur/src/sulfur.glade.h:145
 msgid "Password"
 msgstr "Contraseña"
 
@@ -1684,41 +1684,41 @@ msgstr "Atoms"
 
 #: ../../libraries/entropy/client/services/system/methods.py:189
 #: ../../libraries/entropy/client/services/system/methods.py:207
-#: ../../spritz/src/dialogs.py:2943 ../../spritz/src/dialogs.py:2986
+#: ../../sulfur/src/dialogs.py:2942 ../../sulfur/src/dialogs.py:2985
 msgid "Pretend"
 msgstr "Prueba"
 
 #: ../../libraries/entropy/client/services/system/methods.py:190
-#: ../../spritz/src/dialogs.py:2987
+#: ../../sulfur/src/dialogs.py:2986
 #, fuzzy
 msgid "Oneshot"
 msgstr "Oneshot"
 
 #: ../../libraries/entropy/client/services/system/methods.py:191
 #: ../../libraries/entropy/client/services/system/methods.py:208
-#: ../../spritz/src/dialogs.py:2944 ../../spritz/src/dialogs.py:2988
+#: ../../sulfur/src/dialogs.py:2943 ../../sulfur/src/dialogs.py:2987
 msgid "Verbose"
 msgstr "Verboso"
 
 #: ../../libraries/entropy/client/services/system/methods.py:192
 #: ../../libraries/entropy/client/services/system/methods.py:209
-#: ../../spritz/src/dialogs.py:2945 ../../spritz/src/dialogs.py:2989
+#: ../../sulfur/src/dialogs.py:2944 ../../sulfur/src/dialogs.py:2988
 msgid "No color"
 msgstr "Sin color"
 
 #: ../../libraries/entropy/client/services/system/methods.py:193
-#: ../../spritz/src/dialogs.py:2990
+#: ../../sulfur/src/dialogs.py:2989
 msgid "Fetch only"
 msgstr "Descargar sólo"
 
 #: ../../libraries/entropy/client/services/system/methods.py:194
-#: ../../spritz/src/dialogs.py:2991
+#: ../../sulfur/src/dialogs.py:2990
 msgid "Build only"
 msgstr "Construir sólo"
 
 #: ../../libraries/entropy/client/services/system/methods.py:195
 #: ../../server/server_reagent.py:187 ../../server/server_reagent.py:192
-#: ../../spritz/src/dialogs.py:2992
+#: ../../sulfur/src/dialogs.py:2991
 msgid "No dependencies"
 msgstr "Sin dependencias"
 
@@ -1727,12 +1727,12 @@ msgid "Custom USE"
 msgstr "USE personalizado"
 
 #: ../../libraries/entropy/client/services/system/methods.py:197
-#: ../../spritz/src/dialogs.py:2994
+#: ../../sulfur/src/dialogs.py:2993
 msgid "Custom LDFLAGS"
 msgstr "LDFLAGS personalizados"
 
 #: ../../libraries/entropy/client/services/system/methods.py:198
-#: ../../spritz/src/dialogs.py:2995
+#: ../../sulfur/src/dialogs.py:2994
 msgid "Custom CFLAGS"
 msgstr "CFLAGS personalizados"
 
@@ -1763,7 +1763,7 @@ msgstr "Habilitar las banderas USE para los atoms especificados"
 
 #: ../../libraries/entropy/client/services/system/methods.py:230
 #: ../../libraries/entropy/client/services/system/methods.py:239
-#: ../../client/text_query.py:1176 ../../spritz/src/dialogs.py:4101
+#: ../../client/text_query.py:1176 ../../sulfur/src/dialogs.py:4100
 msgid "USE flags"
 msgstr "Parámetros USE"
 
@@ -1785,7 +1785,7 @@ msgstr "Ejecutar comando de shell personalizado"
 
 #. command col
 #: ../../libraries/entropy/client/services/system/methods.py:259
-#: ../../spritz/src/dialogs.py:695 ../../spritz/src/dialogs.py:736
+#: ../../sulfur/src/dialogs.py:694 ../../sulfur/src/dialogs.py:735
 msgid "Command"
 msgstr "Comando"
 
@@ -1817,7 +1817,7 @@ msgstr "Fijar el repositorio del Servidor de Entropy"
 #: ../../libraries/entropy/client/services/system/methods.py:395
 #: ../../libraries/entropy/client/services/system/methods.py:402
 #: ../../libraries/entropy/client/services/system/methods.py:411
-#: ../../spritz/src/views.py:1901
+#: ../../sulfur/src/views.py:1902
 msgid "Repository Identifier"
 msgstr "Identificador del repositorio"
 
@@ -1852,12 +1852,12 @@ msgstr ""
 "en el repositorio especificado"
 
 #: ../../libraries/entropy/client/services/system/methods.py:314
-#: ../../spritz/src/dialogs.py:3333
+#: ../../sulfur/src/dialogs.py:3332
 msgid "Search type"
 msgstr "Tipo de búsqueda"
 
 #: ../../libraries/entropy/client/services/system/methods.py:315
-#: ../../spritz/src/dialogs.py:3334
+#: ../../sulfur/src/dialogs.py:3333
 msgid "Search string"
 msgstr "Cadena de búsqueda"
 
@@ -1874,7 +1874,7 @@ msgid "From repository"
 msgstr "Desde el repositorio"
 
 #: ../../libraries/entropy/client/services/system/methods.py:326
-#: ../../spritz/src/dialogs.py:1826
+#: ../../sulfur/src/dialogs.py:1825
 msgid "To repository"
 msgstr "Al repositorio"
 
@@ -1970,9 +1970,9 @@ msgstr "Añadir entrada en el tablón de anuncios"
 #: ../../client/text_repositories.py:299 ../../client/text_security.py:85
 #: ../../client/text_ugc.py:361 ../../client/text_ugc.py:545
 #: ../../server/server_activator.py:151 ../../server/server_activator.py:184
-#: ../../server/server_activator.py:216 ../../spritz/src/dialogs.py:100
-#: ../../spritz/src/dialogs.py:1328 ../../spritz/src/dialogs.py:1975
-#: ../../spritz/src/dialogs.py:3731 ../../spritz/src/spritz.glade.h:223
+#: ../../server/server_activator.py:216 ../../sulfur/src/dialogs.py:100
+#: ../../sulfur/src/dialogs.py:1327 ../../sulfur/src/dialogs.py:1974
+#: ../../sulfur/src/dialogs.py:3730 ../../sulfur/src/sulfur.glade.h:223
 msgid "Title"
 msgstr "Título"
 
@@ -2178,13 +2178,13 @@ msgstr "Extracción del paquete completada"
 #: ../../libraries/entropy/client/interfaces/methods.py:56
 #: ../../libraries/entropy/client/interfaces/methods.py:71
 #: ../../server/server_reagent.py:100 ../../server/server_reagent.py:112
-#: ../../spritz/src/dialogs.py:2064 ../../spritz/src/dialogs.py:2227
-#: ../../spritz/src/dialogs.py:2304 ../../spritz/src/dialogs.py:2588
-#: ../../spritz/src/dialogs.py:3277 ../../spritz/src/dialogs.py:3332
-#: ../../spritz/src/dialogs.py:3366 ../../spritz/src/dialogs.py:3389
-#: ../../spritz/src/dialogs.py:3415 ../../spritz/src/dialogs.py:3455
-#: ../../spritz/src/spritz.py:1700 ../../spritz/src/views.py:1254
-#: ../../spritz/src/views.py:1840
+#: ../../sulfur/src/dialogs.py:2063 ../../sulfur/src/dialogs.py:2226
+#: ../../sulfur/src/dialogs.py:2303 ../../sulfur/src/dialogs.py:2587
+#: ../../sulfur/src/dialogs.py:3276 ../../sulfur/src/dialogs.py:3331
+#: ../../sulfur/src/dialogs.py:3365 ../../sulfur/src/dialogs.py:3388
+#: ../../sulfur/src/dialogs.py:3414 ../../sulfur/src/dialogs.py:3454
+#: ../../sulfur/src/sulfur.py:1701 ../../sulfur/src/views.py:1255
+#: ../../sulfur/src/views.py:1841
 msgid "Repository"
 msgstr "Repositorio"
 
@@ -2363,7 +2363,7 @@ msgid "Set not found or unable to remove"
 msgstr "El Set no se ha encontrado o no se puede eliminar"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:979
-#: ../../spritz/src/spritz.glade.h:107
+#: ../../sulfur/src/sulfur.glade.h:107
 msgid "Libraries test"
 msgstr "Comprobación de bibliotecas"
 
@@ -2496,8 +2496,8 @@ msgstr "Por favor, reporta el error"
 #: ../../libraries/entropy/client/interfaces/package.py:1874
 #: ../../libraries/entropy/client/interfaces/trigger.py:63
 #: ../../libraries/entropy/db.py:45 ../../libraries/entropy/security.py:253
-#: ../../server/server_reagent.py:645 ../../spritz/src/spritz.py:901
-#: ../../spritz/src/spritz.py:932 ../../spritz/src/spritz.glade.h:73
+#: ../../server/server_reagent.py:645 ../../sulfur/src/sulfur.py:902
+#: ../../sulfur/src/sulfur.py:933 ../../sulfur/src/sulfur.glade.h:73
 msgid "Error"
 msgstr "Error"
 
@@ -2705,7 +2705,7 @@ msgid "It seems that the Source Package Manager entry is missing"
 msgstr ""
 
 #: ../../libraries/entropy/client/interfaces/package.py:1902
-#: ../../spritz/src/entropyapi.py:120
+#: ../../sulfur/src/entropyapi.py:114
 msgid "Fetching"
 msgstr "Adquiriendo"
 
@@ -3049,7 +3049,7 @@ msgid "Injecting downloaded dump"
 msgstr "Inyectando los elementos descargados"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1431
-#: ../../libraries/entropy/db.py:3831 ../../spritz/src/spritz.glade.h:290
+#: ../../libraries/entropy/db.py:3831 ../../sulfur/src/sulfur.glade.h:290
 msgid "please wait"
 msgstr "espera por favor"
 
@@ -3569,7 +3569,7 @@ msgstr "no se pudo abrir el contador del administrador de paquetes fuente para"
 msgid "counter for atom is duplicated, ignoring"
 msgstr "el contador para el atom está duplicado, ignorando"
 
-#: ../../libraries/entropy/output.py:437 ../../spritz/src/entropyapi.py:318
+#: ../../libraries/entropy/output.py:437 ../../sulfur/src/entropyapi.py:323
 msgid "Entropy needs your attention"
 msgstr "Entropy necesita tu atención"
 
@@ -3732,7 +3732,7 @@ msgstr "Aviso roto"
 #: ../../libraries/entropy/security.py:645
 #: ../../libraries/entropy/security.py:655
 #: ../../libraries/entropy/security.py:676
-#: ../../libraries/entropy/security.py:686 ../../spritz/src/spritz.py:1513
+#: ../../libraries/entropy/security.py:686 ../../sulfur/src/sulfur.py:1514
 msgid "Security Advisories"
 msgstr "Avisos de seguridad"
 
@@ -3862,7 +3862,7 @@ msgstr "seg"
 msgid "Aggregated download"
 msgstr "descarga descartada"
 
-#: ../../libraries/entropy/transceivers.py:518 ../../spritz/src/spritz.py:2251
+#: ../../libraries/entropy/transceivers.py:518 ../../sulfur/src/sulfur.py:2255
 msgid "items"
 msgstr "ítemes"
 
@@ -5204,8 +5204,8 @@ msgstr "No hay coincidencias para"
 
 #. atom
 #: ../../client/text_query.py:231 ../../client/text_query.py:343
-#: ../../spritz/src/dialogs.py:2693 ../../spritz/src/dialogs.py:3329
-#: ../../spritz/src/dialogs.py:5738
+#: ../../sulfur/src/dialogs.py:2692 ../../sulfur/src/dialogs.py:3328
+#: ../../sulfur/src/dialogs.py:5737
 msgid "Atom"
 msgstr "Atom"
 
@@ -5223,7 +5223,7 @@ msgid "Matched"
 msgstr "Coincidentes"
 
 #: ../../client/text_query.py:304 ../../client/text_query.py:1118
-#: ../../spritz/src/spritz.glade.h:117
+#: ../../sulfur/src/sulfur.glade.h:117
 msgid "Masked"
 msgstr "Enmascarado"
 
@@ -5259,9 +5259,9 @@ msgstr "Búsqueda de Eclass"
 #. package
 #. glsa id
 #: ../../client/text_query.py:448 ../../client/text_query.py:1095
-#: ../../server/server_reagent.py:236 ../../spritz/src/dialogs.py:2302
-#: ../../spritz/src/dialogs.py:2585 ../../spritz/src/dialogs.py:4447
-#: ../../spritz/src/dialogs.py:5264 ../../spritz/src/views.py:1236
+#: ../../server/server_reagent.py:236 ../../sulfur/src/dialogs.py:2301
+#: ../../sulfur/src/dialogs.py:2584 ../../sulfur/src/dialogs.py:4446
+#: ../../sulfur/src/dialogs.py:5263 ../../sulfur/src/views.py:1237
 msgid "Package"
 msgstr "Paquete"
 
@@ -5394,9 +5394,9 @@ msgid "Not installed"
 msgstr "No instalado"
 
 #: ../../client/text_query.py:1079 ../../client/text_query.py:1080
-#: ../../spritz/src/dialogs.py:3490 ../../spritz/src/dialogs.py:3549
-#: ../../spritz/src/dialogs.py:3597 ../../spritz/src/dialogs.py:3710
-#: ../../spritz/src/dialogs.py:3713
+#: ../../sulfur/src/dialogs.py:3489 ../../sulfur/src/dialogs.py:3548
+#: ../../sulfur/src/dialogs.py:3596 ../../sulfur/src/dialogs.py:3709
+#: ../../sulfur/src/dialogs.py:3712
 msgid "N/A"
 msgstr "N/D"
 
@@ -5408,8 +5408,8 @@ msgstr "Categoría"
 msgid "Name"
 msgstr "Nombre"
 
-#: ../../client/text_query.py:1121 ../../spritz/src/dialogs.py:832
-#: ../../spritz/src/spritz.glade.h:16
+#: ../../client/text_query.py:1121 ../../sulfur/src/dialogs.py:831
+#: ../../sulfur/src/sulfur.glade.h:16
 msgid "Available"
 msgstr "Disponible"
 
@@ -5417,19 +5417,19 @@ msgstr "Disponible"
 msgid "version"
 msgstr "versión"
 
-#: ../../client/text_query.py:1126 ../../spritz/src/dialogs.py:830
-#: ../../spritz/src/spritz.glade.h:100
+#: ../../client/text_query.py:1126 ../../sulfur/src/dialogs.py:829
+#: ../../sulfur/src/sulfur.glade.h:100
 msgid "Installed"
 msgstr "Instalado"
 
-#: ../../client/text_query.py:1132 ../../spritz/src/dialogs.py:843
-#: ../../spritz/src/dialogs.py:866 ../../spritz/src/spritz.glade.h:206
+#: ../../client/text_query.py:1132 ../../sulfur/src/dialogs.py:842
+#: ../../sulfur/src/dialogs.py:865 ../../sulfur/src/sulfur.glade.h:206
 msgid "Slot"
 msgstr "Bloque"
 
 #: ../../client/text_query.py:1139 ../../client/text_ugc.py:559
-#: ../../spritz/src/dialogs.py:862 ../../spritz/src/dialogs.py:3726
-#: ../../spritz/src/spritz.glade.h:205
+#: ../../sulfur/src/dialogs.py:861 ../../sulfur/src/dialogs.py:3725
+#: ../../sulfur/src/sulfur.glade.h:205
 msgid "Size"
 msgstr "Tamaño"
 
@@ -5441,7 +5441,7 @@ msgstr "Descargado"
 msgid "Checksum"
 msgstr "Comprobación de suma"
 
-#: ../../client/text_query.py:1154 ../../spritz/src/dialogs.py:4117
+#: ../../client/text_query.py:1154 ../../sulfur/src/dialogs.py:4116
 msgid "Dependencies"
 msgstr "Dependencias"
 
@@ -5449,29 +5449,29 @@ msgstr "Dependencias"
 msgid "Conflicts"
 msgstr "Conflictos"
 
-#: ../../client/text_query.py:1165 ../../spritz/src/dialogs.py:872
+#: ../../client/text_query.py:1165 ../../sulfur/src/dialogs.py:871
 msgid "Homepage"
 msgstr "Página"
 
 #. desc col
 #: ../../client/text_query.py:1171 ../../client/text_security.py:89
-#: ../../client/text_ugc.py:366 ../../spritz/src/dialogs.py:697
-#: ../../spritz/src/dialogs.py:710 ../../spritz/src/dialogs.py:851
-#: ../../spritz/src/dialogs.py:3329 ../../spritz/src/dialogs.py:3733
-#: ../../spritz/src/views.py:1716 ../../spritz/src/views.py:1902
-#: ../../spritz/src/spritz.glade.h:55
+#: ../../client/text_ugc.py:366 ../../sulfur/src/dialogs.py:696
+#: ../../sulfur/src/dialogs.py:709 ../../sulfur/src/dialogs.py:850
+#: ../../sulfur/src/dialogs.py:3328 ../../sulfur/src/dialogs.py:3732
+#: ../../sulfur/src/views.py:1717 ../../sulfur/src/views.py:1903
+#: ../../sulfur/src/sulfur.glade.h:55
 msgid "Description"
 msgstr "Descripción"
 
-#: ../../client/text_query.py:1184 ../../spritz/src/spritz.glade.h:24
+#: ../../client/text_query.py:1184 ../../sulfur/src/sulfur.glade.h:24
 msgid "CHOST"
 msgstr "CHOST"
 
-#: ../../client/text_query.py:1186 ../../spritz/src/spritz.glade.h:23
+#: ../../client/text_query.py:1186 ../../sulfur/src/sulfur.glade.h:23
 msgid "CFLAGS"
 msgstr "CFLAGS"
 
-#: ../../client/text_query.py:1188 ../../spritz/src/spritz.glade.h:26
+#: ../../client/text_query.py:1188 ../../sulfur/src/sulfur.glade.h:26
 msgid "CXXFLAGS"
 msgstr "CXXFLAGS"
 
@@ -5479,7 +5479,7 @@ msgstr "CXXFLAGS"
 msgid "Portage eclasses"
 msgstr "Eclasses de Portage"
 
-#: ../../client/text_query.py:1200 ../../spritz/src/dialogs.py:4077
+#: ../../client/text_query.py:1200 ../../sulfur/src/dialogs.py:4076
 msgid "Sources"
 msgstr "Fuentes"
 
@@ -5496,8 +5496,8 @@ msgid "Compiled with"
 msgstr "Compilado con"
 
 #: ../../client/text_query.py:1212 ../../client/text_ugc.py:371
-#: ../../client/text_ugc.py:554 ../../spritz/src/dialogs.py:3735
-#: ../../spritz/src/dialogs.py:4093 ../../spritz/src/spritz.glade.h:105
+#: ../../client/text_ugc.py:554 ../../sulfur/src/dialogs.py:3734
+#: ../../sulfur/src/dialogs.py:4092 ../../sulfur/src/sulfur.glade.h:105
 msgid "Keywords"
 msgstr "Palabras clave"
 
@@ -5506,7 +5506,7 @@ msgid "Created"
 msgstr "Creado"
 
 #: ../../client/text_query.py:1224 ../../client/text_ui.py:1002
-#: ../../spritz/src/dialogs.py:6008
+#: ../../sulfur/src/dialogs.py:6007
 msgid "License"
 msgstr "Licencia"
 
@@ -5556,9 +5556,9 @@ msgstr "activo"
 msgid "never synced"
 msgstr "nunca sincronizado"
 
-#: ../../client/text_repositories.py:150 ../../spritz/src/dialogs.py:728
-#: ../../spritz/src/dialogs.py:772 ../../spritz/src/dialogs.py:1315
-#: ../../spritz/src/views.py:1693
+#: ../../client/text_repositories.py:150 ../../sulfur/src/dialogs.py:727
+#: ../../sulfur/src/dialogs.py:771 ../../sulfur/src/dialogs.py:1314
+#: ../../sulfur/src/views.py:1694
 msgid "Status"
 msgstr "Estado"
 
@@ -5575,12 +5575,12 @@ msgid "Repository database checksum"
 msgstr "Comprobación de suma de la base de datos del repositorio"
 
 #: ../../client/text_repositories.py:175 ../../client/text_ui.py:334
-#: ../../spritz/src/spritz.py:2073
+#: ../../sulfur/src/sulfur.py:2077
 msgid "No repositories specified in"
 msgstr "No se han especificado repositorios en"
 
 #: ../../client/text_repositories.py:178 ../../client/text_ui.py:338
-#: ../../spritz/src/spritz.py:2082
+#: ../../sulfur/src/sulfur.py:2086
 msgid "Unhandled exception"
 msgstr "Excepción no manejada"
 
@@ -5590,13 +5590,13 @@ msgid "Notice board not available"
 msgstr "Tablón de anuncios no disponible"
 
 #: ../../client/text_repositories.py:220 ../../client/text_ugc.py:551
-#: ../../server/server_activator.py:157 ../../spritz/src/dialogs.py:4176
-#: ../../spritz/src/spritz.glade.h:41
+#: ../../server/server_activator.py:157 ../../sulfur/src/dialogs.py:4175
+#: ../../sulfur/src/sulfur.glade.h:41
 msgid "Content"
 msgstr "Contenido"
 
 #: ../../client/text_repositories.py:225 ../../server/server_activator.py:162
-#: ../../spritz/src/spritz.glade.h:109
+#: ../../sulfur/src/sulfur.glade.h:109
 msgid "Link"
 msgstr "Enlace"
 
@@ -5608,8 +5608,8 @@ msgstr "Presiona Enter para continuar"
 msgid "Choose one by typing its identifier"
 msgstr "Elige una escribiendo su identificador"
 
-#: ../../client/text_repositories.py:286 ../../spritz/src/dialogs.py:2033
-#: ../../spritz/src/spritz.glade.h:127
+#: ../../client/text_repositories.py:286 ../../sulfur/src/dialogs.py:2032
+#: ../../sulfur/src/sulfur.glade.h:127
 msgid "Notice board"
 msgstr "Tablón de anuncios"
 
@@ -5978,7 +5978,7 @@ msgstr "Aviso"
 msgid "GLSA Identifier"
 msgstr "Identificador de GLSA"
 
-#: ../../client/text_security.py:112 ../../spritz/src/spritz.glade.h:17
+#: ../../client/text_security.py:112 ../../sulfur/src/sulfur.glade.h:17
 msgid "Background"
 msgstr "Acerca del paquete"
 
@@ -5986,7 +5986,7 @@ msgstr "Acerca del paquete"
 msgid "Exploitable"
 msgstr "Explotable"
 
-#: ../../client/text_security.py:124 ../../spritz/src/spritz.glade.h:92
+#: ../../client/text_security.py:124 ../../sulfur/src/sulfur.glade.h:92
 msgid "Impact"
 msgstr "Impacto"
 
@@ -5994,19 +5994,19 @@ msgstr "Impacto"
 msgid "Impact type"
 msgstr "Tipo de impacto"
 
-#: ../../client/text_security.py:135 ../../spritz/src/spritz.glade.h:191
+#: ../../client/text_security.py:135 ../../sulfur/src/sulfur.glade.h:191
 msgid "Revised"
 msgstr "Revisado"
 
-#: ../../client/text_security.py:139 ../../spritz/src/spritz.glade.h:14
+#: ../../client/text_security.py:139 ../../sulfur/src/sulfur.glade.h:14
 msgid "Announced"
 msgstr "Anunciado"
 
-#: ../../client/text_security.py:143 ../../spritz/src/spritz.glade.h:216
+#: ../../client/text_security.py:143 ../../sulfur/src/sulfur.glade.h:216
 msgid "Synopsis"
 msgstr "Sinopsis"
 
-#: ../../client/text_security.py:150 ../../spritz/src/spritz.glade.h:169
+#: ../../client/text_security.py:150 ../../sulfur/src/sulfur.glade.h:169
 msgid "References"
 msgstr "Referencias"
 
@@ -6026,11 +6026,11 @@ msgstr "versiones vulnerables"
 msgid "unaffected versions"
 msgstr "versiones no afectadas"
 
-#: ../../client/text_security.py:176 ../../spritz/src/spritz.glade.h:250
+#: ../../client/text_security.py:176 ../../sulfur/src/sulfur.glade.h:250
 msgid "Workaround"
 msgstr "Solución manual"
 
-#: ../../client/text_security.py:180 ../../spritz/src/spritz.glade.h:187
+#: ../../client/text_security.py:180 ../../sulfur/src/sulfur.glade.h:187
 msgid "Resolution"
 msgstr "Resolución"
 
@@ -6092,7 +6092,7 @@ msgid "directory does not exist"
 msgstr "directorio no existe"
 
 #: ../../client/text_smart.py:157 ../../client/text_ui.py:448
-#: ../../spritz/src/spritz.py:511
+#: ../../sulfur/src/sulfur.py:511
 msgid "is not a valid Entropy package"
 msgstr "no es un paquete de Entropy válido"
 
@@ -6199,11 +6199,11 @@ msgstr ""
 msgid "Login error. Not logged in."
 msgstr "Error de login. No estás conectado."
 
-#: ../../client/text_ugc.py:113 ../../spritz/src/spritz.py:1676
+#: ../../client/text_ugc.py:113 ../../sulfur/src/sulfur.py:1677
 msgid "Not logged in"
 msgstr "No conectado"
 
-#: ../../client/text_ugc.py:121 ../../spritz/src/etpgui/packages.py:216
+#: ../../client/text_ugc.py:121 ../../sulfur/src/etpgui/packages.py:216
 msgid "User"
 msgstr "El usuario"
 
@@ -6252,7 +6252,7 @@ msgstr "Voto"
 msgid "Vote added, thank you!"
 msgstr "Voto añadido, gracias."
 
-#: ../../client/text_ugc.py:282 ../../spritz/src/dialogs.py:4261
+#: ../../client/text_ugc.py:282 ../../sulfur/src/dialogs.py:4260
 msgid "Number of downloads"
 msgstr "Número de descargas"
 
@@ -6308,7 +6308,7 @@ msgstr "Escribe la ruta del documento"
 msgid "Document path"
 msgstr "Ruta del documento"
 
-#: ../../client/text_ugc.py:382 ../../spritz/src/spritz.glade.h:60
+#: ../../client/text_ugc.py:382 ../../sulfur/src/sulfur.glade.h:60
 msgid "Document type"
 msgstr "Tipo de documento"
 
@@ -6473,7 +6473,7 @@ msgstr "¿en realidad quisiste decir"
 msgid "one of these below?"
 msgstr "alguno de los siguientes paquetes?"
 
-#: ../../client/text_ui.py:450 ../../spritz/src/spritz.py:513
+#: ../../client/text_ui.py:450 ../../sulfur/src/sulfur.py:513
 msgid "is not compiled with the same architecture of the system"
 msgstr "no está compilado con la misma arquitectura que el sistema"
 
@@ -6499,11 +6499,11 @@ msgid "Switch repo"
 msgstr "Cambiar repositorio"
 
 #: ../../client/text_ui.py:530 ../../client/text_ui.py:532
-#: ../../spritz/src/spritz.glade.h:171
+#: ../../sulfur/src/sulfur.glade.h:171
 msgid "Reinstall"
 msgstr "Reinstalar"
 
-#: ../../client/text_ui.py:535 ../../spritz/src/spritz.glade.h:93
+#: ../../client/text_ui.py:535 ../../sulfur/src/sulfur.glade.h:93
 msgid "Install"
 msgstr "Instalar"
 
@@ -6515,7 +6515,7 @@ msgstr "Actualizar"
 msgid "Downgrade"
 msgstr "Desactualizar"
 
-#: ../../client/text_ui.py:540 ../../spritz/src/dialogs.py:2066
+#: ../../client/text_ui.py:540 ../../sulfur/src/dialogs.py:2065
 msgid "Action"
 msgstr "Acción"
 
@@ -6597,7 +6597,7 @@ msgstr "Tamaño de la descarga"
 msgid "Used disk space"
 msgstr "Espacio en disco usado"
 
-#: ../../client/text_ui.py:883 ../../spritz/src/misc.py:440
+#: ../../client/text_ui.py:883 ../../sulfur/src/misc.py:440
 msgid "Freed disk space"
 msgstr "Espacio liberado en disco"
 
@@ -6829,7 +6829,7 @@ msgstr "¡ Abortando !"
 msgid "Exit/Commit"
 msgstr "Salir/Enviar"
 
-#: ../../server/server_activator.py:217 ../../spritz/src/dialogs.py:1989
+#: ../../server/server_activator.py:217 ../../sulfur/src/dialogs.py:1988
 msgid "Notice text"
 msgstr "Texto del anuncio"
 
@@ -6924,7 +6924,7 @@ msgstr "No se especificó un repositorio válido."
 msgid "Enabling"
 msgstr "Habilitando"
 
-#: ../../server/server_reagent.py:97 ../../spritz/src/dialogs.py:5033
+#: ../../server/server_reagent.py:97 ../../sulfur/src/dialogs.py:5032
 msgid "Enabled"
 msgstr "Habilitado"
 
@@ -7054,7 +7054,7 @@ msgstr "Entradas manejadas"
 
 #: ../../server/server_reagent.py:455 ../../server/server_reagent.py:480
 #: ../../server/server_reagent.py:525 ../../server/server_reagent.py:542
-#: ../../spritz/src/dialogs.py:2859
+#: ../../sulfur/src/dialogs.py:2858
 msgid "Not enough parameters"
 msgstr "No se han especificado suficientes parámetros"
 
@@ -7119,11 +7119,11 @@ msgstr "[set]No se han encontrado paquetes"
 msgid "package set not found"
 msgstr "[set]No se han encontrado paquetes"
 
-#: ../../spritz/src/dialogs.py:72 ../../spritz/src/spritz.glade.h:184
+#: ../../sulfur/src/dialogs.py:72 ../../sulfur/src/sulfur.glade.h:184
 msgid "Repositories Notice Board"
 msgstr "Tablón de Anuncios de los Repositorios"
 
-#: ../../spritz/src/dialogs.py:73
+#: ../../sulfur/src/dialogs.py:73
 msgid ""
 "Here below you will find a list of important news directly issued by your "
 "applications maintainers. Double click on each item to retrieve detailed "
@@ -7133,680 +7133,682 @@ msgstr ""
 "por los mantenedores de los programas. Haz doble clic en cada una para "
 "obtener información detallada."
 
-#: ../../spritz/src/dialogs.py:89
+#: ../../sulfur/src/dialogs.py:89
 msgid "Notice"
 msgstr "Anuncio"
 
-#: ../../spritz/src/dialogs.py:195
+#: ../../sulfur/src/dialogs.py:195
 msgid "Connection name"
 msgstr "Nombre de la conexión"
 
-#: ../../spritz/src/dialogs.py:196 ../../spritz/src/dialogs.py:259
-#: ../../spritz/src/spritz.glade.h:88
+#: ../../sulfur/src/dialogs.py:196 ../../sulfur/src/dialogs.py:259
+#: ../../sulfur/src/sulfur.glade.h:88
 msgid "Hostname"
 msgstr "Nombre de Host"
 
-#: ../../spritz/src/dialogs.py:197 ../../spritz/src/dialogs.py:260
-#: ../../spritz/src/spritz.glade.h:151
+#: ../../sulfur/src/dialogs.py:197 ../../sulfur/src/dialogs.py:260
+#: ../../sulfur/src/sulfur.glade.h:151
 msgid "Port"
 msgstr "Puerto"
 
-#: ../../spritz/src/dialogs.py:199
+#: ../../sulfur/src/dialogs.py:199
 msgid "SSL Connection"
 msgstr "Conexión SSL"
 
-#: ../../spritz/src/dialogs.py:202 ../../spritz/src/dialogs.py:3419
+#: ../../sulfur/src/dialogs.py:202 ../../sulfur/src/dialogs.py:3418
 msgid "Choose what kind of test you would like to run"
 msgstr "Elige el tipo de test que quieras ejecutar"
 
-#: ../../spritz/src/dialogs.py:258
+#: ../../sulfur/src/dialogs.py:258
 msgid "Connection"
 msgstr "Conexión"
 
-#: ../../spritz/src/dialogs.py:264
+#: ../../sulfur/src/dialogs.py:264
 msgid "SSL"
 msgstr "SSL"
 
-#: ../../spritz/src/dialogs.py:333 ../../spritz/src/dialogs.py:939
+#: ../../sulfur/src/dialogs.py:333 ../../sulfur/src/dialogs.py:938
 msgid "Connection Error"
 msgstr "Error de conexión"
 
 #.
-#: ../../spritz/src/dialogs.py:521 ../../spritz/src/dialogs.py:540
-#: ../../spritz/src/dialogs.py:557
+#: ../../sulfur/src/dialogs.py:520 ../../sulfur/src/dialogs.py:539
+#: ../../sulfur/src/dialogs.py:556
 msgid "Packages information"
 msgstr "Información de los paquetes"
 
-#: ../../spritz/src/dialogs.py:526 ../../spritz/src/spritz.glade.h:11
+#: ../../sulfur/src/dialogs.py:525 ../../sulfur/src/sulfur.glade.h:11
 msgid "Advisory information"
 msgstr "Información del aviso"
 
 #.
-#: ../../spritz/src/dialogs.py:533 ../../spritz/src/dialogs.py:550
+#: ../../sulfur/src/dialogs.py:532 ../../sulfur/src/dialogs.py:549
 msgid "Execute"
 msgstr "Ejecutar"
 
-#: ../../spritz/src/dialogs.py:545
+#: ../../sulfur/src/dialogs.py:544
 msgid "Destination repository"
 msgstr "Repositorio de destino"
 
-#: ../../spritz/src/dialogs.py:562
+#: ../../sulfur/src/dialogs.py:561
 msgid "Remove packages"
 msgstr "Eliminar paquetes"
 
-#: ../../spritz/src/dialogs.py:567
+#: ../../sulfur/src/dialogs.py:566
 msgid "Copy/move packages"
 msgstr "Copiar/mover paquetes"
 
-#: ../../spritz/src/dialogs.py:572
+#: ../../sulfur/src/dialogs.py:571
 msgid "Compile selected"
 msgstr "Compilar lo seleccionado"
 
-#: ../../spritz/src/dialogs.py:577 ../../spritz/src/spritz.glade.h:7
+#: ../../sulfur/src/dialogs.py:576 ../../sulfur/src/sulfur.glade.h:7
 msgid "Add USE"
 msgstr "Añadir USE"
 
-#: ../../spritz/src/dialogs.py:582 ../../spritz/src/spritz.glade.h:177
+#: ../../sulfur/src/dialogs.py:581 ../../sulfur/src/sulfur.glade.h:177
 msgid "Remove USE"
 msgstr "Eliminar USE"
 
 #.
-#: ../../spritz/src/dialogs.py:589
+#: ../../sulfur/src/dialogs.py:588
 msgid "View"
 msgstr "Ver"
 
-#: ../../spritz/src/dialogs.py:594
+#: ../../sulfur/src/dialogs.py:593
 msgid "Add"
 msgstr "Añadir"
 
-#: ../../spritz/src/dialogs.py:599 ../../spritz/src/spritz.glade.h:174
+#: ../../sulfur/src/dialogs.py:598 ../../sulfur/src/sulfur.glade.h:174
 msgid "Remove"
 msgstr "Eliminar"
 
-#: ../../spritz/src/dialogs.py:604 ../../spritz/src/spritz.glade.h:170
+#: ../../sulfur/src/dialogs.py:603 ../../sulfur/src/sulfur.glade.h:170
 msgid "Refresh"
 msgstr "Actualizar"
 
-#: ../../spritz/src/dialogs.py:708
+#: ../../sulfur/src/dialogs.py:707
 msgid "None"
 msgstr "Ninguno"
 
 #. description col
-#: ../../spritz/src/dialogs.py:712 ../../spritz/src/dialogs.py:738
+#: ../../sulfur/src/dialogs.py:711 ../../sulfur/src/dialogs.py:737
 msgid "Parameters"
 msgstr "Parámetros"
 
 #. date col
 #. date
-#: ../../spritz/src/dialogs.py:740 ../../spritz/src/dialogs.py:780
-#: ../../spritz/src/spritz.py:1660 ../../spritz/src/spritz.glade.h:49
+#: ../../sulfur/src/dialogs.py:739 ../../sulfur/src/dialogs.py:779
+#: ../../sulfur/src/sulfur.py:1661 ../../sulfur/src/sulfur.glade.h:49
 msgid "Date"
 msgstr "Fecha"
 
-#: ../../spritz/src/dialogs.py:841
+#: ../../sulfur/src/dialogs.py:840
 msgid "Key"
 msgstr "Clave"
 
-#: ../../spritz/src/dialogs.py:853
+#: ../../sulfur/src/dialogs.py:852
 msgid "USE Flags"
 msgstr "Parámetros USE"
 
-#: ../../spritz/src/dialogs.py:864 ../../spritz/src/spritz.glade.h:21
+#: ../../sulfur/src/dialogs.py:863 ../../sulfur/src/sulfur.glade.h:21
 msgid "Branch"
 msgstr "Rama"
 
-#: ../../spritz/src/dialogs.py:868 ../../spritz/src/dialogs.py:3329
+#: ../../sulfur/src/dialogs.py:867 ../../sulfur/src/dialogs.py:3328
 msgid "Tag"
 msgstr "Etiqueta"
 
-#: ../../spritz/src/dialogs.py:870
+#: ../../sulfur/src/dialogs.py:869
 msgid "Injected"
 msgstr "Inyectado"
 
-#: ../../spritz/src/dialogs.py:928
+#: ../../sulfur/src/dialogs.py:927
 msgid "No connection to host, please check your data"
 msgstr "No hay conexión con el host, comprueba los datos"
 
-#: ../../spritz/src/dialogs.py:932
+#: ../../sulfur/src/dialogs.py:931
 msgid "Unable to create a remote session. Try again later."
 msgstr "Imposible crear una sesión remota, Inténtalo mas tarde."
 
-#: ../../spritz/src/dialogs.py:936
+#: ../../sulfur/src/dialogs.py:935
 msgid "Login failed. Please retry."
 msgstr "Login fallido. Inténtalo de nuevo."
 
-#: ../../spritz/src/dialogs.py:945
+#: ../../sulfur/src/dialogs.py:944
 msgid "SSL Error, are you sure the server supports SSL?"
 msgstr "Error SSL. ¿Estás seguro de que el servidor soporta SSL?"
 
-#: ../../spritz/src/dialogs.py:982
+#: ../../sulfur/src/dialogs.py:981
 msgid "Communication error"
 msgstr "Error de comunicación"
 
-#: ../../spritz/src/dialogs.py:1013
+#: ../../sulfur/src/dialogs.py:1012
 msgid "Current"
 msgstr "Actual"
 
-#: ../../spritz/src/dialogs.py:1015
+#: ../../sulfur/src/dialogs.py:1014
 msgid "c.mode"
 msgstr "modoCom"
 
-#: ../../spritz/src/dialogs.py:1017
+#: ../../sulfur/src/dialogs.py:1016
 msgid "branch"
 msgstr "rama"
 
-#: ../../spritz/src/dialogs.py:1019
+#: ../../sulfur/src/dialogs.py:1018
 msgid "supported branches"
 msgstr "ramas soportadas"
 
-#: ../../spritz/src/dialogs.py:1021
+#: ../../sulfur/src/dialogs.py:1020
 msgid "repositories"
 msgstr "repositorios"
 
 #. glsa id
-#: ../../spritz/src/dialogs.py:1325
+#: ../../sulfur/src/dialogs.py:1324
 msgid "GLSA Id."
 msgstr "Id. de GLSA"
 
-#: ../../spritz/src/dialogs.py:1367
+#: ../../sulfur/src/dialogs.py:1366
 msgid "Are you sure you want to remove the selected packages ? (For EVA!)"
 msgstr ""
 "¿Estás seguro de que quieres eliminar los pauqetes seleccionados? (¡Para "
 "siempre!)"
 
-#: ../../spritz/src/dialogs.py:1370
+#: ../../sulfur/src/dialogs.py:1369
 msgid "This is your last chance, are you really really really sure?"
 msgstr "Está es tu última oportunidad, ¿estás seguro seguro seguro?"
 
-#: ../../spritz/src/dialogs.py:1397 ../../spritz/src/dialogs.py:2941
-#: ../../spritz/src/dialogs.py:2984 ../../spritz/src/dialogs.py:3048
+#: ../../sulfur/src/dialogs.py:1396 ../../sulfur/src/dialogs.py:2940
+#: ../../sulfur/src/dialogs.py:2983 ../../sulfur/src/dialogs.py:3047
 msgid "Atoms, space separated"
 msgstr "Atoms, separados por espacios"
 
-#: ../../spritz/src/dialogs.py:1399
+#: ../../sulfur/src/dialogs.py:1398
 msgid "USE flags, space separated"
 msgstr "Parámetros USE, separadas por espacios"
 
-#: ../../spritz/src/dialogs.py:1402
+#: ../../sulfur/src/dialogs.py:1401
 msgid "Insert command parameters"
 msgstr "Escribe los parámetros del comando"
 
-#: ../../spritz/src/dialogs.py:1808
+#: ../../sulfur/src/dialogs.py:1807
 msgid "Cannot move/copy packages from different repositories"
 msgstr "No se pudo mover/copiar paquetes desde repositorios diferentes"
 
-#: ../../spritz/src/dialogs.py:1827
+#: ../../sulfur/src/dialogs.py:1826
 msgid "Execute copy"
 msgstr "Ejecutar copia"
 
-#: ../../spritz/src/dialogs.py:1830
+#: ../../sulfur/src/dialogs.py:1829
 msgid "Entropy packages move/copy"
 msgstr "Mover/copiar paquetes de Entropy"
 
-#: ../../spritz/src/dialogs.py:1987
+#: ../../sulfur/src/dialogs.py:1986
 msgid "Notice title"
 msgstr "Título del anuncio"
 
-#: ../../spritz/src/dialogs.py:1988
+#: ../../sulfur/src/dialogs.py:1987
 msgid "Link (URL)"
 msgstr "Enlace (URL)"
 
-#: ../../spritz/src/dialogs.py:1992
+#: ../../sulfur/src/dialogs.py:1991
 msgid "Insert your new notice board entry"
 msgstr "Inserta la nueva entrada para el tablón de anuncios"
 
-#: ../../spritz/src/dialogs.py:2068
+#: ../../sulfur/src/dialogs.py:2067
 msgid "Server"
 msgstr "Servidor"
 
-#: ../../spritz/src/dialogs.py:2070
+#: ../../sulfur/src/dialogs.py:2069
 msgid "Yes"
 msgstr "Si"
 
-#: ../../spritz/src/dialogs.py:2071
+#: ../../sulfur/src/dialogs.py:2070
 msgid "No"
 msgstr "No"
 
-#: ../../spritz/src/dialogs.py:2077 ../../spritz/src/spritz.py:1657
+#: ../../sulfur/src/dialogs.py:2076 ../../sulfur/src/sulfur.py:1658
 msgid "Database"
 msgstr "Base de datos"
 
-#: ../../spritz/src/dialogs.py:2078
+#: ../../sulfur/src/dialogs.py:2077
 msgid "current revision"
 msgstr "revisión actual"
 
-#: ../../spritz/src/dialogs.py:2080
+#: ../../sulfur/src/dialogs.py:2079
 msgid "remote revision"
 msgstr "revisión remota"
 
-#: ../../spritz/src/dialogs.py:2100 ../../spritz/src/dialogs.py:2256
+#: ../../sulfur/src/dialogs.py:2099 ../../sulfur/src/dialogs.py:2255
 msgid "Execution mode"
 msgstr "Modo de ejecución"
 
-#: ../../spritz/src/dialogs.py:2100 ../../spritz/src/dialogs.py:2256
+#: ../../sulfur/src/dialogs.py:2099 ../../sulfur/src/dialogs.py:2255
 msgid "Execute all"
 msgstr "Ejecutar todo"
 
-#: ../../spritz/src/dialogs.py:2100 ../../spritz/src/dialogs.py:2256
+#: ../../sulfur/src/dialogs.py:2099 ../../sulfur/src/dialogs.py:2255
 msgid "Execute only selected"
 msgstr "Ejecutar sólo los seleccionados"
 
-#: ../../spritz/src/dialogs.py:2103 ../../spritz/src/dialogs.py:2259
+#: ../../sulfur/src/dialogs.py:2102 ../../sulfur/src/dialogs.py:2258
 msgid "Choose the execution mode"
 msgstr "Elige el modo de ejecución"
 
-#: ../../spritz/src/dialogs.py:2142
+#: ../../sulfur/src/dialogs.py:2141
 msgid "Commit message"
 msgstr "Enviar mensaje"
 
-#: ../../spritz/src/dialogs.py:2143
+#: ../../sulfur/src/dialogs.py:2142
 msgid "Pretend mode"
 msgstr "Modo de prueba"
 
-#: ../../spritz/src/dialogs.py:2144
+#: ../../sulfur/src/dialogs.py:2143
 msgid "Packages check"
 msgstr "Comprobación de paquetes"
 
-#: ../../spritz/src/dialogs.py:2148
+#: ../../sulfur/src/dialogs.py:2147
 msgid "Choose sync options"
 msgstr "Elige las opciones de sincronización"
 
-#: ../../spritz/src/dialogs.py:2168
+#: ../../sulfur/src/dialogs.py:2167
 msgid "Mirror updates information"
 msgstr "Información de las actualizaciones de los mirrors"
 
-#: ../../spritz/src/dialogs.py:2239
+#: ../../sulfur/src/dialogs.py:2238
 msgid "Choose the destination repository"
 msgstr "Elige el repositorio de destino"
 
-#: ../../spritz/src/dialogs.py:2316
+#: ../../sulfur/src/dialogs.py:2315
 msgid "To be added"
 msgstr "Para ser añadido"
 
-#: ../../spritz/src/dialogs.py:2323 ../../spritz/src/dialogs.py:5311
-#: ../../spritz/src/dialogs.py:5329
+#: ../../sulfur/src/dialogs.py:2322 ../../sulfur/src/dialogs.py:5310
+#: ../../sulfur/src/dialogs.py:5328
 msgid "To be removed"
 msgstr "Para ser eliminado"
 
-#: ../../spritz/src/dialogs.py:2330
+#: ../../sulfur/src/dialogs.py:2329
 msgid "To be injected"
 msgstr "Para ser inyectado"
 
-#: ../../spritz/src/dialogs.py:2779 ../../spritz/src/dialogs.py:2812
+#: ../../sulfur/src/dialogs.py:2778 ../../sulfur/src/dialogs.py:2811
 msgid "Categories, space separated"
 msgstr "Categorías, separadas por espacios"
 
-#: ../../spritz/src/dialogs.py:2785
+#: ../../sulfur/src/dialogs.py:2784
 msgid "Insert categories"
 msgstr "Escribe categorías"
 
-#: ../../spritz/src/dialogs.py:2818
+#: ../../sulfur/src/dialogs.py:2817
 msgid "Insert categories (if you want)"
 msgstr "Escribe categorías (si quieres)"
 
-#: ../../spritz/src/dialogs.py:2840
+#: ../../sulfur/src/dialogs.py:2839
 msgid "Invalid Command"
 msgstr "Comando inválido"
 
-#: ../../spritz/src/dialogs.py:2840 ../../spritz/src/dialogs.py:2859
-#: ../../spritz/src/dialogs.py:2866
+#: ../../sulfur/src/dialogs.py:2839 ../../sulfur/src/dialogs.py:2858
+#: ../../sulfur/src/dialogs.py:2865
 msgid "Custom command Error"
 msgstr "Error de comando personalizado"
 
-#: ../../spritz/src/dialogs.py:2866
+#: ../../sulfur/src/dialogs.py:2865
 msgid "Error executing call"
 msgstr "Error ejecutando la llamada"
 
-#: ../../spritz/src/dialogs.py:2948
+#: ../../sulfur/src/dialogs.py:2947
 msgid "Insert packages removal parameters"
 msgstr "Escribe los parámetros de eliminación de paquetes"
 
-#: ../../spritz/src/dialogs.py:2993
+#: ../../sulfur/src/dialogs.py:2992
 msgid "Custom USE flags"
 msgstr "Parámetros USE personalizados"
 
-#: ../../spritz/src/dialogs.py:2998
+#: ../../sulfur/src/dialogs.py:2997
 msgid "Insert compilation parameters"
 msgstr "Escribe los parámetros de compilación"
 
-#: ../../spritz/src/dialogs.py:3051
+#: ../../sulfur/src/dialogs.py:3050
 msgid "Insert Package Information parameters"
 msgstr "Escribe los parámetros de Información del Paquete"
 
-#: ../../spritz/src/dialogs.py:3096
+#: ../../sulfur/src/dialogs.py:3095
 msgid "Full output"
 msgstr "Salida completa"
 
-#: ../../spritz/src/dialogs.py:3099
+#: ../../sulfur/src/dialogs.py:3098
 msgid "Auto refresh"
 msgstr "Auto actualizar"
 
-#: ../../spritz/src/dialogs.py:3101
+#: ../../sulfur/src/dialogs.py:3100
 msgid "Insert output parameters"
 msgstr "Escribe los parámetros de salida"
 
-#: ../../spritz/src/dialogs.py:3129 ../../spritz/src/spritz.glade.h:77
+#: ../../sulfur/src/dialogs.py:3128 ../../sulfur/src/sulfur.glade.h:77
 msgid "Extended note"
 msgstr "Nota extendida"
 
-#: ../../spritz/src/dialogs.py:3132
+#: ../../sulfur/src/dialogs.py:3131
 msgid "Insert your new pinboard item"
 msgstr "Inserta tu nuevo ítem en el tablón de notas"
 
-#: ../../spritz/src/dialogs.py:3206
+#: ../../sulfur/src/dialogs.py:3205
 msgid "List type"
 msgstr "Tipo de lista"
 
-#: ../../spritz/src/dialogs.py:3209
+#: ../../sulfur/src/dialogs.py:3208
 msgid "Choose what kind of list you want to see"
 msgstr "Elige el tipo de lista que quieras ver"
 
-#: ../../spritz/src/dialogs.py:3281
+#: ../../sulfur/src/dialogs.py:3280
 msgid "Choose from which repository"
 msgstr "Elige desde cual repositorio"
 
-#: ../../spritz/src/dialogs.py:3329
+#: ../../sulfur/src/dialogs.py:3328
 msgid "Needed Libraries"
 msgstr "Bibliotecas requeridas"
 
-#: ../../spritz/src/dialogs.py:3329
+#: ../../sulfur/src/dialogs.py:3328
 msgid "Reverse dependencies"
 msgstr "Dependencias inversas"
 
-#: ../../spritz/src/dialogs.py:3329 ../../spritz/src/dialogs.py:4152
+#: ../../sulfur/src/dialogs.py:3328 ../../sulfur/src/dialogs.py:4151
 msgid "File"
 msgstr "Archivo"
 
-#: ../../spritz/src/dialogs.py:3329
+#: ../../sulfur/src/dialogs.py:3328
 msgid "Eclass"
 msgstr "Eclasses"
 
-#: ../../spritz/src/dialogs.py:3337
+#: ../../sulfur/src/dialogs.py:3336
 msgid "Entropy Search"
 msgstr "Búsqueda de Entropy"
 
-#: ../../spritz/src/dialogs.py:3370
+#: ../../sulfur/src/dialogs.py:3369
 msgid "Choose the repository"
 msgstr "Elige el repositorio"
 
-#: ../../spritz/src/dialogs.py:3392
+#: ../../sulfur/src/dialogs.py:3391
 msgid "Choose the repositories you want to scan"
 msgstr "Elige los repositorios que quieras escanear"
 
-#: ../../spritz/src/dialogs.py:3416
+#: ../../sulfur/src/dialogs.py:3415
 msgid "Choose mode"
 msgstr "Elige el modo"
 
-#: ../../spritz/src/dialogs.py:3416
+#: ../../sulfur/src/dialogs.py:3415
 msgid "Server check"
 msgstr "Comprobación de servidor"
 
-#: ../../spritz/src/dialogs.py:3416
+#: ../../sulfur/src/dialogs.py:3415
 msgid "Mirrors check"
 msgstr "Comprobación de mirrors"
 
-#: ../../spritz/src/dialogs.py:3459
+#: ../../sulfur/src/dialogs.py:3458
 msgid "Choose what notice board you want to see"
 msgstr "Elige el tablón de anuncios que quieras ver"
 
-#: ../../spritz/src/dialogs.py:3708
+#: ../../sulfur/src/dialogs.py:3707
 msgid "Expand to browse"
 msgstr "Expandir para navegar"
 
-#: ../../spritz/src/dialogs.py:3724 ../../spritz/src/spritz.glade.h:89
+#: ../../sulfur/src/dialogs.py:3723 ../../sulfur/src/sulfur.glade.h:89
 msgid "Identifier"
 msgstr "Identificador"
 
-#: ../../spritz/src/dialogs.py:3728 ../../spritz/src/spritz.glade.h:15
+#: ../../sulfur/src/dialogs.py:3727 ../../sulfur/src/sulfur.glade.h:15
 msgid "Author"
 msgstr "Autor"
 
-#: ../../spritz/src/dialogs.py:4001
+#: ../../sulfur/src/dialogs.py:4000
 msgid "Package ChangeLog"
 msgstr "ChangeLog del paquete"
 
-#: ../../spritz/src/dialogs.py:4054 ../../spritz/src/views.py:1303
+#: ../../sulfur/src/dialogs.py:4053 ../../sulfur/src/views.py:1304
 msgid "Vote registered successfully"
 msgstr "Voto registrado correctamente"
 
-#: ../../spritz/src/dialogs.py:4056 ../../spritz/src/views.py:1305
+#: ../../sulfur/src/dialogs.py:4055 ../../sulfur/src/views.py:1306
 msgid "Error registering vote"
 msgstr "Error registrando el voto"
 
-#: ../../spritz/src/dialogs.py:4069
+#: ../../sulfur/src/dialogs.py:4068
 msgid "License name"
 msgstr "Licencia"
 
-#: ../../spritz/src/dialogs.py:4085 ../../spritz/src/spritz.glade.h:121
+#: ../../sulfur/src/dialogs.py:4084 ../../sulfur/src/sulfur.glade.h:121
 msgid "Mirrors"
 msgstr "Mirrors"
 
-#: ../../spritz/src/dialogs.py:4109
+#: ../../sulfur/src/dialogs.py:4108
 msgid "Eclasses"
 msgstr "Eclasses"
 
-#: ../../spritz/src/dialogs.py:4125
+#: ../../sulfur/src/dialogs.py:4124
 msgid "Depends"
 msgstr "Depende de"
 
-#: ../../spritz/src/dialogs.py:4133
+#: ../../sulfur/src/dialogs.py:4132
 msgid "Needed libraries"
 msgstr "Bibliotecas requeridas"
 
-#: ../../spritz/src/dialogs.py:4141
+#: ../../sulfur/src/dialogs.py:4140
 msgid "Protected item"
 msgstr "Elemento protegido"
 
-#: ../../spritz/src/dialogs.py:4144 ../../spritz/src/dialogs.py:4156
-#: ../../spritz/src/dialogs.py:4168
+#: ../../sulfur/src/dialogs.py:4143 ../../sulfur/src/dialogs.py:4155
+#: ../../sulfur/src/dialogs.py:4167
 msgid "Type"
 msgstr "Tipo"
 
-#: ../../spritz/src/dialogs.py:4256
+#: ../../sulfur/src/dialogs.py:4255
 msgid "Share your opinion, your documents, your screenshots!"
 msgstr "¡Comparte tus opiniones, documentos y capturas de pantalla!"
 
-#: ../../spritz/src/dialogs.py:4257
+#: ../../sulfur/src/dialogs.py:4256
 msgid "Be part of our Community!"
 msgstr "¡Sé parte de nuestra Comunidad!"
 
-#: ../../spritz/src/dialogs.py:4294
+#: ../../sulfur/src/dialogs.py:4293
 msgid "From your Operating System"
 msgstr "De tu sistema operativo"
 
-#: ../../spritz/src/dialogs.py:4297
+#: ../../sulfur/src/dialogs.py:4296
 msgid "Remotely"
 msgstr "Remotamente"
 
-#: ../../spritz/src/dialogs.py:4455
+#: ../../sulfur/src/dialogs.py:4454
 msgid "Bug"
 msgstr "Fallo"
 
-#: ../../spritz/src/dialogs.py:4463
+#: ../../sulfur/src/dialogs.py:4462
 msgid "Reference"
 msgstr "Referencia"
 
-#: ../../spritz/src/dialogs.py:4537
+#: ../../sulfur/src/dialogs.py:4536
 msgid "impact"
 msgstr "impacto"
 
-#: ../../spritz/src/dialogs.py:4541
+#: ../../sulfur/src/dialogs.py:4540
 msgid "access"
 msgstr "acceso"
 
-#: ../../spritz/src/dialogs.py:4556
+#: ../../sulfur/src/dialogs.py:4555
 msgid "Vulnerables"
 msgstr "Vulnerables"
 
-#: ../../spritz/src/dialogs.py:4560
+#: ../../sulfur/src/dialogs.py:4559
 msgid "Unaffected"
 msgstr "No afectados"
 
-#: ../../spritz/src/dialogs.py:4644
+#: ../../sulfur/src/dialogs.py:4643
 msgid "Id"
 msgstr "ID"
 
-#: ../../spritz/src/dialogs.py:4722
+#: ../../sulfur/src/dialogs.py:4721
 msgid "Write your"
 msgstr "Escribe tu"
 
-#: ../../spritz/src/dialogs.py:4725
+#: ../../sulfur/src/dialogs.py:4724
 msgid "Select your"
 msgstr "Selecciona tu"
 
-#: ../../spritz/src/dialogs.py:4732
+#: ../../sulfur/src/dialogs.py:4731
 msgid "Submit issue"
 msgstr "Enviar documento"
 
-#: ../../spritz/src/dialogs.py:4745
+#: ../../sulfur/src/dialogs.py:4744
 msgid "Empty Document"
 msgstr "Documento Vacío"
 
-#: ../../spritz/src/dialogs.py:4749
+#: ../../sulfur/src/dialogs.py:4748
 msgid "Invalid Description"
 msgstr "Descripción Inválida"
 
-#: ../../spritz/src/dialogs.py:4755
+#: ../../sulfur/src/dialogs.py:4754
 msgid "Invalid Document Type"
 msgstr "Tipo de Documento Inválido"
 
-#: ../../spritz/src/dialogs.py:4758
+#: ../../sulfur/src/dialogs.py:4757
 msgid "Invalid Title"
 msgstr "Título Inválido"
 
 #. confirm ?
-#: ../../spritz/src/dialogs.py:4762
+#: ../../sulfur/src/dialogs.py:4761
 msgid "Do you confirm your submission?"
 msgstr "¿Confirmas que quieres enviar?"
 
-#: ../../spritz/src/dialogs.py:4788
+#: ../../sulfur/src/dialogs.py:4787
 msgid "UGC Error"
 msgstr "Error UGC"
 
-#: ../../spritz/src/dialogs.py:4792
+#: ../../sulfur/src/dialogs.py:4791
 msgid "Document added successfully. Thank you"
 msgstr "El documento se ha añadido correctamente. Gracias"
 
-#: ../../spritz/src/dialogs.py:4792
+#: ../../sulfur/src/dialogs.py:4791
 msgid "Success!"
 msgstr "¡Éxito!"
 
-#: ../../spritz/src/dialogs.py:4847
+#: ../../sulfur/src/dialogs.py:4846
 msgid "Write your document"
 msgstr "Escribe tu documento"
 
-#: ../../spritz/src/dialogs.py:4855
+#: ../../sulfur/src/dialogs.py:4854
 msgid "Select your file"
 msgstr "Selecciona un archivo"
 
-#: ../../spritz/src/dialogs.py:4867
+#: ../../sulfur/src/dialogs.py:4866
 msgid "On repository"
 msgstr "En el repositorio"
 
-#: ../../spritz/src/dialogs.py:4934
+#: ../../sulfur/src/dialogs.py:4933
 msgid "These are the packages that must be enabled to satisfy your request"
 msgstr ""
 "Estos son los paquetes que deben habilitarse para satisfacer la petición"
 
-#: ../../spritz/src/dialogs.py:4936
+#: ../../sulfur/src/dialogs.py:4935
 msgid "Some packages are masked"
 msgstr "Algunos paquetes están enmascarados"
 
-#: ../../spritz/src/dialogs.py:5025
+#: ../../sulfur/src/dialogs.py:5024
 msgid "Masked package"
 msgstr "Paquete enmascarado"
 
-#: ../../spritz/src/dialogs.py:5103 ../../spritz/src/dialogs.py:5335
-#: ../../spritz/src/dialogs.py:5346 ../../spritz/src/dialogs.py:5357
-#: ../../spritz/src/dialogs.py:5368 ../../spritz/src/views.py:74
-#: ../../spritz/src/views.py:128 ../../spritz/src/views.py:1597
+#: ../../sulfur/src/dialogs.py:5102 ../../sulfur/src/dialogs.py:5334
+#: ../../sulfur/src/dialogs.py:5345 ../../sulfur/src/dialogs.py:5356
+#: ../../sulfur/src/dialogs.py:5367 ../../sulfur/src/views.py:74
+#: ../../sulfur/src/views.py:128 ../../sulfur/src/views.py:1598
 msgid "No description"
 msgstr "Sin descripción"
 
-#: ../../spritz/src/dialogs.py:5226
+#: ../../sulfur/src/dialogs.py:5225
 msgid "Please confirm the actions above"
 msgstr "Por favor, confirma las siguientes acciones"
 
-#: ../../spritz/src/dialogs.py:5270 ../../spritz/src/spritz.py:1631
-#: ../../spritz/src/spritz.py:1640 ../../spritz/src/spritz.py:1649
+#: ../../sulfur/src/dialogs.py:5269 ../../sulfur/src/sulfur.py:1632
+#: ../../sulfur/src/sulfur.py:1641 ../../sulfur/src/sulfur.py:1650
 msgid "Item"
 msgstr "Ítem"
 
-#: ../../spritz/src/dialogs.py:5287 ../../spritz/src/dialogs.py:5340
+#: ../../sulfur/src/dialogs.py:5286 ../../sulfur/src/dialogs.py:5339
 msgid "To be reinstalled"
 msgstr "Para ser reinstalado"
 
-#: ../../spritz/src/dialogs.py:5293 ../../spritz/src/dialogs.py:5351
+#: ../../sulfur/src/dialogs.py:5292 ../../sulfur/src/dialogs.py:5350
 msgid "To be installed"
 msgstr "Para ser instalado"
 
-#: ../../spritz/src/dialogs.py:5299 ../../spritz/src/dialogs.py:5362
+#: ../../sulfur/src/dialogs.py:5298 ../../sulfur/src/dialogs.py:5361
 msgid "To be updated"
 msgstr "Para ser actualizado"
 
-#: ../../spritz/src/dialogs.py:5305
+#: ../../sulfur/src/dialogs.py:5304
 msgid "To be downgraded"
 msgstr "Para ser desactualizado"
 
-#: ../../spritz/src/dialogs.py:5499
+#: ../../sulfur/src/dialogs.py:5498
 msgid "About"
 msgstr "Acerca de"
 
-#: ../../spritz/src/dialogs.py:5619
-msgid "Spritz Question"
+#: ../../sulfur/src/dialogs.py:5618
+#, fuzzy
+msgid "Sulfur Question"
 msgstr "Pregunta de Spritz"
 
-#: ../../spritz/src/dialogs.py:5624
+#: ../../sulfur/src/dialogs.py:5623
 msgid "Hey!"
 msgstr "¡Ey!"
 
-#: ../../spritz/src/dialogs.py:5669
+#: ../../sulfur/src/dialogs.py:5668
 msgid "Please fill the following form"
 msgstr "Por favor, rellena el formulario"
 
-#: ../../spritz/src/dialogs.py:5738
+#: ../../sulfur/src/dialogs.py:5737
 #, fuzzy
 msgid "Add atom"
 msgstr "Atom"
 
-#: ../../spritz/src/dialogs.py:5858
+#: ../../sulfur/src/dialogs.py:5857
 msgid "Invalid entry"
 msgstr "Datos inválidos"
 
-#: ../../spritz/src/dialogs.py:5922
+#: ../../sulfur/src/dialogs.py:5921
 msgid "Cancel"
 msgstr "Cancelar"
 
 #. new
-#: ../../spritz/src/dialogs.py:6011
+#: ../../sulfur/src/dialogs.py:6010
 msgid "Accepted"
 msgstr "Aceptada"
 
-#: ../../spritz/src/dialogs.py:6102
+#: ../../sulfur/src/dialogs.py:6101
 msgid "Exception caught"
 msgstr "Excepción capturada"
 
-#: ../../spritz/src/dialogs.py:6103
-msgid "Spritz crashed! An unexpected error occured."
+#: ../../sulfur/src/dialogs.py:6102
+#, fuzzy
+msgid "Sulfur crashed! An unexpected error occured."
 msgstr "¡Spritz ha petado! Ocurrió un error inesperado."
 
-#: ../../spritz/src/dialogs.py:6112
+#: ../../sulfur/src/dialogs.py:6111
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr "¡El informe se ha enviado correctamente! Muchas gracias."
 
-#: ../../spritz/src/dialogs.py:6114
+#: ../../sulfur/src/dialogs.py:6113
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr "No se puede enviar el informe. ¿No estás conectado a Internet?"
 
-#: ../../spritz/src/entropyapi.py:81
+#: ../../sulfur/src/entropyapi.py:75
 msgid "Error enabling masked package"
 msgstr "Error habilitando el paquete enmascarado"
 
-#: ../../spritz/src/entropyapi.py:122
+#: ../../sulfur/src/entropyapi.py:116
 msgid "Downloading sources"
 msgstr "Descargando código fuente"
 
-#: ../../spritz/src/misc.py:89
+#: ../../sulfur/src/misc.py:89
 msgid ""
 "There are packages that can't be installed at the same time, thus are "
 "blocking your request:"
@@ -7814,11 +7816,11 @@ msgstr ""
 "Hay paquetes que no pueden ser instalados al mismo tiempo y que están "
 "bloqueando tu petición:"
 
-#: ../../spritz/src/misc.py:133
+#: ../../sulfur/src/misc.py:133
 msgid "These are the needed packages"
 msgstr "Estos son los paquetes requeridos"
 
-#: ../../spritz/src/misc.py:134
+#: ../../sulfur/src/misc.py:134
 msgid ""
 "These packages must be removed from the removal queue because they depend on "
 "your last selection. Do you agree?"
@@ -7826,11 +7828,11 @@ msgstr ""
 "Estos paquetes deben ser eliminados de la cola de eliminación porque "
 "dependen de tu última elección. ¿Estás de acuerdo?"
 
-#: ../../spritz/src/misc.py:190
+#: ../../sulfur/src/misc.py:190
 msgid "These packages must be excluded"
 msgstr "Estos paquetes deben ser excluidos"
 
-#: ../../spritz/src/misc.py:191
+#: ../../sulfur/src/misc.py:191
 msgid ""
 "These packages must be removed from the queue because they depend on your "
 "last selection. Do you agree?"
@@ -7838,7 +7840,7 @@ msgstr ""
 "Estos paquetes deben ser eliminados de la cola de eliminación porque "
 "dependen de tu última elección. ¿Estás de acuerdo?"
 
-#: ../../spritz/src/misc.py:373
+#: ../../sulfur/src/misc.py:373
 msgid ""
 "Some dependencies couldn't be found. It can either be because they are "
 "masked or because they aren't in any active repository."
@@ -7846,265 +7848,265 @@ msgstr ""
 "No se pudieron encontrar algunas dependencias. Puede deberse a que están "
 "enmascaradas o a que no están en ningún repositorio activo."
 
-#: ../../spritz/src/misc.py:437
+#: ../../sulfur/src/misc.py:437
 msgid "Needed disk space"
 msgstr "Espacio en disco requerido"
 
-#: ../../spritz/src/misc.py:444
+#: ../../sulfur/src/misc.py:444
 msgid "These are the packages that would be installed/updated"
 msgstr "Los siguientes paquetes serán instalados o actualizados"
 
-#: ../../spritz/src/misc.py:510
+#: ../../sulfur/src/misc.py:510
 msgid "Freed space"
 msgstr "Espacio liberado"
 
-#: ../../spritz/src/misc.py:513
+#: ../../sulfur/src/misc.py:513
 msgid "Needed space"
 msgstr "Espacio requerido"
 
-#: ../../spritz/src/misc.py:518
+#: ../../sulfur/src/misc.py:518
 msgid "These are the packages that would be removed"
 msgstr "Paquetes que serán eliminados"
 
-#: ../../spritz/src/packages.py:222
+#: ../../sulfur/src/packages.py:222
 msgid "Set from"
 msgstr "Set procedente de"
 
-#: ../../spritz/src/packages.py:223
+#: ../../sulfur/src/packages.py:223
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: ../../spritz/src/packages.py:228
+#: ../../sulfur/src/packages.py:228
 msgid "User configuration"
 msgstr "Configuración del usuario"
 
 #. load a pixmap inside the treeview
-#: ../../spritz/src/packages.py:284
+#: ../../sulfur/src/packages.py:284
 #, python-format
 msgid "Try clicking the %s button in the %s page"
 msgstr "Prueba a hacer clic en el botón %s en la página %s"
 
-#: ../../spritz/src/packages.py:284 ../../spritz/src/spritz.py:327
-#: ../../spritz/src/spritz.py:363
+#: ../../sulfur/src/packages.py:284 ../../sulfur/src/sulfur.py:327
+#: ../../sulfur/src/sulfur.py:363
 msgid "Update Repositories"
 msgstr "Actualizar Repositorios"
 
-#: ../../spritz/src/packages.py:284 ../../spritz/src/spritz.py:1514
+#: ../../sulfur/src/packages.py:284 ../../sulfur/src/sulfur.py:1515
 msgid "Repository Selection"
 msgstr "Selección de repositorio"
 
-#: ../../spritz/src/packages.py:288
+#: ../../sulfur/src/packages.py:288
 msgid "No updates available"
 msgstr "No hay actualizaciones disponibles"
 
-#: ../../spritz/src/packages.py:289
+#: ../../sulfur/src/packages.py:289
 msgid "It seems that your system is already up-to-date. Good!"
 msgstr "Parece que tu sistema ya está actualizado. ¡Bien!"
 
-#: ../../spritz/src/spritz.py:64
+#: ../../sulfur/src/sulfur.py:64
 msgid "Error during backup"
 msgstr "Error durante la copia de seguridad"
 
-#: ../../spritz/src/spritz.py:66
+#: ../../sulfur/src/sulfur.py:66
 msgid "Backup complete"
 msgstr "Copia de seguridad completada"
 
-#: ../../spritz/src/spritz.py:84
+#: ../../sulfur/src/sulfur.py:84
 msgid "Error during restore"
 msgstr "Error durante la restauración"
 
-#: ../../spritz/src/spritz.py:89
+#: ../../sulfur/src/sulfur.py:89
 msgid "Restore complete"
 msgstr "Restauración completada"
 
-#: ../../spritz/src/spritz.py:99
+#: ../../sulfur/src/sulfur.py:99
 msgid "Error during removal"
 msgstr "Error durante la eliminación"
 
-#: ../../spritz/src/spritz.py:111
+#: ../../sulfur/src/sulfur.py:111
 msgid "The chosen package is not vulnerable"
 msgstr "El paquete elegido no es vulnerable"
 
-#: ../../spritz/src/spritz.py:119
+#: ../../sulfur/src/sulfur.py:119
 msgid "Packages in Advisory have been queued."
 msgstr "Los paquetes del Aviso se han puesto en cola."
 
-#: ../../spritz/src/spritz.py:134
+#: ../../sulfur/src/sulfur.py:134
 msgid "Packages in all Advisories have been queued."
 msgstr "Los paquetes de todos los Avisos se han puesto en cola."
 
-#: ../../spritz/src/spritz.py:258 ../../spritz/src/spritz.py:280
+#: ../../sulfur/src/sulfur.py:258 ../../sulfur/src/sulfur.py:280
 msgid "Insert URL"
 msgstr "Introducir URL"
 
-#: ../../spritz/src/spritz.py:258 ../../spritz/src/spritz.py:280
+#: ../../sulfur/src/sulfur.py:258 ../../sulfur/src/sulfur.py:280
 msgid "Enter a download mirror, HTTP or FTP"
 msgstr "Introduce un mirror de descarga HTTP o FTP"
 
-#: ../../spritz/src/spritz.py:263
+#: ../../sulfur/src/sulfur.py:263
 msgid "You must enter either a HTTP or a FTP url."
 msgstr "Debes introducir una dirección HTTP o FTP"
 
-#: ../../spritz/src/spritz.py:300 ../../spritz/src/spritz.py:330
+#: ../../sulfur/src/sulfur.py:300 ../../sulfur/src/sulfur.py:330
 msgid "Wrong entries, errors"
 msgstr "Entradas incorrectas, errores"
 
-#: ../../spritz/src/spritz.py:315 ../../spritz/src/spritz.py:327
+#: ../../sulfur/src/sulfur.py:315 ../../sulfur/src/sulfur.py:327
 msgid "You should press the button"
 msgstr "Debes presionar el botón"
 
-#: ../../spritz/src/spritz.py:315 ../../spritz/src/spritz.py:363
+#: ../../sulfur/src/sulfur.py:315 ../../sulfur/src/sulfur.py:363
 msgid "Regenerate Cache"
 msgstr "Regenerar caché"
 
-#: ../../spritz/src/spritz.py:315 ../../spritz/src/spritz.py:327
-#: ../../spritz/src/spritz.py:363
+#: ../../sulfur/src/sulfur.py:315 ../../sulfur/src/sulfur.py:327
+#: ../../sulfur/src/sulfur.py:363
 msgid "now"
 msgstr "ahora"
 
-#: ../../spritz/src/spritz.py:340
+#: ../../sulfur/src/sulfur.py:340
 msgid "Insert Repository"
 msgstr "Introducir repositorio"
 
-#: ../../spritz/src/spritz.py:340
+#: ../../sulfur/src/sulfur.py:340
 msgid "Insert Repository identification string"
 msgstr "Introduce la cadena de identificación del repositorio"
 
-#: ../../spritz/src/spritz.py:348
+#: ../../sulfur/src/sulfur.py:348
 msgid "This Repository identification string is malformed"
 msgstr "La cadena de identificación del repositorio está mal escrita"
 
-#: ../../spritz/src/spritz.py:358
+#: ../../sulfur/src/sulfur.py:358
 msgid "You! Why do you want to remove the main repository ?"
 msgstr "¡Tú! ¿Por qué quieres eliminar el repositorio principal?"
 
-#: ../../spritz/src/spritz.py:363
+#: ../../sulfur/src/sulfur.py:363
 msgid "You must now either press the"
 msgstr "Debes presionar"
 
-#: ../../spritz/src/spritz.py:363
+#: ../../sulfur/src/sulfur.py:363
 msgid "or the"
 msgstr "o"
 
-#: ../../spritz/src/spritz.py:393
+#: ../../sulfur/src/sulfur.py:393
 msgid "Are you sure ?"
 msgstr "¿ Estás seguro ?"
 
-#: ../../spritz/src/spritz.py:406
+#: ../../sulfur/src/sulfur.py:406
 msgid "Error saving parameter"
 msgstr "Error guardando el parámetro"
 
-#: ../../spritz/src/spritz.py:407 ../../spritz/src/spritz.py:1765
+#: ../../sulfur/src/sulfur.py:407 ../../sulfur/src/sulfur.py:1766
 msgid "An issue occured while saving a preference"
 msgstr "Ocurrió un problema al intentar guardar una preferencia"
 
-#: ../../spritz/src/spritz.py:408 ../../spritz/src/spritz.py:1740
-#: ../../spritz/src/spritz.py:1766
+#: ../../sulfur/src/sulfur.py:408 ../../sulfur/src/sulfur.py:1741
+#: ../../sulfur/src/sulfur.py:1767
 msgid "Parameter"
 msgstr "Parámetro"
 
-#: ../../spritz/src/spritz.py:408
+#: ../../sulfur/src/sulfur.py:408
 msgid "not saved"
 msgstr "no guardado"
 
-#: ../../spritz/src/spritz.py:421 ../../spritz/src/spritz.py:427
-#: ../../spritz/src/spritz.py:433 ../../spritz/src/spritz.py:457
-#: ../../spritz/src/spritz.py:467 ../../spritz/src/spritz.py:477
+#: ../../sulfur/src/sulfur.py:421 ../../sulfur/src/sulfur.py:427
+#: ../../sulfur/src/sulfur.py:433 ../../sulfur/src/sulfur.py:457
+#: ../../sulfur/src/sulfur.py:467 ../../sulfur/src/sulfur.py:477
 msgid "New"
 msgstr "Nuevo"
 
-#: ../../spritz/src/spritz.py:421 ../../spritz/src/spritz.py:427
-#: ../../spritz/src/spritz.py:433
+#: ../../sulfur/src/sulfur.py:421 ../../sulfur/src/sulfur.py:427
+#: ../../sulfur/src/sulfur.py:433
 msgid "Please insert a new path"
 msgstr "Inserta una nueva ruta por favor"
 
-#: ../../spritz/src/spritz.py:457 ../../spritz/src/spritz.py:467
-#: ../../spritz/src/spritz.py:477
+#: ../../sulfur/src/sulfur.py:457 ../../sulfur/src/sulfur.py:467
+#: ../../sulfur/src/sulfur.py:477
 msgid "Please edit the selected path"
 msgstr "Edita la ruta seleccionada por favor"
 
-#: ../../spritz/src/spritz.py:497
+#: ../../sulfur/src/sulfur.py:497
 msgid "You have chosen to install this package"
 msgstr "Has elegido instalar este paquete"
 
-#: ../../spritz/src/spritz.py:499
+#: ../../sulfur/src/sulfur.py:499
 msgid "Are you supa sure?"
 msgstr "¿Estás completamente seguro?"
 
-#: ../../spritz/src/spritz.py:517
+#: ../../sulfur/src/sulfur.py:517
 msgid "Cannot install"
 msgstr "No se pudo instalar"
 
-#: ../../spritz/src/spritz.py:612
+#: ../../sulfur/src/sulfur.py:613
 msgid "Please select at least one repository"
 msgstr "Selecciona al menos un repositorio por favor"
 
 #. Check there are any packages in the queue
-#: ../../spritz/src/spritz.py:648
+#: ../../sulfur/src/sulfur.py:649
 msgid "No packages in queue"
 msgstr "No hay paquetes en la cola"
 
-#: ../../spritz/src/spritz.py:697
+#: ../../sulfur/src/sulfur.py:698
 msgid "Queue is too old. Cannot load."
 msgstr "No se puede cargar la cola porque es muy antigua."
 
-#: ../../spritz/src/spritz.py:742
+#: ../../sulfur/src/sulfur.py:743
 #, fuzzy
 msgid "license text"
 msgstr "Texto del anuncio"
 
-#: ../../spritz/src/spritz.py:772
+#: ../../sulfur/src/sulfur.py:773
 msgid ""
 "You have chosen to interrupt the processing. Are you sure you want to do it ?"
 msgstr "Has elegido interrumpir el proceso. ¿Estás seguro?"
 
-#: ../../spritz/src/spritz.py:840
+#: ../../sulfur/src/sulfur.py:841
 msgid "Cleaning UGC cache of"
 msgstr "Eliminando la caché UGC de"
 
-#: ../../spritz/src/spritz.py:841
+#: ../../sulfur/src/sulfur.py:842
 msgid "UGC cache cleared"
 msgstr "Caché UGC eliminada"
 
-#: ../../spritz/src/spritz.py:852
+#: ../../sulfur/src/sulfur.py:853
 msgid "UGC credentials cleared"
 msgstr "Credenciales UGC eliminadas"
 
-#: ../../spritz/src/spritz.py:888
+#: ../../sulfur/src/sulfur.py:889
 #, fuzzy
 msgid "Package Set name"
 msgstr "[set]Nombre del Set de Paquetes"
 
-#: ../../spritz/src/spritz.py:889
+#: ../../sulfur/src/sulfur.py:890
 #, fuzzy
 msgid "Package atoms"
 msgstr "Nombre del paquete"
 
-#: ../../spritz/src/spritz.py:893
+#: ../../sulfur/src/sulfur.py:894
 #, fuzzy
 msgid "Choose what Package Set you want to add"
 msgstr "[set]Elige el tipo de lista que quieras ver"
 
-#: ../../spritz/src/spritz.py:919
+#: ../../sulfur/src/sulfur.py:920
 #, fuzzy
 msgid "Removable Package Set"
 msgstr "[set]Eliminar el Set de Paquetes seleccionado"
 
-#: ../../spritz/src/spritz.py:923
+#: ../../sulfur/src/sulfur.py:924
 #, fuzzy
 msgid "Choose what Package Set you want to remove"
 msgstr "[set]Elige la que quieras eliminar"
 
-#: ../../spritz/src/spritz.py:945
+#: ../../sulfur/src/sulfur.py:946
 msgid "No missing dependencies found."
 msgstr "No se han encontrado dependencias perdidas."
 
-#: ../../spritz/src/spritz.py:979
+#: ../../sulfur/src/sulfur.py:980
 msgid "Missing dependencies found, but none of them are on the repositories."
 msgstr ""
 "Se han encontrado dependencias perdidas pero ninguna se encuentra disponible."
 
-#: ../../spritz/src/spritz.py:987
+#: ../../sulfur/src/sulfur.py:988
 msgid ""
 "Some missing dependencies have not been matched, others are going to be "
 "added to the queue."
@@ -8112,19 +8114,19 @@ msgstr ""
 "Algunas dependencias perdidas no se han podido hacer coincidir; otras se "
 "añadirán a la cola."
 
-#: ../../spritz/src/spritz.py:989
+#: ../../sulfur/src/sulfur.py:990
 msgid "All the missing dependencies are going to be added to the queue"
 msgstr "Todas las dependencias perdidas serán añadidas a la cola"
 
-#: ../../spritz/src/spritz.py:1015 ../../spritz/src/spritz.py:2593
+#: ../../sulfur/src/sulfur.py:1016 ../../sulfur/src/sulfur.py:2597
 msgid "Aborting queue tasks."
 msgstr "Cancelando las tareas en cola."
 
-#: ../../spritz/src/spritz.py:1044
+#: ../../sulfur/src/sulfur.py:1045
 msgid "Libraries test aborted"
 msgstr "Test de comprobación de bibliotecas abortado"
 
-#: ../../spritz/src/spritz.py:1052
+#: ../../sulfur/src/sulfur.py:1053
 msgid ""
 "Some broken packages have not been matched, others are going to be added to "
 "the queue."
@@ -8132,129 +8134,130 @@ msgstr ""
 "Algunos paquetes rotos no se han podido hacer coincidir; otros se añadirán a "
 "la cola."
 
-#: ../../spritz/src/spritz.py:1054
+#: ../../sulfur/src/sulfur.py:1055
 msgid "All the broken packages are going to be added to the queue"
 msgstr "Todos los paquetes rotos serán añadidos a la cola"
 
-#: ../../spritz/src/spritz.py:1105
+#: ../../sulfur/src/sulfur.py:1106
+#, fuzzy
 msgid ""
 "Entropy resources are locked and not accessible. Another Entropy application "
-"is running. Sorry, can't load Spritz."
+"is running. Sorry, can't load Sulfur."
 msgstr ""
 "Los recursos de Entropy están bloqueados y no son accesibles. Otra "
 "aplicación de Entropy se está ejecutando. No se puede cargar Spritz."
 
-#: ../../spritz/src/spritz.py:1112
+#: ../../sulfur/src/sulfur.py:1113
 msgid "Entropy is running in safe mode"
 msgstr "Entropy se está ejecutando en modo seguro"
 
-#: ../../spritz/src/spritz.py:1113
+#: ../../sulfur/src/sulfur.py:1114
 msgid "Please fix as soon as possible"
 msgstr "Arréglalo lo antes posible"
 
-#: ../../spritz/src/spritz.py:1115
+#: ../../sulfur/src/sulfur.py:1116
 msgid "Safe Mode"
 msgstr "Modo Seguro"
 
-#: ../../spritz/src/spritz.py:1324
+#: ../../sulfur/src/sulfur.py:1325
 #, fuzzy
 msgid "Default packages sorting"
 msgstr "Obtener información del paquete"
 
-#: ../../spritz/src/spritz.py:1325
+#: ../../sulfur/src/sulfur.py:1326
 msgid "Sort by name [A-Z]"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1326
+#: ../../sulfur/src/sulfur.py:1327
 msgid "Sort by name [Z-A]"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1327
+#: ../../sulfur/src/sulfur.py:1328
 #, fuzzy
 msgid "Sort by downloads"
 msgstr "para descargar"
 
-#: ../../spritz/src/spritz.py:1328
+#: ../../sulfur/src/sulfur.py:1329
 msgid "Sort by votes"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1329
+#: ../../sulfur/src/sulfur.py:1330
 #, fuzzy
 msgid "Sort by repository"
 msgstr "Al repositorio"
 
-#: ../../spritz/src/spritz.py:1398
+#: ../../sulfur/src/sulfur.py:1399
 msgid ""
 "The repositories listed below are configured but not available. They should "
 "be downloaded."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1399
+#: ../../sulfur/src/sulfur.py:1400
 msgid "If you don't do this now, you won't be able to use them."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1401
+#: ../../sulfur/src/sulfur.py:1402
 #, fuzzy
 msgid "Download now"
 msgstr "Descargado"
 
-#: ../../spritz/src/spritz.py:1402
+#: ../../sulfur/src/sulfur.py:1403
 #, fuzzy
 msgid "Skip"
 msgstr "Omitido"
 
-#: ../../spritz/src/spritz.py:1473
+#: ../../sulfur/src/sulfur.py:1474
 msgid "Show Package Updates"
 msgstr "Mostrar actualizaciones de paquetes"
 
-#: ../../spritz/src/spritz.py:1474
+#: ../../sulfur/src/sulfur.py:1475
 msgid "Show available Packages"
 msgstr "Mostrar paquetes disponibles"
 
-#: ../../spritz/src/spritz.py:1475
+#: ../../sulfur/src/sulfur.py:1476
 msgid "Show Installed Packages"
 msgstr "Mostrar paquetes instalados"
 
-#: ../../spritz/src/spritz.py:1476
+#: ../../sulfur/src/sulfur.py:1477
 msgid "Show Masked Packages"
 msgstr "Mostrar Paquetes Enmascarados"
 
-#: ../../spritz/src/spritz.py:1477
+#: ../../sulfur/src/sulfur.py:1478
 #, fuzzy
 msgid "Show All Packages"
 msgstr "Mostrar paquetes disponibles"
 
-#: ../../spritz/src/spritz.py:1478
+#: ../../sulfur/src/sulfur.py:1479
 msgid "Show Package Sets"
 msgstr "Mostrar sets de paquetes"
 
-#: ../../spritz/src/spritz.py:1479
+#: ../../sulfur/src/sulfur.py:1480
 msgid "Show Queued Packages"
 msgstr "Mostrar Paquetes en cola"
 
 #. Setup Vertical Toolbar
-#: ../../spritz/src/spritz.py:1512 ../../spritz/src/views.py:1525
-#: ../../spritz/src/spritz.glade.h:144
+#: ../../sulfur/src/sulfur.py:1513 ../../sulfur/src/views.py:1526
+#: ../../sulfur/src/sulfur.glade.h:144
 msgid "Packages"
 msgstr "Paquetes"
 
-#: ../../spritz/src/spritz.py:1515
+#: ../../sulfur/src/sulfur.py:1516
 msgid "Configuration Files"
 msgstr "Archivos de configuración"
 
-#: ../../spritz/src/spritz.py:1516 ../../spritz/src/spritz.py:1564
+#: ../../sulfur/src/sulfur.py:1517 ../../sulfur/src/sulfur.py:1565
 msgid "Preferences"
 msgstr "Preferencias"
 
-#: ../../spritz/src/spritz.py:1517
+#: ../../sulfur/src/sulfur.py:1518
 msgid "Package Queue"
 msgstr "Cola de paquetes"
 
-#: ../../spritz/src/spritz.py:1518
+#: ../../sulfur/src/sulfur.py:1519
 msgid "Output"
 msgstr "Salida"
 
-#: ../../spritz/src/spritz.py:1566
+#: ../../sulfur/src/sulfur.py:1567
 msgid ""
 "Some configuration options are critical for the health of your System. Be "
 "careful."
@@ -8262,35 +8265,35 @@ msgstr ""
 "Algunas opciones de configuración son críticas para la salud de tu sistema. "
 "Ten cuidado."
 
-#: ../../spritz/src/spritz.py:1708
+#: ../../sulfur/src/sulfur.py:1709
 msgid "Logged in as"
 msgstr "Conectado como"
 
-#: ../../spritz/src/spritz.py:1715
+#: ../../sulfur/src/sulfur.py:1716
 msgid "UGC Status"
 msgstr "Estado de UGC"
 
-#: ../../spritz/src/spritz.py:1738 ../../spritz/src/spritz.py:1764
+#: ../../sulfur/src/sulfur.py:1739 ../../sulfur/src/sulfur.py:1765
 msgid "Error setting parameter"
 msgstr "Error fijando el parámetro"
 
-#: ../../spritz/src/spritz.py:1739
+#: ../../sulfur/src/sulfur.py:1740
 msgid "An issue occured while loading a preference"
 msgstr "Ocurrió un problema mientras se cargaba una preferencia"
 
-#: ../../spritz/src/spritz.py:1740 ../../spritz/src/spritz.py:1766
+#: ../../sulfur/src/sulfur.py:1741 ../../sulfur/src/sulfur.py:1767
 msgid "must be of type"
 msgstr "debe ser del tipo"
 
-#: ../../spritz/src/spritz.py:1740 ../../spritz/src/spritz.py:1766
+#: ../../sulfur/src/sulfur.py:1741 ../../sulfur/src/sulfur.py:1767
 msgid "got"
 msgstr "pero se obtuvo"
 
-#: ../../spritz/src/spritz.py:1903
+#: ../../sulfur/src/sulfur.py:1904
 msgid "Error saving preferences"
 msgstr "Error guardando las preferencias"
 
-#: ../../spritz/src/spritz.py:1909
+#: ../../sulfur/src/sulfur.py:1910
 msgid ""
 "These packages are masked either by default or due to your choice. Please be "
 "careful, at least."
@@ -8298,110 +8301,110 @@ msgstr ""
 "Estos paquetes están enmascarados por defecto por tu propia decisión. Ten "
 "cuidado."
 
-#: ../../spritz/src/spritz.py:1968
+#: ../../sulfur/src/sulfur.py:1969
 msgid "Generating metadata. Please wait."
 msgstr "Generando metadatos. Espera por favor."
 
-#: ../../spritz/src/spritz.py:1976
+#: ../../sulfur/src/sulfur.py:1977
 msgid "Error during list population"
 msgstr "Error mientras se expandía la lista"
 
-#: ../../spritz/src/spritz.py:1978
+#: ../../sulfur/src/sulfur.py:1979
 msgid "Retrying in 1 second."
 msgstr "Reintentando en 1 segundo."
 
-#: ../../spritz/src/spritz.py:2012
+#: ../../sulfur/src/sulfur.py:2013
 msgid "Error loading advisories"
 msgstr "Error cargando avisos"
 
-#: ../../spritz/src/spritz.py:2063
+#: ../../sulfur/src/sulfur.py:2067
 msgid "Initializing Repository module..."
 msgstr "Inicializando el módulo del repositorio..."
 
-#: ../../spritz/src/spritz.py:2069
+#: ../../sulfur/src/sulfur.py:2073
 msgid "You must run this application as root"
 msgstr "Debes ejecutar este programa como root"
 
-#: ../../spritz/src/spritz.py:2078
+#: ../../sulfur/src/sulfur.py:2082
 msgid "You are not connected to the Internet. You should."
 msgstr "No estás conectado a Internet. Deberías de estarlo."
 
-#: ../../spritz/src/spritz.py:2101
+#: ../../sulfur/src/sulfur.py:2105
 msgid "Errors updating repositories."
 msgstr "Errores al actualizar los repositorios."
 
-#: ../../spritz/src/spritz.py:2102
+#: ../../sulfur/src/sulfur.py:2106
 msgid "Please check logs below for more info"
 msgstr "Por favor, comprueba los siguientes logs para más información"
 
-#: ../../spritz/src/spritz.py:2105
+#: ../../sulfur/src/sulfur.py:2109
 msgid "Repositories updated successfully"
 msgstr "Los repositorios se han actualizado correctamente"
 
-#: ../../spritz/src/spritz.py:2108
+#: ../../sulfur/src/sulfur.py:2112
 msgid "All the repositories were already up to date."
 msgstr "Todos los repositorios estaban ya actualizados."
 
-#: ../../spritz/src/spritz.py:2110
+#: ../../sulfur/src/sulfur.py:2114
 msgid "repositories were already up to date. Others have been updated."
 msgstr "repositorios ya estaban actualizados. Los demás han sido actualizados."
 
-#: ../../spritz/src/spritz.py:2113
+#: ../../sulfur/src/sulfur.py:2117
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr "Se debe actualizar sys-apps/entropy lo antes posible."
 
-#: ../../spritz/src/spritz.py:2121
+#: ../../sulfur/src/sulfur.py:2125
 msgid "Nothing to do. I am idle."
 msgstr "Nada que hacer. Estoy desocupado."
 
-#: ../../spritz/src/spritz.py:2122
+#: ../../sulfur/src/sulfur.py:2126
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr "No malgastes tu tiempo aquí; esto es sólo un modo de ocupar espacio"
 
-#: ../../spritz/src/spritz.py:2123
+#: ../../sulfur/src/sulfur.py:2127
 msgid "I am still alive and kickin'"
 msgstr "Sigo vivo y coleando"
 
 #. -> Get lists
-#: ../../spritz/src/spritz.py:2228
+#: ../../sulfur/src/sulfur.py:2232
 msgid "Generating Metadata, please wait."
 msgstr "Generando metadatos, espera por favor."
 
-#: ../../spritz/src/spritz.py:2229
+#: ../../sulfur/src/sulfur.py:2233
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr "Entropy está indexando los repositorios. Tardará algunos segundos"
 
-#: ../../spritz/src/spritz.py:2230
+#: ../../sulfur/src/sulfur.py:2234
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr "Mientras esperas, tómate un descanso y mira afuera. ¿Está lloviendo?"
 
-#: ../../spritz/src/spritz.py:2232 ../../spritz/src/spritz.py:2238
+#: ../../sulfur/src/sulfur.py:2236 ../../sulfur/src/sulfur.py:2242
 msgid "Calculating"
 msgstr "Calculando"
 
 #. if bootstrap: time.sleep(1)
-#: ../../spritz/src/spritz.py:2251
+#: ../../sulfur/src/sulfur.py:2255
 msgid "Showing"
 msgstr "Mostrando"
 
-#: ../../spritz/src/spritz.py:2278
+#: ../../sulfur/src/sulfur.py:2282
 msgid "Another Entropy instance is running. Cannot process queue."
 msgstr ""
 "Otra instancia de Entropy está ejecutándose. No se puede procesar la cola."
 
-#: ../../spritz/src/spritz.py:2284
+#: ../../sulfur/src/sulfur.py:2288
 msgid "Running tasks"
 msgstr "Ejecutando tareas"
 
-#: ../../spritz/src/spritz.py:2292
+#: ../../sulfur/src/sulfur.py:2296
 msgid "Processing Packages in queue"
 msgstr "Procesando los paquetes en cola"
 
-#: ../../spritz/src/spritz.py:2348
+#: ../../sulfur/src/sulfur.py:2352
 msgid "Attention. You chose to abort the processing."
 msgstr "Atención. Has elegido abortar el proceso."
 
-#: ../../spritz/src/spritz.py:2351
+#: ../../sulfur/src/sulfur.py:2355
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
@@ -8409,140 +8412,140 @@ msgstr ""
 "Atención. Ocurrió un error mientas se procesaba la cola.\n"
 "Observa el terminal de procesamiento por favor."
 
-#: ../../spritz/src/spritz.py:2390
+#: ../../sulfur/src/sulfur.py:2394
 msgid "No packages selected"
 msgstr "No hay paquetes seleccionados"
 
-#: ../../spritz/src/spritz.py:2455
+#: ../../sulfur/src/sulfur.py:2459
 msgid "Packages not found in repositories, try again later."
 msgstr ""
 "Los paquetes no se han encontrado en los repositorios. Inténtalo más tarde."
 
-#: ../../spritz/src/spritz.py:2533
+#: ../../sulfur/src/sulfur.py:2537
 msgid "No Repository Identifier"
 msgstr "No hay identificador para el repositorio"
 
-#: ../../spritz/src/spritz.py:2536
+#: ../../sulfur/src/sulfur.py:2540
 msgid "Duplicated Repository Identifier"
 msgstr "Identificador de repositorio duplicado"
 
-#: ../../spritz/src/spritz.py:2540
+#: ../../sulfur/src/sulfur.py:2544
 msgid "No download mirrors"
 msgstr "Sin mirrors de descarga"
 
-#: ../../spritz/src/spritz.py:2542
+#: ../../sulfur/src/sulfur.py:2546
 msgid "Database URL must start either with http:// or ftp:// or file://"
 msgstr ""
 "La dirección de la base de datos debe empezar por http:// o ftp:// o file://"
 
-#: ../../spritz/src/spritz.py:2550
+#: ../../sulfur/src/sulfur.py:2554
 msgid "Repository Services Port not valid"
 msgstr "El puerto de servicios del Repositorio no es válido"
 
-#: ../../spritz/src/spritz.py:2558
+#: ../../sulfur/src/sulfur.py:2562
 msgid "Secure Services Port not valid"
 msgstr "El puerto para los Servicios de Seguridaad no es válido"
 
-#: ../../spritz/src/spritz.py:2599
+#: ../../sulfur/src/sulfur.py:2603
 msgid "Skipping current mirror."
 msgstr "Omitiendo el mirror actual."
 
-#: ../../spritz/src/spritz_setup.py:117
+#: ../../sulfur/src/sulfur_setup.py:117
 msgid "Programming:"
 msgstr "Programación:"
 
-#: ../../spritz/src/spritz_setup.py:120
+#: ../../sulfur/src/sulfur_setup.py:120
 msgid "Translation:"
 msgstr "Traducción:"
 
-#: ../../spritz/src/spritz_setup.py:134
+#: ../../sulfur/src/sulfur_setup.py:134
 msgid "Dedicated to:"
 msgstr "Dedicado a:"
 
-#: ../../spritz/src/views.py:253
+#: ../../sulfur/src/views.py:254
 msgid "Selection"
 msgstr "Selección"
 
-#: ../../spritz/src/views.py:254
+#: ../../sulfur/src/views.py:255
 msgid "Rating"
 msgstr "Valoración"
 
-#: ../../spritz/src/views.py:908
+#: ../../sulfur/src/views.py:909
 #, fuzzy
 msgid "These are the packages that would be disabled"
 msgstr "Estos son los paquetes que serán marcados"
 
-#: ../../spritz/src/views.py:909
+#: ../../sulfur/src/views.py:910
 msgid "Once confirmed, these packages will be considered masked."
 msgstr "Una vez confirmado, estos paquetes se considerarán enmascarados."
 
-#: ../../spritz/src/views.py:1002
+#: ../../sulfur/src/views.py:1003
 #, fuzzy
 msgid "There are incomplete package sets, continue at your own risk"
 msgstr "[set]Estos son los paquetes que serán marcados"
 
-#: ../../spritz/src/views.py:1556
+#: ../../sulfur/src/views.py:1557
 msgid "Packages To Remove"
 msgstr "Paquetes a eliminar"
 
-#: ../../spritz/src/views.py:1561
+#: ../../sulfur/src/views.py:1562
 msgid "Packages To Install"
 msgstr "Paquetes a instalar"
 
-#: ../../spritz/src/views.py:1566
+#: ../../sulfur/src/views.py:1567
 msgid "Packages To Update"
 msgstr "Paquetes a actualizar"
 
-#: ../../spritz/src/views.py:1571
+#: ../../sulfur/src/views.py:1572
 msgid "Packages To Reinstall"
 msgstr "Paquetes a reinstalar"
 
-#: ../../spritz/src/views.py:1637
+#: ../../sulfur/src/views.py:1638
 msgid "Proposed"
 msgstr "Propuesta"
 
-#: ../../spritz/src/views.py:1644
+#: ../../sulfur/src/views.py:1645
 msgid "Destination"
 msgstr "Destino"
 
-#: ../../spritz/src/views.py:1651
+#: ../../sulfur/src/views.py:1652
 msgid "Rev."
 msgstr "Rev."
 
-#: ../../spritz/src/views.py:1700
+#: ../../sulfur/src/views.py:1701
 msgid "GLSA id."
 msgstr "Id. de GLSA"
 
-#: ../../spritz/src/views.py:1708
+#: ../../sulfur/src/views.py:1709
 msgid "Package key"
 msgstr "Clave del paquete"
 
-#: ../../spritz/src/views.py:1808
+#: ../../sulfur/src/views.py:1809
 msgid "No advisories"
 msgstr "No hay avisos"
 
-#: ../../spritz/src/views.py:1809
+#: ../../sulfur/src/views.py:1810
 msgid "There are no items to show"
 msgstr "No hay elementos para mostrar"
 
-#: ../../spritz/src/views.py:1840
+#: ../../sulfur/src/views.py:1841
 msgid "Filename"
 msgstr "Nombre de archivo"
 
-#: ../../spritz/src/views.py:1880
+#: ../../sulfur/src/views.py:1881
 msgid "Active"
 msgstr "Activado"
 
-#: ../../spritz/src/views.py:1890 ../../spritz/src/spritz.glade.h:241
+#: ../../sulfur/src/views.py:1891 ../../sulfur/src/sulfur.glade.h:241
 msgid "Update"
 msgstr "Actualizar"
 
 #. Setup revision column
-#: ../../spritz/src/views.py:1898 ../../spritz/src/spritz.glade.h:192
+#: ../../sulfur/src/views.py:1899 ../../sulfur/src/sulfur.glade.h:192
 msgid "Revision"
 msgstr "Revisión"
 
-#: ../../spritz/src/etpgui/packages.py:176
+#: ../../sulfur/src/etpgui/packages.py:176
 msgid "Recursive Package Set"
 msgstr ""
 
@@ -8730,11 +8733,11 @@ msgstr ""
 "Es recomendable que actualices a la última versión antes de actualizar "
 "cualquier otro paquete"
 
-#: ../../spritz/src/spritz.glade.h:1
+#: ../../sulfur/src/sulfur.glade.h:1
 msgid "0 = no limit; 100 = 100kB/sec"
 msgstr "0 = sin límite; 100 = 100 kB/seg"
 
-#: ../../spritz/src/spritz.glade.h:2
+#: ../../sulfur/src/sulfur.glade.h:2
 msgid ""
 "<b><big>Please wait</big></b>\n"
 "<small>...take a little break !</small>"
@@ -8742,12 +8745,12 @@ msgstr ""
 "<b><big>Espera por favor</big></b>\n"
 "<small>...tómate un descanso !</small>"
 
-#: ../../spritz/src/spritz.glade.h:4
+#: ../../sulfur/src/sulfur.glade.h:4
 msgid "<b>Entropy database backup tool</b>"
 msgstr ""
 "<b>Herramienta de copia de seguridad de la base de datos de Entropy</b>"
 
-#: ../../spritz/src/spritz.glade.h:5
+#: ../../sulfur/src/sulfur.glade.h:5
 msgid ""
 "<small>Using this tool, you will be able to backup and restore your "
 "Operating System packages database.</small>"
@@ -8755,162 +8758,162 @@ msgstr ""
 "<small>Usando esta herramienta, podrás copiar y restaurar la base de datos "
 "de paquetes del Sistema Operativo.</small>"
 
-#: ../../spritz/src/spritz.glade.h:6
+#: ../../sulfur/src/sulfur.glade.h:6
 msgid "Add Document"
 msgstr "Añadir Documento"
 
-#: ../../spritz/src/spritz.glade.h:8
+#: ../../sulfur/src/sulfur.glade.h:8
 msgid "Add USE flags on atoms"
 msgstr "Añade parámetros USE a los atoms"
 
-#: ../../spritz/src/spritz.glade.h:9
+#: ../../sulfur/src/sulfur.glade.h:9
 msgid "Add/Edit Repository"
 msgstr "Añadir/Editar Repositorio"
 
-#: ../../spritz/src/spritz.glade.h:10
+#: ../../sulfur/src/sulfur.glade.h:10
 msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
 msgstr ""
 "Añadir <b>nuevos repositorios</b> te permite acceder a <b>más software</b>"
 
-#: ../../spritz/src/spritz.glade.h:12
+#: ../../sulfur/src/sulfur.glade.h:12
 msgid "Affected packages"
 msgstr "Paquetes afectados"
 
-#: ../../spritz/src/spritz.glade.h:13
+#: ../../sulfur/src/sulfur.glade.h:13
 msgid "All"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:18
+#: ../../sulfur/src/sulfur.glade.h:18
 msgid "Background error message"
 msgstr "Mensaje de error de fondo"
 
-#: ../../spritz/src/spritz.glade.h:19
+#: ../../sulfur/src/sulfur.glade.h:19
 msgid "Background succ. message"
 msgstr "Mensaje de fondo"
 
-#: ../../spritz/src/spritz.glade.h:20
+#: ../../sulfur/src/sulfur.glade.h:20
 msgid "Backup configuration files"
 msgstr "Copia de seguridad de los archivos de configuración"
 
-#: ../../spritz/src/spritz.glade.h:22
+#: ../../sulfur/src/sulfur.glade.h:22
 msgid "Bugs"
 msgstr "Fallos"
 
-#: ../../spritz/src/spritz.glade.h:25
+#: ../../sulfur/src/sulfur.glade.h:25
 msgid "CONFIG_PROTECT"
 msgstr "CONFIG_PROTECT"
 
-#: ../../spritz/src/spritz.glade.h:27
+#: ../../sulfur/src/sulfur.glade.h:27
 msgid "C_hanges"
 msgstr "_Cambios"
 
-#: ../../spritz/src/spritz.glade.h:28
+#: ../../sulfur/src/sulfur.glade.h:28
 #, fuzzy
 msgid "Call"
 msgstr "[comRep]Llamada"
 
-#: ../../spritz/src/spritz.glade.h:29
+#: ../../sulfur/src/sulfur.glade.h:29
 msgid "ChangeLog"
 msgstr "Changelog"
 
-#: ../../spritz/src/spritz.glade.h:30
+#: ../../sulfur/src/sulfur.glade.h:30
 msgid "Checksum test"
 msgstr "Test de comprob. de suma"
 
-#: ../../spritz/src/spritz.glade.h:31
+#: ../../sulfur/src/sulfur.glade.h:31
 msgid "Cl_ean"
 msgstr "_Limpiar"
 
-#: ../../spritz/src/spritz.glade.h:32
+#: ../../sulfur/src/sulfur.glade.h:32
 msgid "Collision protection"
 msgstr "Protección de colisión"
 
-#: ../../spritz/src/spritz.glade.h:33
+#: ../../sulfur/src/sulfur.glade.h:33
 msgid "Command arguments"
 msgstr "Argumentos del comando"
 
-#: ../../spritz/src/spritz.glade.h:34
+#: ../../sulfur/src/sulfur.glade.h:34
 msgid "Command description"
 msgstr "Descripción del comando"
 
-#: ../../spritz/src/spritz.glade.h:35
+#: ../../sulfur/src/sulfur.glade.h:35
 msgid "Command name"
 msgstr "Nombre del comando"
 
-#: ../../spritz/src/spritz.glade.h:36
+#: ../../sulfur/src/sulfur.glade.h:36
 msgid "Commands"
 msgstr "Comandos"
 
-#: ../../spritz/src/spritz.glade.h:37
+#: ../../sulfur/src/sulfur.glade.h:37
 msgid "Compile atoms"
 msgstr "Compilar atoms"
 
-#: ../../spritz/src/spritz.glade.h:38
+#: ../../sulfur/src/sulfur.glade.h:38
 msgid "Compile packages on the remote server"
 msgstr "Compila los paquetes en el servidor remoto"
 
-#: ../../spritz/src/spritz.glade.h:39
+#: ../../sulfur/src/sulfur.glade.h:39
 msgid "Completed at"
 msgstr "Completado a"
 
-#: ../../spritz/src/spritz.glade.h:40
+#: ../../sulfur/src/sulfur.glade.h:40
 msgid "Compression"
 msgstr "Compresión"
 
-#: ../../spritz/src/spritz.glade.h:42
+#: ../../sulfur/src/sulfur.glade.h:42
 msgid "Creation date"
 msgstr "Fecha de creación"
 
-#: ../../spritz/src/spritz.glade.h:43
+#: ../../sulfur/src/sulfur.glade.h:43
 msgid "Current repository"
 msgstr "Repositorio actual"
 
-#: ../../spritz/src/spritz.glade.h:44
+#: ../../sulfur/src/sulfur.glade.h:44
 msgid "Custom command"
 msgstr "Comando personalizado"
 
-#: ../../spritz/src/spritz.glade.h:45
+#: ../../sulfur/src/sulfur.glade.h:45
 msgid "Custom shell command"
 msgstr "Comando de shell personalizado"
 
-#: ../../spritz/src/spritz.glade.h:46
+#: ../../sulfur/src/sulfur.glade.h:46
 msgid "D_ependencies"
 msgstr "D_ependencias"
 
-#: ../../spritz/src/spritz.glade.h:47
+#: ../../sulfur/src/sulfur.glade.h:47
 msgid "Data View"
 msgstr "Ver datos"
 
-#: ../../spritz/src/spritz.glade.h:48
+#: ../../sulfur/src/sulfur.glade.h:48
 msgid "Database updates"
 msgstr "Actualizs. de la bd"
 
-#: ../../spritz/src/spritz.glade.h:50
+#: ../../sulfur/src/sulfur.glade.h:50
 #, fuzzy
 msgid "Default repository selection"
 msgstr "[comRep]Selección de repositorio por defecto"
 
-#: ../../spritz/src/spritz.glade.h:51
+#: ../../sulfur/src/sulfur.glade.h:51
 msgid "Dele_te all"
 msgstr "Borrar _todo"
 
-#: ../../spritz/src/spritz.glade.h:52
+#: ../../sulfur/src/sulfur.glade.h:52
 msgid "Delete selected"
 msgstr "Eliminar seleccionadas"
 
-#: ../../spritz/src/spritz.glade.h:53
+#: ../../sulfur/src/sulfur.glade.h:53
 msgid "Dep. test"
 msgstr "Test de deps."
 
-#: ../../spritz/src/spritz.glade.h:54
+#: ../../sulfur/src/sulfur.glade.h:54
 msgid "Dependencies test"
 msgstr "Test de dependencias"
 
-#: ../../spritz/src/spritz.glade.h:56
+#: ../../sulfur/src/sulfur.glade.h:56
 msgid "Disable"
 msgstr "Deshabilitado"
 
-#: ../../spritz/src/spritz.glade.h:57
+#: ../../sulfur/src/sulfur.glade.h:57
 msgid ""
 "Disabled\n"
 "Removal only\n"
@@ -8920,645 +8923,645 @@ msgstr ""
 "Sólo eliminar\n"
 "Instalar+Eliminar"
 
-#: ../../spritz/src/spritz.glade.h:61
+#: ../../sulfur/src/sulfur.glade.h:61
 msgid "Done"
 msgstr "Hecho"
 
-#: ../../spritz/src/spritz.glade.h:62
+#: ../../sulfur/src/sulfur.glade.h:62
 msgid "Download Path"
 msgstr "Ruta de descarga"
 
-#: ../../spritz/src/spritz.glade.h:63
+#: ../../sulfur/src/sulfur.glade.h:63
 msgid "Download only"
 msgstr "Sólo descargar"
 
-#: ../../spritz/src/spritz.glade.h:64
+#: ../../sulfur/src/sulfur.glade.h:64
 msgid "Download source code"
 msgstr "Descargar el código fuente"
 
-#: ../../spritz/src/spritz.glade.h:65
+#: ../../sulfur/src/sulfur.glade.h:65
 msgid "Download speed limit"
 msgstr "Velocidad límite de descarga"
 
-#: ../../spritz/src/spritz.glade.h:66
+#: ../../sulfur/src/sulfur.glade.h:66
 msgid "Enable"
 msgstr "Habilitar"
 
-#: ../../spritz/src/spritz.glade.h:67
+#: ../../sulfur/src/sulfur.glade.h:67
 msgid "Enable _all"
 msgstr "Habilitar _todos"
 
-#: ../../spritz/src/spritz.glade.h:68
+#: ../../sulfur/src/sulfur.glade.h:68
 msgid "Entropy API"
 msgstr "API de Entropy"
 
-#: ../../spritz/src/spritz.glade.h:69
+#: ../../sulfur/src/sulfur.glade.h:69
 msgid "Entropy Package Manager"
 msgstr "Administrador de Paquetes de Entropy"
 
-#: ../../spritz/src/spritz.glade.h:70
+#: ../../sulfur/src/sulfur.glade.h:70
 msgid "Entropy Repository Manager"
 msgstr "Administrador de Repositorios de Entropy"
 
-#: ../../spritz/src/spritz.glade.h:71
+#: ../../sulfur/src/sulfur.glade.h:71
 msgid "Entropy Service Connection Manager"
 msgstr "Administrador de Conexión del Servicio Entropy"
 
-#: ../../spritz/src/spritz.glade.h:72
+#: ../../sulfur/src/sulfur.glade.h:72
 msgid "Entropy can keep a backup of your updated configuration files"
 msgstr ""
 "Entropy puede mantener una copia de seguridad de tus archivos de "
 "configuración actualizados"
 
-#: ../../spritz/src/spritz.glade.h:74
+#: ../../sulfur/src/sulfur.glade.h:74
 msgid "Error message"
 msgstr "Mensaje de error"
 
-#: ../../spritz/src/spritz.glade.h:75
+#: ../../sulfur/src/sulfur.glade.h:75
 msgid "Errored at"
 msgstr "Erróneo en"
 
-#: ../../spritz/src/spritz.glade.h:76
+#: ../../sulfur/src/sulfur.glade.h:76
 msgid "Example: http://proxy:1234"
 msgstr "Ejemplo: http://proxy:1234"
 
-#: ../../spritz/src/spritz.glade.h:78
+#: ../../sulfur/src/sulfur.glade.h:78
 msgid "External Trigger"
 msgstr "Activador externo"
 
-#: ../../spritz/src/spritz.glade.h:79
+#: ../../sulfur/src/sulfur.glade.h:79
 msgid "FTP Proxy"
 msgstr "Proxy FTP"
 
-#: ../../spritz/src/spritz.glade.h:80
+#: ../../sulfur/src/sulfur.glade.h:80
 msgid "General"
 msgstr "General"
 
-#: ../../spritz/src/spritz.glade.h:81
+#: ../../sulfur/src/sulfur.glade.h:81
 msgid "Generic title 1"
 msgstr "Título genérico 1"
 
-#: ../../spritz/src/spritz.glade.h:82
+#: ../../sulfur/src/sulfur.glade.h:82
 msgid "Generic title 2"
 msgstr "Título genérico 2"
 
-#: ../../spritz/src/spritz.glade.h:83
+#: ../../sulfur/src/sulfur.glade.h:83
 #, fuzzy
 msgid "Get Spm environment information"
 msgstr "[comRep]Obtener la información del entorno del adm. de paq. fuente"
 
-#: ../../spritz/src/spritz.glade.h:84
+#: ../../sulfur/src/sulfur.glade.h:84
 #, fuzzy
 msgid "Get output"
 msgstr "[comRep]Obtener la salida"
 
-#: ../../spritz/src/spritz.glade.h:85
+#: ../../sulfur/src/sulfur.glade.h:85
 msgid "Get package information"
 msgstr "Obtener información del paquete"
 
-#: ../../spritz/src/spritz.glade.h:86
+#: ../../sulfur/src/sulfur.glade.h:86
 #, fuzzy
 msgid "Get updates related to the chosen categories"
 msgstr ""
 "[comRep]Obtener actualizaciones relacionadas con las categorías elegidas"
 
-#: ../../spritz/src/spritz.glade.h:87
+#: ../../sulfur/src/sulfur.glade.h:87
 msgid "HTTP Proxy"
 msgstr "Proxy HTTP"
 
-#: ../../spritz/src/spritz.glade.h:90
+#: ../../sulfur/src/sulfur.glade.h:90
 msgid "If selected, packages will be downloaded only"
 msgstr "Si está seleccionado, los paquetes sólo se descargarán"
 
-#: ../../spritz/src/spritz.glade.h:91
+#: ../../sulfur/src/sulfur.glade.h:91
 msgid "Ignored protected files"
 msgstr "Archivos Protegidos ignorados"
 
-#: ../../spritz/src/spritz.glade.h:94
+#: ../../sulfur/src/sulfur.glade.h:94
 msgid "Install Set"
 msgstr "Instalar Set"
 
-#: ../../spritz/src/spritz.glade.h:95
+#: ../../sulfur/src/sulfur.glade.h:95
 msgid "Install Size"
 msgstr "Tamaño instalado"
 
-#: ../../spritz/src/spritz.glade.h:96
+#: ../../sulfur/src/sulfur.glade.h:96
 msgid "Install a stand-alone package file"
 msgstr "Instala un archivo de paquete autónomo"
 
-#: ../../spritz/src/spritz.glade.h:97
+#: ../../sulfur/src/sulfur.glade.h:97
 msgid "Install from binary package..."
 msgstr "Instalar desde un paquete binario..."
 
-#: ../../spritz/src/spritz.glade.h:98
+#: ../../sulfur/src/sulfur.glade.h:98
 msgid "Install the selected Package Set"
 msgstr "Instalar el Set de Paquetes seleccionado"
 
-#: ../../spritz/src/spritz.glade.h:99
+#: ../../sulfur/src/sulfur.glade.h:99
 msgid "Install the selected package"
 msgstr "Instalar el paquete seleccionado"
 
-#: ../../spritz/src/spritz.glade.h:101
+#: ../../sulfur/src/sulfur.glade.h:101
 msgid "Installed Packages"
 msgstr "Paquetes instalados"
 
-#: ../../spritz/src/spritz.glade.h:102
+#: ../../sulfur/src/sulfur.glade.h:102
 msgid "Interactivity"
 msgstr "Interactividad"
 
-#: ../../spritz/src/spritz.glade.h:103
+#: ../../sulfur/src/sulfur.glade.h:103
 msgid "Interface Colors"
 msgstr "Colores del interfaz"
 
-#: ../../spritz/src/spritz.glade.h:104
+#: ../../sulfur/src/sulfur.glade.h:104
 msgid "Kernel Tag"
 msgstr "Tag del kernel"
 
-#: ../../spritz/src/spritz.glade.h:106
+#: ../../sulfur/src/sulfur.glade.h:106
 msgid "Keywords (space separated)"
 msgstr "Palabras clave (separadas por espacios)"
 
-#: ../../spritz/src/spritz.glade.h:108
+#: ../../sulfur/src/sulfur.glade.h:108
 msgid "Library test"
 msgstr "Comprobación de bibliotecas"
 
-#: ../../spritz/src/spritz.glade.h:110
+#: ../../sulfur/src/sulfur.glade.h:110
 msgid "Load User Generated Content"
 msgstr "Cargar Contenido Generado por los Usuarios"
 
-#: ../../spritz/src/spritz.glade.h:111
+#: ../../sulfur/src/sulfur.glade.h:111
 msgid "Load content"
 msgstr "Cargar contenido"
 
-#: ../../spritz/src/spritz.glade.h:112
+#: ../../sulfur/src/sulfur.glade.h:112
 msgid "Location"
 msgstr "Procedencia"
 
-#: ../../spritz/src/spritz.glade.h:113
+#: ../../sulfur/src/sulfur.glade.h:113
 msgid "MD5 Signature"
 msgstr "Firma MD5"
 
-#: ../../spritz/src/spritz.glade.h:114
+#: ../../sulfur/src/sulfur.glade.h:114
 msgid "M_erge"
 msgstr "M_erge"
 
-#: ../../spritz/src/spritz.glade.h:115
+#: ../../sulfur/src/sulfur.glade.h:115
 msgid "Mask the selected packages"
 msgstr "Enmascara los paquetes seleccionados"
 
-#: ../../spritz/src/spritz.glade.h:116
+#: ../../sulfur/src/sulfur.glade.h:116
 msgid "Mask this package"
 msgstr "Enmascarar este paquete"
 
-#: ../../spritz/src/spritz.glade.h:118
+#: ../../sulfur/src/sulfur.glade.h:118
 msgid "Merge all"
 msgstr "_Merge a todo"
 
-#: ../../spritz/src/spritz.glade.h:119
+#: ../../sulfur/src/sulfur.glade.h:119
 msgid "Messages"
 msgstr "Mensajes"
 
-#: ../../spritz/src/spritz.glade.h:120
+#: ../../sulfur/src/sulfur.glade.h:120
 msgid "Mirror updates"
 msgstr "Actualizs. de los mirrors"
 
-#: ../../spritz/src/spritz.glade.h:122
+#: ../../sulfur/src/sulfur.glade.h:122
 msgid "Networking"
 msgstr "Red"
 
-#: ../../spritz/src/spritz.glade.h:123
+#: ../../sulfur/src/sulfur.glade.h:123
 msgid "New backup"
 msgstr "Nueva copia de seguridad"
 
-#: ../../spritz/src/spritz.glade.h:124
+#: ../../sulfur/src/sulfur.glade.h:124
 #, fuzzy
 msgid "Not done"
 msgstr "[comRep]No finalizado"
 
-#: ../../spritz/src/spritz.glade.h:126
+#: ../../sulfur/src/sulfur.glade.h:126
 #, fuzzy
 msgid "Notice Board Entry Information"
 msgstr "[comRep]Información de la Entrada del Tablón de Anuncios"
 
-#: ../../spritz/src/spritz.glade.h:128
+#: ../../sulfur/src/sulfur.glade.h:128
 #, fuzzy
 msgid "Notice board Id"
 msgstr "[comRep]ID del tablón de anuncios"
 
-#: ../../spritz/src/spritz.glade.h:129
+#: ../../sulfur/src/sulfur.glade.h:129
 msgid "O_ther"
 msgstr "_Otros"
 
-#: ../../spritz/src/spritz.glade.h:130
+#: ../../sulfur/src/sulfur.glade.h:130
 msgid "Output View"
 msgstr "Ver la salida"
 
-#: ../../spritz/src/spritz.glade.h:131
+#: ../../sulfur/src/sulfur.glade.h:131
 msgid "Package (default)"
 msgstr "Paquete (por defecto)"
 
-#: ../../spritz/src/spritz.glade.h:132
+#: ../../sulfur/src/sulfur.glade.h:132
 msgid "Package Info"
 msgstr "Información del Paquete"
 
-#: ../../spritz/src/spritz.glade.h:133
+#: ../../sulfur/src/sulfur.glade.h:133
 msgid "Package Information"
 msgstr "Información del Paquete"
 
-#: ../../spritz/src/spritz.glade.h:134
+#: ../../sulfur/src/sulfur.glade.h:134
 msgid "Package Masking"
 msgstr "Enmascaramiento de Paquetes"
 
-#: ../../spritz/src/spritz.glade.h:135
+#: ../../sulfur/src/sulfur.glade.h:135
 msgid "Package Size"
 msgstr "Paquete"
 
-#: ../../spritz/src/spritz.glade.h:136
+#: ../../sulfur/src/sulfur.glade.h:136
 msgid "Package category"
 msgstr "Categorías de paquetes"
 
-#: ../../spritz/src/spritz.glade.h:137
+#: ../../sulfur/src/sulfur.glade.h:137
 msgid "Package description"
 msgstr "Descripción del paquete"
 
-#: ../../spritz/src/spritz.glade.h:138
+#: ../../sulfur/src/sulfur.glade.h:138
 msgid "Package not installed"
 msgstr "Paquete no instalado"
 
-#: ../../spritz/src/spritz.glade.h:139
+#: ../../sulfur/src/sulfur.glade.h:139
 msgid "Package reinstalled"
 msgstr "Paquete reinstalado"
 
-#: ../../spritz/src/spritz.glade.h:140
+#: ../../sulfur/src/sulfur.glade.h:140
 msgid "Package removed"
 msgstr "Paquete eliminado"
 
-#: ../../spritz/src/spritz.glade.h:141
+#: ../../sulfur/src/sulfur.glade.h:141
 msgid "Package sub-description"
 msgstr "Subdesripción de paquete"
 
-#: ../../spritz/src/spritz.glade.h:142
+#: ../../sulfur/src/sulfur.glade.h:142
 msgid "Package subtitle"
 msgstr "Subtítulo de paquete"
 
-#: ../../spritz/src/spritz.glade.h:143
+#: ../../sulfur/src/sulfur.glade.h:143
 msgid "Package updated"
 msgstr "Paquete actualizado"
 
-#: ../../spritz/src/spritz.glade.h:146
+#: ../../sulfur/src/sulfur.glade.h:146
 msgid "Pinboard Id"
 msgstr "Id del Tablón de Notas"
 
-#: ../../spritz/src/spritz.glade.h:147
+#: ../../sulfur/src/sulfur.glade.h:147
 #, fuzzy
 msgid "Pinboard Item Information"
 msgstr "[comRep]Información del Ítem del Tablón de Notas"
 
-#: ../../spritz/src/spritz.glade.h:148
+#: ../../sulfur/src/sulfur.glade.h:148
 msgid "Pinboard View"
 msgstr "Vista del Tablón de Notas"
 
-#: ../../spritz/src/spritz.glade.h:149
+#: ../../sulfur/src/sulfur.glade.h:149
 msgid "Please Confirm"
 msgstr "Confirma por favor"
 
-#: ../../spritz/src/spritz.glade.h:150
+#: ../../sulfur/src/sulfur.glade.h:150
 msgid ""
 "Please submit this error to us providing as much information as possible."
 msgstr ""
 "Por favor, envíanos este error añadiendo toda la información que puedas."
 
-#: ../../spritz/src/spritz.glade.h:152
+#: ../../sulfur/src/sulfur.glade.h:152
 msgid "Prevents files belonging to a package being overwritten by another"
 msgstr ""
 "Evita que los archivos pertenecientes a un paquete sean sobrescritos por otro"
 
-#: ../../spritz/src/spritz.glade.h:153
+#: ../../sulfur/src/sulfur.glade.h:153
 msgid "Process priority (nice)"
 msgstr "Prioridad de proceso (nice)"
 
-#: ../../spritz/src/spritz.glade.h:154
+#: ../../sulfur/src/sulfur.glade.h:154
 msgid "Process result"
 msgstr "Resultado del proceso"
 
-#: ../../spritz/src/spritz.glade.h:155
+#: ../../sulfur/src/sulfur.glade.h:155
 msgid "Processing at"
 msgstr "Procesando a"
 
-#: ../../spritz/src/spritz.glade.h:156
+#: ../../sulfur/src/sulfur.glade.h:156
 msgid "Protected files and directories"
 msgstr "Archivos y directorios protegidos"
 
-#: ../../spritz/src/spritz.glade.h:157
+#: ../../sulfur/src/sulfur.glade.h:157
 msgid "Protected files and directories mask"
 msgstr "Archivos y máscara de directorios protegidos"
 
-#: ../../spritz/src/spritz.glade.h:158
+#: ../../sulfur/src/sulfur.glade.h:158
 msgid "Proxy Password"
 msgstr "Contraseña del proxy"
 
-#: ../../spritz/src/spritz.glade.h:159
+#: ../../sulfur/src/sulfur.glade.h:159
 msgid "Proxy Username"
 msgstr "Nombre de usuario del proxy"
 
-#: ../../spritz/src/spritz.glade.h:160
+#: ../../sulfur/src/sulfur.glade.h:160
 msgid "Purge"
 msgstr "Purgar"
 
-#: ../../spritz/src/spritz.glade.h:161
+#: ../../sulfur/src/sulfur.glade.h:161
 msgid "Q_ueue packages in selected Advisory"
 msgstr "E_ncolar los paquetes del aviso seleccionado"
 
-#: ../../spritz/src/spritz.glade.h:162
+#: ../../sulfur/src/sulfur.glade.h:162
 msgid "Queue Id"
 msgstr "ID de cola"
 
-#: ../../spritz/src/spritz.glade.h:163
+#: ../../sulfur/src/sulfur.glade.h:163
 msgid "Queue Item Information"
 msgstr "Información del Ítem en Cola"
 
-#: ../../spritz/src/spritz.glade.h:164
+#: ../../sulfur/src/sulfur.glade.h:164
 #, fuzzy
 msgid "Queue View"
 msgstr "[comRep]Ver la cola"
 
-#: ../../spritz/src/spritz.glade.h:165
+#: ../../sulfur/src/sulfur.glade.h:165
 msgid "Queued"
 msgstr "En cola"
 
-#: ../../spritz/src/spritz.glade.h:166
+#: ../../sulfur/src/sulfur.glade.h:166
 msgid "Queued at"
 msgstr "En cola desde"
 
-#: ../../spritz/src/spritz.glade.h:167
+#: ../../sulfur/src/sulfur.glade.h:167
 msgid "R_egenerate Cache"
 msgstr "Re_generar caché"
 
-#: ../../spritz/src/spritz.glade.h:168
+#: ../../sulfur/src/sulfur.glade.h:168
 msgid "R_epositories Notice Board"
 msgstr "Ta_blón de Anuncios de los Repositorios"
 
-#: ../../spritz/src/spritz.glade.h:172
+#: ../../sulfur/src/sulfur.glade.h:172
 msgid "Reinstall the selected package"
 msgstr "Reinstalar el paquete seleccionado"
 
-#: ../../spritz/src/spritz.glade.h:173
+#: ../../sulfur/src/sulfur.glade.h:173
 msgid "Remote stdout file"
 msgstr "Archivo stdout remoto"
 
-#: ../../spritz/src/spritz.glade.h:175
+#: ../../sulfur/src/sulfur.glade.h:175
 msgid "Remove Selected"
 msgstr "Eliminar Seleccionados"
 
-#: ../../spritz/src/spritz.glade.h:176
+#: ../../sulfur/src/sulfur.glade.h:176
 msgid "Remove Set"
 msgstr "Eliminar Set"
 
-#: ../../spritz/src/spritz.glade.h:178
+#: ../../sulfur/src/sulfur.glade.h:178
 msgid "Remove USE flags on atoms"
 msgstr "Eliminar parámetros USE de los atoms"
 
-#: ../../spritz/src/spritz.glade.h:179
+#: ../../sulfur/src/sulfur.glade.h:179
 msgid "Remove atoms"
 msgstr "Eliminar Atoms"
 
-#: ../../spritz/src/spritz.glade.h:180
+#: ../../sulfur/src/sulfur.glade.h:180
 msgid "Remove packages on the remote server"
 msgstr "Eliminar paquetes en el servidor remoto"
 
-#: ../../spritz/src/spritz.glade.h:181
+#: ../../sulfur/src/sulfur.glade.h:181
 msgid "Remove the selected Package Set"
 msgstr "Eliminar el Set de Paquetes seleccionado"
 
-#: ../../spritz/src/spritz.glade.h:182
+#: ../../sulfur/src/sulfur.glade.h:182
 msgid "Remove the selected package"
 msgstr "Eliminar el paquete seleccionado"
 
-#: ../../spritz/src/spritz.glade.h:183
+#: ../../sulfur/src/sulfur.glade.h:183
 msgid "Remove the selected package and its configuration"
 msgstr "Eliminar el paquete seleccionado y su configuración"
 
-#: ../../spritz/src/spritz.glade.h:185
+#: ../../sulfur/src/sulfur.glade.h:185
 msgid "Repositories options"
 msgstr "Opciones del repositorio"
 
-#: ../../spritz/src/spritz.glade.h:186
+#: ../../sulfur/src/sulfur.glade.h:186
 msgid "Repository information"
 msgstr "Información del repositorio"
 
-#: ../../spritz/src/spritz.glade.h:188
+#: ../../sulfur/src/sulfur.glade.h:188
 msgid "Restore"
 msgstr "Restaurar"
 
-#: ../../spritz/src/spritz.glade.h:189
+#: ../../sulfur/src/sulfur.glade.h:189
 msgid "Restore selected"
 msgstr "Restaurar seleccionados"
 
-#: ../../spritz/src/spritz.glade.h:190
+#: ../../sulfur/src/sulfur.glade.h:190
 msgid "Review for Install..."
 msgstr "Revisar para instalar..."
 
-#: ../../spritz/src/spritz.glade.h:193
+#: ../../sulfur/src/sulfur.glade.h:193
 msgid "S_end Error Report"
 msgstr "_Enviar el Informe de Errores"
 
-#: ../../spritz/src/spritz.glade.h:194
+#: ../../sulfur/src/sulfur.glade.h:194
 msgid "Save"
 msgstr "Guardar"
 
-#: ../../spritz/src/spritz.glade.h:195
+#: ../../sulfur/src/sulfur.glade.h:195
 msgid "Search"
 msgstr "Buscar"
 
-#: ../../spritz/src/spritz.glade.h:196
+#: ../../sulfur/src/sulfur.glade.h:196
 msgid "Secure Services Port"
 msgstr "Puerto para los Servicios de Seguridad"
 
-#: ../../spritz/src/spritz.glade.h:197
+#: ../../sulfur/src/sulfur.glade.h:197
 msgid "Security updates"
 msgstr "Actualizaciones de seguridad"
 
-#: ../../spritz/src/spritz.glade.h:198
+#: ../../sulfur/src/sulfur.glade.h:198
 msgid "Services Port"
 msgstr "Puerto para los Servicios"
 
-#: ../../spritz/src/spritz.glade.h:199
+#: ../../sulfur/src/sulfur.glade.h:199
 msgid "Sets"
 msgstr "Sets"
 
-#: ../../spritz/src/spritz.glade.h:200
+#: ../../sulfur/src/sulfur.glade.h:200
 msgid "Show ChangeLog"
 msgstr "Mostrar Changelog"
 
-#: ../../spritz/src/spritz.glade.h:201
+#: ../../sulfur/src/sulfur.glade.h:201
 msgid "Show Selected"
 msgstr "Mostrar seleccionados"
 
-#: ../../spritz/src/spritz.glade.h:202
+#: ../../sulfur/src/sulfur.glade.h:202
 msgid "Show all"
 msgstr "Mostrar todo"
 
-#: ../../spritz/src/spritz.glade.h:203
+#: ../../sulfur/src/sulfur.glade.h:203
 msgid "Show applied"
 msgstr "Mostrar aplicados"
 
-#: ../../spritz/src/spritz.glade.h:204
+#: ../../sulfur/src/sulfur.glade.h:204
 msgid "Show unapplied"
 msgstr "Mostrar no aplicados"
 
-#: ../../spritz/src/spritz.glade.h:207
+#: ../../sulfur/src/sulfur.glade.h:207
 msgid "Socket settings"
 msgstr "Configuración de socket"
 
-#: ../../spritz/src/spritz.glade.h:208
+#: ../../sulfur/src/sulfur.glade.h:208
 msgid "Source Package Manager"
 msgstr "Administrador de Paquetes Fuente"
 
-#: ../../spritz/src/spritz.glade.h:209
+#: ../../sulfur/src/sulfur.glade.h:209
 msgid "Spm Info"
 msgstr "Info. del Adm. Paq. Fuente"
 
-#: ../../spritz/src/spritz.glade.h:210
+#: ../../sulfur/src/sulfur.glade.h:210
 msgid "Spm Sync"
 msgstr "Sinc. Adm. Paq. Fuente"
 
-#: ../../spritz/src/spritz.glade.h:211
+#: ../../sulfur/src/sulfur.glade.h:211
 msgid "Spm tree updates"
 msgstr "Árbol de actualizaciones del admin. paqs. fuente"
 
-#: ../../spritz/src/spritz.glade.h:212
-msgid "Spritz Package Manager"
-msgstr "Administrador de Paquetes Spritz"
-
-#: ../../spritz/src/spritz.glade.h:213
+#: ../../sulfur/src/sulfur.glade.h:212
 msgid "Submit a new document"
 msgstr "Enviar un nuevo documento"
 
-#: ../../spritz/src/spritz.glade.h:214
+#: ../../sulfur/src/sulfur.glade.h:213
 msgid "Successful mesage"
 msgstr "Mensaje"
 
-#: ../../spritz/src/spritz.glade.h:215
+#: ../../sulfur/src/sulfur.glade.h:214
+msgid "Sulfur"
+msgstr ""
+
+#: ../../sulfur/src/sulfur.glade.h:215
 msgid "Switch to"
 msgstr "Cambiar a"
 
-#: ../../spritz/src/spritz.glade.h:217
+#: ../../sulfur/src/sulfur.glade.h:217
 msgid "System"
 msgstr "Sistema"
 
-#: ../../spritz/src/spritz.glade.h:218
+#: ../../sulfur/src/sulfur.glade.h:218
 msgid "System Database"
 msgstr "BD del sistema"
 
-#: ../../spritz/src/spritz.glade.h:219
+#: ../../sulfur/src/sulfur.glade.h:219
 msgid "Terminal font"
 msgstr "Fuente de la consola"
 
-#: ../../spritz/src/spritz.glade.h:220
+#: ../../sulfur/src/sulfur.glade.h:220
 msgid "Text on error message"
 msgstr "Texto en mensajes de error"
 
-#: ../../spritz/src/spritz.glade.h:221
+#: ../../sulfur/src/sulfur.glade.h:221
 msgid "Text on succ. message"
 msgstr "Texto en mensajes"
 
-#: ../../spritz/src/spritz.glade.h:222
+#: ../../sulfur/src/sulfur.glade.h:222
 msgid "This is what they call \"nice level\""
 msgstr "Esto es lo que se suele llamar \"nivel de nice\""
 
-#: ../../spritz/src/spritz.glade.h:224
+#: ../../sulfur/src/sulfur.glade.h:224
 msgid "UGC Entry Information"
 msgstr "Información de la Entrada UGC"
 
-#: ../../spritz/src/spritz.glade.h:225
+#: ../../sulfur/src/sulfur.glade.h:225
 msgid "URI"
 msgstr "URI"
 
-#: ../../spritz/src/spritz.glade.h:226
+#: ../../sulfur/src/sulfur.glade.h:226
 msgid "Undo Install"
 msgstr "Deshacer Instalación"
 
-#: ../../spritz/src/spritz.glade.h:227
+#: ../../sulfur/src/sulfur.glade.h:227
 msgid "Undo Install Set"
 msgstr "Deshacer Instalación de Set"
 
-#: ../../spritz/src/spritz.glade.h:228
+#: ../../sulfur/src/sulfur.glade.h:228
 msgid "Undo Install Set action"
 msgstr "Deshacer acción de Instalación de Set"
 
-#: ../../spritz/src/spritz.glade.h:229
+#: ../../sulfur/src/sulfur.glade.h:229
 msgid "Undo Install action"
 msgstr "Deshacer acción de Instalación"
 
-#: ../../spritz/src/spritz.glade.h:230
+#: ../../sulfur/src/sulfur.glade.h:230
 msgid "Undo Purge"
 msgstr "Deshacer Purgar"
 
-#: ../../spritz/src/spritz.glade.h:231
+#: ../../sulfur/src/sulfur.glade.h:231
 msgid "Undo Purge action"
 msgstr "Deshacer acción de Purgar"
 
-#: ../../spritz/src/spritz.glade.h:232
+#: ../../sulfur/src/sulfur.glade.h:232
 msgid "Undo Reinstall"
 msgstr "Deshacer Reinstalación"
 
-#: ../../spritz/src/spritz.glade.h:233
+#: ../../sulfur/src/sulfur.glade.h:233
 msgid "Undo Reinstall action"
 msgstr "Deshacer acción de Reinstalación"
 
-#: ../../spritz/src/spritz.glade.h:234
+#: ../../sulfur/src/sulfur.glade.h:234
 msgid "Undo Remove"
 msgstr "Deshacer Eliminar"
 
-#: ../../spritz/src/spritz.glade.h:235
+#: ../../sulfur/src/sulfur.glade.h:235
 msgid "Undo Remove Set"
 msgstr "Deshacer Eliminar Set"
 
-#: ../../spritz/src/spritz.glade.h:236
+#: ../../sulfur/src/sulfur.glade.h:236
 msgid "Undo Remove Set action"
 msgstr "Deshacer acción de Eliminar Set"
 
-#: ../../spritz/src/spritz.glade.h:237
+#: ../../sulfur/src/sulfur.glade.h:237
 msgid "Undo Remove action"
 msgstr "Deshacer acción de Eliminar"
 
-#: ../../spritz/src/spritz.glade.h:238
+#: ../../sulfur/src/sulfur.glade.h:238
 msgid "Undo Update"
 msgstr "Deshacer Actualizar"
 
-#: ../../spritz/src/spritz.glade.h:239
+#: ../../sulfur/src/sulfur.glade.h:239
 msgid "Undo Update action"
 msgstr "Deshacer acción de Actualizar"
 
-#: ../../spritz/src/spritz.glade.h:240
+#: ../../sulfur/src/sulfur.glade.h:240
 msgid "Unmask this package"
 msgstr "Desenmascarar este paquete"
 
-#: ../../spritz/src/spritz.glade.h:242
+#: ../../sulfur/src/sulfur.glade.h:242
 msgid "Update the selected package"
 msgstr "Actualizar el paquete seleccionado"
 
-#: ../../spritz/src/spritz.glade.h:243
+#: ../../sulfur/src/sulfur.glade.h:243
 msgid "Updates"
 msgstr "Actualizaciones"
 
-#: ../../spritz/src/spritz.glade.h:244
+#: ../../sulfur/src/sulfur.glade.h:244
 msgid "User / Group"
 msgstr "Usuario / Grupo"
 
-#: ../../spritz/src/spritz.glade.h:247
+#: ../../sulfur/src/sulfur.glade.h:247
 msgid "Version"
 msgstr "Versión"
 
-#: ../../spritz/src/spritz.glade.h:248
+#: ../../sulfur/src/sulfur.glade.h:248
 msgid "Website"
 msgstr "Sitio web"
 
-#: ../../spritz/src/spritz.glade.h:249
+#: ../../sulfur/src/sulfur.glade.h:249
 msgid "What you were doing"
 msgstr "Lo que estabas haciendo"
 
-#: ../../spritz/src/spritz.glade.h:251
+#: ../../sulfur/src/sulfur.glade.h:251
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
@@ -9566,165 +9569,168 @@ msgstr ""
 "Debes <b>aceptar</b> las siguientes licencias.\n"
 "Por favor, léelas cuidadosamente y <b>toma tu decisión</b>."
 
-#: ../../spritz/src/spritz.glade.h:253
+#: ../../sulfur/src/sulfur.glade.h:253
 msgid "Your E-mail"
 msgstr "Tu email"
 
-#: ../../spritz/src/spritz.glade.h:254
+#: ../../sulfur/src/sulfur.glade.h:254
 msgid "Your Full Name"
 msgstr "Tu nombre completo"
 
-#: ../../spritz/src/spritz.glade.h:255
+#: ../../sulfur/src/sulfur.glade.h:255
 msgid "_Abort"
 msgstr "_Abortar"
 
-#: ../../spritz/src/spritz.glade.h:256
+#: ../../sulfur/src/sulfur.glade.h:256
 msgid "_Accept License"
 msgstr "_Aceptar licencia"
 
-#: ../../spritz/src/spritz.glade.h:257
+#: ../../sulfur/src/sulfur.glade.h:257
 msgid "_Add All"
 msgstr "Añadir _todas"
 
-#: ../../spritz/src/spritz.glade.h:258
+#: ../../sulfur/src/sulfur.glade.h:258
 msgid "_Add Set"
 msgstr "Aña_dir Set"
 
-#: ../../spritz/src/spritz.glade.h:259
+#: ../../sulfur/src/sulfur.glade.h:259
 msgid "_Clear all cache"
 msgstr "_Limpiar toda la caché"
 
-#: ../../spritz/src/spritz.glade.h:260
+#: ../../sulfur/src/sulfur.glade.h:260
 msgid "_Clear all credentials"
 msgstr "Limpiar todas las cre_denciales"
 
-#: ../../spritz/src/spritz.glade.h:261
+#: ../../sulfur/src/sulfur.glade.h:261
 msgid "_Commit Actions"
 msgstr "_Ejecutar acciones"
 
-#: ../../spritz/src/spritz.glade.h:262
+#: ../../sulfur/src/sulfur.glade.h:262
 msgid "_Details"
 msgstr "_Detalles"
 
-#: ../../spritz/src/spritz.glade.h:263
+#: ../../sulfur/src/sulfur.glade.h:263
 msgid "_Enable"
 msgstr "_Habilitar"
 
-#: ../../spritz/src/spritz.glade.h:264
+#: ../../sulfur/src/sulfur.glade.h:264
 msgid "_File"
 msgstr "_Archivo"
 
-#: ../../spritz/src/spritz.glade.h:265
+#: ../../sulfur/src/sulfur.glade.h:265
 msgid "_Force repositories update"
 msgstr "_Forzar la actualización de repositorios"
 
-#: ../../spritz/src/spritz.glade.h:266
+#: ../../sulfur/src/sulfur.glade.h:266
 msgid "_Generate Login"
 msgstr "_Generar Login"
 
-#: ../../spritz/src/spritz.glade.h:267
+#: ../../sulfur/src/sulfur.glade.h:267
 msgid "_Help"
 msgstr "A_yuda"
 
-#: ../../spritz/src/spritz.glade.h:268
+#: ../../sulfur/src/sulfur.glade.h:268
 msgid "_Insert String"
 msgstr "_Insertar cadena"
 
-#: ../../spritz/src/spritz.glade.h:269
+#: ../../sulfur/src/sulfur.glade.h:269
 msgid "_More"
 msgstr "_Más"
 
-#: ../../spritz/src/spritz.glade.h:270
+#: ../../sulfur/src/sulfur.glade.h:270
 msgid "_Open Document"
 msgstr "Abrir Doc_umento"
 
-#: ../../spritz/src/spritz.glade.h:271
+#: ../../sulfur/src/sulfur.glade.h:271
 msgid "_Overview"
 msgstr "_General"
 
-#: ../../spritz/src/spritz.glade.h:272
+#: ../../sulfur/src/sulfur.glade.h:272
 msgid "_Properties"
 msgstr "_Propiedades"
 
-#: ../../spritz/src/spritz.glade.h:273
+#: ../../sulfur/src/sulfur.glade.h:273
 msgid "_Queue all vulnerable packages"
 msgstr "_Encolar todos los paquetes vulnerables"
 
-#: ../../spritz/src/spritz.glade.h:274
+#: ../../sulfur/src/sulfur.glade.h:274
 msgid "_Read License"
 msgstr "_Leer licencia"
 
-#: ../../spritz/src/spritz.glade.h:275
+#: ../../sulfur/src/sulfur.glade.h:275
 msgid "_References"
 msgstr "_Referencias"
 
-#: ../../spritz/src/spritz.glade.h:276
+#: ../../sulfur/src/sulfur.glade.h:276
 msgid "_Remote Repository Manager"
 msgstr "Administrador de _Repositorios Remotos"
 
-#: ../../spritz/src/spritz.glade.h:277
+#: ../../sulfur/src/sulfur.glade.h:277
 msgid "_Remove All"
 msgstr "_Eliminar todas"
 
-#: ../../spritz/src/spritz.glade.h:278
+#: ../../sulfur/src/sulfur.glade.h:278
 msgid "_Remove Login"
 msgstr "_Eliminar Login"
 
-#: ../../spritz/src/spritz.glade.h:279
+#: ../../sulfur/src/sulfur.glade.h:279
 msgid "_Remove Set"
 msgstr "_Eliminar Set"
 
-#: ../../spritz/src/spritz.glade.h:280
+#: ../../sulfur/src/sulfur.glade.h:280
 msgid "_SSL Connection"
 msgstr "Cone_xión SSL"
 
-#: ../../spritz/src/spritz.glade.h:281
+#: ../../sulfur/src/sulfur.glade.h:281
 msgid "_Services"
 msgstr "_Servicios"
 
-#: ../../spritz/src/spritz.glade.h:282
+#: ../../sulfur/src/sulfur.glade.h:282
 msgid "_Skip mirror"
 msgstr "_Omitir mirror"
 
-#: ../../spritz/src/spritz.glade.h:283
+#: ../../sulfur/src/sulfur.glade.h:283
 msgid "_Submit Document"
 msgstr "Enviar Docu_mento"
 
-#: ../../spritz/src/spritz.glade.h:284
+#: ../../sulfur/src/sulfur.glade.h:284
 msgid "_Update Repositories"
 msgstr "A_ctualizar repositorios"
 
-#: ../../spritz/src/spritz.glade.h:285
+#: ../../sulfur/src/sulfur.glade.h:285
 msgid "emerge --sync"
 msgstr "emerge --sync"
 
-#: ../../spritz/src/spritz.glade.h:286
+#: ../../sulfur/src/sulfur.glade.h:286
 msgid "emerge --sync ? (o;"
 msgstr "¿ emerge --sync ? (o;"
 
-#: ../../spritz/src/spritz.glade.h:287
+#: ../../sulfur/src/sulfur.glade.h:287
 msgid "http://www.sabayon.org"
 msgstr "http://www.sabayon.org"
 
-#: ../../spritz/src/spritz.glade.h:288
+#: ../../sulfur/src/sulfur.glade.h:288
 msgid "kB/sec"
 msgstr "kB/seg"
 
-#: ../../spritz/src/spritz.glade.h:289
+#: ../../sulfur/src/sulfur.glade.h:289
 msgid "localhost"
 msgstr "localhost"
 
-#: ../../spritz/src/spritz.glade.h:291
+#: ../../sulfur/src/sulfur.glade.h:291
 msgid "root"
 msgstr "root"
 
-#: ../../spritz/src/spritz.glade.h:292
+#: ../../sulfur/src/sulfur.glade.h:292
 msgid "type your password here"
 msgstr "escribe tu contraseña aquí"
 
-#: ../../spritz/src/spritz.glade.h:293
+#: ../../sulfur/src/sulfur.glade.h:293
 msgid "type your username here"
 msgstr "escribe tu nombre de usuario aquí"
+
+#~ msgid "Spritz Package Manager"
+#~ msgstr "Administrador de Paquetes Spritz"
 
 #~ msgid "Compilation messages"
 #~ msgstr "Mensajes de compilación"

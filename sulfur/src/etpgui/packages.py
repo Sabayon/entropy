@@ -20,7 +20,7 @@
 
 from entropy.const import *
 from entropyapi import Equo
-from spritz_setup import cleanMarkupString, SpritzConf
+from sulfur_setup import cleanMarkupString, SulfurConf
 EquoIntf = Equo()
 
 class DummyEntropyPackage:
@@ -62,7 +62,7 @@ class EntropyPackage:
         self.do_purge = False
         self.masked = None
         self.voted = 0
-        self.color = SpritzConf.color_normal
+        self.color = SulfurConf.color_normal
         self.remote = remote
         self.selected_by_user = False
         self.set_names = set()
@@ -174,7 +174,7 @@ class EntropyPackage:
         if self.pkgset:
             t = self.matched_atom
             desc = _("Recursive Package Set")
-            t += '\n<small><span foreground=\'%s\'>%s</span></small>' % (SpritzConf.color_pkgdesc,cleanMarkupString(desc),)
+            t += '\n<small><span foreground=\'%s\'>%s</span></small>' % (SulfurConf.color_pkgdesc,cleanMarkupString(desc),)
             return t
 
         ugc_string = ''
@@ -187,12 +187,12 @@ class EntropyPackage:
 
         t = ugc_string+'/'.join(atom.split("/")[1:])
         if self.masked:
-            t +=  " <small>[<span foreground='%s'>%s</span>]</small>" % (SpritzConf.color_title2,EquoIntf.SystemSettings['pkg_masking_reasons'][self.masked],)
+            t +=  " <small>[<span foreground='%s'>%s</span>]</small>" % (SulfurConf.color_title2,EquoIntf.SystemSettings['pkg_masking_reasons'][self.masked],)
 
         desc = self.getDescription(markup = False)
         if len(desc) > 56:
             desc = desc[:56].rstrip()+"..."
-        t += '\n<small><span foreground=\'%s\'>%s</span></small>' % (SpritzConf.color_pkgdesc,cleanMarkupString(desc),)
+        t += '\n<small><span foreground=\'%s\'>%s</span></small>' % (SulfurConf.color_pkgdesc,cleanMarkupString(desc),)
         return t
 
     def getOnlyName(self):

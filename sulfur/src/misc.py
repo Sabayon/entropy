@@ -1,7 +1,7 @@
-#!/usr/bin/python -tt
+#!/usr/bin/python2 -O
 # -*- coding: iso-8859-1 -*-
-#    Yum Exteder (yumex) - A GUI for yum
-#    Copyright (C) 2006 Tim Lauridsen < tim<AT>yum-extender<DOT>org > 
+#    Sulfur (Entropy Interface)
+#    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -18,11 +18,11 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 from entropy.i18n import _
-from spritz_setup import cleanMarkupString, SpritzConf
+from sulfur_setup import cleanMarkupString, SulfurConf
 
-class SpritzQueue:
+class Queue:
 
-    def __init__(self, SpritzApplication):
+    def __init__(self, SulfurApplication):
         self.packages = {}
         self.before = []
         self.keyslotFilter = set()
@@ -32,7 +32,7 @@ class SpritzQueue:
         self.etpbase = None
         self.pkgView = None
         self.queueView = None
-        self.Spritz = SpritzApplication
+        self.Sulfur = SulfurApplication
         import dialogs
         self.dialogs = dialogs
 
@@ -116,9 +116,9 @@ class SpritzQueue:
         for idpackage in to_be_reinserted:
             if idpackage not in newdepends:
                 mystring = "<span foreground='%s'>%s</span>\n<small><span foreground='%s'>%s</span></small>" % (
-                    SpritzConf.color_title,
+                    SulfurConf.color_title,
                     self.Entropy.clientDbconn.retrieveAtom(idpackage),
-                    SpritzConf.color_pkgsubtitle,
+                    SulfurConf.color_pkgsubtitle,
                     cleanMarkupString(self.Entropy.clientDbconn.retrieveDescription(idpackage)),
                 )
                 atoms.append(mystring)
@@ -176,9 +176,9 @@ class SpritzQueue:
         for idpackage, repoid in crying_items:
             dbconn = self.Entropy.open_repository(repoid)
             mystring = "<span foreground='%s'>%s</span>\n<small><span foreground='%s'>%s</span></small>" % (
-                SpritzConf.color_title,
+                SulfurConf.color_title,
                 dbconn.retrieveAtom(idpackage),
-                SpritzConf.color_pkgsubtitle,
+                SulfurConf.color_pkgsubtitle,
                 cleanMarkupString(dbconn.retrieveDescription(idpackage)),
             )
             atoms.append(mystring)
@@ -204,7 +204,7 @@ class SpritzQueue:
 
     def remove(self, pkgs, accept = False, accept_reinsert = False, always_ask = False):
 
-        self.Spritz.show_wait_window()
+        self.Sulfur.show_wait_window()
 
         try:
             if type(pkgs) is not list:
@@ -274,11 +274,11 @@ class SpritzQueue:
                 del self.before[:]
                 return 0,1
         finally:
-            self.Spritz.hide_wait_window()
+            self.Sulfur.hide_wait_window()
 
     def add(self, pkgs, accept = False, always_ask = False):
 
-        self.Spritz.show_wait_window()
+        self.Sulfur.show_wait_window()
 
         try:
             if type(pkgs) is not list:
@@ -317,7 +317,7 @@ class SpritzQueue:
                 return status,1
 
         finally:
-            self.Spritz.hide_wait_window()
+            self.Sulfur.hide_wait_window()
 
     def elaborateMaskedPackages(self, matches):
 
@@ -344,7 +344,7 @@ class SpritzQueue:
             pkg, new = self.etpbase.getPackageItem(match)
             pkgs.append(pkg)
 
-        self.Spritz.hide_wait_window()
+        self.Sulfur.hide_wait_window()
         # save old
         oldmask = self.etpbase.unmaskingPackages.copy()
         maskDialog = self.dialogs.MaskedPackagesDialog(self.Entropy, self.etpbase, self.ui.main, pkgs)
@@ -355,7 +355,7 @@ class SpritzQueue:
             # discard changes
             self.etpbase.unmaskingPackages = oldmask.copy()
         maskDialog.destroy()
-        self.Spritz.show_wait_window()
+        self.Sulfur.show_wait_window()
 
         return result
 

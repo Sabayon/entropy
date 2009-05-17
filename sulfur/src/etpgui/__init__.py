@@ -1,5 +1,6 @@
-#!/usr/bin/python2
-#    Spritz (Entropy Interface)
+#!/usr/bin/python2 -O
+# -*- coding: iso-8859-1 -*-
+#    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
 #    This program is free software; you can redistribute it and/or modify
@@ -15,28 +16,23 @@
 #    You should have received a copy of the GNU General Public License
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-import sys, os
 
-# working string: entropy://media-foo/abc;media-foo/abc2
+import gtk
+CURRENT_CURSOR = None
 
-spritz_path = "/usr/bin/spritz"
-spritz_install_arg = "--install"
-entropy_uri_pfx = "entropy://"
-atoms = []
-for arg in sys.argv[1:]:
-    if arg.startswith(entropy_uri_pfx):
-        uri_data = arg[len(entropy_uri_pfx):]
-        for atom in uri_data.split(";"):
-            if atom.endswith("/"):
-                atom = atom[:-1]
-            atoms.append(atom)
-    elif arg == "--fetch":
-        atoms.append(arg)
+def busyCursor(mainwin, insensitive=False, cur = gtk.gdk.Cursor(gtk.gdk.WATCH)):
+    ''' Set busy cursor in mainwin and make it insensitive if selected '''
+    mainwin.window.set_cursor(cur)
+    global CURRENT_CURSOR
+    CURRENT_CURSOR = cur
+    if insensitive:
+        mainwin.set_sensitive(False)
 
-if atoms:
-    args = [spritz_path, spritz_install_arg] + atoms
-    print ' '.join(args)
-    rc = os.system(' '.join(args))
-    raise SystemExit(rc)
+def normalCursor(mainwin):
+    ''' Set Normal cursor in mainwin and make it sensitive '''
+    if mainwin.window != None:
+        mainwin.window.set_cursor(None)
+        mainwin.set_sensitive(True)
+    global CURRENT_CURSOR
+    CURRENT_CURSOR = None
 
-raise SystemExit(1)

@@ -1,7 +1,7 @@
-#!/usr/bin/python -tt
+#!/usr/bin/python2 -O
 # -*- coding: iso-8859-1 -*-
-#    Yum Exteder (yumex) - A GUI for yum
-#    Copyright (C) 2006 Tim Lauridsen < tim<AT>yum-extender<DOT>org > 
+#    Sulfur (Entropy Interface)
+#    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 import time
 import gtk
 import gobject
-from spritz_setup import const, cleanMarkupString, SpritzConf
+from sulfur_setup import const, cleanMarkupString, SulfurConf
 from etpgui.widgets import UI, CellRendererStars
 from packages import DummyEntropyPackage
 from entropyapi import Equo
@@ -86,8 +86,8 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
             cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category, 
                 cleanMarkupString(cat_desc),)
             mydummy = DummyEntropyPackage(namedesc = cat_text,
-                dummy_type = SpritzConf.dummy_category, onlyname = category)
-            mydummy.color = SpritzConf.color_package_category
+                dummy_type = SulfurConf.dummy_category, onlyname = category)
+            mydummy.color = SulfurConf.color_package_category
             set_data = self.entropy.package_set_match(category)[0]
             if not set_data:
                 continue
@@ -140,8 +140,8 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
             cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,
                 cleanMarkupString(cat_desc),)
             mydummy = DummyEntropyPackage(namedesc = cat_text,
-                dummy_type = SpritzConf.dummy_category, onlyname = category)
-            mydummy.color = SpritzConf.color_package_category
+                dummy_type = SulfurConf.dummy_category, onlyname = category)
+            mydummy.color = SulfurConf.color_package_category
             self.dummy_cats[category] = mydummy
             parent = self.model.append( None, (mydummy,) )
             for po in categories[category]:
@@ -246,10 +246,11 @@ class RepoSortPackageViewModelInjector(EntropyPackageViewModelInjector):
 
 class EntropyPackageView:
 
-    def __init__( self, treeview, qview, ui, etpbase, main_window, spritz_app = None ):
+    def __init__( self, treeview, qview, ui, etpbase, main_window,
+        application = None ):
 
         self.Equo = Equo()
-        self.Spritz = spritz_app
+        self.Sulfur = application
         self.pkgcolumn_text = _("Selection")
         self.pkgcolumn_text_rating = _("Rating")
         self.stars_col_size = 100
@@ -869,10 +870,10 @@ class EntropyPackageView:
                 del self.etpbase._packages["queued"]
             # if we remove packages from the queued view
             # we need to completely remove them from the list
-            if self.Spritz != None:
-                if self.Spritz.lastPkgPB == "queued":
+            if self.Sulfur != None:
+                if self.Sulfur.lastPkgPB == "queued":
                     self.etpbase.populateSingle("queued", force = True)
-                    self.Spritz.addPackages()
+                    self.Sulfur.addPackages()
             # disable user selection
             for obj in objs:
                 obj.selected_by_user = False
@@ -917,8 +918,8 @@ class EntropyPackageView:
         self.clear()
         self.etpbase.clearPackages()
         self.etpbase.clearCache()
-        if self.Spritz != None:
-            self.Spritz.addPackages()
+        if self.Sulfur != None:
+            self.Sulfur.addPackages()
 
     def on_pkgsetUndoinstall_activate(self, widget):
         return self.on_pkgset_install_undoinstall_activate(widget, install = False)
@@ -1192,14 +1193,14 @@ class EntropyPackageView:
         if new == self.__current_model_injector_class:
             return
         self.change_model_injector(new)
-        if self.Spritz != None:
-            sorter = self.Spritz.ui.pkgSorter
-            for sort_name, sort_class in self.Spritz.avail_pkg_sorters.items():
+        if self.Sulfur != None:
+            sorter = self.Sulfur.ui.pkgSorter
+            for sort_name, sort_class in self.Sulfur.avail_pkg_sorters.items():
                 if sort_class == new:
-                    sort_id = self.Spritz.pkg_sorters_id_inverse.get(sort_name)
+                    sort_id = self.Sulfur.pkg_sorters_id_inverse.get(sort_name)
                     sorter.set_active(sort_id)
                     break
-            self.Spritz.addPackages()
+            self.Sulfur.addPackages()
         normalCursor(self.main_window)
 
     def on_package_column_clicked(self, widget):
@@ -1300,9 +1301,9 @@ class EntropyPackageView:
     def vote_submit_thread(self, repository, key, obj):
         status, err_msg = self.Equo.UGC.add_vote(repository, key, obj.voted)
         if status:
-            msg = "<small><span foreground='%s'><b>%s</b></span>: %s</small>" % (SpritzConf.color_good,_("Vote registered successfully"),obj.voted,)
+            msg = "<small><span foreground='%s'><b>%s</b></span>: %s</small>" % (SulfurConf.color_good,_("Vote registered successfully"),obj.voted,)
         else:
-            msg = "<small><span foreground='%s'><b>%s</b></span>: %s</small>" % (SpritzConf.color_error,_("Error registering vote"),err_msg,)
+            msg = "<small><span foreground='%s'><b>%s</b></span>: %s</small>" % (SulfurConf.color_error,_("Error registering vote"),err_msg,)
         gtk.gdk.threads_enter()
         self.ui.UGCMessageLabel.set_markup(msg)
         gtk.gdk.threads_leave()
@@ -1416,11 +1417,11 @@ class EntropyPackageView:
 
             self.set_line_status(pkg, cell)
 
-            if pkg.dummy_type == SpritzConf.dummy_empty:
+            if pkg.dummy_type == SulfurConf.dummy_empty:
                 cell.set_property( 'stock-id', 'gtk-apply' )
                 return
 
-            if pkg.dummy_type == SpritzConf.dummy_category:
+            if pkg.dummy_type == SulfurConf.dummy_category:
                 cell.set_property( 'icon-name', 'package-x-generic' )
                 return
 
@@ -1603,10 +1604,10 @@ class EntropyQueueView:
             cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(cat_desc),)
             mydummy = DummyEntropyPackage(
                     namedesc = cat_text,
-                    dummy_type = SpritzConf.dummy_category,
+                    dummy_type = SulfurConf.dummy_category,
                     onlyname = category
             )
-            mydummy.color = SpritzConf.color_package_category
+            mydummy.color = SulfurConf.color_package_category
             parent = self.model.append( grandfather, (mydummy.namedesc,) )
             for po in categories[category]:
                 self.model.append( parent, (po.namedesc,) )
@@ -1761,11 +1762,11 @@ class EntropyAdvisoriesView:
         if key == None:
             affected = False
         if affected:
-            cell.set_property('background',SpritzConf.color_background_error)
-            cell.set_property('foreground',SpritzConf.color_error_on_color_background)
+            cell.set_property('background',SulfurConf.color_background_error)
+            cell.set_property('foreground',SulfurConf.color_error_on_color_background)
         else:
-            cell.set_property('background',SpritzConf.color_background_good)
-            cell.set_property('foreground',SpritzConf.color_good_on_color_background)
+            cell.set_property('background',SulfurConf.color_background_good)
+            cell.set_property('foreground',SulfurConf.color_good_on_color_background)
 
     def atom_search(self, model, column, key, iterator):
         obj = model.get_value( iterator, 2 )
@@ -1835,14 +1836,14 @@ class EntropyAdvisoriesView:
 
 class EntropyRepoView:
 
-    def __init__( self, widget, ui, spritz_app):
+    def __init__( self, widget, ui, application):
         self.view = widget
         self.headers = [_('Repository'),_('Filename')]
         self.store = self.setup_view()
         self.Equo = Equo()
         self.ui = ui
         self.okDialog = okDialog
-        self.Spritz = spritz_app
+        self.Sulfur = application
 
     def on_active_toggled( self, widget, path):
         """ Repo select/unselect handler """
@@ -1857,8 +1858,8 @@ class EntropyRepoView:
             else:
                 self.Equo.enable_repository(repoid)
                 initconfig_entropy_constants(etpSys['rootdir'])
-            self.Spritz.resetSpritzCacheStatus()
-            self.Spritz.addPackages(back_to_page = "repos")
+            self.Sulfur.reset_cache_status()
+            self.Sulfur.addPackages(back_to_page = "repos")
             self.store.set_value(myiter,0, not state)
 
     def on_update_toggled( self, widget, path):

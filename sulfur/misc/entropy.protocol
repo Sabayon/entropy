@@ -1,5 +1,5 @@
 [Protocol]
-exec=spritz-uri-handler "%u"
+exec=sulfur-uri-handler "%u"
 protocol=entropy
 input=none
 output=none
@@ -10,4 +10,4 @@ writing=false
 makedir=false
 deleting=false
 URIMode=rawuri
-Icon=spritz
+Icon=sulfur

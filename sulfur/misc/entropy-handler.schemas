@@ -5,7 +5,7 @@
 			<applyto>/desktop/gnome/url-handlers/entropy/command</applyto>
 			<owner>entropy-handler</owner>
 			<type>string</type>
-			<default>spritz-uri-handler %s</default>
+			<default>sulfur-uri-handler %s</default>
 			<locale name="C">
 				<short>Entropy packages install URI handler</short>
 				<long>The handler of entropy://package-1.2.3 to make packages installation utterly easy</long>

@@ -2,7 +2,7 @@
 Encoding=UTF-8
 MimeType=application/x-tar;application/x-tgz;application/x-tbz;application/x-tbz2;application/x-tarz
 Comment=Entropy Graphical Package Manager
-Icon=/usr/share/pixmaps/spritz/spritz-icon.png
+Icon=/usr/share/pixmaps/sulfur/sulfur-icon.png
 Type=MimeType
 Patterns=*.tbz2
 Hidden=false

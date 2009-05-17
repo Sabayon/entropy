@@ -1,8 +1,6 @@
-#!/usr/bin/python -tt
+#!/usr/bin/python2 -O
 # -*- coding: iso-8859-1 -*-
-#    It was: Yum Exteder (yumex) - A GUI for yum
-#    Copyright (C) 2006 Tim Lauridsen < tim<AT>yum-extender<DOT>org > 
-#    Now is: Spritz (Entropy Interface)
+#    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
 #    This program is free software; you can redistribute it and/or modify
@@ -37,12 +35,10 @@ from entropyapi import Equo, QueueExecutor
 from entropy.qa import ErrorReportInterface
 from entropy.i18n import _
 
-# Spritz Imports
+# Sulfur Imports
 import gtk, gobject
-from etpgui.widgets import UI, Controller, SpritzConsole
 from etpgui import *
-from spritz_setup import SpritzConf, const, fakeoutfile, fakeinfile, cleanMarkupString
-from misc import SpritzQueue
+from sulfur_setup import const
 from dialogs import *
 
 class MyRepositoryManager(RepositoryManagerMenu):
@@ -84,7 +80,7 @@ if __name__ == "__main__":
 
     try:
         try:
-            gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/spritz-icon.png")
+            gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/sulfur-icon.png")
         except gobject.GError:
             pass
         mainApp = ManagerApplication()

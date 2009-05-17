@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-16 20:11+0200\n"
+"POT-Creation-Date: 2009-05-17 10:23+0200\n"
 "PO-Revision-Date: 2006-02-14 14:52+0100\n"
 "Last-Translator: tim <tla@ramil.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -366,7 +366,7 @@ msgstr "Kører Transaktion"
 #: ../../libraries/entropy/server/interfaces/main.py:3035
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1521
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1854
-#: ../../spritz/src/dialogs.py:2084
+#: ../../sulfur/src/dialogs.py:2083
 #, fuzzy
 msgid "download"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
@@ -562,8 +562,8 @@ msgstr "Vis Installerede Pakker"
 #. note
 #: ../../libraries/entropy/server/interfaces/main.py:1573
 #: ../../libraries/entropy/client/services/system/methods.py:98
-#: ../../spritz/src/dialogs.py:782 ../../spritz/src/dialogs.py:3128
-#: ../../spritz/src/spritz.glade.h:125
+#: ../../sulfur/src/dialogs.py:781 ../../sulfur/src/dialogs.py:3127
+#: ../../sulfur/src/sulfur.glade.h:125
 msgid "Note"
 msgstr ""
 
@@ -761,8 +761,8 @@ msgstr ""
 #: ../../client/text_rescue.py:291 ../../client/text_rescue.py:304
 #: ../../client/text_ui.py:908 ../../client/text_ui.py:909
 #: ../../client/text_ui.py:911 ../../client/text_ui.py:912
-#: ../../spritz/src/dialogs.py:5649 ../../spritz/src/misc.py:88
-#: ../../spritz/src/misc.py:372 ../../spritz/src/spritz.py:1908
+#: ../../sulfur/src/dialogs.py:5648 ../../sulfur/src/misc.py:88
+#: ../../sulfur/src/misc.py:372 ../../sulfur/src/sulfur.py:1909
 msgid "Attention"
 msgstr ""
 
@@ -1222,7 +1222,7 @@ msgstr "Indlæsning afsluttet"
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1348
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1376
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1840
-#: ../../spritz/src/dialogs.py:2082
+#: ../../sulfur/src/dialogs.py:2081
 msgid "upload"
 msgstr ""
 
@@ -1592,7 +1592,7 @@ msgid "cannot convert stream into object"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/ugc/commands.py:601
-#: ../../spritz/src/spritz.glade.h:245
+#: ../../sulfur/src/sulfur.glade.h:245
 msgid "User Generated Content"
 msgstr ""
 
@@ -1625,13 +1625,13 @@ msgid "repository does not support EAPI3"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:132
-#: ../../spritz/src/dialogs.py:198 ../../spritz/src/spritz.glade.h:246
+#: ../../sulfur/src/dialogs.py:198 ../../sulfur/src/sulfur.glade.h:246
 #, fuzzy
 msgid "Username"
 msgstr "Filnavn"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:133
-#: ../../spritz/src/spritz.glade.h:145
+#: ../../sulfur/src/sulfur.glade.h:145
 msgid "Password"
 msgstr ""
 
@@ -1856,43 +1856,43 @@ msgstr "Fi_ler"
 
 #: ../../libraries/entropy/client/services/system/methods.py:189
 #: ../../libraries/entropy/client/services/system/methods.py:207
-#: ../../spritz/src/dialogs.py:2943 ../../spritz/src/dialogs.py:2986
+#: ../../sulfur/src/dialogs.py:2942 ../../sulfur/src/dialogs.py:2985
 #, fuzzy
 msgid "Pretend"
 msgstr "Slettet"
 
 #: ../../libraries/entropy/client/services/system/methods.py:190
-#: ../../spritz/src/dialogs.py:2987
+#: ../../sulfur/src/dialogs.py:2986
 msgid "Oneshot"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/system/methods.py:191
 #: ../../libraries/entropy/client/services/system/methods.py:208
-#: ../../spritz/src/dialogs.py:2944 ../../spritz/src/dialogs.py:2988
+#: ../../sulfur/src/dialogs.py:2943 ../../sulfur/src/dialogs.py:2987
 #, fuzzy
 msgid "Verbose"
 msgstr "_Filspejlsliste"
 
 #: ../../libraries/entropy/client/services/system/methods.py:192
 #: ../../libraries/entropy/client/services/system/methods.py:209
-#: ../../spritz/src/dialogs.py:2945 ../../spritz/src/dialogs.py:2989
+#: ../../sulfur/src/dialogs.py:2944 ../../sulfur/src/dialogs.py:2988
 msgid "No color"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/system/methods.py:193
-#: ../../spritz/src/dialogs.py:2990
+#: ../../sulfur/src/dialogs.py:2989
 #, fuzzy
 msgid "Fetch only"
 msgstr "Opdaterer"
 
 #: ../../libraries/entropy/client/services/system/methods.py:194
-#: ../../spritz/src/dialogs.py:2991
+#: ../../sulfur/src/dialogs.py:2990
 msgid "Build only"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/system/methods.py:195
 #: ../../server/server_reagent.py:187 ../../server/server_reagent.py:192
-#: ../../spritz/src/dialogs.py:2992
+#: ../../sulfur/src/dialogs.py:2991
 #, fuzzy
 msgid "No dependencies"
 msgstr "Indstillinger"
@@ -1902,12 +1902,12 @@ msgid "Custom USE"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/system/methods.py:197
-#: ../../spritz/src/dialogs.py:2994
+#: ../../sulfur/src/dialogs.py:2993
 msgid "Custom LDFLAGS"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/system/methods.py:198
-#: ../../spritz/src/dialogs.py:2995
+#: ../../sulfur/src/dialogs.py:2994
 msgid "Custom CFLAGS"
 msgstr ""
 
@@ -1937,7 +1937,7 @@ msgstr "Ingen valgte pakker"
 
 #: ../../libraries/entropy/client/services/system/methods.py:230
 #: ../../libraries/entropy/client/services/system/methods.py:239
-#: ../../client/text_query.py:1176 ../../spritz/src/dialogs.py:4101
+#: ../../client/text_query.py:1176 ../../sulfur/src/dialogs.py:4100
 msgid "USE flags"
 msgstr ""
 
@@ -1961,7 +1961,7 @@ msgstr ""
 
 #. command col
 #: ../../libraries/entropy/client/services/system/methods.py:259
-#: ../../spritz/src/dialogs.py:695 ../../spritz/src/dialogs.py:736
+#: ../../sulfur/src/dialogs.py:694 ../../sulfur/src/dialogs.py:735
 msgid "Command"
 msgstr ""
 
@@ -1994,7 +1994,7 @@ msgstr "Rediger Filkilder"
 #: ../../libraries/entropy/client/services/system/methods.py:395
 #: ../../libraries/entropy/client/services/system/methods.py:402
 #: ../../libraries/entropy/client/services/system/methods.py:411
-#: ../../spritz/src/views.py:1901
+#: ../../sulfur/src/views.py:1902
 #, fuzzy
 msgid "Repository Identifier"
 msgstr "Filkilder"
@@ -2031,13 +2031,13 @@ msgid ""
 msgstr "Ingen valgte pakker"
 
 #: ../../libraries/entropy/client/services/system/methods.py:314
-#: ../../spritz/src/dialogs.py:3333
+#: ../../sulfur/src/dialogs.py:3332
 #, fuzzy
 msgid "Search type"
 msgstr "Søgnings Indstiller"
 
 #: ../../libraries/entropy/client/services/system/methods.py:315
-#: ../../spritz/src/dialogs.py:3334
+#: ../../sulfur/src/dialogs.py:3333
 #, fuzzy
 msgid "Search string"
 msgstr "Søgnings Indstiller"
@@ -2058,7 +2058,7 @@ msgid "From repository"
 msgstr "Kilde"
 
 #: ../../libraries/entropy/client/services/system/methods.py:326
-#: ../../spritz/src/dialogs.py:1826
+#: ../../sulfur/src/dialogs.py:1825
 #, fuzzy
 msgid "To repository"
 msgstr "Kilde"
@@ -2163,9 +2163,9 @@ msgstr "Sletter"
 #: ../../client/text_repositories.py:299 ../../client/text_security.py:85
 #: ../../client/text_ugc.py:361 ../../client/text_ugc.py:545
 #: ../../server/server_activator.py:151 ../../server/server_activator.py:184
-#: ../../server/server_activator.py:216 ../../spritz/src/dialogs.py:100
-#: ../../spritz/src/dialogs.py:1328 ../../spritz/src/dialogs.py:1975
-#: ../../spritz/src/dialogs.py:3731 ../../spritz/src/spritz.glade.h:223
+#: ../../server/server_activator.py:216 ../../sulfur/src/dialogs.py:100
+#: ../../sulfur/src/dialogs.py:1327 ../../sulfur/src/dialogs.py:1974
+#: ../../sulfur/src/dialogs.py:3730 ../../sulfur/src/sulfur.glade.h:223
 #, fuzzy
 msgid "Title"
 msgstr "_Filer"
@@ -2395,13 +2395,13 @@ msgstr "Indlæsning af pakker afsluttet"
 #: ../../libraries/entropy/client/interfaces/methods.py:56
 #: ../../libraries/entropy/client/interfaces/methods.py:71
 #: ../../server/server_reagent.py:100 ../../server/server_reagent.py:112
-#: ../../spritz/src/dialogs.py:2064 ../../spritz/src/dialogs.py:2227
-#: ../../spritz/src/dialogs.py:2304 ../../spritz/src/dialogs.py:2588
-#: ../../spritz/src/dialogs.py:3277 ../../spritz/src/dialogs.py:3332
-#: ../../spritz/src/dialogs.py:3366 ../../spritz/src/dialogs.py:3389
-#: ../../spritz/src/dialogs.py:3415 ../../spritz/src/dialogs.py:3455
-#: ../../spritz/src/spritz.py:1700 ../../spritz/src/views.py:1254
-#: ../../spritz/src/views.py:1840
+#: ../../sulfur/src/dialogs.py:2063 ../../sulfur/src/dialogs.py:2226
+#: ../../sulfur/src/dialogs.py:2303 ../../sulfur/src/dialogs.py:2587
+#: ../../sulfur/src/dialogs.py:3276 ../../sulfur/src/dialogs.py:3331
+#: ../../sulfur/src/dialogs.py:3365 ../../sulfur/src/dialogs.py:3388
+#: ../../sulfur/src/dialogs.py:3414 ../../sulfur/src/dialogs.py:3454
+#: ../../sulfur/src/sulfur.py:1701 ../../sulfur/src/views.py:1255
+#: ../../sulfur/src/views.py:1841
 msgid "Repository"
 msgstr "Kilde"
 
@@ -2595,7 +2595,7 @@ msgid "Set not found or unable to remove"
 msgstr "Ingen valgte pakker"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:979
-#: ../../spritz/src/spritz.glade.h:107
+#: ../../sulfur/src/sulfur.glade.h:107
 msgid "Libraries test"
 msgstr ""
 
@@ -2731,8 +2731,8 @@ msgstr "Konfirmation af behandling af køen"
 #: ../../libraries/entropy/client/interfaces/package.py:1874
 #: ../../libraries/entropy/client/interfaces/trigger.py:63
 #: ../../libraries/entropy/db.py:45 ../../libraries/entropy/security.py:253
-#: ../../server/server_reagent.py:645 ../../spritz/src/spritz.py:901
-#: ../../spritz/src/spritz.py:932 ../../spritz/src/spritz.glade.h:73
+#: ../../server/server_reagent.py:645 ../../sulfur/src/sulfur.py:902
+#: ../../sulfur/src/sulfur.py:933 ../../sulfur/src/sulfur.glade.h:73
 msgid "Error"
 msgstr "Fejl"
 
@@ -2950,7 +2950,7 @@ msgid "It seems that the Source Package Manager entry is missing"
 msgstr ""
 
 #: ../../libraries/entropy/client/interfaces/package.py:1902
-#: ../../spritz/src/entropyapi.py:120
+#: ../../sulfur/src/entropyapi.py:114
 #, fuzzy
 msgid "Fetching"
 msgstr "Opdaterer"
@@ -3348,7 +3348,7 @@ msgid "Injecting downloaded dump"
 msgstr "Henter Pakker:"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1431
-#: ../../libraries/entropy/db.py:3831 ../../spritz/src/spritz.glade.h:290
+#: ../../libraries/entropy/db.py:3831 ../../sulfur/src/sulfur.glade.h:290
 msgid "please wait"
 msgstr ""
 
@@ -3914,7 +3914,7 @@ msgstr ""
 msgid "counter for atom is duplicated, ignoring"
 msgstr ""
 
-#: ../../libraries/entropy/output.py:437 ../../spritz/src/entropyapi.py:318
+#: ../../libraries/entropy/output.py:437 ../../sulfur/src/entropyapi.py:323
 msgid "Entropy needs your attention"
 msgstr ""
 
@@ -4095,7 +4095,7 @@ msgstr "Filkilder"
 #: ../../libraries/entropy/security.py:645
 #: ../../libraries/entropy/security.py:655
 #: ../../libraries/entropy/security.py:676
-#: ../../libraries/entropy/security.py:686 ../../spritz/src/spritz.py:1513
+#: ../../libraries/entropy/security.py:686 ../../sulfur/src/sulfur.py:1514
 msgid "Security Advisories"
 msgstr ""
 
@@ -4240,7 +4240,7 @@ msgstr ""
 msgid "Aggregated download"
 msgstr ""
 
-#: ../../libraries/entropy/transceivers.py:518 ../../spritz/src/spritz.py:2251
+#: ../../libraries/entropy/transceivers.py:518 ../../sulfur/src/sulfur.py:2255
 #, fuzzy
 msgid "items"
 msgstr "Fi_ler"
@@ -5655,8 +5655,8 @@ msgstr ""
 
 #. atom
 #: ../../client/text_query.py:231 ../../client/text_query.py:343
-#: ../../spritz/src/dialogs.py:2693 ../../spritz/src/dialogs.py:3329
-#: ../../spritz/src/dialogs.py:5738
+#: ../../sulfur/src/dialogs.py:2692 ../../sulfur/src/dialogs.py:3328
+#: ../../sulfur/src/dialogs.py:5737
 #, fuzzy
 msgid "Atom"
 msgstr "Fi_ler"
@@ -5677,7 +5677,7 @@ msgid "Matched"
 msgstr "Opdaterer"
 
 #: ../../client/text_query.py:304 ../../client/text_query.py:1118
-#: ../../spritz/src/spritz.glade.h:117
+#: ../../sulfur/src/sulfur.glade.h:117
 #, fuzzy
 msgid "Masked"
 msgstr "Slettet"
@@ -5719,9 +5719,9 @@ msgstr "Ekskludering"
 #. package
 #. glsa id
 #: ../../client/text_query.py:448 ../../client/text_query.py:1095
-#: ../../server/server_reagent.py:236 ../../spritz/src/dialogs.py:2302
-#: ../../spritz/src/dialogs.py:2585 ../../spritz/src/dialogs.py:4447
-#: ../../spritz/src/dialogs.py:5264 ../../spritz/src/views.py:1236
+#: ../../server/server_reagent.py:236 ../../sulfur/src/dialogs.py:2301
+#: ../../sulfur/src/dialogs.py:2584 ../../sulfur/src/dialogs.py:4446
+#: ../../sulfur/src/dialogs.py:5263 ../../sulfur/src/views.py:1237
 msgid "Package"
 msgstr "Pakke"
 
@@ -5878,9 +5878,9 @@ msgid "Not installed"
 msgstr "Installeret"
 
 #: ../../client/text_query.py:1079 ../../client/text_query.py:1080
-#: ../../spritz/src/dialogs.py:3490 ../../spritz/src/dialogs.py:3549
-#: ../../spritz/src/dialogs.py:3597 ../../spritz/src/dialogs.py:3710
-#: ../../spritz/src/dialogs.py:3713
+#: ../../sulfur/src/dialogs.py:3489 ../../sulfur/src/dialogs.py:3548
+#: ../../sulfur/src/dialogs.py:3596 ../../sulfur/src/dialogs.py:3709
+#: ../../sulfur/src/dialogs.py:3712
 msgid "N/A"
 msgstr ""
 
@@ -5893,8 +5893,8 @@ msgstr "Kategorier"
 msgid "Name"
 msgstr "Navn"
 
-#: ../../client/text_query.py:1121 ../../spritz/src/dialogs.py:832
-#: ../../spritz/src/spritz.glade.h:16
+#: ../../client/text_query.py:1121 ../../sulfur/src/dialogs.py:831
+#: ../../sulfur/src/sulfur.glade.h:16
 msgid "Available"
 msgstr "Tilgængelige"
 
@@ -5903,19 +5903,19 @@ msgstr "Tilgængelige"
 msgid "version"
 msgstr "Sletter"
 
-#: ../../client/text_query.py:1126 ../../spritz/src/dialogs.py:830
-#: ../../spritz/src/spritz.glade.h:100
+#: ../../client/text_query.py:1126 ../../sulfur/src/dialogs.py:829
+#: ../../sulfur/src/sulfur.glade.h:100
 msgid "Installed"
 msgstr "Installeret"
 
-#: ../../client/text_query.py:1132 ../../spritz/src/dialogs.py:843
-#: ../../spritz/src/dialogs.py:866 ../../spritz/src/spritz.glade.h:206
+#: ../../client/text_query.py:1132 ../../sulfur/src/dialogs.py:842
+#: ../../sulfur/src/dialogs.py:865 ../../sulfur/src/sulfur.glade.h:206
 msgid "Slot"
 msgstr ""
 
 #: ../../client/text_query.py:1139 ../../client/text_ugc.py:559
-#: ../../spritz/src/dialogs.py:862 ../../spritz/src/dialogs.py:3726
-#: ../../spritz/src/spritz.glade.h:205
+#: ../../sulfur/src/dialogs.py:861 ../../sulfur/src/dialogs.py:3725
+#: ../../sulfur/src/sulfur.glade.h:205
 msgid "Size"
 msgstr "Størrelse"
 
@@ -5929,7 +5929,7 @@ msgstr "<b>Størrelse af filer som skal hentes</b>"
 msgid "Checksum"
 msgstr "Henter : %s"
 
-#: ../../client/text_query.py:1154 ../../spritz/src/dialogs.py:4117
+#: ../../client/text_query.py:1154 ../../sulfur/src/dialogs.py:4116
 #, fuzzy
 msgid "Dependencies"
 msgstr "Indstillinger"
@@ -5938,30 +5938,30 @@ msgstr "Indstillinger"
 msgid "Conflicts"
 msgstr ""
 
-#: ../../client/text_query.py:1165 ../../spritz/src/dialogs.py:872
+#: ../../client/text_query.py:1165 ../../sulfur/src/dialogs.py:871
 msgid "Homepage"
 msgstr ""
 
 #. desc col
 #: ../../client/text_query.py:1171 ../../client/text_security.py:89
-#: ../../client/text_ugc.py:366 ../../spritz/src/dialogs.py:697
-#: ../../spritz/src/dialogs.py:710 ../../spritz/src/dialogs.py:851
-#: ../../spritz/src/dialogs.py:3329 ../../spritz/src/dialogs.py:3733
-#: ../../spritz/src/views.py:1716 ../../spritz/src/views.py:1902
-#: ../../spritz/src/spritz.glade.h:55
+#: ../../client/text_ugc.py:366 ../../sulfur/src/dialogs.py:696
+#: ../../sulfur/src/dialogs.py:709 ../../sulfur/src/dialogs.py:850
+#: ../../sulfur/src/dialogs.py:3328 ../../sulfur/src/dialogs.py:3732
+#: ../../sulfur/src/views.py:1717 ../../sulfur/src/views.py:1903
+#: ../../sulfur/src/sulfur.glade.h:55
 #, fuzzy
 msgid "Description"
 msgstr "_Beskrivelse"
 
-#: ../../client/text_query.py:1184 ../../spritz/src/spritz.glade.h:24
+#: ../../client/text_query.py:1184 ../../sulfur/src/sulfur.glade.h:24
 msgid "CHOST"
 msgstr ""
 
-#: ../../client/text_query.py:1186 ../../spritz/src/spritz.glade.h:23
+#: ../../client/text_query.py:1186 ../../sulfur/src/sulfur.glade.h:23
 msgid "CFLAGS"
 msgstr ""
 
-#: ../../client/text_query.py:1188 ../../spritz/src/spritz.glade.h:26
+#: ../../client/text_query.py:1188 ../../sulfur/src/sulfur.glade.h:26
 msgid "CXXFLAGS"
 msgstr ""
 
@@ -5970,7 +5970,7 @@ msgstr ""
 msgid "Portage eclasses"
 msgstr "Ekskludering"
 
-#: ../../client/text_query.py:1200 ../../spritz/src/dialogs.py:4077
+#: ../../client/text_query.py:1200 ../../sulfur/src/dialogs.py:4076
 msgid "Sources"
 msgstr ""
 
@@ -5987,8 +5987,8 @@ msgid "Compiled with"
 msgstr ""
 
 #: ../../client/text_query.py:1212 ../../client/text_ugc.py:371
-#: ../../client/text_ugc.py:554 ../../spritz/src/dialogs.py:3735
-#: ../../spritz/src/dialogs.py:4093 ../../spritz/src/spritz.glade.h:105
+#: ../../client/text_ugc.py:554 ../../sulfur/src/dialogs.py:3734
+#: ../../sulfur/src/dialogs.py:4092 ../../sulfur/src/sulfur.glade.h:105
 msgid "Keywords"
 msgstr ""
 
@@ -5998,7 +5998,7 @@ msgid "Created"
 msgstr "Slettet"
 
 #: ../../client/text_query.py:1224 ../../client/text_ui.py:1002
-#: ../../spritz/src/dialogs.py:6008
+#: ../../sulfur/src/dialogs.py:6007
 #, fuzzy
 msgid "License"
 msgstr "Filnavn"
@@ -6057,9 +6057,9 @@ msgstr "Søgnings Indstiller"
 msgid "never synced"
 msgstr ""
 
-#: ../../client/text_repositories.py:150 ../../spritz/src/dialogs.py:728
-#: ../../spritz/src/dialogs.py:772 ../../spritz/src/dialogs.py:1315
-#: ../../spritz/src/views.py:1693
+#: ../../client/text_repositories.py:150 ../../sulfur/src/dialogs.py:727
+#: ../../sulfur/src/dialogs.py:771 ../../sulfur/src/dialogs.py:1314
+#: ../../sulfur/src/views.py:1694
 #, fuzzy
 msgid "Status"
 msgstr "Opdateret"
@@ -6080,13 +6080,13 @@ msgid "Repository database checksum"
 msgstr "Filkilder"
 
 #: ../../client/text_repositories.py:175 ../../client/text_ui.py:334
-#: ../../spritz/src/spritz.py:2073
+#: ../../sulfur/src/sulfur.py:2077
 #, fuzzy
 msgid "No repositories specified in"
 msgstr "Ingen valgte pakker"
 
 #: ../../client/text_repositories.py:178 ../../client/text_ui.py:338
-#: ../../spritz/src/spritz.py:2082
+#: ../../sulfur/src/sulfur.py:2086
 #, fuzzy
 msgid "Unhandled exception"
 msgstr "_Beskrivelse"
@@ -6098,13 +6098,13 @@ msgid "Notice board not available"
 msgstr "Tilgængelige"
 
 #: ../../client/text_repositories.py:220 ../../client/text_ugc.py:551
-#: ../../server/server_activator.py:157 ../../spritz/src/dialogs.py:4176
-#: ../../spritz/src/spritz.glade.h:41
+#: ../../server/server_activator.py:157 ../../sulfur/src/dialogs.py:4175
+#: ../../sulfur/src/sulfur.glade.h:41
 msgid "Content"
 msgstr ""
 
 #: ../../client/text_repositories.py:225 ../../server/server_activator.py:162
-#: ../../spritz/src/spritz.glade.h:109
+#: ../../sulfur/src/sulfur.glade.h:109
 msgid "Link"
 msgstr ""
 
@@ -6117,8 +6117,8 @@ msgstr "Ønsker du at forsættet ?"
 msgid "Choose one by typing its identifier"
 msgstr ""
 
-#: ../../client/text_repositories.py:286 ../../spritz/src/dialogs.py:2033
-#: ../../spritz/src/spritz.glade.h:127
+#: ../../client/text_repositories.py:286 ../../sulfur/src/dialogs.py:2032
+#: ../../sulfur/src/sulfur.glade.h:127
 #, fuzzy
 msgid "Notice board"
 msgstr "Henter Pakker:"
@@ -6511,7 +6511,7 @@ msgstr "Filkilder"
 msgid "GLSA Identifier"
 msgstr "Filkilder"
 
-#: ../../client/text_security.py:112 ../../spritz/src/spritz.glade.h:17
+#: ../../client/text_security.py:112 ../../sulfur/src/sulfur.glade.h:17
 msgid "Background"
 msgstr ""
 
@@ -6519,7 +6519,7 @@ msgstr ""
 msgid "Exploitable"
 msgstr ""
 
-#: ../../client/text_security.py:124 ../../spritz/src/spritz.glade.h:92
+#: ../../client/text_security.py:124 ../../sulfur/src/sulfur.glade.h:92
 msgid "Impact"
 msgstr ""
 
@@ -6527,20 +6527,20 @@ msgstr ""
 msgid "Impact type"
 msgstr ""
 
-#: ../../client/text_security.py:135 ../../spritz/src/spritz.glade.h:191
+#: ../../client/text_security.py:135 ../../sulfur/src/sulfur.glade.h:191
 #, fuzzy
 msgid "Revised"
 msgstr "Sletter"
 
-#: ../../client/text_security.py:139 ../../spritz/src/spritz.glade.h:14
+#: ../../client/text_security.py:139 ../../sulfur/src/sulfur.glade.h:14
 msgid "Announced"
 msgstr ""
 
-#: ../../client/text_security.py:143 ../../spritz/src/spritz.glade.h:216
+#: ../../client/text_security.py:143 ../../sulfur/src/sulfur.glade.h:216
 msgid "Synopsis"
 msgstr ""
 
-#: ../../client/text_security.py:150 ../../spritz/src/spritz.glade.h:169
+#: ../../client/text_security.py:150 ../../sulfur/src/sulfur.glade.h:169
 #, fuzzy
 msgid "References"
 msgstr "Indstillinger"
@@ -6563,11 +6563,11 @@ msgstr ""
 msgid "unaffected versions"
 msgstr "Sletter"
 
-#: ../../client/text_security.py:176 ../../spritz/src/spritz.glade.h:250
+#: ../../client/text_security.py:176 ../../sulfur/src/sulfur.glade.h:250
 msgid "Workaround"
 msgstr ""
 
-#: ../../client/text_security.py:180 ../../spritz/src/spritz.glade.h:187
+#: ../../client/text_security.py:180 ../../sulfur/src/sulfur.glade.h:187
 #, fuzzy
 msgid "Resolution"
 msgstr "Sletter"
@@ -6639,7 +6639,7 @@ msgid "directory does not exist"
 msgstr ""
 
 #: ../../client/text_smart.py:157 ../../client/text_ui.py:448
-#: ../../spritz/src/spritz.py:511
+#: ../../sulfur/src/sulfur.py:511
 #, fuzzy
 msgid "is not a valid Entropy package"
 msgstr "Sorterer Pakker"
@@ -6762,11 +6762,11 @@ msgstr ""
 msgid "Login error. Not logged in."
 msgstr ""
 
-#: ../../client/text_ugc.py:113 ../../spritz/src/spritz.py:1676
+#: ../../client/text_ugc.py:113 ../../sulfur/src/sulfur.py:1677
 msgid "Not logged in"
 msgstr ""
 
-#: ../../client/text_ugc.py:121 ../../spritz/src/etpgui/packages.py:216
+#: ../../client/text_ugc.py:121 ../../sulfur/src/etpgui/packages.py:216
 #, fuzzy
 msgid "User"
 msgstr "Filnavn"
@@ -6819,7 +6819,7 @@ msgstr "Sletter"
 msgid "Vote added, thank you!"
 msgstr ""
 
-#: ../../client/text_ugc.py:282 ../../spritz/src/dialogs.py:4261
+#: ../../client/text_ugc.py:282 ../../sulfur/src/dialogs.py:4260
 #, fuzzy
 msgid "Number of downloads"
 msgstr "Navn på den nye profil"
@@ -6878,7 +6878,7 @@ msgstr ""
 msgid "Document path"
 msgstr ""
 
-#: ../../client/text_ugc.py:382 ../../spritz/src/spritz.glade.h:60
+#: ../../client/text_ugc.py:382 ../../sulfur/src/sulfur.glade.h:60
 msgid "Document type"
 msgstr ""
 
@@ -7061,7 +7061,7 @@ msgstr ""
 msgid "one of these below?"
 msgstr ""
 
-#: ../../client/text_ui.py:450 ../../spritz/src/spritz.py:513
+#: ../../client/text_ui.py:450 ../../sulfur/src/sulfur.py:513
 msgid "is not compiled with the same architecture of the system"
 msgstr ""
 
@@ -7092,12 +7092,12 @@ msgid "Switch repo"
 msgstr "Opdaterer"
 
 #: ../../client/text_ui.py:530 ../../client/text_ui.py:532
-#: ../../spritz/src/spritz.glade.h:171
+#: ../../sulfur/src/sulfur.glade.h:171
 #, fuzzy
 msgid "Reinstall"
 msgstr "Installeret"
 
-#: ../../client/text_ui.py:535 ../../spritz/src/spritz.glade.h:93
+#: ../../client/text_ui.py:535 ../../sulfur/src/sulfur.glade.h:93
 #, fuzzy
 msgid "Install"
 msgstr "Installeret"
@@ -7112,7 +7112,7 @@ msgstr "Opdateret"
 msgid "Downgrade"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../client/text_ui.py:540 ../../spritz/src/dialogs.py:2066
+#: ../../client/text_ui.py:540 ../../sulfur/src/dialogs.py:2065
 #, fuzzy
 msgid "Action"
 msgstr "Søgnings Indstiller"
@@ -7210,7 +7210,7 @@ msgstr "<b>Størrelse af filer som skal hentes</b>"
 msgid "Used disk space"
 msgstr "behøvet af %s"
 
-#: ../../client/text_ui.py:883 ../../spritz/src/misc.py:440
+#: ../../client/text_ui.py:883 ../../sulfur/src/misc.py:440
 #, fuzzy
 msgid "Freed disk space"
 msgstr "behøvet af %s"
@@ -7460,7 +7460,7 @@ msgstr ""
 msgid "Exit/Commit"
 msgstr ""
 
-#: ../../server/server_activator.py:217 ../../spritz/src/dialogs.py:1989
+#: ../../server/server_activator.py:217 ../../sulfur/src/dialogs.py:1988
 #, fuzzy
 msgid "Notice text"
 msgstr "Installeret"
@@ -7568,7 +7568,7 @@ msgstr "Ingen valgte pakker"
 msgid "Enabling"
 msgstr "Installerer"
 
-#: ../../server/server_reagent.py:97 ../../spritz/src/dialogs.py:5033
+#: ../../server/server_reagent.py:97 ../../sulfur/src/dialogs.py:5032
 #, fuzzy
 msgid "Enabled"
 msgstr "_Valgt"
@@ -7714,7 +7714,7 @@ msgstr ""
 
 #: ../../server/server_reagent.py:455 ../../server/server_reagent.py:480
 #: ../../server/server_reagent.py:525 ../../server/server_reagent.py:542
-#: ../../spritz/src/dialogs.py:2859
+#: ../../sulfur/src/dialogs.py:2858
 #, fuzzy
 msgid "Not enough parameters"
 msgstr "Fejl i test af pakke signaturer:\n"
@@ -7786,1571 +7786,1571 @@ msgstr "Ingen pakker i køen"
 msgid "package set not found"
 msgstr "Ingen pakker i køen"
 
-#: ../../spritz/src/dialogs.py:72 ../../spritz/src/spritz.glade.h:184
+#: ../../sulfur/src/dialogs.py:72 ../../sulfur/src/sulfur.glade.h:184
 #, fuzzy
 msgid "Repositories Notice Board"
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:73
+#: ../../sulfur/src/dialogs.py:73
 msgid ""
 "Here below you will find a list of important news directly issued by your "
 "applications maintainers. Double click on each item to retrieve detailed "
 "info."
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:89
+#: ../../sulfur/src/dialogs.py:89
 #, fuzzy
 msgid "Notice"
 msgstr "Installeret"
 
-#: ../../spritz/src/dialogs.py:195
+#: ../../sulfur/src/dialogs.py:195
 #, fuzzy
 msgid "Connection name"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../spritz/src/dialogs.py:196 ../../spritz/src/dialogs.py:259
-#: ../../spritz/src/spritz.glade.h:88
+#: ../../sulfur/src/dialogs.py:196 ../../sulfur/src/dialogs.py:259
+#: ../../sulfur/src/sulfur.glade.h:88
 #, fuzzy
 msgid "Hostname"
 msgstr "Filnavn"
 
-#: ../../spritz/src/dialogs.py:197 ../../spritz/src/dialogs.py:260
-#: ../../spritz/src/spritz.glade.h:151
+#: ../../sulfur/src/dialogs.py:197 ../../sulfur/src/dialogs.py:260
+#: ../../sulfur/src/sulfur.glade.h:151
 #, fuzzy
 msgid "Port"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:199
+#: ../../sulfur/src/dialogs.py:199
 #, fuzzy
 msgid "SSL Connection"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../spritz/src/dialogs.py:202 ../../spritz/src/dialogs.py:3419
+#: ../../sulfur/src/dialogs.py:202 ../../sulfur/src/dialogs.py:3418
 msgid "Choose what kind of test you would like to run"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:258
+#: ../../sulfur/src/dialogs.py:258
 #, fuzzy
 msgid "Connection"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../spritz/src/dialogs.py:264
+#: ../../sulfur/src/dialogs.py:264
 msgid "SSL"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:333 ../../spritz/src/dialogs.py:939
+#: ../../sulfur/src/dialogs.py:333 ../../sulfur/src/dialogs.py:938
 #, fuzzy
 msgid "Connection Error"
 msgstr "Ønsker du at forsættet ?"
 
 #.
-#: ../../spritz/src/dialogs.py:521 ../../spritz/src/dialogs.py:540
-#: ../../spritz/src/dialogs.py:557
+#: ../../sulfur/src/dialogs.py:520 ../../sulfur/src/dialogs.py:539
+#: ../../sulfur/src/dialogs.py:556
 #, fuzzy
 msgid "Packages information"
 msgstr "I_nformation"
 
-#: ../../spritz/src/dialogs.py:526 ../../spritz/src/spritz.glade.h:11
+#: ../../sulfur/src/dialogs.py:525 ../../sulfur/src/sulfur.glade.h:11
 #, fuzzy
 msgid "Advisory information"
 msgstr "Filkilder"
 
 #.
-#: ../../spritz/src/dialogs.py:533 ../../spritz/src/dialogs.py:550
+#: ../../sulfur/src/dialogs.py:532 ../../sulfur/src/dialogs.py:549
 msgid "Execute"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:545
+#: ../../sulfur/src/dialogs.py:544
 #, fuzzy
 msgid "Destination repository"
 msgstr "Kilde"
 
-#: ../../spritz/src/dialogs.py:562
+#: ../../sulfur/src/dialogs.py:561
 #, fuzzy
 msgid "Remove packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:567
+#: ../../sulfur/src/dialogs.py:566
 #, fuzzy
 msgid "Copy/move packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:572
+#: ../../sulfur/src/dialogs.py:571
 #, fuzzy
 msgid "Compile selected"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/dialogs.py:577 ../../spritz/src/spritz.glade.h:7
+#: ../../sulfur/src/dialogs.py:576 ../../sulfur/src/sulfur.glade.h:7
 msgid "Add USE"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:582 ../../spritz/src/spritz.glade.h:177
+#: ../../sulfur/src/dialogs.py:581 ../../sulfur/src/sulfur.glade.h:177
 #, fuzzy
 msgid "Remove USE"
 msgstr "Sletter"
 
 #.
-#: ../../spritz/src/dialogs.py:589
+#: ../../sulfur/src/dialogs.py:588
 #, fuzzy
 msgid "View"
 msgstr "Opdateret"
 
-#: ../../spritz/src/dialogs.py:594
+#: ../../sulfur/src/dialogs.py:593
 msgid "Add"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:599 ../../spritz/src/spritz.glade.h:174
+#: ../../sulfur/src/dialogs.py:598 ../../sulfur/src/sulfur.glade.h:174
 #, fuzzy
 msgid "Remove"
 msgstr "Sletter"
 
-#: ../../spritz/src/dialogs.py:604 ../../spritz/src/spritz.glade.h:170
+#: ../../sulfur/src/dialogs.py:603 ../../sulfur/src/sulfur.glade.h:170
 #, fuzzy
 msgid "Refresh"
 msgstr "Indstillinger"
 
-#: ../../spritz/src/dialogs.py:708
+#: ../../sulfur/src/dialogs.py:707
 msgid "None"
 msgstr ""
 
 #. description col
-#: ../../spritz/src/dialogs.py:712 ../../spritz/src/dialogs.py:738
+#: ../../sulfur/src/dialogs.py:711 ../../sulfur/src/dialogs.py:737
 msgid "Parameters"
 msgstr ""
 
 #. date col
 #. date
-#: ../../spritz/src/dialogs.py:740 ../../spritz/src/dialogs.py:780
-#: ../../spritz/src/spritz.py:1660 ../../spritz/src/spritz.glade.h:49
+#: ../../sulfur/src/dialogs.py:739 ../../sulfur/src/dialogs.py:779
+#: ../../sulfur/src/sulfur.py:1661 ../../sulfur/src/sulfur.glade.h:49
 #, fuzzy
 msgid "Date"
 msgstr "Opdateret"
 
-#: ../../spritz/src/dialogs.py:841
+#: ../../sulfur/src/dialogs.py:840
 msgid "Key"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:853
+#: ../../sulfur/src/dialogs.py:852
 msgid "USE Flags"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:864 ../../spritz/src/spritz.glade.h:21
+#: ../../sulfur/src/dialogs.py:863 ../../sulfur/src/sulfur.glade.h:21
 #, fuzzy
 msgid "Branch"
 msgstr "Arkitektur"
 
-#: ../../spritz/src/dialogs.py:868 ../../spritz/src/dialogs.py:3329
+#: ../../sulfur/src/dialogs.py:867 ../../sulfur/src/dialogs.py:3328
 #, fuzzy
 msgid "Tag"
 msgstr "_Tag"
 
-#: ../../spritz/src/dialogs.py:870
+#: ../../sulfur/src/dialogs.py:869
 #, fuzzy
 msgid "Injected"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:928
+#: ../../sulfur/src/dialogs.py:927
 msgid "No connection to host, please check your data"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:932
+#: ../../sulfur/src/dialogs.py:931
 msgid "Unable to create a remote session. Try again later."
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:936
+#: ../../sulfur/src/dialogs.py:935
 msgid "Login failed. Please retry."
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:945
+#: ../../sulfur/src/dialogs.py:944
 msgid "SSL Error, are you sure the server supports SSL?"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:982
+#: ../../sulfur/src/dialogs.py:981
 msgid "Communication error"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1013
+#: ../../sulfur/src/dialogs.py:1012
 msgid "Current"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1015
+#: ../../sulfur/src/dialogs.py:1014
 msgid "c.mode"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1017
+#: ../../sulfur/src/dialogs.py:1016
 #, fuzzy
 msgid "branch"
 msgstr "Arkitektur"
 
-#: ../../spritz/src/dialogs.py:1019
+#: ../../sulfur/src/dialogs.py:1018
 msgid "supported branches"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1021
+#: ../../sulfur/src/dialogs.py:1020
 #, fuzzy
 msgid "repositories"
 msgstr "Kilde"
 
 #. glsa id
-#: ../../spritz/src/dialogs.py:1325
+#: ../../sulfur/src/dialogs.py:1324
 #, fuzzy
 msgid "GLSA Id."
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:1367
+#: ../../sulfur/src/dialogs.py:1366
 #, fuzzy
 msgid "Are you sure you want to remove the selected packages ? (For EVA!)"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:1370
+#: ../../sulfur/src/dialogs.py:1369
 msgid "This is your last chance, are you really really really sure?"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1397 ../../spritz/src/dialogs.py:2941
-#: ../../spritz/src/dialogs.py:2984 ../../spritz/src/dialogs.py:3048
+#: ../../sulfur/src/dialogs.py:1396 ../../sulfur/src/dialogs.py:2940
+#: ../../sulfur/src/dialogs.py:2983 ../../sulfur/src/dialogs.py:3047
 msgid "Atoms, space separated"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1399
+#: ../../sulfur/src/dialogs.py:1398
 msgid "USE flags, space separated"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1402
+#: ../../sulfur/src/dialogs.py:1401
 msgid "Insert command parameters"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1808
+#: ../../sulfur/src/dialogs.py:1807
 #, fuzzy
 msgid "Cannot move/copy packages from different repositories"
 msgstr "Pakke Beskrivelser"
 
-#: ../../spritz/src/dialogs.py:1827
+#: ../../sulfur/src/dialogs.py:1826
 msgid "Execute copy"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1830
+#: ../../sulfur/src/dialogs.py:1829
 #, fuzzy
 msgid "Entropy packages move/copy"
 msgstr "Behandler pakker for %s"
 
-#: ../../spritz/src/dialogs.py:1987
+#: ../../sulfur/src/dialogs.py:1986
 #, fuzzy
 msgid "Notice title"
 msgstr "Installeret"
 
-#: ../../spritz/src/dialogs.py:1988
+#: ../../sulfur/src/dialogs.py:1987
 msgid "Link (URL)"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:1992
+#: ../../sulfur/src/dialogs.py:1991
 msgid "Insert your new notice board entry"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2068
+#: ../../sulfur/src/dialogs.py:2067
 #, fuzzy
 msgid "Server"
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:2070
+#: ../../sulfur/src/dialogs.py:2069
 msgid "Yes"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2071
+#: ../../sulfur/src/dialogs.py:2070
 msgid "No"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2077 ../../spritz/src/spritz.py:1657
+#: ../../sulfur/src/dialogs.py:2076 ../../sulfur/src/sulfur.py:1658
 #, fuzzy
 msgid "Database"
 msgstr "Kører Transaktion"
 
-#: ../../spritz/src/dialogs.py:2078
+#: ../../sulfur/src/dialogs.py:2077
 #, fuzzy
 msgid "current revision"
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:2080
+#: ../../sulfur/src/dialogs.py:2079
 #, fuzzy
 msgid "remote revision"
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:2100 ../../spritz/src/dialogs.py:2256
+#: ../../sulfur/src/dialogs.py:2099 ../../sulfur/src/dialogs.py:2255
 #, fuzzy
 msgid "Execution mode"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/dialogs.py:2100 ../../spritz/src/dialogs.py:2256
+#: ../../sulfur/src/dialogs.py:2099 ../../sulfur/src/dialogs.py:2255
 #, fuzzy
 msgid "Execute all"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/dialogs.py:2100 ../../spritz/src/dialogs.py:2256
+#: ../../sulfur/src/dialogs.py:2099 ../../sulfur/src/dialogs.py:2255
 msgid "Execute only selected"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2103 ../../spritz/src/dialogs.py:2259
+#: ../../sulfur/src/dialogs.py:2102 ../../sulfur/src/dialogs.py:2258
 msgid "Choose the execution mode"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2142
+#: ../../sulfur/src/dialogs.py:2141
 msgid "Commit message"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2143
+#: ../../sulfur/src/dialogs.py:2142
 #, fuzzy
 msgid "Pretend mode"
 msgstr "Slettet"
 
-#: ../../spritz/src/dialogs.py:2144
+#: ../../sulfur/src/dialogs.py:2143
 #, fuzzy
 msgid "Packages check"
 msgstr "Pakker."
 
-#: ../../spritz/src/dialogs.py:2148
+#: ../../sulfur/src/dialogs.py:2147
 #, fuzzy
 msgid "Choose sync options"
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:2168
+#: ../../sulfur/src/dialogs.py:2167
 #, fuzzy
 msgid "Mirror updates information"
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:2239
+#: ../../sulfur/src/dialogs.py:2238
 #, fuzzy
 msgid "Choose the destination repository"
 msgstr "Rediger Filkilder"
 
-#: ../../spritz/src/dialogs.py:2316
+#: ../../sulfur/src/dialogs.py:2315
 #, fuzzy
 msgid "To be added"
 msgstr "Opdateret"
 
-#: ../../spritz/src/dialogs.py:2323 ../../spritz/src/dialogs.py:5311
-#: ../../spritz/src/dialogs.py:5329
+#: ../../sulfur/src/dialogs.py:2322 ../../sulfur/src/dialogs.py:5310
+#: ../../sulfur/src/dialogs.py:5328
 #, fuzzy
 msgid "To be removed"
 msgstr "Sletter"
 
-#: ../../spritz/src/dialogs.py:2330
+#: ../../sulfur/src/dialogs.py:2329
 #, fuzzy
 msgid "To be injected"
 msgstr "Installeret"
 
-#: ../../spritz/src/dialogs.py:2779 ../../spritz/src/dialogs.py:2812
+#: ../../sulfur/src/dialogs.py:2778 ../../sulfur/src/dialogs.py:2811
 msgid "Categories, space separated"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2785
+#: ../../sulfur/src/dialogs.py:2784
 #, fuzzy
 msgid "Insert categories"
 msgstr "Kategorier"
 
-#: ../../spritz/src/dialogs.py:2818
+#: ../../sulfur/src/dialogs.py:2817
 msgid "Insert categories (if you want)"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2840
+#: ../../sulfur/src/dialogs.py:2839
 msgid "Invalid Command"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2840 ../../spritz/src/dialogs.py:2859
-#: ../../spritz/src/dialogs.py:2866
+#: ../../sulfur/src/dialogs.py:2839 ../../sulfur/src/dialogs.py:2858
+#: ../../sulfur/src/dialogs.py:2865
 msgid "Custom command Error"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2866
+#: ../../sulfur/src/dialogs.py:2865
 #, fuzzy
 msgid "Error executing call"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/dialogs.py:2948
+#: ../../sulfur/src/dialogs.py:2947
 #, fuzzy
 msgid "Insert packages removal parameters"
 msgstr "Indlæsning af pakker afsluttet"
 
-#: ../../spritz/src/dialogs.py:2993
+#: ../../sulfur/src/dialogs.py:2992
 msgid "Custom USE flags"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:2998
+#: ../../sulfur/src/dialogs.py:2997
 #, fuzzy
 msgid "Insert compilation parameters"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/dialogs.py:3051
+#: ../../sulfur/src/dialogs.py:3050
 #, fuzzy
 msgid "Insert Package Information parameters"
 msgstr "I_nformation"
 
-#: ../../spritz/src/dialogs.py:3096
+#: ../../sulfur/src/dialogs.py:3095
 msgid "Full output"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3099
+#: ../../sulfur/src/dialogs.py:3098
 #, fuzzy
 msgid "Auto refresh"
 msgstr "_Automatisk indlæsning ved start"
 
-#: ../../spritz/src/dialogs.py:3101
+#: ../../sulfur/src/dialogs.py:3100
 msgid "Insert output parameters"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3129 ../../spritz/src/spritz.glade.h:77
+#: ../../sulfur/src/dialogs.py:3128 ../../sulfur/src/sulfur.glade.h:77
 #, fuzzy
 msgid "Extended note"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/dialogs.py:3132
+#: ../../sulfur/src/dialogs.py:3131
 msgid "Insert your new pinboard item"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3206
+#: ../../sulfur/src/dialogs.py:3205
 msgid "List type"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3209
+#: ../../sulfur/src/dialogs.py:3208
 msgid "Choose what kind of list you want to see"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3281
+#: ../../sulfur/src/dialogs.py:3280
 #, fuzzy
 msgid "Choose from which repository"
 msgstr "Kilde"
 
-#: ../../spritz/src/dialogs.py:3329
+#: ../../sulfur/src/dialogs.py:3328
 #, fuzzy
 msgid "Needed Libraries"
 msgstr "behøvet af %s"
 
-#: ../../spritz/src/dialogs.py:3329
+#: ../../sulfur/src/dialogs.py:3328
 #, fuzzy
 msgid "Reverse dependencies"
 msgstr "Installer som afhængighed"
 
-#: ../../spritz/src/dialogs.py:3329 ../../spritz/src/dialogs.py:4152
+#: ../../sulfur/src/dialogs.py:3328 ../../sulfur/src/dialogs.py:4151
 #, fuzzy
 msgid "File"
 msgstr "_Filer"
 
-#: ../../spritz/src/dialogs.py:3329
+#: ../../sulfur/src/dialogs.py:3328
 #, fuzzy
 msgid "Eclass"
 msgstr "Ekskludering"
 
-#: ../../spritz/src/dialogs.py:3337
+#: ../../sulfur/src/dialogs.py:3336
 #, fuzzy
 msgid "Entropy Search"
 msgstr "Sorterer Pakker"
 
-#: ../../spritz/src/dialogs.py:3370
+#: ../../sulfur/src/dialogs.py:3369
 #, fuzzy
 msgid "Choose the repository"
 msgstr "Rediger Filkilder"
 
-#: ../../spritz/src/dialogs.py:3392
+#: ../../sulfur/src/dialogs.py:3391
 #, fuzzy
 msgid "Choose the repositories you want to scan"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/dialogs.py:3416
+#: ../../sulfur/src/dialogs.py:3415
 msgid "Choose mode"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3416
+#: ../../sulfur/src/dialogs.py:3415
 msgid "Server check"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3416
+#: ../../sulfur/src/dialogs.py:3415
 #, fuzzy
 msgid "Mirrors check"
 msgstr "_Filspejlsliste"
 
-#: ../../spritz/src/dialogs.py:3459
+#: ../../sulfur/src/dialogs.py:3458
 #, fuzzy
 msgid "Choose what notice board you want to see"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/dialogs.py:3708
+#: ../../sulfur/src/dialogs.py:3707
 msgid "Expand to browse"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:3724 ../../spritz/src/spritz.glade.h:89
+#: ../../sulfur/src/dialogs.py:3723 ../../sulfur/src/sulfur.glade.h:89
 #, fuzzy
 msgid "Identifier"
 msgstr "Filkilder"
 
-#: ../../spritz/src/dialogs.py:3728 ../../spritz/src/spritz.glade.h:15
+#: ../../sulfur/src/dialogs.py:3727 ../../sulfur/src/sulfur.glade.h:15
 #, fuzzy
 msgid "Author"
 msgstr "Fi_ler"
 
-#: ../../spritz/src/dialogs.py:4001
+#: ../../sulfur/src/dialogs.py:4000
 #, fuzzy
 msgid "Package ChangeLog"
 msgstr "Pakker"
 
-#: ../../spritz/src/dialogs.py:4054 ../../spritz/src/views.py:1303
+#: ../../sulfur/src/dialogs.py:4053 ../../sulfur/src/views.py:1304
 #, fuzzy
 msgid "Vote registered successfully"
 msgstr "Indlæsning afsluttet"
 
-#: ../../spritz/src/dialogs.py:4056 ../../spritz/src/views.py:1305
+#: ../../sulfur/src/dialogs.py:4055 ../../sulfur/src/views.py:1306
 #, fuzzy
 msgid "Error registering vote"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/dialogs.py:4069
+#: ../../sulfur/src/dialogs.py:4068
 #, fuzzy
 msgid "License name"
 msgstr "Filnavn"
 
-#: ../../spritz/src/dialogs.py:4085 ../../spritz/src/spritz.glade.h:121
+#: ../../sulfur/src/dialogs.py:4084 ../../sulfur/src/sulfur.glade.h:121
 #, fuzzy
 msgid "Mirrors"
 msgstr "_Filspejlsliste"
 
-#: ../../spritz/src/dialogs.py:4109
+#: ../../sulfur/src/dialogs.py:4108
 #, fuzzy
 msgid "Eclasses"
 msgstr "Ekskludering"
 
-#: ../../spritz/src/dialogs.py:4125
+#: ../../sulfur/src/dialogs.py:4124
 #, fuzzy
 msgid "Depends"
 msgstr "Indstillinger"
 
-#: ../../spritz/src/dialogs.py:4133
+#: ../../sulfur/src/dialogs.py:4132
 #, fuzzy
 msgid "Needed libraries"
 msgstr "behøvet af %s"
 
-#: ../../spritz/src/dialogs.py:4141
+#: ../../sulfur/src/dialogs.py:4140
 msgid "Protected item"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4144 ../../spritz/src/dialogs.py:4156
-#: ../../spritz/src/dialogs.py:4168
+#: ../../sulfur/src/dialogs.py:4143 ../../sulfur/src/dialogs.py:4155
+#: ../../sulfur/src/dialogs.py:4167
 msgid "Type"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4256
+#: ../../sulfur/src/dialogs.py:4255
 msgid "Share your opinion, your documents, your screenshots!"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4257
+#: ../../sulfur/src/dialogs.py:4256
 msgid "Be part of our Community!"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4294
+#: ../../sulfur/src/dialogs.py:4293
 msgid "From your Operating System"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4297
+#: ../../sulfur/src/dialogs.py:4296
 #, fuzzy
 msgid "Remotely"
 msgstr "Sletter"
 
-#: ../../spritz/src/dialogs.py:4455
+#: ../../sulfur/src/dialogs.py:4454
 msgid "Bug"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4463
+#: ../../sulfur/src/dialogs.py:4462
 #, fuzzy
 msgid "Reference"
 msgstr "Indstillinger"
 
-#: ../../spritz/src/dialogs.py:4537
+#: ../../sulfur/src/dialogs.py:4536
 msgid "impact"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4541
+#: ../../sulfur/src/dialogs.py:4540
 msgid "access"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4556
+#: ../../sulfur/src/dialogs.py:4555
 msgid "Vulnerables"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4560
+#: ../../sulfur/src/dialogs.py:4559
 #, fuzzy
 msgid "Unaffected"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:4644
+#: ../../sulfur/src/dialogs.py:4643
 msgid "Id"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4722
+#: ../../sulfur/src/dialogs.py:4721
 msgid "Write your"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4725
+#: ../../sulfur/src/dialogs.py:4724
 #, fuzzy
 msgid "Select your"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/dialogs.py:4732
+#: ../../sulfur/src/dialogs.py:4731
 msgid "Submit issue"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4745
+#: ../../sulfur/src/dialogs.py:4744
 msgid "Empty Document"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4749
+#: ../../sulfur/src/dialogs.py:4748
 #, fuzzy
 msgid "Invalid Description"
 msgstr "_Beskrivelse"
 
-#: ../../spritz/src/dialogs.py:4755
+#: ../../sulfur/src/dialogs.py:4754
 msgid "Invalid Document Type"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4758
+#: ../../sulfur/src/dialogs.py:4757
 #, fuzzy
 msgid "Invalid Title"
 msgstr "Kilde"
 
 #. confirm ?
-#: ../../spritz/src/dialogs.py:4762
+#: ../../sulfur/src/dialogs.py:4761
 msgid "Do you confirm your submission?"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4788
+#: ../../sulfur/src/dialogs.py:4787
 #, fuzzy
 msgid "UGC Error"
 msgstr "Fejl"
 
-#: ../../spritz/src/dialogs.py:4792
+#: ../../sulfur/src/dialogs.py:4791
 msgid "Document added successfully. Thank you"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4792
+#: ../../sulfur/src/dialogs.py:4791
 msgid "Success!"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4847
+#: ../../sulfur/src/dialogs.py:4846
 msgid "Write your document"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:4855
+#: ../../sulfur/src/dialogs.py:4854
 #, fuzzy
 msgid "Select your file"
 msgstr "%s profilen er valgt"
 
-#: ../../spritz/src/dialogs.py:4867
+#: ../../sulfur/src/dialogs.py:4866
 #, fuzzy
 msgid "On repository"
 msgstr "Kilde"
 
-#: ../../spritz/src/dialogs.py:4934
+#: ../../sulfur/src/dialogs.py:4933
 #, fuzzy
 msgid "These are the packages that must be enabled to satisfy your request"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:4936
+#: ../../sulfur/src/dialogs.py:4935
 #, fuzzy
 msgid "Some packages are masked"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/dialogs.py:5025
+#: ../../sulfur/src/dialogs.py:5024
 #, fuzzy
 msgid "Masked package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:5103 ../../spritz/src/dialogs.py:5335
-#: ../../spritz/src/dialogs.py:5346 ../../spritz/src/dialogs.py:5357
-#: ../../spritz/src/dialogs.py:5368 ../../spritz/src/views.py:74
-#: ../../spritz/src/views.py:128 ../../spritz/src/views.py:1597
+#: ../../sulfur/src/dialogs.py:5102 ../../sulfur/src/dialogs.py:5334
+#: ../../sulfur/src/dialogs.py:5345 ../../sulfur/src/dialogs.py:5356
+#: ../../sulfur/src/dialogs.py:5367 ../../sulfur/src/views.py:74
+#: ../../sulfur/src/views.py:128 ../../sulfur/src/views.py:1598
 #, fuzzy
 msgid "No description"
 msgstr "_Beskrivelse"
 
-#: ../../spritz/src/dialogs.py:5226
+#: ../../sulfur/src/dialogs.py:5225
 msgid "Please confirm the actions above"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:5270 ../../spritz/src/spritz.py:1631
-#: ../../spritz/src/spritz.py:1640 ../../spritz/src/spritz.py:1649
+#: ../../sulfur/src/dialogs.py:5269 ../../sulfur/src/sulfur.py:1632
+#: ../../sulfur/src/sulfur.py:1641 ../../sulfur/src/sulfur.py:1650
 #, fuzzy
 msgid "Item"
 msgstr "Fi_ler"
 
-#: ../../spritz/src/dialogs.py:5287 ../../spritz/src/dialogs.py:5340
+#: ../../sulfur/src/dialogs.py:5286 ../../sulfur/src/dialogs.py:5339
 #, fuzzy
 msgid "To be reinstalled"
 msgstr "Installeret"
 
-#: ../../spritz/src/dialogs.py:5293 ../../spritz/src/dialogs.py:5351
+#: ../../sulfur/src/dialogs.py:5292 ../../sulfur/src/dialogs.py:5350
 #, fuzzy
 msgid "To be installed"
 msgstr "Installeret"
 
-#: ../../spritz/src/dialogs.py:5299 ../../spritz/src/dialogs.py:5362
+#: ../../sulfur/src/dialogs.py:5298 ../../sulfur/src/dialogs.py:5361
 #, fuzzy
 msgid "To be updated"
 msgstr "Opdateret"
 
-#: ../../spritz/src/dialogs.py:5305
+#: ../../sulfur/src/dialogs.py:5304
 #, fuzzy
 msgid "To be downgraded"
 msgstr "Opdateret"
 
-#: ../../spritz/src/dialogs.py:5499
+#: ../../sulfur/src/dialogs.py:5498
 #, fuzzy
 msgid "About"
 msgstr "Om"
 
-#: ../../spritz/src/dialogs.py:5619
+#: ../../sulfur/src/dialogs.py:5618
 #, fuzzy
-msgid "Spritz Question"
+msgid "Sulfur Question"
 msgstr "Sletter"
 
-#: ../../spritz/src/dialogs.py:5624
+#: ../../sulfur/src/dialogs.py:5623
 msgid "Hey!"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:5669
+#: ../../sulfur/src/dialogs.py:5668
 msgid "Please fill the following form"
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:5738
+#: ../../sulfur/src/dialogs.py:5737
 #, fuzzy
 msgid "Add atom"
 msgstr "Fi_ler"
 
-#: ../../spritz/src/dialogs.py:5858
+#: ../../sulfur/src/dialogs.py:5857
 #, fuzzy
 msgid "Invalid entry"
 msgstr "Kilde"
 
-#: ../../spritz/src/dialogs.py:5922
+#: ../../sulfur/src/dialogs.py:5921
 msgid "Cancel"
 msgstr ""
 
 #. new
-#: ../../spritz/src/dialogs.py:6011
+#: ../../sulfur/src/dialogs.py:6010
 #, fuzzy
 msgid "Accepted"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/dialogs.py:6102
+#: ../../sulfur/src/dialogs.py:6101
 #, fuzzy
 msgid "Exception caught"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/dialogs.py:6103
-msgid "Spritz crashed! An unexpected error occured."
+#: ../../sulfur/src/dialogs.py:6102
+msgid "Sulfur crashed! An unexpected error occured."
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:6112
+#: ../../sulfur/src/dialogs.py:6111
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr ""
 
-#: ../../spritz/src/dialogs.py:6114
+#: ../../sulfur/src/dialogs.py:6113
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr ""
 
-#: ../../spritz/src/entropyapi.py:81
+#: ../../sulfur/src/entropyapi.py:75
 #, fuzzy
 msgid "Error enabling masked package"
 msgstr "Sorterer Pakker"
 
-#: ../../spritz/src/entropyapi.py:122
+#: ../../sulfur/src/entropyapi.py:116
 #, fuzzy
 msgid "Downloading sources"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../spritz/src/misc.py:89
+#: ../../sulfur/src/misc.py:89
 #, fuzzy
 msgid ""
 "There are packages that can't be installed at the same time, thus are "
 "blocking your request:"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/misc.py:133
+#: ../../sulfur/src/misc.py:133
 #, fuzzy
 msgid "These are the needed packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/misc.py:134
+#: ../../sulfur/src/misc.py:134
 msgid ""
 "These packages must be removed from the removal queue because they depend on "
 "your last selection. Do you agree?"
 msgstr ""
 
-#: ../../spritz/src/misc.py:190
+#: ../../sulfur/src/misc.py:190
 #, fuzzy
 msgid "These packages must be excluded"
 msgstr "Behandling af pakker afsluttet"
 
-#: ../../spritz/src/misc.py:191
+#: ../../sulfur/src/misc.py:191
 msgid ""
 "These packages must be removed from the queue because they depend on your "
 "last selection. Do you agree?"
 msgstr ""
 
-#: ../../spritz/src/misc.py:373
+#: ../../sulfur/src/misc.py:373
 msgid ""
 "Some dependencies couldn't be found. It can either be because they are "
 "masked or because they aren't in any active repository."
 msgstr ""
 
-#: ../../spritz/src/misc.py:437
+#: ../../sulfur/src/misc.py:437
 #, fuzzy
 msgid "Needed disk space"
 msgstr "behøvet af %s"
 
-#: ../../spritz/src/misc.py:444
+#: ../../sulfur/src/misc.py:444
 #, fuzzy
 msgid "These are the packages that would be installed/updated"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/misc.py:510
+#: ../../sulfur/src/misc.py:510
 #, fuzzy
 msgid "Freed space"
 msgstr "behøvet af %s"
 
-#: ../../spritz/src/misc.py:513
+#: ../../sulfur/src/misc.py:513
 #, fuzzy
 msgid "Needed space"
 msgstr "behøvet af %s"
 
-#: ../../spritz/src/misc.py:518
+#: ../../sulfur/src/misc.py:518
 #, fuzzy
 msgid "These are the packages that would be removed"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/packages.py:222
+#: ../../sulfur/src/packages.py:222
 msgid "Set from"
 msgstr ""
 
-#: ../../spritz/src/packages.py:223
+#: ../../sulfur/src/packages.py:223
 msgid "Unknown"
 msgstr ""
 
-#: ../../spritz/src/packages.py:228
+#: ../../sulfur/src/packages.py:228
 #, fuzzy
 msgid "User configuration"
 msgstr "Oprettelse af %s profilen fejlede"
 
 #. load a pixmap inside the treeview
-#: ../../spritz/src/packages.py:284
+#: ../../sulfur/src/packages.py:284
 #, python-format
 msgid "Try clicking the %s button in the %s page"
 msgstr ""
 
-#: ../../spritz/src/packages.py:284 ../../spritz/src/spritz.py:327
-#: ../../spritz/src/spritz.py:363
+#: ../../sulfur/src/packages.py:284 ../../sulfur/src/sulfur.py:327
+#: ../../sulfur/src/sulfur.py:363
 #, fuzzy
 msgid "Update Repositories"
 msgstr "Filkilder"
 
-#: ../../spritz/src/packages.py:284 ../../spritz/src/spritz.py:1514
+#: ../../sulfur/src/packages.py:284 ../../sulfur/src/sulfur.py:1515
 #, fuzzy
 msgid "Repository Selection"
 msgstr "Filkilder"
 
-#: ../../spritz/src/packages.py:288
+#: ../../sulfur/src/packages.py:288
 #, fuzzy
 msgid "No updates available"
 msgstr "Tilgængelige"
 
-#: ../../spritz/src/packages.py:289
+#: ../../sulfur/src/packages.py:289
 msgid "It seems that your system is already up-to-date. Good!"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:64
+#: ../../sulfur/src/sulfur.py:64
 #, fuzzy
 msgid "Error during backup"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/spritz.py:66
+#: ../../sulfur/src/sulfur.py:66
 #, fuzzy
 msgid "Backup complete"
 msgstr "Indlæsning afsluttet"
 
-#: ../../spritz/src/spritz.py:84
+#: ../../sulfur/src/sulfur.py:84
 #, fuzzy
 msgid "Error during restore"
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.py:89
+#: ../../sulfur/src/sulfur.py:89
 #, fuzzy
 msgid "Restore complete"
 msgstr "Indlæsning afsluttet"
 
-#: ../../spritz/src/spritz.py:99
+#: ../../sulfur/src/sulfur.py:99
 #, fuzzy
 msgid "Error during removal"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/spritz.py:111
+#: ../../sulfur/src/sulfur.py:111
 #, fuzzy
 msgid "The chosen package is not vulnerable"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:119
+#: ../../sulfur/src/sulfur.py:119
 msgid "Packages in Advisory have been queued."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:134
+#: ../../sulfur/src/sulfur.py:134
 msgid "Packages in all Advisories have been queued."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:258 ../../spritz/src/spritz.py:280
+#: ../../sulfur/src/sulfur.py:258 ../../sulfur/src/sulfur.py:280
 msgid "Insert URL"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:258 ../../spritz/src/spritz.py:280
+#: ../../sulfur/src/sulfur.py:258 ../../sulfur/src/sulfur.py:280
 msgid "Enter a download mirror, HTTP or FTP"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:263
+#: ../../sulfur/src/sulfur.py:263
 msgid "You must enter either a HTTP or a FTP url."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:300 ../../spritz/src/spritz.py:330
+#: ../../sulfur/src/sulfur.py:300 ../../sulfur/src/sulfur.py:330
 msgid "Wrong entries, errors"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:315 ../../spritz/src/spritz.py:327
+#: ../../sulfur/src/sulfur.py:315 ../../sulfur/src/sulfur.py:327
 msgid "You should press the button"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:315 ../../spritz/src/spritz.py:363
+#: ../../sulfur/src/sulfur.py:315 ../../sulfur/src/sulfur.py:363
 #, fuzzy
 msgid "Regenerate Cache"
 msgstr "Sorterer Pakker"
 
-#: ../../spritz/src/spritz.py:315 ../../spritz/src/spritz.py:327
-#: ../../spritz/src/spritz.py:363
+#: ../../sulfur/src/sulfur.py:315 ../../sulfur/src/sulfur.py:327
+#: ../../sulfur/src/sulfur.py:363
 msgid "now"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:340
+#: ../../sulfur/src/sulfur.py:340
 #, fuzzy
 msgid "Insert Repository"
 msgstr "Rediger Filkilder"
 
-#: ../../spritz/src/spritz.py:340
+#: ../../sulfur/src/sulfur.py:340
 #, fuzzy
 msgid "Insert Repository identification string"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:348
+#: ../../sulfur/src/sulfur.py:348
 #, fuzzy
 msgid "This Repository identification string is malformed"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:358
+#: ../../sulfur/src/sulfur.py:358
 msgid "You! Why do you want to remove the main repository ?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:363
+#: ../../sulfur/src/sulfur.py:363
 msgid "You must now either press the"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:363
+#: ../../sulfur/src/sulfur.py:363
 #, fuzzy
 msgid "or the"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:393
+#: ../../sulfur/src/sulfur.py:393
 msgid "Are you sure ?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:406
+#: ../../sulfur/src/sulfur.py:406
 #, fuzzy
 msgid "Error saving parameter"
 msgstr "Fejl opstået i Yum Extender"
 
-#: ../../spritz/src/spritz.py:407 ../../spritz/src/spritz.py:1765
+#: ../../sulfur/src/sulfur.py:407 ../../sulfur/src/sulfur.py:1766
 #, fuzzy
 msgid "An issue occured while saving a preference"
 msgstr "Du er ved at tilføje %s pakker\n"
 
-#: ../../spritz/src/spritz.py:408 ../../spritz/src/spritz.py:1740
-#: ../../spritz/src/spritz.py:1766
+#: ../../sulfur/src/sulfur.py:408 ../../sulfur/src/sulfur.py:1741
+#: ../../sulfur/src/sulfur.py:1767
 #, fuzzy
 msgid "Parameter"
 msgstr "Slettet"
 
-#: ../../spritz/src/spritz.py:408
+#: ../../sulfur/src/sulfur.py:408
 #, fuzzy
 msgid "not saved"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.py:421 ../../spritz/src/spritz.py:427
-#: ../../spritz/src/spritz.py:433 ../../spritz/src/spritz.py:457
-#: ../../spritz/src/spritz.py:467 ../../spritz/src/spritz.py:477
+#: ../../sulfur/src/sulfur.py:421 ../../sulfur/src/sulfur.py:427
+#: ../../sulfur/src/sulfur.py:433 ../../sulfur/src/sulfur.py:457
+#: ../../sulfur/src/sulfur.py:467 ../../sulfur/src/sulfur.py:477
 msgid "New"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:421 ../../spritz/src/spritz.py:427
-#: ../../spritz/src/spritz.py:433
+#: ../../sulfur/src/sulfur.py:421 ../../sulfur/src/sulfur.py:427
+#: ../../sulfur/src/sulfur.py:433
 #, fuzzy
 msgid "Please insert a new path"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:457 ../../spritz/src/spritz.py:467
-#: ../../spritz/src/spritz.py:477
+#: ../../sulfur/src/sulfur.py:457 ../../sulfur/src/sulfur.py:467
+#: ../../sulfur/src/sulfur.py:477
 #, fuzzy
 msgid "Please edit the selected path"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:497
+#: ../../sulfur/src/sulfur.py:497
 #, fuzzy
 msgid "You have chosen to install this package"
 msgstr "Du er ved at tilføje %s pakker\n"
 
-#: ../../spritz/src/spritz.py:499
+#: ../../sulfur/src/sulfur.py:499
 msgid "Are you supa sure?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:517
+#: ../../sulfur/src/sulfur.py:517
 #, fuzzy
 msgid "Cannot install"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.py:612
+#: ../../sulfur/src/sulfur.py:613
 #, fuzzy
 msgid "Please select at least one repository"
 msgstr "Vis Installerede Pakker"
 
 #. Check there are any packages in the queue
-#: ../../spritz/src/spritz.py:648
+#: ../../sulfur/src/sulfur.py:649
 msgid "No packages in queue"
 msgstr "Ingen pakker i køen"
 
-#: ../../spritz/src/spritz.py:697
+#: ../../sulfur/src/sulfur.py:698
 msgid "Queue is too old. Cannot load."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:742
+#: ../../sulfur/src/sulfur.py:743
 #, fuzzy
 msgid "license text"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.py:772
+#: ../../sulfur/src/sulfur.py:773
 msgid ""
 "You have chosen to interrupt the processing. Are you sure you want to do it ?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:840
+#: ../../sulfur/src/sulfur.py:841
 #, fuzzy
 msgid "Cleaning UGC cache of"
 msgstr "Sorterer Pakker"
 
-#: ../../spritz/src/spritz.py:841
+#: ../../sulfur/src/sulfur.py:842
 msgid "UGC cache cleared"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:852
+#: ../../sulfur/src/sulfur.py:853
 msgid "UGC credentials cleared"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:888
+#: ../../sulfur/src/sulfur.py:889
 #, fuzzy
 msgid "Package Set name"
 msgstr "Pakker"
 
-#: ../../spritz/src/spritz.py:889
+#: ../../sulfur/src/sulfur.py:890
 #, fuzzy
 msgid "Package atoms"
 msgstr "Pakker"
 
-#: ../../spritz/src/spritz.py:893
+#: ../../sulfur/src/sulfur.py:894
 #, fuzzy
 msgid "Choose what Package Set you want to add"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.py:919
+#: ../../sulfur/src/sulfur.py:920
 #, fuzzy
 msgid "Removable Package Set"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:923
+#: ../../sulfur/src/sulfur.py:924
 #, fuzzy
 msgid "Choose what Package Set you want to remove"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.py:945
+#: ../../sulfur/src/sulfur.py:946
 #, fuzzy
 msgid "No missing dependencies found."
 msgstr "Installer som afhængighed"
 
-#: ../../spritz/src/spritz.py:979
+#: ../../sulfur/src/sulfur.py:980
 msgid "Missing dependencies found, but none of them are on the repositories."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:987
+#: ../../sulfur/src/sulfur.py:988
 msgid ""
 "Some missing dependencies have not been matched, others are going to be "
 "added to the queue."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:989
+#: ../../sulfur/src/sulfur.py:990
 msgid "All the missing dependencies are going to be added to the queue"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1015 ../../spritz/src/spritz.py:2593
+#: ../../sulfur/src/sulfur.py:1016 ../../sulfur/src/sulfur.py:2597
 msgid "Aborting queue tasks."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1044
+#: ../../sulfur/src/sulfur.py:1045
 #, fuzzy
 msgid "Libraries test aborted"
 msgstr "behøvet af %s"
 
-#: ../../spritz/src/spritz.py:1052
+#: ../../sulfur/src/sulfur.py:1053
 msgid ""
 "Some broken packages have not been matched, others are going to be added to "
 "the queue."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1054
+#: ../../sulfur/src/sulfur.py:1055
 #, fuzzy
 msgid "All the broken packages are going to be added to the queue"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:1105
+#: ../../sulfur/src/sulfur.py:1106
 msgid ""
 "Entropy resources are locked and not accessible. Another Entropy application "
-"is running. Sorry, can't load Spritz."
+"is running. Sorry, can't load Sulfur."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1112
+#: ../../sulfur/src/sulfur.py:1113
 msgid "Entropy is running in safe mode"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1113
+#: ../../sulfur/src/sulfur.py:1114
 msgid "Please fix as soon as possible"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1115
+#: ../../sulfur/src/sulfur.py:1116
 msgid "Safe Mode"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1324
+#: ../../sulfur/src/sulfur.py:1325
 #, fuzzy
 msgid "Default packages sorting"
 msgstr "I_nformation"
 
-#: ../../spritz/src/spritz.py:1325
+#: ../../sulfur/src/sulfur.py:1326
 msgid "Sort by name [A-Z]"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1326
+#: ../../sulfur/src/sulfur.py:1327
 msgid "Sort by name [Z-A]"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1327
+#: ../../sulfur/src/sulfur.py:1328
 #, fuzzy
 msgid "Sort by downloads"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../spritz/src/spritz.py:1328
+#: ../../sulfur/src/sulfur.py:1329
 msgid "Sort by votes"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1329
+#: ../../sulfur/src/sulfur.py:1330
 #, fuzzy
 msgid "Sort by repository"
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.py:1398
+#: ../../sulfur/src/sulfur.py:1399
 msgid ""
 "The repositories listed below are configured but not available. They should "
 "be downloaded."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1399
+#: ../../sulfur/src/sulfur.py:1400
 msgid "If you don't do this now, you won't be able to use them."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1401
+#: ../../sulfur/src/sulfur.py:1402
 #, fuzzy
 msgid "Download now"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../spritz/src/spritz.py:1402
+#: ../../sulfur/src/sulfur.py:1403
 #, fuzzy
 msgid "Skip"
 msgstr "_Spring Over"
 
-#: ../../spritz/src/spritz.py:1473
+#: ../../sulfur/src/sulfur.py:1474
 msgid "Show Package Updates"
 msgstr "Vis Pakker Opdateringer"
 
-#: ../../spritz/src/spritz.py:1474
+#: ../../sulfur/src/sulfur.py:1475
 msgid "Show available Packages"
 msgstr "Vis Tilgængelige Pakker"
 
-#: ../../spritz/src/spritz.py:1475
+#: ../../sulfur/src/sulfur.py:1476
 msgid "Show Installed Packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:1476
+#: ../../sulfur/src/sulfur.py:1477
 #, fuzzy
 msgid "Show Masked Packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.py:1477
+#: ../../sulfur/src/sulfur.py:1478
 msgid "Show All Packages"
 msgstr "Vis Alle Pakker"
 
-#: ../../spritz/src/spritz.py:1478
+#: ../../sulfur/src/sulfur.py:1479
 #, fuzzy
 msgid "Show Package Sets"
 msgstr "Vis Pakker Opdateringer"
 
-#: ../../spritz/src/spritz.py:1479
+#: ../../sulfur/src/sulfur.py:1480
 #, fuzzy
 msgid "Show Queued Packages"
 msgstr "Vis Installerede Pakker"
 
 #. Setup Vertical Toolbar
-#: ../../spritz/src/spritz.py:1512 ../../spritz/src/views.py:1525
-#: ../../spritz/src/spritz.glade.h:144
+#: ../../sulfur/src/sulfur.py:1513 ../../sulfur/src/views.py:1526
+#: ../../sulfur/src/sulfur.glade.h:144
 msgid "Packages"
 msgstr "Pakker."
 
-#: ../../spritz/src/spritz.py:1515
+#: ../../sulfur/src/sulfur.py:1516
 #, fuzzy
 msgid "Configuration Files"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../spritz/src/spritz.py:1516 ../../spritz/src/spritz.py:1564
+#: ../../sulfur/src/sulfur.py:1517 ../../sulfur/src/sulfur.py:1565
 #, fuzzy
 msgid "Preferences"
 msgstr "Indstillinger"
 
-#: ../../spritz/src/spritz.py:1517
+#: ../../sulfur/src/sulfur.py:1518
 #, fuzzy
 msgid "Package Queue"
 msgstr "Pakke Køen"
 
-#: ../../spritz/src/spritz.py:1518
+#: ../../sulfur/src/sulfur.py:1519
 #, fuzzy
 msgid "Output"
 msgstr "Information"
 
-#: ../../spritz/src/spritz.py:1566
+#: ../../sulfur/src/sulfur.py:1567
 msgid ""
 "Some configuration options are critical for the health of your System. Be "
 "careful."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1708
+#: ../../sulfur/src/sulfur.py:1709
 #, fuzzy
 msgid "Logged in as"
 msgstr "Konfirmation af behandling af køen"
 
-#: ../../spritz/src/spritz.py:1715
+#: ../../sulfur/src/sulfur.py:1716
 #, fuzzy
 msgid "UGC Status"
 msgstr "Opdateret"
 
-#: ../../spritz/src/spritz.py:1738 ../../spritz/src/spritz.py:1764
+#: ../../sulfur/src/sulfur.py:1739 ../../sulfur/src/sulfur.py:1765
 #, fuzzy
 msgid "Error setting parameter"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../spritz/src/spritz.py:1739
+#: ../../sulfur/src/sulfur.py:1740
 #, fuzzy
 msgid "An issue occured while loading a preference"
 msgstr "Du er ved at tilføje %s pakker\n"
 
-#: ../../spritz/src/spritz.py:1740 ../../spritz/src/spritz.py:1766
+#: ../../sulfur/src/sulfur.py:1741 ../../sulfur/src/sulfur.py:1767
 msgid "must be of type"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1740 ../../spritz/src/spritz.py:1766
+#: ../../sulfur/src/sulfur.py:1741 ../../sulfur/src/sulfur.py:1767
 msgid "got"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1903
+#: ../../sulfur/src/sulfur.py:1904
 #, fuzzy
 msgid "Error saving preferences"
 msgstr "Fejl opstået i Yum Extender"
 
-#: ../../spritz/src/spritz.py:1909
+#: ../../sulfur/src/sulfur.py:1910
 msgid ""
 "These packages are masked either by default or due to your choice. Please be "
 "careful, at least."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1968
+#: ../../sulfur/src/sulfur.py:1969
 msgid "Generating metadata. Please wait."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:1976
+#: ../../sulfur/src/sulfur.py:1977
 #, fuzzy
 msgid "Error during list population"
 msgstr "Fejl i Transaktionen"
 
-#: ../../spritz/src/spritz.py:1978
+#: ../../sulfur/src/sulfur.py:1979
 msgid "Retrying in 1 second."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2012
+#: ../../sulfur/src/sulfur.py:2013
 #, fuzzy
 msgid "Error loading advisories"
 msgstr "Fejl i Hentning af pakker:\n"
 
-#: ../../spritz/src/spritz.py:2063
+#: ../../sulfur/src/sulfur.py:2067
 #, fuzzy
 msgid "Initializing Repository module..."
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.py:2069
+#: ../../sulfur/src/sulfur.py:2073
 msgid "You must run this application as root"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2078
+#: ../../sulfur/src/sulfur.py:2082
 msgid "You are not connected to the Internet. You should."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2101
+#: ../../sulfur/src/sulfur.py:2105
 #, fuzzy
 msgid "Errors updating repositories."
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.py:2102
+#: ../../sulfur/src/sulfur.py:2106
 msgid "Please check logs below for more info"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2105
+#: ../../sulfur/src/sulfur.py:2109
 #, fuzzy
 msgid "Repositories updated successfully"
 msgstr "Indlæsning afsluttet"
 
-#: ../../spritz/src/spritz.py:2108
+#: ../../sulfur/src/sulfur.py:2112
 msgid "All the repositories were already up to date."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2110
+#: ../../sulfur/src/sulfur.py:2114
 msgid "repositories were already up to date. Others have been updated."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2113
+#: ../../sulfur/src/sulfur.py:2117
 msgid "sys-apps/entropy needs to be updated as soon as possible."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2121
+#: ../../sulfur/src/sulfur.py:2125
 #, fuzzy
 msgid "Nothing to do. I am idle."
 msgstr "Ingen pakker i køen"
 
-#: ../../spritz/src/spritz.py:2122
+#: ../../sulfur/src/sulfur.py:2126
 msgid "Really, don't waste your time here. This is just a placeholder"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2123
+#: ../../sulfur/src/sulfur.py:2127
 msgid "I am still alive and kickin'"
 msgstr ""
 
 #. -> Get lists
-#: ../../spritz/src/spritz.py:2228
+#: ../../sulfur/src/sulfur.py:2232
 msgid "Generating Metadata, please wait."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2229
+#: ../../sulfur/src/sulfur.py:2233
 msgid "Entropy is indexing the repositories. It will take a few seconds"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2230
+#: ../../sulfur/src/sulfur.py:2234
 msgid "While you are waiting, take a break and look outside. Is it rainy?"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2232 ../../spritz/src/spritz.py:2238
+#: ../../sulfur/src/sulfur.py:2236 ../../sulfur/src/sulfur.py:2242
 #, fuzzy
 msgid "Calculating"
 msgstr "Installer som afhængighed"
 
 #. if bootstrap: time.sleep(1)
-#: ../../spritz/src/spritz.py:2251
+#: ../../sulfur/src/sulfur.py:2255
 #, fuzzy
 msgid "Showing"
 msgstr "Sletter"
 
-#: ../../spritz/src/spritz.py:2278
+#: ../../sulfur/src/sulfur.py:2282
 msgid "Another Entropy instance is running. Cannot process queue."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2284
+#: ../../sulfur/src/sulfur.py:2288
 #, fuzzy
 msgid "Running tasks"
 msgstr "Kører Transaktion"
 
-#: ../../spritz/src/spritz.py:2292
+#: ../../sulfur/src/sulfur.py:2296
 msgid "Processing Packages in queue"
 msgstr "Behander pakker i køen"
 
-#: ../../spritz/src/spritz.py:2348
+#: ../../sulfur/src/sulfur.py:2352
 msgid "Attention. You chose to abort the processing."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2351
+#: ../../sulfur/src/sulfur.py:2355
 msgid ""
 "Attention. An error occured when processing the queue.\n"
 "Please have a look in the processing terminal."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2390
+#: ../../sulfur/src/sulfur.py:2394
 msgid "No packages selected"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.py:2455
+#: ../../sulfur/src/sulfur.py:2459
 msgid "Packages not found in repositories, try again later."
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2533
+#: ../../sulfur/src/sulfur.py:2537
 #, fuzzy
 msgid "No Repository Identifier"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:2536
+#: ../../sulfur/src/sulfur.py:2540
 #, fuzzy
 msgid "Duplicated Repository Identifier"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:2540
+#: ../../sulfur/src/sulfur.py:2544
 #, fuzzy
 msgid "No download mirrors"
 msgstr "Indlæsning afsluttet"
 
-#: ../../spritz/src/spritz.py:2542
+#: ../../sulfur/src/sulfur.py:2546
 msgid "Database URL must start either with http:// or ftp:// or file://"
 msgstr ""
 
-#: ../../spritz/src/spritz.py:2550
+#: ../../sulfur/src/sulfur.py:2554
 #, fuzzy
 msgid "Repository Services Port not valid"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:2558
+#: ../../sulfur/src/sulfur.py:2562
 #, fuzzy
 msgid "Secure Services Port not valid"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.py:2599
+#: ../../sulfur/src/sulfur.py:2603
 #, fuzzy
 msgid "Skipping current mirror."
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz_setup.py:117
+#: ../../sulfur/src/sulfur_setup.py:117
 msgid "Programming:"
 msgstr "Programmering"
 
-#: ../../spritz/src/spritz_setup.py:120
+#: ../../sulfur/src/sulfur_setup.py:120
 msgid "Translation:"
 msgstr "Oversættelse"
 
-#: ../../spritz/src/spritz_setup.py:134
+#: ../../sulfur/src/sulfur_setup.py:134
 #, fuzzy
 msgid "Dedicated to:"
 msgstr "Slettet"
 
-#: ../../spritz/src/views.py:253
+#: ../../sulfur/src/views.py:254
 #, fuzzy
 msgid "Selection"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/views.py:254
+#: ../../sulfur/src/views.py:255
 #, fuzzy
 msgid "Rating"
 msgstr "Opdaterer"
 
-#: ../../spritz/src/views.py:908
+#: ../../sulfur/src/views.py:909
 #, fuzzy
 msgid "These are the packages that would be disabled"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/views.py:909
+#: ../../sulfur/src/views.py:910
 msgid "Once confirmed, these packages will be considered masked."
 msgstr ""
 
-#: ../../spritz/src/views.py:1002
+#: ../../sulfur/src/views.py:1003
 #, fuzzy
 msgid "There are incomplete package sets, continue at your own risk"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/views.py:1556
+#: ../../sulfur/src/views.py:1557
 #, fuzzy
 msgid "Packages To Remove"
 msgstr "<b>Pakker Til Sletning</b>"
 
-#: ../../spritz/src/views.py:1561
+#: ../../sulfur/src/views.py:1562
 #, fuzzy
 msgid "Packages To Install"
 msgstr "<b>Pakker Til Installation</b>"
 
-#: ../../spritz/src/views.py:1566
+#: ../../sulfur/src/views.py:1567
 #, fuzzy
 msgid "Packages To Update"
 msgstr "<b>Pakker Til Opdatering</b>"
 
-#: ../../spritz/src/views.py:1571
+#: ../../sulfur/src/views.py:1572
 #, fuzzy
 msgid "Packages To Reinstall"
 msgstr "<b>Pakker Til Installation</b>"
 
-#: ../../spritz/src/views.py:1637
+#: ../../sulfur/src/views.py:1638
 msgid "Proposed"
 msgstr ""
 
-#: ../../spritz/src/views.py:1644
+#: ../../sulfur/src/views.py:1645
 #, fuzzy
 msgid "Destination"
 msgstr "_Beskrivelse"
 
-#: ../../spritz/src/views.py:1651
+#: ../../sulfur/src/views.py:1652
 #, fuzzy
 msgid "Rev."
 msgstr "Filkilde."
 
-#: ../../spritz/src/views.py:1700
+#: ../../sulfur/src/views.py:1701
 msgid "GLSA id."
 msgstr ""
 
-#: ../../spritz/src/views.py:1708
+#: ../../sulfur/src/views.py:1709
 #, fuzzy
 msgid "Package key"
 msgstr "Pakker"
 
-#: ../../spritz/src/views.py:1808
+#: ../../sulfur/src/views.py:1809
 #, fuzzy
 msgid "No advisories"
 msgstr "Fejl i Hentning af pakker:\n"
 
-#: ../../spritz/src/views.py:1809
+#: ../../sulfur/src/views.py:1810
 msgid "There are no items to show"
 msgstr ""
 
-#: ../../spritz/src/views.py:1840
+#: ../../sulfur/src/views.py:1841
 msgid "Filename"
 msgstr "Filnavn"
 
-#: ../../spritz/src/views.py:1880
+#: ../../sulfur/src/views.py:1881
 #, fuzzy
 msgid "Active"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/views.py:1890 ../../spritz/src/spritz.glade.h:241
+#: ../../sulfur/src/views.py:1891 ../../sulfur/src/sulfur.glade.h:241
 #, fuzzy
 msgid "Update"
 msgstr "Opdateret"
 
 #. Setup revision column
-#: ../../spritz/src/views.py:1898 ../../spritz/src/spritz.glade.h:192
+#: ../../sulfur/src/views.py:1899 ../../sulfur/src/sulfur.glade.h:192
 #, fuzzy
 msgid "Revision"
 msgstr "Filkilde"
 
-#: ../../spritz/src/etpgui/packages.py:176
+#: ../../sulfur/src/etpgui/packages.py:176
 #, fuzzy
 msgid "Recursive Package Set"
 msgstr "Vis Installerede Pakker"
@@ -9541,1132 +9541,1135 @@ msgid ""
 "packages"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:1
+#: ../../sulfur/src/sulfur.glade.h:1
 msgid "0 = no limit; 100 = 100kB/sec"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:2
+#: ../../sulfur/src/sulfur.glade.h:2
 msgid ""
 "<b><big>Please wait</big></b>\n"
 "<small>...take a little break !</small>"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:4
+#: ../../sulfur/src/sulfur.glade.h:4
 #, fuzzy
 msgid "<b>Entropy database backup tool</b>"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:5
+#: ../../sulfur/src/sulfur.glade.h:5
 msgid ""
 "<small>Using this tool, you will be able to backup and restore your "
 "Operating System packages database.</small>"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:6
+#: ../../sulfur/src/sulfur.glade.h:6
 msgid "Add Document"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:8
+#: ../../sulfur/src/sulfur.glade.h:8
 msgid "Add USE flags on atoms"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:9
+#: ../../sulfur/src/sulfur.glade.h:9
 #, fuzzy
 msgid "Add/Edit Repository"
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.glade.h:10
+#: ../../sulfur/src/sulfur.glade.h:10
 msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:12
+#: ../../sulfur/src/sulfur.glade.h:12
 #, fuzzy
 msgid "Affected packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:13
+#: ../../sulfur/src/sulfur.glade.h:13
 msgid "All"
 msgstr "Alle"
 
-#: ../../spritz/src/spritz.glade.h:18
+#: ../../sulfur/src/sulfur.glade.h:18
 msgid "Background error message"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:19
+#: ../../sulfur/src/sulfur.glade.h:19
 msgid "Background succ. message"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:20
+#: ../../sulfur/src/sulfur.glade.h:20
 #, fuzzy
 msgid "Backup configuration files"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../spritz/src/spritz.glade.h:22
+#: ../../sulfur/src/sulfur.glade.h:22
 msgid "Bugs"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:25
+#: ../../sulfur/src/sulfur.glade.h:25
 msgid "CONFIG_PROTECT"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:27
+#: ../../sulfur/src/sulfur.glade.h:27
 #, fuzzy
 msgid "C_hanges"
 msgstr "C_hangelog"
 
-#: ../../spritz/src/spritz.glade.h:28
+#: ../../sulfur/src/sulfur.glade.h:28
 msgid "Call"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:29
+#: ../../sulfur/src/sulfur.glade.h:29
 #, fuzzy
 msgid "ChangeLog"
 msgstr "C_hangelog"
 
-#: ../../spritz/src/spritz.glade.h:30
+#: ../../sulfur/src/sulfur.glade.h:30
 #, fuzzy
 msgid "Checksum test"
 msgstr "Henter : %s"
 
-#: ../../spritz/src/spritz.glade.h:31
+#: ../../sulfur/src/sulfur.glade.h:31
 #, fuzzy
 msgid "Cl_ean"
 msgstr "Oprydning"
 
-#: ../../spritz/src/spritz.glade.h:32
+#: ../../sulfur/src/sulfur.glade.h:32
 msgid "Collision protection"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:33
+#: ../../sulfur/src/sulfur.glade.h:33
 msgid "Command arguments"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:34
+#: ../../sulfur/src/sulfur.glade.h:34
 #, fuzzy
 msgid "Command description"
 msgstr "_Beskrivelse"
 
-#: ../../spritz/src/spritz.glade.h:35
+#: ../../sulfur/src/sulfur.glade.h:35
 #, fuzzy
 msgid "Command name"
 msgstr "Fi_ler"
 
-#: ../../spritz/src/spritz.glade.h:36
+#: ../../sulfur/src/sulfur.glade.h:36
 msgid "Commands"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:37
+#: ../../sulfur/src/sulfur.glade.h:37
 #, fuzzy
 msgid "Compile atoms"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.glade.h:38
+#: ../../sulfur/src/sulfur.glade.h:38
 #, fuzzy
 msgid "Compile packages on the remote server"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.glade.h:39
+#: ../../sulfur/src/sulfur.glade.h:39
 #, fuzzy
 msgid "Completed at"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.glade.h:40
+#: ../../sulfur/src/sulfur.glade.h:40
 #, fuzzy
 msgid "Compression"
 msgstr "Sorterer Pakker"
 
-#: ../../spritz/src/spritz.glade.h:42
+#: ../../sulfur/src/sulfur.glade.h:42
 #, fuzzy
 msgid "Creation date"
 msgstr "Slettet"
 
-#: ../../spritz/src/spritz.glade.h:43
+#: ../../sulfur/src/sulfur.glade.h:43
 #, fuzzy
 msgid "Current repository"
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.glade.h:44
+#: ../../sulfur/src/sulfur.glade.h:44
 msgid "Custom command"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:45
+#: ../../sulfur/src/sulfur.glade.h:45
 msgid "Custom shell command"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:46
+#: ../../sulfur/src/sulfur.glade.h:46
 #, fuzzy
 msgid "D_ependencies"
 msgstr "Indstillinger"
 
-#: ../../spritz/src/spritz.glade.h:47
+#: ../../sulfur/src/sulfur.glade.h:47
 #, fuzzy
 msgid "Data View"
 msgstr "Opdateret"
 
-#: ../../spritz/src/spritz.glade.h:48
+#: ../../sulfur/src/sulfur.glade.h:48
 #, fuzzy
 msgid "Database updates"
 msgstr "Indlæsning afsluttet"
 
-#: ../../spritz/src/spritz.glade.h:50
+#: ../../sulfur/src/sulfur.glade.h:50
 #, fuzzy
 msgid "Default repository selection"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:51
+#: ../../sulfur/src/sulfur.glade.h:51
 #, fuzzy
 msgid "Dele_te all"
 msgstr "_Fravælg Alle"
 
-#: ../../spritz/src/spritz.glade.h:52
+#: ../../sulfur/src/sulfur.glade.h:52
 #, fuzzy
 msgid "Delete selected"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.glade.h:53
+#: ../../sulfur/src/sulfur.glade.h:53
 #, fuzzy
 msgid "Dep. test"
 msgstr "Indstillinger"
 
-#: ../../spritz/src/spritz.glade.h:54
+#: ../../sulfur/src/sulfur.glade.h:54
 #, fuzzy
 msgid "Dependencies test"
 msgstr "Indstillinger"
 
-#: ../../spritz/src/spritz.glade.h:56
+#: ../../sulfur/src/sulfur.glade.h:56
 #, fuzzy
 msgid "Disable"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:57
+#: ../../sulfur/src/sulfur.glade.h:57
 msgid ""
 "Disabled\n"
 "Removal only\n"
 "Install+Removal"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:61
+#: ../../sulfur/src/sulfur.glade.h:61
 #, fuzzy
 msgid "Done"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../spritz/src/spritz.glade.h:62
+#: ../../sulfur/src/sulfur.glade.h:62
 #, fuzzy
 msgid "Download Path"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../spritz/src/spritz.glade.h:63
+#: ../../sulfur/src/sulfur.glade.h:63
 #, fuzzy
 msgid "Download only"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../spritz/src/spritz.glade.h:64
+#: ../../sulfur/src/sulfur.glade.h:64
 #, fuzzy
 msgid "Download source code"
 msgstr "Henter Pakker:"
 
-#: ../../spritz/src/spritz.glade.h:65
+#: ../../sulfur/src/sulfur.glade.h:65
 #, fuzzy
 msgid "Download speed limit"
 msgstr "Indlæsning afsluttet"
 
-#: ../../spritz/src/spritz.glade.h:66
+#: ../../sulfur/src/sulfur.glade.h:66
 #, fuzzy
 msgid "Enable"
 msgstr "_Valgt"
 
-#: ../../spritz/src/spritz.glade.h:67
+#: ../../sulfur/src/sulfur.glade.h:67
 #, fuzzy
 msgid "Enable _all"
 msgstr "_Valgt"
 
-#: ../../spritz/src/spritz.glade.h:68
+#: ../../sulfur/src/sulfur.glade.h:68
 msgid "Entropy API"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:69
+#: ../../sulfur/src/sulfur.glade.h:69
 #, fuzzy
 msgid "Entropy Package Manager"
 msgstr "Pakker"
 
-#: ../../spritz/src/spritz.glade.h:70
+#: ../../sulfur/src/sulfur.glade.h:70
 #, fuzzy
 msgid "Entropy Repository Manager"
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.glade.h:71
+#: ../../sulfur/src/sulfur.glade.h:71
 #, fuzzy
 msgid "Entropy Service Connection Manager"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../spritz/src/spritz.glade.h:72
+#: ../../sulfur/src/sulfur.glade.h:72
 msgid "Entropy can keep a backup of your updated configuration files"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:74
+#: ../../sulfur/src/sulfur.glade.h:74
 #, fuzzy
 msgid "Error message"
 msgstr "Fejl"
 
-#: ../../spritz/src/spritz.glade.h:75
+#: ../../sulfur/src/sulfur.glade.h:75
 #, fuzzy
 msgid "Errored at"
 msgstr "Fejl"
 
-#: ../../spritz/src/spritz.glade.h:76
+#: ../../sulfur/src/sulfur.glade.h:76
 msgid "Example: http://proxy:1234"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:78
+#: ../../sulfur/src/sulfur.glade.h:78
 msgid "External Trigger"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:79
+#: ../../sulfur/src/sulfur.glade.h:79
 msgid "FTP Proxy"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:80
+#: ../../sulfur/src/sulfur.glade.h:80
 #, fuzzy
 msgid "General"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:81
+#: ../../sulfur/src/sulfur.glade.h:81
 #, fuzzy
 msgid "Generic title 1"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:82
+#: ../../sulfur/src/sulfur.glade.h:82
 #, fuzzy
 msgid "Generic title 2"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:83
+#: ../../sulfur/src/sulfur.glade.h:83
 #, fuzzy
 msgid "Get Spm environment information"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:84
+#: ../../sulfur/src/sulfur.glade.h:84
 #, fuzzy
 msgid "Get output"
 msgstr "Information"
 
-#: ../../spritz/src/spritz.glade.h:85
+#: ../../sulfur/src/sulfur.glade.h:85
 #, fuzzy
 msgid "Get package information"
 msgstr "I_nformation"
 
-#: ../../spritz/src/spritz.glade.h:86
+#: ../../sulfur/src/sulfur.glade.h:86
 #, fuzzy
 msgid "Get updates related to the chosen categories"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.glade.h:87
+#: ../../sulfur/src/sulfur.glade.h:87
 msgid "HTTP Proxy"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:90
+#: ../../sulfur/src/sulfur.glade.h:90
 msgid "If selected, packages will be downloaded only"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:91
+#: ../../sulfur/src/sulfur.glade.h:91
 #, fuzzy
 msgid "Ignored protected files"
 msgstr "%s profilen er valgt"
 
-#: ../../spritz/src/spritz.glade.h:94
+#: ../../sulfur/src/sulfur.glade.h:94
 #, fuzzy
 msgid "Install Set"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:95
+#: ../../sulfur/src/sulfur.glade.h:95
 #, fuzzy
 msgid "Install Size"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:96
+#: ../../sulfur/src/sulfur.glade.h:96
 #, fuzzy
 msgid "Install a stand-alone package file"
 msgstr "Vis Tilgængelige Pakker"
 
-#: ../../spritz/src/spritz.glade.h:97
+#: ../../sulfur/src/sulfur.glade.h:97
 #, fuzzy
 msgid "Install from binary package..."
 msgstr "Vis Tilgængelige Pakker"
 
-#: ../../spritz/src/spritz.glade.h:98
+#: ../../sulfur/src/sulfur.glade.h:98
 #, fuzzy
 msgid "Install the selected Package Set"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:99
+#: ../../sulfur/src/sulfur.glade.h:99
 #, fuzzy
 msgid "Install the selected package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:101
+#: ../../sulfur/src/sulfur.glade.h:101
 #, fuzzy
 msgid "Installed Packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:102
+#: ../../sulfur/src/sulfur.glade.h:102
 msgid "Interactivity"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:103
+#: ../../sulfur/src/sulfur.glade.h:103
 msgid "Interface Colors"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:104
+#: ../../sulfur/src/sulfur.glade.h:104
 msgid "Kernel Tag"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:106
+#: ../../sulfur/src/sulfur.glade.h:106
 msgid "Keywords (space separated)"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:108
+#: ../../sulfur/src/sulfur.glade.h:108
 #, fuzzy
 msgid "Library test"
 msgstr "behøvet af %s"
 
-#: ../../spritz/src/spritz.glade.h:110
+#: ../../sulfur/src/sulfur.glade.h:110
 #, fuzzy
 msgid "Load User Generated Content"
 msgstr "Tilgængelige"
 
-#: ../../spritz/src/spritz.glade.h:111
+#: ../../sulfur/src/sulfur.glade.h:111
 msgid "Load content"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:112
+#: ../../sulfur/src/sulfur.glade.h:112
 #, fuzzy
 msgid "Location"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/spritz.glade.h:113
+#: ../../sulfur/src/sulfur.glade.h:113
 msgid "MD5 Signature"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:114
+#: ../../sulfur/src/sulfur.glade.h:114
 #, fuzzy
 msgid "M_erge"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/spritz.glade.h:115
+#: ../../sulfur/src/sulfur.glade.h:115
 #, fuzzy
 msgid "Mask the selected packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:116
+#: ../../sulfur/src/sulfur.glade.h:116
 #, fuzzy
 msgid "Mask this package"
 msgstr "Henter Pakker:"
 
-#: ../../spritz/src/spritz.glade.h:118
+#: ../../sulfur/src/sulfur.glade.h:118
 #, fuzzy
 msgid "Merge all"
 msgstr "_Fravælg Alle"
 
-#: ../../spritz/src/spritz.glade.h:119
+#: ../../sulfur/src/sulfur.glade.h:119
 msgid "Messages"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:120
+#: ../../sulfur/src/sulfur.glade.h:120
 #, fuzzy
 msgid "Mirror updates"
 msgstr "_Filspejlsliste"
 
-#: ../../spritz/src/spritz.glade.h:122
+#: ../../sulfur/src/sulfur.glade.h:122
 msgid "Networking"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:123
+#: ../../sulfur/src/sulfur.glade.h:123
 msgid "New backup"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:124
+#: ../../sulfur/src/sulfur.glade.h:124
 #, fuzzy
 msgid "Not done"
 msgstr "Ingen pakker i køen"
 
-#: ../../spritz/src/spritz.glade.h:126
+#: ../../sulfur/src/sulfur.glade.h:126
 #, fuzzy
 msgid "Notice Board Entry Information"
 msgstr "I_nformation"
 
-#: ../../spritz/src/spritz.glade.h:128
+#: ../../sulfur/src/sulfur.glade.h:128
 #, fuzzy
 msgid "Notice board Id"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:129
+#: ../../sulfur/src/sulfur.glade.h:129
 #, fuzzy
 msgid "O_ther"
 msgstr "_Andre"
 
-#: ../../spritz/src/spritz.glade.h:130
+#: ../../sulfur/src/sulfur.glade.h:130
 #, fuzzy
 msgid "Output View"
 msgstr "Information"
 
-#: ../../spritz/src/spritz.glade.h:131
+#: ../../sulfur/src/sulfur.glade.h:131
 #, fuzzy
 msgid "Package (default)"
 msgstr "Pakke Køen"
 
-#: ../../spritz/src/spritz.glade.h:132
+#: ../../sulfur/src/sulfur.glade.h:132
 #, fuzzy
 msgid "Package Info"
 msgstr "Pakke"
 
-#: ../../spritz/src/spritz.glade.h:133
+#: ../../sulfur/src/sulfur.glade.h:133
 #, fuzzy
 msgid "Package Information"
 msgstr "I_nformation"
 
-#: ../../spritz/src/spritz.glade.h:134
+#: ../../sulfur/src/sulfur.glade.h:134
 #, fuzzy
 msgid "Package Masking"
 msgstr "Pakker."
 
-#: ../../spritz/src/spritz.glade.h:135
+#: ../../sulfur/src/sulfur.glade.h:135
 #, fuzzy
 msgid "Package Size"
 msgstr "Pakker"
 
-#: ../../spritz/src/spritz.glade.h:136
+#: ../../sulfur/src/sulfur.glade.h:136
 #, fuzzy
 msgid "Package category"
 msgstr "Kategorier"
 
-#: ../../spritz/src/spritz.glade.h:137
+#: ../../sulfur/src/sulfur.glade.h:137
 #, fuzzy
 msgid "Package description"
 msgstr "Pakke Beskrivelser"
 
-#: ../../spritz/src/spritz.glade.h:138
+#: ../../sulfur/src/sulfur.glade.h:138
 #, fuzzy
 msgid "Package not installed"
 msgstr "<b>Pakker Til Installation</b>"
 
-#: ../../spritz/src/spritz.glade.h:139
+#: ../../sulfur/src/sulfur.glade.h:139
 #, fuzzy
 msgid "Package reinstalled"
 msgstr "<b>Pakker Til Installation</b>"
 
-#: ../../spritz/src/spritz.glade.h:140
+#: ../../sulfur/src/sulfur.glade.h:140
 #, fuzzy
 msgid "Package removed"
 msgstr "Pakker til behandling"
 
-#: ../../spritz/src/spritz.glade.h:141
+#: ../../sulfur/src/sulfur.glade.h:141
 #, fuzzy
 msgid "Package sub-description"
 msgstr "Pakke Beskrivelser"
 
-#: ../../spritz/src/spritz.glade.h:142
+#: ../../sulfur/src/sulfur.glade.h:142
 #, fuzzy
 msgid "Package subtitle"
 msgstr "Pakker"
 
-#: ../../spritz/src/spritz.glade.h:143
+#: ../../sulfur/src/sulfur.glade.h:143
 #, fuzzy
 msgid "Package updated"
 msgstr "<b>Pakker Til Opdatering</b>"
 
-#: ../../spritz/src/spritz.glade.h:146
+#: ../../sulfur/src/sulfur.glade.h:146
 #, fuzzy
 msgid "Pinboard Id"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:147
+#: ../../sulfur/src/sulfur.glade.h:147
 #, fuzzy
 msgid "Pinboard Item Information"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:148
+#: ../../sulfur/src/sulfur.glade.h:148
 #, fuzzy
 msgid "Pinboard View"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:149
+#: ../../sulfur/src/sulfur.glade.h:149
 #, fuzzy
 msgid "Please Confirm"
 msgstr "Konfirmation af behandling af køen"
 
-#: ../../spritz/src/spritz.glade.h:150
+#: ../../sulfur/src/sulfur.glade.h:150
 msgid ""
 "Please submit this error to us providing as much information as possible."
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:152
+#: ../../sulfur/src/sulfur.glade.h:152
 msgid "Prevents files belonging to a package being overwritten by another"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:153
+#: ../../sulfur/src/sulfur.glade.h:153
 msgid "Process priority (nice)"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:154
+#: ../../sulfur/src/sulfur.glade.h:154
 #, fuzzy
 msgid "Process result"
 msgstr "_Behanling af Køen"
 
-#: ../../spritz/src/spritz.glade.h:155
+#: ../../sulfur/src/sulfur.glade.h:155
 #, fuzzy
 msgid "Processing at"
 msgstr "Behandling af pakker"
 
-#: ../../spritz/src/spritz.glade.h:156
+#: ../../sulfur/src/sulfur.glade.h:156
 msgid "Protected files and directories"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:157
+#: ../../sulfur/src/sulfur.glade.h:157
 msgid "Protected files and directories mask"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:158
+#: ../../sulfur/src/sulfur.glade.h:158
 msgid "Proxy Password"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:159
+#: ../../sulfur/src/sulfur.glade.h:159
 #, fuzzy
 msgid "Proxy Username"
 msgstr "Filnavn"
 
-#: ../../spritz/src/spritz.glade.h:160
+#: ../../sulfur/src/sulfur.glade.h:160
 msgid "Purge"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:161
+#: ../../sulfur/src/sulfur.glade.h:161
 #, fuzzy
 msgid "Q_ueue packages in selected Advisory"
 msgstr "Ingen valgte pakker"
 
-#: ../../spritz/src/spritz.glade.h:162
+#: ../../sulfur/src/sulfur.glade.h:162
 #, fuzzy
 msgid "Queue Id"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:163
+#: ../../sulfur/src/sulfur.glade.h:163
 #, fuzzy
 msgid "Queue Item Information"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:164
+#: ../../sulfur/src/sulfur.glade.h:164
 #, fuzzy
 msgid "Queue View"
 msgstr "Pakke Kø"
 
-#: ../../spritz/src/spritz.glade.h:165
+#: ../../sulfur/src/sulfur.glade.h:165
 #, fuzzy
 msgid "Queued"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:166
+#: ../../sulfur/src/sulfur.glade.h:166
 msgid "Queued at"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:167
+#: ../../sulfur/src/sulfur.glade.h:167
 #, fuzzy
 msgid "R_egenerate Cache"
 msgstr "Sorterer Pakker"
 
-#: ../../spritz/src/spritz.glade.h:168
+#: ../../sulfur/src/sulfur.glade.h:168
 #, fuzzy
 msgid "R_epositories Notice Board"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:172
+#: ../../sulfur/src/sulfur.glade.h:172
 #, fuzzy
 msgid "Reinstall the selected package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:173
+#: ../../sulfur/src/sulfur.glade.h:173
 msgid "Remote stdout file"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:175
+#: ../../sulfur/src/sulfur.glade.h:175
 #, fuzzy
 msgid "Remove Selected"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:176
+#: ../../sulfur/src/sulfur.glade.h:176
 #, fuzzy
 msgid "Remove Set"
 msgstr "Sletter"
 
-#: ../../spritz/src/spritz.glade.h:178
+#: ../../sulfur/src/sulfur.glade.h:178
 msgid "Remove USE flags on atoms"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:179
+#: ../../sulfur/src/sulfur.glade.h:179
 #, fuzzy
 msgid "Remove atoms"
 msgstr "Sletter"
 
-#: ../../spritz/src/spritz.glade.h:180
+#: ../../sulfur/src/sulfur.glade.h:180
 #, fuzzy
 msgid "Remove packages on the remote server"
 msgstr "Behandler pakker for %s"
 
-#: ../../spritz/src/spritz.glade.h:181
+#: ../../sulfur/src/sulfur.glade.h:181
 #, fuzzy
 msgid "Remove the selected Package Set"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:182
+#: ../../sulfur/src/sulfur.glade.h:182
 #, fuzzy
 msgid "Remove the selected package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:183
+#: ../../sulfur/src/sulfur.glade.h:183
 #, fuzzy
 msgid "Remove the selected package and its configuration"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:185
+#: ../../sulfur/src/sulfur.glade.h:185
 #, fuzzy
 msgid "Repositories options"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:186
+#: ../../sulfur/src/sulfur.glade.h:186
 #, fuzzy
 msgid "Repository information"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:188
+#: ../../sulfur/src/sulfur.glade.h:188
 #, fuzzy
 msgid "Restore"
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.glade.h:189
+#: ../../sulfur/src/sulfur.glade.h:189
 #, fuzzy
 msgid "Restore selected"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:190
+#: ../../sulfur/src/sulfur.glade.h:190
 #, fuzzy
 msgid "Review for Install..."
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:193
+#: ../../sulfur/src/sulfur.glade.h:193
 msgid "S_end Error Report"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:194
+#: ../../sulfur/src/sulfur.glade.h:194
 #, fuzzy
 msgid "Save"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/spritz.glade.h:195
+#: ../../sulfur/src/sulfur.glade.h:195
 #, fuzzy
 msgid "Search"
 msgstr "Ark."
 
-#: ../../spritz/src/spritz.glade.h:196
+#: ../../sulfur/src/sulfur.glade.h:196
 #, fuzzy
 msgid "Secure Services Port"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:197
+#: ../../sulfur/src/sulfur.glade.h:197
 #, fuzzy
 msgid "Security updates"
 msgstr "Installer som afhængighed"
 
-#: ../../spritz/src/spritz.glade.h:198
+#: ../../sulfur/src/sulfur.glade.h:198
 #, fuzzy
 msgid "Services Port"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:199
+#: ../../sulfur/src/sulfur.glade.h:199
 #, fuzzy
 msgid "Sets"
 msgstr "Størrelser"
 
-#: ../../spritz/src/spritz.glade.h:200
+#: ../../sulfur/src/sulfur.glade.h:200
 msgid "Show ChangeLog"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:201
+#: ../../sulfur/src/sulfur.glade.h:201
 #, fuzzy
 msgid "Show Selected"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:202
+#: ../../sulfur/src/sulfur.glade.h:202
 msgid "Show all"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:203
+#: ../../sulfur/src/sulfur.glade.h:203
 #, fuzzy
 msgid "Show applied"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:204
+#: ../../sulfur/src/sulfur.glade.h:204
 msgid "Show unapplied"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:207
+#: ../../sulfur/src/sulfur.glade.h:207
 #, fuzzy
 msgid "Socket settings"
 msgstr "Aktuelle indstillinger :"
 
-#: ../../spritz/src/spritz.glade.h:208
+#: ../../sulfur/src/sulfur.glade.h:208
 #, fuzzy
 msgid "Source Package Manager"
 msgstr "Pakker"
 
-#: ../../spritz/src/spritz.glade.h:209
+#: ../../sulfur/src/sulfur.glade.h:209
 msgid "Spm Info"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:210
+#: ../../sulfur/src/sulfur.glade.h:210
 msgid "Spm Sync"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:211
+#: ../../sulfur/src/sulfur.glade.h:211
 #, fuzzy
 msgid "Spm tree updates"
 msgstr "Yum Opsætning: Opdateringer"
 
-#: ../../spritz/src/spritz.glade.h:212
-#, fuzzy
-msgid "Spritz Package Manager"
-msgstr "Pakker"
-
-#: ../../spritz/src/spritz.glade.h:213
+#: ../../sulfur/src/sulfur.glade.h:212
 msgid "Submit a new document"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:214
+#: ../../sulfur/src/sulfur.glade.h:213
 msgid "Successful mesage"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:215
+#: ../../sulfur/src/sulfur.glade.h:214
+msgid "Sulfur"
+msgstr ""
+
+#: ../../sulfur/src/sulfur.glade.h:215
 #, fuzzy
 msgid "Switch to"
 msgstr "Opdaterer"
 
-#: ../../spritz/src/spritz.glade.h:217
+#: ../../sulfur/src/sulfur.glade.h:217
 #, fuzzy
 msgid "System"
 msgstr "Fi_ler"
 
-#: ../../spritz/src/spritz.glade.h:218
+#: ../../sulfur/src/sulfur.glade.h:218
 #, fuzzy
 msgid "System Database"
 msgstr "Kører Transaktion"
 
-#: ../../spritz/src/spritz.glade.h:219
+#: ../../sulfur/src/sulfur.glade.h:219
 msgid "Terminal font"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:220
+#: ../../sulfur/src/sulfur.glade.h:220
 msgid "Text on error message"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:221
+#: ../../sulfur/src/sulfur.glade.h:221
 msgid "Text on succ. message"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:222
+#: ../../sulfur/src/sulfur.glade.h:222
 msgid "This is what they call \"nice level\""
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:224
+#: ../../sulfur/src/sulfur.glade.h:224
 #, fuzzy
 msgid "UGC Entry Information"
 msgstr "I_nformation"
 
-#: ../../spritz/src/spritz.glade.h:225
+#: ../../sulfur/src/sulfur.glade.h:225
 #, fuzzy
 msgid "URI"
 msgstr "GUI"
 
-#: ../../spritz/src/spritz.glade.h:226
+#: ../../sulfur/src/sulfur.glade.h:226
 #, fuzzy
 msgid "Undo Install"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:227
+#: ../../sulfur/src/sulfur.glade.h:227
 #, fuzzy
 msgid "Undo Install Set"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:228
+#: ../../sulfur/src/sulfur.glade.h:228
 #, fuzzy
 msgid "Undo Install Set action"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:229
+#: ../../sulfur/src/sulfur.glade.h:229
 #, fuzzy
 msgid "Undo Install action"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:230
+#: ../../sulfur/src/sulfur.glade.h:230
 msgid "Undo Purge"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:231
+#: ../../sulfur/src/sulfur.glade.h:231
 #, fuzzy
 msgid "Undo Purge action"
 msgstr "Søgnings Indstiller"
 
-#: ../../spritz/src/spritz.glade.h:232
+#: ../../sulfur/src/sulfur.glade.h:232
 #, fuzzy
 msgid "Undo Reinstall"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:233
+#: ../../sulfur/src/sulfur.glade.h:233
 #, fuzzy
 msgid "Undo Reinstall action"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:234
+#: ../../sulfur/src/sulfur.glade.h:234
 msgid "Undo Remove"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:235
+#: ../../sulfur/src/sulfur.glade.h:235
 #, fuzzy
 msgid "Undo Remove Set"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:236
+#: ../../sulfur/src/sulfur.glade.h:236
 #, fuzzy
 msgid "Undo Remove Set action"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:237
+#: ../../sulfur/src/sulfur.glade.h:237
 #, fuzzy
 msgid "Undo Remove action"
 msgstr "Installeret"
 
-#: ../../spritz/src/spritz.glade.h:238
+#: ../../sulfur/src/sulfur.glade.h:238
 #, fuzzy
 msgid "Undo Update"
 msgstr "Opdateret"
 
-#: ../../spritz/src/spritz.glade.h:239
+#: ../../sulfur/src/sulfur.glade.h:239
 #, fuzzy
 msgid "Undo Update action"
 msgstr "Opdateret"
 
-#: ../../spritz/src/spritz.glade.h:240
+#: ../../sulfur/src/sulfur.glade.h:240
 #, fuzzy
 msgid "Unmask this package"
 msgstr "Henter Pakker:"
 
-#: ../../spritz/src/spritz.glade.h:242
+#: ../../sulfur/src/sulfur.glade.h:242
 #, fuzzy
 msgid "Update the selected package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../spritz/src/spritz.glade.h:243
+#: ../../sulfur/src/sulfur.glade.h:243
 #, fuzzy
 msgid "Updates"
 msgstr "Opdateret"
 
-#: ../../spritz/src/spritz.glade.h:244
+#: ../../sulfur/src/sulfur.glade.h:244
 msgid "User / Group"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:247
+#: ../../sulfur/src/sulfur.glade.h:247
 #, fuzzy
 msgid "Version"
 msgstr "_Filspejlsliste"
 
-#: ../../spritz/src/spritz.glade.h:248
+#: ../../sulfur/src/sulfur.glade.h:248
 msgid "Website"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:249
+#: ../../sulfur/src/sulfur.glade.h:249
 msgid "What you were doing"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:251
+#: ../../sulfur/src/sulfur.glade.h:251
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:253
+#: ../../sulfur/src/sulfur.glade.h:253
 msgid "Your E-mail"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:254
+#: ../../sulfur/src/sulfur.glade.h:254
 msgid "Your Full Name"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:255
+#: ../../sulfur/src/sulfur.glade.h:255
 #, fuzzy
 msgid "_Abort"
 msgstr "Om"
 
-#: ../../spritz/src/spritz.glade.h:256
+#: ../../sulfur/src/sulfur.glade.h:256
 #, fuzzy
 msgid "_Accept License"
 msgstr "Filnavn"
 
-#: ../../spritz/src/spritz.glade.h:257
+#: ../../sulfur/src/sulfur.glade.h:257
 msgid "_Add All"
 msgstr "Tilføj _Alle"
 
-#: ../../spritz/src/spritz.glade.h:258
+#: ../../sulfur/src/sulfur.glade.h:258
 #, fuzzy
 msgid "_Add Set"
 msgstr "Tilføj _Alle"
 
-#: ../../spritz/src/spritz.glade.h:259
+#: ../../sulfur/src/sulfur.glade.h:259
 msgid "_Clear all cache"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:260
+#: ../../sulfur/src/sulfur.glade.h:260
 msgid "_Clear all credentials"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:261
+#: ../../sulfur/src/sulfur.glade.h:261
 msgid "_Commit Actions"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:262
+#: ../../sulfur/src/sulfur.glade.h:262
 msgid "_Details"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:263
+#: ../../sulfur/src/sulfur.glade.h:263
 #, fuzzy
 msgid "_Enable"
 msgstr "_Valgt"
 
-#: ../../spritz/src/spritz.glade.h:264
+#: ../../sulfur/src/sulfur.glade.h:264
 #, fuzzy
 msgid "_File"
 msgstr "_Filer"
 
-#: ../../spritz/src/spritz.glade.h:265
+#: ../../sulfur/src/sulfur.glade.h:265
 #, fuzzy
 msgid "_Force repositories update"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:266
+#: ../../sulfur/src/sulfur.glade.h:266
 msgid "_Generate Login"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:267
+#: ../../sulfur/src/sulfur.glade.h:267
 msgid "_Help"
 msgstr "_Hjælp"
 
-#: ../../spritz/src/spritz.glade.h:268
+#: ../../sulfur/src/sulfur.glade.h:268
 #, fuzzy
 msgid "_Insert String"
 msgstr "Kategorier"
 
-#: ../../spritz/src/spritz.glade.h:269
+#: ../../sulfur/src/sulfur.glade.h:269
 msgid "_More"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:270
+#: ../../sulfur/src/sulfur.glade.h:270
 msgid "_Open Document"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:271
+#: ../../sulfur/src/sulfur.glade.h:271
 msgid "_Overview"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:272
+#: ../../sulfur/src/sulfur.glade.h:272
 #, fuzzy
 msgid "_Properties"
 msgstr "_Profiler"
 
-#: ../../spritz/src/spritz.glade.h:273
+#: ../../sulfur/src/sulfur.glade.h:273
 #, fuzzy
 msgid "_Queue all vulnerable packages"
 msgstr "Vis Tilgængelige Pakker"
 
-#: ../../spritz/src/spritz.glade.h:274
+#: ../../sulfur/src/sulfur.glade.h:274
 #, fuzzy
 msgid "_Read License"
 msgstr "Filnavn"
 
-#: ../../spritz/src/spritz.glade.h:275
+#: ../../sulfur/src/sulfur.glade.h:275
 #, fuzzy
 msgid "_References"
 msgstr "Indstillinger"
 
-#: ../../spritz/src/spritz.glade.h:276
+#: ../../sulfur/src/sulfur.glade.h:276
 #, fuzzy
 msgid "_Remote Repository Manager"
 msgstr "Kilde"
 
-#: ../../spritz/src/spritz.glade.h:277
+#: ../../sulfur/src/sulfur.glade.h:277
 msgid "_Remove All"
 msgstr "_Fjern Alle"
 
-#: ../../spritz/src/spritz.glade.h:278
+#: ../../sulfur/src/sulfur.glade.h:278
 #, fuzzy
 msgid "_Remove Login"
 msgstr "Sletter"
 
-#: ../../spritz/src/spritz.glade.h:279
+#: ../../sulfur/src/sulfur.glade.h:279
 #, fuzzy
 msgid "_Remove Set"
 msgstr "Sletter"
 
-#: ../../spritz/src/spritz.glade.h:280
+#: ../../sulfur/src/sulfur.glade.h:280
 #, fuzzy
 msgid "_SSL Connection"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../spritz/src/spritz.glade.h:281
+#: ../../sulfur/src/sulfur.glade.h:281
 #, fuzzy
 msgid "_Services"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:282
+#: ../../sulfur/src/sulfur.glade.h:282
 #, fuzzy
 msgid "_Skip mirror"
 msgstr "_Filspejlsliste"
 
-#: ../../spritz/src/spritz.glade.h:283
+#: ../../sulfur/src/sulfur.glade.h:283
 msgid "_Submit Document"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:284
+#: ../../sulfur/src/sulfur.glade.h:284
 #, fuzzy
 msgid "_Update Repositories"
 msgstr "Filkilder"
 
-#: ../../spritz/src/spritz.glade.h:285
+#: ../../sulfur/src/sulfur.glade.h:285
 msgid "emerge --sync"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:286
+#: ../../sulfur/src/sulfur.glade.h:286
 msgid "emerge --sync ? (o;"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:287
+#: ../../sulfur/src/sulfur.glade.h:287
 msgid "http://www.sabayon.org"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:288
+#: ../../sulfur/src/sulfur.glade.h:288
 msgid "kB/sec"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:289
+#: ../../sulfur/src/sulfur.glade.h:289
 msgid "localhost"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:291
+#: ../../sulfur/src/sulfur.glade.h:291
 #, fuzzy
 msgid "root"
 msgstr "Sletter"
 
-#: ../../spritz/src/spritz.glade.h:292
+#: ../../sulfur/src/sulfur.glade.h:292
 msgid "type your password here"
 msgstr ""
 
-#: ../../spritz/src/spritz.glade.h:293
+#: ../../sulfur/src/sulfur.glade.h:293
 msgid "type your username here"
 msgstr ""
+
+#, fuzzy
+#~ msgid "Spritz Package Manager"
+#~ msgstr "Pakker"
 
 #, fuzzy
 #~ msgid "Compilation messages"

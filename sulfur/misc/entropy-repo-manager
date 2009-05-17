@@ -1,0 +1,4 @@
+#!/usr/bin/python
+import subprocess
+rc = subprocess.call(["python2","/usr/lib/entropy/sulfur/repo-manager-client.py"])
+raise SystemExit(rc)

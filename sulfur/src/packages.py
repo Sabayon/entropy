@@ -1,7 +1,7 @@
-#!/usr/bin/python -tt
+#!/usr/bin/python2 -O
 # -*- coding: iso-8859-1 -*-
-#    Yum Exteder (yumex) - A GUI for yum
-#    Copyright (C) 2006 Tim Lauridsen < tim<AT>yum-extender<DOT>org > 
+#    Sulfur (Entropy Interface)
+#    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -19,7 +19,7 @@
 
 from etpgui.packages import EntropyPackage, DummyEntropyPackage
 import logging
-from spritz_setup import SpritzConf
+from sulfur_setup import SulfurConf
 from entropy.i18n import _
 from entropy.const import *
 from entropy.exceptions import *
@@ -112,7 +112,7 @@ class EntropyPackages:
             except RepositoryError:
                 return 0
             yp.action = 'r'
-            yp.color = SpritzConf.color_install
+            yp.color = SulfurConf.color_install
             return yp
         return [x for x in map(fm,self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom')) if type(x) != int]
 
@@ -147,7 +147,7 @@ class EntropyPackages:
             installed_match = cdb_atomMatch(key, matchSlot = slot)
             if installed_match[0] != -1: yp.installed_match = installed_match
             yp.action = 'u'
-            yp.color = SpritzConf.color_update
+            yp.color = SulfurConf.color_update
             return yp
         updates, remove, fine, spm_fine = self.Entropy.calculate_world_updates()
 
@@ -165,7 +165,7 @@ class EntropyPackages:
                 return 0
             yp.installed_match = (idpackage,0)
             yp.action = 'rr'
-            yp.color = SpritzConf.color_install
+            yp.color = SulfurConf.color_install
             return yp
         return [x for x in map(fm,self.filterReinstallable(self.Entropy.clientDbconn.listAllPackages(get_scope = True,order_by = 'atom'))) if type(x) != int]
 
@@ -188,7 +188,7 @@ class EntropyPackages:
                 else:
                     yp.installed_match = (idpackage,0)
             yp.masked = idreason
-            yp.color = SpritzConf.color_install
+            yp.color = SulfurConf.color_install
             return yp
         return [x for x in map(fm,self.getMaskedPackages()) if type(x) != 0]
 
@@ -250,7 +250,7 @@ class EntropyPackages:
             set_objects = []
 
             def update_yp(yp):
-                yp.color = SpritzConf.color_install
+                yp.color = SulfurConf.color_install
                 yp.set_cat_namedesc = cat_namedesc
                 yp.set_names.add(set_name)
                 yp.set_from = set_from
@@ -284,12 +284,12 @@ class EntropyPackages:
         msg2 = _("Try clicking the %s button in the %s page") % ( _("Update Repositories"),_("Repository Selection"),)
 
         msg = "<big><b><span foreground='%s'>%s</span></b></big>\n%s.\n%s" % (
-            SpritzConf.color_title,
+            SulfurConf.color_title,
             _('No updates available'),
             _("It seems that your system is already up-to-date. Good!"),
             msg2,
         )
-        myobj = DummyEntropyPackage(namedesc = msg, dummy_type = SpritzConf.dummy_empty)
+        myobj = DummyEntropyPackage(namedesc = msg, dummy_type = SulfurConf.dummy_empty)
         return [myobj]
 
     def _getPackages(self,mask):

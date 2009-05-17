@@ -1,7 +1,7 @@
-#!/usr/bin/python -tt
+#!/usr/bin/python2 -O
 # -*- coding: iso-8859-1 -*-
-#    Yum Exteder (yumex) - A GUI for yum
-#    Copyright (C) 2006 Tim Lauridsen < tim<AT>yum-extender<DOT>org > 
+#    Sulfur (Entropy Interface)
+#    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
 #    This program is free software; you can redistribute it and/or modify
 #    it under the terms of the GNU General Public License as published by
@@ -21,7 +21,7 @@ from __future__ import with_statement
 import time, gtk, gobject, pango, thread, pty, sys
 from etpgui.widgets import UI
 from etpgui import CURRENT_CURSOR, busyCursor, normalCursor
-from spritz_setup import const, cleanMarkupString, SpritzConf, unicode2htmlentities, fakeoutfile, fakeinfile
+from sulfur_setup import const, cleanMarkupString, SulfurConf, unicode2htmlentities, fakeoutfile, fakeinfile
 from entropy.i18n import _,_LOCALE
 import packages
 from entropy.exceptions import *
@@ -454,9 +454,8 @@ class RepositoryManagerMenu(MenuSkel):
         self.console_menu = self.console_menu_xml.get_widget( "terminalMenu" )
         self.console_menu_xml.signal_autoconnect(self)
 
-        from etpgui.widgets import SpritzConsole
-        self.SpritzConsole = SpritzConsole
-        self.console = self.SpritzConsole()
+        from etpgui.widgets import SulfurConsole
+        self.console = SulfurConsole()
         self.console.set_scrollback_lines(1024)
         self.console.set_scroll_on_output(True)
         self.console.set_pty(self.pty[0])
@@ -3568,12 +3567,12 @@ class RmNoticeBoardMenu(MenuSkel):
         ]
         for item in bold_items:
             t = item.get_text()
-            item.set_markup("<span foreground='%s'><small><b>%s</b></small></span>" % (SpritzConf.color_title,t,))
+            item.set_markup("<span foreground='%s'><small><b>%s</b></small></span>" % (SulfurConf.color_title,t,))
         for item in small_items:
             t = item.get_text()
-            item.set_markup("<span foreground='%s'><small>%s</small></span>" % (SpritzConf.color_pkgsubtitle,t,))
+            item.set_markup("<span foreground='%s'><small>%s</small></span>" % (SulfurConf.color_pkgsubtitle,t,))
         t = self.rm_ui.rmNoticeBoardTextLabel.get_text()
-        self.rm_ui.rmNoticeBoardTextLabel.set_markup("<span foreground='%s'><small>%s</small></span>" % (SpritzConf.color_subdesc,t,))
+        self.rm_ui.rmNoticeBoardTextLabel.set_markup("<span foreground='%s'><small>%s</small></span>" % (SulfurConf.color_subdesc,t,))
         self.rm_ui.rmNoticeBoardInfo.show_all()
 
 class SmQueueMenu(MenuSkel):
@@ -4051,9 +4050,9 @@ class PkgInfoMenu(MenuSkel):
         status, err_msg = self.Entropy.UGC.add_vote(self.repository, self.pkgkey, vote)
         if status:
             self.set_stars_from_repository()
-            msg = "<small><span foreground='%s'>%s</span>: %s</small>" % (SpritzConf.color_good,_("Vote registered successfully"),vote,)
+            msg = "<small><span foreground='%s'>%s</span>: %s</small>" % (SulfurConf.color_good,_("Vote registered successfully"),vote,)
         else:
-            msg = "<small><span foreground='%s'>%s</span>: %s</small>" % (SpritzConf.color_error,_("Error registering vote"),err_msg,)
+            msg = "<small><span foreground='%s'>%s</span>: %s</small>" % (SulfurConf.color_error,_("Error registering vote"),err_msg,)
 
         self.pkginfo_ui.ugcMessageBox.set_markup(msg)
 
@@ -4471,7 +4470,7 @@ class SecurityAdvisoryMenu(MenuSkel):
         adv_pixmap = const.PIXMAPS_PATH+'/button-glsa.png'
         self.advinfo_ui.advImage.set_from_file(adv_pixmap)
 
-        glsa_idtext = "<b>GLSA</b>#<span foreground='%s' weight='bold'>%s</span>" % (SpritzConf.color_title,key,)
+        glsa_idtext = "<b>GLSA</b>#<span foreground='%s' weight='bold'>%s</span>" % (SulfurConf.color_title,key,)
         self.advinfo_ui.labelIdentifier.set_markup(glsa_idtext)
 
         bold_items = [
@@ -4504,14 +4503,14 @@ class SecurityAdvisoryMenu(MenuSkel):
         myurl = ''
         if data.has_key('url'):
             myurl = data['url']
-        self.advinfo_ui.labelTitle.set_markup( "<small>%s\n<span foreground='%s'>%s</span></small>" % (data['title'],SpritzConf.color_title2,myurl,)) 
+        self.advinfo_ui.labelTitle.set_markup( "<small>%s\n<span foreground='%s'>%s</span></small>" % (data['title'],SulfurConf.color_title2,myurl,)) 
 
         # description
         desc_text = ' '.join([x.strip() for x in data['description'].split("\n")]).strip()
         if data.has_key('description_items'):
             if data['description_items']:
                 for item in data['description_items']:
-                    desc_text += '\n\t%s %s' % ("<span foreground='%s'>(*)</span>" % (SpritzConf.color_title,),item,)
+                    desc_text += '\n\t%s %s' % ("<span foreground='%s'>(*)</span>" % (SulfurConf.color_title,),item,)
         desc_text = desc_text.replace('!;\\n','')
         b = gtk.TextBuffer()
         b.set_text(desc_text)
@@ -4535,11 +4534,11 @@ class SecurityAdvisoryMenu(MenuSkel):
         t = "<b>%s</b>" % (t,)
         t += " [<span foreground='darkgreen'>%s</span>:<span foreground='%s'>%s</span>|<span foreground='%s'>%s</span>:<span foreground='%s'>%s</span>]" % (
                     _("impact"),
-                    SpritzConf.color_title2,
+                    SulfurConf.color_title2,
                     data['impacttype'],
-                    SpritzConf.color_subdesc,
+                    SulfurConf.color_subdesc,
                     _("access"),
-                    SpritzConf.color_pkgsubtitle,
+                    SulfurConf.color_pkgsubtitle,
                     data['access'],
         )
         self.advinfo_ui.impactLabel.set_markup(t)
@@ -4785,7 +4784,7 @@ class UGCAddMenu(MenuSkel):
 
         self.hide_loading()
         if not rslt:
-            txt = "<small><span foreground='%s'><b>%s</b></span>: %s | %s</small>" % (SpritzConf.color_error,_("UGC Error"),rslt,data,)
+            txt = "<small><span foreground='%s'><b>%s</b></span>: %s | %s</small>" % (SulfurConf.color_error,_("UGC Error"),rslt,data,)
             self.ugcadd_ui.ugcAddStatusLabel.set_markup(txt)
             return False
         else:
@@ -4933,7 +4932,7 @@ class MaskedPackagesDialog(MenuSkel):
         if top_text == None:
             top_text = _("These are the packages that must be enabled to satisfy your request")
 
-        tit = "<b><span foreground='%s' size='large'>%s</span></b>\n" % (SpritzConf.color_title,_("Some packages are masked"),)
+        tit = "<b><span foreground='%s' size='large'>%s</span></b>\n" % (SulfurConf.color_title,_("Some packages are masked"),)
         tit += top_text
         self.action.set_markup( tit )
         if sub_text != None: self.subaction.set_markup( sub_text )
@@ -5109,10 +5108,10 @@ class MaskedPackagesDialog(MenuSkel):
             cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(cat_desc),)
             mydummy = packages.DummyEntropyPackage(
                     namedesc = cat_text,
-                    dummy_type = SpritzConf.dummy_category,
+                    dummy_type = SulfurConf.dummy_category,
                     onlyname = category
             )
-            mydummy.color = SpritzConf.color_package_category
+            mydummy.color = SulfurConf.color_package_category
             parent = model.append( None, (mydummy,) )
             for po in categories[category]:
                 model.append( parent, (po,) )
@@ -5333,8 +5332,8 @@ class ConfirmationDialog:
                 desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
-                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SpritzConf.color_pkgdesc,desc,)
-                mypkg = "<span foreground='%s'>%s</span>" % (SpritzConf.color_remove,str(pkg),)
+                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SulfurConf.color_pkgdesc,desc,)
+                mypkg = "<span foreground='%s'>%s</span>" % (SulfurConf.color_remove,str(pkg),)
                 model.append( level1, [mypkg+mydesc] )
         if reinstall:
             label = "<b>%s</b>" % _("To be reinstalled")
@@ -5344,8 +5343,8 @@ class ConfirmationDialog:
                 desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
-                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SpritzConf.color_pkgdesc,desc,)
-                mypkg = "<span foreground='%s'>%s</span>" % (SpritzConf.color_reinstall,str(pkg),)
+                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SulfurConf.color_pkgdesc,desc,)
+                mypkg = "<span foreground='%s'>%s</span>" % (SulfurConf.color_reinstall,str(pkg),)
                 model.append( level1, [mypkg+mydesc] )
         if install:
             label = "<b>%s</b>" % _("To be installed")
@@ -5355,8 +5354,8 @@ class ConfirmationDialog:
                 desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
-                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SpritzConf.color_pkgdesc,desc,)
-                mypkg = "<span foreground='%s'>%s</span>" % (SpritzConf.color_install,str(pkg),)
+                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SulfurConf.color_pkgdesc,desc,)
+                mypkg = "<span foreground='%s'>%s</span>" % (SulfurConf.color_install,str(pkg),)
                 model.append( level1, [mypkg+mydesc] )
         if update:
             label = "<b>%s</b>" % _("To be updated")
@@ -5366,8 +5365,8 @@ class ConfirmationDialog:
                 desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
-                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SpritzConf.color_pkgdesc,desc,)
-                mypkg = "<span foreground='%s'>%s</span>" % (SpritzConf.color_update,str(pkg),)
+                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SulfurConf.color_pkgdesc,desc,)
+                mypkg = "<span foreground='%s'>%s</span>" % (SulfurConf.color_update,str(pkg),)
                 model.append( level1, [mypkg+mydesc] )
 
     def destroy( self ):
@@ -5486,7 +5485,7 @@ class AboutDialog(gtk.Window):
         Mostly ripped from the one in gDesklets
     """
 
-    def __init__(self, gfx, creditText, title = "Spritz Package Manager"):
+    def __init__(self, gfx, creditText, title = "Sulfur Project"):
 
         self.__is_stopped = True
         self.__scroller_values = ()
@@ -5616,7 +5615,7 @@ def infoMessage( parent, title, text ):
     dlg.destroy()
     return not rc == gtk.RESPONSE_OK
 
-def questionDialog(parent, msg, title = _("Spritz Question"), get_response = False):
+def questionDialog(parent, msg, title = _("Sulfur Question"), get_response = False):
     dlg = gtk.MessageDialog(
         parent=parent,
         type = gtk.MESSAGE_QUESTION,
@@ -5956,10 +5955,10 @@ class MessageDialog:
         dialog.destroy()
 
 class LicenseDialog:
-    def __init__( self, spritz_app, entropy, licenses ):
+    def __init__( self, application, entropy, licenses ):
 
-        self.parent = spritz_app.ui.main
-        self.Spritz = spritz_app
+        self.parent = application.ui.main
+        self.Sulfur = application
         self.Entropy = entropy
         self.xml = gtk.glade.XML( const.GLADE_FILE, 'licenseWindow',domain="entropy" )
         self.xml_licread = gtk.glade.XML( const.GLADE_FILE, 'textReadWindow',domain="entropy" )
@@ -6100,7 +6099,7 @@ class ExceptionDialog:
         rc, (name,mail,description) = errorMessage(
             None,
             _( "Exception caught" ),
-            _( "Spritz crashed! An unexpected error occured." ),
+            _( "Sulfur crashed! An unexpected error occured." ),
             errmsg,
             showreport = conntest
         )

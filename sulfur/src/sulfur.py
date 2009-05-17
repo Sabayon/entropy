@@ -1,6 +1,6 @@
 #!/usr/bin/python2 -O
 # -*- coding: iso-8859-1 -*-
-#    Spritz (Entropy Interface)
+#    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
 #    This program is free software; you can redistribute it and/or modify
@@ -36,19 +36,19 @@ from entropy.const import *
 from entropy.i18n import _
 from entropy.misc import TimeScheduled, ParallelTask
 
-# Spritz Imports
+# Sulfur Imports
 import gtk, gobject
-from etpgui.widgets import UI, Controller, SpritzConsole
+from etpgui.widgets import UI, Controller, SulfurConsole
 from etpgui import *
-from spritz_setup import SpritzConf, const, fakeoutfile, fakeinfile, \
+from sulfur_setup import SulfurConf, const, fakeoutfile, fakeinfile, \
     cleanMarkupString
-from misc import SpritzQueue
+from misc import Queue
 from views import *
-import filters
+from filters import Filter
 from dialogs import *
-from progress import ProgressTotal, SpritzProgress
+from progress import Base as BaseProgress
 
-class SpritzApplicationEventsMixin:
+class SulfurApplicationEventsMixin:
 
     def on_console_click(self, widget, event):
         self.console_menu.popup( None, None, None, event.button, event.time )
@@ -77,7 +77,7 @@ class SpritzApplicationEventsMixin:
         status, err_msg = self.Equo.restore_database(dbpath, etpConst['etpdatabaseclientfilepath'])
         self.endWorking()
         self.Equo.reopen_client_repository()
-        self.resetSpritzCacheStatus()
+        self.reset_cache_status()
         self.addPackages()
         if not status:
             self.hide_wait_window()
@@ -308,7 +308,7 @@ class SpritzApplicationEventsMixin:
             self.Equo.remove_repository(repodata['repoid'], disable = disable)
             if not disable:
                 self.Equo.add_repository(repodata)
-            self.resetSpritzCacheStatus()
+            self.reset_cache_status()
 
             self.setupRepoView()
             self.addrepo_ui.addRepoWin.hide()
@@ -321,7 +321,7 @@ class SpritzApplicationEventsMixin:
         errors = self._validate_repo_submit(repodata)
         if not errors:
             self.Equo.add_repository(repodata)
-            self.resetSpritzCacheStatus()
+            self.reset_cache_status()
             self.setupRepoView()
             self.addrepo_ui.addRepoWin.hide()
             msg = "%s '%s' %s" % (_("You should press the button"),_("Update Repositories"),_("now"))
@@ -358,7 +358,7 @@ class SpritzApplicationEventsMixin:
                 okDialog( self.ui.main, _("You! Why do you want to remove the main repository ?"))
                 return True
             self.Equo.remove_repository(repoid)
-            self.resetSpritzCacheStatus()
+            self.reset_cache_status()
             self.setupRepoView()
             msg = "%s '%s' %s '%s' %s" % (_("You must now either press the"),_("Update Repositories"),_("or the"),_("Regenerate Cache"),_("now"))
             okDialog( self.ui.main, msg )
@@ -409,7 +409,7 @@ class SpritzApplicationEventsMixin:
                         )
         initconfig_entropy_constants(etpConst['systemroot'])
         # re-read configprotect
-        self.resetSpritzCacheStatus()
+        self.reset_cache_status()
         self.addPackages()
         self.Equo.reload_repositories_config()
         self.setupPreferences()
@@ -521,10 +521,10 @@ class SpritzApplicationEventsMixin:
 
         def clean_n_quit(newrepo):
             self.Equo.remove_repository(newrepo)
-            self.resetSpritzCacheStatus()
+            self.reset_cache_status()
             self.Equo.reopen_client_repository()
             # regenerate packages information
-            self.setupSpritz()
+            self.setup_application()
 
         if not atomsfound:
             clean_n_quit(newrepo)
@@ -550,7 +550,8 @@ class SpritzApplicationEventsMixin:
         self.setPage('output')
 
         try:
-            rc = self.processPackageQueue(self.queue.packages, remove_repos = [newrepo])
+            rc = self.process_queue(self.queue.packages,
+                remove_repos = [newrepo])
         except:
             if self.do_debug:
                 entropy.tools.print_traceback()
@@ -623,9 +624,9 @@ class SpritzApplicationEventsMixin:
             status = self.updateRepositories(repos)
             self.endWorking()
             self.progress.reset_progress()
-            self.resetSpritzCacheStatus()
+            self.reset_cache_status()
             self.setupRepoView()
-            self.setupSpritz()
+            self.setup_application()
             self.setupAdvisories()
             self.setPage('repos')
             if status:
@@ -653,7 +654,7 @@ class SpritzApplicationEventsMixin:
 
         rc = True
         try:
-            rc = self.processPackageQueue(self.queue.packages,
+            rc = self.process_queue(self.queue.packages,
                 fetch_only = fetch_only, download_sources = download_sources)
         except:
             if self.do_debug:
@@ -705,7 +706,7 @@ class SpritzApplicationEventsMixin:
             self.queueView.refresh()
 
     def on_queueClean_clicked(self, widget):
-        self.resetSpritzCacheStatus()
+        self.reset_cache_status()
         self.addPackages()
 
     def on_adv_doubleclick( self, widget, iterator, path ):
@@ -774,10 +775,10 @@ class SpritzApplicationEventsMixin:
         if rc: self.abortQueueNow = True
 
     def on_search_clicked(self,widget):
-        self.etpbase.setFilter(filters.spritzFilter.processFilters)
+        self.etpbase.setFilter(Filter.processFilters)
         ''' Search entry+button handler'''
         txt = self.ui.pkgFilter.get_text()
-        flt = filters.spritzFilter.get('KeywordFilter')
+        flt = Filter.get('KeywordFilter')
         if txt != '':
             flt.activate()
             lst = txt.split()
@@ -801,7 +802,7 @@ class SpritzApplicationEventsMixin:
         self.quit()
 
     def on_HelpAbout( self, widget = None ):
-        about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,SpritzConf.branding_title)
+        about = AboutDialog(const.PIXMAPS_PATH+'/spritz-about.png',const.CREDITS,SulfurConf.branding_title)
         about.show()
 
     def on_notebook1_switch_page(self, widget, page, page_num):
@@ -1066,19 +1067,19 @@ class SpritzApplicationEventsMixin:
         col_button = [x for x in parent.get_children() if isinstance(x,gtk.ColorButton)][0]
         setting = self.colorSettingsReverseMap.get(col_button)
         if setting == None: return
-        default_color = SpritzConf.default_colors_config.get(setting)
+        default_color = SulfurConf.default_colors_config.get(setting)
         col_button.set_color(gtk.gdk.color_parse(default_color))
         self.on_Preferences_toggled(None,True)
-        setattr(SpritzConf,setting,default_color)
+        setattr(SulfurConf,setting,default_color)
 
     def on_ui_color_set(self, widget):
         key = self.colorSettingsReverseMap.get(widget)
-        if not hasattr(SpritzConf,key):
-            print "WARNING: no %s in SpritzConf" % (key,)
+        if not hasattr(SulfurConf,key):
+            print "WARNING: no %s in SulfurConf" % (key,)
             return
         w_col = widget.get_color().to_string()
         self.on_Preferences_toggled(None,True)
-        setattr(SpritzConf,key,w_col)
+        setattr(SulfurConf,key,w_col)
 
     def on_pkgSorter_changed(self, widget):
         busyCursor(self.ui.main)
@@ -1093,7 +1094,7 @@ class SpritzApplicationEventsMixin:
         normalCursor(self.ui.main)
 
 
-class SpritzApplication(Controller, SpritzApplicationEventsMixin):
+class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def __init__(self):
 
@@ -1102,7 +1103,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.do_debug = False
         locked = self.Equo._resources_run_check_lock()
         if locked:
-            okDialog( None, _("Entropy resources are locked and not accessible. Another Entropy application is running. Sorry, can't load Spritz.") )
+            okDialog( None, _("Entropy resources are locked and not accessible. Another Entropy application is running. Sorry, can't load Sulfur.") )
             raise SystemExit(1)
         self.safe_mode_txt = ''
         # check if we'are running in safe mode
@@ -1173,14 +1174,14 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.do_debug = False
         if "--debug" in sys.argv:
             self.do_debug = True
-        elif os.getenv('SPRITZ_DEBUG') != None:
+        elif os.getenv('SULFUR_DEBUG') != None:
             self.do_debug = True
         if not self.do_debug:
             sys.stdout = self.output
             sys.stderr = self.output
             sys.stdin = self.input
 
-        self.queue = SpritzQueue(self)
+        self.queue = Queue(self)
         self.etpbase.connect_queue(self.queue)
         self.queueView = EntropyQueueView(self.ui.queueView, self.queue)
         self.pkgView = EntropyPackageView(self.ui.viewPkg, self.queueView,
@@ -1197,7 +1198,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.activePage = 'repos'
         self.pageBootstrap = True
         # Progress bars
-        self.progress = SpritzProgress(self.ui,self.setPage,self)
+        self.progress = BaseProgress(self.ui,self.setPage,self)
         # Package Radiobuttons
         self.packageRB = {}
         self.lastPkgPB = 'updates'
@@ -1252,7 +1253,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.console_menu = self.console_menu_xml.get_widget( "terminalMenu" )
         self.console_menu_xml.signal_autoconnect(self)
 
-        self.ui.main.set_title( "%s %s %s" % (SpritzConf.branding_title, const.__spritz_version__, self.safe_mode_txt) )
+        self.ui.main.set_title( "%s %s %s" % (SulfurConf.branding_title, const.__spritz_version__, self.safe_mode_txt) )
         self.ui.main.connect( "delete_event", self.quit )
         self.ui.notebook.set_show_tabs( False )
         self.ui.main.present()
@@ -1260,7 +1261,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.setPage(self.activePage)
 
         # put self.console in place
-        self.console = SpritzConsole()
+        self.console = SulfurConsole()
         self.console.set_scrollback_lines(1024)
         self.console.set_scroll_on_output(True)
         self.console.connect("button-press-event", self.on_console_click)
@@ -1301,7 +1302,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.setupRepoView()
         self.firstTime = True
         # calculate updates
-        self.setupSpritz()
+        self.setup_application()
 
         self.console.set_pty(self.pty[0])
         self.resetProgressText()
@@ -1407,7 +1408,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
 
     def packages_install(self):
 
-        packages_install = os.getenv("SPRITZ_PACKAGES")
+        packages_install = os.getenv("SULFUR_PACKAGES")
         atoms_install = []
         do_fetch = False
         if "--fetch" in sys.argv:
@@ -1439,7 +1440,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
             self.setPage('output')
 
             try:
-                rc = self.processPackageQueue(self.queue.packages,
+                rc = self.process_queue(self.queue.packages,
                     fetch_only = do_fetch)
             except:
                 if self.do_debug:
@@ -1899,7 +1900,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
                 else:
                     fillfunc(name, mytype, wgwrite, setting)
 
-        rc, e = SpritzConf.save()
+        rc, e = SulfurConf.save()
         if not rc: okDialog( self.ui.main, "%s: %s" % (_("Error saving preferences"),e) )
         self.on_Preferences_toggled(None,False)
 
@@ -1964,7 +1965,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.ui.progressVBox.grab_remove()
         normalCursor(self.ui.main)
 
-    def setupSpritz(self):
+    def setup_application(self):
         msg = _('Generating metadata. Please wait.')
         self.setStatus(msg)
         count = 30
@@ -1990,7 +1991,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         # clear views
         self.etpbase.clearPackages()
         self.etpbase.clearCache()
-        self.setupSpritz()
+        self.setup_application()
         if alone:
             self.progress.total.show()
 
@@ -2273,7 +2274,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
         self.resetQueueProgressBars()
         self.disable_ugc = False
 
-    def processPackageQueue(self, pkgs, remove_repos = [], fetch_only = False, download_sources = False):
+    def process_queue(self, pkgs, remove_repos = [], fetch_only = False, download_sources = False):
 
         # preventive check against other instances
         locked = self.Equo.application_lock_check()
@@ -2328,24 +2329,24 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
                 while t.isAlive():
                     time.sleep(0.2)
                     if self.do_debug:
-                        print "processPackageQueue: QueueExecutor thread still alive"
+                        print "process_queue: QueueExecutor thread still alive"
                     self.gtk_loop()
 
                 e,i = self.my_inst_errors
                 if self.do_debug:
-                    print "processPackageQueue: left all"
+                    print "process_queue: left all"
 
                 self.ui.skipMirror.hide()
                 self.ui.abortQueue.hide()
                 if self.do_debug:
-                    print "processPackageQueue: buttons now hidden"
+                    print "process_queue: buttons now hidden"
 
                 # deactivate UI lock
                 if self.do_debug:
-                    print "processPackageQueue: unlocking gui?"
+                    print "process_queue: unlocking gui?"
                 self.uiLock(False)
                 if self.do_debug:
-                    print "processPackageQueue: gui unlocked"
+                    print "process_queue: gui unlocked"
 
                 if self.my_inst_abort:
                     okDialog(self.ui.main, _("Attention. You chose to abort the processing."))
@@ -2356,38 +2357,38 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
                     )
 
             if self.do_debug:
-                print "processPackageQueue: endWorking?"
+                print "process_queue: endWorking?"
             self.endWorking()
             self.progress.reset_progress()
             if self.do_debug:
-                print "processPackageQueue: endWorking"
+                print "process_queue: endWorking"
 
             if (not fetch_only) and (not download_sources):
 
                 if self.do_debug:
-                    print "processPackageQueue: cleared caches"
+                    print "process_queue: cleared caches"
 
                 for myrepo in remove_repos:
                     self.Equo.remove_repository(myrepo)
 
-                self.resetSpritzCacheStatus()
+                self.reset_cache_status()
                 if self.do_debug:
-                    print "processPackageQueue: closed repo dbs"
+                    print "process_queue: closed repo dbs"
                 self.Equo.reopen_client_repository()
                 if self.do_debug:
-                    print "processPackageQueue: cleared caches (again)"
+                    print "process_queue: cleared caches (again)"
                 # regenerate packages information
                 if self.do_debug:
-                    print "processPackageQueue: setting up Spritz"
-                self.setupSpritz()
+                    print "process_queue: setting up Sulfur"
+                self.setup_application()
                 if self.do_debug:
-                    print "processPackageQueue: scanning for new files"
+                    print "process_queue: scanning for new files"
                 self.Equo.FileUpdates.scanfs(dcache = False, quiet = True)
                 if self.Equo.FileUpdates.scandata:
                     if len(self.Equo.FileUpdates.scandata) > 0:
                         self.setPage('filesconf')
                 if self.do_debug:
-                    print "processPackageQueue: all done"
+                    print "process_queue: all done"
 
         else:
             self.setStatus( _( "No packages selected" ) )
@@ -2516,7 +2517,7 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
             idx += 1
         self.addrepo_ui.repodbEntry.set_text(repodata['plain_database'])
 
-    def resetSpritzCacheStatus(self):
+    def reset_cache_status(self):
         self.pkgView.clear()
         self.etpbase.clearPackages()
         self.etpbase.clearCache()
@@ -2616,20 +2617,20 @@ class SpritzApplication(Controller, SpritzApplicationEventsMixin):
 
     def load_color_settings(self):
         for key,s_widget in self.colorSettingsMap.items():
-            if not hasattr(SpritzConf,key):
-                if self.do_debug: print "WARNING: no %s in SpritzConf" % (key,)
+            if not hasattr(SulfurConf,key):
+                if self.do_debug: print "WARNING: no %s in SulfurConf" % (key,)
                 continue
-            color = getattr(SpritzConf,key)
+            color = getattr(SulfurConf,key)
             s_widget.set_color(gtk.gdk.color_parse(color))
 
 if __name__ == "__main__":
 
     try:
         try:
-            gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/spritz-icon.png")
+            gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/sulfur-icon.png")
         except gobject.GError:
             pass
-        mainApp = SpritzApplication()
+        mainApp = SulfurApplication()
         mainApp.init()
         gobject.threads_init()
         gtk.gdk.threads_enter()
