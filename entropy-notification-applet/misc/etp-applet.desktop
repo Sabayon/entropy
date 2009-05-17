@@ -1,6 +1,6 @@
 [Desktop Entry]
-_Name=Entropy Alert Icon
-_Comment=Panel icon for indication that newer Entropy packages are available
+Name=Entropy Alert Icon
+Comment=Panel icon for indication that newer Entropy packages are available
 Icon=entropy-applet.png
 Exec=etp-applet-gui
 Type=Application
