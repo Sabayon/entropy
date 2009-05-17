@@ -39,6 +39,8 @@ entropy-install:
 	cp conf/packages $(DESTDIR)/etc/entropy/ -Ra
 	install -m 644 misc/05entropy.envd $(DESTDIR)/etc/env.d/05entropy
 
+	install -m 644 docs/COPYING $(DESTDIR)/$(LIBDIR)/entropy/
+
 	make DESTDIR="$(DESTDIR)" -C misc/po install
 
 entropy-server-install:

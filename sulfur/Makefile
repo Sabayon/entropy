@@ -29,7 +29,6 @@ install:
 	mkdir -p $(DESTDIR)/etc
 	mkdir -p $(DESTDIR)/etc/pam.d
 
-	install -m644 COPYING $(DESTDIR)/$(LIBDIR)/entropy/sulfur/.
 	install -m755 $(MISCDIR)/entropy-repo-manager $(DESTDIR)/usr/bin/.
 	install -m755 $(MISCDIR)/sulfur $(DESTDIR)/usr/bin/.
 	install -m755 $(MISCDIR)/sulfur-uri-handler $(DESTDIR)/usr/bin/.
