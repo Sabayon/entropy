@@ -2428,7 +2428,10 @@ class Server(Singleton,TextInterface):
                     continue
                 dorm = True
 
-            if dorm:
+            # checking if we are allowed to remove stuff on this repo
+            # it xrepo is not the default one, we MUST skip this to
+            # avoid touching what developer doesn't expect
+            if dorm and (xrepo == self.default_repository):
                 trashed = self.is_counter_trashed(counter)
                 if trashed:
                     # search into portage then
