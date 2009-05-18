@@ -65,9 +65,6 @@ class const:
     ugc_image_pix = PIXMAPS_PATH+'/ugc/image.png'
     ugc_view_pix = PIXMAPS_PATH+'/ugc/view.png'
 
-    # ads
-    plain_ad_pix = PIXMAPS_PATH+'/ad.png'
-
     DAY_IN_SECONDS = 86400
     # Page -> Notebook page numbers
     PAGE_REPOS = 0

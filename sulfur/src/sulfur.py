@@ -852,16 +852,6 @@ class SulfurApplicationEventsMixin:
         self.load_ugc_repositories()
         self.setStatus("%s" % (_("UGC credentials cleared"),))
 
-    def on_bannerEventBox_button_release_event(self, widget, event):
-        if self.ad_url != None:
-            self.load_url(self.ad_url)
-
-    def on_bannerEventBox_enter_notify_event(self, widget, event):
-        busyCursor(self.ui.main, cur = gtk.gdk.Cursor(gtk.gdk.HAND2))
-
-    def on_bannerEventBox_leave_notify_event(self, widget, event):
-        busyCursor(self.ui.main, cur = CURRENT_CURSOR)
-
     def on_repoManagerMenuItem_activate(self, widget):
         mymenu = RepositoryManagerMenu(self.Equo, self.ui.main)
         rc = mymenu.load()
@@ -1161,10 +1151,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         while gtk.events_pending():
            gtk.main_iteration()
 
-    def load_url(self, url):
-        import subprocess
-        subprocess.call(['xdg-open',url])
-
     def setup_gui(self):
 
         self.clipboard = gtk.Clipboard()
@@ -1277,13 +1263,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # init flags
         self.disable_ugc = False
-        self.ad_list_url = 'http://www.sabayonlinux.org/entropy_ads/LIST'
-        self.ad_uri_dir = os.path.dirname(self.ad_list_url)
-        self.previous_ad_index = -1
-        self.previous_ad_image_path = None
-        self.ad_url = None
-        self.ad_pix = gtk.image_new_from_file(const.plain_ad_pix)
-        self.adTask = None
+
         self.ugcTask = None
         self.spawning_ugc = False
         self.Preferences = None
