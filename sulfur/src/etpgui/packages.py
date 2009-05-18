@@ -32,7 +32,7 @@ class DummyEntropyPackage:
         self.repoid = ''
         self.name = ''
         self.vote = -1
-        self.voted = 0
+        self.voted = 0.0
         self.color = None
         self.action = None
         self.dbconn = None
@@ -61,7 +61,7 @@ class EntropyPackage:
         self.dummy_type = None
         self.do_purge = False
         self.masked = None
-        self.voted = 0
+        self.voted = 0.0
         self.color = SulfurConf.color_normal
         self.remote = remote
         self.selected_by_user = False
@@ -427,6 +427,16 @@ class EntropyPackage:
             return 0
         return int(vote)
 
+    def getUGCPackageVoteFloat(self):
+        if self.pkgset:
+            return 0.0
+        atom = self.getName()
+        if not atom:
+            return 0.0
+        vote = EquoIntf.UGC.UGCCache.get_package_vote(self.getRepoId(),self.entropyTools.dep_getkey(atom))
+        if not isinstance(vote, float):
+            return 0.0
+        return vote
 
     def getUGCPackageVoted(self):
         return self.voted
@@ -536,6 +546,7 @@ class EntropyPackage:
     install_status = property(fget=getInstallStatus)
     vote = property(fget=getUGCPackageVote)
     voteint = property(fget=getUGCPackageVoteInt)
+    votefloat = property(fget=getUGCPackageVoteFloat)
     voted = property(fget=getUGCPackageVoted)
     downloads = property(fget=getUGCPackageDownloads)
     user_unmasked = property(fget=isUserUnmasked)

@@ -159,7 +159,7 @@ class CellRendererStars(gtk.GenericCellRenderer):
     def __init__(self):
         self.__gobject_init__()
         self.value = -1
-        self.value_voted = 0
+        self.value_voted = 0.0
 
     def do_set_property(self, pspec, value):
         setattr(self, pspec.name, value)
@@ -195,8 +195,12 @@ class CellRendererStars(gtk.GenericCellRenderer):
             star_empty = gtk.Image()
             star_empty.set_from_file(const.star_empty_pixmap)
 
+            star_half = gtk.Image()
+            star_half.set_from_file(const.star_half_pixmap)
+
             star_buf = star.get_pixbuf()
             star_empty_buf = star_empty.get_pixbuf()
+            star_half_buf = star_half.get_pixbuf()
 
             w, h = star_buf.get_width(),star_buf.get_height()
             myval = self.value
@@ -205,12 +209,15 @@ class CellRendererStars(gtk.GenericCellRenderer):
             empty_buf = empty_buf.scale_simple(w*5,h+12,gtk.gdk.INTERP_BILINEAR)
             myvals = [0,w,w*2,w*3,w*4]
             cnt = 0
-            while myval:
-                star_buf.copy_area(0, 0, w, h, empty_buf, myvals[cnt], 6)
+            while myval > 0:
+                if (myval < 0.6):
+                    star_half_buf.copy_area(0, 0, w, h, empty_buf, myvals[cnt], 6)
+                else:
+                    star_buf.copy_area(0, 0, w, h, empty_buf, myvals[cnt], 6)
                 myval -= 1
                 cnt += 1
             myval = 5 - cnt
-            while myval:
+            while myval > 0:
                 star_empty_buf.copy_area(0, 0, w, h, empty_buf, myvals[cnt], 6)
                 myval -= 1
                 cnt += 1

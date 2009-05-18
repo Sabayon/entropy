@@ -207,14 +207,19 @@ class VoteSortPackageViewModelInjector(EntropyPackageViewModelInjector):
 
     def packages_inject(self, packages):
 
-        data = {}
-        for po in packages:
-            vote = po.voteint
-            d_obj = data.setdefault(vote, [])
-            d_obj.append(po)
 
-        for vote in sorted(data, reverse = not self.reverse):
-            for po in data[vote]:
+        def mycmp(obj_a, obj_b):
+            eq = 0
+            d1 = obj_a.votefloat
+            d2 = obj_b.votefloat
+            if d1 == d2:
+                return 0
+            if d1 < d2:
+                return 1
+            return -1
+
+        packages.sort(mycmp, reverse = self.reverse)
+        for po in packages:
                 self.model.append( None, (po,) )
 
 class VoteRevSortPackageViewModelInjector(VoteSortPackageViewModelInjector):
@@ -586,7 +591,7 @@ class EntropyPackageView:
                 distance += col.get_width()
             if (event_x > distance) and (event_x < (distance+self.stars_col_size)):
                 vote = int((event_x - distance)/self.stars_col_size*5)+1
-                obj.voted = vote
+                obj.voted = float(vote)
                 # submit vote
                 self.spawn_vote_submit(obj)
 
@@ -1262,27 +1267,24 @@ class EntropyPackageView:
             self.set_line_status(obj, cell)
 
         try:
-            voted = int(obj.voted)
+            voted = obj.voted
         except:
             return
-        #if voted:
-        #    cell.value_voted = int(voted)
-        #    return
         try:
-            mydata = int(obj.vote)
+            mydata = obj.vote
         except:
             return
-        cell.value = int(mydata)
-        cell.value_voted = int(voted)
+        cell.value = float(mydata)
+        cell.value_voted = float(voted)
 
     def spawn_vote_submit(self, obj):
 
         if self.Equo.UGC == None:
-            obj.voted = 0
+            obj.voted = 0.0
             return
         repository = obj.repoid
         if not self.Equo.UGC.is_repository_eapi3_aware(repository):
-            obj.voted = 0
+            obj.voted = 0.0
             return
         atom = obj.name
         key = self.Equo.entropyTools.dep_getkey(atom)
@@ -1295,28 +1297,34 @@ class EntropyPackageView:
 
 
     def vote_submit_thread(self, repository, key, obj):
-        status, err_msg = self.Equo.UGC.add_vote(repository, key, obj.voted)
+        status, err_msg = self.Equo.UGC.add_vote(repository, key, int(obj.voted))
         if status:
-            msg = "<small><span foreground='%s'><b>%s</b></span>: %s</small>" % (SulfurConf.color_good,_("Vote registered successfully"),obj.voted,)
+            msg = "<small><span foreground='%s'><b>%s</b></span>: %s</small>" % (
+                SulfurConf.color_good, _("Vote registered successfully"),
+                int(obj.voted),)
         else:
-            msg = "<small><span foreground='%s'><b>%s</b></span>: %s</small>" % (SulfurConf.color_error,_("Error registering vote"),err_msg,)
+            msg = "<small><span foreground='%s'><b>%s</b></span>: %s</small>" % (
+                SulfurConf.color_error, _("Error registering vote"), err_msg,)
         gtk.gdk.threads_enter()
-        self.ui.UGCMessageLabel.set_markup(msg)
-        gtk.gdk.threads_leave()
+        def do_refresh(msg):
+            self.ui.UGCMessageLabel.set_markup(msg)
+            return False
+        gobject.timeout_add(0, do_refresh, msg)
         t = ParallelTask(self.refresh_vote_info, obj)
         t.start()
 
 
     def refresh_vote_info(self, obj):
         time.sleep(5)
-        obj.voted = 0
-        gtk.gdk.threads_enter()
-        try:
-            self.queueView.refresh()
-        except self.Equo.dbapi2.ProgrammingError:
-            pass
-        self.view.queue_draw()
-        gtk.gdk.threads_leave()
+        obj.voted = 0.0
+        def do_refresh():
+            try:
+                self.queueView.refresh()
+            except self.Equo.dbapi2.ProgrammingError:
+                pass
+            self.view.queue_draw()
+            return False
+        gobject.timeout_add(0, do_refresh)
 
     def clear(self):
         self.store.clear()
