@@ -2333,14 +2333,15 @@ class Package:
             # create sources destination directory
             unpack_dir = etpConst['entropyunpackdir']+"/sources/"+self.infoDict['atom']
             self.infoDict['unpackdir'] = unpack_dir
-            if os.path.lexists(unpack_dir):
-                if os.path.isfile(unpack_dir):
-                    os.remove(unpack_dir)
-                elif os.path.isdir(unpack_dir):
-                    shutil.rmtree(unpack_dir,True)
-            if not os.path.lexists(unpack_dir):
-                os.makedirs(unpack_dir,0775)
-            const_setup_perms(unpack_dir,etpConst['entropygid'])
+            if not self.infoDict.get('fetch_path'):
+                if os.path.lexists(unpack_dir):
+                    if os.path.isfile(unpack_dir):
+                        os.remove(unpack_dir)
+                    elif os.path.isdir(unpack_dir):
+                        shutil.rmtree(unpack_dir,True)
+                if not os.path.lexists(unpack_dir):
+                    os.makedirs(unpack_dir,0775)
+                const_setup_perms(unpack_dir,etpConst['entropygid'])
 
         else:
             # if file exists, first checksum then fetch
