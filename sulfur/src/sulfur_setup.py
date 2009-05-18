@@ -52,6 +52,7 @@ class const:
     refresh_pixmap = PIXMAPS_PATH+'/ugc/refresh.png'
     star_normal_pixmap = PIXMAPS_PATH+'/star.png'
     star_selected_pixmap = PIXMAPS_PATH+'/star_selected.png'
+    star_half_pixmap = PIXMAPS_PATH+'/star_half.png'
     star_empty_pixmap = PIXMAPS_PATH+'/star_empty.png'
     empty_background = PIXMAPS_PATH+'/empty.png'
     loading_pix = PIXMAPS_PATH+'/loading.gif'

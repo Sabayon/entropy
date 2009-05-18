@@ -266,10 +266,6 @@ class EntropyPackageView:
         self.do_refresh_view = False
         self.main_window = main_window
         self.event_click_pos = 0,0
-        # UGC pixmaps
-        self.star_normal_pixmap = const.star_normal_pixmap
-        self.star_selected_pixmap = const.star_selected_pixmap
-        self.star_empty_pixmap = const.star_empty_pixmap
         # default for installed packages
         self.pkg_install_ok = "package-installed-updated.png"
         self.pkg_install_updatable = "package-installed-outdated.png"
