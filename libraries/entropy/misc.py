@@ -344,7 +344,11 @@ class rssFeed:
         self.__feed_language = "en-EN"
         self.__srv_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
-        self.__feed_editor = self.__system_settings[self.__srv_settings_plugin_id]['server']['rss']['editor']
+        srv_settings = self.__system_settings.get(self.__srv_settings_plugin_id)
+        if srv_settings is None:
+            self.__feed_editor = "N/A"
+        else:
+            self.__feed_editor = srv_settings['server']['rss']['editor']
         self.__feed_copyright = "%s - (C) %s" % (
             self.__system_settings['system']['name'],
             self.entropyTools.get_year(),
