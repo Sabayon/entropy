@@ -4,7 +4,7 @@ if "--debug" in sys.argv:
     os.environ['SULFUR_DEBUG'] = "1"
     sys.argv.remove("--debug")
 
-sulfur_path = " /usr/lib/entropy/sulfur/sulfur.py " + ' '.join(sys.argv[1:])
+sulfur_path = " /usr/lib/entropy/sulfur/sulfur-client.py " + ' '.join(sys.argv[1:])
 su_cmd = "xterm -e \"su -c '"+sulfur_path+"'\""
 
 def setup_env():

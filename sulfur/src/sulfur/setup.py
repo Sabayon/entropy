@@ -25,25 +25,30 @@ from entropy.i18n import _
 class const:
 
     ''' This Class contains all the Constants in Yumex'''
-    __spritz_version__   = etpConst['entropyversion']
+    __sulfur_version__   = etpConst['entropyversion']
     # Paths
     MAIN_PATH = os.path.abspath( os.path.dirname( sys.argv[0] ) )
     GLADE_FILE = MAIN_PATH+'/sulfur.glade'
+
     if not os.path.isfile(GLADE_FILE):
-        MAIN_PATH = '/usr/lib/entropy/spritz'
+        GLADE_FILE = MAIN_PATH+'/sulfur/sulfur.glade'
+
+    if not os.path.isfile(GLADE_FILE):
+        MAIN_PATH = '/usr/lib/entropy/sulfur'
         GLADE_FILE = MAIN_PATH+'/sulfur.glade'
-    if MAIN_PATH == '/usr/lib/entropy/spritz':
-        PIXMAPS_PATH = '/usr/share/pixmaps/spritz'
+
+    if MAIN_PATH == '/usr/lib/entropy/sulfur':
+        PIXMAPS_PATH = '/usr/share/pixmaps/sulfur'
     else:
         PIXMAPS_PATH = MAIN_PATH+'/../gfx'
-    if MAIN_PATH == '/usr/lib/entropy/spritz':
-        ICONS_PATH = '/usr/share/pixmaps/spritz'
+    if MAIN_PATH == '/usr/lib/entropy/sulfur':
+        ICONS_PATH = '/usr/share/pixmaps/sulfur'
     else:
         ICONS_PATH = MAIN_PATH+'/pixmaps'
 
     home = os.getenv("HOME")
     if not home: home = "/tmp"
-    SETTINGS_FILE = os.path.join(home, ".config/entropy/spritz.conf")
+    SETTINGS_FILE = os.path.join(home, ".config/entropy/sulfur.conf")
 
     pkg_pixmap = PIXMAPS_PATH+'/package-x-generic.png'
     ugc_small_pixmap = PIXMAPS_PATH+'/ugc.png'
@@ -109,7 +114,7 @@ class const:
                              0.3) # get package Lists
 
     CREDITS = (
-           (('Sulfur Package Manager - %s' % __spritz_version__),
+           (('Sulfur Package Manager - %s' % __sulfur_version__),
            ('Copyright 2007-2009','Fabio Erculiani')),
 
            (_("Programming:"),

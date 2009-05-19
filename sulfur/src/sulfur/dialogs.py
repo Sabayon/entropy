@@ -19,14 +19,16 @@
 
 from __future__ import with_statement
 import time, gtk, gobject, pango, thread, pty, sys
-from etpgui.widgets import UI
-from etpgui import CURRENT_CURSOR, busyCursor, normalCursor
-from sulfur_setup import const, cleanMarkupString, SulfurConf, unicode2htmlentities, fakeoutfile, fakeinfile
 from entropy.i18n import _,_LOCALE
-import packages
 from entropy.exceptions import *
 from entropy.const import *
 from entropy.misc import TimeScheduled, ParallelTask
+import entropy.tools as entropyTools
+
+from sulfur.core import UI
+from sulfur.misc import busyCursor, normalCursor
+from sulfur.setup import const, cleanMarkupString, SulfurConf, \
+    unicode2htmlentities, fakeoutfile, fakeinfile
 
 class MenuSkel:
 
@@ -148,6 +150,7 @@ class NoticeBoardWindow(MenuSkel):
             try:
                 myrss = self.rssFeed(self.repoids[repoid],'','')
             except:
+                entropyTools.print_traceback()
                 continue
             items, entries_len = myrss.getEntries()
             items = items.copy()
@@ -372,8 +375,6 @@ class RepositoryManagerMenu(MenuSkel):
         self.do_debug = False
         if etpUi['debug']: self.do_debug = True
         self.BufferLock = self.threading.Lock()
-        import entropy.tools as entropyTools
-        self.entropyTools = entropyTools
         self.Entropy = Entropy
         self.window = window
         self.sm_ui = UI( const.GLADE_FILE, 'repositoryManager', 'entropy' )
@@ -454,7 +455,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.console_menu = self.console_menu_xml.get_widget( "terminalMenu" )
         self.console_menu_xml.signal_autoconnect(self)
 
-        from etpgui.widgets import SulfurConsole
+        from sulfur.widgets import SulfurConsole
         self.console = SulfurConsole()
         self.console.set_scrollback_lines(1024)
         self.console.set_scroll_on_output(True)
@@ -859,7 +860,7 @@ class RepositoryManagerMenu(MenuSkel):
             obj['atom'],
             cleanMarkupString(obj['description']),
             _("Size"),
-            self.entropyTools.bytes_into_human(obj['size']),
+            entropyTools.bytes_into_human(obj['size']),
             _("Branch"),
             obj['branch'],
             _("Slot"),
@@ -934,7 +935,7 @@ class RepositoryManagerMenu(MenuSkel):
                 if not logged:
                     return False, _("Login failed. Please retry.")
             except Exception, e:
-                self.entropyTools.print_traceback()
+                entropyTools.print_traceback()
                 return False, "%s: %s" % (_("Connection Error"),e,)
             srv.close_session(session)
             srv.disconnect()
@@ -975,7 +976,7 @@ class RepositoryManagerMenu(MenuSkel):
         return None, None
 
     def service_status_message(self, e):
-        self.entropyTools.print_traceback()
+        entropyTools.print_traceback()
         def do_ok():
             okDialog(self.sm_ui.repositoryManager, unicode(e),
                 title = _("Communication error"))
@@ -1357,7 +1358,8 @@ class RepositoryManagerMenu(MenuSkel):
                 return
 
         if not package_data: return
-        pkg = packages.EntropyPackage((idpackage,repoid,), remote = package_data)
+        from sulfur.packages import EntropyPackage
+        pkg = EntropyPackage((idpackage,repoid,), remote = package_data)
         mymenu = PkgInfoMenu(self.Entropy, pkg, self.window)
         mymenu.load(remote = True)
 
@@ -2333,7 +2335,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         add_cats_data = {}
         for spm_atom, spm_counter in data['add_data']:
-            cat = self.entropyTools.dep_getkey(spm_atom).split("/")[0]
+            cat = entropyTools.dep_getkey(spm_atom).split("/")[0]
             if not add_cats_data.has_key(cat):
                 add_cats_data[cat] = []
             item = data['add_data'][(spm_atom, spm_counter,)]
@@ -2504,7 +2506,7 @@ class RepositoryManagerMenu(MenuSkel):
                             pkg_item = {
                                 'from': "pkg",
                                 'filename': os.path.basename(mypath),
-                                'size': self.entropyTools.bytes_into_human(mysize),
+                                'size': entropyTools.bytes_into_human(mysize),
                                 'color': color,
                                 'repoid': repoid,
                                 'run': (repoid,False,True,)
@@ -3059,7 +3061,7 @@ class RepositoryManagerMenu(MenuSkel):
         if data['atoms']:
             categories = []
             for atom in data['atoms']:
-                categories.append(self.entropyTools.dep_getkey(atom).split("/")[0])
+                categories.append(entropyTools.dep_getkey(atom).split("/")[0])
             if clear: self.clear_data_store_and_view()
             self.run_get_spm_atoms_info(categories, data['atoms'], clear)
 
@@ -3651,7 +3653,6 @@ class SmQueueMenu(MenuSkel):
 
 class PkgInfoMenu(MenuSkel):
 
-    import entropy.tools as entropyTools
     def __init__(self, Entropy, pkg, window):
 
         self.pkg_pixmap = const.pkg_pixmap
@@ -3723,7 +3724,7 @@ class PkgInfoMenu(MenuSkel):
                     _("Identifier"),
                     obj['iddoc'],
                     _("Size"),
-                    self.entropyTools.bytes_into_human(obj['size']),
+                    entropyTools.bytes_into_human(obj['size']),
                     _("Author"),
                     obj['username'],
                     obj['ts'],
@@ -4242,7 +4243,7 @@ class PkgInfoMenu(MenuSkel):
         pkgatom = pkg.name
         self.vote = int(pkg.vote)
         self.repository = pkg.repoid
-        self.pkgkey = self.entropyTools.dep_getkey(pkgatom)
+        self.pkgkey = entropyTools.dep_getkey(pkgatom)
         self.set_stars_from_repository()
         self.pkginfo_ui.pkgImage.set_from_file(self.pkg_pixmap)
         self.pkginfo_ui.ugcSmallIcon.set_from_file(self.ugc_small_pixmap)
@@ -4608,7 +4609,6 @@ class SecurityAdvisoryMenu(MenuSkel):
 
 class UGCInfoMenu(MenuSkel):
 
-    import entropy.tools as entropyTools
     def __init__(self, Entropy, obj, repository, window):
 
         import subprocess
@@ -4650,7 +4650,7 @@ class UGCInfoMenu(MenuSkel):
         self.ugcinfo_ui.authorContent.set_markup("<i>%s</i>" % (unicode(self.ugc_data['username'],'raw_unicode_escape'),))
         self.ugcinfo_ui.dateContent.set_markup("<u>%s</u>" % (self.ugc_data['ts'],))
         self.ugcinfo_ui.keywordsContent.set_markup("%s" % (unicode(', '.join(self.ugc_data['keywords']),'raw_unicode_escape'),))
-        self.ugcinfo_ui.sizeContent.set_markup("%s" % (self.entropyTools.bytes_into_human(self.ugc_data['size']),))
+        self.ugcinfo_ui.sizeContent.set_markup("%s" % (entropyTools.bytes_into_human(self.ugc_data['size']),))
 
         bold_items = [
             self.ugcinfo_ui.titleLabel,
@@ -4692,7 +4692,6 @@ class UGCInfoMenu(MenuSkel):
 
 class UGCAddMenu(MenuSkel):
 
-    import entropy.tools as entropyTools
     def __init__(self, Entropy, pkgkey, repository, window, refresh_cb):
 
         self.loading_pix = gtk.image_new_from_file(const.loading_pix)
@@ -5096,6 +5095,8 @@ class MaskedPackagesDialog(MenuSkel):
                 categories[mycat] = []
             categories[mycat].append(po)
 
+        from sulfur.package import DummyEntropyPackage
+
         cats = categories.keys()
         cats.sort()
         for category in cats:
@@ -5106,7 +5107,7 @@ class MaskedPackagesDialog(MenuSkel):
             elif cat_desc_data.has_key('en'):
                 cat_desc = cat_desc_data['en']
             cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(cat_desc),)
-            mydummy = packages.DummyEntropyPackage(
+            mydummy = DummyEntropyPackage(
                     namedesc = cat_text,
                     dummy_type = SulfurConf.dummy_category,
                     onlyname = category
@@ -5779,8 +5780,8 @@ class InputDialog:
                 self.entry_text_table[input_id] = text
                 self.identifiers_table[input_id] = input_widget
                 if input_type in ["list"]:
-                    def input_cb(s): return s
-                self.cb_table[input_widget] = input_cb
+                    def my_input_cb(s): return s
+                self.cb_table[input_widget] = my_input_cb
                 if input_type not in ["text","list"]:
                     mytable.attach(input_widget, 1, 2, row_count, row_count+1)
 

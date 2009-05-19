@@ -14,13 +14,10 @@
 # along with this program; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA.
 
-#    
-# Authors:
-#    Tim Lauridsen <tla@rasmil.dk>
-
 from entropy.const import *
-from entropyapi import Equo
-from sulfur_setup import cleanMarkupString, SulfurConf
+from entropy.i18n import _
+from sulfur.entropyapi import Equo
+from sulfur.setup import cleanMarkupString, SulfurConf
 EquoIntf = Equo()
 
 class DummyEntropyPackage:

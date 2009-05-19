@@ -20,16 +20,21 @@
 import time
 import gtk
 import gobject
-from sulfur_setup import const, cleanMarkupString, SulfurConf
-from etpgui.widgets import UI, CellRendererStars
-from packages import DummyEntropyPackage
-from entropyapi import Equo
-from etpgui import *
-from entropy.i18n import _, _LOCALE
-from dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog
-from entropy.exceptions import *
-from entropy.const import *
+import os
+
+from entropy.exceptions import RepositoryError
+from entropy.const import etpConst, etpSys, initconfig_entropy_constants
 from entropy.misc import ParallelTask
+from entropy.i18n import _, _LOCALE
+
+from sulfur.setup import const, cleanMarkupString, SulfurConf
+from sulfur.core import UI
+from sulfur.widgets import CellRendererStars
+from sulfur.package import DummyEntropyPackage
+from sulfur.entropyapi import Equo
+from sulfur.misc import busyCursor, normalCursor
+from sulfur.dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog
+
 
 class EntropyPackageViewModelInjector:
 

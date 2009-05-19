@@ -1,12 +1,14 @@
-PKGDIR = /$(LIBDIR)/entropy/spritz
+PKGDIR = /$(LIBDIR)/entropy/sulfur/sulfur
 
 all:
 
 clean:
-	rm -fv *.pyc *.pyo *~ *.bak *.gladep
-	rm -fv etpgui/*.pyc etpgui/*.pyo etpgui/*~ 
+	rm -fv sulfur/*.pyc sulfur/*.pyo sulfur/*~ sulfur/*.bak sulfur/*.gladep
+	rm -fv sulfur/etpgui/*.pyc sulfur/etpgui/*.pyo sulfur/etpgui/*~ 
 
 install:
-	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/spritz
-	install -m755 *.py $(DESTDIR)/$(PKGDIR)/.
-	install -m644 sulfur.glade $(DESTDIR)/$(PKGDIR)/.
+	mkdir -p $(DESTDIR)/$(PKGDIR)/etpgui
+	install -m755 *.py $(DESTDIR)/$(PKGDIR)/..
+	install -m644 sulfur/*.py $(DESTDIR)/$(PKGDIR)/.
+	install -m644 sulfur/*.glade $(DESTDIR)/$(PKGDIR)/.
+	install -m644 sulfur/etpgui/*.py $(DESTDIR)/$(PKGDIR)/etpgui/.

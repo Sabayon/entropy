@@ -17,9 +17,9 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-# Filtering action class
 
 class Filtering:
+
     def __init__(self):
         self.filters = []
 
@@ -46,9 +46,8 @@ class Filtering:
         return None
 
 
-# Abstact BaseFilter Classes
-
 class BaseFilter:
+
     def __init__(self):
         self.name = self.getName()
         self._state = False
@@ -62,10 +61,8 @@ class BaseFilter:
     def activate(self,state=True):
         self._state = state
 
-
-# Filters
-
 class KeywordFilter(BaseFilter):
+
     def __init__(self):
         BaseFilter.__init__(self)
         self.keywordList = []

@@ -20,8 +20,9 @@
 import gtk
 import sys
 import time
-from sulfur_setup import const
-from dialogs import questionDialog, LicenseDialog, okDialog, choiceDialog, inputDialog
+from sulfur.setup import const
+from sulfur.dialogs import LicenseDialog, okDialog, \
+    choiceDialog, inputDialog
 import gobject
 
 # Entropy Imports
@@ -41,7 +42,8 @@ class QueueExecutor:
 
     def handle_licenses(self, queue):
 
-        ### Before even starting the fetch, make sure that the user accepts their licenses
+        ### Before even starting the fetch, make sure
+        ### that the user accepts their licenses
         licenses = self.Entropy.get_licenses_to_accept(queue)
         if licenses:
 
@@ -83,7 +85,6 @@ class QueueExecutor:
         if removal_queue:
             removalQueue += [(x,False) for x in removal_queue if x not in conflicts_queue]
 
-        # XXX handle for eva too, move db configuration to LicenseDialog and forget
         rc, licenses = self.handle_licenses(runQueue)
         if rc != 0:
             return 0,0

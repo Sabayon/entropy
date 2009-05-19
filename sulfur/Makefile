@@ -1,11 +1,10 @@
-SUBDIRS = src src/etpgui 
+SUBDIRS = src 
 PYFILES = $(wildcard *.py)
 PKGNAME = sulfur
 PYTHON = python2
 SRCDIR = src
 MISCDIR = misc
 PIXDIR = gfx
-ALLDIRS = src src/etpgui gfx misc
 
 all: subdirs
 	
@@ -17,7 +16,7 @@ clean:
 	for d in $(SUBDIRS); do make -C $$d clean ; done
 
 install:
-	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/sulfur/misc
+	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/sulfur/sulfur/misc
 	mkdir -p $(DESTDIR)/usr/share/pixmaps/sulfur/packages
 	mkdir -p $(DESTDIR)/usr/share/applications
 	mkdir -p $(DESTDIR)/usr/share/mimelnk/application

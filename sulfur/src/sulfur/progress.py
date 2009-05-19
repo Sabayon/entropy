@@ -19,7 +19,7 @@
 
 import gobject
 import gtk
-from sulfur_setup import cleanMarkupString
+from sulfur.setup import cleanMarkupString
 
 class _Total:
 
