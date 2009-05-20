@@ -247,7 +247,7 @@ class Equo(EquoInterface):
 
     def init_singleton(self, *args, **kwargs):
         EquoInterface.init_singleton(self, *args, **kwargs)
-        self.progressLog = None
+        self.progress_log = None
         self.output = None
         self.progress = None
         self.urlFetcher = None
@@ -259,7 +259,7 @@ class Equo(EquoInterface):
         self.progress = application.progress
         self.urlFetcher = GuiUrlFetcher
         self.nocolor()
-        self.progressLog = application.progressLogWrite
+        self.progress_log = application.progress_log_write
         self.output = application.output
         self.ui = application.ui
 
@@ -286,11 +286,11 @@ class Equo(EquoInterface):
             if importance > 0:
                 myfunc(count_str+text)
 
-        if not back and hasattr(self, 'progressLog'):
+        if not back and hasattr(self, 'progress_log'):
 
             def update_gui():
-                if callable(self.progressLog):
-                    self.progressLog(count_str+text)
+                if callable(self.progress_log):
+                    self.progress_log(count_str+text)
                 return False
             gobject.timeout_add(0, update_gui)
 

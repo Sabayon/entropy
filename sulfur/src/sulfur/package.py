@@ -130,19 +130,19 @@ class EntropyPackage:
             return 0
         return 1
 
-    def getPkg(self):
+    def get_pkg(self):
         return self.matched_atom
 
-    def getTag(self):
+    def get_tag(self):
         if self.pkgset: return ''
 
         return self.dbconn.retrieveVersionTag(self.matched_id)
 
-    def getName(self):
+    def get_name(self):
         if self.pkgset: return self.matched_atom
         return self.dbconn.retrieveAtom(self.matched_id)
 
-    def isMasked(self):
+    def is_masked(self):
 
         if self.pkgset:
             return False
@@ -152,7 +152,7 @@ class EntropyPackage:
             return False
         return True
 
-    def isUserMasked(self):
+    def is_user_masked(self):
         if self.from_installed:
             key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
             m_id, m_r = EquoIntf.atom_match(key, matchSlot = slot)
@@ -160,7 +160,7 @@ class EntropyPackage:
             return EquoIntf.is_match_masked_by_user((m_id, m_r,))
         return EquoIntf.is_match_masked_by_user(self.matched_atom)
 
-    def isUserUnmasked(self):
+    def is_user_unmasked(self):
         if self.from_installed:
             key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
             m_id, m_r = EquoIntf.atom_match(key, matchSlot = slot)
@@ -168,7 +168,7 @@ class EntropyPackage:
             return EquoIntf.is_match_unmasked_by_user((m_id, m_r,))
         return EquoIntf.is_match_unmasked_by_user(self.matched_atom)
 
-    def getNameDesc(self):
+    def get_nameDesc(self):
 
         if self.pkgset:
             t = self.matched_atom
@@ -178,8 +178,8 @@ class EntropyPackage:
             return t
 
         ugc_string = ''
-        atom = self.getName()
-        if self.from_installed: repo = self.getRepoId()
+        atom = self.get_name()
+        if self.from_installed: repo = self.get_repository()
         else: repo = self.matched_repo
         key = self.entropyTools.dep_getkey(atom)
         downloads = EquoIntf.UGC.UGCCache.get_package_downloads(repo,key)
@@ -191,34 +191,19 @@ class EntropyPackage:
                 SulfurConf.color_title2,
                 EquoIntf.SystemSettings['pkg_masking_reasons'][self.masked],)
 
-        desc = self.getDescription(markup = False)
+        desc = self.get_description(markup = False)
         if len(desc) > 56:
             desc = desc[:56].rstrip()+"..."
         t += '\n<small><span foreground=\'%s\'>%s</span></small>' % (
             SulfurConf.color_pkgdesc, cleanMarkupString(desc),)
         return t
 
-    def getOnlyName(self):
+    def get_only_name(self):
         if self.pkgset:
             return self.set_name
         return self.dbconn.retrieveName(self.matched_id)
 
-    def getTup(self):
-        if self.pkgset:
-            return self.matched_atom
-
-        return (self.getName(), self.getRepoId(),
-            self.dbconn.retrieveVersion(self.matched_id),
-            self.dbconn.retrieveVersionTag(self.matched_id),
-            self.dbconn.retrieveRevision(self.matched_id))
-
-    def versionData(self):
-        if self.pkgset: return self.matched_atom
-        return (self.dbconn.retrieveVersion(self.matched_id),
-            self.dbconn.retrieveVersionTag(self.matched_id),
-            self.dbconn.retrieveRevision(self.matched_id))
-
-    def getRepoId(self):
+    def get_repository(self):
         if self.pkgset:
             x = self.set_from
             if x == etpConst['userpackagesetsid']: x = _("User")
@@ -227,15 +212,15 @@ class EntropyPackage:
             return self.dbconn.retrievePackageFromInstalledTable(self.matched_id)
         else: return self.matched_repo
 
-    def getIdpackage(self):
+    def get_idpackage(self):
         return self.matched_id
 
-    def getRevision(self):
+    def get_revision(self):
         if self.pkgset: return 0
 
         return self.dbconn.retrieveRevision(self.matched_id)
 
-    def getSysPkg(self):
+    def is_sys_pkg(self):
         if self.pkgset: return False
 
         match = self.matched_atom
@@ -248,12 +233,13 @@ class EntropyPackage:
         s = EquoIntf.validate_package_removal(match[0])
         return not s
 
-    # 0: from installed db, so it's installed for sure
-    # 1: not installed
-    # 2: updatable
-    # 3: already updated to the latest
-    def getInstallStatus(self):
-        if self.pkgset: return 0
+    def get_install_status(self):
+        # 0: from installed db, so it's installed for sure
+        # 1: not installed
+        # 2: updatable
+        # 3: already updated to the latest
+        if self.pkgset:
+            return 0
 
         if self.from_installed:
             return 0
@@ -263,11 +249,13 @@ class EntropyPackage:
             return 1
         else:
             rc, matched = EquoIntf.check_package_update(key+":"+slot, deep = True)
-            if rc: return 2
+            if rc:
+                return 2
             return 3
 
-    def getVer(self):
-        if self.pkgset: return "0"
+    def get_version(self):
+        if self.pkgset:
+            return "0"
 
         tag = ""
         vtag = self.dbconn.retrieveVersionTag(self.matched_id)
@@ -276,105 +264,129 @@ class EntropyPackage:
         tag += "~"+str(self.dbconn.retrieveRevision(self.matched_id))
         return self.dbconn.retrieveVersion(self.matched_id)+tag
 
-    def getOnlyVer(self):
-        if self.pkgset: return "0"
+    def get_only_version(self):
+        if self.pkgset:
+            return "0"
         return self.dbconn.retrieveVersion(self.matched_id)
 
-    def getDownloadURL(self):
-        if self.pkgset: return None
+    def get_download_url(self):
+        if self.pkgset:
+            return None
         return self.dbconn.retrieveDownloadURL(self.matched_id)
 
-    def getSlot(self):
-        if self.pkgset: return "0"
+    def get_slot(self):
+        if self.pkgset:
+            return "0"
         return self.dbconn.retrieveSlot(self.matched_id)
 
-    def getDependencies(self):
+    def get_dependencies(self):
         if self.pkgset: self.set_matches.copy()
         return self.dbconn.retrieveDependencies(self.matched_id)
 
-    def getDependsFmt(self):
-        if self.pkgset: return []
+    def get_inverse_dependencies(self):
+        if self.pkgset:
+            return []
         return self.dbconn.retrieveDepends(self.matched_id, atoms = True)
 
-    def getConflicts(self):
-        if self.pkgset: return []
+    def get_conflicts(self):
+        if self.pkgset:
+            return []
         return self.dbconn.retrieveConflicts(self.matched_id)
 
-    def getLicense(self):
-        if self.pkgset: return ""
+    def get_license(self):
+        if self.pkgset:
+            return ""
         return self.dbconn.retrieveLicense(self.matched_id)
 
-    def getChangeLog(self):
-        if self.pkgset: return ""
+    def get_changelog(self):
+        if self.pkgset:
+            return ""
         return self.dbconn.retrieveChangelog(self.matched_id)
 
-    def getDigest(self):
-        if self.pkgset: return "0"
+    def get_digest(self):
+        if self.pkgset:
+            return "0"
         return self.dbconn.retrieveDigest(self.matched_id)
 
-    def getCategory(self):
-        if self.pkgset: return self.cat
+    def get_category(self):
+        if self.pkgset:
+            return self.cat
         return self.dbconn.retrieveCategory(self.matched_id)
 
-    def getApi(self):
-        if self.pkgset: return "0"
+    def get_api(self):
+        if self.pkgset:
+            return "0"
         return self.dbconn.retrieveApi(self.matched_id)
 
-    def getUseflags(self):
-        if self.pkgset: return []
+    def get_useflags(self):
+        if self.pkgset:
+            return []
         return self.dbconn.retrieveUseflags(self.matched_id)
 
-    def getTrigger(self):
-        if self.pkgset: return ""
+    def get_trigger(self):
+        if self.pkgset:
+            return ""
         return self.dbconn.retrieveTrigger(self.matched_id)
 
-    def getConfigProtect(self):
-        if self.pkgset: return []
+    def get_config_protect(self):
+        if self.pkgset:
+            return []
         return self.dbconn.retrieveProtect(self.matched_id)
 
-    def getConfigProtectMask(self):
-        if self.pkgset: return []
+    def get_config_protect_mask(self):
+        if self.pkgset:
+            return []
         return self.dbconn.retrieveProtectMask(self.matched_id)
 
-    def getKeywords(self):
-        if self.pkgset: return []
+    def get_keywords(self):
+        if self.pkgset:
+            return []
         return self.dbconn.retrieveKeywords(self.matched_id)
 
-    def getNeeded(self):
-        if self.pkgset: return []
+    def get_needed(self):
+        if self.pkgset:
+            return []
         return self.dbconn.retrieveNeeded(self.matched_id)
 
-    def getCompileFlags(self):
-        if self.pkgset: return []
+    def get_compile_flags(self):
+        if self.pkgset:
+            return []
         flags = self.dbconn.retrieveCompileFlags(self.matched_id)
         return flags
 
-    def getSources(self):
-        if self.pkgset: return []
+    def get_sources(self):
+        if self.pkgset:
+            return []
         return self.dbconn.retrieveSources(self.matched_id)
 
-    def getEclasses(self):
-        if self.pkgset: return []
+    def get_eclasses(self):
+        if self.pkgset:
+            return []
         return self.dbconn.retrieveEclasses(self.matched_id)
 
-    def getHomepage(self):
-        if self.pkgset: return ""
+    def get_homepage(self):
+        if self.pkgset:
+            return ""
         return self.dbconn.retrieveHomepage(self.matched_id)
 
-    def getMessages(self):
-        if self.pkgset: return []
+    def get_messages(self):
+        if self.pkgset:
+            return []
         return self.dbconn.retrieveMessages(self.matched_id)
 
-    def getKeySlot(self):
-        if self.pkgset: return self.set_name,"0"
+    def get_key_slot(self):
+        if self.pkgset:
+            return self.set_name,"0"
         return self.dbconn.retrieveKeySlot(self.matched_id)
 
-    def getDescriptionNoMarkup(self):
-        if self.pkgset: return self.set_cat_namedesc
-        return self.getDescription(markup = False)
+    def get_description_no_markup(self):
+        if self.pkgset:
+            return self.set_cat_namedesc
+        return self.get_description(markup = False)
 
-    def getDescription(self, markup = True):
-        if self.pkgset: return self.set_cat_namedesc
+    def get_description(self, markup = True):
+        if self.pkgset:
+            return self.set_cat_namedesc
 
         if markup:
             return cleanMarkupString(
@@ -382,99 +394,102 @@ class EntropyPackage:
         else:
             return self.dbconn.retrieveDescription(self.matched_id)
 
-    def getDownSize(self):
+    def get_download_size(self):
         if self.pkgset:
             return 0
         return self.dbconn.retrieveSize(self.matched_id)
 
-    def getDiskSize(self):
+    def get_disk_size(self):
         if self.pkgset:
             return 0
         return self.dbconn.retrieveOnDiskSize(self.matched_id)
 
-    def getIntelligentSize(self):
+    def get_proper_size(self):
         if self.from_installed:
-            return self.getDiskSizeFmt()
+            return self.get_disk_sizeFmt()
         else:
-            return self.getDownSizeFmt()
+            return self.get_download_sizeFmt()
 
-    def getDownSizeFmt(self):
+    def get_download_sizeFmt(self):
         if self.pkgset:
             return 0
         return EquoIntf.entropyTools.bytes_into_human(
             self.dbconn.retrieveSize(self.matched_id))
 
-    def getDiskSizeFmt(self):
+    def get_disk_sizeFmt(self):
         if self.pkgset:
             return 0
         return EquoIntf.entropyTools.bytes_into_human(
             self.dbconn.retrieveOnDiskSize(self.matched_id))
 
-    def getArch(self):
+    def get_arch(self):
         return etpConst['currentarch']
 
-    def getEpoch(self):
+    def get_creation_date(self):
         if self.pkgset:
             return 0
         return self.dbconn.retrieveDateCreation(self.matched_id)
 
-    def getEpochFmt(self):
+    def get_creation_date_formatted(self):
         if self.pkgset:
             return 0
         return EquoIntf.entropyTools.convert_unix_time_to_human_time(
             float(self.dbconn.retrieveDateCreation(self.matched_id)))
 
-    def getRel(self):
+    def get_release(self):
         if self.pkgset:
             return EquoIntf.SystemSettings['repositories']['branch']
         return self.dbconn.retrieveBranch(self.matched_id)
 
-    def getUGCPackageVote(self):
+    def get_ugc_package_vote(self):
         if self.pkgset:
             return -1
-        atom = self.getName()
+        atom = self.get_name()
         if not atom:
             return None
-        return EquoIntf.UGC.UGCCache.get_package_vote(self.getRepoId(),
+        return EquoIntf.UGC.UGCCache.get_package_vote(self.get_repository(),
             self.entropyTools.dep_getkey(atom))
 
-    def getUGCPackageVoteInt(self):
+    def get_ugc_package_vote_int(self):
         if self.pkgset:
             return 0
-        atom = self.getName()
+        atom = self.get_name()
         if not atom:
             return 0
-        vote = EquoIntf.UGC.UGCCache.get_package_vote(self.getRepoId(),
+        vote = EquoIntf.UGC.UGCCache.get_package_vote(self.get_repository(),
             self.entropyTools.dep_getkey(atom))
         if not isinstance(vote, float):
             return 0
         return int(vote)
 
-    def getUGCPackageVoteFloat(self):
+    def get_ugc_package_vote_float(self):
         if self.pkgset:
             return 0.0
-        atom = self.getName()
+        atom = self.get_name()
         if not atom:
             return 0.0
-        vote = EquoIntf.UGC.UGCCache.get_package_vote(self.getRepoId(),
+        vote = EquoIntf.UGC.UGCCache.get_package_vote(self.get_repository(),
             self.entropyTools.dep_getkey(atom))
         if not isinstance(vote, float):
             return 0.0
         return vote
 
-    def getUGCPackageVoted(self):
+    def get_ugc_package_voted(self):
         return self.voted
 
-    def getUGCPackageDownloads(self):
-        if self.pkgset: return 0
-        if self.from_installed: return 0
-        atom = self.getName()
-        if not atom: return 0
+    def get_ugc_package_downloads(self):
+        if self.pkgset:
+            return 0
+        if self.from_installed:
+            return 0
+        atom = self.get_name()
+        if not atom:
+            return 0
         key = self.entropyTools.dep_getkey(atom)
         return EquoIntf.UGC.UGCCache.get_package_downloads(self.matched_repo,
             key)
 
-    def getAttr(self,attr):
+    def get_attribute(self,attr):
         x = None
         if attr == "description":
             x = cleanMarkupString(self.dbconn.retrieveDescription(self.matched_id))
@@ -490,91 +505,92 @@ class EntropyPackage:
             x = self.dbconn.retrieveRevision(self.matched_id)
         elif attr == "versiontag":
             x = self.dbconn.retrieveVersionTag(self.matched_id)
-            if not x: x = "None"
+            if not x:
+                x = "None"
         elif attr == "branch":
             x = self.dbconn.retrieveBranch(self.matched_id)
         elif attr == "name":
             x = self.dbconn.retrieveName(self.matched_id)
         elif attr == "namedesc":
-            x = self.getNameDesc()
+            x = self.get_nameDesc()
         elif attr == "slot":
             x = self.dbconn.retrieveSlot(self.matched_id)
         return x
 
     def _get_time( self ):
-        if self.pkgset: return 0
+        if self.pkgset:
+            return 0
         return self.dbconn.retrieveDateCreation(self.matched_id)
 
-    def get_changelog( self ):
-        return "No ChangeLog"
-
     def get_filelist( self ):
-        if self.pkgset: return []
+        if self.pkgset:
+            return []
         mycont = sorted(list(self.dbconn.retrieveContent(self.matched_id)))
         return mycont
 
     def get_filelist_ext( self ):
-        if self.pkgset: return []
+        if self.pkgset:
+            return []
         return self.dbconn.retrieveContent(self.matched_id, extended = True,
             order_by = 'file')
 
     def get_fullname( self ):
-        if self.pkgset: return self.set_name
+        if self.pkgset:
+            return self.set_name
         return self.dbconn.retrieveAtom(self.matched_id)
 
-    pkg =  property(fget=getPkg)
-    name =  property(fget=getName)
-    namedesc = property(fget=getNameDesc)
-    onlyname = property(fget=getOnlyName)
-    cat = property(fget=getCategory)
-    repoid =  property(fget=getRepoId)
-    ver =  property(fget=getVer)
-    binurl = property(fget=getDownloadURL)
-    onlyver = property(fget=getOnlyVer)
-    tag = property(fget=getTag)
-    revision = property(fget=getRevision)
-    digest = property(fget=getDigest)
-    version = property(fget=getVer)
-    release = property(fget=getRel)
-    slot = property(fget=getSlot)
-    maskstat = property(fget=isMasked)
-    keywords = property(fget=getKeywords)
-    useflags = property(fget=getUseflags)
-    homepage = property(fget=getHomepage)
-    messages = property(fget=getMessages)
-    protect = property(fget=getConfigProtect)
-    protect_mask = property(fget=getConfigProtectMask)
-    trigger = property(fget=getTrigger)
-    compileflags = property(fget=getCompileFlags)
-    dependencies = property(fget=getDependencies)
-    needed = property(fget=getNeeded)
-    conflicts = property(fget=getConflicts)
-    dependsFmt = property(fget=getDependsFmt)
-    api = property(fget=getApi)
+    pkg =  property(fget=get_pkg)
+    name =  property(fget=get_name)
+    namedesc = property(fget=get_nameDesc)
+    onlyname = property(fget=get_only_name)
+    cat = property(fget=get_category)
+    repoid =  property(fget=get_repository)
+    ver =  property(fget=get_version)
+    binurl = property(fget=get_download_url)
+    onlyver = property(fget=get_only_version)
+    tag = property(fget=get_tag)
+    revision = property(fget=get_revision)
+    digest = property(fget=get_digest)
+    version = property(fget=get_version)
+    release = property(fget=get_release)
+    slot = property(fget=get_slot)
+    maskstat = property(fget=is_masked)
+    keywords = property(fget=get_keywords)
+    useflags = property(fget=get_useflags)
+    homepage = property(fget=get_homepage)
+    messages = property(fget=get_messages)
+    protect = property(fget=get_config_protect)
+    protect_mask = property(fget=get_config_protect_mask)
+    trigger = property(fget=get_trigger)
+    compileflags = property(fget=get_compile_flags)
+    dependencies = property(fget=get_dependencies)
+    needed = property(fget=get_needed)
+    conflicts = property(fget=get_conflicts)
+    dependsFmt = property(fget=get_inverse_dependencies)
+    api = property(fget=get_api)
     content = property(fget=get_filelist)
     contentExt = property(fget=get_filelist_ext)
-    eclasses = property(fget=getEclasses)
-    lic = property(fget=getLicense)
-    sources = property(fget=getSources)
-    keyslot = property(fget=getKeySlot)
-    description =  property(fget=getDescription)
-    description_nomarkup = property(fget=getDescriptionNoMarkup)
-    size =  property(fget=getDownSize)
-    intelligentsizeFmt = property(fget=getIntelligentSize)
-    sizeFmt =  property(fget=getDownSizeFmt)
-    disksize =  property(fget=getDiskSize)
-    disksizeFmt =  property(fget=getDiskSizeFmt)
-    arch = property(fget=getArch)
-    epoch = property(fget=getEpoch)
-    epochFmt = property(fget=getEpochFmt)
-    pkgtup = property(fget=getTup)
-    syspkg = property(fget=getSysPkg)
-    install_status = property(fget=getInstallStatus)
-    vote = property(fget=getUGCPackageVote)
-    voteint = property(fget=getUGCPackageVoteInt)
-    votefloat = property(fget=getUGCPackageVoteFloat)
-    voted = property(fget=getUGCPackageVoted)
-    downloads = property(fget=getUGCPackageDownloads)
-    user_unmasked = property(fget=isUserUnmasked)
-    user_masked = property(fget=isUserMasked)
-    changelog = property(fget=getChangeLog)
+    eclasses = property(fget=get_eclasses)
+    lic = property(fget=get_license)
+    sources = property(fget=get_sources)
+    keyslot = property(fget=get_key_slot)
+    description =  property(fget=get_description)
+    description_nomarkup = property(fget=get_description_no_markup)
+    size =  property(fget=get_download_size)
+    intelligentsizeFmt = property(fget=get_proper_size)
+    sizeFmt =  property(fget=get_download_sizeFmt)
+    disksize =  property(fget=get_disk_size)
+    disksizeFmt =  property(fget=get_disk_sizeFmt)
+    arch = property(fget=get_arch)
+    epoch = property(fget=get_creation_date)
+    epochFmt = property(fget=get_creation_date_formatted)
+    syspkg = property(fget=is_sys_pkg)
+    install_status = property(fget=get_install_status)
+    vote = property(fget=get_ugc_package_vote)
+    voteint = property(fget=get_ugc_package_vote_int)
+    votefloat = property(fget=get_ugc_package_vote_float)
+    voted = property(fget=get_ugc_package_voted)
+    downloads = property(fget=get_ugc_package_downloads)
+    user_unmasked = property(fget=is_user_unmasked)
+    user_masked = property(fget=is_user_masked)
+    changelog = property(fget=get_changelog)

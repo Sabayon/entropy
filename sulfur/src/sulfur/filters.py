@@ -37,11 +37,11 @@ class Filtering:
 
     def listFilters(self):
         for flt in self.filters:
-            print "%s : %s " % (flt.getName(),flt._state)
+            print "%s : %s " % (flt.get_name(),flt._state)
 
     def get(self,name):
         for flt in self.filters:
-            if flt.getName() == name:
+            if flt.get_name() == name:
                 return flt
         return None
 
@@ -49,10 +49,10 @@ class Filtering:
 class BaseFilter:
 
     def __init__(self):
-        self.name = self.getName()
+        self.name = self.get_name()
         self._state = False
 
-    def getName(self):
+    def get_name(self):
         return "BaseFilter"
 
     def process(self,po):
@@ -71,7 +71,7 @@ class KeywordFilter(BaseFilter):
     def setKeys(self,criteria):
         self.keywordList = criteria[:]
 
-    def getName(self):
+    def get_name(self):
         return "KeywordFilter"
 
     def process(self,pkg):

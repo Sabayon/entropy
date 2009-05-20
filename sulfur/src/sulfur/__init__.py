@@ -47,7 +47,7 @@ from sulfur.setup import SulfurConf, const, fakeoutfile, fakeinfile, \
     cleanMarkupString
 from sulfur.widgets import SulfurConsole
 from sulfur.core import UI, Controller
-from sulfur.misc import busyCursor, normalCursor
+from sulfur.misc import busy_cursor, normal_cursor
 from sulfur.views import *
 from sulfur.filters import Filter
 from sulfur.dialogs import *
@@ -103,18 +103,18 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def quit(self, widget = None, event = None, sysexit = True ):
         if hasattr(self,'ugcTask'):
-            if self.ugcTask != None:
-                self.ugcTask.kill()
-                while self.ugcTask.isAlive():
+            if self.__ugc_task != None:
+                self.__ugc_task.kill()
+                while self.__ugc_task.isAlive():
                     time.sleep(0.2)
         if hasattr(self,'Equo'):
             self.Equo.destroy()
 
         if sysexit:
-            self.exitNow()
+            self.exit_now()
             raise SystemExit(0)
 
-    def exitNow(self):
+    def exit_now(self):
         self.wait_window.show()
         try: gtk.main_quit()
         except RuntimeError: pass
@@ -155,7 +155,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.activePage = 'repos'
         self.pageBootstrap = True
         # Progress bars
-        self.progress = BaseProgress(self.ui,self.setPage,self)
+        self.progress = BaseProgress(self.ui,self.set_page,self)
         # Package Radiobuttons
         self.packageRB = {}
         self.lastPkgPB = 'updates'
@@ -206,16 +206,18 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         }
 
         # setup add repository window
-        self.console_menu_xml = gtk.glade.XML( const.GLADE_FILE, "terminalMenu",domain="entropy" )
+        self.console_menu_xml = gtk.glade.XML( const.GLADE_FILE, "terminalMenu",
+            domain="entropy" )
         self.console_menu = self.console_menu_xml.get_widget( "terminalMenu" )
         self.console_menu_xml.signal_autoconnect(self)
 
-        self.ui.main.set_title( "%s %s %s" % (SulfurConf.branding_title, const.__sulfur_version__, self.safe_mode_txt) )
+        self.ui.main.set_title( "%s %s %s" % (SulfurConf.branding_title,
+            const.__sulfur_version__, self.safe_mode_txt) )
         self.ui.main.connect( "delete_event", self.quit )
         self.ui.notebook.set_show_tabs( False )
         self.ui.main.present()
-        self.setupPageButtons()        # Setup left side toolbar
-        self.setPage(self.activePage)
+        self.setup_page_buttons()        # Setup left side toolbar
+        self.set_page(self.activePage)
 
         # put self.console in place
         self.console = SulfurConsole()
@@ -226,41 +228,41 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.vteBox.pack_start(self.console, True, True)
         self.ui.termScrollBox.pack_start(termScroll, False)
         self.ui.termHBox.show_all()
-        self.setupPkgFilter()
-        self.setupAdvisoriesFilter()
+        self.setup_packages_filter()
+        self.setup_advisories_filter()
 
-        self.setupImages()
-        self.setupLabels()
+        self.setup_images()
+        self.setup_labels()
 
         # init flags
         self.disable_ugc = False
 
-        self.ugcTask = None
-        self.spawning_ugc = False
-        self.Preferences = None
+        self.__ugc_task = None
+        self._spawning_ugc = False
+        self._preferences = None
         self.skipMirrorNow = False
         self.abortQueueNow = False
         self.doProgress = False
-        self.isWorking = False
+        self._is_working = False
         self.lastPkgPB = "updates"
         self.Equo.connect_to_gui(self)
-        self.setupEditor()
+        self.setup_editor()
 
-        self.setPage("packages")
+        self.set_page("packages")
 
-        self.setupAdvisories()
+        self.setup_advisories()
         # setup Repositories
-        self.setupRepoView()
+        self.setup_repoView()
         self.firstTime = True
         # calculate updates
         self.setup_application()
 
         self.console.set_pty(self.pty[0])
-        self.resetProgressText()
+        self.reset_progress_text()
         self.pkgProperties_selected = None
-        self.setupPreferences()
+        self.setup_preferences()
         self.setup_pkg_sorter()
-        self.setupUgc()
+        self.setup_user_generated_content()
 
     def setup_pkg_sorter(self):
 
@@ -377,7 +379,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             rc = self.add_atoms_to_queue(atoms_install)
             if not rc:
                 return
-            self.setPage('output')
+            self.set_page('output')
 
             try:
                 rc = self.process_queue(self.queue.packages,
@@ -389,15 +391,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 else:
                     raise
 
-            self.resetQueueProgressBars()
+            self.reset_queue_progress_bars()
             if rc:
                 self.queue.clear()
                 self.queueView.refresh()
 
         else:
-            self.showNoticeBoard()
+            self.show_notice_board()
 
-    def setupAdvisoriesFilter(self):
+    def setup_advisories_filter(self):
         self.advisoryRB = {}
         widgets = [
                     (self.ui.rbAdvisories,'affected'),
@@ -405,21 +407,27 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     (self.ui.rbAdvisoriesAll,'all')
         ]
         for w,tag in widgets:
-            w.connect('toggled',self.populateAdvisories,tag)
+            w.connect('toggled',self.populate_advisories,tag)
             w.set_mode(False)
             self.advisoryRB[tag] = w
 
-    def setupPkgFilter(self):
-        ''' set callbacks for package radio buttons (all,updates, ...)'''
-        self.setupPkgRadio(self.ui.rbUpdates,"updates",_('Show Package Updates'))
-        self.setupPkgRadio(self.ui.rbAvailable,"available",_('Show available Packages'))
-        self.setupPkgRadio(self.ui.rbInstalled,"installed",_('Show Installed Packages'))
-        self.setupPkgRadio(self.ui.rbMasked,"masked",_('Show Masked Packages'))
-        self.setupPkgRadio(self.ui.rbAll,"all",_('Show All Packages'))
-        self.setupPkgRadio(self.ui.rbPkgSets,"pkgsets",_('Show Package Sets'))
-        self.setupPkgRadio(self.ui.rbPkgQueued,"queued",_('Show Queued Packages'))
+    def setup_packages_filter(self):
+        self.setup_package_radio_buttons(self.ui.rbUpdates, "updates",
+            _('Show Package Updates'))
+        self.setup_package_radio_buttons(self.ui.rbAvailable, "available",
+            _('Show available Packages'))
+        self.setup_package_radio_buttons(self.ui.rbInstalled, "installed",
+            _('Show Installed Packages'))
+        self.setup_package_radio_buttons(self.ui.rbMasked, "masked",
+            _('Show Masked Packages'))
+        self.setup_package_radio_buttons(self.ui.rbAll, "all",
+            _('Show All Packages'))
+        self.setup_package_radio_buttons(self.ui.rbPkgSets, "pkgsets",
+            _('Show Package Sets'))
+        self.setup_package_radio_buttons(self.ui.rbPkgQueued,"queued",
+            _('Show Queued Packages'))
 
-    def setupPkgRadio(self, widget, tag, tip):
+    def setup_package_radio_buttons(self, widget, tag, tip):
         widget.connect('toggled',self.on_pkgFilter_toggled,tag)
 
         #widget.set_relief( gtk.RELIEF_NONE )
@@ -448,17 +456,24 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.tooltip.set_tip(widget,tip)
         self.packageRB[tag] = widget
 
-    def setupPageButtons(self):
+    def setup_page_buttons(self):
         # Setup Vertical Toolbar
-        self.createButton( _( "Packages" ), "button-packages.png", 'packages', True )
-        self.createButton( _( "Security Advisories" ), "button-glsa.png", 'glsa' )
-        self.createButton( _( "Repository Selection" ), "button-repo.png", 'repos' )
-        self.createButton( _( "Configuration Files" ), "button-conf.png", 'filesconf' )
-        self.createButton( _( "Preferences" ), "preferences.png", 'preferences' )
-        self.createButton( _( "Package Queue" ), "button-queue.png", 'queue' )
-        self.createButton( _( "Output" ), "button-output.png", 'output' )
+        self.create_sidebar_button( _( "Packages" ), "button-packages.png",
+            'packages', True )
+        self.create_sidebar_button( _( "Security Advisories" ),
+            "button-glsa.png", 'glsa' )
+        self.create_sidebar_button( _( "Repository Selection" ),
+            "button-repo.png", 'repos' )
+        self.create_sidebar_button( _( "Configuration Files" ),
+            "button-conf.png", 'filesconf' )
+        self.create_sidebar_button( _( "Preferences" ), "preferences.png",
+            'preferences' )
+        self.create_sidebar_button( _( "Package Queue" ), "button-queue.png",
+            'queue' )
+        self.create_sidebar_button( _( "Output" ), "button-output.png",
+            'output' )
 
-    def createButton( self, text, icon, page, first = None ):
+    def create_sidebar_button( self, text, icon, page, first = None ):
         if first:
             button = gtk.RadioButton( None )
             self.firstButton = button
@@ -487,7 +502,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.content.pack_start( button, False )
         self.pageButtons[page] = button
 
-    def setupImages(self):
+    def setup_images(self):
         """ setup misc application images """
 
         # progressImage
@@ -499,74 +514,82 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             except gobject.GError:
                 pass
 
-    def setupLabels(self):
+    def setup_labels(self):
         """ setup misc application labels """
 
-        mytxt = "<span size='x-large' foreground='#8A381B'>%s</span>" % (_("Preferences"),)
+        mytxt = "<span size='x-large' foreground='#8A381B'>%s</span>" % (
+            _("Preferences"),)
         self.ui.preferencesTitleLabel.set_markup(mytxt)
-        mytxt = "<span foreground='#084670'>%s</span>" % (_("Some configuration options are critical for the health of your System. Be careful."),)
+        mytxt = "<span foreground='#084670'>%s</span>" % (
+            _("Some configuration options are critical for the health of your System. Be careful."),)
         self.ui.preferencesLabel.set_markup(mytxt)
 
-    def setupUgc(self):
-        self.ugcTask = TimeScheduled(30, self.spawnUgcUpdate)
-        self.ugcTask.set_delay_before(True)
+    def setup_user_generated_content(self):
+        self.__ugc_task = TimeScheduled(30, self.spawn_user_generated_content)
+        self.__ugc_task.set_delay_before(True)
         if "--nougc" not in sys.argv:
-            self.ugcTask.start()
+            self.__ugc_task.start()
 
-    def spawnUgcUpdate(self):
-        self.ugcTask.set_delay(300)
-        if self.do_debug: print "entering UGC"
+    def spawn_user_generated_content(self):
+        self.__ugc_task.set_delay(300)
+        if self.do_debug:
+            print "entering UGC"
         try:
             self.ugc_update()
         except (SystemExit,):
             raise
         except:
             pass
-        if self.do_debug: print "quitting UGC"
+        if self.do_debug:
+            print "quitting UGC"
 
     def ugc_update(self):
 
-        if self.spawning_ugc or self.isWorking or self.disable_ugc:
+        if self._spawning_ugc or self._is_working or self.disable_ugc:
             return
 
-        self.isWorking = True
-        self.spawning_ugc = True
+        self._is_working = True
+        self._spawning_ugc = True
         if self.do_debug: print "are we connected?"
         connected = entropy.tools.get_remote_data(etpConst['conntestlink'])
         if self.do_debug:
             cr = False
             if connected: cr = True
             print "conn result",cr
-        if (isinstance(connected,bool) and (not connected)) or (self.Equo.UGC == None):
-            self.isWorking = False
-            self.spawning_ugc = False
+        if (isinstance(connected,bool) and (not connected)) or \
+            (self.Equo.UGC == None):
+            self._is_working = False
+            self._spawning_ugc = False
             return
+
         for repo in self.Equo.validRepositories:
             if self.do_debug:
                 t1 = time.time()
-                print "working UGC update for",repo
+                print "working UGC update for", repo
             self.Equo.update_ugc_cache(repo)
             if self.do_debug:
                 t2 = time.time()
                 td = t2 - t1
-                print "completed UGC update for",repo,"took",td
+                print "completed UGC update for", repo, "took", td
 
-        self.isWorking = False
-        self.spawning_ugc = False
+        self._is_working = False
+        self._spawning_ugc = False
 
-    def fillPreferencesDbBackupPage(self):
+    def fill_pref_db_backup_page(self):
         self.dbBackupStore.clear()
         backed_up_dbs = self.Equo.list_backedup_client_databases()
         for mypath in backed_up_dbs:
             mymtime = entropy.tools.get_file_unix_mtime(mypath)
             mytime = entropy.tools.convert_unix_time_to_human_time(mymtime)
-            self.dbBackupStore.append( (mypath,os.path.basename(mypath),mytime,) )
+            self.dbBackupStore.append(
+                (mypath,os.path.basename(mypath), mytime,) )
 
-    def setupPreferences(self):
+    def setup_preferences(self):
 
         # config protect
         self.configProtectView = self.ui.configProtectView
-        for mycol in self.configProtectView.get_columns(): self.configProtectView.remove_column(mycol)
+        for mycol in self.configProtectView.get_columns():
+            self.configProtectView.remove_column(mycol)
         self.configProtectModel = gtk.ListStore( gobject.TYPE_STRING )
         cell = gtk.CellRendererText()
         column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
@@ -575,7 +598,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # config protect mask
         self.configProtectMaskView = self.ui.configProtectMaskView
-        for mycol in self.configProtectMaskView.get_columns(): self.configProtectMaskView.remove_column(mycol)
+        for mycol in self.configProtectMaskView.get_columns():
+            self.configProtectMaskView.remove_column(mycol)
         self.configProtectMaskModel = gtk.ListStore( gobject.TYPE_STRING )
         cell = gtk.CellRendererText()
         column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
@@ -584,7 +608,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # config protect skip
         self.configProtectSkipView = self.ui.configProtectSkipView
-        for mycol in self.configProtectSkipView.get_columns(): self.configProtectSkipView.remove_column(mycol)
+        for mycol in self.configProtectSkipView.get_columns():
+            self.configProtectSkipView.remove_column(mycol)
         self.configProtectSkipModel = gtk.ListStore( gobject.TYPE_STRING )
         cell = gtk.CellRendererText()
         column = gtk.TreeViewColumn( _( "Item" ), cell, markup = 0 )
@@ -593,7 +618,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # database backup tool
         self.dbBackupView = self.ui.dbBackupView
-        self.dbBackupStore = gtk.ListStore( gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING )
+        self.dbBackupStore = gtk.ListStore( gobject.TYPE_STRING,
+            gobject.TYPE_STRING, gobject.TYPE_STRING )
         cell = gtk.CellRendererText()
         column = gtk.TreeViewColumn( _( "Database" ), cell, markup = 1 )
         self.dbBackupView.append_column( column )
@@ -601,7 +627,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         column = gtk.TreeViewColumn( _( "Date" ), cell, markup = 2 )
         self.dbBackupView.append_column( column )
         self.dbBackupView.set_model( self.dbBackupStore )
-        self.fillPreferencesDbBackupPage()
+        self.fill_pref_db_backup_page()
 
         # UGC repositories
 
@@ -662,7 +688,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ugcRepositoriesView.set_model( self.ugcRepositoriesModel )
 
         # prepare generic config to allow filling of data
-        def fillSettingView(model, view, data):
+        def fill_setting_view(model, view, data):
             model.clear()
             view.set_model(model)
             view.set_property('headers-visible',False)
@@ -670,20 +696,22 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 model.append([item])
             view.expand_all()
 
-        def fillSetting(name, mytype, wgwrite, data):
+        def fill_setting(name, mytype, wgwrite, data):
             if not isinstance(data,mytype):
                 if data == None: # empty parameter
                     return
                 errorMessage(
                     self.ui.main,
-                    cleanMarkupString("%s: %s") % (_("Error setting parameter"),name,),
+                    cleanMarkupString("%s: %s") % (_("Error setting parameter"),
+                        name,),
                     _("An issue occured while loading a preference"),
-                    "%s %s %s: %s, %s: %s" % (_("Parameter"),name,_("must be of type"),mytype,_("got"),type(data),),
+                    "%s %s %s: %s, %s: %s" % (_("Parameter"), name,
+                        _("must be of type"), mytype, _("got"), type(data),),
                 )
                 return
             wgwrite(data)
 
-        def saveSettingView(config_file, name, setting, mytype, model, view):
+        def save_setting_view(config_file, name, setting, mytype, model, view):
 
             data = []
             iterator = model.get_iter_first()
@@ -702,9 +730,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             if (not isinstance(data,mytype)) and (data != None):
                 errorMessage(
                     self.ui.main,
-                    cleanMarkupString("%s: %s") % (_("Error setting parameter"),name,),
+                    cleanMarkupString("%s: %s") % (_("Error setting parameter"),
+                        name,),
                     _("An issue occured while saving a preference"),
-                    "%s %s %s: %s, %s: %s" % (_("Parameter"),name,_("must be of type"),mytype,_("got"),type(data),),
+                    "%s %s %s: %s, %s: %s" % (_("Parameter"), name,
+                        _("must be of type"), mytype, _("got"), type(data),),
                 )
                 return False
 
@@ -717,20 +747,20 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 if data: writedata = "enable"
             elif isinstance(data,basestring):
                 writedata = data
-            return saveParameter(config_file, name, writedata)
+            return save_parameter(config_file, name, writedata)
 
-        def saveParameter(config_file, name, data):
+        def save_parameter(config_file, name, data):
             return entropy.tools.write_parameter_to_file(config_file,name,data)
 
         sys_settings_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
-        self.Preferences = {
+        self._preferences = {
             etpConst['entropyconf']: [
                 (
                     'ftp-proxy',
                     self.Equo.SystemSettings['system']['proxy']['ftp'],
                     basestring,
-                    fillSetting,
+                    fill_setting,
                     saveSetting,
                     self.ui.ftpProxyEntry.set_text,
                     self.ui.ftpProxyEntry.get_text,
@@ -739,7 +769,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     'http-proxy',
                     self.Equo.SystemSettings['system']['proxy']['http'],
                     basestring,
-                    fillSetting,
+                    fill_setting,
                     saveSetting,
                     self.ui.httpProxyEntry.set_text,
                     self.ui.httpProxyEntry.get_text,
@@ -748,7 +778,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     'proxy-username',
                     self.Equo.SystemSettings['system']['proxy']['username'],
                     basestring,
-                    fillSetting,
+                    fill_setting,
                     saveSetting,
                     self.ui.usernameProxyEntry.set_text,
                     self.ui.usernameProxyEntry.get_text,
@@ -757,7 +787,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     'proxy-password',
                     self.Equo.SystemSettings['system']['proxy']['password'],
                     basestring,
-                    fillSetting,
+                    fill_setting,
                     saveSetting,
                     self.ui.passwordProxyEntry.set_text,
                     self.ui.passwordProxyEntry.get_text,
@@ -766,7 +796,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     'nice-level',
                     etpConst['current_nice'],
                     int,
-                    fillSetting,
+                    fill_setting,
                     saveSetting,
                     self.ui.niceSpinSelect.set_value,
                     self.ui.niceSpinSelect.get_value_as_int,
@@ -777,7 +807,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     'collisionprotect',
                     self.Equo.SystemSettings[sys_settings_plg_id]['misc']['collisionprotect'],
                     int,
-                    fillSetting,
+                    fill_setting,
                     saveSetting,
                     self.ui.collisionProtectionCombo.set_active,
                     self.ui.collisionProtectionCombo.get_active,
@@ -786,8 +816,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     'configprotect',
                     self.Equo.SystemSettings[sys_settings_plg_id]['misc']['configprotect'],
                     list,
-                    fillSettingView,
-                    saveSettingView,
+                    fill_setting_view,
+                    save_setting_view,
                     self.configProtectModel,
                     self.configProtectView,
                 ),
@@ -795,8 +825,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     'configprotectmask',
                     self.Equo.SystemSettings[sys_settings_plg_id]['misc']['configprotectmask'],
                     list,
-                    fillSettingView,
-                    saveSettingView,
+                    fill_setting_view,
+                    save_setting_view,
                     self.configProtectMaskModel,
                     self.configProtectMaskView,
                 ),
@@ -804,8 +834,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     'configprotectskip',
                     self.Equo.SystemSettings[sys_settings_plg_id]['misc']['configprotectskip'],
                     list,
-                    fillSettingView,
-                    saveSettingView,
+                    fill_setting_view,
+                    save_setting_view,
                     self.configProtectSkipModel,
                     self.configProtectSkipView,
                 ),
@@ -813,7 +843,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     'filesbackup',
                     self.Equo.SystemSettings[sys_settings_plg_id]['misc']['filesbackup'],
                     bool,
-                    fillSetting,
+                    fill_setting,
                     saveSetting,
                     self.ui.filesBackupCheckbutton.set_active,
                     self.ui.filesBackupCheckbutton.get_active,
@@ -824,7 +854,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     'downloadspeedlimit',
                     self.Equo.SystemSettings['repositories']['transfer_limit'],
                     int,
-                    fillSetting,
+                    fill_setting,
                     saveSetting,
                     self.ui.speedLimitSpin.set_value,
                     self.ui.speedLimitSpin.get_value_as_int,
@@ -833,8 +863,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         }
 
         # load data
-        for config_file in self.Preferences:
-            for name, setting, mytype, fillfunc, savefunc, wgwrite, wgread in self.Preferences[config_file]:
+        for config_file in self._preferences:
+            for name, setting, mytype, fillfunc, savefunc, wgwrite, wgread in \
+                self._preferences[config_file]:
+
                 if mytype == list:
                     fillfunc(wgwrite,wgread,setting)
                 else:
@@ -844,17 +876,17 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if not rc: okDialog( self.ui.main, "%s: %s" % (_("Error saving preferences"),e) )
         self.on_Preferences_toggled(None,False)
 
-    def setupMaskedPackagesWarningBox(self):
+    def setup_masked_pkgs_warning_box(self):
         mytxt = "<b><big><span foreground='#FF0000'>%s</span></big></b>\n%s" % (
             _("Attention"),
             _("These packages are masked either by default or due to your choice. Please be careful, at least."),
         )
         self.ui.maskedWarningLabel.set_markup(mytxt)
 
-    def setupAdvisories(self):
+    def setup_advisories(self):
         self.Advisories = self.Equo.Security()
 
-    def setupEditor(self):
+    def setup_editor(self):
 
         pathenv = os.getenv("PATH")
         if os.path.isfile("/etc/profile.env"):
@@ -870,50 +902,50 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     break
         os.environ['PATH'] = pathenv
 
-        self.fileEditor = '/usr/bin/xterm -e $EDITOR'
+        self._file_editor = '/usr/bin/xterm -e $EDITOR'
         de_session = os.getenv('DESKTOP_SESSION')
         if de_session == None: de_session = ''
         path = os.getenv('PATH').split(":")
         if os.access("/usr/bin/xdg-open",os.X_OK):
-            self.fileEditor = "/usr/bin/xdg-open"
+            self._file_editor = "/usr/bin/xdg-open"
         if de_session.find("kde") != -1:
             for item in path:
                 itempath = os.path.join(item,'kwrite')
                 itempath2 = os.path.join(item,'kedit')
                 itempath3 = os.path.join(item,'kate')
                 if os.access(itempath,os.X_OK):
-                    self.fileEditor = itempath
+                    self._file_editor = itempath
                     break
                 elif os.access(itempath2,os.X_OK):
-                    self.fileEditor = itempath2
+                    self._file_editor = itempath2
                     break
                 elif os.access(itempath3,os.X_OK):
-                    self.fileEditor = itempath3
+                    self._file_editor = itempath3
                     break
         else:
             if os.access('/usr/bin/gedit',os.X_OK):
-                self.fileEditor = '/usr/bin/gedit'
+                self._file_editor = '/usr/bin/gedit'
 
-    def startWorking(self, do_busy = True):
-        self.isWorking = True
+    def start_working(self, do_busy = True):
+        self._is_working = True
         if do_busy:
-            busyCursor(self.ui.main)
+            busy_cursor(self.ui.main)
         self.ui.progressVBox.grab_add()
 
-    def endWorking(self):
-        self.isWorking = False
+    def end_working(self):
+        self._is_working = False
         self.ui.progressVBox.grab_remove()
-        normalCursor(self.ui.main)
+        normal_cursor(self.ui.main)
 
     def setup_application(self):
         msg = _('Generating metadata. Please wait.')
-        self.setStatus(msg)
+        self.set_status_ticker(msg)
         count = 30
         while count:
             try:
-                self.addPackages()
+                self.show_packages()
             except self.Equo.dbapi2.ProgrammingError, e:
-                self.setStatus("%s: %s, %s" % (
+                self.set_status_ticker("%s: %s, %s" % (
                         _("Error during list population"),
                         e,
                         _("Retrying in 1 second."),
@@ -924,19 +956,19 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 continue
             break
 
-    def cleanEntropyCaches(self, alone = False):
+    def clean_entropy_caches(self, alone = False):
         if alone:
             self.progress.total.hide()
         self.Equo.generate_cache(depcache = True, configcache = False)
         # clear views
-        self.etpbase.clearPackages()
-        self.etpbase.clearCache()
+        self.etpbase.clear_groups()
+        self.etpbase.clear_cache()
         self.setup_application()
         if alone:
             self.progress.total.show()
 
-    def populateAdvisories(self, widget, show):
-        self.setBusy()
+    def populate_advisories(self, widget, show):
+        self.set_busy()
         self.wait_window.show()
         cached = None
         try:
@@ -950,14 +982,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             try:
                 cached = self.Advisories.get_advisories_metadata()
             except Exception, e:
-                okDialog( self.ui.main, "%s: %s" % (_("Error loading advisories"),e) )
+                okDialog( self.ui.main, "%s: %s" % (
+                    _("Error loading advisories"), e) )
                 cached = {}
         if cached:
             self.advisoriesView.populate(self.Advisories, cached, show)
-        self.unsetBusy()
+        self.unset_busy()
         self.wait_window.hide()
 
-    def populateFilesUpdate(self):
+    def populate_files_update(self):
         # load filesUpdate interface and fill self.filesView
         cached = None
         try:
@@ -965,30 +998,31 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         except CacheCorruptionError:
             pass
         if cached == None:
-            self.setBusy()
+            self.set_busy()
             cached = self.Equo.FileUpdates.scanfs(quiet = True)
-            self.unsetBusy()
+            self.unset_busy()
         if cached:
             self.filesView.populate(cached)
 
-    def showNoticeBoard(self):
+    def show_notice_board(self):
         repoids = {}
         for repoid in self.Equo.validRepositories:
             avail_repos = self.Equo.SystemSettings['repositories']['available']
             board_file = avail_repos[repoid]['local_notice_board']
-            if not (os.path.isfile(board_file) and os.access(board_file,os.R_OK)):
+            if not (os.path.isfile(board_file) and \
+                os.access(board_file,os.R_OK)):
                 continue
             if entropy.tools.get_file_size(board_file) < 10:
                 continue
             repoids[repoid] = board_file
         if repoids:
-            self.loadNoticeBoard(repoids)
+            self.load_notice_board(repoids)
 
-    def loadNoticeBoard(self, repoids):
+    def load_notice_board(self, repoids):
         my = NoticeBoardWindow(self.ui.main, self.Equo)
         my.load(repoids)
 
-    def updateRepositories(self, repos):
+    def update_repositories(self, repos):
 
         self.disable_ugc = True
         """
@@ -1010,21 +1044,25 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         try:
             repoConn = self.Equo.Repositories(repos, forceUpdate = forceUpdate)
         except PermissionDenied:
-            self.progressLog(_('You must run this application as root'), extra = "repositories")
+            self.progress_log(_('You must run this application as root'),
+                extra = "repositories")
             self.disable_ugc = False
             return 1
         except MissingParameter:
-            msg = "%s: %s" % (_('No repositories specified in'),etpConst['repositoriesconf'],)
-            self.progressLog( msg, extra = "repositories")
+            msg = "%s: %s" % (_('No repositories specified in'),
+                etpConst['repositoriesconf'],)
+            self.progress_log( msg, extra = "repositories")
             self.disable_ugc = False
             return 127
         except OnlineMirrorError:
-            self.progressLog(_('You are not connected to the Internet. You should.'), extra = "repositories")
+            self.progress_log(
+                _('You are not connected to the Internet. You should.'),
+                extra = "repositories")
             self.disable_ugc = False
             return 126
         except Exception, e:
             msg = "%s: %s" % (_('Unhandled exception'),e,)
-            self.progressLog(msg, extra = "repositories")
+            self.progress_log(msg, extra = "repositories")
             self.disable_ugc = False
             return 2
 
@@ -1037,70 +1075,76 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         while t.isAlive():
             time.sleep(0.2)
             if self.do_debug:
-                print "updateRepositories: update thread still alive"
+                print "update_repositories: update thread still alive"
             self.gtk_loop()
         rc = self.__repo_update_rc
 
         if repoConn.syncErrors or (rc != 0):
             self.progress.set_mainLabel(_('Errors updating repositories.'))
-            self.progress.set_subLabel(_('Please check logs below for more info'))
+            self.progress.set_subLabel(
+                _('Please check logs below for more info'))
         else:
             if repoConn.alreadyUpdated == 0:
-                self.progress.set_mainLabel(_('Repositories updated successfully'))
+                self.progress.set_mainLabel(
+                    _('Repositories updated successfully'))
             else:
                 if len(repos) == repoConn.alreadyUpdated:
-                    self.progress.set_mainLabel(_('All the repositories were already up to date.'))
+                    self.progress.set_mainLabel(
+                        _('All the repositories were already up to date.'))
                 else:
-                    msg = "%s %s" % (repoConn.alreadyUpdated,_("repositories were already up to date. Others have been updated."),)
+                    msg = "%s %s" % (repoConn.alreadyUpdated,
+                        _("repositories were already up to date. Others have been updated."),)
                     self.progress.set_mainLabel(msg)
             if repoConn.newEquo:
-                self.progress.set_extraLabel(_('sys-apps/entropy needs to be updated as soon as possible.'))
+                self.progress.set_extraLabel(
+                    _('sys-apps/entropy needs to be updated as soon as possible.'))
 
         initconfig_entropy_constants(etpSys['rootdir'])
 
         self.disable_ugc = False
         return not repoConn.syncErrors
 
-    def resetProgressText(self):
+    def reset_progress_text(self):
         self.progress.set_mainLabel(_('Nothing to do. I am idle.'))
-        self.progress.set_subLabel(_('Really, don\'t waste your time here. This is just a placeholder'))
+        self.progress.set_subLabel(
+            _('Really, don\'t waste your time here. This is just a placeholder'))
         self.progress.set_extraLabel(_('I am still alive and kickin\''))
 
-    def resetQueueProgressBars(self):
+    def reset_queue_progress_bars(self):
         self.progress.reset_progress()
         self.progress.total.clear()
 
-    def setupRepoView(self):
+    def setup_repoView(self):
         self.repoView.populate()
 
-    def setBusy(self):
+    def set_busy(self):
         self.isBusy = True
-        busyCursor(self.ui.main)
+        busy_cursor(self.ui.main)
 
-    def unsetBusy(self):
+    def unset_busy(self):
         self.isBusy = False
-        normalCursor(self.ui.main)
+        normal_cursor(self.ui.main)
 
-    def setPage( self, page ):
+    def set_page( self, page ):
         self.activePage = page
         widget = self.pageButtons[page]
         widget.set_active( True )
 
-    def setPkgRB( self, tag ):
+    def set_package_radio( self, tag ):
         self.lastPkgPB = tag
         widget = self.packageRB[tag]
         widget.set_active( True )
 
-    def setNotebookPage(self,page):
+    def set_notebook_page(self,page):
         ''' Switch to Page in GUI'''
         self.ui.notebook.set_current_page(page)
 
-    def setStatus( self, text ):
+    def set_status_ticker( self, text ):
         ''' Write Message to Statusbar'''
         context_id = self.ui.status.get_context_id( "Status" )
         self.ui.status.push( context_id, text )
 
-    def progressLog(self, msg, extra = None):
+    def progress_log(self, msg, extra = None):
         self.progress.set_subLabel( msg )
         self.progress.set_progress( 0, " " ) # Blank the progress bar.
 
@@ -1117,7 +1161,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 continue
             self.output.write_line("%s\n" % (txt,))
 
-    def progressLogWrite(self, msg):
+    def progress_log_write(self, msg):
 
         mytxt = []
         slice_count = self.console.get_column_count()
@@ -1128,17 +1172,17 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         for txt in mytxt: self.output.write_line("%s\n" % (txt,))
 
-    def enableSkipMirror(self):
+    def enable_skip_mirror(self):
         self.ui.skipMirror.show()
         self.skipMirror = True
 
-    def disableSkipMirror(self):
+    def disable_skip_mirror(self):
         self.ui.skipMirror.hide()
         self.skipMirror = False
 
-    def addPackages(self, back_to_page = None):
+    def show_packages(self, back_to_page = None):
 
-        self.uiLock(True)
+        self.ui_lock(True)
         action = self.lastPkgPB
         if action == 'all':
             masks = ['installed','available','masked','updates']
@@ -1146,53 +1190,55 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             masks = [action]
 
         self.disable_ugc = True
-        self.setBusy()
+        self.set_busy()
         bootstrap = False
         if (self.Equo.get_world_update_cache(empty_deps = False) == None):
             if self.do_debug:
-                print "addPackages: bootstrap True due to empty world cache"
+                print "show_packages: bootstrap True due to empty world cache"
             bootstrap = True
-            self.setPage('output')
+            self.set_page('output')
         elif (self.Equo.get_available_packages_cache() == None) and \
             (('available' in masks) or ('updates' in masks)):
             if self.do_debug:
-                print "addPackages: bootstrap True due to empty avail cache"
+                print "show_packages: bootstrap True due to empty avail cache"
             bootstrap = True
-            self.setPage('output')
+            self.set_page('output')
         self.progress.total.hide()
 
         if bootstrap:
             if self.do_debug:
-                print "addPackages: bootstrap is enabled, clearing ALL cache"
-            self.etpbase.clearCache()
-            self.startWorking()
+                print "show_packages: bootstrap is enabled, clearing ALL cache"
+            self.etpbase.clear_cache()
+            self.start_working()
 
         allpkgs = []
         if self.doProgress: self.progress.total.next() # -> Get lists
         self.progress.set_mainLabel(_('Generating Metadata, please wait.'))
-        self.progress.set_subLabel(_('Entropy is indexing the repositories. It will take a few seconds'))
-        self.progress.set_extraLabel(_('While you are waiting, take a break and look outside. Is it rainy?'))
+        self.progress.set_subLabel(
+            _('Entropy is indexing the repositories. It will take a few seconds'))
+        self.progress.set_extraLabel(
+            _('While you are waiting, take a break and look outside. Is it rainy?'))
         for flt in masks:
             msg = "%s: %s" % (_('Calculating'),flt,)
-            self.setStatus(msg)
-            allpkgs += self.etpbase.getPackages(flt)
+            self.set_status_ticker(msg)
+            allpkgs += self.etpbase.get_groups(flt)
         if self.doProgress: self.progress.total.next() # -> Sort Lists
 
         if action == "updates":
             msg = "%s: available" % (_('Calculating'),)
-            self.setStatus(msg)
-            self.etpbase.getPackages("available")
+            self.set_status_ticker(msg)
+            self.etpbase.get_groups("available")
 
         if bootstrap:
-            self.endWorking()
+            self.end_working()
 
         empty = False
         if not allpkgs and action == "updates":
-            allpkgs = self.etpbase.getPackages('fake_updates')
+            allpkgs = self.etpbase.get_groups('fake_updates')
             empty = True
 
         #if bootstrap: time.sleep(1)
-        self.setStatus("%s: %s %s" % (_("Showing"),len(allpkgs),_("items"),))
+        self.set_status_ticker("%s: %s %s" % (_("Showing"),len(allpkgs),_("items"),))
 
         show_pkgsets = False
         if action == "pkgsets":
@@ -1203,48 +1249,124 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if self.doProgress: self.progress.hide() #Hide Progress
         if back_to_page:
-            self.setPage(back_to_page)
+            self.set_page(back_to_page)
         elif bootstrap:
-            self.setPage('packages')
+            self.set_page('packages')
 
-        self.unsetBusy()
-        self.uiLock(False)
+        self.unset_busy()
+        self.ui_lock(False)
         # reset labels
-        self.resetProgressText()
-        self.resetQueueProgressBars()
+        self.reset_progress_text()
+        self.reset_queue_progress_bars()
         self.disable_ugc = False
 
-    def process_queue(self, pkgs, remove_repos = [], fetch_only = False, download_sources = False):
+    def add_atoms_to_queue(self, atoms, always_ask = False, matches = set()):
+
+        self.wait_window.show()
+        self.set_busy()
+        if not matches:
+            # resolve atoms ?
+            for atom in atoms:
+                match = self.Equo.atom_match(atom)
+                if match[0] != -1:
+                    matches.add(match)
+        if not matches:
+            self.wait_window.hide()
+            okDialog( self.ui.main,
+                _("Packages not found in repositories, try again later.") )
+            self.unset_busy()
+            return
+
+        resolved = []
+
+        self.etpbase.get_groups('installed')
+        self.etpbase.get_groups('available')
+        self.etpbase.get_groups('reinstallable')
+        self.etpbase.get_groups('updates')
+
+        for match in matches:
+            resolved.append(self.etpbase.get_package_item(match)[0])
+
+        rc = True
+
+        found_objs = []
+        for obj in resolved:
+            if obj in self.queue.packages['i'] + \
+                        self.queue.packages['u'] + \
+                        self.queue.packages['r'] + \
+                        self.queue.packages['rr']:
+                continue
+            found_objs.append(obj)
+
+
+        q_cache = {}
+        for obj in found_objs:
+            q_cache[obj.matched_atom] = obj.queued
+            obj.queued = 'u'
+
+        status, myaction = self.queue.add(found_objs, always_ask = always_ask)
+        if status != 0:
+            rc = False
+            for obj in found_objs:
+                obj.queued = q_cache.get(obj.matched_atom)
+
+        self.queueView.refresh()
+        self.ui.viewPkg.queue_draw()
+
+        self.wait_window.hide()
+        self.unset_busy()
+        return rc
+
+    def reset_cache_status(self):
+        self.pkgView.clear()
+        self.etpbase.clear_groups()
+        self.etpbase.clear_cache()
+        self.queue.clear()
+        self.queueView.refresh()
+        # re-scan system settings, useful
+        # if there are packages that have been
+        # live masked, and anyway, better wasting
+        # 2-3 more cycles than having unattended
+        # behaviours
+        self.Equo.SystemSettings.clear()
+        self.Equo.close_all_repositories()
+
+    def process_queue(self, pkgs, remove_repos = [], fetch_only = False,
+            download_sources = False):
 
         # preventive check against other instances
         locked = self.Equo.application_lock_check()
         if locked:
-            okDialog(self.ui.main, _("Another Entropy instance is running. Cannot process queue."))
+            okDialog(self.ui.main,
+                _("Another Entropy instance is running. Cannot process queue."))
             self.progress.reset_progress()
-            self.setPage('packages')
+            self.set_page('packages')
             return False
 
         self.disable_ugc = True
-        self.setStatus( _( "Running tasks" ) )
-        total = len( pkgs['i'] )+len( pkgs['u'] )+len( pkgs['r'] ) +len( pkgs['rr'] )
+        self.set_status_ticker(_("Running tasks"))
+        total = len(pkgs['i']) + len(pkgs['u']) + len(pkgs['r']) + \
+            len(pkgs['rr'])
         state = True
         if total > 0:
 
-            self.startWorking(do_busy = True)
-            normalCursor(self.ui.main)
+            self.start_working(do_busy = True)
+            normal_cursor(self.ui.main)
             self.progress.show()
             self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
-            self.setPage('output')
+            self.set_page('output')
             queue = pkgs['i']+pkgs['u']+pkgs['rr']
             install_queue = [x.matched_atom for x in queue]
-            selected_by_user = set([x.matched_atom for x in queue if x.selected_by_user])
+            selected_by_user = set([x.matched_atom for x in queue if \
+                x.selected_by_user])
             removal_queue = [x.matched_atom[0] for x in pkgs['r']]
-            do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if x.do_purge])
+            do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if \
+                x.do_purge])
 
             if install_queue or removal_queue:
 
                 # activate UI lock
-                self.uiLock(True)
+                self.ui_lock(True)
 
                 controller = QueueExecutor(self)
                 self.my_inst_errors = None
@@ -1284,12 +1406,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 # deactivate UI lock
                 if self.do_debug:
                     print "process_queue: unlocking gui?"
-                self.uiLock(False)
+                self.ui_lock(False)
                 if self.do_debug:
                     print "process_queue: gui unlocked"
 
                 if self.my_inst_abort:
-                    okDialog(self.ui.main, _("Attention. You chose to abort the processing."))
+                    okDialog(self.ui.main,
+                        _("Attention. You chose to abort the processing."))
                 elif (e != 0):
                     okDialog(self.ui.main,
                         _("Attention. An error occured when processing the queue."
@@ -1297,11 +1420,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     )
 
             if self.do_debug:
-                print "process_queue: endWorking?"
-            self.endWorking()
+                print "process_queue: end_working?"
+            self.end_working()
             self.progress.reset_progress()
             if self.do_debug:
-                print "process_queue: endWorking"
+                print "process_queue: end_working"
 
             if (not fetch_only) and (not download_sources):
 
@@ -1326,21 +1449,21 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.Equo.FileUpdates.scanfs(dcache = False, quiet = True)
                 if self.Equo.FileUpdates.scandata:
                     if len(self.Equo.FileUpdates.scandata) > 0:
-                        self.setPage('filesconf')
+                        self.set_page('filesconf')
                 if self.do_debug:
                     print "process_queue: all done"
 
         else:
-            self.setStatus( _( "No packages selected" ) )
+            self.set_status_ticker( _( "No packages selected" ) )
 
         self.disable_ugc = False
         return state
 
-    def uiLock(self, lock):
+    def ui_lock(self, lock):
         self.ui.content.set_sensitive(not lock)
         self.ui.menubar.set_sensitive(not lock)
 
-    def switchNotebookPage(self, page):
+    def switch_notebook_page(self, page):
         rb = self.pageButtons[page]
         rb.set_active(True)
         self.on_PageButton_changed(None, page)
@@ -1360,12 +1483,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 return idx, repoid, repodata
         return None, None, None
 
-    def runEditor(self, filename, delete = False):
-        cmd = ' '.join([self.fileEditor,filename])
-        task = ParallelTask(self.__runEditor, cmd, delete, filename)
+    def run_editor(self, filename, delete = False):
+        cmd = ' '.join([self._file_editor,filename])
+        task = ParallelTask(self.__run_editor, cmd, delete, filename)
         task.start()
 
-    def __runEditor(self, cmd, delete, filename):
+    def __run_editor(self, cmd, delete, filename):
         os.system(cmd+"&> /dev/null")
         if delete and os.path.isfile(filename) and os.access(filename,os.W_OK):
             try:
@@ -1384,81 +1507,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             return identifier, source, destination
         return 0,None,None
 
-    def add_atoms_to_queue(self, atoms, always_ask = False, matches = set()):
-
-        self.wait_window.show()
-        self.setBusy()
-        if not matches:
-            # resolve atoms ?
-            for atom in atoms:
-                match = self.Equo.atom_match(atom)
-                if match[0] != -1:
-                    matches.add(match)
-        if not matches:
-            self.wait_window.hide()
-            okDialog( self.ui.main, _("Packages not found in repositories, try again later.") )
-            self.unsetBusy()
-            return
-
-        resolved = []
-
-        self.etpbase.getPackages('installed')
-        self.etpbase.getPackages('available')
-        self.etpbase.getPackages('reinstallable')
-        self.etpbase.getPackages('updates')
-
-        for match in matches:
-            resolved.append(self.etpbase.getPackageItem(match)[0])
-
-        rc = True
-
-        found_objs = []
-        for obj in resolved:
-            if obj in self.queue.packages['i'] + \
-                        self.queue.packages['u'] + \
-                        self.queue.packages['r'] + \
-                        self.queue.packages['rr']:
-                continue
-            found_objs.append(obj)
-
-
-        q_cache = {}
-        for obj in found_objs:
-            q_cache[obj.matched_atom] = obj.queued
-            obj.queued = 'u'
-
-        status, myaction = self.queue.add(found_objs, always_ask = always_ask)
-        if status != 0:
-            rc = False
-            for obj in found_objs:
-                obj.queued = q_cache.get(obj.matched_atom)
-
-        self.queueView.refresh()
-        self.ui.viewPkg.queue_draw()
-
-        self.wait_window.hide()
-        self.unsetBusy()
-        return rc
-
-    def reset_cache_status(self):
-        self.pkgView.clear()
-        self.etpbase.clearPackages()
-        self.etpbase.clearCache()
-        self.queue.clear()
-        self.queueView.refresh()
-        # re-scan system settings, useful
-        # if there are packages that have been
-        # live masked, and anyway, better wasting
-        # 2-3 more cycles than having unattended
-        # behaviours
-        self.Equo.SystemSettings.clear()
-        self.Equo.close_all_repositories()
-
-    def loadAdvInfoMenu(self, item):
+    def load_advisory_info_menu(self, item):
         my = SecurityAdvisoryMenu(self.ui.main)
         my.load(item)
 
-    def loadPkgInfoMenu(self, pkg):
+    def load_package_info_menu(self, pkg):
         mymenu = PkgInfoMenu(self.Equo, pkg, self.ui.main)
         load_count = 6
         while 1:

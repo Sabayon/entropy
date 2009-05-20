@@ -26,7 +26,7 @@ from entropy.misc import TimeScheduled, ParallelTask
 import entropy.tools as entropyTools
 
 from sulfur.core import UI
-from sulfur.misc import busyCursor, normalCursor
+from sulfur.misc import busy_cursor, normal_cursor
 from sulfur.setup import const, cleanMarkupString, SulfurConf, \
     unicode2htmlentities, fakeoutfile, fakeinfile
 
@@ -229,7 +229,7 @@ class AddRepositoryWindow(MenuSkel):
         if not errors:
             self.Equo.add_repository(repodata)
             self.Sulfur.reset_cache_status()
-            self.Sulfur.setupRepoView()
+            self.Sulfur.setup_repoView()
             self.addrepo_ui.addRepoWin.hide()
             msg = "%s '%s' %s" % (_("You should press the button"),
                 _("Update Repositories"), _("now"))
@@ -255,7 +255,7 @@ class AddRepositoryWindow(MenuSkel):
                 self.Equo.add_repository(repodata)
             self.Sulfur.reset_cache_status()
 
-            self.Sulfur.setupRepoView()
+            self.Sulfur.setup_repoView()
             self.addrepo_ui.addRepoWin.hide()
             msg = "%s '%s' %s" % (_("You should press the button"),
                 _("Regenerate Cache"), _("now"))
@@ -642,7 +642,7 @@ class RepositoryManagerMenu(MenuSkel):
             if self.connection_done:
                 self.Service.kill_all_connections()
 
-    def uiLock(self, action):
+    def ui_lock(self, action):
         self.sm_ui.repositoryManager.set_sensitive(not action)
 
     def set_notebook_page(self, page):
@@ -1166,7 +1166,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.PinboardUpdater.start()
 
         # ui will be unlocked by the thread below
-        self.uiLock(True)
+        self.ui_lock(True)
         self.EntropyRepositoryComboLoader.start()
         return True
 
@@ -1232,7 +1232,7 @@ class RepositoryManagerMenu(MenuSkel):
                     pass
                 if not self.repos_loaded:
                     self.repos_loaded = True
-                    self.uiLock(False)
+                    self.ui_lock(False)
                 return False
 
             gobject.idle_add(task, repo_info)
@@ -4225,11 +4225,11 @@ class PkgInfoMenu(MenuSkel):
         self.star_enter(widget, event, 1)
 
     def on_starsEvent_leave_notify_event(self, widget, event):
-        normalCursor(self.pkginfo_ui.pkgInfo)
+        normal_cursor(self.pkginfo_ui.pkgInfo)
         self.set_stars(self.vote)
 
     def on_starsEvent_enter_notify_event(self, widget, event):
-        busyCursor(self.pkginfo_ui.pkgInfo, cur = gtk.gdk.Cursor(gtk.gdk.CROSSHAIR))
+        busy_cursor(self.pkginfo_ui.pkgInfo, cur = gtk.gdk.Cursor(gtk.gdk.CROSSHAIR))
 
     def on_starEvent5_button_release_event(self, widget, event):
         self.vote_click(5)

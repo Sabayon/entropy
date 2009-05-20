@@ -20,7 +20,7 @@
 import gtk
 CURRENT_CURSOR = None
 
-def busyCursor(mainwin, insensitive=False, cur = gtk.gdk.Cursor(gtk.gdk.WATCH)):
+def busy_cursor(mainwin, insensitive=False, cur = gtk.gdk.Cursor(gtk.gdk.WATCH)):
     ''' Set busy cursor in mainwin and make it insensitive if selected '''
     mainwin.window.set_cursor(cur)
     global CURRENT_CURSOR
@@ -28,7 +28,7 @@ def busyCursor(mainwin, insensitive=False, cur = gtk.gdk.Cursor(gtk.gdk.WATCH)):
     if insensitive:
         mainwin.set_sensitive(False)
 
-def normalCursor(mainwin):
+def normal_cursor(mainwin):
     ''' Set Normal cursor in mainwin and make it sensitive '''
     if mainwin.window != None:
         mainwin.window.set_cursor(None)

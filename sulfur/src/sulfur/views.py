@@ -32,7 +32,7 @@ from sulfur.core import UI
 from sulfur.widgets import CellRendererStars
 from sulfur.package import DummyEntropyPackage
 from sulfur.entropyapi import Equo
-from sulfur.misc import busyCursor, normalCursor
+from sulfur.misc import busy_cursor, normal_cursor
 from sulfur.dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog
 
 
@@ -347,7 +347,7 @@ class EntropyPackageView:
         self.queueView = qview
         self.ui = ui
         self.etpbase = etpbase
-        self.clearUpdates()
+        self.clear_updates()
 
         # installed packages right click menu
         self.installed_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageInstalled", domain="entropy" )
@@ -762,7 +762,7 @@ class EntropyPackageView:
             self.installed_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time )
 
     def get_reinstallables(self, objs):
-        reinstallables = self.etpbase.getPackages("reinstallable")
+        reinstallables = self.etpbase.get_groups("reinstallable")
         r_dict = {}
         for obj in objs:
             r_dict[obj.matched_atom] = obj
@@ -778,7 +778,7 @@ class EntropyPackageView:
         self.loaded_reinstallables = self.get_reinstallables(objs)
 
     def on_unmask_activate(self, widget):
-        busyCursor(self.main_window)
+        busy_cursor(self.main_window)
         objs = self.selected_objs
         oldmask = self.etpbase.unmaskingPackages.copy()
         mydialog = MaskedPackagesDialog(self.Equo, self.etpbase, self.ui.main, objs)
@@ -786,17 +786,17 @@ class EntropyPackageView:
         if result != -5:
             self.etpbase.unmaskingPackages = oldmask.copy()
         mydialog.destroy()
-        normalCursor(self.main_window)
+        normal_cursor(self.main_window)
 
     def do_remove(self, action, do_purge):
 
-        busyCursor(self.main_window)
+        busy_cursor(self.main_window)
         new_objs = []
         just_show_objs = []
 
         for obj in self.selected_objs:
             if obj.installed_match:
-                iobj, new = self.etpbase.getPackageItem(obj.installed_match)
+                iobj, new = self.etpbase.get_package_item(obj.installed_match)
                 new_objs.append(iobj)
                 just_show_objs.append(obj)
             else:
@@ -820,7 +820,7 @@ class EntropyPackageView:
                 obj.do_purge = do_purge
 
         self.queueView.refresh()
-        normalCursor(self.main_window)
+        normal_cursor(self.main_window)
         self.view.queue_draw()
 
     def on_remove_activate(self, widget, do_purge = False):
@@ -831,7 +831,7 @@ class EntropyPackageView:
 
     def do_reinstall(self, action):
 
-        busyCursor(self.main_window)
+        busy_cursor(self.main_window)
 
         q_cache = {}
         for obj in self.selected_objs+self.loaded_reinstallables:
@@ -848,7 +848,7 @@ class EntropyPackageView:
                 obj.queued = q_cache.get(obj.matched_atom)
 
         self.queueView.refresh()
-        normalCursor(self.main_window)
+        normal_cursor(self.main_window)
 
     def on_reinstall_activate(self, widget):
         self.do_reinstall("rr")
@@ -878,8 +878,8 @@ class EntropyPackageView:
             # we need to completely remove them from the list
             if self.Sulfur != None:
                 if self.Sulfur.lastPkgPB == "queued":
-                    self.etpbase.populateSingle("queued", force = True)
-                    self.Sulfur.addPackages()
+                    self.etpbase.populate_single_group("queued", force = True)
+                    self.Sulfur.show_packages()
             # disable user selection
             for obj in objs:
                 obj.selected_by_user = False
@@ -922,10 +922,10 @@ class EntropyPackageView:
         for obj in objs: self.Equo.mask_match(obj.matched_atom, clean_all_cache = True)
         # clear cache
         self.clear()
-        self.etpbase.clearPackages()
-        self.etpbase.clearCache()
+        self.etpbase.clear_groups()
+        self.etpbase.clear_cache()
         if self.Sulfur != None:
-            self.Sulfur.addPackages()
+            self.Sulfur.show_packages()
 
     def on_pkgsetUndoinstall_activate(self, widget):
         return self.on_pkgset_install_undoinstall_activate(widget, install = False)
@@ -982,7 +982,7 @@ class EntropyPackageView:
         objs = []
         for match in exp_matches:
             try:
-                yp, new = self.etpbase.getPackageItem(match)
+                yp, new = self.etpbase.get_package_item(match)
             except RepositoryError:
                 return
             if add and yp.queued != None:
@@ -991,14 +991,14 @@ class EntropyPackageView:
 
         set_objs = []
         for pkgset in pkgsets:
-            yp, new = self.etpbase.getPackageItem(pkgset)
+            yp, new = self.etpbase.get_package_item(pkgset)
             set_objs.append(yp)
 
         return pkgsets, exp_matches, objs, set_objs, exp_atoms
 
     def on_pkgset_install_undoinstall_activate(self, widget, install = True):
 
-        busyCursor(self.main_window)
+        busy_cursor(self.main_window)
         pkgsets, exp_matches, objs, set_objs, exp_atoms = \
             self._get_pkgset_data(self.selected_objs, add = install)
 
@@ -1040,7 +1040,7 @@ class EntropyPackageView:
                     etpConst['packagesetprefix'], item.set_category,)
                 else: myset = item.matched_atom
 
-                yp, new = self.etpbase.getPackageItem(myset)
+                yp, new = self.etpbase.get_package_item(myset)
                 yp.queued = c_action
 
                 for pkgset in pkgsets:
@@ -1050,12 +1050,12 @@ class EntropyPackageView:
                 item.queued = c_action
 
         self.queueView.refresh()
-        normalCursor(self.main_window)
+        normal_cursor(self.main_window)
         self.view.queue_draw()
 
     def on_pkgset_remove_undoremove_activate(self, widget, remove = True):
 
-        busyCursor(self.main_window)
+        busy_cursor(self.main_window)
         pkgsets, exp_matches, objs, set_objs, exp_atoms = \
             self._get_pkgset_data(self.selected_objs, add = remove,
                 remove_action = True)
@@ -1068,7 +1068,7 @@ class EntropyPackageView:
                 continue
             mymatch = self.Equo.atom_match(key, matchSlot = slot)
             if mymatch[0] == -1: continue
-            yp, new = self.etpbase.getPackageItem(mymatch)
+            yp, new = self.etpbase.get_package_item(mymatch)
             repo_objs.append(yp)
 
         q_cache = {}
@@ -1101,7 +1101,7 @@ class EntropyPackageView:
                     etpConst['packagesetprefix'], item.set_category,)
                 else: myset = item.matched_atom
 
-                yp, new = self.etpbase.getPackageItem(myset)
+                yp, new = self.etpbase.get_package_item(myset)
                 yp.queued = c_action
 
                 for pkgset in pkgsets:
@@ -1112,7 +1112,7 @@ class EntropyPackageView:
 
 
         self.queueView.refresh()
-        normalCursor(self.main_window)
+        normal_cursor(self.main_window)
         self.view.queue_draw()
 
 
@@ -1147,18 +1147,18 @@ class EntropyPackageView:
         self.view.queue_draw()
 
     def on_install_update_activate(self, widget, action):
-        busyCursor(self.main_window)
+        busy_cursor(self.main_window)
         if self.selected_objs:
             self.add_to_queue(self.selected_objs, action)
         self.queueView.refresh()
-        normalCursor(self.main_window)
+        normal_cursor(self.main_window)
         self.view.queue_draw()
 
     def on_undoinstall_undoupdate_activate(self, widget):
-        busyCursor(self.main_window)
+        busy_cursor(self.main_window)
         self.remove_queued(self.selected_objs)
         self.queueView.refresh()
-        normalCursor(self.main_window)
+        normal_cursor(self.main_window)
         self.view.queue_draw()
 
     # installed packages mask action
@@ -1170,33 +1170,33 @@ class EntropyPackageView:
             m = self.Equo.atom_match(key, matchSlot = slot)
             if m[0] != -1: objs.append(m)
 
-        busyCursor(self.main_window)
+        busy_cursor(self.main_window)
         if objs:
             self.add_to_package_mask(objs)
         self.queueView.refresh()
-        normalCursor(self.main_window)
+        normal_cursor(self.main_window)
         self.view.queue_draw()
 
     # updatable packages mask action
     def on_updateMask_activate(self, widget):
-        busyCursor(self.main_window)
+        busy_cursor(self.main_window)
         if self.selected_objs:
             self.add_to_package_mask(self.selected_objs)
         self.queueView.refresh()
-        normalCursor(self.main_window)
+        normal_cursor(self.main_window)
         self.view.queue_draw()
 
     # available packages mask action
     def on_maskinstall_activate(self, widget):
-        busyCursor(self.main_window)
+        busy_cursor(self.main_window)
         if self.selected_objs:
             self.add_to_package_mask(self.selected_objs)
         self.queueView.refresh()
-        normalCursor(self.main_window)
+        normal_cursor(self.main_window)
         self.view.queue_draw()
 
     def __do_change_sorting_by_column(self, options):
-        busyCursor(self.main_window)
+        busy_cursor(self.main_window)
         current = self.__current_model_injector_class
         new = options[0]
         if current in options:
@@ -1215,8 +1215,8 @@ class EntropyPackageView:
                     sort_id = self.Sulfur.pkg_sorters_id_inverse.get(sort_name)
                     sorter.set_active(sort_id)
                     break
-            self.Sulfur.addPackages()
-        normalCursor(self.main_window)
+            self.Sulfur.show_packages()
+        normal_cursor(self.main_window)
 
     def on_package_column_clicked(self, widget):
         options = self.model_injector_rotation['package']
@@ -1478,7 +1478,7 @@ class EntropyPackageView:
         elif not obj.queued:
             cell.set_property(stype,None)
 
-    def selectAll(self):
+    def select_all(self):
 
         mylist = []
         for parent in self.store:
@@ -1491,7 +1491,7 @@ class EntropyPackageView:
         for obj in mylist:
             obj.queued = obj.action
 
-        self.clearUpdates()
+        self.clear_updates()
         self.updates['u'] = self.queue.packages['u'][:]
         self.updates['i'] = self.queue.packages['i'][:]
         self.updates['r'] = self.queue.packages['r'][:]
@@ -1509,13 +1509,13 @@ class EntropyPackageView:
         self.queueView.refresh()
         self.view.queue_draw()
 
-    def clearUpdates(self):
+    def clear_updates(self):
         self.updates = {}
         self.updates['u'] = []
         self.updates['r'] = []
         self.updates['i'] = []
 
-    def deselectAll(self):
+    def deselect_all(self):
 
         xlist = []
         for parent in self.store:
@@ -1529,7 +1529,7 @@ class EntropyPackageView:
         for obj in xlist:
             obj.queued = None
         self.queue.remove(xlist)
-        self.clearUpdates()
+        self.clear_updates()
         self.queueView.refresh()
         self.view.queue_draw()
 
@@ -1574,7 +1574,6 @@ class EntropyQueueView:
             cell.set_property(stype,None)
 
     def refresh ( self ):
-        """ Populate view with data from queue """
         self.model.clear()
 
         label = "<b>%s</b>" % (_( "Packages To Remove" ),)
@@ -1642,13 +1641,13 @@ class EntropyQueueView:
         self.view.set_property('enable-search',True)
 
 class EntropyFilesView:
-    """ Queue View Class"""
+
     def __init__( self, widget ):
         self.view = widget
         self.model = self.setup_view()
 
     def setup_view( self ):
-        """ Create Notebook list for single page  """
+
         model = gtk.TreeStore( gobject.TYPE_INT, gobject.TYPE_STRING,
             gobject.TYPE_STRING, gobject.TYPE_STRING )
         self.view.set_model( model )
@@ -1696,7 +1695,7 @@ class EntropyFilesView:
             )
 
 class EntropyAdvisoriesView:
-    """ Queue View Class"""
+
     def __init__( self, widget, ui, etpbase ):
         self.view = widget
         self.model = self.setup_view()
@@ -1873,7 +1872,7 @@ class EntropyRepoView:
         self.Sulfur = application
 
     def on_active_toggled( self, widget, path):
-        """ Repo select/unselect handler """
+
         myiter = self.store.get_iter( path )
         state = self.store.get_value(myiter,0)
         repoid = self.store.get_value(myiter,3)
@@ -1886,7 +1885,7 @@ class EntropyRepoView:
                 self.Equo.enable_repository(repoid)
                 initconfig_entropy_constants(etpSys['rootdir'])
             self.Sulfur.reset_cache_status()
-            self.Sulfur.addPackages(back_to_page = "repos")
+            self.Sulfur.show_packages(back_to_page = "repos")
             self.store.set_value(myiter,0, not state)
 
     def on_update_toggled( self, widget, path):
@@ -1898,7 +1897,7 @@ class EntropyRepoView:
             self.store.set_value(myiter,1, not state)
 
     def setup_view( self ):
-        """ Create models and columns for the Repo TextView  """
+
         store = gtk.ListStore( 'gboolean', 'gboolean', gobject.TYPE_STRING,
             gobject.TYPE_STRING, gobject.TYPE_STRING)
         self.view.set_model( store )
@@ -1934,14 +1933,14 @@ class EntropyRepoView:
         return store
 
     def create_text_column( self, hdr,colno):
-        cell = gtk.CellRendererText()    # Size Column
+        cell = gtk.CellRendererText()
         column = gtk.TreeViewColumn( hdr, cell, text=colno )
         column.set_resizable( True )
         self.view.append_column( column )
 
     def populate(self):
+
         self.store.clear()
-        """ Populate a repo liststore with data """
         for repo in self.Equo.SystemSettings['repositories']['order']:
             repodata = self.Equo.SystemSettings['repositories']['available'][repo]
             self.store.append([1, 1, repodata['dbrevision'], repo,
@@ -2006,16 +2005,14 @@ class EntropyRepoView:
             iterator = self.store.iter_next( iterator )
 
 class EntropyRepositoryMirrorsView:
-    """ 
-    This class controls the repo TreeView
-    """
+
     def __init__( self, widget):
         self.view = widget
         self.headers = [""]
         self.store = self.setup_view()
 
     def setup_view( self ):
-        """ Create models and columns for the Repo TextView  """
+
         store = gtk.ListStore(str)
         self.view.set_model( store )
 
@@ -2034,7 +2031,6 @@ class EntropyRepositoryMirrorsView:
         self.view.append_column( column )
 
     def populate(self):
-        """ Populate a repo liststore with data """
         self.store.clear()
 
     def get_selected( self ):
