@@ -1174,18 +1174,44 @@ class Package:
                     os.remove(rootdir)
 
                 # if our directory is a symlink instead, then copy the symlink
-                if os.path.islink(imagepathDir) and not os.path.isdir(rootdir):
-                    # for security we skip live items that are dirs
+                if os.path.islink(imagepathDir):
+
+                    # if our live system features a directory instead of
+                    # a symlink, we should consider removing the directory
+                    if (not os.path.islink(rootdir)) and os.path.isdir(rootdir):
+                        self.Entropy.clientLog.log(
+                            ETP_LOGPRI_INFO,
+                            ETP_LOGLEVEL_NORMAL,
+                            "WARNING!!! %s is a directory when it should be a symlink !! Removing in 20 seconds..." % (rootdir,)
+                        )
+                        mytxt = darkred(_("%s is a directory when should be a symlink !! Removing in 20 seconds...") % (rootdir,))
+                        self.Entropy.updateProgress(
+                            red("QA: ")+mytxt,
+                            importance = 1,
+                            type = "warning",
+                            header = red(" !!! ")
+                        )
+                        self.entropyTools.ebeep(20)
+                        shutil.rmtree(rootdir, True)
+                        os.rmdir(rootdir)
+
                     tolink = os.readlink(imagepathDir)
+                    live_tolink = None
                     if os.path.islink(rootdir):
-                        os.remove(rootdir)
-                    os.symlink(tolink,rootdir)
+                        live_tolink = os.readlink(rootdir)
+                    if tolink != live_tolink:
+                        if os.path.lexists(rootdir):
+                            # at this point, it must be a file
+                            os.remove(rootdir)
+                        os.symlink(tolink, rootdir)
+
                 elif (not os.path.isdir(rootdir)) and (not os.access(rootdir,os.R_OK)):
                     try:
                         # we should really force a simple mkdir first of all
                         os.mkdir(rootdir)
                     except OSError:
                         os.makedirs(rootdir)
+
 
                 if not os.path.islink(rootdir) and os.access(rootdir,os.W_OK):
                     # symlink doesn't need permissions, also until os.walk ends they might be broken
