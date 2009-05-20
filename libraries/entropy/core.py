@@ -24,9 +24,8 @@ from __future__ import with_statement
 import os
 from entropy.exceptions import IncorrectParameter, SystemDatabaseError
 from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
-    etpRepositories, etpRepositoriesOrder, const_secure_config_file, \
-    const_set_nice_level, etpRepositories, \
-    etpRepositoriesExcluded, const_extract_cli_repo_params, etpCache
+    const_secure_config_file, const_set_nice_level, \
+    const_extract_cli_repo_params, etpCache
 from entropy.i18n import _
 
 class Singleton(object):
@@ -1103,12 +1102,6 @@ class SystemSettings(Singleton):
             'security_advisories_url': etpConst['securityurl'],
         }
 
-        # kept for backward compatibility
-        # XXX will be removed before 10-10-2009
-        etpRepositories.clear()
-        etpRepositoriesExcluded.clear()
-        del etpRepositoriesOrder[:]
-
         repo_conf = etpConst['repositoriesconf']
         if not (os.path.isfile(repo_conf) and os.access(repo_conf, os.R_OK)):
             return data
@@ -1209,12 +1202,6 @@ class SystemSettings(Singleton):
                     data['security_advisories_url'] = split_line[1]
                 except (IndexError, ValueError, TypeError,):
                     continue
-
-        # kept for backward compatibility
-        # XXX will be removed before 10-10-2009
-        etpRepositories.update(data['available'])
-        etpRepositoriesExcluded.update(data['excluded'])
-        etpRepositoriesOrder.extend(data['order'])
 
         return data
 

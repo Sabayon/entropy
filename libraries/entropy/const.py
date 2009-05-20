@@ -89,13 +89,6 @@ etpCache = {
     'ugc_srv_cache': 'ugc/ugc_srv_cache'
 }
 
-# kept for backward compatibility
-# XXX will be removed before 10-10-2009
-etpRepositories = {}
-etpRepositoriesExcluded = {}
-etpRepositoriesOrder = []
-
-
 etpConst = {}
 
 def initconfig_entropy_constants(rootdir):
