@@ -56,7 +56,7 @@ class Client:
                 raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
             self.MethodsInterface = MethodsInterface
         else:
-            self.MethodsInterface = BaseMethods
+            self.MethodsInterface = BaseMixin
 
         import socket, struct
         import entropy.tools as entropyTools
