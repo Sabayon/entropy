@@ -29,7 +29,9 @@ from entropy.i18n import _
 class Client:
 
     ssl_connection = True
-    def __init__(self, OutputInterface, MethodsInterface = None, ClientCommandsInterface = None, quiet = True, show_progress = False, do_cache_connection = False, do_cache_session = False):
+    def __init__(self, OutputInterface, MethodsInterface = None,
+        ClientCommandsInterface = None, quiet = True, show_progress = False,
+        do_cache_connection = False, do_cache_session = False):
 
         if not hasattr(OutputInterface,'updateProgress'):
             mytxt = _("OutputInterface does not have an updateProgress method")
