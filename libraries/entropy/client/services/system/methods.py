@@ -22,7 +22,7 @@
 from __future__ import with_statement
 from entropy.i18n import _
 
-class Base:
+class BaseMixin:
 
     def __init__(self, SystemManagerClientInstance):
         self.Manager = SystemManagerClientInstance
@@ -171,10 +171,10 @@ class Base:
         return self.Manager.do_cmd(True, "write_to_running_command_pipe", [queue_id, write_to_stdout, txt], {})
 
 
-class Repository(Base):
+class Repository(BaseMixin):
 
     def __init__(self, *args, **kwargs):
-        Base.__init__(self, *args, **kwargs)
+        BaseMixin.__init__(self, *args, **kwargs)
         self.available_commands.update({
             'sync_spm': {
                 'desc': _("Update Spm Repository (emerge --sync)"),

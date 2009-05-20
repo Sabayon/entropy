@@ -47,10 +47,10 @@ class Client:
         else:
             self.ClientCommandsInterface = ClientCommands
 
-        from entropy.client.services.system.methods import Base as BaseMethods
+        from entropy.client.services.system.methods import BaseMixin
         if MethodsInterface != None:
-            if not issubclass(MethodsInterface, BaseMethods):
-                mytxt = _("A valid entropy.client.services.system.methods.BaseMethods class/subclass is needed")
+            if not issubclass(MethodsInterface, BaseMixin):
+                mytxt = _("A valid entropy.client.services.system.methods.BaseMixin class/subclass is needed")
                 raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
             self.MethodsInterface = MethodsInterface
         else:
