@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-17 10:23+0200\n"
+"POT-Creation-Date: 2009-05-20 20:03+0200\n"
 "PO-Revision-Date: 2006-02-14 14:52+0100\n"
 "Last-Translator: tim <tla@ramil.dk>\n"
 "Language-Team: Danish <dansk@klid.dk>\n"
@@ -90,8 +90,8 @@ msgstr "Sorterer Pakker"
 #: ../../libraries/entropy/services/ugc/interfaces.py:1553
 #: ../../libraries/entropy/client/services/ugc/commands.py:36
 #: ../../libraries/entropy/client/services/ugc/commands.py:39
-#: ../../libraries/entropy/client/services/system/interfaces.py:35
-#: ../../libraries/entropy/client/services/system/interfaces.py:38
+#: ../../libraries/entropy/client/services/system/interfaces.py:37
+#: ../../libraries/entropy/client/services/system/interfaces.py:40
 #: ../../libraries/entropy/spm.py:35 ../../libraries/entropy/spm.py:38
 #: ../../libraries/entropy/spm.py:99 ../../libraries/entropy/spm.py:102
 #: ../../libraries/entropy/transceivers.py:629
@@ -363,10 +363,10 @@ msgid "database"
 msgstr "Kører Transaktion"
 
 #: ../../libraries/entropy/server/interfaces/main.py:775
-#: ../../libraries/entropy/server/interfaces/main.py:3035
+#: ../../libraries/entropy/server/interfaces/main.py:3038
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1521
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1854
-#: ../../sulfur/src/dialogs.py:2083
+#: ../../sulfur/src/sulfur/dialogs.py:2290
 #, fuzzy
 msgid "download"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
@@ -495,8 +495,8 @@ msgstr "Vis Installerede Pakker"
 #. ask to continue
 #: ../../libraries/entropy/server/interfaces/main.py:1384
 #: ../../libraries/entropy/server/interfaces/main.py:1633
-#: ../../libraries/entropy/server/interfaces/main.py:2808
-#: ../../libraries/entropy/server/interfaces/main.py:3046
+#: ../../libraries/entropy/server/interfaces/main.py:2811
+#: ../../libraries/entropy/server/interfaces/main.py:3049
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2752
 #: ../../server/server_reagent.py:503 ../../server/server_reagent.py:564
 #: ../../server/server_reagent.py:609
@@ -562,8 +562,8 @@ msgstr "Vis Installerede Pakker"
 #. note
 #: ../../libraries/entropy/server/interfaces/main.py:1573
 #: ../../libraries/entropy/client/services/system/methods.py:98
-#: ../../sulfur/src/dialogs.py:781 ../../sulfur/src/dialogs.py:3127
-#: ../../sulfur/src/sulfur.glade.h:125
+#: ../../sulfur/src/sulfur/dialogs.py:987
+#: ../../sulfur/src/sulfur/dialogs.py:3334
 msgid "Note"
 msgstr ""
 
@@ -622,7 +622,7 @@ msgid "adding package"
 msgstr "Vis Installerede Pakker"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1836
-#: ../../libraries/entropy/server/interfaces/main.py:2678
+#: ../../libraries/entropy/server/interfaces/main.py:2681
 #, fuzzy
 msgid "added package"
 msgstr "Vis Installerede Pakker"
@@ -695,63 +695,63 @@ msgstr "Indlæsning afsluttet"
 msgid "defaulting to 0"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:2518
+#: ../../libraries/entropy/server/interfaces/main.py:2521
 #, fuzzy
 msgid "Initializing Entropy database"
 msgstr "Oprydning af alt Yum metadat"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2549
+#: ../../libraries/entropy/server/interfaces/main.py:2552
 #: ../../libraries/entropy/db.py:886 ../../libraries/entropy/db.py:904
 #: ../../libraries/entropy/db.py:1106
 msgid "WARNING"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:2550
+#: ../../libraries/entropy/server/interfaces/main.py:2553
 #, fuzzy
 msgid "database already exists"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2560
+#: ../../libraries/entropy/server/interfaces/main.py:2563
 #, fuzzy
 msgid "Do you want to continue ?"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2579
+#: ../../libraries/entropy/server/interfaces/main.py:2582
 #, fuzzy
 msgid "Dumping current revisions to file"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2596
+#: ../../libraries/entropy/server/interfaces/main.py:2599
 msgid "Dumping current 'treeupdates' actions to file"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:2608
+#: ../../libraries/entropy/server/interfaces/main.py:2611
 msgid ""
 "Would you like to sync packages first (important if you don't have them "
 "synced) ?"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:2626
+#: ../../libraries/entropy/server/interfaces/main.py:2629
 #, fuzzy
 msgid "Reinitializing Entropy database for branch"
 msgstr "Oprydning af alt Yum metadat"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2628
+#: ../../libraries/entropy/server/interfaces/main.py:2631
 #, fuzzy
 msgid "using Packages in the repository"
 msgstr "Behander pakker i køen"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2645
+#: ../../libraries/entropy/server/interfaces/main.py:2648
 #, fuzzy
 msgid "analyzing"
 msgstr "Installerer"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2680
+#: ../../libraries/entropy/server/interfaces/main.py:2683
 #: ../../client/text_query.py:1123 ../../client/text_query.py:1129
 msgid "revision"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:2719
+#: ../../libraries/entropy/server/interfaces/main.py:2722
 #: ../../libraries/entropy/client/interfaces/methods.py:1057
 #: ../../libraries/entropy/client/interfaces/repository.py:1315
 #: ../../libraries/entropy/client/interfaces/repository.py:1352
@@ -761,62 +761,64 @@ msgstr ""
 #: ../../client/text_rescue.py:291 ../../client/text_rescue.py:304
 #: ../../client/text_ui.py:908 ../../client/text_ui.py:909
 #: ../../client/text_ui.py:911 ../../client/text_ui.py:912
-#: ../../sulfur/src/dialogs.py:5648 ../../sulfur/src/misc.py:88
-#: ../../sulfur/src/misc.py:372 ../../sulfur/src/sulfur.py:1909
+#: ../../sulfur/src/sulfur/dialogs.py:5854
+#: ../../sulfur/src/sulfur/__init__.py:881
+#: ../../sulfur/src/sulfur/packages.py:92
+#: ../../sulfur/src/sulfur/packages.py:394
 msgid "Attention"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:2719
+#: ../../libraries/entropy/server/interfaces/main.py:2722
 #, fuzzy
 msgid "cannot match"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2772
-#: ../../libraries/entropy/server/interfaces/main.py:2978
+#: ../../libraries/entropy/server/interfaces/main.py:2775
+#: ../../libraries/entropy/server/interfaces/main.py:2981
 #, fuzzy
 msgid "Integrity verification of the selected packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2784
-#: ../../libraries/entropy/server/interfaces/main.py:2990
+#: ../../libraries/entropy/server/interfaces/main.py:2787
+#: ../../libraries/entropy/server/interfaces/main.py:2993
 #, fuzzy
 msgid "All the packages in the Entropy Packages repository will be checked."
 msgstr "Rediger Filkilder"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2790
+#: ../../libraries/entropy/server/interfaces/main.py:2793
 #, fuzzy
 msgid "This is the list of the packages that would be checked"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2822
+#: ../../libraries/entropy/server/interfaces/main.py:2825
 #, fuzzy
 msgid "Working on mirror"
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2842
+#: ../../libraries/entropy/server/interfaces/main.py:2845
 #, fuzzy
 msgid "checking hash"
 msgstr "Henter : %s"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2858
-#: ../../libraries/entropy/server/interfaces/main.py:2874
+#: ../../libraries/entropy/server/interfaces/main.py:2861
+#: ../../libraries/entropy/server/interfaces/main.py:2877
 #, fuzzy
 msgid "digest verification of"
 msgstr "_Beskrivelse"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2860
+#: ../../libraries/entropy/server/interfaces/main.py:2863
 #: ../../libraries/entropy/client/interfaces/metadata.py:139
 #: ../../libraries/entropy/transceivers.py:1210
 #, fuzzy
 msgid "not supported"
 msgstr "Installeret"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2876
+#: ../../libraries/entropy/server/interfaces/main.py:2879
 msgid "failed for unknown reasons"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:2891
-#: ../../libraries/entropy/server/interfaces/main.py:3152
+#: ../../libraries/entropy/server/interfaces/main.py:2894
+#: ../../libraries/entropy/server/interfaces/main.py:3155
 #: ../../libraries/entropy/server/interfaces/mirrors.py:446
 #: ../../libraries/entropy/server/interfaces/mirrors.py:465
 #: ../../libraries/entropy/server/interfaces/mirrors.py:499
@@ -826,138 +828,138 @@ msgstr ""
 msgid "package"
 msgstr "Pakker."
 
-#: ../../libraries/entropy/server/interfaces/main.py:2893
+#: ../../libraries/entropy/server/interfaces/main.py:2896
 msgid "NOT healthy"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:2905
-#: ../../libraries/entropy/server/interfaces/main.py:3164
+#: ../../libraries/entropy/server/interfaces/main.py:2908
+#: ../../libraries/entropy/server/interfaces/main.py:3167
 #, fuzzy
 msgid "This is the list of broken packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2913
+#: ../../libraries/entropy/server/interfaces/main.py:2916
 #: ../../libraries/entropy/client/interfaces/fetch.py:141
 #: ../../libraries/entropy/client/interfaces/fetch.py:395
 #, fuzzy
 msgid "Mirror"
 msgstr "_Filspejlsliste"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2930
+#: ../../libraries/entropy/server/interfaces/main.py:2933
 #: ../../server/server_reagent.py:429
 msgid "Statistics"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:2939
-#: ../../libraries/entropy/server/interfaces/main.py:3190
+#: ../../libraries/entropy/server/interfaces/main.py:2942
+#: ../../libraries/entropy/server/interfaces/main.py:3193
 #, fuzzy
 msgid "Number of checked packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2949
-#: ../../libraries/entropy/server/interfaces/main.py:3200
+#: ../../libraries/entropy/server/interfaces/main.py:2952
+#: ../../libraries/entropy/server/interfaces/main.py:3203
 #, fuzzy
 msgid "Number of healthy packages"
 msgstr "Navn på den nye profil"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2959
-#: ../../libraries/entropy/server/interfaces/main.py:3210
+#: ../../libraries/entropy/server/interfaces/main.py:2962
+#: ../../libraries/entropy/server/interfaces/main.py:3213
 #, fuzzy
 msgid "Number of broken packages"
 msgstr "Du er ved at slette %s pakker\n"
 
-#: ../../libraries/entropy/server/interfaces/main.py:2977
+#: ../../libraries/entropy/server/interfaces/main.py:2980
 #: ../../libraries/entropy/client/interfaces/repository.py:802
 msgid "local"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:3011
+#: ../../libraries/entropy/server/interfaces/main.py:3014
 #, fuzzy
 msgid "available"
 msgstr "Tilgængelige"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3024
+#: ../../libraries/entropy/server/interfaces/main.py:3027
 msgid "upload/ignored"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:3059
+#: ../../libraries/entropy/server/interfaces/main.py:3062
 #, fuzzy
 msgid "Starting to download missing files"
 msgstr "Kilde"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3069
+#: ../../libraries/entropy/server/interfaces/main.py:3072
 msgid "Trying to search missing or broken files on another mirror"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:3089
+#: ../../libraries/entropy/server/interfaces/main.py:3092
 #, fuzzy
 msgid "All the binary packages have been downloaded successfully."
 msgstr "Indlæsning afsluttet"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3097
+#: ../../libraries/entropy/server/interfaces/main.py:3100
 #, fuzzy
 msgid "These are the packages that cannot be found online"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3113
+#: ../../libraries/entropy/server/interfaces/main.py:3116
 msgid "They won't be checked"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:3132
+#: ../../libraries/entropy/server/interfaces/main.py:3135
 #, fuzzy
 msgid "checking hash of"
 msgstr "Henter : %s"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3154
+#: ../../libraries/entropy/server/interfaces/main.py:3157
 msgid "is corrupted, stored checksum"
 msgstr ""
 
-#: ../../libraries/entropy/server/interfaces/main.py:3220
+#: ../../libraries/entropy/server/interfaces/main.py:3223
 #, fuzzy
 msgid "Number of downloaded packages"
 msgstr "Henter Pakker:"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3230
+#: ../../libraries/entropy/server/interfaces/main.py:3233
 #, fuzzy
 msgid "Number of failed downloads"
 msgstr "Navn på den nye profil"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3249
+#: ../../libraries/entropy/server/interfaces/main.py:3252
 #, fuzzy
 msgid "Please setup your branch to"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3249
+#: ../../libraries/entropy/server/interfaces/main.py:3252
 #, fuzzy
 msgid "and retry"
 msgstr "Kilde"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3258
+#: ../../libraries/entropy/server/interfaces/main.py:3261
 #, fuzzy
 msgid "Moving database (if not exists)"
 msgstr "I_nformation"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3270
+#: ../../libraries/entropy/server/interfaces/main.py:3273
 #, fuzzy
 msgid "Switching packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3296
+#: ../../libraries/entropy/server/interfaces/main.py:3299
 #, fuzzy
 msgid "Ignoring"
 msgstr "Installeret"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3298
+#: ../../libraries/entropy/server/interfaces/main.py:3301
 #, fuzzy
 msgid "already in branch"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3310
+#: ../../libraries/entropy/server/interfaces/main.py:3313
 #, fuzzy
 msgid "configuring package information"
 msgstr "I_nformation"
 
-#: ../../libraries/entropy/server/interfaces/main.py:3337
+#: ../../libraries/entropy/server/interfaces/main.py:3340
 #, fuzzy
 msgid "migration loop completed"
 msgstr "Indlæsning afsluttet"
@@ -1222,7 +1224,7 @@ msgstr "Indlæsning afsluttet"
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1348
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1376
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1840
-#: ../../sulfur/src/dialogs.py:2081
+#: ../../sulfur/src/sulfur/dialogs.py:2288
 msgid "upload"
 msgstr ""
 
@@ -1592,7 +1594,6 @@ msgid "cannot convert stream into object"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/ugc/commands.py:601
-#: ../../sulfur/src/sulfur.glade.h:245
 msgid "User Generated Content"
 msgstr ""
 
@@ -1625,13 +1626,12 @@ msgid "repository does not support EAPI3"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:132
-#: ../../sulfur/src/dialogs.py:198 ../../sulfur/src/sulfur.glade.h:246
+#: ../../sulfur/src/sulfur/dialogs.py:406
 #, fuzzy
 msgid "Username"
 msgstr "Filnavn"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:133
-#: ../../sulfur/src/sulfur.glade.h:145
 msgid "Password"
 msgstr ""
 
@@ -1691,39 +1691,39 @@ msgstr "Navn på den nye profil"
 msgid "Cannot write to cache file"
 msgstr "Navn på den nye profil"
 
-#: ../../libraries/entropy/client/services/system/interfaces.py:44
+#: ../../libraries/entropy/client/services/system/interfaces.py:45
 msgid ""
 "A valid entropy.client.services.system.commands.Client class/subclass is "
 "needed"
 msgstr ""
 
-#: ../../libraries/entropy/client/services/system/interfaces.py:53
+#: ../../libraries/entropy/client/services/system/interfaces.py:50
 msgid ""
-"A valid entropy.client.services.system.methods.BaseMethods class/subclass is "
+"A valid entropy.client.services.system.methods.BaseMixin class/subclass is "
 "needed"
 msgstr ""
 
-#: ../../libraries/entropy/client/services/system/interfaces.py:102
-#: ../../libraries/entropy/client/services/system/interfaces.py:104
-#: ../../libraries/entropy/client/services/system/interfaces.py:106
+#: ../../libraries/entropy/client/services/system/interfaces.py:97
+#: ../../libraries/entropy/client/services/system/interfaces.py:99
+#: ../../libraries/entropy/client/services/system/interfaces.py:101
 #, fuzzy
 msgid "not a string"
 msgstr "Installeret"
 
-#: ../../libraries/entropy/client/services/system/interfaces.py:102
-#: ../../libraries/entropy/client/services/system/interfaces.py:104
-#: ../../libraries/entropy/client/services/system/interfaces.py:106
-#: ../../libraries/entropy/client/services/system/interfaces.py:108
-#: ../../libraries/entropy/client/services/system/interfaces.py:110
+#: ../../libraries/entropy/client/services/system/interfaces.py:97
+#: ../../libraries/entropy/client/services/system/interfaces.py:99
+#: ../../libraries/entropy/client/services/system/interfaces.py:101
+#: ../../libraries/entropy/client/services/system/interfaces.py:103
+#: ../../libraries/entropy/client/services/system/interfaces.py:105
 msgid "Please use setup_connection() properly"
 msgstr ""
 
-#: ../../libraries/entropy/client/services/system/interfaces.py:108
+#: ../../libraries/entropy/client/services/system/interfaces.py:103
 #, fuzzy
 msgid "not an int"
 msgstr "Installeret"
 
-#: ../../libraries/entropy/client/services/system/interfaces.py:110
+#: ../../libraries/entropy/client/services/system/interfaces.py:105
 #, fuzzy
 msgid "not a bool"
 msgstr "Tilgængelige"
@@ -1856,43 +1856,46 @@ msgstr "Fi_ler"
 
 #: ../../libraries/entropy/client/services/system/methods.py:189
 #: ../../libraries/entropy/client/services/system/methods.py:207
-#: ../../sulfur/src/dialogs.py:2942 ../../sulfur/src/dialogs.py:2985
+#: ../../sulfur/src/sulfur/dialogs.py:3149
+#: ../../sulfur/src/sulfur/dialogs.py:3192
 #, fuzzy
 msgid "Pretend"
 msgstr "Slettet"
 
 #: ../../libraries/entropy/client/services/system/methods.py:190
-#: ../../sulfur/src/dialogs.py:2986
+#: ../../sulfur/src/sulfur/dialogs.py:3193
 msgid "Oneshot"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/system/methods.py:191
 #: ../../libraries/entropy/client/services/system/methods.py:208
-#: ../../sulfur/src/dialogs.py:2943 ../../sulfur/src/dialogs.py:2987
+#: ../../sulfur/src/sulfur/dialogs.py:3150
+#: ../../sulfur/src/sulfur/dialogs.py:3194
 #, fuzzy
 msgid "Verbose"
 msgstr "_Filspejlsliste"
 
 #: ../../libraries/entropy/client/services/system/methods.py:192
 #: ../../libraries/entropy/client/services/system/methods.py:209
-#: ../../sulfur/src/dialogs.py:2944 ../../sulfur/src/dialogs.py:2988
+#: ../../sulfur/src/sulfur/dialogs.py:3151
+#: ../../sulfur/src/sulfur/dialogs.py:3195
 msgid "No color"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/system/methods.py:193
-#: ../../sulfur/src/dialogs.py:2989
+#: ../../sulfur/src/sulfur/dialogs.py:3196
 #, fuzzy
 msgid "Fetch only"
 msgstr "Opdaterer"
 
 #: ../../libraries/entropy/client/services/system/methods.py:194
-#: ../../sulfur/src/dialogs.py:2990
+#: ../../sulfur/src/sulfur/dialogs.py:3197
 msgid "Build only"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/system/methods.py:195
 #: ../../server/server_reagent.py:187 ../../server/server_reagent.py:192
-#: ../../sulfur/src/dialogs.py:2991
+#: ../../sulfur/src/sulfur/dialogs.py:3198
 #, fuzzy
 msgid "No dependencies"
 msgstr "Indstillinger"
@@ -1902,12 +1905,12 @@ msgid "Custom USE"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/system/methods.py:197
-#: ../../sulfur/src/dialogs.py:2993
+#: ../../sulfur/src/sulfur/dialogs.py:3200
 msgid "Custom LDFLAGS"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/system/methods.py:198
-#: ../../sulfur/src/dialogs.py:2994
+#: ../../sulfur/src/sulfur/dialogs.py:3201
 msgid "Custom CFLAGS"
 msgstr ""
 
@@ -1937,7 +1940,7 @@ msgstr "Ingen valgte pakker"
 
 #: ../../libraries/entropy/client/services/system/methods.py:230
 #: ../../libraries/entropy/client/services/system/methods.py:239
-#: ../../client/text_query.py:1176 ../../sulfur/src/dialogs.py:4100
+#: ../../client/text_query.py:1176 ../../sulfur/src/sulfur/dialogs.py:4306
 msgid "USE flags"
 msgstr ""
 
@@ -1961,7 +1964,8 @@ msgstr ""
 
 #. command col
 #: ../../libraries/entropy/client/services/system/methods.py:259
-#: ../../sulfur/src/dialogs.py:694 ../../sulfur/src/dialogs.py:735
+#: ../../sulfur/src/sulfur/dialogs.py:900
+#: ../../sulfur/src/sulfur/dialogs.py:941
 msgid "Command"
 msgstr ""
 
@@ -1994,7 +1998,7 @@ msgstr "Rediger Filkilder"
 #: ../../libraries/entropy/client/services/system/methods.py:395
 #: ../../libraries/entropy/client/services/system/methods.py:402
 #: ../../libraries/entropy/client/services/system/methods.py:411
-#: ../../sulfur/src/views.py:1902
+#: ../../sulfur/src/sulfur/views.py:1929
 #, fuzzy
 msgid "Repository Identifier"
 msgstr "Filkilder"
@@ -2031,13 +2035,13 @@ msgid ""
 msgstr "Ingen valgte pakker"
 
 #: ../../libraries/entropy/client/services/system/methods.py:314
-#: ../../sulfur/src/dialogs.py:3332
+#: ../../sulfur/src/sulfur/dialogs.py:3539
 #, fuzzy
 msgid "Search type"
 msgstr "Søgnings Indstiller"
 
 #: ../../libraries/entropy/client/services/system/methods.py:315
-#: ../../sulfur/src/dialogs.py:3333
+#: ../../sulfur/src/sulfur/dialogs.py:3540
 #, fuzzy
 msgid "Search string"
 msgstr "Søgnings Indstiller"
@@ -2058,7 +2062,7 @@ msgid "From repository"
 msgstr "Kilde"
 
 #: ../../libraries/entropy/client/services/system/methods.py:326
-#: ../../sulfur/src/dialogs.py:1825
+#: ../../sulfur/src/sulfur/dialogs.py:2032
 #, fuzzy
 msgid "To repository"
 msgstr "Kilde"
@@ -2163,9 +2167,10 @@ msgstr "Sletter"
 #: ../../client/text_repositories.py:299 ../../client/text_security.py:85
 #: ../../client/text_ugc.py:361 ../../client/text_ugc.py:545
 #: ../../server/server_activator.py:151 ../../server/server_activator.py:184
-#: ../../server/server_activator.py:216 ../../sulfur/src/dialogs.py:100
-#: ../../sulfur/src/dialogs.py:1327 ../../sulfur/src/dialogs.py:1974
-#: ../../sulfur/src/dialogs.py:3730 ../../sulfur/src/sulfur.glade.h:223
+#: ../../server/server_activator.py:216 ../../sulfur/src/sulfur/dialogs.py:307
+#: ../../sulfur/src/sulfur/dialogs.py:1533
+#: ../../sulfur/src/sulfur/dialogs.py:2181
+#: ../../sulfur/src/sulfur/dialogs.py:3936
 #, fuzzy
 msgid "Title"
 msgstr "_Filer"
@@ -2282,13 +2287,13 @@ msgstr ""
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:196
 #: ../../libraries/entropy/client/interfaces/fetch.py:445
-#: ../../libraries/entropy/client/interfaces/package.py:1517
+#: ../../libraries/entropy/client/interfaces/package.py:1553
 msgid "second"
 msgstr ""
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:211
 #: ../../libraries/entropy/client/interfaces/fetch.py:461
-#: ../../libraries/entropy/client/interfaces/package.py:1532
+#: ../../libraries/entropy/client/interfaces/package.py:1568
 #, fuzzy
 msgid "Error downloading from"
 msgstr "Fejl i Hentning af pakker:\n"
@@ -2319,14 +2324,14 @@ msgstr "Du er ved at slette %s pakker\n"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:224
 #: ../../libraries/entropy/client/interfaces/fetch.py:479
-#: ../../libraries/entropy/client/interfaces/package.py:1541
+#: ../../libraries/entropy/client/interfaces/package.py:1577
 #, fuzzy
 msgid "discarded download"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:227
 #: ../../libraries/entropy/client/interfaces/fetch.py:482
-#: ../../libraries/entropy/client/interfaces/package.py:1543
+#: ../../libraries/entropy/client/interfaces/package.py:1579
 #, fuzzy
 msgid "unknown reason"
 msgstr "Filkilde"
@@ -2337,18 +2342,18 @@ msgid "Downloading from"
 msgstr "Indlæsning afsluttet"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:443
-#: ../../libraries/entropy/client/interfaces/package.py:1515
+#: ../../libraries/entropy/client/interfaces/package.py:1551
 msgid "Successfully downloaded from"
 msgstr ""
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:445
-#: ../../libraries/entropy/client/interfaces/package.py:1517
+#: ../../libraries/entropy/client/interfaces/package.py:1553
 #, fuzzy
 msgid "at"
 msgstr "Fi_ler"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:466
-#: ../../libraries/entropy/client/interfaces/package.py:1537
+#: ../../libraries/entropy/client/interfaces/package.py:1573
 #, fuzzy
 msgid "file not available on this mirror"
 msgstr "Tilgængelige"
@@ -2395,13 +2400,18 @@ msgstr "Indlæsning af pakker afsluttet"
 #: ../../libraries/entropy/client/interfaces/methods.py:56
 #: ../../libraries/entropy/client/interfaces/methods.py:71
 #: ../../server/server_reagent.py:100 ../../server/server_reagent.py:112
-#: ../../sulfur/src/dialogs.py:2063 ../../sulfur/src/dialogs.py:2226
-#: ../../sulfur/src/dialogs.py:2303 ../../sulfur/src/dialogs.py:2587
-#: ../../sulfur/src/dialogs.py:3276 ../../sulfur/src/dialogs.py:3331
-#: ../../sulfur/src/dialogs.py:3365 ../../sulfur/src/dialogs.py:3388
-#: ../../sulfur/src/dialogs.py:3414 ../../sulfur/src/dialogs.py:3454
-#: ../../sulfur/src/sulfur.py:1701 ../../sulfur/src/views.py:1255
-#: ../../sulfur/src/views.py:1841
+#: ../../sulfur/src/sulfur/dialogs.py:2270
+#: ../../sulfur/src/sulfur/dialogs.py:2433
+#: ../../sulfur/src/sulfur/dialogs.py:2510
+#: ../../sulfur/src/sulfur/dialogs.py:2794
+#: ../../sulfur/src/sulfur/dialogs.py:3483
+#: ../../sulfur/src/sulfur/dialogs.py:3538
+#: ../../sulfur/src/sulfur/dialogs.py:3572
+#: ../../sulfur/src/sulfur/dialogs.py:3595
+#: ../../sulfur/src/sulfur/dialogs.py:3621
+#: ../../sulfur/src/sulfur/dialogs.py:3661
+#: ../../sulfur/src/sulfur/__init__.py:667
+#: ../../sulfur/src/sulfur/views.py:1270 ../../sulfur/src/sulfur/views.py:1867
 msgid "Repository"
 msgstr "Kilde"
 
@@ -2507,7 +2517,7 @@ msgstr "Indlæsning afsluttet"
 #: ../../libraries/entropy/client/interfaces/methods.py:670
 #: ../../libraries/entropy/client/interfaces/methods.py:897
 #: ../../libraries/entropy/client/interfaces/methods.py:920
-#: ../../libraries/entropy/const.py:527
+#: ../../libraries/entropy/const.py:520
 msgid "All fine"
 msgstr ""
 
@@ -2595,7 +2605,6 @@ msgid "Set not found or unable to remove"
 msgstr "Ingen valgte pakker"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:979
-#: ../../sulfur/src/sulfur.glade.h:107
 msgid "Libraries test"
 msgstr ""
 
@@ -2696,13 +2705,13 @@ msgstr ""
 #: ../../libraries/entropy/client/interfaces/trigger.py:1026
 #: ../../libraries/entropy/client/interfaces/trigger.py:1113
 #: ../../libraries/entropy/client/interfaces/trigger.py:1202
-#: ../../libraries/entropy/client/interfaces/trigger.py:1463
-#: ../../libraries/entropy/client/interfaces/trigger.py:1477
-#: ../../libraries/entropy/client/interfaces/trigger.py:1520
-#: ../../libraries/entropy/client/interfaces/trigger.py:1538
-#: ../../libraries/entropy/client/interfaces/trigger.py:1567
-#: ../../libraries/entropy/client/interfaces/trigger.py:1580
-#: ../../libraries/entropy/client/interfaces/trigger.py:1593
+#: ../../libraries/entropy/client/interfaces/trigger.py:1469
+#: ../../libraries/entropy/client/interfaces/trigger.py:1483
+#: ../../libraries/entropy/client/interfaces/trigger.py:1526
+#: ../../libraries/entropy/client/interfaces/trigger.py:1544
+#: ../../libraries/entropy/client/interfaces/trigger.py:1573
+#: ../../libraries/entropy/client/interfaces/trigger.py:1586
+#: ../../libraries/entropy/client/interfaces/trigger.py:1599
 msgid "QA"
 msgstr ""
 
@@ -2721,18 +2730,18 @@ msgid "Please report it"
 msgstr "Konfirmation af behandling af køen"
 
 #: ../../libraries/entropy/client/interfaces/package.py:388
-#: ../../libraries/entropy/client/interfaces/package.py:1577
-#: ../../libraries/entropy/client/interfaces/package.py:1607
-#: ../../libraries/entropy/client/interfaces/package.py:1677
-#: ../../libraries/entropy/client/interfaces/package.py:1683
-#: ../../libraries/entropy/client/interfaces/package.py:1708
-#: ../../libraries/entropy/client/interfaces/package.py:1733
-#: ../../libraries/entropy/client/interfaces/package.py:1861
-#: ../../libraries/entropy/client/interfaces/package.py:1874
+#: ../../libraries/entropy/client/interfaces/package.py:1613
+#: ../../libraries/entropy/client/interfaces/package.py:1643
+#: ../../libraries/entropy/client/interfaces/package.py:1713
+#: ../../libraries/entropy/client/interfaces/package.py:1719
+#: ../../libraries/entropy/client/interfaces/package.py:1744
+#: ../../libraries/entropy/client/interfaces/package.py:1769
+#: ../../libraries/entropy/client/interfaces/package.py:1897
+#: ../../libraries/entropy/client/interfaces/package.py:1910
 #: ../../libraries/entropy/client/interfaces/trigger.py:63
 #: ../../libraries/entropy/db.py:45 ../../libraries/entropy/security.py:253
-#: ../../server/server_reagent.py:645 ../../sulfur/src/sulfur.py:902
-#: ../../sulfur/src/sulfur.py:933 ../../sulfur/src/sulfur.glade.h:73
+#: ../../server/server_reagent.py:645 ../../sulfur/src/sulfur/events.py:787
+#: ../../sulfur/src/sulfur/events.py:820
 msgid "Error"
 msgstr "Fejl"
 
@@ -2748,7 +2757,7 @@ msgid "Collision found during removal of"
 msgstr "Fejl i test af pakke signaturer:\n"
 
 #: ../../libraries/entropy/client/interfaces/package.py:455
-#: ../../libraries/entropy/client/interfaces/package.py:1449
+#: ../../libraries/entropy/client/interfaces/package.py:1485
 #, fuzzy
 msgid "cannot overwrite"
 msgstr "Vis Installerede Pakker"
@@ -2758,7 +2767,7 @@ msgid "Removing config file, never modified"
 msgstr ""
 
 #: ../../libraries/entropy/client/interfaces/package.py:513
-#: ../../libraries/entropy/client/interfaces/package.py:1407
+#: ../../libraries/entropy/client/interfaces/package.py:1443
 #, fuzzy
 msgid "Protecting config file"
 msgstr "Oprettelse af %s profilen fejlede"
@@ -2802,233 +2811,238 @@ msgstr ""
 msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1244
+#: ../../libraries/entropy/client/interfaces/package.py:1187
+#, python-format
+msgid "%s is a directory when should be a symlink !! Removing in 20 seconds..."
+msgstr ""
+
+#: ../../libraries/entropy/client/interfaces/package.py:1270
 msgid "Automerging config file, never modified"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1278
+#: ../../libraries/entropy/client/interfaces/package.py:1304
 #, python-format
 msgid "%s is a directory when it should be a file !! Removing in 20 seconds..."
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1307
+#: ../../libraries/entropy/client/interfaces/package.py:1333
 #, fuzzy
 msgid "File move error"
 msgstr "Du er ved at slette %s pakker\n"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1307
+#: ../../libraries/entropy/client/interfaces/package.py:1333
 #, fuzzy
 msgid "please report"
 msgstr "Konfirmation af behandling af køen"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1421
+#: ../../libraries/entropy/client/interfaces/package.py:1457
 #, fuzzy
 msgid "Skipping file installation/removal"
 msgstr "Installeret"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1434
+#: ../../libraries/entropy/client/interfaces/package.py:1470
 msgid "Cannot check CONFIG PROTECTION. Error"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1448
+#: ../../libraries/entropy/client/interfaces/package.py:1484
 msgid "Collision found during install for"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1497
-#: ../../libraries/entropy/client/interfaces/package.py:1591
+#: ../../libraries/entropy/client/interfaces/package.py:1533
+#: ../../libraries/entropy/client/interfaces/package.py:1627
 #, fuzzy
 msgid "Downloading"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1525
+#: ../../libraries/entropy/client/interfaces/package.py:1561
 #, fuzzy
 msgid "Local path"
 msgstr "Opdateret"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1556
+#: ../../libraries/entropy/client/interfaces/package.py:1592
 #, fuzzy
 msgid "Downloading archive"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1576
+#: ../../libraries/entropy/client/interfaces/package.py:1612
 msgid "Package cannot be fetched. Try to update repositories and retry"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1591
+#: ../../libraries/entropy/client/interfaces/package.py:1627
 #, fuzzy
 msgid "archives"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1606
+#: ../../libraries/entropy/client/interfaces/package.py:1642
 msgid "Some packages cannot be fetched. Try to update repositories and retry"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1628
+#: ../../libraries/entropy/client/interfaces/package.py:1664
 #, fuzzy
 msgid "Fetch for the chosen package is not available, unknown error."
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1637
+#: ../../libraries/entropy/client/interfaces/package.py:1673
 msgid "Installed package in queue vanished, skipping."
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1656
+#: ../../libraries/entropy/client/interfaces/package.py:1692
 #, fuzzy
 msgid "Unpacking package"
 msgstr "Opdater som afhængighed"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1664
+#: ../../libraries/entropy/client/interfaces/package.py:1700
 #, fuzzy
 msgid "Merging package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1675
+#: ../../libraries/entropy/client/interfaces/package.py:1711
 msgid "You are running out of disk space"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1676
+#: ../../libraries/entropy/client/interfaces/package.py:1712
 msgid "I bet, you're probably Michele"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1681
+#: ../../libraries/entropy/client/interfaces/package.py:1717
 #, fuzzy
 msgid "An error occured while trying to unpack the package"
 msgstr "Du er ved at tilføje %s pakker\n"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1682
-#: ../../libraries/entropy/client/interfaces/package.py:1707
+#: ../../libraries/entropy/client/interfaces/package.py:1718
+#: ../../libraries/entropy/client/interfaces/package.py:1743
 msgid "Check if your system is healthy"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1696
+#: ../../libraries/entropy/client/interfaces/package.py:1732
 #, fuzzy
 msgid "Installing package"
 msgstr "Vis Tilgængelige Pakker"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1706
+#: ../../libraries/entropy/client/interfaces/package.py:1742
 #, fuzzy
 msgid "An error occured while trying to install the package"
 msgstr "Du er ved at tilføje %s pakker\n"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1721
+#: ../../libraries/entropy/client/interfaces/package.py:1757
 #, fuzzy
 msgid "Removing data"
 msgstr "Sletter"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1731
+#: ../../libraries/entropy/client/interfaces/package.py:1767
 #, fuzzy
 msgid "An error occured while trying to remove the package"
 msgstr "Du er ved at tilføje %s pakker\n"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1732
+#: ../../libraries/entropy/client/interfaces/package.py:1768
 msgid "Check if you have enough disk space on your hard disk"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1746
-#: ../../libraries/entropy/client/interfaces/package.py:1955
+#: ../../libraries/entropy/client/interfaces/package.py:1782
+#: ../../libraries/entropy/client/interfaces/package.py:1991
 #, fuzzy
 msgid "Cleaning"
 msgstr "Oprydning"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1849
+#: ../../libraries/entropy/client/interfaces/package.py:1885
 #, fuzzy
 msgid "Configuring package"
 msgstr "I_nformation"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1859
-#: ../../libraries/entropy/client/interfaces/package.py:1872
+#: ../../libraries/entropy/client/interfaces/package.py:1895
+#: ../../libraries/entropy/client/interfaces/package.py:1908
 #, fuzzy
 msgid "An error occured while trying to configure the package"
 msgstr "Du er ved at tilføje %s pakker\n"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1860
+#: ../../libraries/entropy/client/interfaces/package.py:1896
 msgid "Make sure that your system is healthy"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1873
+#: ../../libraries/entropy/client/interfaces/package.py:1909
 msgid "It seems that the Source Package Manager entry is missing"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1902
-#: ../../sulfur/src/entropyapi.py:114
+#: ../../libraries/entropy/client/interfaces/package.py:1938
+#: ../../sulfur/src/sulfur/entropyapi.py:117
 #, fuzzy
 msgid "Fetching"
 msgstr "Opdaterer"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1907
+#: ../../libraries/entropy/client/interfaces/package.py:1943
 #, fuzzy
 msgid "Multi Fetching"
 msgstr "Opdaterer"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1908
-#: ../../libraries/entropy/client/interfaces/package.py:1924
+#: ../../libraries/entropy/client/interfaces/package.py:1944
+#: ../../libraries/entropy/client/interfaces/package.py:1960
 #: ../../client/text_query.py:380 ../../client/text_query.py:413
 #: ../../client/text_ui.py:1065 ../../server/server_reagent.py:501
 #, fuzzy
 msgid "packages"
 msgstr "Pakker."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1913
+#: ../../libraries/entropy/client/interfaces/package.py:1949
 #, fuzzy
 msgid "Fetching sources"
 msgstr "Opdaterer"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1918
+#: ../../libraries/entropy/client/interfaces/package.py:1954
 #, fuzzy
 msgid "Verifying"
 msgstr "Sletter"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1923
+#: ../../libraries/entropy/client/interfaces/package.py:1959
 #, fuzzy
 msgid "Multi Verification"
 msgstr "_Beskrivelse"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1930
+#: ../../libraries/entropy/client/interfaces/package.py:1966
 #, fuzzy
 msgid "Unpacking"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1933
+#: ../../libraries/entropy/client/interfaces/package.py:1969
 #, fuzzy
 msgid "Merging"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1942
+#: ../../libraries/entropy/client/interfaces/package.py:1978
 #, fuzzy
 msgid "Installing"
 msgstr "Installeret"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1947
+#: ../../libraries/entropy/client/interfaces/package.py:1983
 #: ../../client/text_rescue.py:532
 msgid "Removing"
 msgstr "Sletter"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1960
+#: ../../libraries/entropy/client/interfaces/package.py:1996
 #, fuzzy
 msgid "Postinstall"
 msgstr "Installeret"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1965
+#: ../../libraries/entropy/client/interfaces/package.py:2001
 #, fuzzy
 msgid "Preinstall"
 msgstr "Installeret"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1970
+#: ../../libraries/entropy/client/interfaces/package.py:2006
 #, fuzzy
 msgid "Preremove"
 msgstr "Sletter"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1975
+#: ../../libraries/entropy/client/interfaces/package.py:2011
 #, fuzzy
 msgid "Postremove"
 msgstr "Sletter"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1980
+#: ../../libraries/entropy/client/interfaces/package.py:2016
 #, fuzzy
 msgid "Configuring"
 msgstr "Oprettelse af %s profilen fejlede"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2041
+#: ../../libraries/entropy/client/interfaces/package.py:2077
 #, fuzzy
 msgid "An error occured. Action aborted."
 msgstr "Du er ved at tilføje %s pakker\n"
@@ -3348,7 +3362,7 @@ msgid "Injecting downloaded dump"
 msgstr "Henter Pakker:"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1431
-#: ../../libraries/entropy/db.py:3831 ../../sulfur/src/sulfur.glade.h:290
+#: ../../libraries/entropy/db.py:3831
 msgid "please wait"
 msgstr ""
 
@@ -3579,169 +3593,169 @@ msgstr ""
 msgid "Attach this"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1464
+#: ../../libraries/entropy/client/interfaces/trigger.py:1470
 #, fuzzy
 msgid "Cannot find df"
 msgstr "Installeret"
 
 #. 'cannot match device /dev/foo with a grub one'
-#: ../../libraries/entropy/client/interfaces/trigger.py:1465
-#: ../../libraries/entropy/client/interfaces/trigger.py:1479
-#: ../../libraries/entropy/client/interfaces/trigger.py:1524
-#: ../../libraries/entropy/client/interfaces/trigger.py:1569
-#: ../../libraries/entropy/client/interfaces/trigger.py:1582
-#: ../../libraries/entropy/client/interfaces/trigger.py:1595
+#: ../../libraries/entropy/client/interfaces/trigger.py:1471
+#: ../../libraries/entropy/client/interfaces/trigger.py:1485
+#: ../../libraries/entropy/client/interfaces/trigger.py:1530
+#: ../../libraries/entropy/client/interfaces/trigger.py:1575
+#: ../../libraries/entropy/client/interfaces/trigger.py:1588
+#: ../../libraries/entropy/client/interfaces/trigger.py:1601
 msgid "Cannot properly configure the kernel"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1466
-#: ../../libraries/entropy/client/interfaces/trigger.py:1480
-#: ../../libraries/entropy/client/interfaces/trigger.py:1525
-#: ../../libraries/entropy/client/interfaces/trigger.py:1542
-#: ../../libraries/entropy/client/interfaces/trigger.py:1570
-#: ../../libraries/entropy/client/interfaces/trigger.py:1583
-#: ../../libraries/entropy/client/interfaces/trigger.py:1596
+#: ../../libraries/entropy/client/interfaces/trigger.py:1472
+#: ../../libraries/entropy/client/interfaces/trigger.py:1486
+#: ../../libraries/entropy/client/interfaces/trigger.py:1531
+#: ../../libraries/entropy/client/interfaces/trigger.py:1548
+#: ../../libraries/entropy/client/interfaces/trigger.py:1576
+#: ../../libraries/entropy/client/interfaces/trigger.py:1589
+#: ../../libraries/entropy/client/interfaces/trigger.py:1602
 #, fuzzy
 msgid "Defaulting to"
 msgstr "Søgnings Indstiller"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1478
+#: ../../libraries/entropy/client/interfaces/trigger.py:1484
 #, fuzzy
 msgid "Cannot find grub"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1521
+#: ../../libraries/entropy/client/interfaces/trigger.py:1527
 #, fuzzy
 msgid "cannot match device"
 msgstr "Vis Installerede Pakker"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1523
+#: ../../libraries/entropy/client/interfaces/trigger.py:1529
 msgid "with a grub one"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1539
+#: ../../libraries/entropy/client/interfaces/trigger.py:1545
 msgid "grub translation not supported for"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1541
+#: ../../libraries/entropy/client/interfaces/trigger.py:1547
 msgid "Cannot properly configure grub.conf"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1568
+#: ../../libraries/entropy/client/interfaces/trigger.py:1574
 msgid "cannot match grub device with a Linux one"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1581
+#: ../../libraries/entropy/client/interfaces/trigger.py:1587
 #, fuzzy
 msgid "cannot find generated device.map"
 msgstr "Opdater som afhængighed"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1594
+#: ../../libraries/entropy/client/interfaces/trigger.py:1600
 #, fuzzy
 msgid "cannot run df /boot"
 msgstr "Installeret"
 
-#: ../../libraries/entropy/const.py:528
+#: ../../libraries/entropy/const.py:521
 msgid "Corrupted Client Repository. Please restore a backup."
 msgstr ""
 
-#: ../../libraries/entropy/const.py:596
+#: ../../libraries/entropy/const.py:589
 msgid "Comments"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:597
+#: ../../libraries/entropy/const.py:590
 msgid "BBcode Documents"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:598
+#: ../../libraries/entropy/const.py:591
 msgid "Images/Screenshots"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:599
+#: ../../libraries/entropy/const.py:592
 #, fuzzy
 msgid "Generic Files"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy/const.py:600
+#: ../../libraries/entropy/const.py:593
 msgid "YouTube(tm) Videos"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:603
+#: ../../libraries/entropy/const.py:596
 msgid "Comment"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:604
+#: ../../libraries/entropy/const.py:597
 msgid "BBcode Document"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:605
+#: ../../libraries/entropy/const.py:598
 msgid "Image/Screenshot"
 msgstr ""
 
-#: ../../libraries/entropy/const.py:606
+#: ../../libraries/entropy/const.py:599
 #, fuzzy
 msgid "Generic File"
 msgstr "Filkilder"
 
-#: ../../libraries/entropy/const.py:607
+#: ../../libraries/entropy/const.py:600
 msgid "YouTube(tm) Video"
 msgstr ""
 
-#: ../../libraries/entropy/core.py:181
+#: ../../libraries/entropy/core.py:180
 #, fuzzy
 msgid "reason not available"
 msgstr "Tilgængelige"
 
-#: ../../libraries/entropy/core.py:182
+#: ../../libraries/entropy/core.py:181
 #, fuzzy
 msgid "user package.mask"
 msgstr "Fandt %d %s pakker"
 
-#: ../../libraries/entropy/core.py:183
+#: ../../libraries/entropy/core.py:182
 #, fuzzy
 msgid "system keywords"
 msgstr "Kører Transaktion"
 
-#: ../../libraries/entropy/core.py:184
+#: ../../libraries/entropy/core.py:183
 #, fuzzy
 msgid "user package.unmask"
 msgstr "Fandt %d %s pakker"
 
-#: ../../libraries/entropy/core.py:185
+#: ../../libraries/entropy/core.py:184
 msgid "user repo package.keywords (all packages)"
 msgstr ""
 
-#: ../../libraries/entropy/core.py:186
+#: ../../libraries/entropy/core.py:185
 #, fuzzy
 msgid "user repo package.keywords"
 msgstr "Fandt %d %s pakker"
 
-#: ../../libraries/entropy/core.py:187
+#: ../../libraries/entropy/core.py:186
 #, fuzzy
 msgid "user package.keywords"
 msgstr "Fandt %d %s pakker"
 
-#: ../../libraries/entropy/core.py:188
+#: ../../libraries/entropy/core.py:187
 #, fuzzy
 msgid "completely masked"
 msgstr "Ingen valgte pakker"
 
-#: ../../libraries/entropy/core.py:189
+#: ../../libraries/entropy/core.py:188
 #, fuzzy
 msgid "repository general packages.db.mask"
 msgstr "Fandt %d %s pakker"
 
-#: ../../libraries/entropy/core.py:190
+#: ../../libraries/entropy/core.py:189
 #, fuzzy
 msgid "user license.mask"
 msgstr "Fandt %d %s pakker"
 
-#: ../../libraries/entropy/core.py:191
+#: ../../libraries/entropy/core.py:190
 #, fuzzy
 msgid "user live unmask"
 msgstr "Fandt %d %s pakker"
 
-#: ../../libraries/entropy/core.py:192
+#: ../../libraries/entropy/core.py:191
 #, fuzzy
 msgid "user live mask"
 msgstr "Fandt %d %s pakker"
@@ -3914,7 +3928,8 @@ msgstr ""
 msgid "counter for atom is duplicated, ignoring"
 msgstr ""
 
-#: ../../libraries/entropy/output.py:437 ../../sulfur/src/entropyapi.py:323
+#: ../../libraries/entropy/output.py:437
+#: ../../sulfur/src/sulfur/entropyapi.py:320
 msgid "Entropy needs your attention"
 msgstr ""
 
@@ -4095,7 +4110,8 @@ msgstr "Filkilder"
 #: ../../libraries/entropy/security.py:645
 #: ../../libraries/entropy/security.py:655
 #: ../../libraries/entropy/security.py:676
-#: ../../libraries/entropy/security.py:686 ../../sulfur/src/sulfur.py:1514
+#: ../../libraries/entropy/security.py:686
+#: ../../sulfur/src/sulfur/__init__.py:463
 msgid "Security Advisories"
 msgstr ""
 
@@ -4240,7 +4256,8 @@ msgstr ""
 msgid "Aggregated download"
 msgstr ""
 
-#: ../../libraries/entropy/transceivers.py:518 ../../sulfur/src/sulfur.py:2255
+#: ../../libraries/entropy/transceivers.py:518
+#: ../../sulfur/src/sulfur/__init__.py:1241
 #, fuzzy
 msgid "items"
 msgstr "Fi_ler"
@@ -5344,96 +5361,96 @@ msgstr ""
 msgid "You need to install/update sys-apps/entropy-server. :-) Do it !"
 msgstr ""
 
-#: ../../client/equo.py:742
+#: ../../client/equo.py:743
 msgid ""
 "Installed Packages Database not found or corrupted. Please generate it using "
 "'equo database' tools"
 msgstr ""
 
 #. becoming from entropy.db
-#: ../../client/equo.py:747 ../../client/equo.py:753 ../../client/equo.py:758
-#: ../../client/equo.py:763 ../../client/equo.py:768 ../../client/equo.py:773
-#: ../../client/equo.py:785 ../../client/text_smart.py:124
+#: ../../client/equo.py:748 ../../client/equo.py:754 ../../client/equo.py:759
+#: ../../client/equo.py:764 ../../client/equo.py:769 ../../client/equo.py:774
+#: ../../client/equo.py:786 ../../client/text_smart.py:124
 #: ../../client/text_smart.py:269 ../../client/text_smart.py:411
 #, fuzzy
 msgid "Cannot continue"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../client/equo.py:780
+#: ../../client/equo.py:781
 msgid "Cannot continue. Your hard disk is probably faulty."
 msgstr ""
 
-#: ../../client/equo.py:801
+#: ../../client/equo.py:802
 msgid ""
 "Your hard drive is full! Next time remember to have a look at it before "
 "starting. I'm sorry, there's nothing I can do for you. It's your fault :-("
 msgstr ""
 
-#: ../../client/equo.py:815
+#: ../../client/equo.py:816
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. "
 "Well, you know, shit happens."
 msgstr ""
 
-#: ../../client/equo.py:816
+#: ../../client/equo.py:817
 msgid ""
 "But there's something you could do to help Equo to be a better application."
 msgstr ""
 
-#: ../../client/equo.py:817
+#: ../../client/equo.py:818
 msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
 msgstr ""
 
-#: ../../client/equo.py:818
+#: ../../client/equo.py:819
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
 msgstr ""
 
-#: ../../client/equo.py:844
+#: ../../client/equo.py:845
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
 "lxnay@sabayonlinux.org."
 msgstr ""
 
-#: ../../client/equo.py:849
+#: ../../client/equo.py:850
 msgid "Of course you are on the Internet..."
 msgstr ""
 
-#: ../../client/equo.py:850
+#: ../../client/equo.py:851
 msgid ""
 "Erm... Can I send the error, along with some information\n"
 "   about your hardware to my creators so they can fix me? (Your IP will be "
 "logged)"
 msgstr ""
 
-#: ../../client/equo.py:852
+#: ../../client/equo.py:853
 msgid "Ok, ok ok ok... Sorry!"
 msgstr ""
 
-#: ../../client/equo.py:855
+#: ../../client/equo.py:856
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
 msgstr ""
 
-#: ../../client/equo.py:856
+#: ../../client/equo.py:857
 msgid "Your Full name:"
 msgstr ""
 
-#: ../../client/equo.py:857
+#: ../../client/equo.py:858
 msgid "Your E-Mail address:"
 msgstr ""
 
-#: ../../client/equo.py:858
+#: ../../client/equo.py:859
 msgid "What you were doing:"
 msgstr ""
 
-#: ../../client/equo.py:864
+#: ../../client/equo.py:865
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
 msgstr ""
 
-#: ../../client/equo.py:866
+#: ../../client/equo.py:867
 msgid ""
 "Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When "
 "you want, mail the file to lxnay@sabayonlinux.org."
@@ -5655,8 +5672,9 @@ msgstr ""
 
 #. atom
 #: ../../client/text_query.py:231 ../../client/text_query.py:343
-#: ../../sulfur/src/dialogs.py:2692 ../../sulfur/src/dialogs.py:3328
-#: ../../sulfur/src/dialogs.py:5737
+#: ../../sulfur/src/sulfur/dialogs.py:2899
+#: ../../sulfur/src/sulfur/dialogs.py:3535
+#: ../../sulfur/src/sulfur/dialogs.py:5943
 #, fuzzy
 msgid "Atom"
 msgstr "Fi_ler"
@@ -5677,7 +5695,6 @@ msgid "Matched"
 msgstr "Opdaterer"
 
 #: ../../client/text_query.py:304 ../../client/text_query.py:1118
-#: ../../sulfur/src/sulfur.glade.h:117
 #, fuzzy
 msgid "Masked"
 msgstr "Slettet"
@@ -5719,9 +5736,11 @@ msgstr "Ekskludering"
 #. package
 #. glsa id
 #: ../../client/text_query.py:448 ../../client/text_query.py:1095
-#: ../../server/server_reagent.py:236 ../../sulfur/src/dialogs.py:2301
-#: ../../sulfur/src/dialogs.py:2584 ../../sulfur/src/dialogs.py:4446
-#: ../../sulfur/src/dialogs.py:5263 ../../sulfur/src/views.py:1237
+#: ../../server/server_reagent.py:236 ../../sulfur/src/sulfur/dialogs.py:2508
+#: ../../sulfur/src/sulfur/dialogs.py:2791
+#: ../../sulfur/src/sulfur/dialogs.py:4652
+#: ../../sulfur/src/sulfur/dialogs.py:5469
+#: ../../sulfur/src/sulfur/views.py:1252
 msgid "Package"
 msgstr "Pakke"
 
@@ -5878,9 +5897,11 @@ msgid "Not installed"
 msgstr "Installeret"
 
 #: ../../client/text_query.py:1079 ../../client/text_query.py:1080
-#: ../../sulfur/src/dialogs.py:3489 ../../sulfur/src/dialogs.py:3548
-#: ../../sulfur/src/dialogs.py:3596 ../../sulfur/src/dialogs.py:3709
-#: ../../sulfur/src/dialogs.py:3712
+#: ../../sulfur/src/sulfur/dialogs.py:3696
+#: ../../sulfur/src/sulfur/dialogs.py:3755
+#: ../../sulfur/src/sulfur/dialogs.py:3803
+#: ../../sulfur/src/sulfur/dialogs.py:3915
+#: ../../sulfur/src/sulfur/dialogs.py:3918
 msgid "N/A"
 msgstr ""
 
@@ -5893,8 +5914,7 @@ msgstr "Kategorier"
 msgid "Name"
 msgstr "Navn"
 
-#: ../../client/text_query.py:1121 ../../sulfur/src/dialogs.py:831
-#: ../../sulfur/src/sulfur.glade.h:16
+#: ../../client/text_query.py:1121 ../../sulfur/src/sulfur/dialogs.py:1037
 msgid "Available"
 msgstr "Tilgængelige"
 
@@ -5903,19 +5923,18 @@ msgstr "Tilgængelige"
 msgid "version"
 msgstr "Sletter"
 
-#: ../../client/text_query.py:1126 ../../sulfur/src/dialogs.py:829
-#: ../../sulfur/src/sulfur.glade.h:100
+#: ../../client/text_query.py:1126 ../../sulfur/src/sulfur/dialogs.py:1035
 msgid "Installed"
 msgstr "Installeret"
 
-#: ../../client/text_query.py:1132 ../../sulfur/src/dialogs.py:842
-#: ../../sulfur/src/dialogs.py:865 ../../sulfur/src/sulfur.glade.h:206
+#: ../../client/text_query.py:1132 ../../sulfur/src/sulfur/dialogs.py:1048
+#: ../../sulfur/src/sulfur/dialogs.py:1071
 msgid "Slot"
 msgstr ""
 
 #: ../../client/text_query.py:1139 ../../client/text_ugc.py:559
-#: ../../sulfur/src/dialogs.py:861 ../../sulfur/src/dialogs.py:3725
-#: ../../sulfur/src/sulfur.glade.h:205
+#: ../../sulfur/src/sulfur/dialogs.py:1067
+#: ../../sulfur/src/sulfur/dialogs.py:3931
 msgid "Size"
 msgstr "Størrelse"
 
@@ -5929,7 +5948,7 @@ msgstr "<b>Størrelse af filer som skal hentes</b>"
 msgid "Checksum"
 msgstr "Henter : %s"
 
-#: ../../client/text_query.py:1154 ../../sulfur/src/dialogs.py:4116
+#: ../../client/text_query.py:1154 ../../sulfur/src/sulfur/dialogs.py:4322
 #, fuzzy
 msgid "Dependencies"
 msgstr "Indstillinger"
@@ -5938,30 +5957,31 @@ msgstr "Indstillinger"
 msgid "Conflicts"
 msgstr ""
 
-#: ../../client/text_query.py:1165 ../../sulfur/src/dialogs.py:871
+#: ../../client/text_query.py:1165 ../../sulfur/src/sulfur/dialogs.py:1077
 msgid "Homepage"
 msgstr ""
 
 #. desc col
 #: ../../client/text_query.py:1171 ../../client/text_security.py:89
-#: ../../client/text_ugc.py:366 ../../sulfur/src/dialogs.py:696
-#: ../../sulfur/src/dialogs.py:709 ../../sulfur/src/dialogs.py:850
-#: ../../sulfur/src/dialogs.py:3328 ../../sulfur/src/dialogs.py:3732
-#: ../../sulfur/src/views.py:1717 ../../sulfur/src/views.py:1903
-#: ../../sulfur/src/sulfur.glade.h:55
+#: ../../client/text_ugc.py:366 ../../sulfur/src/sulfur/dialogs.py:902
+#: ../../sulfur/src/sulfur/dialogs.py:915
+#: ../../sulfur/src/sulfur/dialogs.py:1056
+#: ../../sulfur/src/sulfur/dialogs.py:3535
+#: ../../sulfur/src/sulfur/dialogs.py:3938
+#: ../../sulfur/src/sulfur/views.py:1740 ../../sulfur/src/sulfur/views.py:1930
 #, fuzzy
 msgid "Description"
 msgstr "_Beskrivelse"
 
-#: ../../client/text_query.py:1184 ../../sulfur/src/sulfur.glade.h:24
+#: ../../client/text_query.py:1184
 msgid "CHOST"
 msgstr ""
 
-#: ../../client/text_query.py:1186 ../../sulfur/src/sulfur.glade.h:23
+#: ../../client/text_query.py:1186
 msgid "CFLAGS"
 msgstr ""
 
-#: ../../client/text_query.py:1188 ../../sulfur/src/sulfur.glade.h:26
+#: ../../client/text_query.py:1188
 msgid "CXXFLAGS"
 msgstr ""
 
@@ -5970,7 +5990,7 @@ msgstr ""
 msgid "Portage eclasses"
 msgstr "Ekskludering"
 
-#: ../../client/text_query.py:1200 ../../sulfur/src/dialogs.py:4076
+#: ../../client/text_query.py:1200 ../../sulfur/src/sulfur/dialogs.py:4282
 msgid "Sources"
 msgstr ""
 
@@ -5987,8 +6007,8 @@ msgid "Compiled with"
 msgstr ""
 
 #: ../../client/text_query.py:1212 ../../client/text_ugc.py:371
-#: ../../client/text_ugc.py:554 ../../sulfur/src/dialogs.py:3734
-#: ../../sulfur/src/dialogs.py:4092 ../../sulfur/src/sulfur.glade.h:105
+#: ../../client/text_ugc.py:554 ../../sulfur/src/sulfur/dialogs.py:3940
+#: ../../sulfur/src/sulfur/dialogs.py:4298
 msgid "Keywords"
 msgstr ""
 
@@ -5998,7 +6018,7 @@ msgid "Created"
 msgstr "Slettet"
 
 #: ../../client/text_query.py:1224 ../../client/text_ui.py:1002
-#: ../../sulfur/src/dialogs.py:6007
+#: ../../sulfur/src/sulfur/dialogs.py:6213
 #, fuzzy
 msgid "License"
 msgstr "Filnavn"
@@ -6057,9 +6077,11 @@ msgstr "Søgnings Indstiller"
 msgid "never synced"
 msgstr ""
 
-#: ../../client/text_repositories.py:150 ../../sulfur/src/dialogs.py:727
-#: ../../sulfur/src/dialogs.py:771 ../../sulfur/src/dialogs.py:1314
-#: ../../sulfur/src/views.py:1694
+#: ../../client/text_repositories.py:150
+#: ../../sulfur/src/sulfur/dialogs.py:933
+#: ../../sulfur/src/sulfur/dialogs.py:977
+#: ../../sulfur/src/sulfur/dialogs.py:1520
+#: ../../sulfur/src/sulfur/views.py:1717
 #, fuzzy
 msgid "Status"
 msgstr "Opdateret"
@@ -6080,13 +6102,13 @@ msgid "Repository database checksum"
 msgstr "Filkilder"
 
 #: ../../client/text_repositories.py:175 ../../client/text_ui.py:334
-#: ../../sulfur/src/sulfur.py:2077
+#: ../../sulfur/src/sulfur/__init__.py:1052
 #, fuzzy
 msgid "No repositories specified in"
 msgstr "Ingen valgte pakker"
 
 #: ../../client/text_repositories.py:178 ../../client/text_ui.py:338
-#: ../../sulfur/src/sulfur.py:2086
+#: ../../sulfur/src/sulfur/__init__.py:1064
 #, fuzzy
 msgid "Unhandled exception"
 msgstr "_Beskrivelse"
@@ -6098,13 +6120,12 @@ msgid "Notice board not available"
 msgstr "Tilgængelige"
 
 #: ../../client/text_repositories.py:220 ../../client/text_ugc.py:551
-#: ../../server/server_activator.py:157 ../../sulfur/src/dialogs.py:4175
-#: ../../sulfur/src/sulfur.glade.h:41
+#: ../../server/server_activator.py:157
+#: ../../sulfur/src/sulfur/dialogs.py:4381
 msgid "Content"
 msgstr ""
 
 #: ../../client/text_repositories.py:225 ../../server/server_activator.py:162
-#: ../../sulfur/src/sulfur.glade.h:109
 msgid "Link"
 msgstr ""
 
@@ -6117,8 +6138,8 @@ msgstr "Ønsker du at forsættet ?"
 msgid "Choose one by typing its identifier"
 msgstr ""
 
-#: ../../client/text_repositories.py:286 ../../sulfur/src/dialogs.py:2032
-#: ../../sulfur/src/sulfur.glade.h:127
+#: ../../client/text_repositories.py:286
+#: ../../sulfur/src/sulfur/dialogs.py:2239
 #, fuzzy
 msgid "Notice board"
 msgstr "Henter Pakker:"
@@ -6511,7 +6532,7 @@ msgstr "Filkilder"
 msgid "GLSA Identifier"
 msgstr "Filkilder"
 
-#: ../../client/text_security.py:112 ../../sulfur/src/sulfur.glade.h:17
+#: ../../client/text_security.py:112
 msgid "Background"
 msgstr ""
 
@@ -6519,7 +6540,7 @@ msgstr ""
 msgid "Exploitable"
 msgstr ""
 
-#: ../../client/text_security.py:124 ../../sulfur/src/sulfur.glade.h:92
+#: ../../client/text_security.py:124
 msgid "Impact"
 msgstr ""
 
@@ -6527,20 +6548,20 @@ msgstr ""
 msgid "Impact type"
 msgstr ""
 
-#: ../../client/text_security.py:135 ../../sulfur/src/sulfur.glade.h:191
+#: ../../client/text_security.py:135
 #, fuzzy
 msgid "Revised"
 msgstr "Sletter"
 
-#: ../../client/text_security.py:139 ../../sulfur/src/sulfur.glade.h:14
+#: ../../client/text_security.py:139
 msgid "Announced"
 msgstr ""
 
-#: ../../client/text_security.py:143 ../../sulfur/src/sulfur.glade.h:216
+#: ../../client/text_security.py:143
 msgid "Synopsis"
 msgstr ""
 
-#: ../../client/text_security.py:150 ../../sulfur/src/sulfur.glade.h:169
+#: ../../client/text_security.py:150
 #, fuzzy
 msgid "References"
 msgstr "Indstillinger"
@@ -6563,11 +6584,11 @@ msgstr ""
 msgid "unaffected versions"
 msgstr "Sletter"
 
-#: ../../client/text_security.py:176 ../../sulfur/src/sulfur.glade.h:250
+#: ../../client/text_security.py:176
 msgid "Workaround"
 msgstr ""
 
-#: ../../client/text_security.py:180 ../../sulfur/src/sulfur.glade.h:187
+#: ../../client/text_security.py:180
 #, fuzzy
 msgid "Resolution"
 msgstr "Sletter"
@@ -6639,7 +6660,7 @@ msgid "directory does not exist"
 msgstr ""
 
 #: ../../client/text_smart.py:157 ../../client/text_ui.py:448
-#: ../../sulfur/src/sulfur.py:511
+#: ../../sulfur/src/sulfur/events.py:402
 #, fuzzy
 msgid "is not a valid Entropy package"
 msgstr "Sorterer Pakker"
@@ -6762,11 +6783,11 @@ msgstr ""
 msgid "Login error. Not logged in."
 msgstr ""
 
-#: ../../client/text_ugc.py:113 ../../sulfur/src/sulfur.py:1677
+#: ../../client/text_ugc.py:113 ../../sulfur/src/sulfur/__init__.py:643
 msgid "Not logged in"
 msgstr ""
 
-#: ../../client/text_ugc.py:121 ../../sulfur/src/etpgui/packages.py:216
+#: ../../client/text_ugc.py:121 ../../sulfur/src/sulfur/package.py:209
 #, fuzzy
 msgid "User"
 msgstr "Filnavn"
@@ -6819,7 +6840,7 @@ msgstr "Sletter"
 msgid "Vote added, thank you!"
 msgstr ""
 
-#: ../../client/text_ugc.py:282 ../../sulfur/src/dialogs.py:4260
+#: ../../client/text_ugc.py:282 ../../sulfur/src/sulfur/dialogs.py:4466
 #, fuzzy
 msgid "Number of downloads"
 msgstr "Navn på den nye profil"
@@ -6878,7 +6899,7 @@ msgstr ""
 msgid "Document path"
 msgstr ""
 
-#: ../../client/text_ugc.py:382 ../../sulfur/src/sulfur.glade.h:60
+#: ../../client/text_ugc.py:382
 msgid "Document type"
 msgstr ""
 
@@ -7061,7 +7082,7 @@ msgstr ""
 msgid "one of these below?"
 msgstr ""
 
-#: ../../client/text_ui.py:450 ../../sulfur/src/sulfur.py:513
+#: ../../client/text_ui.py:450 ../../sulfur/src/sulfur/events.py:404
 msgid "is not compiled with the same architecture of the system"
 msgstr ""
 
@@ -7092,12 +7113,11 @@ msgid "Switch repo"
 msgstr "Opdaterer"
 
 #: ../../client/text_ui.py:530 ../../client/text_ui.py:532
-#: ../../sulfur/src/sulfur.glade.h:171
 #, fuzzy
 msgid "Reinstall"
 msgstr "Installeret"
 
-#: ../../client/text_ui.py:535 ../../sulfur/src/sulfur.glade.h:93
+#: ../../client/text_ui.py:535
 #, fuzzy
 msgid "Install"
 msgstr "Installeret"
@@ -7112,7 +7132,7 @@ msgstr "Opdateret"
 msgid "Downgrade"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../client/text_ui.py:540 ../../sulfur/src/dialogs.py:2065
+#: ../../client/text_ui.py:540 ../../sulfur/src/sulfur/dialogs.py:2272
 #, fuzzy
 msgid "Action"
 msgstr "Søgnings Indstiller"
@@ -7210,7 +7230,7 @@ msgstr "<b>Størrelse af filer som skal hentes</b>"
 msgid "Used disk space"
 msgstr "behøvet af %s"
 
-#: ../../client/text_ui.py:883 ../../sulfur/src/misc.py:440
+#: ../../client/text_ui.py:883 ../../sulfur/src/sulfur/packages.py:465
 #, fuzzy
 msgid "Freed disk space"
 msgstr "behøvet af %s"
@@ -7460,7 +7480,8 @@ msgstr ""
 msgid "Exit/Commit"
 msgstr ""
 
-#: ../../server/server_activator.py:217 ../../sulfur/src/dialogs.py:1988
+#: ../../server/server_activator.py:217
+#: ../../sulfur/src/sulfur/dialogs.py:2195
 #, fuzzy
 msgid "Notice text"
 msgstr "Installeret"
@@ -7568,7 +7589,7 @@ msgstr "Ingen valgte pakker"
 msgid "Enabling"
 msgstr "Installerer"
 
-#: ../../server/server_reagent.py:97 ../../sulfur/src/dialogs.py:5032
+#: ../../server/server_reagent.py:97 ../../sulfur/src/sulfur/dialogs.py:5236
 #, fuzzy
 msgid "Enabled"
 msgstr "_Valgt"
@@ -7714,7 +7735,7 @@ msgstr ""
 
 #: ../../server/server_reagent.py:455 ../../server/server_reagent.py:480
 #: ../../server/server_reagent.py:525 ../../server/server_reagent.py:542
-#: ../../sulfur/src/dialogs.py:2858
+#: ../../sulfur/src/sulfur/dialogs.py:3065
 #, fuzzy
 msgid "Not enough parameters"
 msgstr "Fejl i test af pakke signaturer:\n"
@@ -7786,1574 +7807,1618 @@ msgstr "Ingen pakker i køen"
 msgid "package set not found"
 msgstr "Ingen pakker i køen"
 
-#: ../../sulfur/src/dialogs.py:72 ../../sulfur/src/sulfur.glade.h:184
+#: ../../sulfur/src/sulfur/dialogs.py:119
+#, fuzzy
+msgid "No Repository Identifier"
+msgstr "Filkilder"
+
+#: ../../sulfur/src/sulfur/dialogs.py:123
+#, fuzzy
+msgid "Duplicated Repository Identifier"
+msgstr "Filkilder"
+
+#: ../../sulfur/src/sulfur/dialogs.py:129
+#, fuzzy
+msgid "No download mirrors"
+msgstr "Indlæsning afsluttet"
+
+#: ../../sulfur/src/sulfur/dialogs.py:136
+msgid "Database URL must start either with http:// or ftp:// or file://"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/dialogs.py:144
+#, fuzzy
+msgid "Repository Services Port not valid"
+msgstr "Filkilder"
+
+#: ../../sulfur/src/sulfur/dialogs.py:152
+#, fuzzy
+msgid "Secure Services Port not valid"
+msgstr "Filkilder"
+
+#: ../../sulfur/src/sulfur/dialogs.py:182
+#: ../../sulfur/src/sulfur/dialogs.py:195
+msgid "Insert URL"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/dialogs.py:183
+#: ../../sulfur/src/sulfur/dialogs.py:196
+msgid "Enter a download mirror, HTTP or FTP"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/dialogs.py:203
+msgid "You must enter either a HTTP or a FTP url."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/dialogs.py:208
+#, fuzzy
+msgid "Insert Repository"
+msgstr "Rediger Filkilder"
+
+#: ../../sulfur/src/sulfur/dialogs.py:209
+#, fuzzy
+msgid "Insert Repository identification string"
+msgstr "Filkilder"
+
+#: ../../sulfur/src/sulfur/dialogs.py:219
+#, fuzzy
+msgid "This Repository identification string is malformed"
+msgstr "Filkilder"
+
+#: ../../sulfur/src/sulfur/dialogs.py:234
+#: ../../sulfur/src/sulfur/dialogs.py:260
+msgid "You should press the button"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/dialogs.py:235
+#: ../../sulfur/src/sulfur/events.py:250
+#: ../../sulfur/src/sulfur/packages.py:830
+#, fuzzy
+msgid "Update Repositories"
+msgstr "Filkilder"
+
+#: ../../sulfur/src/sulfur/dialogs.py:235
+#: ../../sulfur/src/sulfur/dialogs.py:261
+#: ../../sulfur/src/sulfur/events.py:251
+msgid "now"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/dialogs.py:238
+#: ../../sulfur/src/sulfur/dialogs.py:245
+msgid "Wrong entries, errors"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/dialogs.py:261
+#: ../../sulfur/src/sulfur/events.py:250
+#, fuzzy
+msgid "Regenerate Cache"
+msgstr "Sorterer Pakker"
+
+#: ../../sulfur/src/sulfur/dialogs.py:279
 #, fuzzy
 msgid "Repositories Notice Board"
 msgstr "Filkilder"
 
-#: ../../sulfur/src/dialogs.py:73
+#: ../../sulfur/src/sulfur/dialogs.py:280
 msgid ""
 "Here below you will find a list of important news directly issued by your "
 "applications maintainers. Double click on each item to retrieve detailed "
 "info."
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:89
+#: ../../sulfur/src/sulfur/dialogs.py:296
 #, fuzzy
 msgid "Notice"
 msgstr "Installeret"
 
-#: ../../sulfur/src/dialogs.py:195
+#: ../../sulfur/src/sulfur/dialogs.py:403
 #, fuzzy
 msgid "Connection name"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../sulfur/src/dialogs.py:196 ../../sulfur/src/dialogs.py:259
-#: ../../sulfur/src/sulfur.glade.h:88
+#: ../../sulfur/src/sulfur/dialogs.py:404
+#: ../../sulfur/src/sulfur/dialogs.py:467
 #, fuzzy
 msgid "Hostname"
 msgstr "Filnavn"
 
-#: ../../sulfur/src/dialogs.py:197 ../../sulfur/src/dialogs.py:260
-#: ../../sulfur/src/sulfur.glade.h:151
+#: ../../sulfur/src/sulfur/dialogs.py:405
+#: ../../sulfur/src/sulfur/dialogs.py:468
 #, fuzzy
 msgid "Port"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/dialogs.py:199
+#: ../../sulfur/src/sulfur/dialogs.py:407
 #, fuzzy
 msgid "SSL Connection"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../sulfur/src/dialogs.py:202 ../../sulfur/src/dialogs.py:3418
+#: ../../sulfur/src/sulfur/dialogs.py:410
+#: ../../sulfur/src/sulfur/dialogs.py:3625
 msgid "Choose what kind of test you would like to run"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:258
+#: ../../sulfur/src/sulfur/dialogs.py:466
 #, fuzzy
 msgid "Connection"
 msgstr "Ønsker du at forsættet ?"
 
-#: ../../sulfur/src/dialogs.py:264
+#: ../../sulfur/src/sulfur/dialogs.py:472
 msgid "SSL"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:333 ../../sulfur/src/dialogs.py:938
+#: ../../sulfur/src/sulfur/dialogs.py:541
+#: ../../sulfur/src/sulfur/dialogs.py:1144
 #, fuzzy
 msgid "Connection Error"
 msgstr "Ønsker du at forsættet ?"
 
 #.
-#: ../../sulfur/src/dialogs.py:520 ../../sulfur/src/dialogs.py:539
-#: ../../sulfur/src/dialogs.py:556
+#: ../../sulfur/src/sulfur/dialogs.py:726
+#: ../../sulfur/src/sulfur/dialogs.py:745
+#: ../../sulfur/src/sulfur/dialogs.py:762
 #, fuzzy
 msgid "Packages information"
 msgstr "I_nformation"
 
-#: ../../sulfur/src/dialogs.py:525 ../../sulfur/src/sulfur.glade.h:11
+#: ../../sulfur/src/sulfur/dialogs.py:731
 #, fuzzy
 msgid "Advisory information"
 msgstr "Filkilder"
 
 #.
-#: ../../sulfur/src/dialogs.py:532 ../../sulfur/src/dialogs.py:549
+#: ../../sulfur/src/sulfur/dialogs.py:738
+#: ../../sulfur/src/sulfur/dialogs.py:755
 msgid "Execute"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:544
+#: ../../sulfur/src/sulfur/dialogs.py:750
 #, fuzzy
 msgid "Destination repository"
 msgstr "Kilde"
 
-#: ../../sulfur/src/dialogs.py:561
+#: ../../sulfur/src/sulfur/dialogs.py:767
 #, fuzzy
 msgid "Remove packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/dialogs.py:566
+#: ../../sulfur/src/sulfur/dialogs.py:772
 #, fuzzy
 msgid "Copy/move packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/dialogs.py:571
+#: ../../sulfur/src/sulfur/dialogs.py:777
 #, fuzzy
 msgid "Compile selected"
 msgstr "Ingen valgte pakker"
 
-#: ../../sulfur/src/dialogs.py:576 ../../sulfur/src/sulfur.glade.h:7
+#: ../../sulfur/src/sulfur/dialogs.py:782
 msgid "Add USE"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:581 ../../sulfur/src/sulfur.glade.h:177
+#: ../../sulfur/src/sulfur/dialogs.py:787
 #, fuzzy
 msgid "Remove USE"
 msgstr "Sletter"
 
 #.
-#: ../../sulfur/src/dialogs.py:588
+#: ../../sulfur/src/sulfur/dialogs.py:794
 #, fuzzy
 msgid "View"
 msgstr "Opdateret"
 
-#: ../../sulfur/src/dialogs.py:593
+#: ../../sulfur/src/sulfur/dialogs.py:799
 msgid "Add"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:598 ../../sulfur/src/sulfur.glade.h:174
+#: ../../sulfur/src/sulfur/dialogs.py:804
 #, fuzzy
 msgid "Remove"
 msgstr "Sletter"
 
-#: ../../sulfur/src/dialogs.py:603 ../../sulfur/src/sulfur.glade.h:170
+#: ../../sulfur/src/sulfur/dialogs.py:809
 #, fuzzy
 msgid "Refresh"
 msgstr "Indstillinger"
 
-#: ../../sulfur/src/dialogs.py:707
+#: ../../sulfur/src/sulfur/dialogs.py:913
 msgid "None"
 msgstr ""
 
 #. description col
-#: ../../sulfur/src/dialogs.py:711 ../../sulfur/src/dialogs.py:737
+#: ../../sulfur/src/sulfur/dialogs.py:917
+#: ../../sulfur/src/sulfur/dialogs.py:943
 msgid "Parameters"
 msgstr ""
 
 #. date col
 #. date
-#: ../../sulfur/src/dialogs.py:739 ../../sulfur/src/dialogs.py:779
-#: ../../sulfur/src/sulfur.py:1661 ../../sulfur/src/sulfur.glade.h:49
+#: ../../sulfur/src/sulfur/dialogs.py:945
+#: ../../sulfur/src/sulfur/dialogs.py:985
+#: ../../sulfur/src/sulfur/__init__.py:627
 #, fuzzy
 msgid "Date"
 msgstr "Opdateret"
 
-#: ../../sulfur/src/dialogs.py:840
+#: ../../sulfur/src/sulfur/dialogs.py:1046
 msgid "Key"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:852
+#: ../../sulfur/src/sulfur/dialogs.py:1058
 msgid "USE Flags"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:863 ../../sulfur/src/sulfur.glade.h:21
+#: ../../sulfur/src/sulfur/dialogs.py:1069
 #, fuzzy
 msgid "Branch"
 msgstr "Arkitektur"
 
-#: ../../sulfur/src/dialogs.py:867 ../../sulfur/src/dialogs.py:3328
+#: ../../sulfur/src/sulfur/dialogs.py:1073
+#: ../../sulfur/src/sulfur/dialogs.py:3535
 #, fuzzy
 msgid "Tag"
 msgstr "_Tag"
 
-#: ../../sulfur/src/dialogs.py:869
+#: ../../sulfur/src/sulfur/dialogs.py:1075
 #, fuzzy
 msgid "Injected"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/dialogs.py:927
+#: ../../sulfur/src/sulfur/dialogs.py:1133
 msgid "No connection to host, please check your data"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:931
+#: ../../sulfur/src/sulfur/dialogs.py:1137
 msgid "Unable to create a remote session. Try again later."
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:935
+#: ../../sulfur/src/sulfur/dialogs.py:1141
 msgid "Login failed. Please retry."
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:944
+#: ../../sulfur/src/sulfur/dialogs.py:1150
 msgid "SSL Error, are you sure the server supports SSL?"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:981
+#: ../../sulfur/src/sulfur/dialogs.py:1187
 msgid "Communication error"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:1012
+#: ../../sulfur/src/sulfur/dialogs.py:1218
 msgid "Current"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:1014
+#: ../../sulfur/src/sulfur/dialogs.py:1220
 msgid "c.mode"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:1016
+#: ../../sulfur/src/sulfur/dialogs.py:1222
 #, fuzzy
 msgid "branch"
 msgstr "Arkitektur"
 
-#: ../../sulfur/src/dialogs.py:1018
+#: ../../sulfur/src/sulfur/dialogs.py:1224
 msgid "supported branches"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:1020
+#: ../../sulfur/src/sulfur/dialogs.py:1226
 #, fuzzy
 msgid "repositories"
 msgstr "Kilde"
 
 #. glsa id
-#: ../../sulfur/src/dialogs.py:1324
+#: ../../sulfur/src/sulfur/dialogs.py:1530
 #, fuzzy
 msgid "GLSA Id."
 msgstr "Filkilder"
 
-#: ../../sulfur/src/dialogs.py:1366
+#: ../../sulfur/src/sulfur/dialogs.py:1573
 #, fuzzy
 msgid "Are you sure you want to remove the selected packages ? (For EVA!)"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/dialogs.py:1369
+#: ../../sulfur/src/sulfur/dialogs.py:1576
 msgid "This is your last chance, are you really really really sure?"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:1396 ../../sulfur/src/dialogs.py:2940
-#: ../../sulfur/src/dialogs.py:2983 ../../sulfur/src/dialogs.py:3047
+#: ../../sulfur/src/sulfur/dialogs.py:1603
+#: ../../sulfur/src/sulfur/dialogs.py:3147
+#: ../../sulfur/src/sulfur/dialogs.py:3190
+#: ../../sulfur/src/sulfur/dialogs.py:3254
 msgid "Atoms, space separated"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:1398
+#: ../../sulfur/src/sulfur/dialogs.py:1605
 msgid "USE flags, space separated"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:1401
+#: ../../sulfur/src/sulfur/dialogs.py:1608
 msgid "Insert command parameters"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:1807
+#: ../../sulfur/src/sulfur/dialogs.py:2014
 #, fuzzy
 msgid "Cannot move/copy packages from different repositories"
 msgstr "Pakke Beskrivelser"
 
-#: ../../sulfur/src/dialogs.py:1826
+#: ../../sulfur/src/sulfur/dialogs.py:2033
 msgid "Execute copy"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:1829
+#: ../../sulfur/src/sulfur/dialogs.py:2036
 #, fuzzy
 msgid "Entropy packages move/copy"
 msgstr "Behandler pakker for %s"
 
-#: ../../sulfur/src/dialogs.py:1986
+#: ../../sulfur/src/sulfur/dialogs.py:2193
 #, fuzzy
 msgid "Notice title"
 msgstr "Installeret"
 
-#: ../../sulfur/src/dialogs.py:1987
+#: ../../sulfur/src/sulfur/dialogs.py:2194
 msgid "Link (URL)"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:1991
+#: ../../sulfur/src/sulfur/dialogs.py:2198
 msgid "Insert your new notice board entry"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:2067
+#: ../../sulfur/src/sulfur/dialogs.py:2274
 #, fuzzy
 msgid "Server"
 msgstr "Filkilder"
 
-#: ../../sulfur/src/dialogs.py:2069
+#: ../../sulfur/src/sulfur/dialogs.py:2276
 msgid "Yes"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:2070
+#: ../../sulfur/src/sulfur/dialogs.py:2277
 msgid "No"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:2076 ../../sulfur/src/sulfur.py:1658
+#: ../../sulfur/src/sulfur/dialogs.py:2283
+#: ../../sulfur/src/sulfur/__init__.py:624
 #, fuzzy
 msgid "Database"
 msgstr "Kører Transaktion"
 
-#: ../../sulfur/src/dialogs.py:2077
+#: ../../sulfur/src/sulfur/dialogs.py:2284
 #, fuzzy
 msgid "current revision"
 msgstr "Filkilder"
 
-#: ../../sulfur/src/dialogs.py:2079
+#: ../../sulfur/src/sulfur/dialogs.py:2286
 #, fuzzy
 msgid "remote revision"
 msgstr "Filkilder"
 
-#: ../../sulfur/src/dialogs.py:2099 ../../sulfur/src/dialogs.py:2255
+#: ../../sulfur/src/sulfur/dialogs.py:2306
+#: ../../sulfur/src/sulfur/dialogs.py:2462
 #, fuzzy
 msgid "Execution mode"
 msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/dialogs.py:2099 ../../sulfur/src/dialogs.py:2255
+#: ../../sulfur/src/sulfur/dialogs.py:2306
+#: ../../sulfur/src/sulfur/dialogs.py:2462
 #, fuzzy
 msgid "Execute all"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../sulfur/src/dialogs.py:2099 ../../sulfur/src/dialogs.py:2255
+#: ../../sulfur/src/sulfur/dialogs.py:2306
+#: ../../sulfur/src/sulfur/dialogs.py:2462
 msgid "Execute only selected"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:2102 ../../sulfur/src/dialogs.py:2258
+#: ../../sulfur/src/sulfur/dialogs.py:2309
+#: ../../sulfur/src/sulfur/dialogs.py:2465
 msgid "Choose the execution mode"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:2141
+#: ../../sulfur/src/sulfur/dialogs.py:2348
 msgid "Commit message"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:2142
+#: ../../sulfur/src/sulfur/dialogs.py:2349
 #, fuzzy
 msgid "Pretend mode"
 msgstr "Slettet"
 
-#: ../../sulfur/src/dialogs.py:2143
+#: ../../sulfur/src/sulfur/dialogs.py:2350
 #, fuzzy
 msgid "Packages check"
 msgstr "Pakker."
 
-#: ../../sulfur/src/dialogs.py:2147
+#: ../../sulfur/src/sulfur/dialogs.py:2354
 #, fuzzy
 msgid "Choose sync options"
 msgstr "Filkilder"
 
-#: ../../sulfur/src/dialogs.py:2167
+#: ../../sulfur/src/sulfur/dialogs.py:2374
 #, fuzzy
 msgid "Mirror updates information"
 msgstr "Filkilder"
 
-#: ../../sulfur/src/dialogs.py:2238
+#: ../../sulfur/src/sulfur/dialogs.py:2445
 #, fuzzy
 msgid "Choose the destination repository"
 msgstr "Rediger Filkilder"
 
-#: ../../sulfur/src/dialogs.py:2315
+#: ../../sulfur/src/sulfur/dialogs.py:2522
 #, fuzzy
 msgid "To be added"
 msgstr "Opdateret"
 
-#: ../../sulfur/src/dialogs.py:2322 ../../sulfur/src/dialogs.py:5310
-#: ../../sulfur/src/dialogs.py:5328
+#: ../../sulfur/src/sulfur/dialogs.py:2529
+#: ../../sulfur/src/sulfur/dialogs.py:5516
+#: ../../sulfur/src/sulfur/dialogs.py:5534
 #, fuzzy
 msgid "To be removed"
 msgstr "Sletter"
 
-#: ../../sulfur/src/dialogs.py:2329
+#: ../../sulfur/src/sulfur/dialogs.py:2536
 #, fuzzy
 msgid "To be injected"
 msgstr "Installeret"
 
-#: ../../sulfur/src/dialogs.py:2778 ../../sulfur/src/dialogs.py:2811
+#: ../../sulfur/src/sulfur/dialogs.py:2985
+#: ../../sulfur/src/sulfur/dialogs.py:3018
 msgid "Categories, space separated"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:2784
+#: ../../sulfur/src/sulfur/dialogs.py:2991
 #, fuzzy
 msgid "Insert categories"
 msgstr "Kategorier"
 
-#: ../../sulfur/src/dialogs.py:2817
+#: ../../sulfur/src/sulfur/dialogs.py:3024
 msgid "Insert categories (if you want)"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:2839
+#: ../../sulfur/src/sulfur/dialogs.py:3046
 msgid "Invalid Command"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:2839 ../../sulfur/src/dialogs.py:2858
-#: ../../sulfur/src/dialogs.py:2865
+#: ../../sulfur/src/sulfur/dialogs.py:3046
+#: ../../sulfur/src/sulfur/dialogs.py:3065
+#: ../../sulfur/src/sulfur/dialogs.py:3072
 msgid "Custom command Error"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:2865
+#: ../../sulfur/src/sulfur/dialogs.py:3072
 #, fuzzy
 msgid "Error executing call"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../sulfur/src/dialogs.py:2947
+#: ../../sulfur/src/sulfur/dialogs.py:3154
 #, fuzzy
 msgid "Insert packages removal parameters"
 msgstr "Indlæsning af pakker afsluttet"
 
-#: ../../sulfur/src/dialogs.py:2992
+#: ../../sulfur/src/sulfur/dialogs.py:3199
 msgid "Custom USE flags"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:2997
+#: ../../sulfur/src/sulfur/dialogs.py:3204
 #, fuzzy
 msgid "Insert compilation parameters"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../sulfur/src/dialogs.py:3050
+#: ../../sulfur/src/sulfur/dialogs.py:3257
 #, fuzzy
 msgid "Insert Package Information parameters"
 msgstr "I_nformation"
 
-#: ../../sulfur/src/dialogs.py:3095
+#: ../../sulfur/src/sulfur/dialogs.py:3302
 msgid "Full output"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:3098
+#: ../../sulfur/src/sulfur/dialogs.py:3305
 #, fuzzy
 msgid "Auto refresh"
 msgstr "_Automatisk indlæsning ved start"
 
-#: ../../sulfur/src/dialogs.py:3100
+#: ../../sulfur/src/sulfur/dialogs.py:3307
 msgid "Insert output parameters"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:3128 ../../sulfur/src/sulfur.glade.h:77
+#: ../../sulfur/src/sulfur/dialogs.py:3335
 #, fuzzy
 msgid "Extended note"
 msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/dialogs.py:3131
+#: ../../sulfur/src/sulfur/dialogs.py:3338
 msgid "Insert your new pinboard item"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:3205
+#: ../../sulfur/src/sulfur/dialogs.py:3412
 msgid "List type"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:3208
+#: ../../sulfur/src/sulfur/dialogs.py:3415
 msgid "Choose what kind of list you want to see"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:3280
+#: ../../sulfur/src/sulfur/dialogs.py:3487
 #, fuzzy
 msgid "Choose from which repository"
 msgstr "Kilde"
 
-#: ../../sulfur/src/dialogs.py:3328
+#: ../../sulfur/src/sulfur/dialogs.py:3535
 #, fuzzy
 msgid "Needed Libraries"
 msgstr "behøvet af %s"
 
-#: ../../sulfur/src/dialogs.py:3328
+#: ../../sulfur/src/sulfur/dialogs.py:3535
 #, fuzzy
 msgid "Reverse dependencies"
 msgstr "Installer som afhængighed"
 
-#: ../../sulfur/src/dialogs.py:3328 ../../sulfur/src/dialogs.py:4151
+#: ../../sulfur/src/sulfur/dialogs.py:3535
+#: ../../sulfur/src/sulfur/dialogs.py:4357
 #, fuzzy
 msgid "File"
 msgstr "_Filer"
 
-#: ../../sulfur/src/dialogs.py:3328
+#: ../../sulfur/src/sulfur/dialogs.py:3535
 #, fuzzy
 msgid "Eclass"
 msgstr "Ekskludering"
 
-#: ../../sulfur/src/dialogs.py:3336
+#: ../../sulfur/src/sulfur/dialogs.py:3543
 #, fuzzy
 msgid "Entropy Search"
 msgstr "Sorterer Pakker"
 
-#: ../../sulfur/src/dialogs.py:3369
+#: ../../sulfur/src/sulfur/dialogs.py:3576
 #, fuzzy
 msgid "Choose the repository"
 msgstr "Rediger Filkilder"
 
-#: ../../sulfur/src/dialogs.py:3391
+#: ../../sulfur/src/sulfur/dialogs.py:3598
 #, fuzzy
 msgid "Choose the repositories you want to scan"
 msgstr "Ingen valgte pakker"
 
-#: ../../sulfur/src/dialogs.py:3415
+#: ../../sulfur/src/sulfur/dialogs.py:3622
 msgid "Choose mode"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:3415
+#: ../../sulfur/src/sulfur/dialogs.py:3622
 msgid "Server check"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:3415
+#: ../../sulfur/src/sulfur/dialogs.py:3622
 #, fuzzy
 msgid "Mirrors check"
 msgstr "_Filspejlsliste"
 
-#: ../../sulfur/src/dialogs.py:3458
+#: ../../sulfur/src/sulfur/dialogs.py:3665
 #, fuzzy
 msgid "Choose what notice board you want to see"
 msgstr "Ingen valgte pakker"
 
-#: ../../sulfur/src/dialogs.py:3707
+#: ../../sulfur/src/sulfur/dialogs.py:3913
 msgid "Expand to browse"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:3723 ../../sulfur/src/sulfur.glade.h:89
+#: ../../sulfur/src/sulfur/dialogs.py:3929
 #, fuzzy
 msgid "Identifier"
 msgstr "Filkilder"
 
-#: ../../sulfur/src/dialogs.py:3727 ../../sulfur/src/sulfur.glade.h:15
+#: ../../sulfur/src/sulfur/dialogs.py:3933
 #, fuzzy
 msgid "Author"
 msgstr "Fi_ler"
 
-#: ../../sulfur/src/dialogs.py:4000
+#: ../../sulfur/src/sulfur/dialogs.py:4206
 #, fuzzy
 msgid "Package ChangeLog"
 msgstr "Pakker"
 
-#: ../../sulfur/src/dialogs.py:4053 ../../sulfur/src/views.py:1304
+#: ../../sulfur/src/sulfur/dialogs.py:4259
+#: ../../sulfur/src/sulfur/views.py:1317
 #, fuzzy
 msgid "Vote registered successfully"
 msgstr "Indlæsning afsluttet"
 
-#: ../../sulfur/src/dialogs.py:4055 ../../sulfur/src/views.py:1306
+#: ../../sulfur/src/sulfur/dialogs.py:4261
+#: ../../sulfur/src/sulfur/views.py:1321
 #, fuzzy
 msgid "Error registering vote"
 msgstr "Fejl i test af pakke signaturer:\n"
 
-#: ../../sulfur/src/dialogs.py:4068
+#: ../../sulfur/src/sulfur/dialogs.py:4274
 #, fuzzy
 msgid "License name"
 msgstr "Filnavn"
 
-#: ../../sulfur/src/dialogs.py:4084 ../../sulfur/src/sulfur.glade.h:121
+#: ../../sulfur/src/sulfur/dialogs.py:4290
 #, fuzzy
 msgid "Mirrors"
 msgstr "_Filspejlsliste"
 
-#: ../../sulfur/src/dialogs.py:4108
+#: ../../sulfur/src/sulfur/dialogs.py:4314
 #, fuzzy
 msgid "Eclasses"
 msgstr "Ekskludering"
 
-#: ../../sulfur/src/dialogs.py:4124
+#: ../../sulfur/src/sulfur/dialogs.py:4330
 #, fuzzy
 msgid "Depends"
 msgstr "Indstillinger"
 
-#: ../../sulfur/src/dialogs.py:4132
+#: ../../sulfur/src/sulfur/dialogs.py:4338
 #, fuzzy
 msgid "Needed libraries"
 msgstr "behøvet af %s"
 
-#: ../../sulfur/src/dialogs.py:4140
+#: ../../sulfur/src/sulfur/dialogs.py:4346
 msgid "Protected item"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4143 ../../sulfur/src/dialogs.py:4155
-#: ../../sulfur/src/dialogs.py:4167
+#: ../../sulfur/src/sulfur/dialogs.py:4349
+#: ../../sulfur/src/sulfur/dialogs.py:4361
+#: ../../sulfur/src/sulfur/dialogs.py:4373
 msgid "Type"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4255
+#: ../../sulfur/src/sulfur/dialogs.py:4461
 msgid "Share your opinion, your documents, your screenshots!"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4256
+#: ../../sulfur/src/sulfur/dialogs.py:4462
 msgid "Be part of our Community!"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4293
+#: ../../sulfur/src/sulfur/dialogs.py:4499
 msgid "From your Operating System"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4296
+#: ../../sulfur/src/sulfur/dialogs.py:4502
 #, fuzzy
 msgid "Remotely"
 msgstr "Sletter"
 
-#: ../../sulfur/src/dialogs.py:4454
+#: ../../sulfur/src/sulfur/dialogs.py:4660
 msgid "Bug"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4462
+#: ../../sulfur/src/sulfur/dialogs.py:4668
 #, fuzzy
 msgid "Reference"
 msgstr "Indstillinger"
 
-#: ../../sulfur/src/dialogs.py:4536
+#: ../../sulfur/src/sulfur/dialogs.py:4742
 msgid "impact"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4540
+#: ../../sulfur/src/sulfur/dialogs.py:4746
 msgid "access"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4555
+#: ../../sulfur/src/sulfur/dialogs.py:4761
 msgid "Vulnerables"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4559
+#: ../../sulfur/src/sulfur/dialogs.py:4765
 #, fuzzy
 msgid "Unaffected"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/dialogs.py:4643
+#: ../../sulfur/src/sulfur/dialogs.py:4848
 msgid "Id"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4721
+#: ../../sulfur/src/sulfur/dialogs.py:4925
 msgid "Write your"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4724
+#: ../../sulfur/src/sulfur/dialogs.py:4928
 #, fuzzy
 msgid "Select your"
 msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/dialogs.py:4731
+#: ../../sulfur/src/sulfur/dialogs.py:4935
 msgid "Submit issue"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4744
+#: ../../sulfur/src/sulfur/dialogs.py:4948
 msgid "Empty Document"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4748
+#: ../../sulfur/src/sulfur/dialogs.py:4952
 #, fuzzy
 msgid "Invalid Description"
 msgstr "_Beskrivelse"
 
-#: ../../sulfur/src/dialogs.py:4754
+#: ../../sulfur/src/sulfur/dialogs.py:4958
 msgid "Invalid Document Type"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4757
+#: ../../sulfur/src/sulfur/dialogs.py:4961
 #, fuzzy
 msgid "Invalid Title"
 msgstr "Kilde"
 
 #. confirm ?
-#: ../../sulfur/src/dialogs.py:4761
+#: ../../sulfur/src/sulfur/dialogs.py:4965
 msgid "Do you confirm your submission?"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4787
+#: ../../sulfur/src/sulfur/dialogs.py:4991
 #, fuzzy
 msgid "UGC Error"
 msgstr "Fejl"
 
-#: ../../sulfur/src/dialogs.py:4791
+#: ../../sulfur/src/sulfur/dialogs.py:4995
 msgid "Document added successfully. Thank you"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4791
+#: ../../sulfur/src/sulfur/dialogs.py:4995
 msgid "Success!"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4846
+#: ../../sulfur/src/sulfur/dialogs.py:5050
 msgid "Write your document"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:4854
+#: ../../sulfur/src/sulfur/dialogs.py:5058
 #, fuzzy
 msgid "Select your file"
 msgstr "%s profilen er valgt"
 
-#: ../../sulfur/src/dialogs.py:4866
+#: ../../sulfur/src/sulfur/dialogs.py:5070
 #, fuzzy
 msgid "On repository"
 msgstr "Kilde"
 
-#: ../../sulfur/src/dialogs.py:4933
+#: ../../sulfur/src/sulfur/dialogs.py:5137
 #, fuzzy
 msgid "These are the packages that must be enabled to satisfy your request"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/dialogs.py:4935
+#: ../../sulfur/src/sulfur/dialogs.py:5139
 #, fuzzy
 msgid "Some packages are masked"
 msgstr "Ingen valgte pakker"
 
-#: ../../sulfur/src/dialogs.py:5024
+#: ../../sulfur/src/sulfur/dialogs.py:5228
 #, fuzzy
 msgid "Masked package"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/dialogs.py:5102 ../../sulfur/src/dialogs.py:5334
-#: ../../sulfur/src/dialogs.py:5345 ../../sulfur/src/dialogs.py:5356
-#: ../../sulfur/src/dialogs.py:5367 ../../sulfur/src/views.py:74
-#: ../../sulfur/src/views.py:128 ../../sulfur/src/views.py:1598
+#: ../../sulfur/src/sulfur/dialogs.py:5308
+#: ../../sulfur/src/sulfur/dialogs.py:5540
+#: ../../sulfur/src/sulfur/dialogs.py:5551
+#: ../../sulfur/src/sulfur/dialogs.py:5562
+#: ../../sulfur/src/sulfur/dialogs.py:5573 ../../sulfur/src/sulfur/views.py:79
+#: ../../sulfur/src/sulfur/views.py:133 ../../sulfur/src/sulfur/views.py:1620
 #, fuzzy
 msgid "No description"
 msgstr "_Beskrivelse"
 
-#: ../../sulfur/src/dialogs.py:5225
+#: ../../sulfur/src/sulfur/dialogs.py:5431
 msgid "Please confirm the actions above"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:5269 ../../sulfur/src/sulfur.py:1632
-#: ../../sulfur/src/sulfur.py:1641 ../../sulfur/src/sulfur.py:1650
+#: ../../sulfur/src/sulfur/dialogs.py:5475
+#: ../../sulfur/src/sulfur/__init__.py:595
+#: ../../sulfur/src/sulfur/__init__.py:605
+#: ../../sulfur/src/sulfur/__init__.py:615
 #, fuzzy
 msgid "Item"
 msgstr "Fi_ler"
 
-#: ../../sulfur/src/dialogs.py:5286 ../../sulfur/src/dialogs.py:5339
+#: ../../sulfur/src/sulfur/dialogs.py:5492
+#: ../../sulfur/src/sulfur/dialogs.py:5545
 #, fuzzy
 msgid "To be reinstalled"
 msgstr "Installeret"
 
-#: ../../sulfur/src/dialogs.py:5292 ../../sulfur/src/dialogs.py:5350
+#: ../../sulfur/src/sulfur/dialogs.py:5498
+#: ../../sulfur/src/sulfur/dialogs.py:5556
 #, fuzzy
 msgid "To be installed"
 msgstr "Installeret"
 
-#: ../../sulfur/src/dialogs.py:5298 ../../sulfur/src/dialogs.py:5361
+#: ../../sulfur/src/sulfur/dialogs.py:5504
+#: ../../sulfur/src/sulfur/dialogs.py:5567
 #, fuzzy
 msgid "To be updated"
 msgstr "Opdateret"
 
-#: ../../sulfur/src/dialogs.py:5304
+#: ../../sulfur/src/sulfur/dialogs.py:5510
 #, fuzzy
 msgid "To be downgraded"
 msgstr "Opdateret"
 
-#: ../../sulfur/src/dialogs.py:5498
+#: ../../sulfur/src/sulfur/dialogs.py:5704
 #, fuzzy
 msgid "About"
 msgstr "Om"
 
-#: ../../sulfur/src/dialogs.py:5618
+#: ../../sulfur/src/sulfur/dialogs.py:5824
 #, fuzzy
 msgid "Sulfur Question"
 msgstr "Sletter"
 
-#: ../../sulfur/src/dialogs.py:5623
+#: ../../sulfur/src/sulfur/dialogs.py:5829
 msgid "Hey!"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:5668
+#: ../../sulfur/src/sulfur/dialogs.py:5874
 msgid "Please fill the following form"
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:5737
+#: ../../sulfur/src/sulfur/dialogs.py:5943
 #, fuzzy
 msgid "Add atom"
 msgstr "Fi_ler"
 
-#: ../../sulfur/src/dialogs.py:5857
+#: ../../sulfur/src/sulfur/dialogs.py:6063
 #, fuzzy
 msgid "Invalid entry"
 msgstr "Kilde"
 
-#: ../../sulfur/src/dialogs.py:5921
+#: ../../sulfur/src/sulfur/dialogs.py:6127
 msgid "Cancel"
 msgstr ""
 
 #. new
-#: ../../sulfur/src/dialogs.py:6010
+#: ../../sulfur/src/sulfur/dialogs.py:6216
 #, fuzzy
 msgid "Accepted"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/dialogs.py:6101
+#: ../../sulfur/src/sulfur/dialogs.py:6329
 #, fuzzy
 msgid "Exception caught"
 msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/dialogs.py:6102
+#: ../../sulfur/src/sulfur/dialogs.py:6330
 msgid "Sulfur crashed! An unexpected error occured."
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:6111
+#: ../../sulfur/src/sulfur/dialogs.py:6339
 msgid "Your report has been submitted successfully! Thanks a lot."
 msgstr ""
 
-#: ../../sulfur/src/dialogs.py:6113
+#: ../../sulfur/src/sulfur/dialogs.py:6341
 msgid "Cannot submit your report. Not connected to Internet?"
 msgstr ""
 
-#: ../../sulfur/src/entropyapi.py:75
+#: ../../sulfur/src/sulfur/entropyapi.py:77
 #, fuzzy
 msgid "Error enabling masked package"
 msgstr "Sorterer Pakker"
 
-#: ../../sulfur/src/entropyapi.py:116
+#: ../../sulfur/src/sulfur/entropyapi.py:119
 #, fuzzy
 msgid "Downloading sources"
 msgstr "<b>Størrelse af filer som skal hentes</b>"
 
-#: ../../sulfur/src/misc.py:89
+#: ../../sulfur/src/sulfur/events.py:53
+#, fuzzy
+msgid "Error during backup"
+msgstr "Fejl i test af pakke signaturer:\n"
+
+#: ../../sulfur/src/sulfur/events.py:56
+#, fuzzy
+msgid "Backup complete"
+msgstr "Indlæsning afsluttet"
+
+#: ../../sulfur/src/sulfur/events.py:75
+#, fuzzy
+msgid "Error during restore"
+msgstr "Kilde"
+
+#: ../../sulfur/src/sulfur/events.py:81
+#, fuzzy
+msgid "Restore complete"
+msgstr "Indlæsning afsluttet"
+
+#: ../../sulfur/src/sulfur/events.py:91
+#, fuzzy
+msgid "Error during removal"
+msgstr "Fejl i test af pakke signaturer:\n"
+
+#: ../../sulfur/src/sulfur/events.py:103
+#, fuzzy
+msgid "The chosen package is not vulnerable"
+msgstr "Vis Installerede Pakker"
+
+#: ../../sulfur/src/sulfur/events.py:111
+msgid "Packages in Advisory have been queued."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:128
+msgid "Packages in all Advisories have been queued."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:244
+msgid "You! Why do you want to remove the main repository ?"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:249
+msgid "You must now either press the"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:250
+#, fuzzy
+msgid "or the"
+msgstr "Vis Installerede Pakker"
+
+#: ../../sulfur/src/sulfur/events.py:281
+msgid "Are you sure ?"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:294
+#, fuzzy
+msgid "Error saving parameter"
+msgstr "Fejl opstået i Yum Extender"
+
+#: ../../sulfur/src/sulfur/events.py:295
+#: ../../sulfur/src/sulfur/__init__.py:735
+#, fuzzy
+msgid "An issue occured while saving a preference"
+msgstr "Du er ved at tilføje %s pakker\n"
+
+#: ../../sulfur/src/sulfur/events.py:296
+#: ../../sulfur/src/sulfur/__init__.py:708
+#: ../../sulfur/src/sulfur/__init__.py:736
+#, fuzzy
+msgid "Parameter"
+msgstr "Slettet"
+
+#: ../../sulfur/src/sulfur/events.py:296
+#, fuzzy
+msgid "not saved"
+msgstr "Installeret"
+
+#: ../../sulfur/src/sulfur/events.py:309 ../../sulfur/src/sulfur/events.py:315
+#: ../../sulfur/src/sulfur/events.py:321 ../../sulfur/src/sulfur/events.py:345
+#: ../../sulfur/src/sulfur/events.py:356 ../../sulfur/src/sulfur/events.py:367
+msgid "New"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:309 ../../sulfur/src/sulfur/events.py:315
+#: ../../sulfur/src/sulfur/events.py:321
+#, fuzzy
+msgid "Please insert a new path"
+msgstr "Vis Installerede Pakker"
+
+#: ../../sulfur/src/sulfur/events.py:346 ../../sulfur/src/sulfur/events.py:357
+#: ../../sulfur/src/sulfur/events.py:368
+#, fuzzy
+msgid "Please edit the selected path"
+msgstr "Vis Installerede Pakker"
+
+#: ../../sulfur/src/sulfur/events.py:388
+#, fuzzy
+msgid "You have chosen to install this package"
+msgstr "Du er ved at tilføje %s pakker\n"
+
+#: ../../sulfur/src/sulfur/events.py:390
+msgid "Are you supa sure?"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:408
+#, fuzzy
+msgid "Cannot install"
+msgstr "Installeret"
+
+#: ../../sulfur/src/sulfur/events.py:504
+#, fuzzy
+msgid "Please select at least one repository"
+msgstr "Vis Installerede Pakker"
+
+#. Check there are any packages in the queue
+#: ../../sulfur/src/sulfur/events.py:540
+msgid "No packages in queue"
+msgstr "Ingen pakker i køen"
+
+#: ../../sulfur/src/sulfur/events.py:590
+msgid "Queue is too old. Cannot load."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:632
+#, fuzzy
+msgid "license text"
+msgstr "Installeret"
+
+#: ../../sulfur/src/sulfur/events.py:659
+msgid ""
+"You have chosen to interrupt the processing. Are you sure you want to do it ?"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:729
+#, fuzzy
+msgid "Cleaning UGC cache of"
+msgstr "Sorterer Pakker"
+
+#: ../../sulfur/src/sulfur/events.py:730
+msgid "UGC cache cleared"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:743
+msgid "UGC credentials cleared"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:772
+#, fuzzy
+msgid "Package Set name"
+msgstr "Pakker"
+
+#: ../../sulfur/src/sulfur/events.py:773
+#, fuzzy
+msgid "Package atoms"
+msgstr "Pakker"
+
+#: ../../sulfur/src/sulfur/events.py:777
+#, fuzzy
+msgid "Choose what Package Set you want to add"
+msgstr "Ingen valgte pakker"
+
+#: ../../sulfur/src/sulfur/events.py:806
+#, fuzzy
+msgid "Removable Package Set"
+msgstr "Vis Installerede Pakker"
+
+#: ../../sulfur/src/sulfur/events.py:811
+#, fuzzy
+msgid "Choose what Package Set you want to remove"
+msgstr "Ingen valgte pakker"
+
+#: ../../sulfur/src/sulfur/events.py:833
+#, fuzzy
+msgid "No missing dependencies found."
+msgstr "Installer som afhængighed"
+
+#: ../../sulfur/src/sulfur/events.py:868
+msgid "Missing dependencies found, but none of them are on the repositories."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:877
+msgid ""
+"Some missing dependencies have not been matched, others are going to be "
+"added to the queue."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:880
+msgid "All the missing dependencies are going to be added to the queue"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:906
+#: ../../sulfur/src/sulfur/__init__.py:1531
+msgid "Aborting queue tasks."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:936
+#, fuzzy
+msgid "Libraries test aborted"
+msgstr "behøvet af %s"
+
+#: ../../sulfur/src/sulfur/events.py:945
+msgid ""
+"Some broken packages have not been matched, others are going to be added to "
+"the queue."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/events.py:948
+#, fuzzy
+msgid "All the broken packages are going to be added to the queue"
+msgstr "Vis Installerede Pakker"
+
+#: ../../sulfur/src/sulfur/__init__.py:68
+msgid ""
+"Entropy resources are locked and not accessible. Another Entropy application "
+"is running. Sorry, can't load Sulfur."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:75
+msgid "Entropy is running in safe mode"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:76
+msgid "Please fix as soon as possible"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:78
+msgid "Safe Mode"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:278
+#, fuzzy
+msgid "Default packages sorting"
+msgstr "I_nformation"
+
+#: ../../sulfur/src/sulfur/__init__.py:279
+msgid "Sort by name [A-Z]"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:280
+msgid "Sort by name [Z-A]"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:281
+#, fuzzy
+msgid "Sort by downloads"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../sulfur/src/sulfur/__init__.py:282
+msgid "Sort by votes"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:283
+#, fuzzy
+msgid "Sort by repository"
+msgstr "Kilde"
+
+#: ../../sulfur/src/sulfur/__init__.py:341
+msgid ""
+"The repositories listed below are configured but not available. They should "
+"be downloaded."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:342
+msgid "If you don't do this now, you won't be able to use them."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:344
+#, fuzzy
+msgid "Download now"
+msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#: ../../sulfur/src/sulfur/__init__.py:345
+#, fuzzy
+msgid "Skip"
+msgstr "_Spring Over"
+
+#: ../../sulfur/src/sulfur/__init__.py:416
+msgid "Show Package Updates"
+msgstr "Vis Pakker Opdateringer"
+
+#: ../../sulfur/src/sulfur/__init__.py:418
+msgid "Show available Packages"
+msgstr "Vis Tilgængelige Pakker"
+
+#: ../../sulfur/src/sulfur/__init__.py:420
+msgid "Show Installed Packages"
+msgstr "Vis Installerede Pakker"
+
+#: ../../sulfur/src/sulfur/__init__.py:422
+#, fuzzy
+msgid "Show Masked Packages"
+msgstr "Vis Installerede Pakker"
+
+#: ../../sulfur/src/sulfur/__init__.py:424
+msgid "Show All Packages"
+msgstr "Vis Alle Pakker"
+
+#: ../../sulfur/src/sulfur/__init__.py:426
+#, fuzzy
+msgid "Show Package Sets"
+msgstr "Vis Pakker Opdateringer"
+
+#: ../../sulfur/src/sulfur/__init__.py:428
+#, fuzzy
+msgid "Show Queued Packages"
+msgstr "Vis Installerede Pakker"
+
+#. Setup Vertical Toolbar
+#: ../../sulfur/src/sulfur/__init__.py:461
+#: ../../sulfur/src/sulfur/views.py:1549
+msgid "Packages"
+msgstr "Pakker."
+
+#: ../../sulfur/src/sulfur/__init__.py:465
+#: ../../sulfur/src/sulfur/packages.py:830
+#, fuzzy
+msgid "Repository Selection"
+msgstr "Filkilder"
+
+#: ../../sulfur/src/sulfur/__init__.py:467
+#, fuzzy
+msgid "Configuration Files"
+msgstr "Oprettelse af %s profilen fejlede"
+
+#: ../../sulfur/src/sulfur/__init__.py:469
+#: ../../sulfur/src/sulfur/__init__.py:521
+#, fuzzy
+msgid "Preferences"
+msgstr "Indstillinger"
+
+#: ../../sulfur/src/sulfur/__init__.py:471
+#, fuzzy
+msgid "Package Queue"
+msgstr "Pakke Køen"
+
+#: ../../sulfur/src/sulfur/__init__.py:473
+#, fuzzy
+msgid "Output"
+msgstr "Information"
+
+#: ../../sulfur/src/sulfur/__init__.py:524
+msgid ""
+"Some configuration options are critical for the health of your System. Be "
+"careful."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:675
+#, fuzzy
+msgid "Logged in as"
+msgstr "Konfirmation af behandling af køen"
+
+#: ../../sulfur/src/sulfur/__init__.py:682
+#, fuzzy
+msgid "UGC Status"
+msgstr "Opdateret"
+
+#: ../../sulfur/src/sulfur/__init__.py:705
+#: ../../sulfur/src/sulfur/__init__.py:733
+#, fuzzy
+msgid "Error setting parameter"
+msgstr "Fejl i test af pakke signaturer:\n"
+
+#: ../../sulfur/src/sulfur/__init__.py:707
+#, fuzzy
+msgid "An issue occured while loading a preference"
+msgstr "Du er ved at tilføje %s pakker\n"
+
+#: ../../sulfur/src/sulfur/__init__.py:709
+#: ../../sulfur/src/sulfur/__init__.py:737
+msgid "must be of type"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:709
+#: ../../sulfur/src/sulfur/__init__.py:737
+msgid "got"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:876
+#, fuzzy
+msgid "Error saving preferences"
+msgstr "Fejl opstået i Yum Extender"
+
+#: ../../sulfur/src/sulfur/__init__.py:882
+msgid ""
+"These packages are masked either by default or due to your choice. Please be "
+"careful, at least."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:941
+msgid "Generating metadata. Please wait."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:949
+#, fuzzy
+msgid "Error during list population"
+msgstr "Fejl i Transaktionen"
+
+#: ../../sulfur/src/sulfur/__init__.py:951
+msgid "Retrying in 1 second."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:986
+#, fuzzy
+msgid "Error loading advisories"
+msgstr "Fejl i Hentning af pakker:\n"
+
+#: ../../sulfur/src/sulfur/__init__.py:1041
+#, fuzzy
+msgid "Initializing Repository module..."
+msgstr "Kilde"
+
+#: ../../sulfur/src/sulfur/__init__.py:1047
+msgid "You must run this application as root"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1059
+msgid "You are not connected to the Internet. You should."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1083
+#, fuzzy
+msgid "Errors updating repositories."
+msgstr "Kilde"
+
+#: ../../sulfur/src/sulfur/__init__.py:1085
+msgid "Please check logs below for more info"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1089
+#, fuzzy
+msgid "Repositories updated successfully"
+msgstr "Indlæsning afsluttet"
+
+#: ../../sulfur/src/sulfur/__init__.py:1093
+msgid "All the repositories were already up to date."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1096
+msgid "repositories were already up to date. Others have been updated."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1100
+msgid "sys-apps/entropy needs to be updated as soon as possible."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1108
+#, fuzzy
+msgid "Nothing to do. I am idle."
+msgstr "Ingen pakker i køen"
+
+#: ../../sulfur/src/sulfur/__init__.py:1110
+msgid "Really, don't waste your time here. This is just a placeholder"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1111
+msgid "I am still alive and kickin'"
+msgstr ""
+
+#. -> Get lists
+#: ../../sulfur/src/sulfur/__init__.py:1216
+msgid "Generating Metadata, please wait."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1218
+msgid "Entropy is indexing the repositories. It will take a few seconds"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1220
+msgid "While you are waiting, take a break and look outside. Is it rainy?"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1222
+#: ../../sulfur/src/sulfur/__init__.py:1228
+#, fuzzy
+msgid "Calculating"
+msgstr "Installer som afhængighed"
+
+#. if bootstrap: time.sleep(1)
+#: ../../sulfur/src/sulfur/__init__.py:1241
+#, fuzzy
+msgid "Showing"
+msgstr "Sletter"
+
+#: ../../sulfur/src/sulfur/__init__.py:1276
+msgid "Packages not found in repositories, try again later."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1341
+msgid "Another Entropy instance is running. Cannot process queue."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1347
+#, fuzzy
+msgid "Running tasks"
+msgstr "Kører Transaktion"
+
+#: ../../sulfur/src/sulfur/__init__.py:1356
+msgid "Processing Packages in queue"
+msgstr "Behander pakker i køen"
+
+#: ../../sulfur/src/sulfur/__init__.py:1415
+msgid "Attention. You chose to abort the processing."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1418
+msgid ""
+"Attention. An error occured when processing the queue.\n"
+"Please have a look in the processing terminal."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1457
+msgid "No packages selected"
+msgstr "Ingen valgte pakker"
+
+#: ../../sulfur/src/sulfur/__init__.py:1537
+#, fuzzy
+msgid "Skipping current mirror."
+msgstr "Filkilder"
+
+#: ../../sulfur/src/sulfur/package.py:175
+#, fuzzy
+msgid "Recursive Package Set"
+msgstr "Vis Installerede Pakker"
+
+#: ../../sulfur/src/sulfur/packages.py:93
 #, fuzzy
 msgid ""
 "There are packages that can't be installed at the same time, thus are "
 "blocking your request:"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/misc.py:133
+#: ../../sulfur/src/sulfur/packages.py:141
 #, fuzzy
 msgid "These are the needed packages"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/misc.py:134
+#: ../../sulfur/src/sulfur/packages.py:142
 msgid ""
 "These packages must be removed from the removal queue because they depend on "
 "your last selection. Do you agree?"
 msgstr ""
 
-#: ../../sulfur/src/misc.py:190
+#: ../../sulfur/src/sulfur/packages.py:198
 #, fuzzy
 msgid "These packages must be excluded"
 msgstr "Behandling af pakker afsluttet"
 
-#: ../../sulfur/src/misc.py:191
+#: ../../sulfur/src/sulfur/packages.py:199
 msgid ""
 "These packages must be removed from the queue because they depend on your "
 "last selection. Do you agree?"
 msgstr ""
 
-#: ../../sulfur/src/misc.py:373
+#: ../../sulfur/src/sulfur/packages.py:395
 msgid ""
 "Some dependencies couldn't be found. It can either be because they are "
 "masked or because they aren't in any active repository."
 msgstr ""
 
-#: ../../sulfur/src/misc.py:437
+#: ../../sulfur/src/sulfur/packages.py:462
 #, fuzzy
 msgid "Needed disk space"
 msgstr "behøvet af %s"
 
-#: ../../sulfur/src/misc.py:444
+#: ../../sulfur/src/sulfur/packages.py:469
 #, fuzzy
 msgid "These are the packages that would be installed/updated"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/misc.py:510
+#: ../../sulfur/src/sulfur/packages.py:535
 #, fuzzy
 msgid "Freed space"
 msgstr "behøvet af %s"
 
-#: ../../sulfur/src/misc.py:513
+#: ../../sulfur/src/sulfur/packages.py:538
 #, fuzzy
 msgid "Needed space"
 msgstr "behøvet af %s"
 
-#: ../../sulfur/src/misc.py:518
+#: ../../sulfur/src/sulfur/packages.py:543
 #, fuzzy
 msgid "These are the packages that would be removed"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/packages.py:222
+#: ../../sulfur/src/sulfur/packages.py:765
 msgid "Set from"
 msgstr ""
 
-#: ../../sulfur/src/packages.py:223
+#: ../../sulfur/src/sulfur/packages.py:766
 msgid "Unknown"
 msgstr ""
 
-#: ../../sulfur/src/packages.py:228
+#: ../../sulfur/src/sulfur/packages.py:771
 #, fuzzy
 msgid "User configuration"
 msgstr "Oprettelse af %s profilen fejlede"
 
 #. load a pixmap inside the treeview
-#: ../../sulfur/src/packages.py:284
+#: ../../sulfur/src/sulfur/packages.py:829
 #, python-format
 msgid "Try clicking the %s button in the %s page"
 msgstr ""
 
-#: ../../sulfur/src/packages.py:284 ../../sulfur/src/sulfur.py:327
-#: ../../sulfur/src/sulfur.py:363
-#, fuzzy
-msgid "Update Repositories"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/packages.py:284 ../../sulfur/src/sulfur.py:1515
-#, fuzzy
-msgid "Repository Selection"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/packages.py:288
+#: ../../sulfur/src/sulfur/packages.py:834
 #, fuzzy
 msgid "No updates available"
 msgstr "Tilgængelige"
 
-#: ../../sulfur/src/packages.py:289
+#: ../../sulfur/src/sulfur/packages.py:835
 msgid "It seems that your system is already up-to-date. Good!"
 msgstr ""
 
-#: ../../sulfur/src/sulfur.py:64
-#, fuzzy
-msgid "Error during backup"
-msgstr "Fejl i test af pakke signaturer:\n"
-
-#: ../../sulfur/src/sulfur.py:66
-#, fuzzy
-msgid "Backup complete"
-msgstr "Indlæsning afsluttet"
-
-#: ../../sulfur/src/sulfur.py:84
-#, fuzzy
-msgid "Error during restore"
-msgstr "Kilde"
-
-#: ../../sulfur/src/sulfur.py:89
-#, fuzzy
-msgid "Restore complete"
-msgstr "Indlæsning afsluttet"
-
-#: ../../sulfur/src/sulfur.py:99
-#, fuzzy
-msgid "Error during removal"
-msgstr "Fejl i test af pakke signaturer:\n"
-
-#: ../../sulfur/src/sulfur.py:111
-#, fuzzy
-msgid "The chosen package is not vulnerable"
-msgstr "Vis Installerede Pakker"
-
-#: ../../sulfur/src/sulfur.py:119
-msgid "Packages in Advisory have been queued."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:134
-msgid "Packages in all Advisories have been queued."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:258 ../../sulfur/src/sulfur.py:280
-msgid "Insert URL"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:258 ../../sulfur/src/sulfur.py:280
-msgid "Enter a download mirror, HTTP or FTP"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:263
-msgid "You must enter either a HTTP or a FTP url."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:300 ../../sulfur/src/sulfur.py:330
-msgid "Wrong entries, errors"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:315 ../../sulfur/src/sulfur.py:327
-msgid "You should press the button"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:315 ../../sulfur/src/sulfur.py:363
-#, fuzzy
-msgid "Regenerate Cache"
-msgstr "Sorterer Pakker"
-
-#: ../../sulfur/src/sulfur.py:315 ../../sulfur/src/sulfur.py:327
-#: ../../sulfur/src/sulfur.py:363
-msgid "now"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:340
-#, fuzzy
-msgid "Insert Repository"
-msgstr "Rediger Filkilder"
-
-#: ../../sulfur/src/sulfur.py:340
-#, fuzzy
-msgid "Insert Repository identification string"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/sulfur.py:348
-#, fuzzy
-msgid "This Repository identification string is malformed"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/sulfur.py:358
-msgid "You! Why do you want to remove the main repository ?"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:363
-msgid "You must now either press the"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:363
-#, fuzzy
-msgid "or the"
-msgstr "Vis Installerede Pakker"
-
-#: ../../sulfur/src/sulfur.py:393
-msgid "Are you sure ?"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:406
-#, fuzzy
-msgid "Error saving parameter"
-msgstr "Fejl opstået i Yum Extender"
-
-#: ../../sulfur/src/sulfur.py:407 ../../sulfur/src/sulfur.py:1766
-#, fuzzy
-msgid "An issue occured while saving a preference"
-msgstr "Du er ved at tilføje %s pakker\n"
-
-#: ../../sulfur/src/sulfur.py:408 ../../sulfur/src/sulfur.py:1741
-#: ../../sulfur/src/sulfur.py:1767
-#, fuzzy
-msgid "Parameter"
-msgstr "Slettet"
-
-#: ../../sulfur/src/sulfur.py:408
-#, fuzzy
-msgid "not saved"
-msgstr "Installeret"
-
-#: ../../sulfur/src/sulfur.py:421 ../../sulfur/src/sulfur.py:427
-#: ../../sulfur/src/sulfur.py:433 ../../sulfur/src/sulfur.py:457
-#: ../../sulfur/src/sulfur.py:467 ../../sulfur/src/sulfur.py:477
-msgid "New"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:421 ../../sulfur/src/sulfur.py:427
-#: ../../sulfur/src/sulfur.py:433
-#, fuzzy
-msgid "Please insert a new path"
-msgstr "Vis Installerede Pakker"
-
-#: ../../sulfur/src/sulfur.py:457 ../../sulfur/src/sulfur.py:467
-#: ../../sulfur/src/sulfur.py:477
-#, fuzzy
-msgid "Please edit the selected path"
-msgstr "Vis Installerede Pakker"
-
-#: ../../sulfur/src/sulfur.py:497
-#, fuzzy
-msgid "You have chosen to install this package"
-msgstr "Du er ved at tilføje %s pakker\n"
-
-#: ../../sulfur/src/sulfur.py:499
-msgid "Are you supa sure?"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:517
-#, fuzzy
-msgid "Cannot install"
-msgstr "Installeret"
-
-#: ../../sulfur/src/sulfur.py:613
-#, fuzzy
-msgid "Please select at least one repository"
-msgstr "Vis Installerede Pakker"
-
-#. Check there are any packages in the queue
-#: ../../sulfur/src/sulfur.py:649
-msgid "No packages in queue"
-msgstr "Ingen pakker i køen"
-
-#: ../../sulfur/src/sulfur.py:698
-msgid "Queue is too old. Cannot load."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:743
-#, fuzzy
-msgid "license text"
-msgstr "Installeret"
-
-#: ../../sulfur/src/sulfur.py:773
-msgid ""
-"You have chosen to interrupt the processing. Are you sure you want to do it ?"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:841
-#, fuzzy
-msgid "Cleaning UGC cache of"
-msgstr "Sorterer Pakker"
-
-#: ../../sulfur/src/sulfur.py:842
-msgid "UGC cache cleared"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:853
-msgid "UGC credentials cleared"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:889
-#, fuzzy
-msgid "Package Set name"
-msgstr "Pakker"
-
-#: ../../sulfur/src/sulfur.py:890
-#, fuzzy
-msgid "Package atoms"
-msgstr "Pakker"
-
-#: ../../sulfur/src/sulfur.py:894
-#, fuzzy
-msgid "Choose what Package Set you want to add"
-msgstr "Ingen valgte pakker"
-
-#: ../../sulfur/src/sulfur.py:920
-#, fuzzy
-msgid "Removable Package Set"
-msgstr "Vis Installerede Pakker"
-
-#: ../../sulfur/src/sulfur.py:924
-#, fuzzy
-msgid "Choose what Package Set you want to remove"
-msgstr "Ingen valgte pakker"
-
-#: ../../sulfur/src/sulfur.py:946
-#, fuzzy
-msgid "No missing dependencies found."
-msgstr "Installer som afhængighed"
-
-#: ../../sulfur/src/sulfur.py:980
-msgid "Missing dependencies found, but none of them are on the repositories."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:988
-msgid ""
-"Some missing dependencies have not been matched, others are going to be "
-"added to the queue."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:990
-msgid "All the missing dependencies are going to be added to the queue"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1016 ../../sulfur/src/sulfur.py:2597
-msgid "Aborting queue tasks."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1045
-#, fuzzy
-msgid "Libraries test aborted"
-msgstr "behøvet af %s"
-
-#: ../../sulfur/src/sulfur.py:1053
-msgid ""
-"Some broken packages have not been matched, others are going to be added to "
-"the queue."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1055
-#, fuzzy
-msgid "All the broken packages are going to be added to the queue"
-msgstr "Vis Installerede Pakker"
-
-#: ../../sulfur/src/sulfur.py:1106
-msgid ""
-"Entropy resources are locked and not accessible. Another Entropy application "
-"is running. Sorry, can't load Sulfur."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1113
-msgid "Entropy is running in safe mode"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1114
-msgid "Please fix as soon as possible"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1116
-msgid "Safe Mode"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1325
-#, fuzzy
-msgid "Default packages sorting"
-msgstr "I_nformation"
-
-#: ../../sulfur/src/sulfur.py:1326
-msgid "Sort by name [A-Z]"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1327
-msgid "Sort by name [Z-A]"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1328
-#, fuzzy
-msgid "Sort by downloads"
-msgstr "<b>Størrelse af filer som skal hentes</b>"
-
-#: ../../sulfur/src/sulfur.py:1329
-msgid "Sort by votes"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1330
-#, fuzzy
-msgid "Sort by repository"
-msgstr "Kilde"
-
-#: ../../sulfur/src/sulfur.py:1399
-msgid ""
-"The repositories listed below are configured but not available. They should "
-"be downloaded."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1400
-msgid "If you don't do this now, you won't be able to use them."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1402
-#, fuzzy
-msgid "Download now"
-msgstr "<b>Størrelse af filer som skal hentes</b>"
-
-#: ../../sulfur/src/sulfur.py:1403
-#, fuzzy
-msgid "Skip"
-msgstr "_Spring Over"
-
-#: ../../sulfur/src/sulfur.py:1474
-msgid "Show Package Updates"
-msgstr "Vis Pakker Opdateringer"
-
-#: ../../sulfur/src/sulfur.py:1475
-msgid "Show available Packages"
-msgstr "Vis Tilgængelige Pakker"
-
-#: ../../sulfur/src/sulfur.py:1476
-msgid "Show Installed Packages"
-msgstr "Vis Installerede Pakker"
-
-#: ../../sulfur/src/sulfur.py:1477
-#, fuzzy
-msgid "Show Masked Packages"
-msgstr "Vis Installerede Pakker"
-
-#: ../../sulfur/src/sulfur.py:1478
-msgid "Show All Packages"
-msgstr "Vis Alle Pakker"
-
-#: ../../sulfur/src/sulfur.py:1479
-#, fuzzy
-msgid "Show Package Sets"
-msgstr "Vis Pakker Opdateringer"
-
-#: ../../sulfur/src/sulfur.py:1480
-#, fuzzy
-msgid "Show Queued Packages"
-msgstr "Vis Installerede Pakker"
-
-#. Setup Vertical Toolbar
-#: ../../sulfur/src/sulfur.py:1513 ../../sulfur/src/views.py:1526
-#: ../../sulfur/src/sulfur.glade.h:144
-msgid "Packages"
-msgstr "Pakker."
-
-#: ../../sulfur/src/sulfur.py:1516
-#, fuzzy
-msgid "Configuration Files"
-msgstr "Oprettelse af %s profilen fejlede"
-
-#: ../../sulfur/src/sulfur.py:1517 ../../sulfur/src/sulfur.py:1565
-#, fuzzy
-msgid "Preferences"
-msgstr "Indstillinger"
-
-#: ../../sulfur/src/sulfur.py:1518
-#, fuzzy
-msgid "Package Queue"
-msgstr "Pakke Køen"
-
-#: ../../sulfur/src/sulfur.py:1519
-#, fuzzy
-msgid "Output"
-msgstr "Information"
-
-#: ../../sulfur/src/sulfur.py:1567
-msgid ""
-"Some configuration options are critical for the health of your System. Be "
-"careful."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1709
-#, fuzzy
-msgid "Logged in as"
-msgstr "Konfirmation af behandling af køen"
-
-#: ../../sulfur/src/sulfur.py:1716
-#, fuzzy
-msgid "UGC Status"
-msgstr "Opdateret"
-
-#: ../../sulfur/src/sulfur.py:1739 ../../sulfur/src/sulfur.py:1765
-#, fuzzy
-msgid "Error setting parameter"
-msgstr "Fejl i test af pakke signaturer:\n"
-
-#: ../../sulfur/src/sulfur.py:1740
-#, fuzzy
-msgid "An issue occured while loading a preference"
-msgstr "Du er ved at tilføje %s pakker\n"
-
-#: ../../sulfur/src/sulfur.py:1741 ../../sulfur/src/sulfur.py:1767
-msgid "must be of type"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1741 ../../sulfur/src/sulfur.py:1767
-msgid "got"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1904
-#, fuzzy
-msgid "Error saving preferences"
-msgstr "Fejl opstået i Yum Extender"
-
-#: ../../sulfur/src/sulfur.py:1910
-msgid ""
-"These packages are masked either by default or due to your choice. Please be "
-"careful, at least."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1969
-msgid "Generating metadata. Please wait."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:1977
-#, fuzzy
-msgid "Error during list population"
-msgstr "Fejl i Transaktionen"
-
-#: ../../sulfur/src/sulfur.py:1979
-msgid "Retrying in 1 second."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2013
-#, fuzzy
-msgid "Error loading advisories"
-msgstr "Fejl i Hentning af pakker:\n"
-
-#: ../../sulfur/src/sulfur.py:2067
-#, fuzzy
-msgid "Initializing Repository module..."
-msgstr "Kilde"
-
-#: ../../sulfur/src/sulfur.py:2073
-msgid "You must run this application as root"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2082
-msgid "You are not connected to the Internet. You should."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2105
-#, fuzzy
-msgid "Errors updating repositories."
-msgstr "Kilde"
-
-#: ../../sulfur/src/sulfur.py:2106
-msgid "Please check logs below for more info"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2109
-#, fuzzy
-msgid "Repositories updated successfully"
-msgstr "Indlæsning afsluttet"
-
-#: ../../sulfur/src/sulfur.py:2112
-msgid "All the repositories were already up to date."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2114
-msgid "repositories were already up to date. Others have been updated."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2117
-msgid "sys-apps/entropy needs to be updated as soon as possible."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2125
-#, fuzzy
-msgid "Nothing to do. I am idle."
-msgstr "Ingen pakker i køen"
-
-#: ../../sulfur/src/sulfur.py:2126
-msgid "Really, don't waste your time here. This is just a placeholder"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2127
-msgid "I am still alive and kickin'"
-msgstr ""
-
-#. -> Get lists
-#: ../../sulfur/src/sulfur.py:2232
-msgid "Generating Metadata, please wait."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2233
-msgid "Entropy is indexing the repositories. It will take a few seconds"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2234
-msgid "While you are waiting, take a break and look outside. Is it rainy?"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2236 ../../sulfur/src/sulfur.py:2242
-#, fuzzy
-msgid "Calculating"
-msgstr "Installer som afhængighed"
-
-#. if bootstrap: time.sleep(1)
-#: ../../sulfur/src/sulfur.py:2255
-#, fuzzy
-msgid "Showing"
-msgstr "Sletter"
-
-#: ../../sulfur/src/sulfur.py:2282
-msgid "Another Entropy instance is running. Cannot process queue."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2288
-#, fuzzy
-msgid "Running tasks"
-msgstr "Kører Transaktion"
-
-#: ../../sulfur/src/sulfur.py:2296
-msgid "Processing Packages in queue"
-msgstr "Behander pakker i køen"
-
-#: ../../sulfur/src/sulfur.py:2352
-msgid "Attention. You chose to abort the processing."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2355
-msgid ""
-"Attention. An error occured when processing the queue.\n"
-"Please have a look in the processing terminal."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2394
-msgid "No packages selected"
-msgstr "Ingen valgte pakker"
-
-#: ../../sulfur/src/sulfur.py:2459
-msgid "Packages not found in repositories, try again later."
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2537
-#, fuzzy
-msgid "No Repository Identifier"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/sulfur.py:2540
-#, fuzzy
-msgid "Duplicated Repository Identifier"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/sulfur.py:2544
-#, fuzzy
-msgid "No download mirrors"
-msgstr "Indlæsning afsluttet"
-
-#: ../../sulfur/src/sulfur.py:2546
-msgid "Database URL must start either with http:// or ftp:// or file://"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.py:2554
-#, fuzzy
-msgid "Repository Services Port not valid"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/sulfur.py:2562
-#, fuzzy
-msgid "Secure Services Port not valid"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/sulfur.py:2603
-#, fuzzy
-msgid "Skipping current mirror."
-msgstr "Filkilder"
-
-#: ../../sulfur/src/sulfur_setup.py:117
+#: ../../sulfur/src/sulfur/setup.py:120
 msgid "Programming:"
 msgstr "Programmering"
 
-#: ../../sulfur/src/sulfur_setup.py:120
+#: ../../sulfur/src/sulfur/setup.py:123
 msgid "Translation:"
 msgstr "Oversættelse"
 
-#: ../../sulfur/src/sulfur_setup.py:134
+#: ../../sulfur/src/sulfur/setup.py:137
 #, fuzzy
 msgid "Dedicated to:"
 msgstr "Slettet"
 
-#: ../../sulfur/src/views.py:254
+#: ../../sulfur/src/sulfur/views.py:264
 #, fuzzy
 msgid "Selection"
 msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/views.py:255
+#: ../../sulfur/src/sulfur/views.py:265
 #, fuzzy
 msgid "Rating"
 msgstr "Opdaterer"
 
-#: ../../sulfur/src/views.py:909
+#: ../../sulfur/src/sulfur/views.py:915
 #, fuzzy
 msgid "These are the packages that would be disabled"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/views.py:910
+#: ../../sulfur/src/sulfur/views.py:916
 msgid "Once confirmed, these packages will be considered masked."
 msgstr ""
 
-#: ../../sulfur/src/views.py:1003
+#: ../../sulfur/src/sulfur/views.py:1011
 #, fuzzy
 msgid "There are incomplete package sets, continue at your own risk"
 msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/views.py:1557
+#: ../../sulfur/src/sulfur/views.py:1579
 #, fuzzy
 msgid "Packages To Remove"
 msgstr "<b>Pakker Til Sletning</b>"
 
-#: ../../sulfur/src/views.py:1562
+#: ../../sulfur/src/sulfur/views.py:1584
 #, fuzzy
 msgid "Packages To Install"
 msgstr "<b>Pakker Til Installation</b>"
 
-#: ../../sulfur/src/views.py:1567
+#: ../../sulfur/src/sulfur/views.py:1589
 #, fuzzy
 msgid "Packages To Update"
 msgstr "<b>Pakker Til Opdatering</b>"
 
-#: ../../sulfur/src/views.py:1572
+#: ../../sulfur/src/sulfur/views.py:1594
 #, fuzzy
 msgid "Packages To Reinstall"
 msgstr "<b>Pakker Til Installation</b>"
 
-#: ../../sulfur/src/views.py:1638
+#: ../../sulfur/src/sulfur/views.py:1662
 msgid "Proposed"
 msgstr ""
 
-#: ../../sulfur/src/views.py:1645
+#: ../../sulfur/src/sulfur/views.py:1669
 #, fuzzy
 msgid "Destination"
 msgstr "_Beskrivelse"
 
-#: ../../sulfur/src/views.py:1652
+#: ../../sulfur/src/sulfur/views.py:1676
 #, fuzzy
 msgid "Rev."
 msgstr "Filkilde."
 
-#: ../../sulfur/src/views.py:1701
+#: ../../sulfur/src/sulfur/views.py:1724
 msgid "GLSA id."
 msgstr ""
 
-#: ../../sulfur/src/views.py:1709
+#: ../../sulfur/src/sulfur/views.py:1732
 #, fuzzy
 msgid "Package key"
 msgstr "Pakker"
 
-#: ../../sulfur/src/views.py:1809
+#: ../../sulfur/src/sulfur/views.py:1834
 #, fuzzy
 msgid "No advisories"
 msgstr "Fejl i Hentning af pakker:\n"
 
-#: ../../sulfur/src/views.py:1810
+#: ../../sulfur/src/sulfur/views.py:1835
 msgid "There are no items to show"
 msgstr ""
 
-#: ../../sulfur/src/views.py:1841
+#: ../../sulfur/src/sulfur/views.py:1867
 msgid "Filename"
 msgstr "Filnavn"
 
-#: ../../sulfur/src/views.py:1881
+#: ../../sulfur/src/sulfur/views.py:1908
 #, fuzzy
 msgid "Active"
 msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/views.py:1891 ../../sulfur/src/sulfur.glade.h:241
+#: ../../sulfur/src/sulfur/views.py:1918
 #, fuzzy
 msgid "Update"
 msgstr "Opdateret"
 
 #. Setup revision column
-#: ../../sulfur/src/views.py:1899 ../../sulfur/src/sulfur.glade.h:192
+#: ../../sulfur/src/sulfur/views.py:1926
 #, fuzzy
 msgid "Revision"
 msgstr "Filkilde"
-
-#: ../../sulfur/src/etpgui/packages.py:176
-#, fuzzy
-msgid "Recursive Package Set"
-msgstr "Vis Installerede Pakker"
 
 #: ../../entropy-notification-applet/src/etp_applet_components.py:60
 #, fuzzy
@@ -9541,1131 +9606,655 @@ msgid ""
 "packages"
 msgstr ""
 
-#: ../../sulfur/src/sulfur.glade.h:1
-msgid "0 = no limit; 100 = 100kB/sec"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:2
-msgid ""
-"<b><big>Please wait</big></b>\n"
-"<small>...take a little break !</small>"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:4
+#: ../../entropy-notification-applet/src/etp_applet.glade.h:1
 #, fuzzy
-msgid "<b>Entropy database backup tool</b>"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/sulfur.glade.h:5
-msgid ""
-"<small>Using this tool, you will be able to backup and restore your "
-"Operating System packages database.</small>"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:6
-msgid "Add Document"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:8
-msgid "Add USE flags on atoms"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:9
-#, fuzzy
-msgid "Add/Edit Repository"
-msgstr "Kilde"
-
-#: ../../sulfur/src/sulfur.glade.h:10
-msgid "Adding a <b>new repository</b> lets you access <b>extra software</b>"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:12
-#, fuzzy
-msgid "Affected packages"
-msgstr "Vis Installerede Pakker"
-
-#: ../../sulfur/src/sulfur.glade.h:13
-msgid "All"
-msgstr "Alle"
-
-#: ../../sulfur/src/sulfur.glade.h:18
-msgid "Background error message"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:19
-msgid "Background succ. message"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:20
-#, fuzzy
-msgid "Backup configuration files"
-msgstr "Oprettelse af %s profilen fejlede"
-
-#: ../../sulfur/src/sulfur.glade.h:22
-msgid "Bugs"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:25
-msgid "CONFIG_PROTECT"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:27
-#, fuzzy
-msgid "C_hanges"
-msgstr "C_hangelog"
-
-#: ../../sulfur/src/sulfur.glade.h:28
-msgid "Call"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:29
-#, fuzzy
-msgid "ChangeLog"
-msgstr "C_hangelog"
-
-#: ../../sulfur/src/sulfur.glade.h:30
-#, fuzzy
-msgid "Checksum test"
-msgstr "Henter : %s"
-
-#: ../../sulfur/src/sulfur.glade.h:31
-#, fuzzy
-msgid "Cl_ean"
-msgstr "Oprydning"
-
-#: ../../sulfur/src/sulfur.glade.h:32
-msgid "Collision protection"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:33
-msgid "Command arguments"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:34
-#, fuzzy
-msgid "Command description"
-msgstr "_Beskrivelse"
-
-#: ../../sulfur/src/sulfur.glade.h:35
-#, fuzzy
-msgid "Command name"
-msgstr "Fi_ler"
-
-#: ../../sulfur/src/sulfur.glade.h:36
-msgid "Commands"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:37
-#, fuzzy
-msgid "Compile atoms"
-msgstr "Ingen valgte pakker"
-
-#: ../../sulfur/src/sulfur.glade.h:38
-#, fuzzy
-msgid "Compile packages on the remote server"
-msgstr "Ingen valgte pakker"
-
-#: ../../sulfur/src/sulfur.glade.h:39
-#, fuzzy
-msgid "Completed at"
-msgstr "Ingen valgte pakker"
-
-#: ../../sulfur/src/sulfur.glade.h:40
-#, fuzzy
-msgid "Compression"
-msgstr "Sorterer Pakker"
-
-#: ../../sulfur/src/sulfur.glade.h:42
-#, fuzzy
-msgid "Creation date"
-msgstr "Slettet"
-
-#: ../../sulfur/src/sulfur.glade.h:43
-#, fuzzy
-msgid "Current repository"
-msgstr "Kilde"
-
-#: ../../sulfur/src/sulfur.glade.h:44
-msgid "Custom command"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:45
-msgid "Custom shell command"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:46
-#, fuzzy
-msgid "D_ependencies"
-msgstr "Indstillinger"
-
-#: ../../sulfur/src/sulfur.glade.h:47
-#, fuzzy
-msgid "Data View"
-msgstr "Opdateret"
-
-#: ../../sulfur/src/sulfur.glade.h:48
-#, fuzzy
-msgid "Database updates"
-msgstr "Indlæsning afsluttet"
-
-#: ../../sulfur/src/sulfur.glade.h:50
-#, fuzzy
-msgid "Default repository selection"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/sulfur.glade.h:51
-#, fuzzy
-msgid "Dele_te all"
-msgstr "_Fravælg Alle"
-
-#: ../../sulfur/src/sulfur.glade.h:52
-#, fuzzy
-msgid "Delete selected"
-msgstr "Ingen valgte pakker"
-
-#: ../../sulfur/src/sulfur.glade.h:53
-#, fuzzy
-msgid "Dep. test"
-msgstr "Indstillinger"
-
-#: ../../sulfur/src/sulfur.glade.h:54
-#, fuzzy
-msgid "Dependencies test"
-msgstr "Indstillinger"
-
-#: ../../sulfur/src/sulfur.glade.h:56
-#, fuzzy
-msgid "Disable"
-msgstr "Installeret"
-
-#: ../../sulfur/src/sulfur.glade.h:57
-msgid ""
-"Disabled\n"
-"Removal only\n"
-"Install+Removal"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:61
-#, fuzzy
-msgid "Done"
-msgstr "<b>Størrelse af filer som skal hentes</b>"
-
-#: ../../sulfur/src/sulfur.glade.h:62
-#, fuzzy
-msgid "Download Path"
-msgstr "<b>Størrelse af filer som skal hentes</b>"
-
-#: ../../sulfur/src/sulfur.glade.h:63
-#, fuzzy
-msgid "Download only"
-msgstr "<b>Størrelse af filer som skal hentes</b>"
-
-#: ../../sulfur/src/sulfur.glade.h:64
-#, fuzzy
-msgid "Download source code"
-msgstr "Henter Pakker:"
-
-#: ../../sulfur/src/sulfur.glade.h:65
-#, fuzzy
-msgid "Download speed limit"
-msgstr "Indlæsning afsluttet"
-
-#: ../../sulfur/src/sulfur.glade.h:66
-#, fuzzy
-msgid "Enable"
-msgstr "_Valgt"
-
-#: ../../sulfur/src/sulfur.glade.h:67
-#, fuzzy
-msgid "Enable _all"
-msgstr "_Valgt"
-
-#: ../../sulfur/src/sulfur.glade.h:68
-msgid "Entropy API"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:69
-#, fuzzy
-msgid "Entropy Package Manager"
-msgstr "Pakker"
-
-#: ../../sulfur/src/sulfur.glade.h:70
-#, fuzzy
-msgid "Entropy Repository Manager"
-msgstr "Kilde"
-
-#: ../../sulfur/src/sulfur.glade.h:71
-#, fuzzy
-msgid "Entropy Service Connection Manager"
-msgstr "Ønsker du at forsættet ?"
-
-#: ../../sulfur/src/sulfur.glade.h:72
-msgid "Entropy can keep a backup of your updated configuration files"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:74
-#, fuzzy
-msgid "Error message"
-msgstr "Fejl"
-
-#: ../../sulfur/src/sulfur.glade.h:75
-#, fuzzy
-msgid "Errored at"
-msgstr "Fejl"
-
-#: ../../sulfur/src/sulfur.glade.h:76
-msgid "Example: http://proxy:1234"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:78
-msgid "External Trigger"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:79
-msgid "FTP Proxy"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:80
-#, fuzzy
-msgid "General"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/sulfur.glade.h:81
-#, fuzzy
-msgid "Generic title 1"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/sulfur.glade.h:82
-#, fuzzy
-msgid "Generic title 2"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/sulfur.glade.h:83
-#, fuzzy
-msgid "Get Spm environment information"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/sulfur.glade.h:84
-#, fuzzy
-msgid "Get output"
-msgstr "Information"
-
-#: ../../sulfur/src/sulfur.glade.h:85
-#, fuzzy
-msgid "Get package information"
-msgstr "I_nformation"
-
-#: ../../sulfur/src/sulfur.glade.h:86
-#, fuzzy
-msgid "Get updates related to the chosen categories"
-msgstr "Ingen valgte pakker"
-
-#: ../../sulfur/src/sulfur.glade.h:87
-msgid "HTTP Proxy"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:90
-msgid "If selected, packages will be downloaded only"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:91
-#, fuzzy
-msgid "Ignored protected files"
-msgstr "%s profilen er valgt"
-
-#: ../../sulfur/src/sulfur.glade.h:94
-#, fuzzy
-msgid "Install Set"
-msgstr "Installeret"
-
-#: ../../sulfur/src/sulfur.glade.h:95
-#, fuzzy
-msgid "Install Size"
-msgstr "Installeret"
-
-#: ../../sulfur/src/sulfur.glade.h:96
-#, fuzzy
-msgid "Install a stand-alone package file"
-msgstr "Vis Tilgængelige Pakker"
-
-#: ../../sulfur/src/sulfur.glade.h:97
-#, fuzzy
-msgid "Install from binary package..."
-msgstr "Vis Tilgængelige Pakker"
-
-#: ../../sulfur/src/sulfur.glade.h:98
-#, fuzzy
-msgid "Install the selected Package Set"
-msgstr "Vis Installerede Pakker"
-
-#: ../../sulfur/src/sulfur.glade.h:99
-#, fuzzy
-msgid "Install the selected package"
-msgstr "Vis Installerede Pakker"
-
-#: ../../sulfur/src/sulfur.glade.h:101
-#, fuzzy
-msgid "Installed Packages"
-msgstr "Vis Installerede Pakker"
-
-#: ../../sulfur/src/sulfur.glade.h:102
-msgid "Interactivity"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:103
-msgid "Interface Colors"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:104
-msgid "Kernel Tag"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:106
-msgid "Keywords (space separated)"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:108
-#, fuzzy
-msgid "Library test"
-msgstr "behøvet af %s"
-
-#: ../../sulfur/src/sulfur.glade.h:110
-#, fuzzy
-msgid "Load User Generated Content"
+msgid "Available Updates"
 msgstr "Tilgængelige"
 
-#: ../../sulfur/src/sulfur.glade.h:111
-msgid "Load content"
+#: ../../entropy-notification-applet/src/etp_applet.glade.h:2
+msgid "Package Manager Notification Window"
 msgstr ""
 
-#: ../../sulfur/src/sulfur.glade.h:112
+#: ../../entropy-notification-applet/src/etp_applet.glade.h:3
 #, fuzzy
-msgid "Location"
-msgstr "Søgnings Indstiller"
-
-#: ../../sulfur/src/sulfur.glade.h:113
-msgid "MD5 Signature"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:114
-#, fuzzy
-msgid "M_erge"
-msgstr "Søgnings Indstiller"
-
-#: ../../sulfur/src/sulfur.glade.h:115
-#, fuzzy
-msgid "Mask the selected packages"
-msgstr "Vis Installerede Pakker"
-
-#: ../../sulfur/src/sulfur.glade.h:116
-#, fuzzy
-msgid "Mask this package"
-msgstr "Henter Pakker:"
-
-#: ../../sulfur/src/sulfur.glade.h:118
-#, fuzzy
-msgid "Merge all"
-msgstr "_Fravælg Alle"
-
-#: ../../sulfur/src/sulfur.glade.h:119
-msgid "Messages"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:120
-#, fuzzy
-msgid "Mirror updates"
-msgstr "_Filspejlsliste"
-
-#: ../../sulfur/src/sulfur.glade.h:122
-msgid "Networking"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:123
-msgid "New backup"
-msgstr ""
-
-#: ../../sulfur/src/sulfur.glade.h:124
-#, fuzzy
-msgid "Not done"
-msgstr "Ingen pakker i køen"
-
-#: ../../sulfur/src/sulfur.glade.h:126
-#, fuzzy
-msgid "Notice Board Entry Information"
-msgstr "I_nformation"
-
-#: ../../sulfur/src/sulfur.glade.h:128
-#, fuzzy
-msgid "Notice board Id"
-msgstr "Filkilder"
-
-#: ../../sulfur/src/sulfur.glade.h:129
-#, fuzzy
-msgid "O_ther"
-msgstr "_Andre"
-
-#: ../../sulfur/src/sulfur.glade.h:130
-#, fuzzy
-msgid "Output View"
-msgstr "Information"
-
-#: ../../sulfur/src/sulfur.glade.h:131
-#, fuzzy
-msgid "Package (default)"
-msgstr "Pakke Køen"
-
-#: ../../sulfur/src/sulfur.glade.h:132
-#, fuzzy
-msgid "Package Info"
-msgstr "Pakke"
-
-#: ../../sulfur/src/sulfur.glade.h:133
-#, fuzzy
-msgid "Package Information"
-msgstr "I_nformation"
-
-#: ../../sulfur/src/sulfur.glade.h:134
-#, fuzzy
-msgid "Package Masking"
-msgstr "Pakker."
-
-#: ../../sulfur/src/sulfur.glade.h:135
-#, fuzzy
-msgid "Package Size"
+msgid "_Load Package Manager"
 msgstr "Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:136
 #, fuzzy
-msgid "Package category"
-msgstr "Kategorier"
+#~ msgid "<b>Entropy database backup tool</b>"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:137
 #, fuzzy
-msgid "Package description"
-msgstr "Pakke Beskrivelser"
+#~ msgid "Add/Edit Repository"
+#~ msgstr "Kilde"
 
-#: ../../sulfur/src/sulfur.glade.h:138
 #, fuzzy
-msgid "Package not installed"
-msgstr "<b>Pakker Til Installation</b>"
+#~ msgid "Affected packages"
+#~ msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:139
+#~ msgid "All"
+#~ msgstr "Alle"
+
+#, fuzzy
+#~ msgid "Backup configuration files"
+#~ msgstr "Oprettelse af %s profilen fejlede"
+
+#, fuzzy
+#~ msgid "C_hanges"
+#~ msgstr "C_hangelog"
+
+#, fuzzy
+#~ msgid "ChangeLog"
+#~ msgstr "C_hangelog"
+
+#, fuzzy
+#~ msgid "Checksum test"
+#~ msgstr "Henter : %s"
+
+#, fuzzy
+#~ msgid "Cl_ean"
+#~ msgstr "Oprydning"
+
+#, fuzzy
+#~ msgid "Command description"
+#~ msgstr "_Beskrivelse"
+
+#, fuzzy
+#~ msgid "Command name"
+#~ msgstr "Fi_ler"
+
+#, fuzzy
+#~ msgid "Compile atoms"
+#~ msgstr "Ingen valgte pakker"
+
+#, fuzzy
+#~ msgid "Compile packages on the remote server"
+#~ msgstr "Ingen valgte pakker"
+
+#, fuzzy
+#~ msgid "Completed at"
+#~ msgstr "Ingen valgte pakker"
+
+#, fuzzy
+#~ msgid "Compression"
+#~ msgstr "Sorterer Pakker"
+
 #, fuzzy
-msgid "Package reinstalled"
-msgstr "<b>Pakker Til Installation</b>"
+#~ msgid "Creation date"
+#~ msgstr "Slettet"
 
-#: ../../sulfur/src/sulfur.glade.h:140
 #, fuzzy
-msgid "Package removed"
-msgstr "Pakker til behandling"
+#~ msgid "Current repository"
+#~ msgstr "Kilde"
 
-#: ../../sulfur/src/sulfur.glade.h:141
 #, fuzzy
-msgid "Package sub-description"
-msgstr "Pakke Beskrivelser"
+#~ msgid "D_ependencies"
+#~ msgstr "Indstillinger"
 
-#: ../../sulfur/src/sulfur.glade.h:142
 #, fuzzy
-msgid "Package subtitle"
-msgstr "Pakker"
+#~ msgid "Data View"
+#~ msgstr "Opdateret"
 
-#: ../../sulfur/src/sulfur.glade.h:143
 #, fuzzy
-msgid "Package updated"
-msgstr "<b>Pakker Til Opdatering</b>"
+#~ msgid "Database updates"
+#~ msgstr "Indlæsning afsluttet"
 
-#: ../../sulfur/src/sulfur.glade.h:146
 #, fuzzy
-msgid "Pinboard Id"
-msgstr "Filkilder"
+#~ msgid "Default repository selection"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:147
 #, fuzzy
-msgid "Pinboard Item Information"
-msgstr "Filkilder"
+#~ msgid "Dele_te all"
+#~ msgstr "_Fravælg Alle"
 
-#: ../../sulfur/src/sulfur.glade.h:148
 #, fuzzy
-msgid "Pinboard View"
-msgstr "Filkilder"
+#~ msgid "Delete selected"
+#~ msgstr "Ingen valgte pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:149
 #, fuzzy
-msgid "Please Confirm"
-msgstr "Konfirmation af behandling af køen"
+#~ msgid "Dep. test"
+#~ msgstr "Indstillinger"
 
-#: ../../sulfur/src/sulfur.glade.h:150
-msgid ""
-"Please submit this error to us providing as much information as possible."
-msgstr ""
+#, fuzzy
+#~ msgid "Dependencies test"
+#~ msgstr "Indstillinger"
+
+#, fuzzy
+#~ msgid "Disable"
+#~ msgstr "Installeret"
+
+#, fuzzy
+#~ msgid "Done"
+#~ msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#, fuzzy
+#~ msgid "Download Path"
+#~ msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#, fuzzy
+#~ msgid "Download only"
+#~ msgstr "<b>Størrelse af filer som skal hentes</b>"
+
+#, fuzzy
+#~ msgid "Download source code"
+#~ msgstr "Henter Pakker:"
+
+#, fuzzy
+#~ msgid "Download speed limit"
+#~ msgstr "Indlæsning afsluttet"
+
+#, fuzzy
+#~ msgid "Enable"
+#~ msgstr "_Valgt"
+
+#, fuzzy
+#~ msgid "Enable _all"
+#~ msgstr "_Valgt"
+
+#, fuzzy
+#~ msgid "Entropy Package Manager"
+#~ msgstr "Pakker"
+
+#, fuzzy
+#~ msgid "Entropy Repository Manager"
+#~ msgstr "Kilde"
 
-#: ../../sulfur/src/sulfur.glade.h:152
-msgid "Prevents files belonging to a package being overwritten by another"
-msgstr ""
+#, fuzzy
+#~ msgid "Entropy Service Connection Manager"
+#~ msgstr "Ønsker du at forsættet ?"
 
-#: ../../sulfur/src/sulfur.glade.h:153
-msgid "Process priority (nice)"
-msgstr ""
+#, fuzzy
+#~ msgid "Error message"
+#~ msgstr "Fejl"
 
-#: ../../sulfur/src/sulfur.glade.h:154
 #, fuzzy
-msgid "Process result"
-msgstr "_Behanling af Køen"
+#~ msgid "Errored at"
+#~ msgstr "Fejl"
 
-#: ../../sulfur/src/sulfur.glade.h:155
 #, fuzzy
-msgid "Processing at"
-msgstr "Behandling af pakker"
+#~ msgid "General"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:156
-msgid "Protected files and directories"
-msgstr ""
+#, fuzzy
+#~ msgid "Generic title 1"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:157
-msgid "Protected files and directories mask"
-msgstr ""
+#, fuzzy
+#~ msgid "Generic title 2"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:158
-msgid "Proxy Password"
-msgstr ""
+#, fuzzy
+#~ msgid "Get Spm environment information"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:159
 #, fuzzy
-msgid "Proxy Username"
-msgstr "Filnavn"
+#~ msgid "Get output"
+#~ msgstr "Information"
 
-#: ../../sulfur/src/sulfur.glade.h:160
-msgid "Purge"
-msgstr ""
+#, fuzzy
+#~ msgid "Get package information"
+#~ msgstr "I_nformation"
 
-#: ../../sulfur/src/sulfur.glade.h:161
 #, fuzzy
-msgid "Q_ueue packages in selected Advisory"
-msgstr "Ingen valgte pakker"
+#~ msgid "Get updates related to the chosen categories"
+#~ msgstr "Ingen valgte pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:162
 #, fuzzy
-msgid "Queue Id"
-msgstr "Filkilder"
+#~ msgid "Ignored protected files"
+#~ msgstr "%s profilen er valgt"
 
-#: ../../sulfur/src/sulfur.glade.h:163
 #, fuzzy
-msgid "Queue Item Information"
-msgstr "Filkilder"
+#~ msgid "Install Set"
+#~ msgstr "Installeret"
 
-#: ../../sulfur/src/sulfur.glade.h:164
 #, fuzzy
-msgid "Queue View"
-msgstr "Pakke Kø"
+#~ msgid "Install Size"
+#~ msgstr "Installeret"
 
-#: ../../sulfur/src/sulfur.glade.h:165
 #, fuzzy
-msgid "Queued"
-msgstr "Filkilder"
+#~ msgid "Install a stand-alone package file"
+#~ msgstr "Vis Tilgængelige Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:166
-msgid "Queued at"
-msgstr ""
+#, fuzzy
+#~ msgid "Install from binary package..."
+#~ msgstr "Vis Tilgængelige Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:167
 #, fuzzy
-msgid "R_egenerate Cache"
-msgstr "Sorterer Pakker"
+#~ msgid "Install the selected Package Set"
+#~ msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:168
 #, fuzzy
-msgid "R_epositories Notice Board"
-msgstr "Filkilder"
+#~ msgid "Install the selected package"
+#~ msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:172
 #, fuzzy
-msgid "Reinstall the selected package"
-msgstr "Vis Installerede Pakker"
+#~ msgid "Installed Packages"
+#~ msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:173
-msgid "Remote stdout file"
-msgstr ""
+#, fuzzy
+#~ msgid "Library test"
+#~ msgstr "behøvet af %s"
 
-#: ../../sulfur/src/sulfur.glade.h:175
 #, fuzzy
-msgid "Remove Selected"
-msgstr "Vis Installerede Pakker"
+#~ msgid "Load User Generated Content"
+#~ msgstr "Tilgængelige"
 
-#: ../../sulfur/src/sulfur.glade.h:176
 #, fuzzy
-msgid "Remove Set"
-msgstr "Sletter"
+#~ msgid "Location"
+#~ msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/sulfur.glade.h:178
-msgid "Remove USE flags on atoms"
-msgstr ""
+#, fuzzy
+#~ msgid "M_erge"
+#~ msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/sulfur.glade.h:179
 #, fuzzy
-msgid "Remove atoms"
-msgstr "Sletter"
+#~ msgid "Mask the selected packages"
+#~ msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:180
 #, fuzzy
-msgid "Remove packages on the remote server"
-msgstr "Behandler pakker for %s"
+#~ msgid "Mask this package"
+#~ msgstr "Henter Pakker:"
 
-#: ../../sulfur/src/sulfur.glade.h:181
 #, fuzzy
-msgid "Remove the selected Package Set"
-msgstr "Vis Installerede Pakker"
+#~ msgid "Merge all"
+#~ msgstr "_Fravælg Alle"
 
-#: ../../sulfur/src/sulfur.glade.h:182
 #, fuzzy
-msgid "Remove the selected package"
-msgstr "Vis Installerede Pakker"
+#~ msgid "Mirror updates"
+#~ msgstr "_Filspejlsliste"
 
-#: ../../sulfur/src/sulfur.glade.h:183
 #, fuzzy
-msgid "Remove the selected package and its configuration"
-msgstr "Vis Installerede Pakker"
+#~ msgid "Not done"
+#~ msgstr "Ingen pakker i køen"
 
-#: ../../sulfur/src/sulfur.glade.h:185
 #, fuzzy
-msgid "Repositories options"
-msgstr "Filkilder"
+#~ msgid "Notice Board Entry Information"
+#~ msgstr "I_nformation"
 
-#: ../../sulfur/src/sulfur.glade.h:186
 #, fuzzy
-msgid "Repository information"
-msgstr "Filkilder"
+#~ msgid "Notice board Id"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:188
 #, fuzzy
-msgid "Restore"
-msgstr "Kilde"
+#~ msgid "O_ther"
+#~ msgstr "_Andre"
 
-#: ../../sulfur/src/sulfur.glade.h:189
 #, fuzzy
-msgid "Restore selected"
-msgstr "Vis Installerede Pakker"
+#~ msgid "Output View"
+#~ msgstr "Information"
 
-#: ../../sulfur/src/sulfur.glade.h:190
 #, fuzzy
-msgid "Review for Install..."
-msgstr "Installeret"
+#~ msgid "Package (default)"
+#~ msgstr "Pakke Køen"
 
-#: ../../sulfur/src/sulfur.glade.h:193
-msgid "S_end Error Report"
-msgstr ""
+#, fuzzy
+#~ msgid "Package Info"
+#~ msgstr "Pakke"
 
-#: ../../sulfur/src/sulfur.glade.h:194
 #, fuzzy
-msgid "Save"
-msgstr "Søgnings Indstiller"
+#~ msgid "Package Information"
+#~ msgstr "I_nformation"
 
-#: ../../sulfur/src/sulfur.glade.h:195
 #, fuzzy
-msgid "Search"
-msgstr "Ark."
+#~ msgid "Package Masking"
+#~ msgstr "Pakker."
 
-#: ../../sulfur/src/sulfur.glade.h:196
 #, fuzzy
-msgid "Secure Services Port"
-msgstr "Filkilder"
+#~ msgid "Package Size"
+#~ msgstr "Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:197
 #, fuzzy
-msgid "Security updates"
-msgstr "Installer som afhængighed"
+#~ msgid "Package category"
+#~ msgstr "Kategorier"
 
-#: ../../sulfur/src/sulfur.glade.h:198
 #, fuzzy
-msgid "Services Port"
-msgstr "Filkilder"
+#~ msgid "Package description"
+#~ msgstr "Pakke Beskrivelser"
 
-#: ../../sulfur/src/sulfur.glade.h:199
 #, fuzzy
-msgid "Sets"
-msgstr "Størrelser"
+#~ msgid "Package not installed"
+#~ msgstr "<b>Pakker Til Installation</b>"
 
-#: ../../sulfur/src/sulfur.glade.h:200
-msgid "Show ChangeLog"
-msgstr ""
+#, fuzzy
+#~ msgid "Package reinstalled"
+#~ msgstr "<b>Pakker Til Installation</b>"
 
-#: ../../sulfur/src/sulfur.glade.h:201
 #, fuzzy
-msgid "Show Selected"
-msgstr "Vis Installerede Pakker"
+#~ msgid "Package removed"
+#~ msgstr "Pakker til behandling"
 
-#: ../../sulfur/src/sulfur.glade.h:202
-msgid "Show all"
-msgstr ""
+#, fuzzy
+#~ msgid "Package sub-description"
+#~ msgstr "Pakke Beskrivelser"
 
-#: ../../sulfur/src/sulfur.glade.h:203
 #, fuzzy
-msgid "Show applied"
-msgstr "Vis Installerede Pakker"
+#~ msgid "Package subtitle"
+#~ msgstr "Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:204
-msgid "Show unapplied"
-msgstr ""
+#, fuzzy
+#~ msgid "Package updated"
+#~ msgstr "<b>Pakker Til Opdatering</b>"
 
-#: ../../sulfur/src/sulfur.glade.h:207
 #, fuzzy
-msgid "Socket settings"
-msgstr "Aktuelle indstillinger :"
+#~ msgid "Pinboard Id"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:208
 #, fuzzy
-msgid "Source Package Manager"
-msgstr "Pakker"
+#~ msgid "Pinboard Item Information"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:209
-msgid "Spm Info"
-msgstr ""
+#, fuzzy
+#~ msgid "Pinboard View"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:210
-msgid "Spm Sync"
-msgstr ""
+#, fuzzy
+#~ msgid "Please Confirm"
+#~ msgstr "Konfirmation af behandling af køen"
 
-#: ../../sulfur/src/sulfur.glade.h:211
 #, fuzzy
-msgid "Spm tree updates"
-msgstr "Yum Opsætning: Opdateringer"
+#~ msgid "Process result"
+#~ msgstr "_Behanling af Køen"
 
-#: ../../sulfur/src/sulfur.glade.h:212
-msgid "Submit a new document"
-msgstr ""
+#, fuzzy
+#~ msgid "Processing at"
+#~ msgstr "Behandling af pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:213
-msgid "Successful mesage"
-msgstr ""
+#, fuzzy
+#~ msgid "Proxy Username"
+#~ msgstr "Filnavn"
 
-#: ../../sulfur/src/sulfur.glade.h:214
-msgid "Sulfur"
-msgstr ""
+#, fuzzy
+#~ msgid "Q_ueue packages in selected Advisory"
+#~ msgstr "Ingen valgte pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:215
 #, fuzzy
-msgid "Switch to"
-msgstr "Opdaterer"
+#~ msgid "Queue Id"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:217
 #, fuzzy
-msgid "System"
-msgstr "Fi_ler"
+#~ msgid "Queue Item Information"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:218
 #, fuzzy
-msgid "System Database"
-msgstr "Kører Transaktion"
+#~ msgid "Queue View"
+#~ msgstr "Pakke Kø"
 
-#: ../../sulfur/src/sulfur.glade.h:219
-msgid "Terminal font"
-msgstr ""
+#, fuzzy
+#~ msgid "Queued"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:220
-msgid "Text on error message"
-msgstr ""
+#, fuzzy
+#~ msgid "R_egenerate Cache"
+#~ msgstr "Sorterer Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:221
-msgid "Text on succ. message"
-msgstr ""
+#, fuzzy
+#~ msgid "R_epositories Notice Board"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:222
-msgid "This is what they call \"nice level\""
-msgstr ""
+#, fuzzy
+#~ msgid "Reinstall the selected package"
+#~ msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:224
 #, fuzzy
-msgid "UGC Entry Information"
-msgstr "I_nformation"
+#~ msgid "Remove Selected"
+#~ msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:225
 #, fuzzy
-msgid "URI"
-msgstr "GUI"
+#~ msgid "Remove Set"
+#~ msgstr "Sletter"
 
-#: ../../sulfur/src/sulfur.glade.h:226
 #, fuzzy
-msgid "Undo Install"
-msgstr "Installeret"
+#~ msgid "Remove atoms"
+#~ msgstr "Sletter"
 
-#: ../../sulfur/src/sulfur.glade.h:227
 #, fuzzy
-msgid "Undo Install Set"
-msgstr "Installeret"
+#~ msgid "Remove packages on the remote server"
+#~ msgstr "Behandler pakker for %s"
 
-#: ../../sulfur/src/sulfur.glade.h:228
 #, fuzzy
-msgid "Undo Install Set action"
-msgstr "Installeret"
+#~ msgid "Remove the selected Package Set"
+#~ msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:229
 #, fuzzy
-msgid "Undo Install action"
-msgstr "Installeret"
+#~ msgid "Remove the selected package"
+#~ msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:230
-msgid "Undo Purge"
-msgstr ""
+#, fuzzy
+#~ msgid "Remove the selected package and its configuration"
+#~ msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:231
 #, fuzzy
-msgid "Undo Purge action"
-msgstr "Søgnings Indstiller"
+#~ msgid "Repositories options"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:232
 #, fuzzy
-msgid "Undo Reinstall"
-msgstr "Installeret"
+#~ msgid "Repository information"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:233
 #, fuzzy
-msgid "Undo Reinstall action"
-msgstr "Installeret"
+#~ msgid "Restore"
+#~ msgstr "Kilde"
 
-#: ../../sulfur/src/sulfur.glade.h:234
-msgid "Undo Remove"
-msgstr ""
+#, fuzzy
+#~ msgid "Restore selected"
+#~ msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:235
 #, fuzzy
-msgid "Undo Remove Set"
-msgstr "Installeret"
+#~ msgid "Review for Install..."
+#~ msgstr "Installeret"
 
-#: ../../sulfur/src/sulfur.glade.h:236
 #, fuzzy
-msgid "Undo Remove Set action"
-msgstr "Installeret"
+#~ msgid "Save"
+#~ msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/sulfur.glade.h:237
 #, fuzzy
-msgid "Undo Remove action"
-msgstr "Installeret"
+#~ msgid "Search"
+#~ msgstr "Ark."
 
-#: ../../sulfur/src/sulfur.glade.h:238
 #, fuzzy
-msgid "Undo Update"
-msgstr "Opdateret"
+#~ msgid "Secure Services Port"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:239
 #, fuzzy
-msgid "Undo Update action"
-msgstr "Opdateret"
+#~ msgid "Security updates"
+#~ msgstr "Installer som afhængighed"
 
-#: ../../sulfur/src/sulfur.glade.h:240
 #, fuzzy
-msgid "Unmask this package"
-msgstr "Henter Pakker:"
+#~ msgid "Services Port"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:242
 #, fuzzy
-msgid "Update the selected package"
-msgstr "Vis Installerede Pakker"
+#~ msgid "Sets"
+#~ msgstr "Størrelser"
 
-#: ../../sulfur/src/sulfur.glade.h:243
 #, fuzzy
-msgid "Updates"
-msgstr "Opdateret"
+#~ msgid "Show Selected"
+#~ msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:244
-msgid "User / Group"
-msgstr ""
+#, fuzzy
+#~ msgid "Show applied"
+#~ msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:247
 #, fuzzy
-msgid "Version"
-msgstr "_Filspejlsliste"
+#~ msgid "Socket settings"
+#~ msgstr "Aktuelle indstillinger :"
 
-#: ../../sulfur/src/sulfur.glade.h:248
-msgid "Website"
-msgstr ""
+#, fuzzy
+#~ msgid "Source Package Manager"
+#~ msgstr "Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:249
-msgid "What you were doing"
-msgstr ""
+#, fuzzy
+#~ msgid "Spm tree updates"
+#~ msgstr "Yum Opsætning: Opdateringer"
 
-#: ../../sulfur/src/sulfur.glade.h:251
-msgid ""
-"You <b>need to accept</b> the licenses below.\n"
-"Please read them carefully and <b>make your choice</b>."
-msgstr ""
+#, fuzzy
+#~ msgid "Switch to"
+#~ msgstr "Opdaterer"
 
-#: ../../sulfur/src/sulfur.glade.h:253
-msgid "Your E-mail"
-msgstr ""
+#, fuzzy
+#~ msgid "System"
+#~ msgstr "Fi_ler"
 
-#: ../../sulfur/src/sulfur.glade.h:254
-msgid "Your Full Name"
-msgstr ""
+#, fuzzy
+#~ msgid "System Database"
+#~ msgstr "Kører Transaktion"
 
-#: ../../sulfur/src/sulfur.glade.h:255
 #, fuzzy
-msgid "_Abort"
-msgstr "Om"
+#~ msgid "UGC Entry Information"
+#~ msgstr "I_nformation"
 
-#: ../../sulfur/src/sulfur.glade.h:256
 #, fuzzy
-msgid "_Accept License"
-msgstr "Filnavn"
+#~ msgid "URI"
+#~ msgstr "GUI"
 
-#: ../../sulfur/src/sulfur.glade.h:257
-msgid "_Add All"
-msgstr "Tilføj _Alle"
+#, fuzzy
+#~ msgid "Undo Install"
+#~ msgstr "Installeret"
 
-#: ../../sulfur/src/sulfur.glade.h:258
 #, fuzzy
-msgid "_Add Set"
-msgstr "Tilføj _Alle"
+#~ msgid "Undo Install Set"
+#~ msgstr "Installeret"
 
-#: ../../sulfur/src/sulfur.glade.h:259
-msgid "_Clear all cache"
-msgstr ""
+#, fuzzy
+#~ msgid "Undo Install Set action"
+#~ msgstr "Installeret"
 
-#: ../../sulfur/src/sulfur.glade.h:260
-msgid "_Clear all credentials"
-msgstr ""
+#, fuzzy
+#~ msgid "Undo Install action"
+#~ msgstr "Installeret"
 
-#: ../../sulfur/src/sulfur.glade.h:261
-msgid "_Commit Actions"
-msgstr ""
+#, fuzzy
+#~ msgid "Undo Purge action"
+#~ msgstr "Søgnings Indstiller"
 
-#: ../../sulfur/src/sulfur.glade.h:262
-msgid "_Details"
-msgstr ""
+#, fuzzy
+#~ msgid "Undo Reinstall"
+#~ msgstr "Installeret"
 
-#: ../../sulfur/src/sulfur.glade.h:263
 #, fuzzy
-msgid "_Enable"
-msgstr "_Valgt"
+#~ msgid "Undo Reinstall action"
+#~ msgstr "Installeret"
 
-#: ../../sulfur/src/sulfur.glade.h:264
 #, fuzzy
-msgid "_File"
-msgstr "_Filer"
+#~ msgid "Undo Remove Set"
+#~ msgstr "Installeret"
 
-#: ../../sulfur/src/sulfur.glade.h:265
 #, fuzzy
-msgid "_Force repositories update"
-msgstr "Filkilder"
+#~ msgid "Undo Remove Set action"
+#~ msgstr "Installeret"
 
-#: ../../sulfur/src/sulfur.glade.h:266
-msgid "_Generate Login"
-msgstr ""
+#, fuzzy
+#~ msgid "Undo Remove action"
+#~ msgstr "Installeret"
 
-#: ../../sulfur/src/sulfur.glade.h:267
-msgid "_Help"
-msgstr "_Hjælp"
+#, fuzzy
+#~ msgid "Undo Update"
+#~ msgstr "Opdateret"
 
-#: ../../sulfur/src/sulfur.glade.h:268
 #, fuzzy
-msgid "_Insert String"
-msgstr "Kategorier"
+#~ msgid "Undo Update action"
+#~ msgstr "Opdateret"
 
-#: ../../sulfur/src/sulfur.glade.h:269
-msgid "_More"
-msgstr ""
+#, fuzzy
+#~ msgid "Unmask this package"
+#~ msgstr "Henter Pakker:"
 
-#: ../../sulfur/src/sulfur.glade.h:270
-msgid "_Open Document"
-msgstr ""
+#, fuzzy
+#~ msgid "Update the selected package"
+#~ msgstr "Vis Installerede Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:271
-msgid "_Overview"
-msgstr ""
+#, fuzzy
+#~ msgid "Updates"
+#~ msgstr "Opdateret"
 
-#: ../../sulfur/src/sulfur.glade.h:272
 #, fuzzy
-msgid "_Properties"
-msgstr "_Profiler"
+#~ msgid "Version"
+#~ msgstr "_Filspejlsliste"
 
-#: ../../sulfur/src/sulfur.glade.h:273
 #, fuzzy
-msgid "_Queue all vulnerable packages"
-msgstr "Vis Tilgængelige Pakker"
+#~ msgid "_Abort"
+#~ msgstr "Om"
 
-#: ../../sulfur/src/sulfur.glade.h:274
 #, fuzzy
-msgid "_Read License"
-msgstr "Filnavn"
+#~ msgid "_Accept License"
+#~ msgstr "Filnavn"
+
+#~ msgid "_Add All"
+#~ msgstr "Tilføj _Alle"
 
-#: ../../sulfur/src/sulfur.glade.h:275
 #, fuzzy
-msgid "_References"
-msgstr "Indstillinger"
+#~ msgid "_Add Set"
+#~ msgstr "Tilføj _Alle"
 
-#: ../../sulfur/src/sulfur.glade.h:276
 #, fuzzy
-msgid "_Remote Repository Manager"
-msgstr "Kilde"
+#~ msgid "_Enable"
+#~ msgstr "_Valgt"
 
-#: ../../sulfur/src/sulfur.glade.h:277
-msgid "_Remove All"
-msgstr "_Fjern Alle"
+#, fuzzy
+#~ msgid "_File"
+#~ msgstr "_Filer"
 
-#: ../../sulfur/src/sulfur.glade.h:278
 #, fuzzy
-msgid "_Remove Login"
-msgstr "Sletter"
+#~ msgid "_Force repositories update"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:279
+#~ msgid "_Help"
+#~ msgstr "_Hjælp"
+
 #, fuzzy
-msgid "_Remove Set"
-msgstr "Sletter"
+#~ msgid "_Insert String"
+#~ msgstr "Kategorier"
 
-#: ../../sulfur/src/sulfur.glade.h:280
 #, fuzzy
-msgid "_SSL Connection"
-msgstr "Ønsker du at forsættet ?"
+#~ msgid "_Properties"
+#~ msgstr "_Profiler"
 
-#: ../../sulfur/src/sulfur.glade.h:281
 #, fuzzy
-msgid "_Services"
-msgstr "Filkilder"
+#~ msgid "_Queue all vulnerable packages"
+#~ msgstr "Vis Tilgængelige Pakker"
 
-#: ../../sulfur/src/sulfur.glade.h:282
 #, fuzzy
-msgid "_Skip mirror"
-msgstr "_Filspejlsliste"
+#~ msgid "_Read License"
+#~ msgstr "Filnavn"
 
-#: ../../sulfur/src/sulfur.glade.h:283
-msgid "_Submit Document"
-msgstr ""
+#, fuzzy
+#~ msgid "_References"
+#~ msgstr "Indstillinger"
 
-#: ../../sulfur/src/sulfur.glade.h:284
 #, fuzzy
-msgid "_Update Repositories"
-msgstr "Filkilder"
+#~ msgid "_Remote Repository Manager"
+#~ msgstr "Kilde"
 
-#: ../../sulfur/src/sulfur.glade.h:285
-msgid "emerge --sync"
-msgstr ""
+#~ msgid "_Remove All"
+#~ msgstr "_Fjern Alle"
 
-#: ../../sulfur/src/sulfur.glade.h:286
-msgid "emerge --sync ? (o;"
-msgstr ""
+#, fuzzy
+#~ msgid "_Remove Login"
+#~ msgstr "Sletter"
 
-#: ../../sulfur/src/sulfur.glade.h:287
-msgid "http://www.sabayon.org"
-msgstr ""
+#, fuzzy
+#~ msgid "_Remove Set"
+#~ msgstr "Sletter"
 
-#: ../../sulfur/src/sulfur.glade.h:288
-msgid "kB/sec"
-msgstr ""
+#, fuzzy
+#~ msgid "_SSL Connection"
+#~ msgstr "Ønsker du at forsættet ?"
 
-#: ../../sulfur/src/sulfur.glade.h:289
-msgid "localhost"
-msgstr ""
+#, fuzzy
+#~ msgid "_Services"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:291
 #, fuzzy
-msgid "root"
-msgstr "Sletter"
+#~ msgid "_Skip mirror"
+#~ msgstr "_Filspejlsliste"
 
-#: ../../sulfur/src/sulfur.glade.h:292
-msgid "type your password here"
-msgstr ""
+#, fuzzy
+#~ msgid "_Update Repositories"
+#~ msgstr "Filkilder"
 
-#: ../../sulfur/src/sulfur.glade.h:293
-msgid "type your username here"
-msgstr ""
+#, fuzzy
+#~ msgid "root"
+#~ msgstr "Sletter"
 
 #, fuzzy
 #~ msgid "Spritz Package Manager"
