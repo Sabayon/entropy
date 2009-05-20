@@ -208,7 +208,7 @@ class Queue:
 
     def remove(self, pkgs, accept = False, accept_reinsert = False, always_ask = False):
 
-        self.Sulfur.show_wait_window()
+        self.Sulfur.wait_window.show()
 
         try:
             if type(pkgs) is not list:
@@ -278,11 +278,11 @@ class Queue:
                 del self.before[:]
                 return 0,1
         finally:
-            self.Sulfur.hide_wait_window()
+            self.Sulfur.wait_window.hide()
 
     def add(self, pkgs, accept = False, always_ask = False):
 
-        self.Sulfur.show_wait_window()
+        self.Sulfur.wait_window.show()
 
         try:
             if type(pkgs) is not list:
@@ -321,7 +321,7 @@ class Queue:
                 return status,1
 
         finally:
-            self.Sulfur.hide_wait_window()
+            self.Sulfur.wait_window.hide()
 
     def elaborateMaskedPackages(self, matches):
 
@@ -348,7 +348,7 @@ class Queue:
             pkg, new = self.etpbase.getPackageItem(match)
             pkgs.append(pkg)
 
-        self.Sulfur.hide_wait_window()
+        self.Sulfur.wait_window.hide()
         # save old
         oldmask = self.etpbase.unmaskingPackages.copy()
         maskDialog = self.dialogs.MaskedPackagesDialog(self.Entropy, self.etpbase, self.ui.main, pkgs)
@@ -359,7 +359,7 @@ class Queue:
             # discard changes
             self.etpbase.unmaskingPackages = oldmask.copy()
         maskDialog.destroy()
-        self.Sulfur.show_wait_window()
+        self.Sulfur.wait_window.show()
 
         return result
 
