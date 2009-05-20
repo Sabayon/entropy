@@ -52,16 +52,11 @@ class UI(gtk.glade.XML):
 class Controller:
 
     """Base class for all controllers of glade-derived UIs."""
-    def __init__(self, ui, wait_ui):
+    def __init__(self, ui):
         """Initialize a new instance.
         `ui' is the user interface to be controlled."""
         self.ui = ui
-        self.wait_ui = wait_ui
         self.ui.signal_autoconnect(self._getAllMethods())
-
-        if wait_ui != None:
-            self.wait_ui.signal_autoconnect(self._getAllMethods())
-            self.wait_ui.waitWindow.set_transient_for(self.ui.main)
 
     def _getAllMethods(self):
         """Get a dictionary of all methods in self's class hierarchy."""

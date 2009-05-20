@@ -58,12 +58,12 @@ except KeyboardInterrupt:
     except NameError:
         pass
 except: # catch other exception and write it to the logger.
+    my = ExceptionDialog()
+    my.show()
     entropy.tools.kill_threads()
     try:
         mainApp.quit(sysexit = False)
     except NameError:
         pass
-    my = ExceptionDialog()
-    my.show()
 
 raise SystemExit(0)

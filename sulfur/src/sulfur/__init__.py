@@ -83,19 +83,20 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # Create and ui object contains the widgets.
         ui = UI( const.GLADE_FILE , 'main', 'entropy' )
         ui.main.hide()
-        wait_ui = UI( const.GLADE_FILE , 'waitWindow', 'entropy' )
         # init the Controller Class to connect signals.
-        Controller.__init__( self, ui, wait_ui )
+        Controller.__init__( self, ui )
+
+        self.wait_window = WaitWindow(self.ui.main)
 
     def init(self):
 
-        self.show_wait_window()
+        self.wait_window.show()
         self.setup_gui()
         # show UI
         if "--nomaximize" not in sys.argv:
             self.ui.main.maximize()
         self.ui.main.show()
-        self.hide_wait_window()
+        self.wait_window.hide()
 
         self.warn_repositories()
         self.packages_install()
@@ -114,7 +115,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             raise SystemExit(0)
 
     def exitNow(self):
-        self.show_wait_window()
+        self.wait_window.show()
         try: gtk.main_quit()
         except RuntimeError: pass
 
@@ -947,7 +948,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def populateAdvisories(self, widget, show):
         self.setBusy()
-        self.show_wait_window()
+        self.wait_window.show()
         cached = None
         try:
             cached = self.Advisories.get_advisories_cache()
@@ -965,7 +966,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if cached:
             self.advisoriesView.populate(self.Advisories, cached, show)
         self.unsetBusy()
-        self.hide_wait_window()
+        self.wait_window.hide()
 
     def populateFilesUpdate(self):
         # load filesUpdate interface and fill self.filesView
@@ -1396,7 +1397,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def add_atoms_to_queue(self, atoms, always_ask = False, matches = set()):
 
-        self.show_wait_window()
+        self.wait_window.show()
         self.setBusy()
         if not matches:
             # resolve atoms ?
@@ -1405,7 +1406,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 if match[0] != -1:
                     matches.add(match)
         if not matches:
-            self.hide_wait_window()
+            self.wait_window.hide()
             okDialog( self.ui.main, _("Packages not found in repositories, try again later.") )
             self.unsetBusy()
             return
@@ -1446,7 +1447,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.queueView.refresh()
         self.ui.viewPkg.queue_draw()
 
-        self.hide_wait_window()
+        self.wait_window.hide()
         self.unsetBusy()
         return rc
 

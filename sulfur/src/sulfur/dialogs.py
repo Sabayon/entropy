@@ -6292,6 +6292,28 @@ class LicenseDialog:
                 atom = dbconn.retrieveAtom(match[0])
                 self.model.append( parent, [atom,None] )
 
+class WaitWindow(MenuSkel):
+
+    def __init__(self, window):
+
+        self.wait_ui = UI( const.GLADE_FILE , 'waitWindow', 'entropy' )
+        self.wait_ui.signal_autoconnect(self._getAllMethods())
+        self.wait_ui.waitWindow.set_transient_for(window)
+        self.window = window
+
+    def show(self):
+        self.window.set_sensitive(False)
+        self.wait_ui.waitWindow.show_all()
+        self.wait_ui.waitWindow.queue_draw()
+        self.window.queue_draw()
+        while gtk.events_pending():
+           gtk.main_iteration()
+
+    def hide(self):
+        self.wait_ui.waitWindow.hide()
+        self.window.set_sensitive(True)
+
+
 class ExceptionDialog:
 
     def __init__(self):
