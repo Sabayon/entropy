@@ -2,12 +2,6 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
-  0.95:
-
-    - Spritz codebase refactoring (Sulfur):
-        - simple mode vs extended mode
-        - Implement entropy:// URI handler
-
   1.0_beta1:
 
     - Move Trigger.trigger_configure_boot_grub & friends to ebuild (make Trigger more agnostic)
