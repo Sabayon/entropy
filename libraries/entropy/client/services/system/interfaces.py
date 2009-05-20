@@ -33,7 +33,7 @@ class Client:
         ClientCommandsInterface = None, quiet = True, show_progress = False,
         do_cache_connection = False, do_cache_session = False):
 
-        if not hasattr(OutputInterface,'updateProgress'):
+        if not hasattr(OutputInterface, 'updateProgress'):
             mytxt = _("OutputInterface does not have an updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
         elif not callable(OutputInterface.updateProgress):
@@ -41,23 +41,16 @@ class Client:
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
 
         from entropy.client.services.system.commands import Client as ClientCommands
-        if ClientCommandsInterface != None:
-            if not issubclass(ClientCommandsInterface, ClientCommands):
-                mytxt = _("A valid entropy.client.services.system.commands.Client class/subclass is needed")
-                raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-            self.ClientCommandsInterface = ClientCommandsInterface
-        else:
-            self.ClientCommandsInterface = ClientCommands
+        if not issubclass(ClientCommandsInterface, ClientCommands):
+            mytxt = _("A valid entropy.client.services.system.commands.Client class/subclass is needed")
+            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         from entropy.client.services.system.methods import BaseMixin
-        if MethodsInterface != None:
-            if not issubclass(MethodsInterface, BaseMixin):
-                mytxt = _("A valid entropy.client.services.system.methods.BaseMixin class/subclass is needed")
-                raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-            self.MethodsInterface = MethodsInterface
-        else:
-            self.MethodsInterface = BaseMixin
+        if not issubclass(MethodsInterface, BaseMixin):
+            mytxt = _("A valid entropy.client.services.system.methods.BaseMixin class/subclass is needed")
+            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
+        self.ClientCommandsInterface = ClientCommandsInterface
         import socket, struct
         import entropy.tools as entropyTools
         self.socket, self.struct, self.entropyTools = socket, struct, entropyTools
@@ -74,7 +67,7 @@ class Client:
         self.do_cache_connection = do_cache_connection
         self.show_progress = show_progress
         self.ClientCommandsInterface = ClientCommandsInterface
-        self.Methods = self.MethodsInterface(self)
+        self.Methods = MethodsInterface(self)
         self.session_cache = {}
         self.SessionCacheLock = self.threading.Lock()
         self.connection_cache = {}
