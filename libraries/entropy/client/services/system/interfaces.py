@@ -266,7 +266,8 @@ class Client:
                         srv.disconnect()
                     return False, error
 
-            rslt = eval("srv.CmdInterface.%s" % (func,))(*args,**kwargs)
+            cmd_func = getattr(srv.CmdInterface, func)
+            rslt = cmd_func(*args, **kwargs)
             if not self.do_cache_session:
                 if login_required:
                     self.logout(srv, session)
