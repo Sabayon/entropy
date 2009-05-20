@@ -77,7 +77,8 @@ class EntropyPackage:
         if self.pkgset:
 
             # must be available!
-            set_from, set_name, set_deps = EquoIntf.package_set_match(self.matched_atom[1:])[0]
+            set_from, set_name, set_deps = EquoIntf.package_set_match(
+                self.matched_atom[1:])[0]
             self.from_installed = False
             self.dbconn = None
             self.dummy_type = -2
@@ -121,7 +122,8 @@ class EntropyPackage:
 
     def __str__(self):
         if self.pkgset: return self.matched_atom
-        return str(self.dbconn.retrieveAtom(self.matched_id)+"~"+str(self.dbconn.retrieveRevision(self.matched_id)))
+        return str(self.dbconn.retrieveAtom(self.matched_id) + "~" + \
+            str(self.dbconn.retrieveRevision(self.matched_id)))
 
     def __cmp__(self, pkg):
         if pkg.matched_atom == self.matched_atom:
@@ -171,7 +173,8 @@ class EntropyPackage:
         if self.pkgset:
             t = self.matched_atom
             desc = _("Recursive Package Set")
-            t += '\n<small><span foreground=\'%s\'>%s</span></small>' % (SulfurConf.color_pkgdesc,cleanMarkupString(desc),)
+            t += '\n<small><span foreground=\'%s\'>%s</span></small>' % (
+                SulfurConf.color_pkgdesc,cleanMarkupString(desc),)
             return t
 
         ugc_string = ''
@@ -184,12 +187,15 @@ class EntropyPackage:
 
         t = ugc_string+'/'.join(atom.split("/")[1:])
         if self.masked:
-            t +=  " <small>[<span foreground='%s'>%s</span>]</small>" % (SulfurConf.color_title2,EquoIntf.SystemSettings['pkg_masking_reasons'][self.masked],)
+            t +=  " <small>[<span foreground='%s'>%s</span>]</small>" % (
+                SulfurConf.color_title2,
+                EquoIntf.SystemSettings['pkg_masking_reasons'][self.masked],)
 
         desc = self.getDescription(markup = False)
         if len(desc) > 56:
             desc = desc[:56].rstrip()+"..."
-        t += '\n<small><span foreground=\'%s\'>%s</span></small>' % (SulfurConf.color_pkgdesc,cleanMarkupString(desc),)
+        t += '\n<small><span foreground=\'%s\'>%s</span></small>' % (
+            SulfurConf.color_pkgdesc, cleanMarkupString(desc),)
         return t
 
     def getOnlyName(self):
@@ -201,18 +207,24 @@ class EntropyPackage:
         if self.pkgset:
             return self.matched_atom
 
-        return (self.getName(),self.getRepoId(),self.dbconn.retrieveVersion(self.matched_id),self.dbconn.retrieveVersionTag(self.matched_id),self.dbconn.retrieveRevision(self.matched_id))
+        return (self.getName(), self.getRepoId(),
+            self.dbconn.retrieveVersion(self.matched_id),
+            self.dbconn.retrieveVersionTag(self.matched_id),
+            self.dbconn.retrieveRevision(self.matched_id))
 
     def versionData(self):
         if self.pkgset: return self.matched_atom
-        return (self.dbconn.retrieveVersion(self.matched_id),self.dbconn.retrieveVersionTag(self.matched_id),self.dbconn.retrieveRevision(self.matched_id))
+        return (self.dbconn.retrieveVersion(self.matched_id),
+            self.dbconn.retrieveVersionTag(self.matched_id),
+            self.dbconn.retrieveRevision(self.matched_id))
 
     def getRepoId(self):
         if self.pkgset:
             x = self.set_from
             if x == etpConst['userpackagesetsid']: x = _("User")
             return x
-        if self.matched_atom[1] == 0: return self.dbconn.retrievePackageFromInstalledTable(self.matched_id)
+        if self.matched_atom[1] == 0:
+            return self.dbconn.retrievePackageFromInstalledTable(self.matched_id)
         else: return self.matched_repo
 
     def getIdpackage(self):
@@ -365,16 +377,19 @@ class EntropyPackage:
         if self.pkgset: return self.set_cat_namedesc
 
         if markup:
-            return cleanMarkupString(self.dbconn.retrieveDescription(self.matched_id))
+            return cleanMarkupString(
+                self.dbconn.retrieveDescription(self.matched_id))
         else:
             return self.dbconn.retrieveDescription(self.matched_id)
 
     def getDownSize(self):
-        if self.pkgset: return 0
+        if self.pkgset:
+            return 0
         return self.dbconn.retrieveSize(self.matched_id)
 
     def getDiskSize(self):
-        if self.pkgset: return 0
+        if self.pkgset:
+            return 0
         return self.dbconn.retrieveOnDiskSize(self.matched_id)
 
     def getIntelligentSize(self):
@@ -384,23 +399,30 @@ class EntropyPackage:
             return self.getDownSizeFmt()
 
     def getDownSizeFmt(self):
-        if self.pkgset: return 0
-        return EquoIntf.entropyTools.bytes_into_human(self.dbconn.retrieveSize(self.matched_id))
+        if self.pkgset:
+            return 0
+        return EquoIntf.entropyTools.bytes_into_human(
+            self.dbconn.retrieveSize(self.matched_id))
 
     def getDiskSizeFmt(self):
-        if self.pkgset: return 0
-        return EquoIntf.entropyTools.bytes_into_human(self.dbconn.retrieveOnDiskSize(self.matched_id))
+        if self.pkgset:
+            return 0
+        return EquoIntf.entropyTools.bytes_into_human(
+            self.dbconn.retrieveOnDiskSize(self.matched_id))
 
     def getArch(self):
         return etpConst['currentarch']
 
     def getEpoch(self):
-        if self.pkgset: return 0
+        if self.pkgset:
+            return 0
         return self.dbconn.retrieveDateCreation(self.matched_id)
 
     def getEpochFmt(self):
-        if self.pkgset: return 0
-        return EquoIntf.entropyTools.convert_unix_time_to_human_time(float(self.dbconn.retrieveDateCreation(self.matched_id)))
+        if self.pkgset:
+            return 0
+        return EquoIntf.entropyTools.convert_unix_time_to_human_time(
+            float(self.dbconn.retrieveDateCreation(self.matched_id)))
 
     def getRel(self):
         if self.pkgset:
@@ -408,10 +430,13 @@ class EntropyPackage:
         return self.dbconn.retrieveBranch(self.matched_id)
 
     def getUGCPackageVote(self):
-        if self.pkgset: return -1
+        if self.pkgset:
+            return -1
         atom = self.getName()
-        if not atom: return None
-        return EquoIntf.UGC.UGCCache.get_package_vote(self.getRepoId(),self.entropyTools.dep_getkey(atom))
+        if not atom:
+            return None
+        return EquoIntf.UGC.UGCCache.get_package_vote(self.getRepoId(),
+            self.entropyTools.dep_getkey(atom))
 
     def getUGCPackageVoteInt(self):
         if self.pkgset:
@@ -419,7 +444,8 @@ class EntropyPackage:
         atom = self.getName()
         if not atom:
             return 0
-        vote = EquoIntf.UGC.UGCCache.get_package_vote(self.getRepoId(),self.entropyTools.dep_getkey(atom))
+        vote = EquoIntf.UGC.UGCCache.get_package_vote(self.getRepoId(),
+            self.entropyTools.dep_getkey(atom))
         if not isinstance(vote, float):
             return 0
         return int(vote)
@@ -430,7 +456,8 @@ class EntropyPackage:
         atom = self.getName()
         if not atom:
             return 0.0
-        vote = EquoIntf.UGC.UGCCache.get_package_vote(self.getRepoId(),self.entropyTools.dep_getkey(atom))
+        vote = EquoIntf.UGC.UGCCache.get_package_vote(self.getRepoId(),
+            self.entropyTools.dep_getkey(atom))
         if not isinstance(vote, float):
             return 0.0
         return vote
@@ -444,7 +471,8 @@ class EntropyPackage:
         atom = self.getName()
         if not atom: return 0
         key = self.entropyTools.dep_getkey(atom)
-        return EquoIntf.UGC.UGCCache.get_package_downloads(self.matched_repo,key)
+        return EquoIntf.UGC.UGCCache.get_package_downloads(self.matched_repo,
+            key)
 
     def getAttr(self,attr):
         x = None
@@ -487,7 +515,8 @@ class EntropyPackage:
 
     def get_filelist_ext( self ):
         if self.pkgset: return []
-        return self.dbconn.retrieveContent(self.matched_id, extended = True, order_by = 'file')
+        return self.dbconn.retrieveContent(self.matched_id, extended = True,
+            order_by = 'file')
 
     def get_fullname( self ):
         if self.pkgset: return self.set_name

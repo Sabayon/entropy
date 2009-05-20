@@ -83,10 +83,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # Create and ui object contains the widgets.
         ui = UI( const.GLADE_FILE , 'main', 'entropy' )
         ui.main.hide()
-        addrepo_ui = UI( const.GLADE_FILE , 'addRepoWin', 'entropy' )
         wait_ui = UI( const.GLADE_FILE , 'waitWindow', 'entropy' )
         # init the Controller Class to connect signals.
-        Controller.__init__( self, ui, addrepo_ui, wait_ui )
+        Controller.__init__( self, ui, wait_ui )
 
     def init(self):
 
@@ -149,7 +148,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.ui, self.etpbase)
         self.queue.connect_objects(self.Equo, self.etpbase, self.pkgView, self.ui)
         self.repoView = EntropyRepoView(self.ui.viewRepo, self.ui, self)
-        self.repoMirrorsView = EntropyRepositoryMirrorsView(self.addrepo_ui.mirrorsView)
         # Left Side Toolbar
         self.pageButtons = {}    # Dict with page buttons
         self.firstButton = None  # first button
@@ -1452,23 +1450,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.unsetBusy()
         return rc
 
-    def _load_repo_data(self, repodata):
-        self.addrepo_ui.repoidEntry.set_text(repodata['repoid'])
-        self.addrepo_ui.repoDescEntry.set_text(repodata['description'])
-        self.addrepo_ui.repodbPort.set_text(str(repodata['service_port']))
-        self.addrepo_ui.repodbPortSSL.set_text(str(repodata['ssl_service_port']))
-        self.repoMirrorsView.store.clear()
-        for x in repodata['plain_packages']:
-            self.repoMirrorsView.add(x)
-        idx = 0
-        # XXX hackish way fix it
-        while idx < 100:
-            self.addrepo_ui.repodbcformatEntry.set_active(idx)
-            if repodata['dbcformat'] == self.addrepo_ui.repodbcformatEntry.get_active_text():
-                break
-            idx += 1
-        self.addrepo_ui.repodbEntry.set_text(repodata['plain_database'])
-
     def reset_cache_status(self):
         self.pkgView.clear()
         self.etpbase.clearPackages()
@@ -1482,48 +1463,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # behaviours
         self.Equo.SystemSettings.clear()
         self.Equo.close_all_repositories()
-
-    def _validate_repo_submit(self, repodata, edit = False):
-        errors = []
-        if not repodata['repoid']:
-            errors.append(_('No Repository Identifier'))
-        if repodata['repoid'] and self.Equo.SystemSettings['repositories']['available'].has_key(repodata['repoid']):
-            if not edit:
-                errors.append(_('Duplicated Repository Identifier'))
-        if not repodata['description']:
-            repodata['description'] = "No description"
-        if not repodata['plain_packages']:
-            errors.append(_("No download mirrors"))
-        if not repodata['plain_database'] or not (repodata['plain_database'].startswith("http://") or repodata['plain_database'].startswith("ftp://") or repodata['plain_database'].startswith("file://")):
-            errors.append(_("Database URL must start either with http:// or ftp:// or file://"))
-
-        if not repodata['service_port']:
-            repodata['service_port'] = int(etpConst['socket_service']['port'])
-        else:
-            try:
-                repodata['service_port'] = int(repodata['service_port'])
-            except (ValueError,):
-                errors.append(_("Repository Services Port not valid"))
-
-        if not repodata['ssl_service_port']:
-            repodata['ssl_service_port'] = int(etpConst['socket_service']['ssl_port'])
-        else:
-            try:
-                repodata['ssl_service_port'] = int(repodata['ssl_service_port'])
-            except (ValueError,):
-                errors.append(_("Secure Services Port not valid"))
-        return errors
-
-    def _get_repo_data(self):
-        repodata = {}
-        repodata['repoid'] = self.addrepo_ui.repoidEntry.get_text()
-        repodata['description'] = self.addrepo_ui.repoDescEntry.get_text()
-        repodata['plain_packages'] = self.repoMirrorsView.get_all()
-        repodata['dbcformat'] = self.addrepo_ui.repodbcformatEntry.get_active_text()
-        repodata['plain_database'] = self.addrepo_ui.repodbEntry.get_text()
-        repodata['service_port'] = self.addrepo_ui.repodbPort.get_text()
-        repodata['ssl_service_port'] = self.addrepo_ui.repodbPortSSL.get_text()
-        return repodata
 
     def loadAdvInfoMenu(self, item):
         my = SecurityAdvisoryMenu(self.ui.main)

@@ -21,12 +21,11 @@ import gtk
 import sys
 import time
 from sulfur.setup import const
-from sulfur.dialogs import LicenseDialog, okDialog, \
-    choiceDialog, inputDialog
+from sulfur.dialogs import LicenseDialog, okDialog, choiceDialog, inputDialog
 import gobject
 
 # Entropy Imports
-from entropy.const import *
+from entropy.const import etpConst
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.transceivers import UrlFetcher
 from entropy.i18n import _
@@ -74,16 +73,19 @@ class QueueExecutor:
             if not result or self.Entropy.is_match_masked(match):
                 dbconn = self.Entropy.open_repository(match[1])
                 atom = dbconn.retrieveAtom(match[0])
-                okDialog( self.Sulfur.ui.main, "%s: %s" % (_("Error enabling masked package"),atom) )
+                okDialog( self.Sulfur.ui.main, "%s: %s" % (
+                    _("Error enabling masked package"), atom) )
                 return -2,1
 
         removalQueue = []
         runQueue = []
         conflicts_queue = []
         if install_queue:
-            runQueue, conflicts_queue, status = self.Entropy.get_install_queue(install_queue,False,False)
+            runQueue, conflicts_queue, status = self.Entropy.get_install_queue(
+                install_queue, False, False)
         if removal_queue:
-            removalQueue += [(x,False) for x in removal_queue if x not in conflicts_queue]
+            removalQueue += [(x,False) for x in removal_queue if x \
+                not in conflicts_queue]
 
         rc, licenses = self.handle_licenses(runQueue)
         if rc != 0:
@@ -130,7 +132,8 @@ class QueueExecutor:
             myrepo = Package.infoDict['repository']
             if not mykeys.has_key(myrepo):
                 mykeys[myrepo] = set()
-            mykeys[myrepo].add(self.Entropy.entropyTools.dep_getkey(Package.infoDict['atom']))
+            mykeys[myrepo].add(self.Entropy.entropyTools.dep_getkey(
+                Package.infoDict['atom']))
 
             self.Entropy.updateProgress(
                 fetch_string+Package.infoDict['atom'],
@@ -150,7 +153,8 @@ class QueueExecutor:
                     if self.Entropy.UGC != None:
                         for myrepo in mykeys:
                             mypkgkeys = sorted(mykeys[myrepo])
-                            self.Entropy.UGC.add_download_stats(myrepo, mypkgkeys)
+                            self.Entropy.UGC.add_download_stats(myrepo,
+                                mypkgkeys)
                 except:
                     pass
             t = ParallelTask(spawn_ugc)
@@ -259,7 +263,8 @@ class Equo(EquoInterface):
         self.output = application.output
         self.ui = application.ui
 
-    def updateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
+    def updateProgress(self, text, header = "", footer = "", back = False,
+            importance = 0, type = "info", count = [], percent = False):
 
         count_str = ""
         if self.progress:
@@ -268,20 +273,20 @@ class Equo(EquoInterface):
                 if importance == 0:
                     progress_text = text
                 else:
-                    progress_text = str(int(round((float(count[0])/count[1])*100,1)))+"%"
-                self.progress.set_progress( round((float(count[0])/count[1]),1), progress_text )
+                    percent_int = int(round((float(count[0])/count[1])*100,1))
+                    progress_text = str(percent_int) + "%"
+                self.progress.set_progress(
+                    round((float(count[0])/count[1]),1), progress_text )
             if importance == 1:
                 myfunc = self.progress.set_subLabel
             elif importance == 2:
                 myfunc = self.progress.set_mainLabel
             elif importance == 3:
-                # show warning popup
-                # FIXME: interface with popup !
                 myfunc = self.progress.set_extraLabel
             if importance > 0:
                 myfunc(count_str+text)
 
-        if not back and hasattr(self,'progressLog'):
+        if not back and hasattr(self, 'progressLog'):
 
             def update_gui():
                 if callable(self.progressLog):
@@ -304,16 +309,6 @@ class Equo(EquoInterface):
             return False
         gobject.timeout_add(0, update_gui)
 
-    # @input question: question to do
-    #
-    # @input importance:
-    #           values: 0,1,2 (latter is a blocker - popup menu on a GUI env)
-    #           used to specify information importance, 0<important<2
-    #
-    # @input responses:
-    #           list of options whose users can choose between
-    #
-    # feel free to reimplement this
     def askQuestion(self, question, importance = 0, responses = ["Yes","No"]):
 
         try:
@@ -321,23 +316,27 @@ class Equo(EquoInterface):
         except AttributeError:
             parent = None
 
-        choice = choiceDialog(parent, question, _("Entropy needs your attention"), responses)
+        choice = choiceDialog(parent, question,
+            _("Entropy needs your attention"), responses)
         try:
             return responses[choice]
         except IndexError:
             return responses[0]
 
-    # @ title: title of the input box
-    # @ input_parameters: [('identifier 1','input text 1',input_verification_callback,False), ('password','Password',input_verification_callback,True)]
-    # @ cancel_button: show cancel button ?
-    # @ output: dictionary as follows:
-    #   {'identifier 1': result, 'identifier 2': result}
     def inputBox(self, title, input_parameters, cancel_button = True):
+        # @ title: title of the input box
+        # @ input_parameters: [('identifier 1','input text 1',
+        #       input_verification_callback,False),
+        #       ('password','Password',input_verification_callback,True)]
+        # @ cancel_button: show cancel button ?
+        # @ output: dictionary as follows:
+        #   {'identifier 1': result, 'identifier 2': result}
         try:
             parent = self.ui.main
         except AttributeError:
             parent = None
-        return inputDialog(parent, title, input_parameters, cancel = cancel_button)
+        return inputDialog(parent, title, input_parameters,
+            cancel = cancel_button)
 
 class GuiUrlFetcher(UrlFetcher):
 
@@ -367,12 +366,13 @@ class GuiUrlFetcher(UrlFetcher):
 
         if (myavg > self.gui_last_avg) or (myavg < 2) or (myavg > 97):
 
-            self.progress.set_progress( round(float(self.__average)/100,1), str(myavg)+"%" )
+            self.progress.set_progress(round(float(self.__average)/100,1),
+                str(myavg)+"%")
+            human_dt = self.entropyTools.bytes_into_human(self.__datatransfer)
             self.progress.set_extraLabel("%s/%s kB @ %s" % (
-                                            str(round(float(self.__downloadedsize)/1024,1)),
-                                            str(round(self.__remotesize,1)),
-                                            str(self.entropyTools.bytes_into_human(self.__datatransfer))+"/sec",
-                                        )
+                    str(round(float(self.__downloadedsize)/1024,1)),
+                    str(round(self.__remotesize,1)),
+                    str(human_dt) + "/sec",
+                )
             )
             self.gui_last_avg = myavg
-

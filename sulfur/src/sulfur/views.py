@@ -999,14 +999,16 @@ class EntropyPackageView:
     def on_pkgset_install_undoinstall_activate(self, widget, install = True):
 
         busyCursor(self.main_window)
-        pkgsets, exp_matches, objs, set_objs, exp_atoms = self._get_pkgset_data(self.selected_objs, add = install)
+        pkgsets, exp_matches, objs, set_objs, exp_atoms = \
+            self._get_pkgset_data(self.selected_objs, add = install)
 
         if not objs+set_objs: return
 
         install_incomplete = [x for x in self.selected_objs if x.set_install_incomplete]
         remove_incomplete = [x for x in self.selected_objs if x.set_remove_incomplete]
         if (install and install_incomplete) or ((not install) and remove_incomplete):
-            okDialog(self.ui.main,_("There are incomplete package sets, continue at your own risk"))
+            okDialog(self.ui.main,
+                _("There are incomplete package sets, continue at your own risk"))
 
         q_cache = {}
         for obj in objs+set_objs:
@@ -1029,17 +1031,20 @@ class EntropyPackageView:
             if not install:
                 c_action = None
 
+            pkgset_pfx_len = len(etpConst['packagesetprefix'])
+
             # also disable/enable item if it's a dep of any other set
             for item in self.selected_objs:
 
-                if item.set_category: myset = "%s%s" % (etpConst['packagesetprefix'],item.set_category,)
+                if item.set_category: myset = "%s%s" % (
+                    etpConst['packagesetprefix'], item.set_category,)
                 else: myset = item.matched_atom
 
                 yp, new = self.etpbase.getPackageItem(myset)
                 yp.queued = c_action
 
                 for pkgset in pkgsets:
-                    dummy_obj = self.dummyCats.get(pkgset[len(etpConst['packagesetprefix']):])
+                    dummy_obj = self.dummyCats.get(pkgset[pkgset_pfx_len:])
                     if not dummy_obj: continue
                     dummy_obj.queued = c_action
                 item.queued = c_action
@@ -1051,7 +1056,9 @@ class EntropyPackageView:
     def on_pkgset_remove_undoremove_activate(self, widget, remove = True):
 
         busyCursor(self.main_window)
-        pkgsets, exp_matches, objs, set_objs, exp_atoms = self._get_pkgset_data(self.selected_objs, add = remove, remove_action = True)
+        pkgsets, exp_matches, objs, set_objs, exp_atoms = \
+            self._get_pkgset_data(self.selected_objs, add = remove,
+                remove_action = True)
         if not objs+set_objs: return
 
         repo_objs = []
@@ -1087,16 +1094,18 @@ class EntropyPackageView:
             if not remove:
                 c_action = None
 
+            pkgset_pfx_len = len(etpConst['packagesetprefix'])
             for item in self.selected_objs:
                 # also disable/enable item if it's a dep of any other set
-                if item.set_category: myset = "%s%s" % (etpConst['packagesetprefix'],item.set_category,)
+                if item.set_category: myset = "%s%s" % (
+                    etpConst['packagesetprefix'], item.set_category,)
                 else: myset = item.matched_atom
 
                 yp, new = self.etpbase.getPackageItem(myset)
                 yp.queued = c_action
 
                 for pkgset in pkgsets:
-                    dummy_obj = self.dummyCats.get(pkgset[len(etpConst['packagesetprefix']):])
+                    dummy_obj = self.dummyCats.get(pkgset[pkgset_pfx_len:])
                     if not dummy_obj: continue
                     dummy_obj.queued = c_action
                 item.queued = c_action
@@ -1371,7 +1380,8 @@ class EntropyPackageView:
 
     def set_pixbuf_to_cell(self, cell, filename):
         try:
-            pixbuf = gtk.gdk.pixbuf_new_from_file(const.PIXMAPS_PATH+"/packages/"+filename)
+            pixbuf = gtk.gdk.pixbuf_new_from_file(
+                const.PIXMAPS_PATH+"/packages/"+filename)
             cell.set_property( 'pixbuf', pixbuf )
         except gobject.GError:
             pass
@@ -1487,9 +1497,12 @@ class EntropyPackageView:
         self.updates['r'] = self.queue.packages['r'][:]
         status, myaction = self.queue.add(mylist)
         if status == 0:
-            self.updates['u'] = [x for x in self.queue.packages['u'] if x not in self.updates['u']]
-            self.updates['i'] = [x for x in self.queue.packages['i'] if x not in self.updates['i']]
-            self.updates['r'] = [x for x in self.queue.packages['r'] if x not in self.updates['r']]
+            self.updates['u'] = [x for x in self.queue.packages['u'] if x not \
+                in self.updates['u']]
+            self.updates['i'] = [x for x in self.queue.packages['i'] if x not \
+                in self.updates['i']]
+            self.updates['r'] = [x for x in self.queue.packages['r'] if x not \
+                in self.updates['r']]
         else:
             for obj in mylist:
                 obj.queued = None
@@ -1509,7 +1522,8 @@ class EntropyPackageView:
             for child in parent.iterchildren():
                 xlist += [x for x in child if x.queued == x.action]
 
-        xlist += [x for x in self.updates['u']+self.updates['i']+self.updates['r'] if x not in xlist]
+        xlist += [x for x in self.updates['u'] + self.updates['i'] + \
+            self.updates['r'] if x not in xlist]
         if not xlist:
             return
         for obj in xlist:
@@ -1610,7 +1624,8 @@ class EntropyQueueView:
                 cat_desc = cat_desc_data[_LOCALE]
             elif cat_desc_data.has_key('en'):
                 cat_desc = cat_desc_data['en']
-            cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(cat_desc),)
+            cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,
+                cleanMarkupString(cat_desc),)
             mydummy = DummyEntropyPackage(
                     namedesc = cat_text,
                     dummy_type = SulfurConf.dummy_category,
@@ -1634,7 +1649,8 @@ class EntropyFilesView:
 
     def setup_view( self ):
         """ Create Notebook list for single page  """
-        model = gtk.TreeStore( gobject.TYPE_INT, gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING )
+        model = gtk.TreeStore( gobject.TYPE_INT, gobject.TYPE_STRING,
+            gobject.TYPE_STRING, gobject.TYPE_STRING )
         self.view.set_model( model )
 
         cell0 = gtk.CellRendererText()
@@ -1672,12 +1688,11 @@ class EntropyFilesView:
         keys = scandata.keys()
         keys.sort()
         for key in keys:
-            self.model.append(None,[
-                                        key,
-                                        os.path.basename(scandata[key]['source']),
-                                        scandata[key]['destination'],
-                                        scandata[key]['revision']
-                                    ]
+            self.model.append(None, [key,
+                    os.path.basename(scandata[key]['source']),
+                    scandata[key]['destination'],
+                    scandata[key]['revision']
+                ]
             )
 
 class EntropyAdvisoriesView:
@@ -1771,11 +1786,13 @@ class EntropyAdvisoriesView:
         if key == None:
             affected = False
         if affected:
-            cell.set_property('background',SulfurConf.color_background_error)
-            cell.set_property('foreground',SulfurConf.color_error_on_color_background)
+            cell.set_property('background', SulfurConf.color_background_error)
+            cell.set_property('foreground',
+                SulfurConf.color_error_on_color_background)
         else:
-            cell.set_property('background',SulfurConf.color_background_good)
-            cell.set_property('foreground',SulfurConf.color_good_on_color_background)
+            cell.set_property('background', SulfurConf.color_background_good)
+            cell.set_property('foreground',
+                SulfurConf.color_good_on_color_background)
 
     def atom_search(self, model, column, key, iterator):
         obj = model.get_value( iterator, 2 )
@@ -1833,7 +1850,8 @@ class EntropyAdvisoriesView:
                         (key,identifiers[key],adv_metadata[key].copy(),),
                         key,
                         "<b>%s</b>" % (a_key,),
-                        "<small>%s</small>" % (cleanMarkupString(mydata['title']),)
+                        "<small>%s</small>" % (
+                            cleanMarkupString(mydata['title']),)
                     ]
                 )
 
@@ -1881,7 +1899,8 @@ class EntropyRepoView:
 
     def setup_view( self ):
         """ Create models and columns for the Repo TextView  """
-        store = gtk.ListStore( 'gboolean', 'gboolean', gobject.TYPE_STRING, gobject.TYPE_STRING, gobject.TYPE_STRING)
+        store = gtk.ListStore( 'gboolean', 'gboolean', gobject.TYPE_STRING,
+            gobject.TYPE_STRING, gobject.TYPE_STRING)
         self.view.set_model( store )
 
         # Setup Selection Column
@@ -1925,12 +1944,14 @@ class EntropyRepoView:
         """ Populate a repo liststore with data """
         for repo in self.Equo.SystemSettings['repositories']['order']:
             repodata = self.Equo.SystemSettings['repositories']['available'][repo]
-            self.store.append([1,1,repodata['dbrevision'],repo,repodata['description']])
+            self.store.append([1, 1, repodata['dbrevision'], repo,
+                repodata['description']])
         # excluded ones
         repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
         for repo in repo_excluded:
             repodata = repo_excluded[repo]
-            self.store.append([0,0,repodata['dbrevision'],repo,repodata['description']])
+            self.store.append([0, 0, repodata['dbrevision'], repo,
+                repodata['description']])
 
     def new_pixbuf( self, column, cell, model, myiter ):
         gpg = model.get_value( myiter, 3 )

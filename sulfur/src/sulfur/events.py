@@ -32,7 +32,8 @@ from entropy.misc import TimeScheduled, ParallelTask
 from sulfur.filters import Filter
 from sulfur.setup import SulfurConf, const, cleanMarkupString
 from sulfur.dialogs import okDialog, inputBox, TextReadDialog, questionDialog, \
-    RepositoryManagerMenu, FileChooser, AboutDialog, errorMessage
+    RepositoryManagerMenu, FileChooser, AboutDialog, errorMessage, \
+    AddRepositoryWindow
 from sulfur.misc import busyCursor, normalCursor
 
 class SulfurApplicationEventsMixin:
@@ -227,128 +228,9 @@ class SulfurApplicationEventsMixin:
                 self.Equo.shift_repository(repoid, idx)
                 self.repoView.store.swap(iterdata[1],next)
 
-    def on_mirrorDown_clicked( self, widget ):
-        selection = self.repoMirrorsView.view.get_selection()
-        urldata = selection.get_selected()
-        # get text
-        if urldata[1] != None:
-            next = urldata[0].iter_next(urldata[1])
-            if next:
-                self.repoMirrorsView.store.swap(urldata[1],next)
-
-    def on_mirrorUp_clicked( self, widget ):
-        selection = self.repoMirrorsView.view.get_selection()
-        urldata = selection.get_selected()
-        # get text
-        if urldata[1] != None:
-            path = urldata[0].get_path(urldata[1])[0]
-            if path > 0:
-                # get next iter
-                prev = urldata[0].get_iter(path-1)
-                self.repoMirrorsView.store.swap(urldata[1],prev)
-
-    def on_repoMirrorAdd_clicked( self, widget ):
-        text = inputBox(self.addrepo_ui.addRepoWin, _("Insert URL"),
-            _("Enter a download mirror, HTTP or FTP")+"   ")
-        # call liststore and tell to add
-        if text:
-            # validate url
-            if not (text.startswith("http://") or text.startswith("ftp://") or \
-                text.startswith("file://")):
-                okDialog( self.addrepo_ui.addRepoWin,
-                    _("You must enter either a HTTP or a FTP url.") )
-            else:
-                self.repoMirrorsView.add(text)
-
-    def on_repoMirrorRemove_clicked( self, widget ):
-        selection = self.repoMirrorsView.view.get_selection()
-        urldata = selection.get_selected()
-        if urldata[1] != None:
-            self.repoMirrorsView.remove(urldata)
-
-    def on_repoMirrorEdit_clicked( self, widget ):
-        selection = self.repoMirrorsView.view.get_selection()
-        urldata = selection.get_selected()
-        # get text
-        if urldata[1] != None:
-            text = self.repoMirrorsView.get_text(urldata)
-            self.repoMirrorsView.remove(urldata)
-            text = inputBox(self.addrepo_ui.addRepoWin, _("Insert URL"),
-                _("Enter a download mirror, HTTP or FTP")+"   ",
-                input_text = text)
-            # call liststore and tell to add
-            self.repoMirrorsView.add(text)
-
     def on_addRepo_clicked( self, widget ):
-        self.addrepo_ui.repoSubmit.show()
-        self.addrepo_ui.repoSubmitEdit.hide()
-        self.addrepo_ui.repoInsert.show()
-        self.addrepo_ui.repoidEntry.set_editable(True)
-        self.addrepo_ui.repodbcformatEntry.set_active(0)
-        self.addrepo_ui.repoidEntry.set_text("")
-        self.addrepo_ui.repoDescEntry.set_text("")
-        self.addrepo_ui.repodbEntry.set_text("")
-        self.addrepo_ui.addRepoWin.show()
-        self.repoMirrorsView.populate()
-
-    def on_repoSubmitEdit_clicked( self, widget ):
-        repodata = self._get_repo_data()
-        errors = self._validate_repo_submit(repodata, edit = True)
-        if errors:
-            msg = "%s: %s" % (_("Wrong entries, errors"),', '.join(errors),)
-            okDialog( self.addrepo_ui.addRepoWin, msg )
-            return True
-        else:
-            disable = False
-            repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
-            if repo_excluded.has_key(repodata['repoid']):
-                disable = True
-            self.Equo.remove_repository(repodata['repoid'], disable = disable)
-            if not disable:
-                self.Equo.add_repository(repodata)
-            self.reset_cache_status()
-
-            self.setupRepoView()
-            self.addrepo_ui.addRepoWin.hide()
-            msg = "%s '%s' %s" % (_("You should press the button"),
-                _("Regenerate Cache"), _("now"))
-            okDialog( self.ui.main, msg )
-
-    def on_repoSubmit_clicked( self, widget ):
-        repodata = self._get_repo_data()
-        # validate
-        errors = self._validate_repo_submit(repodata)
-        if not errors:
-            self.Equo.add_repository(repodata)
-            self.reset_cache_status()
-            self.setupRepoView()
-            self.addrepo_ui.addRepoWin.hide()
-            msg = "%s '%s' %s" % (_("You should press the button"),
-                _("Update Repositories"), _("now"))
-            okDialog( self.ui.main, msg )
-        else:
-            msg = "%s: %s" % (_("Wrong entries, errors"),', '.join(errors),)
-            okDialog( self.addrepo_ui.addRepoWin, msg )
-
-    def on_addRepoWin_delete_event(self, widget, path):
-        return True
-
-    def on_repoCancel_clicked( self, widget ):
-        self.addrepo_ui.addRepoWin.hide()
-
-    def on_repoInsert_clicked( self, widget ):
-        text = inputBox(self.addrepo_ui.addRepoWin, _("Insert Repository"),
-            _("Insert Repository identification string")+"   ")
-        if text:
-            if (text.startswith("repository|")) and (len(text.split("|")) == 5):
-                current_branch = self.Equo.SystemSettings['repositories']['branch']
-                current_product = self.Equo.SystemSettings['repositories']['product']
-                repoid, repodata = const_extract_cli_repo_params(text,
-                    current_branch, current_product)
-                self._load_repo_data(repodata)
-            else:
-                okDialog( self.addrepo_ui.addRepoWin,
-                    _("This Repository identification string is malformed") )
+        my = AddRepositoryWindow(self, self.ui.main, self.Equo)
+        my.load()
 
     def on_removeRepo_clicked( self, widget ):
         # get selected repo

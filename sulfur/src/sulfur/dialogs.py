@@ -57,6 +57,211 @@ class MenuSkel:
             i = i + 1
         return result
 
+class AddRepositoryWindow(MenuSkel):
+
+    def __init__(self, application, window, entropy):
+
+        from sulfur.views import EntropyRepositoryMirrorsView
+        self.addrepo_ui = UI( const.GLADE_FILE , 'addRepoWin', 'entropy' )
+        self.addrepo_ui.signal_autoconnect(self._getAllMethods())
+        self.repoMirrorsView = EntropyRepositoryMirrorsView(
+            self.addrepo_ui.mirrorsView)
+        self.addrepo_ui.addRepoWin.set_transient_for(window)
+        self.Equo = entropy
+        self.Sulfur = application
+        self.window = window
+
+    def load(self):
+        self.addrepo_ui.repoSubmit.show()
+        self.addrepo_ui.repoSubmitEdit.hide()
+        self.addrepo_ui.repoInsert.show()
+        self.addrepo_ui.repoidEntry.set_editable(True)
+        self.addrepo_ui.repodbcformatEntry.set_active(0)
+        self.addrepo_ui.repoidEntry.set_text("")
+        self.addrepo_ui.repoDescEntry.set_text("")
+        self.addrepo_ui.repodbEntry.set_text("")
+        self.addrepo_ui.addRepoWin.show()
+        self.repoMirrorsView.populate()
+
+    def _load_repo_data(self, repodata):
+
+        self.addrepo_ui.repoidEntry.set_text(repodata['repoid'])
+        self.addrepo_ui.repoDescEntry.set_text(repodata['description'])
+        self.addrepo_ui.repodbPort.set_text(str(repodata['service_port']))
+        self.addrepo_ui.repodbPortSSL.set_text(str(repodata['ssl_service_port']))
+        self.repoMirrorsView.store.clear()
+        for x in repodata['plain_packages']:
+            self.repoMirrorsView.add(x)
+        idx = 0
+        # XXX hackish way fix it
+        while idx < 100:
+            self.addrepo_ui.repodbcformatEntry.set_active(idx)
+            dbc_format_entry = self.addrepo_ui.repodbcformatEntry
+            if repodata['dbcformat'] == dbc_format_entry.get_active_text():
+                break
+            idx += 1
+        self.addrepo_ui.repodbEntry.set_text(repodata['plain_database'])
+
+    def _get_repo_data(self):
+        repodata = {}
+        repodata['repoid'] = self.addrepo_ui.repoidEntry.get_text()
+        repodata['description'] = self.addrepo_ui.repoDescEntry.get_text()
+        repodata['plain_packages'] = self.repoMirrorsView.get_all()
+        repodata['dbcformat'] = self.addrepo_ui.repodbcformatEntry.get_active_text()
+        repodata['plain_database'] = self.addrepo_ui.repodbEntry.get_text()
+        repodata['service_port'] = self.addrepo_ui.repodbPort.get_text()
+        repodata['ssl_service_port'] = self.addrepo_ui.repodbPortSSL.get_text()
+        return repodata
+
+    def _validate_repo_submit(self, repodata, edit = False):
+        errors = []
+        if not repodata['repoid']:
+            errors.append(_('No Repository Identifier'))
+
+        if repodata['repoid'] and self.Equo.SystemSettings['repositories']['available'].has_key(repodata['repoid']):
+            if not edit:
+                errors.append(_('Duplicated Repository Identifier'))
+
+        if not repodata['description']:
+            repodata['description'] = "No description"
+
+        if not repodata['plain_packages']:
+            errors.append(_("No download mirrors"))
+
+        if not repodata['plain_database'] or not \
+            (repodata['plain_database'].startswith("http://") or \
+            repodata['plain_database'].startswith("ftp://") or \
+            repodata['plain_database'].startswith("file://")):
+
+            errors.append(_("Database URL must start either with http:// or ftp:// or file://"))
+
+        if not repodata['service_port']:
+            repodata['service_port'] = int(etpConst['socket_service']['port'])
+        else:
+            try:
+                repodata['service_port'] = int(repodata['service_port'])
+            except (ValueError,):
+                errors.append(_("Repository Services Port not valid"))
+
+        if not repodata['ssl_service_port']:
+            repodata['ssl_service_port'] = int(etpConst['socket_service']['ssl_port'])
+        else:
+            try:
+                repodata['ssl_service_port'] = int(repodata['ssl_service_port'])
+            except (ValueError,):
+                errors.append(_("Secure Services Port not valid"))
+        return errors
+
+    def on_mirrorDown_clicked( self, widget ):
+        selection = self.repoMirrorsView.view.get_selection()
+        urldata = selection.get_selected()
+        # get text
+        if urldata[1] != None:
+            next = urldata[0].iter_next(urldata[1])
+            if next:
+                self.repoMirrorsView.store.swap(urldata[1],next)
+
+    def on_mirrorUp_clicked( self, widget ):
+        selection = self.repoMirrorsView.view.get_selection()
+        urldata = selection.get_selected()
+        # get text
+        if urldata[1] != None:
+            path = urldata[0].get_path(urldata[1])[0]
+            if path > 0:
+                # get next iter
+                prev = urldata[0].get_iter(path-1)
+                self.repoMirrorsView.store.swap(urldata[1],prev)
+
+    def on_repoMirrorEdit_clicked( self, widget ):
+        selection = self.repoMirrorsView.view.get_selection()
+        urldata = selection.get_selected()
+        # get text
+        if urldata[1] != None:
+            text = self.repoMirrorsView.get_text(urldata)
+            self.repoMirrorsView.remove(urldata)
+            text = inputBox(self.addrepo_ui.addRepoWin, _("Insert URL"),
+                _("Enter a download mirror, HTTP or FTP")+"   ",
+                input_text = text)
+            # call liststore and tell to add
+            self.repoMirrorsView.add(text)
+
+    def on_repoMirrorRemove_clicked( self, widget ):
+        selection = self.repoMirrorsView.view.get_selection()
+        urldata = selection.get_selected()
+        if urldata[1] != None:
+            self.repoMirrorsView.remove(urldata)
+
+    def on_repoMirrorAdd_clicked( self, widget ):
+        text = inputBox(self.addrepo_ui.addRepoWin, _("Insert URL"),
+            _("Enter a download mirror, HTTP or FTP")+"   ")
+        # call liststore and tell to add
+        if text:
+            # validate url
+            if not (text.startswith("http://") or text.startswith("ftp://") or \
+                text.startswith("file://")):
+                okDialog( self.addrepo_ui.addRepoWin,
+                    _("You must enter either a HTTP or a FTP url.") )
+            else:
+                self.repoMirrorsView.add(text)
+
+    def on_repoInsert_clicked( self, widget ):
+        text = inputBox(self.addrepo_ui.addRepoWin, _("Insert Repository"),
+            _("Insert Repository identification string")+"   ")
+        if text:
+            if (text.startswith("repository|")) and (len(text.split("|")) == 5):
+                current_branch = self.Equo.SystemSettings['repositories']['branch']
+                current_product = self.Equo.SystemSettings['repositories']['product']
+                repoid, repodata = const_extract_cli_repo_params(text,
+                    current_branch, current_product)
+                self._load_repo_data(repodata)
+            else:
+                okDialog( self.addrepo_ui.addRepoWin,
+                    _("This Repository identification string is malformed") )
+
+    def on_repoCancel_clicked( self, widget ):
+        self.addrepo_ui.addRepoWin.hide()
+        self.addrepo_ui.addRepoWin.destroy()
+
+    def on_repoSubmit_clicked( self, widget ):
+        repodata = self._get_repo_data()
+        # validate
+        errors = self._validate_repo_submit(repodata)
+        if not errors:
+            self.Equo.add_repository(repodata)
+            self.Sulfur.reset_cache_status()
+            self.Sulfur.setupRepoView()
+            self.addrepo_ui.addRepoWin.hide()
+            msg = "%s '%s' %s" % (_("You should press the button"),
+                _("Update Repositories"), _("now"))
+            okDialog( self.window, msg )
+        else:
+            msg = "%s: %s" % (_("Wrong entries, errors"),', '.join(errors),)
+            okDialog( self.addrepo_ui.addRepoWin, msg )
+
+    def on_repoSubmitEdit_clicked( self, widget ):
+        repodata = self._get_repo_data()
+        errors = self._validate_repo_submit(repodata, edit = True)
+        if errors:
+            msg = "%s: %s" % (_("Wrong entries, errors"),', '.join(errors),)
+            okDialog( self.addrepo_ui.addRepoWin, msg )
+            return True
+        else:
+            disable = False
+            repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
+            if repo_excluded.has_key(repodata['repoid']):
+                disable = True
+            self.Equo.remove_repository(repodata['repoid'], disable = disable)
+            if not disable:
+                self.Equo.add_repository(repodata)
+            self.Sulfur.reset_cache_status()
+
+            self.Sulfur.setupRepoView()
+            self.addrepo_ui.addRepoWin.hide()
+            msg = "%s '%s' %s" % (_("You should press the button"),
+                _("Regenerate Cache"), _("now"))
+            okDialog( self.window, msg )
+
+
 class NoticeBoardWindow(MenuSkel):
 
     def __init__( self, window, entropy ):
@@ -6114,6 +6319,3 @@ class ExceptionDialog:
                 okDialog(None,_("Cannot submit your report. Not connected to Internet?"))
         #gtkEventThread.doQuit()
         raise SystemExit(1)
-
-
-

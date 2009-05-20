@@ -18,11 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 # Base Python Imports
-import sys, os, pty, random
-import logging
-import commands
-import time
-
+import sys
 # Entropy Imports
 sys.path.insert(0,"../../libraries")
 sys.path.insert(1,"../../client")
@@ -30,23 +26,16 @@ sys.path.insert(2,"./sulfur")
 sys.path.insert(3,"/usr/lib/entropy/libraries")
 sys.path.insert(4,"/usr/lib/entropy/client")
 sys.path.insert(5,"/usr/lib/entropy/sulfur")
-from entropy.const import *
-import entropy.tools as entropyTools
-from sulfur.packages import EntropyPackages
-from sulfur.entropyapi import Equo, QueueExecutor
-from entropy.qa import ErrorReportInterface
-from entropy.i18n import _
-
+from sulfur.entropyapi import Equo
 # Sulfur Imports
 import gtk, gobject
-from sulfur.etpgui import *
 from sulfur.setup import const
-from sulfur.dialogs import *
+from sulfur.dialogs import RepositoryManagerMenu, ExceptionDialog
 
 class MyRepositoryManager(RepositoryManagerMenu):
 
-    def __init__(self, Equo, parent):
-        RepositoryManagerMenu.__init__(self, Equo, parent)
+    def __init__(self, equo, parent):
+        RepositoryManagerMenu.__init__(self, equo, parent)
 
     def on_repoManagerClose_clicked(self, *args, **kwargs):
         self.QueueUpdater.kill()
@@ -67,8 +56,8 @@ class ManagerApplication:
 
     def init(self):
         mymenu = MyRepositoryManager(self.Equo, None)
-        rc = mymenu.load()
-        if not rc:
+        rc_status = mymenu.load()
+        if not rc_status:
             del mymenu
             raise SystemExit(1)
 
@@ -82,11 +71,12 @@ if __name__ == "__main__":
 
     try:
         try:
-            gtk.window_set_default_icon_from_file(const.PIXMAPS_PATH+"/sulfur-icon.png")
+            gtk.window_set_default_icon_from_file(
+                const.PIXMAPS_PATH+"/sulfur-icon.png")
         except gobject.GError:
             pass
-        mainApp = ManagerApplication()
-        mainApp.init()
+        main_app = ManagerApplication()
+        main_app.init()
         gobject.threads_init()
         gtk.gdk.threads_enter()
         gtk.main()
@@ -94,11 +84,11 @@ if __name__ == "__main__":
         Equo.destroy()
     except SystemExit:
         print "Quit by User"
-        mainApp.destroy()
+        main_app.destroy()
         raise SystemExit(0)
     except KeyboardInterrupt:
         print "Quit by User (KeyboardInterrupt)"
-        mainApp.destroy()
+        main_app.destroy()
         raise SystemExit(0)
     except: # catch other exception and write it to the logger.
         my = ExceptionDialog()
