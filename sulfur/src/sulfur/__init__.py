@@ -328,17 +328,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 sorter.set_active_iter(item)
                 first = False
 
-    def show_wait_window(self):
-        self.ui.main.set_sensitive(False)
-        self.wait_ui.waitWindow.show_all()
-        self.wait_ui.waitWindow.queue_draw()
-        self.ui.main.queue_draw()
-        self.gtk_loop()
-
-    def hide_wait_window(self):
-        self.wait_ui.waitWindow.hide()
-        self.ui.main.set_sensitive(True)
-
     def warn_repositories(self):
         all_repos = self.Equo.SystemSettings['repositories']['order']
         valid_repos = self.Equo.validRepositories
