@@ -18,16 +18,16 @@ clean:
 	for d in $(SUBDIRS); do make -C $$d clean ; done
 
 install:
-	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/spritz/applet
-	mkdir -p $(DESTDIR)/usr/share/pixmaps/spritz/applet
+	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/sulfur/applet
+	mkdir -p $(DESTDIR)/usr/share/pixmaps/sulfur/applet
 	mkdir -p $(DESTDIR)/usr/share/applications
 	mkdir -p $(DESTDIR)/usr/share/autostart
 	mkdir -p $(DESTDIR)/etc/xdg/autostart
 	mkdir -p $(DESTDIR)/usr/bin
 	mkdir -p $(DESTDIR)/etc
-	install -m644 COPYING $(DESTDIR)/$(LIBDIR)/entropy/spritz/applet/.
+	install -m644 COPYING $(DESTDIR)/$(LIBDIR)/entropy/sulfur/applet/.
 	install -m755 $(MISCDIR)/etp-applet-gui $(DESTDIR)/usr/bin/.
-	install -m644 $(PIXDIR)/applet/*.png $(DESTDIR)/usr/share/pixmaps/spritz/applet/.
+	install -m644 $(PIXDIR)/applet/*.png $(DESTDIR)/usr/share/pixmaps/sulfur/applet/.
 	install -m644 $(PIXDIR)/entropy-applet.png $(DESTDIR)/usr/share/pixmaps/.
 	chmod +x $(DESTDIR)/usr/bin/etp-applet-gui
 	install -m644 $(MISCDIR)/*.desktop $(DESTDIR)/usr/share/applications/.

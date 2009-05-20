@@ -1,2 +1,2 @@
 #!/bin/bash
-python /usr/lib/entropy/spritz/applet/applet.py "$@"
+python /usr/lib/entropy/sulfur/applet/applet.py "$@"

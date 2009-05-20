@@ -114,7 +114,7 @@ class EntropyApplet:
         self.last_alert = None
         self.tooltip_text = ""
         self.last_trigger_check_t = 0.0
-        gnome.program_init("spritz-updater", etpConst['entropyversion'])
+        gnome.program_init("entropy-notifier", etpConst['entropyversion'])
 
         self.session = gnome.ui.master_client()
         if self.session:
@@ -133,7 +133,7 @@ class EntropyApplet:
         self.icons.add_file("busy", "applet-busy.png")
         self.icons.add_file("critical", "applet-critical.png")
         self.icons.add_file("disable", "applet-disable.png")
-        self.icons.add_file("spritz","spritz.png")
+        self.icons.add_file("sulfur","sulfur.png")
         self.icons.add_file("about","applet-about.png")
         self.icons.add_file("web","applet-web.png")
         self.icons.add_file("configuration","applet-configuration.png")
@@ -366,7 +366,7 @@ class EntropyApplet:
     def set_menu_image(self, widget, name):
         img = gtk.Image()
         if name == "update_now":
-            pix = self.icons.best_match("spritz",22)
+            pix = self.icons.best_match("sulfur",22)
         elif name == "about":
             pix = self.icons.best_match("about",22)
         elif name in ["web_panel","web_site"]:
@@ -436,11 +436,11 @@ class EntropyApplet:
             self.send_check_updates_signal()
 
     def launch_package_manager(self, *data):
-        def spawn_spritz():
-            os.execv('/usr/bin/spritz', ['spritz'])
+        def spawn_sulfur():
+            os.execv('/usr/bin/sulfur', ['sulfur'])
         pid = os.fork()
         if pid == 0:
-            spawn_spritz()
+            spawn_sulfur()
             os._exit(0)
 
     def show_alert(self, title, text, urgency = None):

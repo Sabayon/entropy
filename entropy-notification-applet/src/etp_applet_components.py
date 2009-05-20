@@ -39,7 +39,7 @@ class GladeWindow:
     def __init__(self, filename, window_name):
         self.filename = filename
         if not os.path.isfile(filename):
-            self.filename = "/usr/lib/entropy/spritz/applet/%s" % (filename,)
+            self.filename = "/usr/lib/entropy/sulfur/applet/%s" % (filename,)
         self.xml = gtk.glade.XML(self.filename, window_name, domain="entropy")
         self.window = self.xml.get_widget(window_name)
 
@@ -72,11 +72,11 @@ class AppletNoticeWindow(GladeWindow):
 
         self.xml.signal_autoconnect (
             {
-            "on_launch_spritz_clicked" : self.on_spritz,
+            "on_launch_sulfur_clicked" : self.on_sulfur,
             "on_close_clicked" : self.on_close,
             })
 
-    def on_spritz(self, button):
+    def on_sulfur(self, button):
         self.parent.launch_package_manager()
 
     def on_close(self, close_button):
@@ -289,7 +289,7 @@ class AppletIconPixbuf:
 
         if not self.images.has_key(name):
             self.images[name] = []
-        from spritz_setup import const
+        from sulfur.setup import const
         filepath = const.PIXMAPS_PATH + "/applet/" + filename
         if not os.path.isfile(filepath):
             filename = "../gfx/applet/" + filename

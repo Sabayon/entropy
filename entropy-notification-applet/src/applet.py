@@ -11,10 +11,10 @@ import sys, gtk
 #import signal
 sys.path.insert(0,'/usr/lib/entropy/client')
 sys.path.insert(0,'/usr/lib/entropy/libraries')
-sys.path.insert(0,'/usr/lib/entropy/spritz')
+sys.path.insert(0,'/usr/lib/entropy/sulfur')
 sys.path.insert(0,'../../client')
 sys.path.insert(0,'../../libraries')
-sys.path.insert(0,'../../spritz/src')
+sys.path.insert(0,'../../sulfur/src')
 sys.path.insert(0,'../')
 sys.argv.append('--no-pid-handling')
 

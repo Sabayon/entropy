@@ -1,7 +1,7 @@
 PYTHON=python
 PACKAGE = $(shell basename `pwd`)
 PYFILES = $(wildcard *.py)
-PKGDIR = /$(LIBDIR)/entropy/spritz/applet
+PKGDIR = /$(LIBDIR)/entropy/sulfur/applet
 
 all: 
 	echo "Nothing to do"

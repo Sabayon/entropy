@@ -68,7 +68,7 @@
                 <property name="can_default">True</property>
                 <property name="has_default">True</property>
                 <property name="response_id">0</property>
-                <signal name="clicked" handler="on_launch_spritz_clicked"/>
+                <signal name="clicked" handler="on_launch_sulfur_clicked"/>
                 <child>
                   <widget class="GtkAlignment" id="alignment1">
                     <property name="visible">True</property>
