@@ -472,9 +472,17 @@ class SulfurApplicationEventsMixin:
     def on_queueReviewAndInstall_clicked(self, widget):
         self.switch_notebook_page("queue")
 
+    def on_advancedMode_toggled(self, widget):
+        if not self.in_mode_loading:
+            new_mode = 1
+            if SulfurConf.simple_mode:
+                new_mode = 0
+            self.switch_application_mode(new_mode)
+
     def on_pkgFilter_toggled(self,rb,action):
 
-        if not rb.get_active(): return
+        if not rb.get_active():
+            return
 
         rb.grab_add()
         self.lastPkgPB = action
@@ -489,14 +497,22 @@ class SulfurApplicationEventsMixin:
         else:
             self.ui.maskedWarningBox.hide()
 
-        if action == "pkgsets": self.ui.pkgsetsButtonBox.show()
-        else: self.ui.pkgsetsButtonBox.hide()
+        if action == "pkgsets":
+            self.ui.pkgsetsButtonBox.show()
+        else:
+            self.ui.pkgsetsButtonBox.hide()
 
-        if action == "queued": self.ui.queueReviewAndInstallBox.show()
-        else: self.ui.queueReviewAndInstallBox.hide()
+        if action == "queued":
+            self.ui.queueReviewAndInstallBox.show()
+        else:
+            self.ui.queueReviewAndInstallBox.hide()
 
         self.show_packages()
         rb.grab_remove()
+
+    def on_repoRefreshButton_clicked(self, widget):
+        self.on_repoRefresh_clicked(widget)
+        self.set_page('packages')
 
     def on_repoRefresh_clicked(self, widget):
         repos = self.repoView.get_selected()

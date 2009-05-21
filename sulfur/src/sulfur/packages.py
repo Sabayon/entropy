@@ -31,7 +31,6 @@ class Queue:
         self.before = []
         self.keyslotFilter = set()
         self._keyslotFilter = set()
-        self.clear()
         self.Entropy = None
         self.etpbase = None
         self.pkgView = None
@@ -39,7 +38,7 @@ class Queue:
         self.Sulfur = SulfurApplication
         import dialogs
         self.dialogs = dialogs
-
+        self.clear()
 
     def connect_objects(self, equo_conn, etpbase, pkgView, ui):
         self.Entropy = equo_conn
@@ -48,6 +47,7 @@ class Queue:
         self.ui = ui
 
     def clear( self ):
+        self.Sulfur.ui.rbPkgQueued.hide()
         self.packages.clear()
         self.packages['i'] = []
         self.packages['u'] = []
@@ -289,6 +289,10 @@ class Queue:
                 del self.before[:]
                 return 0,1
         finally:
+            if self.packages.values():
+                self.Sulfur.ui.rbPkgQueued.show()
+            else:
+                self.Sulfur.ui.rbPkgQueued.hide()
             self.Sulfur.wait_window.hide()
 
     def add(self, pkgs, accept = False, always_ask = False):
@@ -335,6 +339,10 @@ class Queue:
                 return status,1
 
         finally:
+            if self.packages.values():
+                self.Sulfur.ui.rbPkgQueued.show()
+            else:
+                self.Sulfur.ui.rbPkgQueued.hide()
             self.Sulfur.wait_window.hide()
 
     def elaborate_masked_packages(self, matches):

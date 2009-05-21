@@ -260,9 +260,57 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.console.set_pty(self.pty[0])
         self.reset_progress_text()
         self.pkgProperties_selected = None
-        self.setup_preferences()
         self.setup_pkg_sorter()
         self.setup_user_generated_content()
+
+        simple_mode = 1
+        if "--advanced" in sys.argv:
+            simple_mode = 0
+        elif not SulfurConf.simple_mode:
+            simple_mode = 0
+        self.in_mode_loading = True
+        self.switch_application_mode(simple_mode)
+        self.in_mode_loading = False
+
+        self.setup_preferences()
+
+    def switch_application_mode(self, do_simple):
+        if do_simple:
+            self.switch_simple_mode()
+            self.ui.advancedMode.set_active(0)
+        else:
+            self.switch_advanced_mode()
+            self.ui.advancedMode.set_active(1)
+        SulfurConf.simple_mode = do_simple
+        SulfurConf.save()
+
+    def switch_simple_mode(self):
+        self.ui.repoRefreshButton.show()
+        self.ui.vseparator1.hide()
+        self.ui.rbAllLabel.set_text(_("Packages"))
+        self.ui.pkgSorter.hide()
+        self.ui.updateButtonView.hide()
+        self.ui.rbAvailable.hide()
+        self.ui.rbInstalled.hide()
+        self.ui.rbMasked.hide()
+        self.ui.rbPkgSets.hide()
+        self.pageButtons['glsa'].hide()
+        self.pageButtons['preferences'].hide()
+        self.pageButtons['repos'].hide()
+
+    def switch_advanced_mode(self):
+        self.ui.repoRefreshButton.hide()
+        self.ui.vseparator1.show()
+        self.ui.rbAllLabel.set_text(_("All"))
+        self.ui.pkgSorter.show()
+        self.ui.updateButtonView.show()
+        self.ui.rbAvailable.show()
+        self.ui.rbInstalled.show()
+        self.ui.rbMasked.show()
+        self.ui.rbPkgSets.show()
+        self.pageButtons['glsa'].show()
+        self.pageButtons['preferences'].show()
+        self.pageButtons['repos'].show()
 
     def setup_pkg_sorter(self):
 
@@ -412,6 +460,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.advisoryRB[tag] = w
 
     def setup_packages_filter(self):
+
         self.setup_package_radio_buttons(self.ui.rbUpdates, "updates",
             _('Show Package Updates'))
         self.setup_package_radio_buttons(self.ui.rbAvailable, "available",
@@ -428,7 +477,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             _('Show Queued Packages'))
 
     def setup_package_radio_buttons(self, widget, tag, tip):
-        widget.connect('toggled',self.on_pkgFilter_toggled,tag)
+        widget.connect('toggled',self.on_pkgFilter_toggled, tag)
 
         #widget.set_relief( gtk.RELIEF_NONE )
         widget.set_mode( False )
@@ -873,7 +922,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     fillfunc(name, mytype, wgwrite, setting)
 
         rc, e = SulfurConf.save()
-        if not rc: okDialog( self.ui.main, "%s: %s" % (_("Error saving preferences"),e) )
+        if not rc:
+            okDialog( self.ui.main, "%s: %s" % (_("Error saving preferences"),e) )
         self.on_Preferences_toggled(None,False)
 
     def setup_masked_pkgs_warning_box(self):
@@ -1099,6 +1149,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.progress.set_extraLabel(
                     _('sys-apps/entropy needs to be updated as soon as possible.'))
 
+        self.set_package_radio('updates')
         initconfig_entropy_constants(etpSys['rootdir'])
 
         self.disable_ugc = False

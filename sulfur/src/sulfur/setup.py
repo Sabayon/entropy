@@ -142,7 +142,7 @@ class const:
 
 
 class SulfurConf:
-    """ Yum Extender Config Setting"""
+
     autorefresh = True
     recentdays = 14
     debug = False
@@ -172,6 +172,7 @@ class SulfurConf:
     color_good_on_color_background = '#FFFFFF'
     color_error_on_color_background = '#FFFFFF'
     color_package_category = '#9C7234' # brown
+    simple_mode = 1
 
     filelist = True
     changelog = False
@@ -190,6 +191,9 @@ class SulfurConf:
                 return True
             except ValueError:
                 return False
+
+        def foo_validator(s):
+            return True
 
         config_data = {
             "color_console_font": validate_color_conf,
@@ -210,6 +214,7 @@ class SulfurConf:
             "color_good_on_color_background": validate_color_conf,
             "color_error_on_color_background": validate_color_conf,
             "color_package_category": validate_color_conf,
+            "simple_mode": foo_validator,
         }
         return config_data
 
@@ -235,6 +240,7 @@ class SulfurConf:
             "color_good_on_color_background": SulfurConf.color_good_on_color_background,
             "color_error_on_color_background": SulfurConf.color_error_on_color_background,
             "color_package_category": SulfurConf.color_package_category,
+            "simple_mode": SulfurConf.simple_mode,
         }
         return config_data
 
@@ -243,7 +249,7 @@ class SulfurConf:
 
         def do_save():
             if not os.path.isdir(os.path.dirname(const.SETTINGS_FILE)):
-                os.makedirs(os.path.dirname(const.SETTINGS_FILE))
+                os.makedirs(os.path.dirname(const.SETTINGS_FILE), 0755)
             myxml = entropyTools.xml_from_dict_extended(SulfurConf.getconf())
             try:
                 f = open(const.SETTINGS_FILE,"w")
@@ -257,6 +263,7 @@ class SulfurConf:
         try:
             return do_save()
         except Exception, e:
+            entropyTools.print_traceback()
             return False,e
         return True,None
 
@@ -273,6 +280,7 @@ class SulfurConf:
         try:
             return do_read()
         except:
+            entropyTools.print_traceback()
             return None
 
     @staticmethod
