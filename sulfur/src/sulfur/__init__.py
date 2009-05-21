@@ -1163,6 +1163,17 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.progress.set_subLabel(
             _('Really, don\'t waste your time here. This is just a placeholder'))
         self.progress.set_extraLabel(_('I am still alive and kickin\''))
+        self.hide_progress_bars()
+
+    def hide_progress_bars(self):
+        self.progress.total.hide()
+        self.ui.progressBar.hide()
+        #self.progress.hide()
+
+    def show_progress_bars(self):
+        self.progress.total.show()
+        self.ui.progressBar.show()
+        #self.progress.show()
 
     def reset_queue_progress_bars(self):
         self.progress.reset_progress()
@@ -1387,6 +1398,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def process_queue(self, pkgs, remove_repos = [], fetch_only = False,
             download_sources = False):
+
+        self.show_progress_bars()
 
         # preventive check against other instances
         locked = self.Equo.application_lock_check()

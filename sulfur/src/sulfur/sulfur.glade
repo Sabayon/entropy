@@ -4,12 +4,11 @@
   <!-- interface-naming-policy toplevel-contextual -->
   <widget class="GtkWindow" id="main">
     <property name="width_request">800</property>
-    <property name="height_request">420</property>
+    <property name="height_request">400</property>
     <property name="visible">True</property>
     <property name="title" translatable="yes">Sulfur</property>
     <property name="window_position">center</property>
     <property name="default_width">640</property>
-    <property name="default_height">450</property>
     <property name="icon_name">sulfur-icon</property>
     <child>
       <widget class="GtkVBox" id="vbox1">
@@ -1097,7 +1096,6 @@
                                 </child>
                                 <child>
                                   <widget class="GtkButton" id="pkgDeSelect">
-                                    <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="can_default">True</property>
                                     <property name="receives_default">False</property>
@@ -1657,54 +1655,71 @@
                       <placeholder/>
                     </child>
                     <child>
-                      <widget class="GtkVBox" id="bannerBox">
+                      <widget class="GtkExpander" id="processExpander">
                         <property name="visible">True</property>
+                        <property name="can_focus">True</property>
                         <child>
-                          <placeholder/>
-                        </child>
-                        <child>
-                          <widget class="GtkEventBox" id="consoleEvent">
+                          <widget class="GtkVBox" id="bannerBox">
                             <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
                             <child>
-                              <widget class="GtkHBox" id="termHBox">
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <widget class="GtkEventBox" id="consoleEvent">
                                 <property name="visible">True</property>
                                 <child>
-                                  <widget class="GtkVBox" id="vteBox">
-                                    <property name="width_request">600</property>
-                                    <property name="height_request">250</property>
+                                  <widget class="GtkHBox" id="termHBox">
                                     <property name="visible">True</property>
                                     <child>
-                                      <placeholder/>
+                                      <widget class="GtkVBox" id="vteBox">
+                                        <property name="width_request">550</property>
+                                        <property name="height_request">150</property>
+                                        <property name="visible">True</property>
+                                        <property name="orientation">vertical</property>
+                                        <child>
+                                          <placeholder/>
+                                        </child>
+                                      </widget>
+                                      <packing>
+                                        <property name="position">0</property>
+                                      </packing>
                                     </child>
-                                  </widget>
-                                  <packing>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <widget class="GtkVBox" id="termScrollBox">
-                                    <property name="width_request">20</property>
-                                    <property name="visible">True</property>
-                                    <property name="homogeneous">True</property>
                                     <child>
-                                      <placeholder/>
+                                      <widget class="GtkVBox" id="termScrollBox">
+                                        <property name="width_request">20</property>
+                                        <property name="visible">True</property>
+                                        <property name="orientation">vertical</property>
+                                        <property name="homogeneous">True</property>
+                                        <child>
+                                          <placeholder/>
+                                        </child>
+                                      </widget>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="position">1</property>
+                                      </packing>
                                     </child>
                                   </widget>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="position">1</property>
-                                  </packing>
                                 </child>
                               </widget>
+                              <packing>
+                                <property name="position">1</property>
+                              </packing>
                             </child>
                           </widget>
+                        </child>
+                        <child>
+                          <widget class="GtkLabel" id="expanderLabel">
+                            <property name="visible">True</property>
+                            <property name="label" translatable="yes">Process details</property>
+                          </widget>
                           <packing>
-                            <property name="position">1</property>
+                            <property name="type">label_item</property>
                           </packing>
                         </child>
                       </widget>
                       <packing>
-                        <property name="padding">6</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
