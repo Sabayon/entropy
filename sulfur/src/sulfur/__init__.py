@@ -509,49 +509,39 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.packageRB[tag] = widget
 
     def setup_page_buttons(self):
+
         # Setup Vertical Toolbar
-        self.create_sidebar_button( _( "Packages" ), "button-packages.png",
-            'packages', True )
-        self.create_sidebar_button( _( "Security Advisories" ),
-            "button-glsa.png", 'glsa' )
-        self.create_sidebar_button( _( "Repository Selection" ),
-            "button-repo.png", 'repos' )
-        self.create_sidebar_button( _( "Configuration Files" ),
-            "button-conf.png", 'filesconf' )
-        self.create_sidebar_button( _( "Preferences" ), "preferences.png",
-            'preferences' )
-        self.create_sidebar_button( _( "Package Queue" ), "button-queue.png",
-            'queue' )
-        self.create_sidebar_button( _( "Output" ), "button-output.png",
-            'output' )
+        self.create_sidebar_button(self.ui.sidePackagesRadio,
+            self.ui.sideRadioPkgImage, "button-packages.png", 'packages')
+        self.create_sidebar_button(self.ui.sideSecurityRadio,
+            self.ui.sideRadioSecurityImage, "button-glsa.png", 'glsa' )
+        self.create_sidebar_button(self.ui.sideReposRadio,
+            self.ui.sideRadioReposImage, "button-repo.png", 'repos' )
+        self.create_sidebar_button(self.ui.sideFilesRadio,
+            self.ui.sideRadioSystemImage, "button-conf.png", 'filesconf' )
+        self.create_sidebar_button(self.ui.sidePreferencesRadio,
+            self.ui.sideRadioPrefsImage, "preferences.png", 'preferences' )
+        self.create_sidebar_button(self.ui.sideQueueRadio,
+            self.ui.sideRadioQueueImage, "button-queue.png", 'queue' )
+        self.create_sidebar_button(self.ui.sideOutputButton,
+            self.ui.sideRadioInstallImage, "button-output.png", 'output' )
 
-    def create_sidebar_button( self, text, icon, page, first = None ):
-        if first:
-            button = gtk.RadioButton( None )
-            self.firstButton = button
-        else:
-            button = gtk.RadioButton( self.firstButton )
+    def create_sidebar_button( self, button, image, icon, page):
+
         button.connect( "clicked", self.on_PageButton_changed, page )
+        #button.set_relief( gtk.RELIEF_NONE )
+        #button.set_mode( False )
 
-        button.set_relief( gtk.RELIEF_NONE )
-        button.set_mode( False )
-
-        iconpath = os.path.join(const.PIXMAPS_PATH,icon)
+        iconpath = os.path.join(const.PIXMAPS_PATH, icon)
         pix = None
-        if os.path.isfile(iconpath) and os.access(iconpath,os.R_OK):
+        if os.path.isfile(iconpath) and os.access(iconpath, os.R_OK):
             try:
-                p = gtk.gdk.pixbuf_new_from_file( iconpath )
-                pix = gtk.Image()
-                pix.set_from_pixbuf( p )
-                pix.show()
+                p = gtk.gdk.pixbuf_new_from_file(iconpath)
+                image.set_from_pixbuf(p)
+                image.show()
             except gobject.GError:
                 pass
 
-        self.tooltip.set_tip(button,text)
-        if pix != None:
-            button.add(pix)
-        button.show()
-        self.ui.content.pack_start( button, False )
         self.pageButtons[page] = button
 
     def setup_images(self):
