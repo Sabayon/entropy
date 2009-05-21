@@ -12,7 +12,7 @@ NLSPACKAGE = entropy
 CATALOGS = $(shell ls *.po)
 FMTCATALOGS = $(patsubst %.po,%.mo,$(CATALOGS))
 
-GLADEFILES = $(wildcard ../../sulfur/src/*.glade) $(wildcard ../../entropy-notification-applet/src/*.glade)
+GLADEFILES = $(wildcard ../../sulfur/src/sulfur/*.glade) $(wildcard ../../entropy-notification-applet/src/*.glade)
 PYFILES  = $(wildcard ../../libraries/entropy/services/system/*.py) $(wildcard ../../libraries/entropy/services/ugc/*.py) $(wildcard ../../libraries/entropy/services/repository/*.py) $(wildcard ../../libraries/entropy/services/*.py) $(wildcard ../../libraries/entropy/server/*.py) $(wildcard ../../libraries/entropy/server/interfaces/*.py) $(wildcard ../../libraries/entropy/client/services/ugc/*.py) $(wildcard ../../libraries/entropy/client/services/system/*.py) $(wildcard ../../libraries/entropy/client/services/*.py) $(wildcard ../../libraries/entropy/client/*.py) $(wildcard ../../libraries/entropy/client/interfaces/*.py) $(wildcard ../../libraries/entropy/*.py) $(wildcard ../../libraries/*.py) $(wildcard ../../client/*.py) $(wildcard ../../server/*.py) $(wildcard ../../sulfur/src/*.py) $(wildcard ../../sulfur/src/sulfur/*.py) $(wildcard ../../entropy-notification-applet/src/*.py)
 POTFILES  = $(PYFILES) $(GLADEFILES)
 

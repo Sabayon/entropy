@@ -90,4 +90,5 @@
 ../entropy-notification-applet/src/etp_applet_components.py
 ../entropy-notification-applet/src/etp_applet_config.py
 ../entropy-notification-applet/src/etp_applet.py
+../sulfur/src/sulfur/sulfur.glade
 ../entropy-notification-applet/src/etp_applet.glade
