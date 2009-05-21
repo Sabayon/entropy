@@ -817,9 +817,9 @@ class Server:
         rss_dump_name = etpConst['rss-dump-name']
         db_revision_path = self.Entropy.get_local_database_revision_file(repo)
 
-        rss_title = "%s Online Repository Status" % (
+        rss_title = u"%s Online Repository Status" % (
             self.SystemSettings['system']['name'],)
-        rss_description = "Keep you updated on what's going on in the %s Repository." % (
+        rss_description = u"Keep you updated on what's going on in the %s Repository." % (
             self.SystemSettings['system']['name'],)
         Rss = self.rssFeed(rss_path, rss_title, rss_description, maxentries = self.SystemSettings[self.sys_settings_plugin_id]['server']['rss']['max_entries'])
         # load dump
