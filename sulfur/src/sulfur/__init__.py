@@ -285,6 +285,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         SulfurConf.save()
 
     def switch_simple_mode(self):
+        self.ui.servicesMenuItem.hide()
         self.ui.repoRefreshButton.show()
         self.ui.vseparator1.hide()
         self.ui.rbAllLabel.set_text(_("Packages"))
@@ -299,6 +300,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.pageButtons['repos'].hide()
 
     def switch_advanced_mode(self):
+        self.ui.servicesMenuItem.show()
         self.ui.repoRefreshButton.hide()
         self.ui.vseparator1.show()
         self.ui.rbAllLabel.set_text(_("All"))
