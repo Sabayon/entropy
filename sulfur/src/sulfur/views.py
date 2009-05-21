@@ -1321,6 +1321,7 @@ class EntropyPackageView:
                 SulfurConf.color_error, _("Error registering vote"), err_msg,)
         gtk.gdk.threads_enter()
         def do_refresh(msg):
+            self.ui.UGCMessageLabel.show()
             self.ui.UGCMessageLabel.set_markup(msg)
             return False
         gobject.timeout_add(0, do_refresh, msg)

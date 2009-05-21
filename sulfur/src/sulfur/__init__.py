@@ -275,6 +275,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.setup_preferences()
 
     def switch_application_mode(self, do_simple):
+        self.ui.UGCMessageLabel.hide()
         if do_simple:
             self.switch_simple_mode()
             self.ui.advancedMode.set_active(0)
