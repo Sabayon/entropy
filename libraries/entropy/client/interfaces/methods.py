@@ -174,8 +174,9 @@ class RepositoryMixin:
             )
 
         if (repoid not in etpConst['client_treeupdatescalled']) and \
-            (self.entropyTools.is_user_in_entropy_group()) and \
+            (self.entropyTools.is_root()) and \
             (not repoid.endswith(etpConst['packagesext'])):
+                # only as root due to Portage
                 updated = False
                 try:
                     updated = conn.clientUpdatePackagesData(self.clientDbconn)

@@ -1027,7 +1027,8 @@ class Repository:
             if self.fetchSecurity:
                 self.do_update_security_advisories()
             # do treeupdates
-            if isinstance(self.Entropy.clientDbconn,LocalRepository):
+            if isinstance(self.Entropy.clientDbconn, LocalRepository) and \
+                self.entropyTools.is_root(): # only as root due to Portage
                 for repo in self.reponames:
                     dbc = self.Entropy.open_repository(repo)
                     dbc.clientUpdatePackagesData(self.Entropy.clientDbconn)
