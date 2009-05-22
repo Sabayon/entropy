@@ -26,6 +26,7 @@ from entropy.exceptions import RepositoryError
 from entropy.const import etpConst, etpSys, initconfig_entropy_constants
 from entropy.misc import ParallelTask
 from entropy.i18n import _, _LOCALE
+from entropy.db import dbapi2
 
 from sulfur.setup import const, cleanMarkupString, SulfurConf
 from sulfur.core import UI
@@ -122,7 +123,10 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
         cat_descs = {}
 
         def fm(po):
-            mycat = po.cat
+            try:
+                mycat = po.cat
+            except dbapi2.Error:
+                return 0
             if not categories.has_key(mycat):
                 categories[mycat] = []
             categories[mycat].append(po)
@@ -164,7 +168,10 @@ class NameSortPackageViewModelInjector(DefaultPackageViewModelInjector):
         categories = {}
 
         def fm(po):
-            myinitial = po.onlyname.lower()[0]
+            try:
+                myinitial = po.onlyname.lower()[0]
+            except dbapi2.Error:
+                return 0
             if not categories.has_key(myinitial):
                 categories[myinitial] = []
             categories[myinitial].append(po)
@@ -192,8 +199,11 @@ class DownloadSortPackageViewModelInjector(EntropyPackageViewModelInjector):
 
         def mycmp(obj_a, obj_b):
             eq = 0
-            d1 = obj_a.downloads
-            d2 = obj_b.downloads
+            try:
+                d1 = obj_a.downloads
+                d2 = obj_b.downloads
+            except dbapi2.Error:
+                return 0
             if d1 == d2:
                 return 0
             if d1 < d2:
@@ -215,8 +225,11 @@ class VoteSortPackageViewModelInjector(EntropyPackageViewModelInjector):
 
         def mycmp(obj_a, obj_b):
             eq = 0
-            d1 = obj_a.votefloat
-            d2 = obj_b.votefloat
+            try:
+                d1 = obj_a.votefloat
+                d2 = obj_b.votefloat
+            except dbapi2.Error:
+                return 0
             if d1 == d2:
                 return 0
             if d1 < d2:
@@ -242,8 +255,11 @@ class RepoSortPackageViewModelInjector(EntropyPackageViewModelInjector):
 
         def mycmp(obj_a, obj_b):
             eq = 0
-            d1 = obj_a.repoid
-            d2 = obj_b.repoid
+            try:
+                d1 = obj_a.repoid
+                d2 = obj_b.repoid
+            except dbapi2.Error:
+                return 0
             if d1 == d2:
                 return 0
             if d1 < d2:
