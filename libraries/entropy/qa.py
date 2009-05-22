@@ -320,7 +320,7 @@ class QAInterface:
         neededs = dbconn.retrieveNeeded(idpackage, extended = True)
         ldpaths = set(self.entropyTools.collect_linker_paths())
         deps_content = set()
-        dependencies = self._get_deep_dependency_list(dbconn, idpackage, atoms = True)
+        dependencies = self.get_deep_dependency_list(dbconn, idpackage, atoms = True)
         scope_cache = set()
 
         def update_depscontent(mycontent, dbconn, ldpaths):
@@ -413,7 +413,7 @@ class QAInterface:
 
         return rdepends, rdepends_plain
 
-    def _get_deep_dependency_list(self, dbconn, idpackage, atoms = False):
+    def get_deep_dependency_list(self, dbconn, idpackage, atoms = False):
 
         mybuffer = self.Lifo()
         matchcache = set()
