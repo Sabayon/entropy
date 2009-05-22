@@ -24,14 +24,17 @@ from __future__ import with_statement
 import os
 import shutil
 from entropy.core import Singleton
-from entropy.exceptions import *
+from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
+    SystemDatabaseError
 from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_create_working_dirs, const_extract_srv_repo_params
 from entropy.output import TextInterface, purple, red, darkgreen, \
-    bold, brown, blue, darkred, darkblue
+    bold, brown, blue, darkred
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
 from entropy.i18n import _
 from entropy.core import SystemSettings, SystemSettingsPlugin
+from entropy.transceivers import FtpInterface
+from entropy.db import LocalRepository
 
 class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
@@ -283,8 +286,8 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
                     idpackages.add(-1)
                 else:
                     for pkg in pkgs:
-                        idpackage, rc = dbconn.atomMatch(pkg)
-                        if rc:
+                        idpackage, rc_match = dbconn.atomMatch(pkg)
+                        if rc_match:
                             continue
                         idpackages.add(idpackage)
 
@@ -293,7 +296,7 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
         return data
 
 
-class Server(Singleton,TextInterface):
+class Server(Singleton, TextInterface):
 
     def init_singleton(self, default_repository = None, save_repository = False,
             community_repo = False, fake_default_repo = False,
@@ -309,8 +312,7 @@ class Server(Singleton,TextInterface):
         from entropy.misc import LogFile
         self.SystemSettings = SystemSettings()
         self.community_repo = community_repo
-        from entropy.db import dbapi2, LocalRepository
-        self.LocalRepository = LocalRepository
+        from entropy.db import dbapi2
         self.dbapi2 = dbapi2 # export for third parties
         etpSys['serverside'] = True
         self._memory_db_instances = {}
@@ -318,14 +320,10 @@ class Server(Singleton,TextInterface):
         self.indexing = False
         self.xcache = False
         self.MirrorsService = None
-        from entropy.transceivers import FtpInterface
-        self.FtpInterface = FtpInterface
-        from entropy.misc import rssFeed
-        self.rssFeed = rssFeed
-        self.serverDbCache = {}
+        self.__server_dbcache = {}
         self.repository_treeupdate_digests = {}
-        self.settings_to_backup = []
-        self.do_save_repository = save_repository
+        self.__settings_to_backup = []
+        self.__do_save_repository = save_repository
         self.__sync_lock_cache = set()
         self.rssMessages = {
             'added': {},
@@ -333,12 +331,6 @@ class Server(Singleton,TextInterface):
             'commitmessage': "",
             'light': {},
         }
-
-        self.serverLog = LogFile(
-            level = self.SystemSettings['system']['log_level'],
-            filename = etpConst['entropylogfile'],
-            header = "[server]"
-        )
 
         if fake_default_repo:
             default_repository = fake_default_repo_id
@@ -360,15 +352,16 @@ class Server(Singleton,TextInterface):
             self.sys_settings_fatscope_plugin_id, self)
         self.SystemSettings.add_plugin(self.sys_settings_fatscope_plugin)
 
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         self.default_repository = default_repository
         if self.default_repository == None:
-            self.default_repository = self.SystemSettings[self.sys_settings_plugin_id]['server']['default_repository_id']
+            self.default_repository = srv_set['default_repository_id']
 
-        if self.default_repository in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories']:
+        if self.default_repository in srv_set['repositories']:
             self.ensure_paths(self.default_repository)
         self.migrate_repository_databases_to_new_branched_path()
 
-        if self.default_repository not in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories']:
+        if self.default_repository not in srv_set['repositories']:
             raise PermissionDenied("PermissionDenied: %s %s" % (
                         self.default_repository,
                         _("repository not configured"),
@@ -376,17 +369,15 @@ class Server(Singleton,TextInterface):
             )
         if etpConst['clientserverrepoid'] == self.default_repository:
             raise PermissionDenied("PermissionDenied: %s %s" % (
-                        etpConst['clientserverrepoid'],
-                        _("protected repository id, can't use this, sorry dude..."),
-                    )
+                    etpConst['clientserverrepoid'],
+                    _("protected repository id, can't use this, sorry dude..."),
+                )
             )
 
         self.switch_default_repository(self.default_repository)
 
     def destroy(self):
         self.__instance_destroyed = True
-        if hasattr(self,'serverLog'):
-            self.serverLog.close()
         if hasattr(self,'ClientService'):
             self.ClientService.destroy()
         if hasattr(self,'sys_settings_server_plugin'):
@@ -409,25 +400,26 @@ class Server(Singleton,TextInterface):
         self.destroy()
 
     def ensure_paths(self, repo):
-        upload_dir = os.path.join(self.get_local_upload_directory(repo),self.SystemSettings['repositories']['branch'])
+        upload_dir = os.path.join(self.get_local_upload_directory(repo),
+            self.SystemSettings['repositories']['branch'])
         db_dir = self.get_local_database_dir(repo)
-        for mydir in [upload_dir,db_dir]:
+        for mydir in [upload_dir, db_dir]:
             if (not os.path.isdir(mydir)) and (not os.path.lexists(mydir)):
                 os.makedirs(mydir)
-                const_setup_perms(mydir,etpConst['entropygid'])
+                const_setup_perms(mydir, etpConst['entropygid'])
 
 
-    # FIXME: this will be removed in future, creation date: 2008-10-08
     def migrate_repository_databases_to_new_branched_path(self):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         migrated_filename = '.branch_migrated'
-        for repoid in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys():
+        for repoid in srv_set['repositories'].keys():
 
             if repoid == etpConst['clientserverrepoid']: continue
-            mydir = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repoid]['database_dir']
+            mydir = srv_set['repositories'][repoid]['database_dir']
             if not os.path.isdir(mydir): # empty ?
                 continue
 
-            migrated_filepath = os.path.join(mydir,migrated_filename)
+            migrated_filepath = os.path.join(mydir, migrated_filename)
             if os.path.isfile(migrated_filepath):
                 continue
 
@@ -449,27 +441,28 @@ class Server(Singleton,TextInterface):
                 header = bold(" @@ ")
             )
 
-            repo_files = [os.path.join(mydir,x) for x in os.listdir(mydir) if \
-                (os.path.isfile(os.path.join(mydir,x)) and \
-                os.access(os.path.join(mydir,x),os.W_OK))
+            repo_files = [os.path.join(mydir, x) for x in os.listdir(mydir) if \
+                (os.path.isfile(os.path.join(mydir, x)) and \
+                os.access(os.path.join(mydir, x), os.W_OK))
             ]
             os.makedirs(my_branched_dir)
-            const_setup_perms(my_branched_dir,etpConst['entropygid'])
+            const_setup_perms(my_branched_dir, etpConst['entropygid'])
 
             for repo_file in repo_files:
                 repo_filename = os.path.basename(repo_file)
-                shutil.move(repo_file,os.path.join(my_branched_dir,repo_filename))
+                shutil.move(repo_file,
+                    os.path.join(my_branched_dir, repo_filename))
 
-            f = open(migrated_filepath,"w")
-            f.write("done\n")
-            f.flush()
-            f.close()
+            f_migrated = open(migrated_filepath,"w")
+            f_migrated.write("done\n")
+            f_migrated.flush()
+            f_migrated.close()
 
     def setup_services(self):
         self.setup_entropy_settings()
         cs_name = 'ClientService'
-        if hasattr(self,cs_name):
-            obj = getattr(self,cs_name)
+        if hasattr(self, cs_name):
+            obj = getattr(self, cs_name)
             obj.destroy()
         from entropy.client.interfaces import Client
         self.ClientService = Client(
@@ -490,59 +483,64 @@ class Server(Singleton,TextInterface):
         self.MirrorsService = MirrorsServer(self)
 
     def setup_entropy_settings(self, repo = None):
-        curr_repoid = self.SystemSettings[self.sys_settings_plugin_id]['server']['default_repository_id']
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        curr_repoid = srv_set['default_repository_id']
         backup_list = [
             'etpdatabaseclientfilepath',
             'clientdbid',
-            {'server': self.SystemSettings[self.sys_settings_plugin_id]['server'].copy()},
+            {'server': srv_set.copy()},
         ]
         for setting in backup_list:
-            if setting not in self.settings_to_backup:
-                self.settings_to_backup.append(setting)
+            if setting not in self.__settings_to_backup:
+                self.__settings_to_backup.append(setting)
         # setup client database
         if not self.community_repo:
-            etpConst['etpdatabaseclientfilepath'] = self.get_local_database_file(repo)
+            etpConst['etpdatabaseclientfilepath'] = \
+                self.get_local_database_file(repo)
             etpConst['clientdbid'] = etpConst['serverdbid']
         const_create_working_dirs()
 
     def close_server_databases(self):
         if hasattr(self,'serverDbCache'):
-            for item in self.serverDbCache:
+            for item in self.__server_dbcache:
                 try:
-                    self.serverDbCache[item].closeDB()
+                    self.__server_dbcache[item].closeDB()
                 except self.dbapi2.ProgrammingError: # already closed?
                     pass
-            self.serverDbCache.clear()
+            self.__server_dbcache.clear()
 
     def close_server_database(self, dbinstance):
         found = None
-        for item in self.serverDbCache:
-            if dbinstance == self.serverDbCache[item]:
+        for item in self.__server_dbcache:
+            if dbinstance == self.__server_dbcache[item]:
                 found = item
                 break
         if found:
-            instance = self.serverDbCache.pop(found)
+            instance = self.__server_dbcache.pop(found)
             instance.closeDB()
 
     def get_available_repositories(self):
-        return self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].copy()
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        return srv_set['repositories'].copy()
 
-    def switch_default_repository(self, repoid, save = None, handle_uninitialized = True):
+    def switch_default_repository(self, repoid, save = None,
+        handle_uninitialized = True):
 
         # avoid setting __default__ as default server repo
         if repoid == etpConst['clientserverrepoid']:
             return
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
 
         if save == None:
-            save = self.do_save_repository
-        if repoid not in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories']:
+            save = self.__do_save_repository
+        if repoid not in srv_set['repositories']:
             raise PermissionDenied("PermissionDenied: %s %s" % (
                         repoid,
                         _("repository not configured"),
                     )
             )
         self.close_server_databases()
-        self.SystemSettings[self.sys_settings_plugin_id]['server']['default_repository_id'] = repoid
+        srv_set['default_repository_id'] = repoid
         self.default_repository = repoid
         self.setup_services()
         if save:
@@ -554,32 +552,37 @@ class Server(Singleton,TextInterface):
             self.handle_uninitialized_repository(repoid)
 
     def setup_community_repositories_settings(self):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if self.community_repo:
-            for repoid in self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories']:
-                self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repoid]['community'] = True
+            for repoid in srv_set['repositories']:
+                srv_set['repositories'][repoid]['community'] = True
 
 
     def handle_uninitialized_repository(self, repoid):
+
         if not self.is_repository_initialized(repoid):
-            mytxt = blue("%s.") % (_("Your default repository is not initialized"),)
+            mytxt = blue("%s.") % (
+                _("Your default repository is not initialized"),)
             self.updateProgress(
                 "[%s:%s] %s" % (
-                        brown("repo"),
-                        purple(repoid),
-                        mytxt,
+                    brown("repo"),
+                    purple(repoid),
+                    mytxt,
                 ),
                 importance = 1,
                 type = "warning",
                 header = darkred(" !!! ")
             )
-            answer = self.askQuestion(_("Do you want to initialize your default repository ?"))
+            answer = self.askQuestion(
+                _("Do you want to initialize your default repository ?"))
             if answer == "No":
-                mytxt = red("%s.") % (_("You have taken the risk to continue with an uninitialized repository"),)
+                mytxt = red("%s.") % (
+                    _("Continuing with an uninitialized repository"),)
                 self.updateProgress(
                     "[%s:%s] %s" % (
-                            brown("repo"),
-                            purple(repoid),
-                            mytxt,
+                        brown("repo"),
+                        purple(repoid),
+                        mytxt,
                     ),
                     importance = 1,
                     type = "warning",
@@ -589,15 +592,17 @@ class Server(Singleton,TextInterface):
                 # move empty database for security sake
                 dbfile = self.get_local_database_file(repoid)
                 if os.path.isfile(dbfile):
-                    shutil.move(dbfile,dbfile+".backup")
-                self.initialize_server_database(empty = True, repo = repoid, warnings = False)
+                    shutil.move(dbfile, dbfile+".backup")
+                self.initialize_server_database(empty = True,
+                    repo = repoid, warnings = False)
 
 
     def show_interface_status(self):
         type_txt = _("server-side repository")
         if self.community_repo:
             type_txt = _("community repository")
-        mytxt = _("Entropy Server Interface Instance on repository") # ..on repository: <repository_name>
+        # ..on repository: <repository_name>
+        mytxt = _("Entropy Server Interface Instance on repository")
         self.updateProgress(
             blue("%s: %s, %s: %s (%s: %s)" % (
                     mytxt,
@@ -612,13 +617,14 @@ class Server(Singleton,TextInterface):
             type = "info",
             header = red(" @@ ")
         )
-        repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
-        mytxt = blue("%s:") % (_("Currently configured repositories"),) # ...: <list>
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        repos = srv_set['repositories'].keys()
+        mytxt = blue("%s:") % (_("Currently configured repositories"),)
         self.updateProgress(
-                mytxt,
-                importance = 1,
-                type = "info",
-                header = red(" @@ ")
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = red(" @@ ")
         )
         for repo in repos:
             self.updateProgress(
@@ -636,9 +642,9 @@ class Server(Singleton,TextInterface):
             return
 
         if os.path.isfile(etpConst['serverconf']):
-            f = open(etpConst['serverconf'],"r")
-            content = f.readlines()
-            f.close()
+            f_srv = open(etpConst['serverconf'],"r")
+            content = f_srv.readlines()
+            f_srv.close()
             content = [x.strip() for x in content]
             found = False
             new_content = []
@@ -649,17 +655,18 @@ class Server(Singleton,TextInterface):
                 new_content.append(line)
             if not found:
                 new_content.append("officialserverrepositoryid|%s" % (repoid,))
-            f = open(etpConst['serverconf']+".save_default_repo_tmp","w")
+            f_srv_t = open(etpConst['serverconf']+".save_default_repo_tmp","w")
             for line in new_content:
-                f.write(line+"\n")
-            f.flush()
-            f.close()
-            shutil.move(etpConst['serverconf']+".save_default_repo_tmp",etpConst['serverconf'])
+                f_srv_t.write(line+"\n")
+            f_srv_t.flush()
+            f_srv_t.close()
+            os.rename(etpConst['serverconf']+".save_default_repo_tmp",
+                etpConst['serverconf'])
         else:
-            f = open(etpConst['serverconf'],"w")
-            f.write("officialserverrepositoryid|%s\n" % (repoid,))
-            f.flush()
-            f.close()
+            f_srv = open(etpConst['serverconf'],"w")
+            f_srv.write("officialserverrepositoryid|%s\n" % (repoid,))
+            f_srv.flush()
+            f_srv.close()
 
     def toggle_repository(self, repoid, enable = True):
 
@@ -669,26 +676,28 @@ class Server(Singleton,TextInterface):
 
         if not os.path.isfile(etpConst['serverconf']):
             return None
-        f = open(etpConst['serverconf'])
+        f_srv = open(etpConst['serverconf'])
         tmpfile = etpConst['serverconf']+".switch"
-        mycontent = [x.strip() for x in f.readlines()]
-        f.close()
-        f = open(tmpfile,"w")
+        mycontent = [x.strip() for x in f_srv.readlines()]
+        f_srv.close()
+        f_tmp = open(tmpfile,"w")
         st = "repository|%s" % (repoid,)
         status = False
         for line in mycontent:
             if enable:
-                if (line.find(st) != -1) and line.startswith("#") and (len(line.split("|")) == 5):
+                if (line.find(st) != -1) and line.startswith("#") and \
+                    (len(line.split("|")) == 5):
                     line = line[1:]
                     status = True
             else:
-                if (line.find(st) != -1) and not line.startswith("#") and (len(line.split("|")) == 5):
+                if (line.find(st) != -1) and not line.startswith("#") and \
+                    (len(line.split("|")) == 5):
                     line = "#"+line
                     status = True
-            f.write(line+"\n")
-        f.flush()
-        f.close()
-        shutil.move(tmpfile,etpConst['serverconf'])
+            f_tmp.write(line+"\n")
+        f_tmp.flush()
+        f_tmp.close()
+        shutil.move(tmpfile, etpConst['serverconf'])
         if status:
             self.close_server_databases()
             self.SystemSettings.clear()
@@ -697,7 +706,7 @@ class Server(Singleton,TextInterface):
         return status
 
     def backup_entropy_settings(self):
-        for setting in self.settings_to_backup:
+        for setting in self.__settings_to_backup:
             if isinstance(setting, basestring):
                 self.ClientService.backup_constant(setting)
             elif isinstance(setting, dict):
@@ -716,7 +725,8 @@ class Server(Singleton,TextInterface):
         valid = do_validate(dbc)
         self.close_server_database(dbc)
         if not valid: # check online?
-            dbc = self.open_server_repository(read_only = False, no_upload = True, repo = repo, is_new = True)
+            dbc = self.open_server_repository(read_only = False,
+                no_upload = True, repo = repo, is_new = True)
             valid = do_validate(dbc)
             self.close_server_database(dbc)
 
@@ -747,9 +757,11 @@ class Server(Singleton,TextInterface):
                 back = True
             )
             for uri in self.get_remote_mirrors(repo):
-                given_up = self.MirrorsService.mirror_lock_check(uri, repo = repo)
+                given_up = self.MirrorsService.mirror_lock_check(uri,
+                    repo = repo)
                 if given_up:
-                    crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+                    crippled_uri = \
+                        self.entropyTools.extract_ftp_host_from_uri(uri)
                     mytxt = "%s:" % (_("Mirrors status table"),)
                     self.updateProgress(
                         darkgreen(mytxt),
@@ -758,22 +770,23 @@ class Server(Singleton,TextInterface):
                         header = brown(" * ")
                     )
                     dbstatus = self.MirrorsService.get_mirrors_lock(repo = repo)
-                    for db in dbstatus:
-                        db[1] = darkgreen(_("Unlocked"))
-                        if (db[1]):
-                            db[1] = red(_("Locked"))
-                        db[2] = darkgreen(_("Unlocked"))
-                        if (db[2]):
-                            db[2] = red(_("Locked"))
+                    for db_uri, db_st1, db_st2 in dbstatus:
+                        db_st1_info = darkgreen(_("Unlocked"))
+                        if db_st1:
+                            db_st1_info = red(_("Locked"))
+                        db_st2_info = darkgreen(_("Unlocked"))
+                        if db_st2:
+                            db_st2_info = red(_("Locked"))
 
-                        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(db[0])
+                        crippled_uri = \
+                            self.entropyTools.extract_ftp_host_from_uri(db_uri)
                         self.updateProgress(
                             "%s: [%s: %s] [%s: %s]" % (
                                 bold(crippled_uri),
                                 brown(_("database")),
-                                db[1],
+                                db_st1_info,
                                 brown(_("download")),
-                                db[2],
+                                db_st2_info,
                             ),
                             importance = 1,
                             type = "info",
@@ -792,8 +805,10 @@ class Server(Singleton,TextInterface):
 
 
     def init_generic_memory_server_repository(self, repoid, description,
-        mirrors = [], community_repo = False, service_url = None):
+        mirrors = None, community_repo = False, service_url = None):
 
+        if mirrors is None:
+            mirrors = []
         product = self.SystemSettings['repositories']['product']
         dbc = self.open_memory_database(dbname = etpConst['serverdbid']+repoid)
         self._memory_db_instances[repoid] = dbc
@@ -821,7 +836,7 @@ class Server(Singleton,TextInterface):
     def open_memory_database(self, dbname = None):
         if dbname == None:
             dbname = etpConst['genericdbid']
-        dbc = self.LocalRepository(
+        dbc = LocalRepository(
             readOnly = False,
             dbFile = ':memory:',
             clientDatabase = True,
@@ -865,7 +880,7 @@ class Server(Singleton,TextInterface):
 
         local_dbfile = self.get_local_database_file(repo, use_branch)
         if do_cache:
-            cached = self.serverDbCache.get(
+            cached = self.__server_dbcache.get(
                 (repo, etpConst['systemroot'], local_dbfile, read_only,
                     no_upload, just_reading, use_branch, lock_remote,)
             )
@@ -882,7 +897,7 @@ class Server(Singleton,TextInterface):
             self.__sync_lock_cache.add(repo)
 
         local_dbfile_exists = os.path.lexists(local_dbfile)
-        conn = self.LocalRepository(
+        conn = LocalRepository(
             readOnly = read_only,
             dbFile = local_dbfile,
             noUpload = no_upload,
@@ -906,12 +921,14 @@ class Server(Singleton,TextInterface):
 
         # verify if we need to update the database to sync
         # with portage updates, we just ignore being readonly in the case
-        if (repo not in etpConst['server_treeupdatescalled']) and (not just_reading):
-            # sometimes, when filling a new server db, we need to avoid tree updates
+        if (repo not in etpConst['server_treeupdatescalled']) and \
+            (not just_reading):
+            # sometimes, when filling a new server db
+            # we need to avoid tree updates
             if valid:
                 conn.serverUpdatePackagesData()
             elif warnings and not is_new:
-                mytxt = _( "Entropy database is probably corrupted! I won't stop you here btw...")
+                mytxt = _("Entropy database is corrupted!")
                 self.updateProgress(
                     darkred(mytxt),
                     importance = 1,
@@ -923,9 +940,9 @@ class Server(Singleton,TextInterface):
 
             self.updateProgress(
                 "[repo:%s|%s] %s" % (
-                            blue(repo),
-                            red(_("database")),
-                            blue(_("indexing database")),
+                        blue(repo),
+                        red(_("database")),
+                        blue(_("indexing database")),
                     ),
                 importance = 1,
                 type = "info",
@@ -937,7 +954,7 @@ class Server(Singleton,TextInterface):
         if do_cache:
             # !!! also cache just_reading otherwise there will be
             # real issues if the connection is opened several times
-            self.serverDbCache[
+            self.__server_dbcache[
                 (repo, etpConst['systemroot'], local_dbfile, read_only,
                 no_upload, just_reading, use_branch, lock_remote,)] = conn
 
@@ -953,7 +970,8 @@ class Server(Singleton,TextInterface):
 
     def deps_tester(self, default_repo = None):
 
-        server_repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
+        sys_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        server_repos = sys_set['repositories'].keys()
         installed_packages = set()
         # if a default repository is passed, we will just test against it
         if default_repo:
@@ -962,7 +980,7 @@ class Server(Singleton,TextInterface):
         for repo in server_repos:
             dbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = repo)
-            installed_packages |= set([(x,repo) for x in \
+            installed_packages |= set([(x, repo) for x in \
                 dbconn.listAllIdpackages()])
 
 
@@ -983,21 +1001,21 @@ class Server(Singleton,TextInterface):
                     importance = 0,
                     type = "info",
                     back = True,
-                    count = (count,length),
+                    count = (count, length),
                     header = darkred(" @@  ")
                 )
 
             xdeps = dbconn.retrieveDependencies(idpackage)
             for xdep in xdeps:
-                xmatch = self.atom_match(xdep)
-                if xmatch[0] == -1:
+                xid, xuseless = self.atom_match(xdep)
+                if xid == -1:
                     deps_not_satisfied.add(xdep)
 
         return deps_not_satisfied
 
     def dependencies_test(self, repo = None):
 
-        mytxt = "%s %s" % (blue(_("Running dependencies test")),red("..."))
+        mytxt = "%s %s" % (blue(_("Running dependencies test")), red("..."))
         self.updateProgress(
             mytxt,
             importance = 2,
@@ -1005,7 +1023,8 @@ class Server(Singleton,TextInterface):
             header = red(" @@ ")
         )
 
-        server_repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        server_repos = srv_set['repositories'].keys()
         deps_not_matched = self.deps_tester(repo)
 
         if deps_not_matched:
@@ -1013,17 +1032,17 @@ class Server(Singleton,TextInterface):
             crying_atoms = {}
             for atom in deps_not_matched:
                 for repo in server_repos:
-                    dbconn = self.open_server_repository(just_reading = True, repo = repo)
+                    dbconn = self.open_server_repository(just_reading = True,
+                        repo = repo)
                     riddep = dbconn.searchDependency(atom)
                     if riddep == -1:
                         continue
-                    if riddep != -1:
-                        ridpackages = dbconn.searchIdpackageFromIddependency(riddep)
-                        for i in ridpackages:
-                            iatom = dbconn.retrieveAtom(i)
-                            if not crying_atoms.has_key(atom):
-                                crying_atoms[atom] = set()
-                            crying_atoms[atom].add((iatom,repo))
+                    ridpackages = dbconn.searchIdpackageFromIddependency(riddep)
+                    for i in ridpackages:
+                        iatom = dbconn.retrieveAtom(i)
+                        if not crying_atoms.has_key(atom):
+                            crying_atoms[atom] = set()
+                        crying_atoms[atom].add((iatom, repo))
 
             mytxt = blue("%s:") % (_("These are the dependencies not found"),)
             self.updateProgress(
@@ -1047,9 +1066,13 @@ class Server(Singleton,TextInterface):
                         type = "info",
                         header = blue("      # ")
                     )
-                    for x , myrepo in crying_atoms[atom]:
+                    for my_dep, myrepo in crying_atoms[atom]:
                         self.updateProgress(
-                            "[%s:%s] %s" % (blue(_("by repo")),darkred(myrepo),darkgreen(x),),
+                            "[%s:%s] %s" % (
+                                blue(_("by repo")),
+                                darkred(myrepo),
+                                darkgreen(my_dep),
+                            ),
                             importance = 0,
                             type = "info",
                             header = blue("      # ")
@@ -1069,15 +1092,18 @@ class Server(Singleton,TextInterface):
     def libraries_test(self, get_files = False, repo = None):
 
         # load db
-        dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
-        packagesMatched, brokenexecs, status = self.ClientService.libraries_test(dbconn = dbconn, broken_symbols = False)
+        dbconn = self.open_server_repository(read_only = True,
+            no_upload = True, repo = repo)
+        packages_matched, brokenexecs, status = \
+            self.ClientService.libraries_test(dbconn = dbconn,
+                broken_symbols = False)
         if status != 0:
-            return 1,None
+            return 1, None
 
         if get_files:
-            return 0,brokenexecs
+            return 0, brokenexecs
 
-        if (not brokenexecs) and (not packagesMatched):
+        if (not brokenexecs) and (not packages_matched):
             mytxt = "%s." % (_("System is healthy"),)
             self.updateProgress(
                 blue(mytxt),
@@ -1085,7 +1111,7 @@ class Server(Singleton,TextInterface):
                 type = "info",
                 header = red(" @@ ")
             )
-            return 0,None
+            return 0, None
 
         mytxt = "%s..." % (_("Matching libraries with Spm, please wait"),)
         self.updateProgress(
@@ -1120,8 +1146,10 @@ class Server(Singleton,TextInterface):
                         header = brown("       => ")
                     )
             # print string
-            pkgstring = ' '.join(["%s:%s" % (self.entropyTools.dep_getkey(x[0]),x[1],) for x in sorted(packages.keys())])
-            mytxt = "%s: %s" % (darkgreen(_("Packages string")),pkgstring,)
+            pkgstring = ' '.join(["%s:%s" % (
+                self.entropyTools.dep_getkey(x[0]), x[1],) for x \
+                    in sorted(packages)])
+            mytxt = "%s: %s" % (darkgreen(_("Packages string")), pkgstring,)
             self.updateProgress(
                 mytxt,
                 importance = 1,
@@ -1136,11 +1164,12 @@ class Server(Singleton,TextInterface):
                 header = red(" @@ ")
             )
 
-        return 0,packages
+        return 0, packages
 
     def orphaned_spm_packages_test(self):
 
-        mytxt = "%s %s" % (blue(_("Running orphaned SPM packages test")),red("..."),)
+        mytxt = "%s %s" % (
+            blue(_("Running orphaned SPM packages test")), red("..."),)
         self.updateProgress(
             mytxt,
             importance = 2,
@@ -1153,40 +1182,50 @@ class Server(Singleton,TextInterface):
         for installed_package in installed_packages:
             count += 1
             self.updateProgress(
-                "%s: %s" % (darkgreen(_("Scanning package")),brown(installed_package),),
+                "%s: %s" % (
+                    darkgreen(_("Scanning package")),
+                    brown(installed_package),),
                 importance = 0,
                 type = "info",
                 back = True,
-                count = (count,length),
+                count = (count, length),
                 header = darkred(" @@ ")
             )
-            key, slot = self.entropyTools.dep_getkey(installed_package),self.SpmService.get_installed_package_slot(installed_package)
-            pkg_atom = "%s:%s" % (key,slot,)
+            key, slot = (self.entropyTools.dep_getkey(installed_package),
+                self.SpmService.get_installed_package_slot(installed_package),)
+            pkg_atom = "%s:%s" % (key, slot,)
             tree_atom = self.SpmService.get_best_atom(pkg_atom)
             if not tree_atom:
                 not_found[installed_package] = pkg_atom
                 self.updateProgress(
-                    "%s: %s" % (blue(pkg_atom),darkred(_("not found anymore")),),
+                    "%s: %s" % (
+                        blue(pkg_atom),
+                        darkred(_("not found anymore")),
+                    ),
                     importance = 0,
                     type = "warning",
-                    count = (count,length),
+                    count = (count, length),
                     header = darkred(" @@ ")
                 )
 
         if not_found:
-            not_found_list = ' '.join([not_found[x] for x in sorted(not_found.keys())])
+            not_found_list = ' '.join([not_found[x] for x in sorted(not_found)])
             self.updateProgress(
-                "%s: %s" % (blue(_("Packages string")),not_found_list,),
+                "%s: %s" % (
+                        blue(_("Packages string")),
+                        not_found_list,
+                    ),
                 importance = 0,
                 type = "warning",
-                count = (count,length),
+                count = (count, length),
                 header = darkred(" @@ ")
             )
 
         return not_found
 
     def depends_table_initialize(self, repo = None):
-        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = False,
+            no_upload = True, repo = repo)
         dbconn.regenerateDependsTable()
         dbconn.taintDatabase()
         dbconn.commitChanges()
@@ -1199,7 +1238,7 @@ class Server(Singleton,TextInterface):
         if not os.path.isdir(dbdir):
             os.makedirs(dbdir)
 
-        mytxt = red("%s ...") % (_("Initializing an empty database file with Entropy structure"),)
+        mytxt = red("%s ...") % (_("Initializing an empty database"),)
         self.updateProgress(
             mytxt,
             importance = 1,
@@ -1211,7 +1250,11 @@ class Server(Singleton,TextInterface):
         dbconn.initializeDatabase()
         dbconn.commitChanges()
         dbconn.closeDB()
-        mytxt = "%s %s %s." % (red(_("Entropy database file")),bold(dbpath),red(_("successfully initialized")),)
+        mytxt = "%s %s %s." % (
+            red(_("Entropy database file")),
+            bold(dbpath),
+            red(_("successfully initialized")),
+        )
         self.updateProgress(
             mytxt,
             importance = 1,
@@ -1225,8 +1268,9 @@ class Server(Singleton,TextInterface):
 
         try:
             package_tag = str(package_tag)
-            if " " in package_tag: raise ValueError
-        except (UnicodeDecodeError,UnicodeEncodeError,ValueError,):
+            if " " in package_tag:
+                raise ValueError
+        except (UnicodeDecodeError, UnicodeEncodeError, ValueError,):
             self.updateProgress(
                 "%s: %s" % (
                     blue(_("Invalid tag specified")),
@@ -1236,11 +1280,13 @@ class Server(Singleton,TextInterface):
             )
             return 1, package_tag
 
-        if repo == None: repo = self.default_repository
+        if repo == None:
+            repo = self.default_repository
 
         # sanity check
         invalid_atoms = []
-        dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = True,
+            no_upload = True, repo = repo)
         for idpackage in idpackages:
             ver_tag = dbconn.retrieveVersionTag(idpackage)
             if ver_tag:
@@ -1249,14 +1295,14 @@ class Server(Singleton,TextInterface):
         if invalid_atoms:
             self.updateProgress(
                 "%s: %s" % (
-                    blue(_("These are the packages already tagged, cannot re-tag, action aborted")),
+                    blue(_("Packages already tagged, action aborted")),
                     ', '.join([darkred(unicode(x)) for x in invalid_atoms]),
                 ),
                 importance = 1, type = "error", header = darkred(" !! ")
             )
             return 2, invalid_atoms
 
-        matches = [(x,repo) for x in idpackages]
+        matches = [(x, repo) for x in idpackages]
         status = 0
         data = self.move_packages(
             matches, to_repo = repo, from_repo = repo, ask = ask,
@@ -1305,7 +1351,7 @@ class Server(Singleton,TextInterface):
         dbconn = self.open_server_repository(read_only = True,
             no_upload = True, repo = repo)
 
-        idpackage_map = dict(((x,[],) for x in from_branches))
+        idpackage_map = dict(((x, [],) for x in from_branches))
         idpackages = dbconn.listAllIdpackages(order_by = 'atom')
         for idpackage in idpackages:
             download_url = dbconn.retrieveDownloadURL(idpackage)
@@ -1381,8 +1427,9 @@ class Server(Singleton,TextInterface):
                 download_queue[from_branch], idpackage_map)
 
             if ask:
-                rc = self.askQuestion(_("Would you like to continue ?"))
-                if rc == "No":
+                rc_question = self.askQuestion(
+                    _("Would you like to continue ?"))
+                if rc_question == "No":
                     continue
 
             remote_relative_path = self.get_remote_packages_relative_path(repo)
@@ -1394,7 +1441,7 @@ class Server(Singleton,TextInterface):
 
                 downloader_queue = [x[0] for x in download_queue[from_branch]]
                 downloader = self.MirrorsService.FtpServerHandler(
-                    self.FtpInterface,
+                    FtpInterface,
                     self,
                     [uri],
                     downloader_queue,
@@ -1501,8 +1548,9 @@ class Server(Singleton,TextInterface):
 
                 # update database
                 download_url = dbconn.retrieveDownloadURL(idpackage)
-                download_url = self.ClientService.swap_branch_in_download_relative_uri(
-                    branch, download_url)
+                download_url = \
+                    self.ClientService.swap_branch_in_download_relative_uri(
+                        branch, download_url)
                 dbconn.setDownloadURL(idpackage, download_url)
                 dbconn.switchBranch(idpackage, branch)
                 dbconn.commitChanges()
@@ -1538,11 +1586,11 @@ class Server(Singleton,TextInterface):
         my_matches = list(matches)
 
         # avoid setting __default__ as default server repo
-        if etpConst['clientserverrepoid'] in (to_repo,from_repo):
+        if etpConst['clientserverrepoid'] in (to_repo, from_repo):
             self.updateProgress(
                 "%s: %s" % (
-                        blue(_("You cannot switch packages from/to your system database")),
-                        red(etpConst['clientserverrepoid']),
+                    blue(_("Cannot touch system database")),
+                    red(etpConst['clientserverrepoid']),
                 ),
                 importance = 2, type = "warning", header = darkred(" @@ ")
             )
@@ -1552,7 +1600,7 @@ class Server(Singleton,TextInterface):
             dbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = from_repo)
             my_matches = set( \
-                [(x,from_repo) for x in \
+                [(x, from_repo) for x in \
                     dbconn.listAllIdpackages()]
             )
 
@@ -1561,8 +1609,8 @@ class Server(Singleton,TextInterface):
             mytxt = _("Preparing to copy selected packages to")
         self.updateProgress(
             "%s %s:" % (
-                    blue(mytxt),
-                    red(to_repo),
+                blue(mytxt),
+                red(to_repo),
             ),
             importance = 2,
             type = "info",
@@ -1570,8 +1618,9 @@ class Server(Singleton,TextInterface):
         )
         self.updateProgress(
             "%s: %s" % (
-                    bold(_("Note")),
-                    red(_("all the old packages with conflicting scope will be removed from the destination repo unless injected")),
+                bold(_("Note")),
+                red(_("all old packages with conflicting scope will be " \
+                    "removed from destination repo unless injected")),
             ),
             importance = 1,
             type = "info",
@@ -1583,7 +1632,7 @@ class Server(Singleton,TextInterface):
             new_tag_string = "[%s: %s]" % (darkgreen(_("new tag")),
                 brown(new_tag),)
 
-        myQA = self.QA()
+        my_qa = self.QA()
         branch = self.SystemSettings['repositories']['branch']
         pull_deps_matches = []
         for idpackage, repo in my_matches:
@@ -1602,7 +1651,7 @@ class Server(Singleton,TextInterface):
             )
             # do we want to pull in also package dependencies?
             if pull_deps:
-                dep_idpackages = myQA._get_deep_dependency_list(dbconn,
+                dep_idpackages = my_qa.get_deep_dependency_list(dbconn,
                     idpackage)
                 for dep_idpackage in dep_idpackages:
 
@@ -1630,15 +1679,17 @@ class Server(Singleton,TextInterface):
                 in pull_deps_matches]
 
         if ask:
-            rc = self.askQuestion(_("Would you like to continue ?"))
-            if rc == "No":
+            rc_question = self.askQuestion(_("Would you like to continue ?"))
+            if rc_question == "No":
                 return switched
 
         for idpackage, repo in my_matches:
-            dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
+            dbconn = self.open_server_repository(read_only = False,
+                no_upload = True, repo = repo)
             match_branch = dbconn.retrieveBranch(idpackage)
             match_atom = dbconn.retrieveAtom(idpackage)
-            package_filename = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
+            package_filename = os.path.basename(
+                dbconn.retrieveDownloadURL(idpackage))
             self.updateProgress(
                 "[%s=>%s|%s] %s: %s" % (
                         darkgreen(repo),
@@ -1653,18 +1704,20 @@ class Server(Singleton,TextInterface):
                 back = True
             )
             # move binary file
-            from_file = os.path.join(self.get_local_packages_directory(repo),match_branch,package_filename)
+            from_file = os.path.join(self.get_local_packages_directory(repo),
+                match_branch, package_filename)
             if not os.path.isfile(from_file):
-                from_file = os.path.join(self.get_local_upload_directory(repo),match_branch,package_filename)
+                from_file = os.path.join(self.get_local_upload_directory(repo),
+                    match_branch, package_filename)
             if not os.path.isfile(from_file):
                 self.updateProgress(
                     "[%s=>%s|%s] %s: %s -> %s" % (
-                            darkgreen(repo),
-                            darkred(to_repo),
-                            brown(branch),
-                            bold(_("cannot switch, package not found, skipping")),
-                            darkgreen(),
-                            red(from_file),
+                        darkgreen(repo),
+                        darkred(to_repo),
+                        brown(branch),
+                        bold(_("cannot switch, package not found, skipping")),
+                        darkgreen(),
+                        red(from_file),
                     ),
                     importance = 1,
                     type = "warning",
@@ -1676,28 +1729,33 @@ class Server(Singleton,TextInterface):
                 match_category = dbconn.retrieveCategory(idpackage)
                 match_name = dbconn.retrieveName(idpackage)
                 match_version = dbconn.retrieveVersion(idpackage)
-                tagged_package_filename = self.entropyTools.create_package_filename(
-                    match_category, match_name, match_version, new_tag)
-                to_file = os.path.join(self.get_local_upload_directory(to_repo),match_branch,tagged_package_filename)
+                tagged_package_filename = \
+                    self.entropyTools.create_package_filename(
+                        match_category, match_name, match_version, new_tag)
+                to_file = os.path.join(self.get_local_upload_directory(to_repo),
+                    match_branch, tagged_package_filename)
             else:
-                to_file = os.path.join(self.get_local_upload_directory(to_repo),match_branch,package_filename)
+                to_file = os.path.join(self.get_local_upload_directory(to_repo),
+                    match_branch, package_filename)
             if not os.path.isdir(os.path.dirname(to_file)):
                 os.makedirs(os.path.dirname(to_file))
 
             copy_data = [
-                            (from_file,to_file,),
-                            (from_file+etpConst['packagesmd5fileext'],to_file+etpConst['packagesmd5fileext'],),
-                            (from_file+etpConst['packagesexpirationfileext'],to_file+etpConst['packagesexpirationfileext'],)
-                        ]
+                (from_file, to_file,),
+                (from_file + etpConst['packagesmd5fileext'],
+                    to_file + etpConst['packagesmd5fileext'],),
+                (from_file + etpConst['packagesexpirationfileext'],
+                    to_file + etpConst['packagesexpirationfileext'],)
+            ]
 
-            for from_item,to_item in copy_data:
+            for from_item, to_item in copy_data:
                 self.updateProgress(
                         "[%s=>%s|%s] %s: %s" % (
-                                darkgreen(repo),
-                                darkred(to_repo),
-                                brown(branch),
-                                blue(_("moving file")),
-                                darkgreen(os.path.basename(from_item)),
+                            darkgreen(repo),
+                            darkred(to_repo),
+                            brown(branch),
+                            blue(_("moving file")),
+                            darkgreen(os.path.basename(from_item)),
                         ),
                         importance = 0,
                         type = "info",
@@ -1705,15 +1763,15 @@ class Server(Singleton,TextInterface):
                         back = True
                 )
                 if os.path.isfile(from_item):
-                    shutil.copy2(from_item,to_item)
+                    shutil.copy2(from_item, to_item)
 
             self.updateProgress(
                 "[%s=>%s|%s] %s: %s" % (
-                        darkgreen(repo),
-                        darkred(to_repo),
-                        brown(branch),
-                        blue(_("loading data from source database")),
-                        darkgreen(repo),
+                    darkgreen(repo),
+                    darkred(to_repo),
+                    brown(branch),
+                    blue(_("loading data from source database")),
+                    darkgreen(repo),
                 ),
                 importance = 0,
                 type = "info",
@@ -1725,15 +1783,16 @@ class Server(Singleton,TextInterface):
             if new_tag != None:
                 data['versiontag'] = new_tag
 
-            todbconn = self.open_server_repository(read_only = False, no_upload = True, repo = to_repo)
+            todbconn = self.open_server_repository(read_only = False,
+                no_upload = True, repo = to_repo)
 
             self.updateProgress(
                 "[%s=>%s|%s] %s: %s" % (
-                        darkgreen(repo),
-                        darkred(to_repo),
-                        brown(branch),
-                        blue(_("injecting data to destination database")),
-                        darkgreen(to_repo),
+                    darkgreen(repo),
+                    darkred(to_repo),
+                    brown(branch),
+                    blue(_("injecting data to destination database")),
+                    darkgreen(to_repo),
                 ),
                 importance = 0,
                 type = "info",
@@ -1747,11 +1806,11 @@ class Server(Singleton,TextInterface):
             if not do_copy:
                 self.updateProgress(
                     "[%s=>%s|%s] %s: %s" % (
-                            darkgreen(repo),
-                            darkred(to_repo),
-                            brown(branch),
-                            blue(_("removing entry from source database")),
-                            darkgreen(repo),
+                        darkgreen(repo),
+                        darkred(to_repo),
+                        brown(branch),
+                        blue(_("removing entry from source database")),
+                        darkgreen(repo),
                     ),
                     importance = 0,
                     type = "info",
@@ -1765,11 +1824,11 @@ class Server(Singleton,TextInterface):
 
             self.updateProgress(
                 "[%s=>%s|%s] %s: %s" % (
-                        darkgreen(repo),
-                        darkred(to_repo),
-                        brown(branch),
-                        blue(_("successfully handled atom")),
-                        darkgreen(match_atom),
+                    darkgreen(repo),
+                    darkred(to_repo),
+                    brown(branch),
+                    blue(_("successfully handled atom")),
+                    darkgreen(match_atom),
                 ),
                 importance = 0,
                 type = "info",
@@ -1788,31 +1847,37 @@ class Server(Singleton,TextInterface):
         if repo == None:
             repo = self.default_repository
 
-        upload_dir = os.path.join(self.get_local_upload_directory(repo),self.SystemSettings['repositories']['branch'])
+        upload_dir = os.path.join(self.get_local_upload_directory(repo),
+            self.SystemSettings['repositories']['branch'])
         if not os.path.isdir(upload_dir):
             os.makedirs(upload_dir)
 
-        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = False,
+            no_upload = True, repo = repo)
         self.updateProgress(
             red("[repo: %s] %s: %s" % (
-                        darkgreen(repo),
-                        _("adding package"),
-                        bold(os.path.basename(package_file)),
-                    )
+                    darkgreen(repo),
+                    _("adding package"),
+                    bold(os.path.basename(package_file)),
+                )
             ),
             importance = 1,
             type = "info",
             header = brown(" * "),
             back = True
         )
-        mydata = self.ClientService.extract_pkg_metadata(package_file, etpBranch = self.SystemSettings['repositories']['branch'], inject = inject)
+        mydata = self.ClientService.extract_pkg_metadata(package_file,
+            etpBranch = self.SystemSettings['repositories']['branch'],
+            inject = inject)
         idpackage, revision, mydata = dbconn.handlePackage(mydata)
 
         # set trashed counters
         trashing_counters = set()
-        myserver_repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        myserver_repos = srv_set['repositories'].keys()
         for myrepo in myserver_repos:
-            mydbconn = self.open_server_repository(read_only = True, no_upload = True, repo = myrepo)
+            mydbconn = self.open_server_repository(read_only = True,
+                no_upload = True, repo = myrepo)
             mylist = mydbconn.retrieve_packages_to_remove(
                     mydata['name'],
                     mydata['category'],
@@ -1827,16 +1892,16 @@ class Server(Singleton,TextInterface):
 
         # add package info to our current server repository
         dbconn.removePackageFromInstalledTable(idpackage)
-        dbconn.addPackageToInstalledTable(idpackage,repo)
+        dbconn.addPackageToInstalledTable(idpackage, repo)
         atom = dbconn.retrieveAtom(idpackage)
 
         self.updateProgress(
             "[repo:%s] %s: %s %s: %s" % (
-                        darkgreen(repo),
-                        blue(_("added package")),
-                        darkgreen(atom),
-                        blue(_("rev")), # as in revision
-                        bold(str(revision)),
+                    darkgreen(repo),
+                    blue(_("added package")),
+                    darkgreen(atom),
+                    blue(_("rev")), # as in revision
+                    bold(str(revision)),
                 ),
             importance = 1,
             type = "info",
@@ -1847,9 +1912,9 @@ class Server(Singleton,TextInterface):
         if manual_deps:
             self.updateProgress(
                 "[repo:%s] %s: %s" % (
-                            darkgreen(repo),
-                            blue(_("manual dependencies for")),
-                            darkgreen(atom),
+                        darkgreen(repo),
+                        blue(_("manual dependencies for")),
+                        darkgreen(atom),
                     ),
                 importance = 1,
                 type = "warning",
@@ -1863,33 +1928,37 @@ class Server(Singleton,TextInterface):
                     header = darkred("    # ")
                 )
 
-        download_url = self._setup_repository_package_filename(idpackage, repo = repo)
+        download_url = self._setup_repository_package_filename(idpackage,
+            repo = repo)
         downloadfile = os.path.basename(download_url)
-        destination_path = os.path.join(upload_dir,downloadfile)
-        shutil.move(package_file,destination_path)
+        destination_path = os.path.join(upload_dir, downloadfile)
+        shutil.move(package_file, destination_path)
 
         dbconn.commitChanges()
-        return idpackage,destination_path
+        return idpackage, destination_path
 
     # this function changes the final repository package filename
     def _setup_repository_package_filename(self, idpackage, repo = None):
 
-        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = False,
+            no_upload = True, repo = repo)
 
         downloadurl = dbconn.retrieveDownloadURL(idpackage)
         packagerev = dbconn.retrieveRevision(idpackage)
         downloaddir = os.path.dirname(downloadurl)
         downloadfile = os.path.basename(downloadurl)
         # add revision
-        downloadfile = downloadfile[:-5]+"~%s%s" % (packagerev,etpConst['packagesext'],)
-        downloadurl = os.path.join(downloaddir,downloadfile)
+        downloadfile = downloadfile[:-5]+"~%s%s" % (packagerev,
+            etpConst['packagesext'],)
+        downloadurl = os.path.join(downloaddir, downloadfile)
 
         # update url
-        dbconn.setDownloadURL(idpackage,downloadurl)
+        dbconn.setDownloadURL(idpackage, downloadurl)
 
         return downloadurl
 
-    def add_packages_to_repository(self, packages_data, ask = True, repo = None):
+    def add_packages_to_repository(self, packages_data, ask = True,
+        repo = None):
 
         if repo == None:
             repo = self.default_repository
@@ -1898,21 +1967,21 @@ class Server(Singleton,TextInterface):
         maxcount = len(packages_data)
         idpackages_added = set()
         to_be_injected = set()
-        myQA = self.QA()
+        my_qa = self.QA()
         missing_deps_taint = False
         for package_filepath, inject in packages_data:
 
             mycount += 1
             self.updateProgress(
                 "[repo:%s] %s: %s" % (
-                            darkgreen(repo),
-                            blue(_("adding package")),
-                            darkgreen(os.path.basename(package_filepath)),
-                        ),
+                    darkgreen(repo),
+                    blue(_("adding package")),
+                    darkgreen(os.path.basename(package_filepath)),
+                ),
                 importance = 1,
                 type = "info",
                 header = blue(" @@ "),
-                count = (mycount,maxcount,)
+                count = (mycount, maxcount,)
             )
 
             try:
@@ -1923,36 +1992,42 @@ class Server(Singleton,TextInterface):
                     repo = repo
                 )
                 idpackages_added.add(idpackage)
-                to_be_injected.add((idpackage,destination_path))
-            except Exception, e:
+                to_be_injected.add((idpackage, destination_path))
+            except Exception, err:
                 self.entropyTools.print_traceback()
                 self.updateProgress(
                     "[repo:%s] %s: %s" % (
-                                darkgreen(repo),
-                                darkred(_("Exception caught, running injection and RDEPEND check before raising")),
-                                darkgreen(unicode(e)),
-                            ),
+                        darkgreen(repo),
+                        darkred(_("Exception caught, closing tasks")),
+                        darkgreen(unicode(err)),
+                    ),
                     importance = 1,
                     type = "error",
                     header = bold(" !!! "),
-                    count = (mycount,maxcount,)
+                    count = (mycount, maxcount,)
                 )
                 # reinit depends table
                 self.depends_table_initialize(repo)
                 if idpackages_added:
-                    dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
-                    missing_deps_taint = myQA.scan_missing_dependencies(
+                    dbconn = self.open_server_repository(read_only = False,
+                        no_upload = True, repo = repo)
+                    missing_deps_taint = my_qa.scan_missing_dependencies(
                         idpackages_added,
                         dbconn,
                         ask = ask,
                         repo = repo,
                         self_check = True,
-                        black_list = self.get_missing_dependencies_blacklist(repo = repo),
-                        black_list_adder = self.add_missing_dependencies_blacklist_items
+                        black_list = \
+                            self.get_missing_dependencies_blacklist(
+                                repo = repo),
+                        black_list_adder = \
+                            self.add_missing_dependencies_blacklist_items
                     )
-                    myQA.test_depends_linking(idpackages_added, dbconn, repo = repo)
+                    my_qa.test_depends_linking(idpackages_added, dbconn,
+                        repo = repo)
                 if to_be_injected:
-                    self.inject_database_into_packages(to_be_injected, repo = repo)
+                    self.inject_database_into_packages(to_be_injected,
+                        repo = repo)
                 # reinit depends table
                 if missing_deps_taint:
                     self.depends_table_initialize(repo)
@@ -1963,17 +2038,20 @@ class Server(Singleton,TextInterface):
         self.depends_table_initialize(repo)
 
         if idpackages_added:
-            dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
-            missing_deps_taint = myQA.scan_missing_dependencies(
+            dbconn = self.open_server_repository(read_only = False,
+                no_upload = True, repo = repo)
+            missing_deps_taint = my_qa.scan_missing_dependencies(
                 idpackages_added,
                 dbconn,
                 ask = ask,
                 repo = repo,
                 self_check = True,
-                black_list = self.get_missing_dependencies_blacklist(repo = repo),
-                black_list_adder = self.add_missing_dependencies_blacklist_items
+                black_list = \
+                    self.get_missing_dependencies_blacklist(repo = repo),
+                black_list_adder = \
+                    self.add_missing_dependencies_blacklist_items
             )
-            myQA.test_depends_linking(idpackages_added, dbconn, repo = repo)
+            my_qa.test_depends_linking(idpackages_added, dbconn, repo = repo)
 
         # reinit depends table
         if missing_deps_taint:
@@ -1993,23 +2071,24 @@ class Server(Singleton,TextInterface):
         # now inject metadata into tbz2 packages
         self.updateProgress(
             "[repo:%s] %s:" % (
-                        darkgreen(repo),
-                        blue(_("Injecting entropy metadata into built packages")),
-                    ),
+                darkgreen(repo),
+                blue(_("Injecting entropy metadata into built packages")),
+            ),
             importance = 1,
             type = "info",
             header = red(" @@ ")
         )
 
-        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
-        for idpackage,package_path in injection_data:
+        dbconn = self.open_server_repository(read_only = False,
+            no_upload = True, repo = repo)
+        for idpackage, package_path in injection_data:
             self.updateProgress(
                 "[repo:%s|%s] %s: %s" % (
-                            darkgreen(repo),
-                            brown(str(idpackage)),
-                            blue(_("injecting entropy metadata")),
-                            darkgreen(os.path.basename(package_path)),
-                        ),
+                    darkgreen(repo),
+                    brown(str(idpackage)),
+                    blue(_("injecting entropy metadata")),
+                    darkgreen(os.path.basename(package_path)),
+                ),
                 importance = 1,
                 type = "info",
                 header = blue(" @@ "),
@@ -2017,14 +2096,15 @@ class Server(Singleton,TextInterface):
             )
             data = dbconn.getPackageData(idpackage)
             treeupdates_actions = dbconn.listAllTreeUpdatesActions()
-            dbpath = self.ClientService.inject_entropy_database_into_package(package_path, data, treeupdates_actions)
+            dbpath = self.ClientService.inject_entropy_database_into_package(
+                package_path, data, treeupdates_actions)
             digest = self.entropyTools.md5sum(package_path)
             # update digest
-            dbconn.setDigest(idpackage,digest)
+            dbconn.setDigest(idpackage, digest)
             # update signatures
             signatures = data['signatures'].copy()
             for hash_key in sorted(signatures):
-                hash_func = getattr(self.entropyTools,hash_key)
+                hash_func = getattr(self.entropyTools, hash_key)
                 signatures[hash_key] = hash_func(package_path)
             dbconn.setSignatures(idpackage, signatures)
             self.entropyTools.create_md5_file(package_path)
@@ -2032,11 +2112,11 @@ class Server(Singleton,TextInterface):
             os.remove(dbpath)
             self.updateProgress(
                 "[repo:%s|%s] %s: %s" % (
-                            darkgreen(repo),
-                            brown(str(idpackage)),
-                            blue(_("injection complete")),
-                            darkgreen(os.path.basename(package_path)),
-                        ),
+                    darkgreen(repo),
+                    brown(str(idpackage)),
+                    blue(_("injection complete")),
+                    darkgreen(os.path.basename(package_path)),
+                ),
                 importance = 1,
                 type = "info",
                 header = red(" @@ ")
@@ -2066,9 +2146,10 @@ class Server(Singleton,TextInterface):
                 type = "error",
                 header = darkred(" @@ ")
             )
-            for x in scandata:
+            for key in scandata:
                 self.updateProgress(
-                    "%s" % ( brown(etpConst['systemroot']+scandata[x]['destination']) ),
+                    "%s" % (brown(etpConst['systemroot'] + \
+                        scandata[key]['destination'])),
                     importance = 1,
                     type = "info",
                     header = "\t"
@@ -2077,7 +2158,7 @@ class Server(Singleton,TextInterface):
         return False
 
     def quickpkg(self, atom, storedir):
-        return self.SpmService.quickpkg(atom,storedir)
+        return self.SpmService.quickpkg(atom, storedir)
 
 
     def remove_packages(self, idpackages, repo = None):
@@ -2085,14 +2166,15 @@ class Server(Singleton,TextInterface):
         if repo == None:
             repo = self.default_repository
 
-        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = False,
+            no_upload = True, repo = repo)
         for idpackage in idpackages:
             atom = dbconn.retrieveAtom(idpackage)
             self.updateProgress(
                 "[repo:%s] %s: %s" % (
-                        darkgreen(repo),
-                        blue(_("removing package")),
-                        darkgreen(atom),
+                    darkgreen(repo),
+                    blue(_("removing package")),
+                    darkgreen(atom),
                 ),
                 importance = 1,
                 type = "info",
@@ -2102,9 +2184,9 @@ class Server(Singleton,TextInterface):
         self.close_server_database(dbconn)
         self.updateProgress(
             "[repo:%s] %s" % (
-                        darkgreen(repo),
-                        blue(_("removal complete")),
-                ),
+                darkgreen(repo),
+                blue(_("removal complete")),
+            ),
             importance = 1,
             type = "info",
             header = brown(" @@ ")
@@ -2112,121 +2194,152 @@ class Server(Singleton,TextInterface):
 
 
     def bump_database(self, repo = None):
-        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = False,
+            no_upload = True, repo = repo)
         dbconn.taintDatabase()
         self.close_server_database(dbconn)
 
     def get_remote_mirrors(self, repo = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo == None:
             repo = self.default_repository
-        return self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['mirrors'][:]
+        return srv_set['repositories'][repo]['mirrors'][:]
 
     def get_remote_packages_relative_path(self, repo = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo == None:
             repo = self.default_repository
-        return self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['packages_relative_path']
+        return srv_set['repositories'][repo]['packages_relative_path']
 
     def get_remote_database_relative_path(self, repo = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo == None:
             repo = self.default_repository
-        return self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['database_relative_path']
+        return srv_set['repositories'][repo]['database_relative_path']
 
     def get_local_database_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasefile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabasefile'])
 
     def get_local_store_directory(self, repo = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo == None:
             repo = self.default_repository
-        return self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['store_dir']
+        return srv_set['repositories'][repo]['store_dir']
 
     def get_local_upload_directory(self, repo = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo == None:
             repo = self.default_repository
-        return self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['upload_dir']
+        return srv_set['repositories'][repo]['upload_dir']
 
     def get_local_packages_directory(self, repo = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo == None:
             repo = self.default_repository
-        return self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['packages_dir']
+        return srv_set['repositories'][repo]['packages_dir']
 
     def get_local_database_taint_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasetaintfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabasetaintfile'])
 
     def get_local_database_revision_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabaserevisionfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabaserevisionfile'])
 
     def get_local_database_timestamp_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasetimestampfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabasetimestampfile'])
 
     def get_local_database_ca_cert_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasecacertfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabasecacertfile'])
 
     def get_local_database_server_cert_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabaseservercertfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabaseservercertfile'])
 
     def get_local_database_mask_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasemaskfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabasemaskfile'])
 
     def get_local_database_system_mask_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasesytemmaskfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabasesytemmaskfile'])
 
     def get_local_database_confl_tagged_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabaseconflictingtaggedfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabaseconflictingtaggedfile'])
 
-    def get_local_database_licensewhitelist_file(self, repo = None, branch = None):
+    def get_local_database_licensewhitelist_file(self, repo = None,
+        branch = None):
+
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabaselicwhitelistfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabaselicwhitelistfile'])
 
     def get_local_database_rss_file(self, repo = None, branch = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),self.SystemSettings[self.sys_settings_plugin_id]['server']['rss']['name'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            srv_set['rss']['name'])
 
     def get_local_database_rsslight_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['rss-light-name'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['rss-light-name'])
 
     def get_local_database_notice_board_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['rss-notice-board'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['rss-notice-board'])
 
     def get_local_database_treeupdates_file(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabaseupdatefile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabaseupdatefile'])
 
-    def get_local_database_compressed_metafiles_file(self, repo = None, branch = None):
+    def get_local_database_compressed_metafiles_file(self, repo = None,
+        branch = None):
+
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasemetafilesfile'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabasemetafilesfile'])
 
-    def get_local_database_metafiles_not_found_file(self, repo = None, branch = None):
+    def get_local_database_metafiles_not_found_file(self, repo = None,
+        branch = None):
+
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['etpdatabasemetafilesnotfound'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabasemetafilesnotfound'])
 
-    def get_local_exp_based_pkgs_rm_whitelist_file(self, repo = None, branch = None):
+    def get_local_exp_based_pkgs_rm_whitelist_file(self, repo = None,
+        branch = None):
         if repo == None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
@@ -2235,21 +2348,27 @@ class Server(Singleton,TextInterface):
     def get_local_database_sets_dir(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
-        return os.path.join(self.get_local_database_dir(repo, branch),etpConst['confsetsdirname'])
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['confsetsdirname'])
 
     def get_local_database_dir(self, repo = None, branch = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo == None:
             repo = self.default_repository
         if branch == None:
             branch = self.SystemSettings['repositories']['branch']
-        return os.path.join(self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['database_dir'],branch)
+        return os.path.join(srv_set['repositories'][repo]['database_dir'],
+            branch)
 
-    def get_missing_dependencies_blacklist_file(self, repo = None, branch = None):
+    def get_missing_dependencies_blacklist_file(self, repo = None,
+        branch = None):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo == None:
             repo = self.default_repository
         if branch == None:
             branch = self.SystemSettings['repositories']['branch']
-        return os.path.join(self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['database_dir'],branch,etpConst['etpdatabasemissingdepsblfile'])
+        return os.path.join(srv_set['repositories'][repo]['database_dir'],
+            branch, etpConst['etpdatabasemissingdepsblfile'])
 
     def get_missing_dependencies_blacklist(self, repo = None, branch = None):
         if repo == None:
@@ -2258,27 +2377,30 @@ class Server(Singleton,TextInterface):
             branch = self.SystemSettings['repositories']['branch']
         wl_file = self.get_missing_dependencies_blacklist_file(repo, branch)
         wl_data = []
-        if os.path.isfile(wl_file) and os.access(wl_file,os.R_OK):
-            f = open(wl_file,"r")
-            wl_data = [x.strip() for x in f.readlines() if x.strip() and not x.strip().startswith("#")]
-            f.close()
+        if os.path.isfile(wl_file) and os.access(wl_file, os.R_OK):
+            f_wl = open(wl_file,"r")
+            wl_data = [x.strip() for x in f_wl.readlines() if x.strip() and \
+                not x.strip().startswith("#")]
+            f_wl.close()
         return set(wl_data)
 
-    def add_missing_dependencies_blacklist_items(self, items, repo = None, branch = None):
+    def add_missing_dependencies_blacklist_items(self, items, repo = None,
+        branch = None):
+
         if repo == None:
             repo = self.default_repository
         if branch == None:
             branch = self.SystemSettings['repositories']['branch']
         wl_file = self.get_missing_dependencies_blacklist_file(repo, branch)
         wl_dir = os.path.dirname(wl_file)
-        if not (os.path.isdir(wl_dir) and os.access(wl_dir,os.W_OK)):
+        if not (os.path.isdir(wl_dir) and os.access(wl_dir, os.W_OK)):
             return
-        if os.path.isfile(wl_file) and not os.access(wl_file,os.W_OK):
+        if os.path.isfile(wl_file) and not os.access(wl_file, os.W_OK):
             return
-        f = open(wl_file,"a+")
-        f.write('\n'.join(items)+'\n')
-        f.flush()
-        f.close()
+        f_wl = open(wl_file,"a+")
+        f_wl.write('\n'.join(items)+'\n')
+        f_wl.flush()
+        f_wl.close()
 
     def get_local_database_revision(self, repo = None):
 
@@ -2287,9 +2409,9 @@ class Server(Singleton,TextInterface):
 
         dbrev_file = self.get_local_database_revision_file(repo)
         if os.path.isfile(dbrev_file):
-            f = open(dbrev_file)
-            rev = f.readline().strip()
-            f.close()
+            f_rev = open(dbrev_file)
+            rev = f_rev.readline().strip()
+            f_rev.close()
             try:
                 rev = int(rev)
             except ValueError:
@@ -2331,36 +2453,40 @@ class Server(Singleton,TextInterface):
         return "%s" % (datetime.fromtimestamp(time.time()),)
 
     def package_set_list(self, *args, **kwargs):
-        repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        repos = srv_set['repositories'].keys()
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
-        return self.ClientService.package_set_list(*args,**kwargs)
+        return self.ClientService.package_set_list(*args, **kwargs)
 
     def package_set_search(self, *args, **kwargs):
-        repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        repos = srv_set['repositories'].keys()
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
-        return self.ClientService.package_set_search(*args,**kwargs)
+        return self.ClientService.package_set_search(*args, **kwargs)
 
     def package_set_match(self, *args, **kwargs):
-        repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        repos = srv_set['repositories'].keys()
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
-        return self.ClientService.package_set_match(*args,**kwargs)
+        return self.ClientService.package_set_match(*args, **kwargs)
 
     def atom_match(self, *args, **kwargs):
-        repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        repos = srv_set['repositories'].keys()
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
-        return self.ClientService.atom_match(*args,**kwargs)
+        return self.ClientService.atom_match(*args, **kwargs)
 
     def scan_package_changes(self):
 
         installed_packages = self.SpmService.get_installed_packages_counter()
         installed_counters = set()
-        toBeAdded = set()
-        toBeRemoved = set()
-        toBeInjected = set()
+        to_be_added = set()
+        to_be_removed = set()
+        to_be_injected = set()
         my_settings = self.SystemSettings[self.sys_settings_plugin_id]['server']
         exp_based_scope = my_settings['exp_based_scope']
 
@@ -2368,31 +2494,34 @@ class Server(Singleton,TextInterface):
         exp_pkgs_cache = {}
 
         # packages to be added
-        for spm_atom,spm_counter in installed_packages:
+        for spm_atom, spm_counter in installed_packages:
             found = False
             for server_repo in server_repos:
                 installed_counters.add(spm_counter)
-                server_dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = server_repo)
+                server_dbconn = self.open_server_repository(read_only = True,
+                    no_upload = True, repo = server_repo)
                 counter = server_dbconn.isCounterAvailable(spm_counter)
                 if counter:
                     found = True
                     break
             if not found:
-                toBeAdded.add((spm_atom,spm_counter,))
+                to_be_added.add((spm_atom, spm_counter,))
 
         # packages to be removed from the database
         database_counters = {}
         for server_repo in server_repos:
-            server_dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = server_repo)
-            database_counters[server_repo] = server_dbconn.listAllCounters(branch = self.SystemSettings['repositories']['branch'])
+            server_dbconn = self.open_server_repository(read_only = True,
+                no_upload = True, repo = server_repo)
+            database_counters[server_repo] = server_dbconn.listAllCounters(
+                branch = self.SystemSettings['repositories']['branch'])
 
         ordered_counters = set()
         for server_repo in database_counters:
             for data in database_counters[server_repo]:
-                ordered_counters.add((data,server_repo))
+                ordered_counters.add((data, server_repo))
         database_counters = ordered_counters
 
-        for (counter,idpackage,),xrepo in database_counters:
+        for (counter, idpackage,), xrepo in database_counters:
 
             if counter < 0:
                 continue # skip packages without valid counter
@@ -2400,11 +2529,12 @@ class Server(Singleton,TextInterface):
             if counter in installed_counters:
                 continue
 
-            dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = xrepo)
+            dbconn = self.open_server_repository(read_only = True,
+                no_upload = True, repo = xrepo)
 
             dorm = True
-            # check if the package is in toBeAdded
-            if toBeAdded:
+            # check if the package is in to_be_added
+            if to_be_added:
 
                 dorm = False
                 atom = dbconn.retrieveAtom(idpackage)
@@ -2413,14 +2543,17 @@ class Server(Singleton,TextInterface):
                 atomslot = dbconn.retrieveSlot(idpackage)
 
                 add = True
-                for spm_atom, spm_counter in toBeAdded:
-                    addslot = self.SpmService.get_installed_package_slot(spm_atom)
+                for spm_atom, spm_counter in to_be_added:
+                    addslot = self.SpmService.get_installed_package_slot(
+                        spm_atom)
                     addkey = self.entropyTools.dep_getkey(spm_atom)
                     # workaround for ebuilds not having slot
                     if addslot == None:
-                        addslot = '0'                                              # handle tagged packages correctly
-                    if (atomkey == addkey) and ((str(atomslot) == str(addslot)) or (atomtag != None)):
-                        # do not add to toBeRemoved
+                        addslot = '0'
+                    # atomtag != None is for handling tagged pkgs correctly
+                    if (atomkey == addkey) and \
+                        ((str(atomslot) == str(addslot)) or (atomtag != None)):
+                        # do not add to to_be_removed
                         add = False
                         break
 
@@ -2437,7 +2570,8 @@ class Server(Singleton,TextInterface):
                     # search into portage then
                     try:
                         key, slot = dbconn.retrieveKeySlot(idpackage)
-                        trashed = self.SpmService.get_installed_atom(key+":"+slot)
+                        trashed = self.SpmService.get_installed_atom(
+                            key+":"+slot)
                     except TypeError: # referred to retrieveKeySlot
                         trashed = True
                 if not trashed:
@@ -2446,18 +2580,19 @@ class Server(Singleton,TextInterface):
                     if dbtag:
                         is_injected = dbconn.isInjected(idpackage)
                         if not is_injected:
-                            toBeInjected.add((idpackage,xrepo))
+                            to_be_injected.add((idpackage, xrepo))
 
                     elif exp_based_scope:
 
                         # check if support for this is set
                         plg_id = self.sys_settings_fatscope_plugin_id
-                        exp_data = self.SystemSettings[plg_id]['repos'].get(xrepo, set())
+                        exp_data = self.SystemSettings[plg_id]['repos'].get(
+                            xrepo, set())
 
                         # only some packages are set, check if our is
                         # in the list
                         if (idpackage not in exp_data) and (-1 not in exp_data):
-                            toBeRemoved.add((idpackage,xrepo))
+                            to_be_removed.add((idpackage, xrepo))
                             continue
 
                         idpackage_expired = self.is_match_expired((idpackage,
@@ -2466,14 +2601,14 @@ class Server(Singleton,TextInterface):
                         if idpackage_expired:
                             # expired !!!
                             # add this and its depends (reverse deps)
-                            toBeRemoved.add((idpackage,xrepo))
+                            to_be_removed.add((idpackage, xrepo))
                             for my_id in dbconn.retrieveDepends(idpackage):
-                                toBeRemoved.add((my_id,xrepo))
+                                to_be_removed.add((my_id, xrepo))
 
                     else:
-                        toBeRemoved.add((idpackage,xrepo))
+                        to_be_removed.add((idpackage, xrepo))
 
-        return toBeAdded, toBeRemoved, toBeInjected
+        return to_be_added, to_be_removed, to_be_injected
 
     def is_match_expired(self, match):
 
@@ -2494,22 +2629,27 @@ class Server(Singleton,TextInterface):
         return False
 
     def is_counter_trashed(self, counter):
-        server_repos = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'].keys()
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        server_repos = srv_set['repositories'].keys()
         for repo in server_repos:
-            dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
+            dbconn = self.open_server_repository(read_only = True,
+                no_upload = True, repo = repo)
             if dbconn.isCounterTrashed(counter):
                 return True
         return False
 
     def transform_package_into_injected(self, idpackage, repo = None):
-        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = False,
+            no_upload = True, repo = repo)
         counter = dbconn.getNewNegativeCounter()
-        dbconn.setCounter(idpackage,counter)
+        dbconn.setCounter(idpackage, counter)
         dbconn.setInjected(idpackage)
 
-    def initialize_server_database(self, empty = True, repo = None, warnings = True):
+    def initialize_server_database(self, empty = True, repo = None,
+        warnings = True):
 
-        if repo == None: repo = self.default_repository
+        if repo == None:
+            repo = self.default_repository
 
         self.close_server_databases()
         revisions_match = {}
@@ -2527,24 +2667,30 @@ class Server(Singleton,TextInterface):
 
         if os.path.isfile(self.get_local_database_file(repo)):
 
-            dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo, warnings = warnings)
+            dbconn = self.open_server_repository(read_only = True,
+                no_upload = True, repo = repo, warnings = warnings)
 
-            if dbconn.doesTableExist("baseinfo") and dbconn.doesTableExist("extrainfo"):
+            if dbconn.doesTableExist("baseinfo") and \
+                dbconn.doesTableExist("extrainfo"):
                 idpackages = dbconn.listAllIdpackages()
 
             if dbconn.doesTableExist("treeupdatesactions"):
                 treeupdates_actions = dbconn.listAllTreeUpdatesActions()
 
             # save list of injected packages
-            if dbconn.doesTableExist("injected") and dbconn.doesTableExist("extrainfo"):
-                injected_packages = dbconn.listAllInjectedPackages(justFiles = True)
-                injected_packages = set([os.path.basename(x) for x in injected_packages])
+            if dbconn.doesTableExist("injected") and \
+                dbconn.doesTableExist("extrainfo"):
+                injected_packages = dbconn.listAllInjectedPackages(
+                    justFiles = True)
+                injected_packages = set([os.path.basename(x) for x \
+                    in injected_packages])
 
             for idpackage in idpackages:
-                package = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
+                url = dbconn.retrieveDownloadURL(idpackage)
+                package = os.path.basename(url)
                 branch = dbconn.retrieveBranch(idpackage)
                 revision = dbconn.retrieveRevision(idpackage)
-                revisions_match[package] = (branch,revision,)
+                revisions_match[package] = (branch, revision,)
 
             self.close_server_database(dbconn)
 
@@ -2560,8 +2706,9 @@ class Server(Singleton,TextInterface):
                 header = darkred(" !!! ")
             )
 
-            rc = self.askQuestion(_("Do you want to continue ?"))
-            if rc == "No": return
+            rc_question = self.askQuestion(_("Do you want to continue ?"))
+            if rc_question == "No":
+                return
             try:
                 os.remove(self.get_local_database_file(repo))
             except OSError:
@@ -2569,7 +2716,8 @@ class Server(Singleton,TextInterface):
 
 
         # initialize
-        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo, is_new = True)
+        dbconn = self.open_server_repository(read_only = False,
+            no_upload = True, repo = repo, is_new = True)
         dbconn.initializeDatabase()
 
         if not empty:
@@ -2586,30 +2734,32 @@ class Server(Singleton,TextInterface):
                     type = "info",
                     header = darkgreen(" * ")
                 )
-                f = open(revisions_file,"w")
-                f.write(str(revisions_match))
-                f.flush()
-                f.close()
+                f_rev = open(revisions_file,"w")
+                f_rev.write(str(revisions_match))
+                f_rev.flush()
+                f_rev.close()
 
             # dump treeupdates - as a backup
             treeupdates_file = "/entropy-treeupdates-dump.txt"
             if treeupdates_actions:
                 self.updateProgress(
                     "%s: %s" % (
-                        red(_("Dumping current 'treeupdates' actions to file")), # do not translate treeupdates
+                        # do not translate treeupdates
+                        red(_("Dumping current 'treeupdates' actions to file")),
                         bold(treeupdates_file),
                     ),
                     importance = 1,
                     type = "info",
                     header = darkgreen(" * ")
                 )
-                f = open(treeupdates_file,"w")
-                f.write(str(treeupdates_actions))
-                f.flush()
-                f.close()
+                f_tree = open(treeupdates_file,"w")
+                f_tree.write(str(treeupdates_actions))
+                f_tree.flush()
+                f_tree.close()
 
-            rc = self.askQuestion(_("Would you like to sync packages first (important if you don't have them synced) ?"))
-            if rc == "Yes":
+            rc_question = self.askQuestion(
+                _("Would you like to sync packages first (important!) ?"))
+            if rc_question == "Yes":
                 self.MirrorsService.sync_packages(repo = repo)
 
             # fill tree updates actions
@@ -2617,11 +2767,16 @@ class Server(Singleton,TextInterface):
                 dbconn.bumpTreeUpdatesActions(treeupdates_actions)
 
             # now fill the database
-            pkg_branch_dir = os.path.join(self.get_local_packages_directory(repo),self.SystemSettings['repositories']['branch'])
+            pkg_branch_dir = os.path.join(
+                self.get_local_packages_directory(repo),
+                self.SystemSettings['repositories']['branch'])
             pkglist = os.listdir(pkg_branch_dir)
             # filter .md5 and .expired packages
-            pkglist = [x for x in pkglist if x[-5:] == etpConst['packagesext'] and not \
-                os.path.isfile(os.path.join(pkg_branch_dir,x+etpConst['packagesexpirationfileext']))]
+            pkg_ext_len = len(etpConst['packagesext'])
+            pkglist = [x for x in pkglist if (x[(pkg_ext_len*-1):] == \
+                etpConst['packagesext']) and not \
+                os.path.isfile(os.path.join(pkg_branch_dir,
+                    x + etpConst['packagesexpirationfileext']))]
 
             if pkglist:
                 self.updateProgress(
@@ -2638,51 +2793,55 @@ class Server(Singleton,TextInterface):
 
             counter = 0
             maxcount = len(pkglist)
+            branch = self.SystemSettings['repositories']['branch']
             for pkg in pkglist:
                 counter += 1
 
                 self.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
-                            darkgreen(repo),
-                            brown(self.SystemSettings['repositories']['branch']),
-                            blue(_("analyzing")),
-                            bold(pkg),
-                        ),
+                        darkgreen(repo),
+                        brown(branch),
+                        blue(_("analyzing")),
+                        bold(pkg),
+                    ),
                     importance = 1,
                     type = "info",
                     header = " ",
                     back = True,
-                    count = (counter,maxcount,)
+                    count = (counter, maxcount,)
                 )
 
                 doinject = False
                 if pkg in injected_packages:
                     doinject = True
 
-                pkg_path = os.path.join(self.get_local_packages_directory(repo),self.SystemSettings['repositories']['branch'],pkg)
-                mydata = self.ClientService.extract_pkg_metadata(pkg_path, self.SystemSettings['repositories']['branch'], inject = doinject)
+                pkg_path = os.path.join(self.get_local_packages_directory(repo),
+                    branch, pkg)
+                mydata = self.ClientService.extract_pkg_metadata(pkg_path,
+                    branch, inject = doinject)
 
                 # get previous revision
                 revision_avail = revisions_match.get(pkg)
-                addRevision = 0
+                add_revision = 0
                 if (revision_avail != None):
-                    if self.SystemSettings['repositories']['branch'] == revision_avail[0]:
-                        addRevision = revision_avail[1]
+                    if branch == revision_avail[0]:
+                        add_revision = revision_avail[1]
 
-                idpackage, revision, mydata_upd = dbconn.addPackage(mydata, revision = addRevision)
+                idpackage, revision, mydata_upd = dbconn.addPackage(mydata,
+                    revision = add_revision)
                 idpackages_added.add(idpackage)
 
                 self.updateProgress(
                     "[repo:%s] [%s:%s/%s] %s: %s, %s: %s" % (
-                                repo,
-                                brown(self.SystemSettings['repositories']['branch']),
-                                darkgreen(str(counter)),
-                                blue(str(maxcount)),
-                                red(_("added package")),
-                                darkgreen(pkg),
-                                red(_("revision")),
-                                brown(str(revision)),
-                        ),
+                            repo,
+                            brown(branch),
+                            darkgreen(str(counter)),
+                            blue(str(maxcount)),
+                            red(_("added package")),
+                            darkgreen(pkg),
+                            red(_("revision")),
+                            brown(str(revision)),
+                    ),
                     importance = 1,
                     type = "info",
                     header = " ",
@@ -2691,15 +2850,18 @@ class Server(Singleton,TextInterface):
 
             self.depends_table_initialize(repo)
 
-            myQA = self.QA()
+            my_qa = self.QA()
 
             if idpackages_added:
-                dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
-                myQA.scan_missing_dependencies(
+                dbconn = self.open_server_repository(read_only = False,
+                    no_upload = True, repo = repo)
+                my_qa.scan_missing_dependencies(
                     idpackages_added, dbconn, ask = True,
                     repo = repo, self_check = True,
-                    black_list = self.get_missing_dependencies_blacklist(repo = repo),
-                    black_list_adder = self.add_missing_dependencies_blacklist_items
+                    black_list = \
+                        self.get_missing_dependencies_blacklist(repo = repo),
+                    black_list_adder = \
+                        self.add_missing_dependencies_blacklist_items
                 )
 
         dbconn.commitChanges()
@@ -2709,9 +2871,10 @@ class Server(Singleton,TextInterface):
 
     def match_packages(self, packages, repo = None):
 
-        dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = True,
+            no_upload = True, repo = repo)
         if ("world" in packages) or not packages:
-            return dbconn.listAllIdpackages(),True
+            return dbconn.listAllIdpackages(), True
         else:
             idpackages = set()
             for package in packages:
@@ -2719,27 +2882,32 @@ class Server(Singleton,TextInterface):
                 if matches[1] == 0:
                     idpackages |= matches[0]
                 else:
-                    mytxt = "%s: %s: %s" % (red(_("Attention")),blue(_("cannot match")),bold(package),)
+                    mytxt = "%s: %s: %s" % (
+                        red(_("Attention")),
+                        blue(_("cannot match")),
+                        bold(package),
+                    )
                     self.updateProgress(
                         mytxt,
                         importance = 1,
                         type = "warning",
                         header = darkred(" !!! ")
                     )
-            return idpackages,False
+            return idpackages, False
 
     def get_remote_package_checksum(self, repo, filename, branch):
 
         import urllib2
-        if not self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo].has_key('handler'):
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        if not srv_set['repositories'][repo].has_key('handler'):
             return None
-        url = self.SystemSettings[self.sys_settings_plugin_id]['server']['repositories'][repo]['handler']
+        url = srv_set['repositories'][repo]['handler']
 
         # does the package has "#" (== tag) ? hackish thing that works
         filename = filename.replace("#","%23")
         # "+"
         filename = filename.replace("+","%2b")
-        request = os.path.join(url,etpConst['handlers']['md5sum'])
+        request = os.path.join(url, etpConst['handlers']['md5sum'])
         request += filename+"&branch="+branch
 
         proxy_settings = self.SystemSettings['system']['proxy']
@@ -2761,7 +2929,7 @@ class Server(Singleton,TextInterface):
             item.close()
             del item
             return result
-        except: # no HTTP support?
+        except (urllib2.URLError, urllib2.HTTPError,): # no HTTP support?
             return None
 
     def verify_remote_packages(self, packages, ask = True, repo = None):
@@ -2780,17 +2948,21 @@ class Server(Singleton,TextInterface):
         )
 
         idpackages, world = self.match_packages(packages)
-        dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = True, no_upload = True,
+            repo = repo)
+        branch = self.SystemSettings['repositories']['branch']
 
         if world:
             self.updateProgress(
-                blue(_("All the packages in the Entropy Packages repository will be checked.")),
+                blue(
+                    _("All the packages in repository will be checked.")),
                 importance = 1,
                 type = "info",
                 header = "    "
             )
         else:
-            mytxt = red("%s:") % (_("This is the list of the packages that would be checked"),)
+            mytxt = red("%s:") % (
+                _("This is the list of the packages that would be checked"),)
             self.updateProgress(
                 mytxt,
                 importance = 1,
@@ -2799,18 +2971,20 @@ class Server(Singleton,TextInterface):
             )
             for idpackage in idpackages:
                 pkgatom = dbconn.retrieveAtom(idpackage)
-                pkgfile = os.path.basename(dbconn.retrieveDownloadURL(idpackage))
+                down_url = dbconn.retrieveDownloadURL(idpackage)
+                pkgfile = os.path.basename(down_url)
                 self.updateProgress(
-                    red(pkgatom)+" -> "+bold(os.path.join(self.SystemSettings['repositories']['branch'],pkgfile)),
+                    red(pkgatom) + " -> " + bold(os.path.join(branch, pkgfile)),
                     importance = 1,
                     type = "info",
                     header = darkgreen("   - ")
                 )
 
         if ask:
-            rc = self.askQuestion(_("Would you like to continue ?"))
-            if rc == "No":
-                return set(),set(),{}
+            rc_question = self.askQuestion(
+                _("Would you like to continue ?"))
+            if rc_question == "No":
+                return set(), set(), {}
 
         match = set()
         not_match = set()
@@ -2821,10 +2995,10 @@ class Server(Singleton,TextInterface):
             crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
             self.updateProgress(
                 "[repo:%s] %s: %s" % (
-                        darkgreen(repo),
-                        blue(_("Working on mirror")),
-                        brown(crippled_uri),
-                    ),
+                    darkgreen(repo),
+                    blue(_("Working on mirror")),
+                    brown(crippled_uri),
+                ),
                 importance = 1,
                 type = "info",
                 header = red(" @@ ")
@@ -2837,24 +3011,26 @@ class Server(Singleton,TextInterface):
 
                 currentcounter += 1
                 pkgfile = dbconn.retrieveDownloadURL(idpackage)
-                orig_branch = self.get_branch_from_download_relative_uri(pkgfile)
+                orig_branch = self.get_branch_from_download_relative_uri(
+                    pkgfile)
 
                 self.updateProgress(
                     "[%s] %s: %s" % (
-                            brown(crippled_uri),
-                            blue(_("checking hash")),
-                            darkgreen(pkgfile),
+                        brown(crippled_uri),
+                        blue(_("checking hash")),
+                        darkgreen(pkgfile),
                     ),
                     importance = 1,
                     type = "info",
                     header = blue(" @@ "),
                     back = True,
-                    count = (currentcounter,totalcounter,)
+                    count = (currentcounter, totalcounter,)
                 )
 
-                ckOk = False
-                ck = self.get_remote_package_checksum(repo, os.path.basename(pkgfile), orig_branch)
-                if ck == None:
+                checksum_ok = False
+                ck_remote = self.get_remote_package_checksum(repo,
+                    os.path.basename(pkgfile), orig_branch)
+                if ck_remote == None:
                     self.updateProgress(
                         "[%s] %s: %s %s" % (
                             brown(crippled_uri),
@@ -2865,11 +3041,12 @@ class Server(Singleton,TextInterface):
                         importance = 1,
                         type = "info",
                         header = blue(" @@ "),
-                        count = (currentcounter,totalcounter,)
+                        count = (currentcounter, totalcounter,)
                     )
-                elif len(ck) == 32:
+                elif len(ck_remote) == 32:
                     pkghash = dbconn.retrieveDigest(idpackage)
-                    if ck == pkghash: ckOk = True
+                    if ck_remote == pkghash:
+                        checksum_ok = True
                 else:
                     self.updateProgress(
                         "[%s] %s: %s %s" % (
@@ -2881,10 +3058,10 @@ class Server(Singleton,TextInterface):
                         importance = 1,
                         type = "info",
                         header = blue(" @@ "),
-                        count = (currentcounter,totalcounter,)
+                        count = (currentcounter, totalcounter,)
                     )
 
-                if ckOk:
+                if checksum_ok:
                     match.add(idpackage)
                 else:
                     not_match.add(idpackage)
@@ -2898,14 +3075,15 @@ class Server(Singleton,TextInterface):
                         importance = 1,
                         type = "warning",
                         header = darkred(" !!! "),
-                        count = (currentcounter,totalcounter,)
+                        count = (currentcounter, totalcounter,)
                     )
                     if not broken_packages.has_key(crippled_uri):
                         broken_packages[crippled_uri] = []
                     broken_packages[crippled_uri].append(pkgfile)
 
             if broken_packages:
-                mytxt = blue("%s:") % (_("This is the list of broken packages"),)
+                mytxt = blue("%s:") % (
+                    _("This is the list of broken packages"),)
                 self.updateProgress(
                     mytxt,
                     importance = 1,
@@ -2913,16 +3091,19 @@ class Server(Singleton,TextInterface):
                     header = red(" * ")
                 )
                 for mirror in broken_packages.keys():
-                    mytxt = "%s: %s" % (brown(_("Mirror")),bold(mirror),)
+                    mytxt = "%s: %s" % (
+                        brown(_("Mirror")),
+                        bold(mirror),
+                    )
                     self.updateProgress(
                         mytxt,
                         importance = 1,
                         type = "info",
                         header = red("   <> ")
                     )
-                    for bp in broken_packages[mirror]:
+                    for broken_package in broken_packages[mirror]:
                         self.updateProgress(
-                            blue(bp),
+                            blue(broken_package),
                             importance = 1,
                             type = "info",
                             header = red("      - ")
@@ -2940,7 +3121,7 @@ class Server(Singleton,TextInterface):
                 "[%s] %s:\t%s" % (
                     red(crippled_uri),
                     brown(_("Number of checked packages")),
-                    brown(str(len(match)+len(not_match))),
+                    brown(str(len(match) + len(not_match))),
                 ),
                 importance = 1,
                 type = "info",
@@ -2986,11 +3167,12 @@ class Server(Singleton,TextInterface):
         )
 
         idpackages, world = self.match_packages(packages)
-        dbconn = self.open_server_repository(read_only = True, no_upload = True, repo = repo)
+        dbconn = self.open_server_repository(read_only = True,
+            no_upload = True, repo = repo)
 
         if world:
             self.updateProgress(
-                blue(_("All the packages in the Entropy Packages repository will be checked.")),
+                blue(_("All the packages in repository will be checked.")),
                 importance = 1,
                 type = "info",
                 header = "    "
@@ -3004,16 +3186,18 @@ class Server(Singleton,TextInterface):
             pkg_path = dbconn.retrieveDownloadURL(idpackage)
             pkg_rel_path = '/'.join(pkg_path.split("/")[2:])
 
-            bindir_path = os.path.join(self.get_local_packages_directory(repo),pkg_rel_path)
-            uploaddir_path = os.path.join(self.get_local_upload_directory(repo),pkg_rel_path)
+            bindir_path = os.path.join(self.get_local_packages_directory(repo),
+                pkg_rel_path)
+            uploaddir_path = os.path.join(self.get_local_upload_directory(repo),
+                pkg_rel_path)
 
             if os.path.isfile(bindir_path):
                 if not world:
                     self.updateProgress(
                         "[%s] %s :: %s" % (
-                                darkgreen(_("available")),
-                                blue(pkgatom),
-                                darkgreen(pkg_rel_path),
+                            darkgreen(_("available")),
+                            blue(pkgatom),
+                            darkgreen(pkg_rel_path),
                         ),
                         importance = 0,
                         type = "info",
@@ -3024,9 +3208,9 @@ class Server(Singleton,TextInterface):
                 if not world:
                     self.updateProgress(
                         "[%s] %s :: %s" % (
-                                darkred(_("upload/ignored")),
-                                blue(pkgatom),
-                                darkgreen(pkg_rel_path),
+                            darkred(_("upload/ignored")),
+                            blue(pkgatom),
+                            darkgreen(pkg_rel_path),
                         ),
                         importance = 0,
                         type = "info",
@@ -3035,20 +3219,20 @@ class Server(Singleton,TextInterface):
             else:
                 self.updateProgress(
                     "[%s] %s :: %s" % (
-                            brown(_("download")),
-                            blue(pkgatom),
-                            darkgreen(pkg_rel_path),
+                        brown(_("download")),
+                        blue(pkgatom),
+                        darkgreen(pkg_rel_path),
                     ),
                     importance = 0,
                     type = "info",
                     header = darkgreen("   # ")
                 )
-                to_download.add((idpackage,pkg_path,))
+                to_download.add((idpackage, pkg_path,))
 
         if ask:
-            rc = self.askQuestion(_("Would you like to continue ?"))
-            if rc == "No":
-                return set(),set(),set(),set()
+            rc_question = self.askQuestion(_("Would you like to continue ?"))
+            if rc_question == "No":
+                return set(), set(), set(), set()
 
 
         fine = set()
@@ -3069,7 +3253,8 @@ class Server(Singleton,TextInterface):
             for uri in self.get_remote_mirrors(repo):
 
                 if not_downloaded:
-                    mytxt = blue("%s ...") % (_("Trying to search missing or broken files on another mirror"),)
+                    mytxt = blue("%s ...") % (
+                        _("Searching missing/broken files on another mirror"),)
                     self.updateProgress(
                         mytxt,
                         importance = 1,
@@ -3079,9 +3264,10 @@ class Server(Singleton,TextInterface):
                     to_download = not_downloaded.copy()
                     not_downloaded = set()
 
-                for idpackage, pkg_path in to_download: # idpackage, pkgfile, branch
-                    rc = self.MirrorsService.download_package(uri, pkg_path, repo = repo)
-                    if rc:
+                for idpackage, pkg_path in to_download:
+                    rc_down = self.MirrorsService.download_package(uri,
+                        pkg_path, repo = repo)
+                    if rc_down:
                         downloaded_fine.add(idpackage)
                         available.add(idpackage)
                     else:
@@ -3089,7 +3275,7 @@ class Server(Singleton,TextInterface):
 
                 if not not_downloaded:
                     self.updateProgress(
-                        red(_("All the binary packages have been downloaded successfully.")),
+                        red(_("Binary packages downloaded successfully.")),
                         importance = 1,
                         type = "info",
                         header = "   "
@@ -3097,7 +3283,8 @@ class Server(Singleton,TextInterface):
                     break
 
             if not_downloaded:
-                mytxt = blue("%s:") % (_("These are the packages that cannot be found online"),)
+                mytxt = blue("%s:") % (
+                    _("These are the packages that cannot be found online"),)
                 self.updateProgress(
                     mytxt,
                     importance = 1,
@@ -3139,12 +3326,13 @@ class Server(Singleton,TextInterface):
                 type = "info",
                 header = "   ",
                 back = True,
-                count = (currentcounter,totalcounter,)
+                count = (currentcounter, totalcounter,)
             )
 
             storedmd5 = dbconn.retrieveDigest(idpackage)
-            pkgpath = os.path.join(self.get_local_packages_directory(repo),orig_branch,pkgfile)
-            result = self.entropyTools.compare_md5(pkgpath,storedmd5)
+            pkgpath = os.path.join(self.get_local_packages_directory(repo),
+                orig_branch, pkgfile)
+            result = self.entropyTools.compare_md5(pkgpath, storedmd5)
             if result:
                 fine.add(idpackage)
             else:
@@ -3154,13 +3342,13 @@ class Server(Singleton,TextInterface):
                             brown(orig_branch),
                             blue(_("package")),
                             darkgreen(pkg_path),
-                            blue(_("is corrupted, stored checksum")), # package -blah- is corrupted...
+                            blue(_("is corrupted, stored checksum")),
                             brown(storedmd5),
                     ),
                     importance = 1,
                     type = "info",
                     header = "   ",
-                    count = (currentcounter,totalcounter,)
+                    count = (currentcounter, totalcounter,)
                 )
 
         if failed:
@@ -3173,9 +3361,9 @@ class Server(Singleton,TextInterface):
             )
             for idpackage in failed:
                 atom = dbconn.retrieveAtom(idpackage)
-                dp = dbconn.retrieveDownloadURL(idpackage)
+                down_p = dbconn.retrieveDownloadURL(idpackage)
                 self.updateProgress(
-                        blue("[atom:%s] %s" % (atom,dp,)),
+                        blue("[atom:%s] %s" % (atom, down_p,)),
                         importance = 0,
                         type = "warning",
                         header =  brown("    # ")
@@ -3189,9 +3377,9 @@ class Server(Singleton,TextInterface):
             header = blue(" * ")
         )
         self.updateProgress(
-            brown("%s:\t\t%s" % (
-                    _("Number of checked packages"),
-                    len(fine)+len(failed),
+            brown("%s => %s" % (
+                    len(fine) + len(failed),
+                    _("checked packages"),
                 )
             ),
             importance = 0,
@@ -3199,9 +3387,9 @@ class Server(Singleton,TextInterface):
             header = brown("   # ")
         )
         self.updateProgress(
-            darkgreen("%s:\t\t%s" % (
-                    _("Number of healthy packages"),
+            darkgreen("%s => %s" % (
                     len(fine),
+                    _("healthy packages"),
                 )
             ),
             importance = 0,
@@ -3209,9 +3397,9 @@ class Server(Singleton,TextInterface):
             header = brown("   # ")
         )
         self.updateProgress(
-            darkred("%s:\t\t%s" % (
-                    _("Number of broken packages"),
+            darkred("%s => %s" % (
                     len(failed),
+                    _("broken packages"),
                 )
             ),
             importance = 0,
@@ -3219,9 +3407,9 @@ class Server(Singleton,TextInterface):
             header = brown("   # ")
         )
         self.updateProgress(
-            blue("%s:\t\t%s" % (
-                    _("Number of downloaded packages"),
+            blue("%s => %s" % (
                     len(downloaded_fine),
+                    _("downloaded packages"),
                 )
             ),
             importance = 0,
@@ -3229,9 +3417,9 @@ class Server(Singleton,TextInterface):
             header = brown("   # ")
         )
         self.updateProgress(
-            bold("%s:\t\t%s" % (
-                    _("Number of failed downloads"),
+            bold("%s => %s" % (
                     len(downloaded_errors),
+                    _("failed downloads"),
                 )
             ),
             importance = 0,
@@ -3243,13 +3431,18 @@ class Server(Singleton,TextInterface):
         return fine, failed, downloaded_fine, downloaded_errors
 
 
-    def switch_packages_branch(self, idpackages, from_branch, to_branch, repo = None):
+    def switch_packages_branch(self, idpackages, from_branch, to_branch,
+        repo = None):
 
         if repo == None:
             repo = self.default_repository
 
         if to_branch != self.SystemSettings['repositories']['branch']:
-            mytxt = "%s: %s %s" % (blue(_("Please setup your branch to")),bold(to_branch),blue(_("and retry")),)
+            mytxt = "%s: %s %s" % (
+                blue(_("Please setup your branch to")),
+                bold(to_branch),
+                blue(_("and retry")),
+            )
             self.updateProgress(
                 mytxt,
                 importance = 1,
@@ -3267,8 +3460,9 @@ class Server(Singleton,TextInterface):
         )
         branch_dbdir = self.get_local_database_dir(repo)
         old_branch_dbdir = self.get_local_database_dir(repo, from_branch)
-        if (not os.path.isdir(branch_dbdir)) and os.path.isdir(old_branch_dbdir):
-            shutil.copytree(old_branch_dbdir,branch_dbdir)
+        if (not os.path.isdir(branch_dbdir)) and \
+            os.path.isdir(old_branch_dbdir):
+            shutil.copytree(old_branch_dbdir, branch_dbdir)
 
         mytxt = red("%s ...") % (_("Switching packages"),)
         self.updateProgress(
@@ -3277,7 +3471,8 @@ class Server(Singleton,TextInterface):
             type = "info",
             header = darkgreen(" @@ ")
         )
-        dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo, lock_remote = False)
+        dbconn = self.open_server_repository(read_only = False,
+            no_upload = True, repo = repo, lock_remote = False)
 
         already_switched = set()
         not_found = set()
@@ -3305,7 +3500,7 @@ class Server(Singleton,TextInterface):
                     importance = 0,
                     type = "info",
                     header = darkgreen(" @@ "),
-                    count = (count,maxcount,)
+                    count = (count, maxcount,)
                 )
                 ignored.add(idpackage)
                 continue
@@ -3322,9 +3517,9 @@ class Server(Singleton,TextInterface):
                 type = "info",
                 header = darkgreen(" @@ "),
                 back = True,
-                count = (count,maxcount,)
+                count = (count, maxcount,)
             )
-            switch_status = dbconn.switchBranch(idpackage,to_branch)
+            switch_status = dbconn.switchBranch(idpackage, to_branch)
             if not switch_status:
                 # remove idpackage
                 dbconn.removePackage(idpackage)
@@ -3355,10 +3550,11 @@ class Server(Singleton,TextInterface):
 
         if branch == None:
             branch = self.SystemSettings['repositories']['branch']
-        if repo == None: repo = self.default_repository
+        if repo == None:
+            repo = self.default_repository
 
         sets_dir = self.get_local_database_sets_dir(repo, branch)
-        if not (os.path.isdir(sets_dir) and os.access(sets_dir,os.R_OK)):
+        if not (os.path.isdir(sets_dir) and os.access(sets_dir, os.R_OK)):
             return {}
 
         mydata = {}
@@ -3367,22 +3563,26 @@ class Server(Singleton,TextInterface):
 
             try:
                 item_clean = str(item)
-            except (UnicodeEncodeError,UnicodeDecodeError,):
+            except (UnicodeEncodeError, UnicodeDecodeError,):
                 continue
-            item_path = os.path.join(sets_dir,item)
-            if not (os.path.isfile(item_path) and os.access(item_path,os.R_OK)):
+            item_path = os.path.join(sets_dir, item)
+            if not (os.path.isfile(item_path) and \
+                os.access(item_path, os.R_OK)):
                 continue
-            item_elements = self.entropyTools.extract_packages_from_set_file(item_path)
+            item_elements = self.entropyTools.extract_packages_from_set_file(
+                item_path)
             if item_elements:
                 mydata[item_clean] = item_elements.copy()
 
         return mydata
 
-    def get_configured_package_sets(self, repo = None, branch = None, validate = True):
+    def get_configured_package_sets(self, repo = None, branch = None,
+        validate = True):
 
         if branch == None:
             branch = self.SystemSettings['repositories']['branch']
-        if repo == None: repo = self.default_repository
+        if repo == None:
+            repo = self.default_repository
 
         # portage sets
         sets_data = self.SpmService.get_sets_expanded(builtin_sets = False)
@@ -3394,12 +3594,14 @@ class Server(Singleton,TextInterface):
             for setname in sets_data:
                 good = True
                 for atom in sets_data[setname]:
-                    dbconn = self.open_server_repository(just_reading = True, repo = repo)
+                    dbconn = self.open_server_repository(just_reading = True,
+                        repo = repo)
                     match = dbconn.atomMatch(atom)
                     if match[0] == -1:
                         good = False
                         break
-                if not good: invalid_sets.add(setname)
+                if not good:
+                    invalid_sets.add(setname)
             for invalid_set in invalid_sets:
                 del sets_data[invalid_set]
 
@@ -3407,24 +3609,13 @@ class Server(Singleton,TextInterface):
 
     def update_database_package_sets(self, repo = None, dbconn = None):
 
-        if repo == None: repo = self.default_repository
+        if repo == None:
+            repo = self.default_repository
         package_sets = self.get_configured_package_sets(repo)
-        if dbconn == None: dbconn = self.open_server_repository(read_only = False, no_upload = True, repo = repo)
+        if dbconn == None:
+            dbconn = self.open_server_repository(
+                read_only = False, no_upload = True, repo = repo)
         dbconn.clearPackageSets()
-        if package_sets: dbconn.insertPackageSets(package_sets)
+        if package_sets:
+            dbconn.insertPackageSets(package_sets)
         dbconn.commitChanges()
-
-
-    """
-        XXX deprecated XXX
-    """
-
-    def openServerDatabase(self, *args, **kwargs):
-        import warnings
-        warnings.warn("deprecated, use open_server_repository instead")
-        return self.open_server_repository(*args, **kwargs)
-
-    def doServerDatabaseSyncLock(self, *args, **kwargs):
-        import warnings
-        warnings.warn("deprecated, use do_server_repository_sync_lock instead")
-        return self.do_server_repository_sync_lock(*args, **kwargs)

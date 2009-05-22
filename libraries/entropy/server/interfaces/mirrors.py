@@ -29,6 +29,8 @@ from entropy.output import TextInterface, purple, green, red, darkgreen, bold, \
     brown, blue, darkred, darkblue
 from entropy.const import etpConst, etpSys
 from entropy.i18n import _
+from entropy.misc import rssFeed
+from entropy.transceivers import FtpInterface
 
 class Server:
 
@@ -47,8 +49,6 @@ class Server:
         self.FtpServerHandler = FtpServerHandler
         from entropy.cache import EntropyCacher
         self.Cacher = EntropyCacher()
-        self.FtpInterface = self.Entropy.FtpInterface
-        self.rssFeed = self.Entropy.rssFeed
         self.sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
         self.SystemSettings = self.Entropy.SystemSettings
@@ -100,7 +100,7 @@ class Server:
             )
 
             try:
-                ftp = self.FtpInterface(uri, self.Entropy)
+                ftp = FtpInterface(uri, self.Entropy)
             except ConnectionError:
                 self.entropyTools.print_traceback()
                 return True # issues
@@ -151,7 +151,10 @@ class Server:
     # this functions makes entropy clients to not download anything from the chosen
     # mirrors. it is used to avoid clients to download databases while we're uploading
     # a new one.
-    def lock_mirrors_for_download(self, lock = True, mirrors = [], repo = None):
+    def lock_mirrors_for_download(self, lock = True, mirrors = None, repo = None):
+
+        if mirrors == None:
+            mirrors = []
 
         if repo == None:
             repo = self.Entropy.default_repository
@@ -180,7 +183,7 @@ class Server:
             )
 
             try:
-                ftp = self.FtpInterface(uri, self.Entropy)
+                ftp = FtpInterface(uri, self.Entropy)
             except ConnectionError:
                 self.entropyTools.print_traceback()
                 return True # issues
@@ -231,7 +234,7 @@ class Server:
         my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),self.SystemSettings['repositories']['branch'])
         if not ftp_connection:
             try:
-                ftp_connection = self.FtpInterface(uri, self.Entropy)
+                ftp_connection = FtpInterface(uri, self.Entropy)
             except ConnectionError:
                 self.entropyTools.print_traceback()
                 return False # issues
@@ -292,7 +295,7 @@ class Server:
         my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),self.SystemSettings['repositories']['branch'])
         if not ftp_connection:
             try:
-                ftp_connection = self.FtpInterface(uri, self.Entropy)
+                ftp_connection = FtpInterface(uri, self.Entropy)
             except ConnectionError:
                 self.entropyTools.print_traceback()
                 return False # issues
@@ -413,7 +416,7 @@ class Server:
             )
 
             try:
-                ftp = self.FtpInterface(uri, self.Entropy)
+                ftp = FtpInterface(uri, self.Entropy)
             except ConnectionError:
                 self.entropyTools.print_traceback()
                 return False # issues
@@ -553,7 +556,7 @@ class Server:
         for uri in mirrors:
 
             # let it raise an exception if connection is impossible
-            ftp = self.FtpInterface(uri, self.Entropy)
+            ftp = FtpInterface(uri, self.Entropy)
             try:
                 my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),self.SystemSettings['repositories']['branch'])
                 ftp.set_cwd(my_path, dodir = True)
@@ -657,7 +660,7 @@ class Server:
         dbstatus = []
         for uri in self.Entropy.get_remote_mirrors(repo):
             data = [uri,False,False]
-            ftp = self.FtpInterface(uri, self.Entropy)
+            ftp = FtpInterface(uri, self.Entropy)
             try:
                 my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo),self.SystemSettings['repositories']['branch'])
                 ftp.set_cwd(my_path)
@@ -697,7 +700,7 @@ class Server:
         for uri in mirrors:
             crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
             downloader = self.FtpServerHandler(
-                self.FtpInterface, self.Entropy, [uri],
+                FtpInterface, self.Entropy, [uri],
                 [rss_path], download = True,
                 local_basedir = mytmpdir, critical_files = [rss_path], repo = repo
             )
@@ -739,7 +742,7 @@ class Server:
         )
 
         uploader = self.FtpServerHandler(
-            self.FtpInterface,
+            FtpInterface,
             self.Entropy,
             mirrors,
             [rss_path],
@@ -781,7 +784,7 @@ class Server:
         if not link: link = self.SystemSettings[self.sys_settings_plugin_id]['server']['rss']['website_url']
 
         self.download_notice_board(repo)
-        Rss = self.rssFeed(rss_path, rss_title, rss_description, maxentries = 20)
+        Rss = rssFeed(rss_path, rss_title, rss_description, maxentries = 20)
         Rss.addItem(title, link, description = notice_text)
         Rss.writeChanges()
         status = self.upload_notice_board(repo)
@@ -793,7 +796,7 @@ class Server:
         if do_download: self.download_notice_board(repo)
         if not (os.path.isfile(rss_path) and os.access(rss_path,os.R_OK)):
             return None
-        Rss = self.rssFeed(rss_path, '', '')
+        Rss = rssFeed(rss_path, '', '')
         return Rss.getEntries()
 
     def remove_from_notice_board(self, identifier, repo = None):
@@ -803,7 +806,7 @@ class Server:
         rss_description = "Inform about important distribution activities."
         if not (os.path.isfile(rss_path) and os.access(rss_path,os.R_OK)):
             return 0
-        Rss = self.rssFeed(rss_path, rss_title, rss_description)
+        Rss = rssFeed(rss_path, rss_title, rss_description)
         data = Rss.removeEntry(identifier)
         Rss.writeChanges()
         return data
@@ -821,7 +824,7 @@ class Server:
             self.SystemSettings['system']['name'],)
         rss_description = u"Keep you updated on what's going on in the %s Repository." % (
             self.SystemSettings['system']['name'],)
-        Rss = self.rssFeed(rss_path, rss_title, rss_description, maxentries = self.SystemSettings[self.sys_settings_plugin_id]['server']['rss']['max_entries'])
+        Rss = rssFeed(rss_path, rss_title, rss_description, maxentries = self.SystemSettings[self.sys_settings_plugin_id]['server']['rss']['max_entries'])
         # load dump
         db_actions = self.Cacher.pop(rss_dump_name)
         if db_actions:
@@ -855,7 +858,7 @@ class Server:
                     Rss.addItem(title = "Removed"+title, link = link, description = description)
             light_items = db_actions.get('light')
             if light_items:
-                rssLight = self.rssFeed(rss_light_path, rss_title, rss_description, maxentries = self.SystemSettings[self.sys_settings_plugin_id]['server']['rss']['light_max_entries'])
+                rssLight = rssFeed(rss_light_path, rss_title, rss_description, maxentries = self.SystemSettings[self.sys_settings_plugin_id]['server']['rss']['light_max_entries'])
                 for atom in light_items:
                     mylink = link+"?search="+atom.split("~")[0]+"&arch="+etpConst['currentarch']+"&product="+product
                     description = light_items[atom]['description']
@@ -1195,7 +1198,7 @@ class Server:
         gave_up = False
         crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
         try:
-            ftp = self.FtpInterface(uri, self.Entropy)
+            ftp = FtpInterface(uri, self.Entropy)
         except ConnectionError:
             self.entropyTools.print_traceback()
             return True # gave up
@@ -1425,7 +1428,7 @@ class Server:
             if not pretend:
                 # upload
                 uploader = self.FtpServerHandler(
-                    self.FtpInterface,
+                    FtpInterface,
                     self.Entropy,
                     [uri],
                     [upload_data[x] for x in upload_data],
@@ -1547,7 +1550,7 @@ class Server:
             if not pretend:
                 # download
                 downloader = self.FtpServerHandler(
-                    self.FtpInterface, self.Entropy, [uri],
+                    FtpInterface, self.Entropy, [uri],
                     [download_data[x] for x in download_data], download = True,
                     local_basedir = mytmpdir, critical_files = critical, repo = repo
                 )
@@ -1956,7 +1959,7 @@ class Server:
         if ftp_connection == None:
             close_conn = True
             # let it raise an exception if things go bad
-            ftp_connection = self.FtpInterface(uri, self.Entropy)
+            ftp_connection = FtpInterface(uri, self.Entropy)
         ftp_connection.set_cwd(my_path, dodir = True)
 
         remote_packages = ftp_connection.list_dir()
@@ -2269,7 +2272,7 @@ class Server:
             myqueue.append(x)
 
         ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
-        uploader = self.FtpServerHandler(self.FtpInterface,
+        uploader = self.FtpServerHandler(FtpInterface,
             self.Entropy,
             [uri],
             myqueue,
@@ -2325,7 +2328,7 @@ class Server:
         ftp_basedir = os.path.join(self.Entropy.get_remote_packages_relative_path(repo),branch)
         local_basedir = os.path.join(self.Entropy.get_local_packages_directory(repo),branch)
         downloader = self.FtpServerHandler(
-            self.FtpInterface,
+            FtpInterface,
             self.Entropy,
             [uri],
             myqueue,
@@ -2772,7 +2775,7 @@ class Server:
 
             crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
             destroyer = self.FtpServerHandler(
-                self.FtpInterface,
+                FtpInterface,
                 self.Entropy,
                 [uri],
                 myqueue,
