@@ -23,6 +23,8 @@
 from __future__ import with_statement
 import sys, os, stat
 from entropy.i18n import _
+import gzip
+import bz2
 
 # ETP_ARCH_CONST setup
 ETP_ARCH_CONST = "x86"
@@ -291,9 +293,9 @@ def const_default_settings(rootdir):
         # Entropy compressed databases format support
         'etpdatabasesupportedcformats': ["bz2", "gz"],
         'etpdatabasecompressclasses': {
-            "bz2": ("bz2.BZ2File", "unpack_bzip2", "etpdatabasefilebzip2",
+            "bz2": (bz2.BZ2File, "unpack_bzip2", "etpdatabasefilebzip2",
                 "etpdatabasedumpbzip2", "etpdatabasedumphashfilebz2"),
-            "gz": ("gzip.GzipFile", "unpack_gzip", "etpdatabasefilegzip",
+            "gz": (gzip.GzipFile, "unpack_gzip", "etpdatabasefilegzip",
                 "etpdatabasedumpgzip", "etpdatabasedumphashfilegzip")
         },
         # enable/disable packages RSS feed feature

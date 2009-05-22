@@ -148,7 +148,9 @@ class Repository:
 
         self.__validate_repository_id(repo)
 
-        cmethod = etpConst['etpdatabasecompressclasses'].get(self.Entropy.SystemSettings['repositories']['available'][repo]['dbcformat'])
+        repo_settings = self.Entropy.SystemSettings['repositories']
+        dbc_format = repo_settings['available'][repo]['dbcformat']
+        cmethod = etpConst['etpdatabasecompressclasses'].get(dbc_format)
         if cmethod == None:
             mytxt = _("Wrong database compression method")
             raise InvalidDataType("InvalidDataType: %s" % (mytxt,))
@@ -263,7 +265,8 @@ class Repository:
         if self.dbformat_eapi == 1:
             myfile = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+etpConst[cmethod[2]]
             try:
-                path = eval("self.entropyTools."+cmethod[1])(myfile)
+                myfunc = getattr(self.entropyTools, cmethod[1])
+                path = myfunc(myfile)
             except EOFError:
                 rc = 1
             if os.path.isfile(myfile):
