@@ -609,6 +609,8 @@ class EntropyPackages:
     def get_groups(self, flt):
         if flt == 'all':
             return self.get_all_groups()
+        elif flt == 'queued':
+            return self.get_raw_groups(flt)
         else:
             return self.do_filtering(self.get_raw_groups(flt))
 
