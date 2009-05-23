@@ -193,8 +193,6 @@ class Trigger:
                 functions.append('removebootablekernel')
             if x.startswith('/etc/init.d/') and ("initdisable" not in functions):
                 functions.append('initdisable')
-            if x.endswith('.py') and ("cleanpy" not in functions):
-                functions.append('cleanpy')
             if x.startswith('/etc/env.d/') and ("env_update" not in functions):
                 functions.append('env_update')
             if (os.path.dirname(x) in ldpaths) and ("run_ldconfig" not in functions):
@@ -787,17 +785,6 @@ class Trigger:
                                     header = red("   ## ")
                                 )
                             break
-
-    def trigger_cleanpy(self):
-        pyfiles = [x for x in self.pkgdata['content'] if x.endswith(".py")]
-        for item in pyfiles:
-            item = etpConst['systemroot']+item
-            if os.path.isfile(item+"o"):
-                try: os.remove(item+"o")
-                except OSError: pass
-            if os.path.isfile(item+"c"):
-                try: os.remove(item+"c")
-                except OSError: pass
 
     def trigger_createkernelsym(self):
         for item in self.pkgdata['content']:
