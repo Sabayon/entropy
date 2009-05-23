@@ -678,7 +678,7 @@ class EntropyPackages:
             yp.action = 'i'
             return yp
         return [x for x in map(fm,self.Entropy.calculate_available_packages()) \
-            if type(x) != int]
+            if type(x) is int]
 
     def _pkg_get_updates(self):
 
