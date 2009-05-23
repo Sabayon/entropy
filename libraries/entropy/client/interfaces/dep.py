@@ -1198,9 +1198,8 @@ class CalculatorsMixin:
             except (RepositoryError,SystemDatabaseError):
                 self.cycleDone()
                 continue
-            idpackages = [x for x in dbconn.listAllIdpackages(branch = branch,
-                branch_operator = "<=", order_by = 'atom') \
-                if dbconn.idpackageValidator(x)[0] != -1]
+            idpackages = [x for x in dbconn.listAllIdpackages(
+                order_by = 'atom') if dbconn.idpackageValidator(x)[0] != -1]
             count = 0
             maxlen = len(idpackages)
             myavailable = []
