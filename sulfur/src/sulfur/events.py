@@ -652,11 +652,11 @@ class SulfurApplicationEventsMixin:
         self.wait_window.show()
         self.set_busy()
         self.start_working()
-        busy_cursor(self.wait_ui.waitWindow)
+        busy_cursor(self.ui.main)
         self.pkgView.select_all()
         self.end_working()
         self.unset_busy()
-        normal_cursor(self.wait_ui.waitWindow)
+        normal_cursor(self.ui.main)
         self.wait_window.hide()
 
     def on_deselect_clicked(self,widget):
