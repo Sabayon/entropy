@@ -1389,6 +1389,20 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.Equo.SystemSettings.clear()
         self.Equo.close_all_repositories()
 
+    def hide_notebook_tabs_for_install(self):
+        self.ui.securityVbox.hide()
+        self.ui.prefsVbox.hide()
+        self.ui.reposVbox.hide()
+        self.ui.queueVbox.hide()
+        self.ui.systemVbox.hide()
+        self.ui.packagesVbox.hide()
+
+    def show_notebook_tabs_after_install(self):
+        self.ui.queueVbox.show()
+        self.ui.systemVbox.show()
+        self.ui.packagesVbox.show()
+        self.switch_application_mode(SulfurConf.simple_mode)
+
     def process_queue(self, pkgs, remove_repos = [], fetch_only = False,
             download_sources = False):
 
@@ -1403,6 +1417,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.switch_notebook_page('packages')
             return False
 
+        self.hide_notebook_tabs_for_install()
         self.disable_ugc = True
         self.set_status_ticker(_("Running tasks"))
         total = 0
@@ -1521,6 +1536,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         else:
             self.set_status_ticker( _( "No packages selected" ) )
 
+        self.show_notebook_tabs_after_install()
         self.disable_ugc = False
         return state
 
