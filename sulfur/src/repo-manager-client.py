@@ -49,7 +49,7 @@ class ManagerApplication:
     def __init__(self):
         self.Equo = Equo()
         self.ui = None
-        self.progressLogWrite = sys.stdout
+        self.progress_log_write = sys.stdout
         self.output = sys.stdout
         self.progress = None
         self.Equo.connect_to_gui(self)
