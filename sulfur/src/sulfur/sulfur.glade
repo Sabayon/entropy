@@ -4,7 +4,6 @@
   <!-- interface-naming-policy toplevel-contextual -->
   <widget class="GtkWindow" id="main">
     <property name="width_request">800</property>
-    <property name="height_request">450</property>
     <property name="visible">True</property>
     <property name="title" translatable="yes">Sulfur</property>
     <property name="window_position">center</property>
