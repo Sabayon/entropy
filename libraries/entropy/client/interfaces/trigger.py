@@ -140,9 +140,6 @@ class Trigger:
             if x.startswith('/boot/kernel-') and ("addbootablekernel" not in functions):
                 functions.append('addbootablekernel')
 
-            if x.startswith('/usr/src/') and ("createkernelsym" not in functions):
-                functions.append('createkernelsym')
-
             if x.startswith('/etc/env.d/') and ("env_update" not in functions):
                 functions.append('env_update')
 
@@ -688,7 +685,7 @@ class Trigger:
                 header = red("   ##")
             )
 
-    # FIXME: this only supports grub (no lilo support)
+    # FIXME: deprecated
     def trigger_addbootablekernel(self):
         boot_mount = False
         if os.path.ismount("/boot"):
@@ -721,7 +718,7 @@ class Trigger:
             )
             self.trigger_configure_boot_grub(kernel, initramfs)
 
-    # FIXME: this only supports grub (no lilo support)
+    # FIXME: deprecated
     def trigger_removebootablekernel(self):
         kernels = [x for x in self.pkgdata['content'] if \
             x.startswith("/boot/kernel-")]
@@ -746,6 +743,7 @@ class Trigger:
             )
             self.trigger_remove_boot_grub(kernel,initramfs)
 
+    # FIXME: deprecated
     def trigger_mountboot(self):
         # is in fstab?
         if etpConst['systemroot']:
@@ -785,48 +783,6 @@ class Trigger:
                                     header = red("   ## ")
                                 )
                             break
-
-    def trigger_createkernelsym(self):
-        for item in self.pkgdata['content']:
-            item = etpConst['systemroot']+item
-            if item.startswith(etpConst['systemroot']+"/usr/src/"):
-                # extract directory
-                try:
-                    todir = item[len(etpConst['systemroot']):]
-                    todir = todir.split("/")[3]
-                except:
-                    continue
-                if os.path.isdir(etpConst['systemroot']+"/usr/src/"+todir):
-                    # link to /usr/src/linux
-                    self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO,
-                        ETP_LOGLEVEL_NORMAL,
-                        "[POST] Creating kernel symlink "+etpConst['systemroot']+"/usr/src/linux for /usr/src/"+todir
-                    )
-                    mytxt = "%s %s %s %s" % (
-                        _("Creating kernel symlink"),
-                        etpConst['systemroot']+"/usr/src/linux",
-                        _("for"),
-                        "/usr/src/"+todir,
-                    )
-                    self.Entropy.updateProgress(
-                        brown(mytxt),
-                        importance = 0,
-                        header = red("   ## ")
-                    )
-                    if os.path.isfile(etpConst['systemroot']+"/usr/src/linux") or \
-                        os.path.islink(etpConst['systemroot']+"/usr/src/linux"):
-                            os.remove(etpConst['systemroot']+"/usr/src/linux")
-                    if os.path.isdir(etpConst['systemroot']+"/usr/src/linux"):
-                        mydir = etpConst['systemroot']+"/usr/src/linux."+str(self.Entropy.entropyTools.get_random_number())
-                        while os.path.isdir(mydir):
-                            mydir = etpConst['systemroot']+"/usr/src/linux."+str(self.Entropy.entropyTools.get_random_number())
-                        shutil.move(etpConst['systemroot']+"/usr/src/linux",mydir)
-                    try:
-                        os.symlink(todir,etpConst['systemroot']+"/usr/src/linux")
-                    except OSError: # not important in the end
-                        pass
-                    break
 
     def trigger_run_ldconfig(self):
         if not etpConst['systemroot']:
