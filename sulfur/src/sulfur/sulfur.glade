@@ -4223,7 +4223,58 @@ Install+Removal</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <placeholder/>
+                                  <widget class="GtkHBox" id="hbox1">
+                                    <property name="visible">True</property>
+                                    <child>
+                                      <widget class="GtkLabel" id="label2">
+                                        <property name="visible">True</property>
+                                        <property name="xalign">0.98000001907348633</property>
+                                        <property name="label" translatable="yes">Package downgrade</property>
+                                      </widget>
+                                      <packing>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkButton" id="color_downgrade_reset">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <signal name="clicked" handler="on_color_reset"/>
+                                        <child>
+                                          <widget class="GtkImage" id="image1">
+                                            <property name="visible">True</property>
+                                            <property name="stock">gtk-revert-to-saved</property>
+                                          </widget>
+                                        </child>
+                                      </widget>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <widget class="GtkColorButton" id="color_downgrade_picker">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">True</property>
+                                        <property name="color">#000000000000</property>
+                                        <signal name="color_set" handler="on_ui_color_set"/>
+                                      </widget>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">False</property>
+                                        <property name="position">2</property>
+                                      </packing>
+                                    </child>
+                                  </widget>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="right_attach">2</property>
+                                    <property name="top_attach">4</property>
+                                    <property name="bottom_attach">5</property>
+                                  </packing>
                                 </child>
                               </widget>
                               <packing>

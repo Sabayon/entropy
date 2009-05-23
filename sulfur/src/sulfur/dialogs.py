@@ -5281,6 +5281,8 @@ class MaskedPackagesDialog(MenuSkel):
             cell.set_property(stype,'#D895FF')
         elif obj.queued == "rr":
             cell.set_property(stype,'#B7BEFF')
+        elif obj.queued == "d":
+            cell.set_property(stype,'#A7D0FF')
         elif not obj.queued:
             cell.set_property(stype,None)
 
@@ -5530,6 +5532,7 @@ class ConfirmationDialog:
         update = [x for x in pkgs if x.action == "u"]
         remove = [x for x in pkgs if x.action == "r"]
         reinstall = [x for x in pkgs if x.action == "rr"]
+        downgrade = [x for x in pkgs if x.action == "d"]
         if remove:
             label = "<b>%s</b>" % _("To be removed")
             level1 = model.append( None, [label] )
@@ -5540,6 +5543,17 @@ class ConfirmationDialog:
                     desc = _("No description")
                 mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SulfurConf.color_pkgdesc,desc,)
                 mypkg = "<span foreground='%s'>%s</span>" % (SulfurConf.color_remove,str(pkg),)
+                model.append( level1, [mypkg+mydesc] )
+        if downgrade:
+            label = "<b>%s</b>" % _("To be downgraded")
+            level1 = model.append( None, [label] )
+            for pkg in downgrade:
+                desc = pkg.description[:desc_len].rstrip()+"..."
+                desc = cleanMarkupString(desc)
+                if not desc.strip():
+                    desc = _("No description")
+                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SulfurConf.color_pkgdesc, desc,)
+                mypkg = "<span foreground='%s'>%s</span>" % (SulfurConf.color_downgrade, str(pkg),)
                 model.append( level1, [mypkg+mydesc] )
         if reinstall:
             label = "<b>%s</b>" % _("To be reinstalled")

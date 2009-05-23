@@ -53,6 +53,7 @@ class Queue:
         self.packages['u'] = []
         self.packages['r'] = []
         self.packages['rr'] = []
+        self.packages['d'] = []
         del self.before[:]
         self.keyslotFilter.clear()
 
@@ -220,23 +221,24 @@ class Queue:
                 pkgs = [pkgs]
 
             action = [pkgs[0].action]
-            if action[0] in ("u","i","rr"): # update/install
+            if action[0] in ("u","i","rr","d"): # update/install/downgrade
 
-                action = ["u","i","rr"]
+                action = ["u","i","rr","d"]
                 pkgs_matches = [x.matched_atom for x in pkgs]
                 myq = [x.matched_atom for x in self.packages['u'] + \
-                    self.packages['i'] + self.packages['rr']]
+                    self.packages['i'] + self.packages['rr'] + self.packages['d']]
                 xlist = [x for x in myq if x not in pkgs_matches]
 
                 xlist, abort = self.elaborate_undo_remove(pkgs_matches, xlist)
                 if abort: return -10,0
 
                 self.before = self.packages['u'][:] + self.packages['i'][:] + \
-                    self.packages['rr'][:]
+                    self.packages['rr'][:] + self.packages['d'][:]
                 for pkg in self.before: pkg.queued = None
                 del self.packages['u'][:]
                 del self.packages['i'][:]
                 del self.packages['rr'][:]
+                del self.packages['d'][:]
 
                 mybefore = set([x.keyslot for x in self.before])
                 self.keyslotFilter -= mybefore
@@ -305,7 +307,7 @@ class Queue:
 
             action = [pkgs[0].queued]
 
-            if action[0] in ("u","i","rr"): # update/install
+            if action[0] in ("u","i","rr","d"): # update/install
 
                 self._keyslotFilter.clear()
                 blocked = self.key_slot_filtering(pkgs)
@@ -313,9 +315,9 @@ class Queue:
                     self.show_key_slot_error_message(blocked)
                     return 1,0
 
-                action = ["u","i","rr"]
+                action = ["u","i","rr","d"]
                 myq = [x.matched_atom for x in self.packages['u'] + \
-                    self.packages['i'] + self.packages['rr']]
+                    self.packages['i'] + self.packages['rr'] + self.packages['d']]
                 xlist = myq+[x.matched_atom for x in pkgs if x.matched_atom not in myq]
                 status = self.elaborate_install(xlist, action, False, accept,
                     always_ask)
@@ -424,6 +426,7 @@ class Queue:
                 self.etpbase.get_raw_groups('reinstallable')
                 self.etpbase.get_raw_groups('updates')
                 self.etpbase.get_raw_groups('masked')
+                self.etpbase.get_raw_groups('downgrade')
 
                 for matched_atom in runQueue:
                     if matched_atom in my_icache:
@@ -490,6 +493,7 @@ class Queue:
                         'u': [x.matched_atom for x in self.packages['u']],
                         'rr': [x.matched_atom for x in self.packages['rr']],
                         'i': [x.matched_atom for x in self.packages['i']],
+                        'd': [x.matched_atom for x in self.packages['d']],
                     }
 
                     for rem_pkg in remove_todo:
@@ -620,6 +624,10 @@ class EntropyPackages:
         pkgs.extend(self.get_groups('available'))
         pkgs.extend(self.get_groups('reinstallable'))
         pkgs.extend(self.get_groups('updates'))
+        #pkgs.extend(self.get_groups('downgrade'))
+        #pkgs.extend(self.get_groups('masked'))
+        #pkgs.extend(self.get_groups('user_masked'))
+        #pkgs.extend(self.get_groups('user_unmasked'))
         return pkgs
 
     def set_filter(self,fn = None):
@@ -630,7 +638,7 @@ class EntropyPackages:
             return filter(self.filterCallback,pkgs)
         return pkgs
 
-    def get_raw_groups(self,flt):
+    def get_raw_groups(self, flt):
         self.populate_single_group(flt)
         return self._packages[flt]
 
@@ -659,7 +667,7 @@ class EntropyPackages:
             return yp
         return [x for x in map(fm,
             self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom')) if \
-                type(x) != int]
+                type(x) is not int]
 
     def _pkg_get_queued(self):
         data = []
@@ -691,7 +699,8 @@ class EntropyPackages:
                 return 0
             key, slot = yp.keyslot
             installed_match = cdb_atomMatch(key, matchSlot = slot)
-            if installed_match[0] != -1: yp.installed_match = installed_match
+            if installed_match[0] != -1:
+                yp.installed_match = installed_match
             yp.action = 'u'
             yp.color = SulfurConf.color_update
             return yp
@@ -700,7 +709,46 @@ class EntropyPackages:
         # we need to cache these too on get_package_item
         map(fm, spm_fine)
 
-        return [x for x in map(fm, updates) if type(x) != int]
+        return [x for x in map(fm, updates) if type(x) is not int]
+
+    def _pkg_get_downgrade(self):
+
+        already_in = self.get_raw_groups("updates")
+        already_in += self.get_raw_groups("available")
+        already_in += self.get_raw_groups("reinstallable")
+        already_in += self.get_raw_groups("masked")
+        already_in += self.get_raw_groups("user_masked")
+        already_in += self.get_raw_groups("user_unmasked")
+        already_in = [x.matched_atom for x in already_in]
+
+        matches = []
+        for repo in self.Entropy.validRepositories:
+            try:
+                dbconn = self.Entropy.open_repository(repo)
+                dbconn.validateDatabase()
+            except (RepositoryError, SystemDatabaseError):
+                continue
+            idpackages = dbconn.listAllIdpackages()
+            matches += [(x, repo) for x in idpackages if (x, repo) not in
+                already_in]
+
+        final_matches = []
+        for match in matches:
+            try:
+                yp, new = self.get_package_item(match)
+            except RepositoryError:
+                continue
+            key, slot = yp.keyslot
+            installed_match = self.Entropy.clientDbconn.atomMatch(key,
+                matchSlot = slot)
+            if installed_match[0] != -1:
+                yp.installed_match = installed_match
+            yp.action = 'd'
+            yp.is_downgrade = True
+            yp.color = SulfurConf.color_remove
+            final_matches.append(yp)
+
+        return final_matches
 
     def _pkg_get_reinstallable(self):
         def fm(match):
@@ -715,7 +763,7 @@ class EntropyPackages:
             return yp
         return [x for x in map(fm, self.filter_reinstallable(
             self.Entropy.clientDbconn.listAllPackages(get_scope = True,
-                order_by = 'atom'))) if type(x) != int]
+                order_by = 'atom'))) if type(x) is not int]
 
     def _pkg_get_masked(self):
         gp_call = self.get_package_item
@@ -738,15 +786,16 @@ class EntropyPackages:
             yp.masked = idreason
             yp.color = SulfurConf.color_install
             return yp
-        return [x for x in map(fm,self.get_masked_packages()) if type(x) != 0]
+        return [x for x in map(fm,self.get_masked_packages()) if type(x) is \
+                    not int]
 
     def _pkg_get_user_masked(self):
-        masked_objs = self.get_groups("masked")
+        masked_objs = self.get_raw_groups("masked")
         return [x for x in masked_objs if x.user_masked]
 
     def _pkg_get_user_unmasked(self):
-        objs = self.get_groups("updates") + self.get_groups("available") + \
-            self.get_groups('reinstallable')
+        objs = self.get_raw_groups("updates") + self.get_raw_groups("available") + \
+            self.get_raw_groups('reinstallable')# + self.get_raw_groups("downgrade")
         return [x for x in objs if x.user_unmasked]
 
     def _pkg_get_pkgset_matches_installed_matches(self, set_deps):
@@ -755,8 +804,9 @@ class EntropyPackages:
         set_installed_matches = []
         install_incomplete = False
         remove_incomplete = False
+        pkgset_pfx = etpConst['packagesetprefix']
         for set_dep in set_deps:
-            if set_dep.startswith(etpConst['packagesetprefix']):
+            if set_dep.startswith(pkgset_pfx):
                 set_matches.append((set_dep,None,))
                 set_installed_matches.append((set_dep,None,))
             else:
@@ -785,12 +835,13 @@ class EntropyPackages:
 
         gp_call = self.get_package_item
 
-        # make sure updates will be marked as such
         self.get_groups("updates")
-        # make sure unavailable packages are marked as such
         self.get_groups("available")
-        # make sure reinstallable packages will be marked as such
         self.get_groups("reinstallable")
+        self.get_groups("downgrade")
+        self.get_groups("masked")
+        self.get_groups("user_masked")
+        self.get_groups("user_unmasked")
 
         objects = []
 
@@ -862,6 +913,7 @@ class EntropyPackages:
             "user_unmasked": self._pkg_get_user_unmasked,
             "pkgsets": self._pkg_get_pkgsets,
             "fake_updates": self._pkg_get_fake_updates,
+            "downgrade": self._pkg_get_downgrade,
         }
         return calls_dict.get(mask)()
 
@@ -891,14 +943,16 @@ class EntropyPackages:
                 if idpackage_filtered == -1:
                     return ((idpackage,repoid,),idreason)
                 return 0
-            maskdata += [x for x in map(fm,repodata) if type(x) != int]
+            maskdata += [x for x in map(fm,repodata) if type(x) is not int]
 
         return maskdata
 
     def get_masked_package_action(self, match):
         action = self.Entropy.get_package_action(match)
-        if action in [2,-1]:
+        if action == 2:
             return 'u'
+        elif action == -1:
+            return 'd'
         elif action == 1:
             return 'i'
         else:
@@ -944,7 +998,7 @@ class EntropyPackages:
                 return 0
 
             matched_data |= set([x for x in map(fm,filter(fm_pre,clientdata)) \
-                if type(x) != int])
+                if type(x) is not int])
 
         return matched_data
 

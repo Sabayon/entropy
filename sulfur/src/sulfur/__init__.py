@@ -170,6 +170,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             "color_install": self.ui.color_install_picker,
             "color_remove": self.ui.color_remove_picker,
             "color_reinstall": self.ui.color_reinstall_picker,
+            "color_downgrade": self.ui.color_downgrade_picker,
             "color_title": self.ui.color_title_picker,
             "color_title2": self.ui.color_title2_picker,
             "color_pkgdesc": self.ui.color_pkgdesc_picker,
@@ -191,6 +192,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.ui.color_install_picker: "color_install",
             self.ui.color_remove_picker: "color_remove",
             self.ui.color_reinstall_picker: "color_reinstall",
+            self.ui.color_downgrade_picker: "color_downgrade",
             self.ui.color_title_picker: "color_title",
             self.ui.color_title2_picker:  "color_title2",
             self.ui.color_pkgdesc_picker: "color_pkgdesc",
@@ -1338,6 +1340,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.etpbase.get_groups('available')
         self.etpbase.get_groups('reinstallable')
         self.etpbase.get_groups('updates')
+        self.etpbase.get_groups("downgrade")
 
         for match in matches:
             resolved.append(self.etpbase.get_package_item(match)[0])
@@ -1345,11 +1348,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         rc = True
 
         found_objs = []
+        master_queue = []
+        for key in self.queue.packages:
+            master_queue += self.queue.packages[key]
         for obj in resolved:
-            if obj in self.queue.packages['i'] + \
-                        self.queue.packages['u'] + \
-                        self.queue.packages['r'] + \
-                        self.queue.packages['rr']:
+            if obj in master_queue:
                 continue
             found_objs.append(obj)
 
@@ -1357,7 +1360,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         q_cache = {}
         for obj in found_objs:
             q_cache[obj.matched_atom] = obj.queued
-            obj.queued = 'u'
+            obj.queued = "u"
 
         status, myaction = self.queue.add(found_objs, always_ask = always_ask)
         if status != 0:
@@ -1402,8 +1405,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.disable_ugc = True
         self.set_status_ticker(_("Running tasks"))
-        total = len(pkgs['i']) + len(pkgs['u']) + len(pkgs['r']) + \
-            len(pkgs['rr'])
+        total = 0
+        for key in pkgs:
+            total += len(pkgs[key])
         state = True
         if total > 0:
 
@@ -1412,7 +1416,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.progress.show()
             self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
             self.switch_notebook_page('output')
-            queue = pkgs['i']+pkgs['u']+pkgs['rr']
+            queue = []
+            for key in pkgs:
+                if key == "r":
+                    continue
+                queue += pkgs[key]
             install_queue = [x.matched_atom for x in queue]
             selected_by_user = set([x.matched_atom for x in queue if \
                 x.selected_by_user])

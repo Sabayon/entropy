@@ -158,6 +158,7 @@ class SulfurConf:
     color_update = '#418C0F' #  dark green
     color_remove = '#A71B1B' # red
     color_reinstall = '#A71B1B'
+    color_downgrade = '#A71B1B'
     color_title = '#A71B1B' # red
     color_title2 = '#2A6AFF' # light blue
     # description below package atoms
@@ -202,6 +203,7 @@ class SulfurConf:
             "color_update": validate_color_conf,
             "color_remove": validate_color_conf,
             "color_reinstall": validate_color_conf,
+            "color_downgrade": validate_color_conf,
             "color_title": validate_color_conf,
             "color_title2": validate_color_conf,
             "color_pkgdesc": validate_color_conf,
@@ -228,6 +230,7 @@ class SulfurConf:
             "color_update": SulfurConf.color_update,
             "color_remove": SulfurConf.color_remove,
             "color_reinstall": SulfurConf.color_reinstall,
+            "color_downgrade": SulfurConf.color_downgrade,
             "color_title": SulfurConf.color_title,
             "color_title2": SulfurConf.color_title2,
             "color_pkgdesc": SulfurConf.color_pkgdesc,

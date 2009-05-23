@@ -1466,6 +1466,8 @@ class EntropyPackageView:
                     self.set_pixbuf_to_cell(cell, self.pkg_install_ok)
                 elif pkg.action == "i":
                     self.set_pixbuf_to_cell(cell, self.pkg_install_new)
+                elif pkg.action == "d":
+                    self.set_pixbuf_to_cell(cell, self.pkg_downgrade)
                 else:
                     self.set_pixbuf_to_cell(cell, self.pkg_install_updatable)
             else:
@@ -1479,6 +1481,8 @@ class EntropyPackageView:
                     self.set_pixbuf_to_cell(cell, self.pkg_install)
                 elif pkg.queued == "u":
                     self.set_pixbuf_to_cell(cell, self.pkg_update)
+                elif pkg.queued == "d":
+                    self.set_pixbuf_to_cell(cell, self.pkg_downgrade)
 
         else:
             cell.set_property( 'visible', False )
@@ -1488,6 +1492,8 @@ class EntropyPackageView:
             cell.set_property(stype,'#FFE2A3')
         elif obj.queued == "u":
             cell.set_property(stype,'#B7BEFF')
+        elif obj.queued == "d":
+            cell.set_property(stype,'#A7D0FF')
         elif obj.queued == "i":
             cell.set_property(stype,'#E9C8FF')
         elif obj.queued == "rr":
@@ -1512,6 +1518,7 @@ class EntropyPackageView:
         self.updates['u'] = self.queue.packages['u'][:]
         self.updates['i'] = self.queue.packages['i'][:]
         self.updates['r'] = self.queue.packages['r'][:]
+        self.updates['d'] = self.queue.packages['d'][:]
         status, myaction = self.queue.add(mylist)
         if status == 0:
             self.updates['u'] = [x for x in self.queue.packages['u'] if x not \
@@ -1520,6 +1527,8 @@ class EntropyPackageView:
                 in self.updates['i']]
             self.updates['r'] = [x for x in self.queue.packages['r'] if x not \
                 in self.updates['r']]
+            self.updates['d'] = [x for x in self.queue.packages['d'] if x not \
+                in self.updates['d']]
         else:
             for obj in mylist:
                 obj.queued = None
@@ -1530,6 +1539,7 @@ class EntropyPackageView:
         self.updates = {}
         self.updates['u'] = []
         self.updates['r'] = []
+        self.updates['d'] = []
         self.updates['i'] = []
 
     def deselect_all(self):
@@ -1539,8 +1549,8 @@ class EntropyPackageView:
             for child in parent.iterchildren():
                 xlist += [x for x in child if x.queued == x.action]
 
-        xlist += [x for x in self.updates['u'] + self.updates['i'] + \
-            self.updates['r'] if x not in xlist]
+        for key in self.updates:
+            xlist += [x for x in self.updates[key] if x not in xlist]
         if not xlist:
             return
         for obj in xlist:
@@ -1587,28 +1597,35 @@ class EntropyQueueView:
             cell.set_property(stype,'#D895FF')
         elif obj.queued == "rr":
             cell.set_property(stype,'#B7BEFF')
+        elif obj.queued == "d":
+            cell.set_property(stype,'#A7D0FF')
         elif not obj.queued:
             cell.set_property(stype,None)
 
     def refresh ( self ):
         self.model.clear()
 
-        label = "<b>%s</b>" % (_( "Packages To Remove" ),)
+        label = "<b>%s</b>" % (_( "Packages to remove" ),)
         mylist = self.queue.packages['r']
         if mylist:
             self.populate_list( label, mylist )
 
-        label = "<b>%s</b>" % (_( "Packages To Install" ),)
+        label = "<b>%s</b>" % (_( "Packages to downgrade" ),)
+        mylist = self.queue.packages['d']
+        if mylist:
+            self.populate_list( label, mylist )
+
+        label = "<b>%s</b>" % (_( "Packages to install" ),)
         mylist = self.queue.packages['i']
         if mylist:
             self.populate_list( label, mylist )
 
-        label = "<b>%s</b>" % (_( "Packages To Update" ),)
+        label = "<b>%s</b>" % (_( "Packages to update" ),)
         mylist = self.queue.packages['u']
         if mylist:
             self.populate_list( label, mylist )
 
-        label = "<b>%s</b>" % (_( "Packages To Reinstall" ),)
+        label = "<b>%s</b>" % (_( "Packages to reinstall" ),)
         mylist = self.queue.packages['rr']
         if mylist:
             self.populate_list( label, mylist )
