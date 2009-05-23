@@ -438,7 +438,7 @@ class SulfurApplicationEventsMixin:
             return
 
         normal_cursor(self.ui.main)
-        self.set_page('output')
+        self.switch_notebook_page('output')
 
         try:
             rc = self.process_queue(self.queue.packages,
@@ -512,7 +512,7 @@ class SulfurApplicationEventsMixin:
 
     def on_repoRefreshButton_clicked(self, widget):
         self.on_repoRefresh_clicked(widget)
-        self.set_page('packages')
+        self.switch_notebook_page('packages')
 
     def on_repoRefresh_clicked(self, widget):
         repos = self.repoView.get_selected()
@@ -522,7 +522,7 @@ class SulfurApplicationEventsMixin:
         return self.do_repo_refresh(repos)
 
     def do_repo_refresh(self, repos):
-        self.set_page('output')
+        self.switch_notebook_page('output')
         self.ui.main.queue_draw()
         self.ui_lock(True)
         try:
@@ -535,7 +535,7 @@ class SulfurApplicationEventsMixin:
             self.setup_repoView()
             self.setup_application()
             self.setup_advisories()
-            self.set_page('repos')
+            self.switch_notebook_page('repos')
             if status:
                 self.show_notice_board()
         finally:
@@ -543,9 +543,9 @@ class SulfurApplicationEventsMixin:
 
     def on_cacheButton_clicked(self,widget):
         self.repoView.get_selected()
-        self.set_page('output')
+        self.switch_notebook_page('output')
         self.clean_entropy_caches(alone = True)
-        self.set_page('repos')
+        self.switch_notebook_page('repos')
 
     def on_repoDeSelect_clicked(self,widget):
         self.repoView.deselect_all()
@@ -573,7 +573,7 @@ class SulfurApplicationEventsMixin:
             self.queue.clear()       # Clear package queue
             self.queueView.refresh() # Refresh Package Queue
         #if fetch_only:
-        #    self.set_page('queue')
+        #    self.switch_notebook_page('queue')
 
     def on_queueSave_clicked( self, widget ):
         fn = FileChooser(action = gtk.FILE_CHOOSER_ACTION_SAVE, buttons = (

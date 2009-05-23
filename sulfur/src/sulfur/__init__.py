@@ -150,12 +150,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.queue.connect_objects(self.Equo, self.etpbase, self.pkgView, self.ui)
         self.repoView = EntropyRepoView(self.ui.viewRepo, self.ui, self)
         # Left Side Toolbar
-        self.pageButtons = {}    # Dict with page buttons
+        self._notebook_tabs_cache = {}
         self.firstButton = None  # first button
         self.activePage = 'repos'
         self.pageBootstrap = True
         # Progress bars
-        self.progress = BaseProgress(self.ui,self.set_page,self)
+        self.progress = BaseProgress(self.ui, self.switch_notebook_page, self)
         # Package Radiobuttons
         self.packageRB = {}
         self.lastPkgPB = 'updates'
@@ -214,10 +214,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.main.set_title( "%s %s %s" % (SulfurConf.branding_title,
             const.__sulfur_version__, self.safe_mode_txt) )
         self.ui.main.connect( "delete_event", self.quit )
-        self.ui.notebook.set_show_tabs( False )
+
+        #self.ui.notebook.set_show_tabs( False )
+
         self.ui.main.present()
         self.setup_page_buttons()        # Setup left side toolbar
-        self.set_page(self.activePage)
+        self.switch_notebook_page(self.activePage)
 
         # put self.console in place
         self.console = SulfurConsole()
@@ -248,7 +250,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.Equo.connect_to_gui(self)
         self.setup_editor()
 
-        self.set_page("packages")
+        self.switch_notebook_page("packages")
 
         self.setup_advisories()
         # setup Repositories
@@ -296,9 +298,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.rbInstalled.hide()
         self.ui.rbMasked.hide()
         self.ui.rbPkgSets.hide()
-        self.pageButtons['glsa'].hide()
-        self.pageButtons['preferences'].hide()
-        self.pageButtons['repos'].hide()
+
+        self.ui.securityVbox.hide()
+        self.ui.prefsVbox.hide()
+        self.ui.reposVbox.hide()
 
     def switch_advanced_mode(self):
         self.ui.servicesMenuItem.show()
@@ -311,9 +314,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.rbInstalled.show()
         self.ui.rbMasked.show()
         self.ui.rbPkgSets.show()
-        self.pageButtons['glsa'].show()
-        self.pageButtons['preferences'].show()
-        self.pageButtons['repos'].show()
+
+        self.ui.securityVbox.show()
+        self.ui.prefsVbox.show()
+        self.ui.reposVbox.show()
 
     def setup_pkg_sorter(self):
 
@@ -430,7 +434,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             rc = self.add_atoms_to_queue(atoms_install)
             if not rc:
                 return
-            self.set_page('output')
+            self.switch_notebook_page('output')
 
             try:
                 rc = self.process_queue(self.queue.packages,
@@ -511,26 +515,28 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def setup_page_buttons(self):
 
         # Setup Vertical Toolbar
-        self.create_sidebar_button(self.ui.sidePackagesRadio,
-            self.ui.sideRadioPkgImage, "button-packages.png", 'packages')
-        self.create_sidebar_button(self.ui.sideSecurityRadio,
-            self.ui.sideRadioSecurityImage, "button-glsa.png", 'glsa' )
-        self.create_sidebar_button(self.ui.sideReposRadio,
-            self.ui.sideRadioReposImage, "button-repo.png", 'repos' )
-        self.create_sidebar_button(self.ui.sideFilesRadio,
-            self.ui.sideRadioSystemImage, "button-conf.png", 'filesconf' )
-        self.create_sidebar_button(self.ui.sidePreferencesRadio,
-            self.ui.sideRadioPrefsImage, "preferences.png", 'preferences' )
-        self.create_sidebar_button(self.ui.sideQueueRadio,
-            self.ui.sideRadioQueueImage, "button-queue.png", 'queue' )
-        self.create_sidebar_button(self.ui.sideOutputButton,
-            self.ui.sideRadioInstallImage, "button-output.png", 'output' )
+        self.create_sidebar_button(self.ui.sideRadioPkgImage,
+            "button-packages.png", 'packages')
 
-    def create_sidebar_button( self, button, image, icon, page):
+        self.create_sidebar_button(self.ui.sideRadioSecurityImage,
+            "button-glsa.png", 'glsa' )
 
-        button.connect( "clicked", self.on_PageButton_changed, page )
-        #button.set_relief( gtk.RELIEF_NONE )
-        #button.set_mode( False )
+        self.create_sidebar_button(self.ui.sideRadioReposImage,
+            "button-repo.png", 'repos' )
+
+        self.create_sidebar_button(self.ui.sideRadioSystemImage,
+            "button-conf.png", 'filesconf' )
+
+        self.create_sidebar_button(self.ui.sideRadioPrefsImage,
+            "preferences.png", 'preferences' )
+
+        self.create_sidebar_button(self.ui.sideRadioQueueImage,
+            "button-queue.png", 'queue' )
+
+        self.create_sidebar_button(self.ui.sideRadioInstallImage,
+            "button-output.png", 'output' )
+
+    def create_sidebar_button( self, image, icon, page):
 
         iconpath = os.path.join(const.PIXMAPS_PATH, icon)
         pix = None
@@ -542,7 +548,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             except gobject.GError:
                 pass
 
-        self.pageButtons[page] = button
+        page_widget = self.ui.notebook.get_nth_page(const.PAGES[page])
+        self._notebook_tabs_cache[page] = page_widget
 
     def setup_images(self):
         """ setup misc application images """
@@ -1180,11 +1187,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.isBusy = False
         normal_cursor(self.ui.main)
 
-    def set_page( self, page ):
-        self.activePage = page
-        widget = self.pageButtons[page]
-        widget.set_active( True )
-
     def set_package_radio( self, tag ):
         self.lastPkgPB = tag
         widget = self.packageRB[tag]
@@ -1251,13 +1253,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             if self.do_debug:
                 print "show_packages: bootstrap True due to empty world cache"
             bootstrap = True
-            self.set_page('output')
+            self.switch_notebook_page('output')
         elif (self.Equo.get_available_packages_cache() == None) and \
             (('available' in masks) or ('updates' in masks)):
             if self.do_debug:
                 print "show_packages: bootstrap True due to empty avail cache"
             bootstrap = True
-            self.set_page('output')
+            self.switch_notebook_page('output')
         self.progress.total.hide()
 
         if bootstrap:
@@ -1304,9 +1306,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if self.doProgress: self.progress.hide() #Hide Progress
         if back_to_page:
-            self.set_page(back_to_page)
+            self.switch_notebook_page(back_to_page)
         elif bootstrap:
-            self.set_page('packages')
+            self.switch_notebook_page('packages')
 
         self.unset_busy()
         self.ui_lock(False)
@@ -1397,7 +1399,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             okDialog(self.ui.main,
                 _("Another Entropy instance is running. Cannot process queue."))
             self.progress.reset_progress()
-            self.set_page('packages')
+            self.switch_notebook_page('packages')
             return False
 
         self.disable_ugc = True
@@ -1411,7 +1413,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             normal_cursor(self.ui.main)
             self.progress.show()
             self.progress.set_mainLabel( _( "Processing Packages in queue" ) )
-            self.set_page('output')
+            self.switch_notebook_page('output')
             queue = pkgs['i']+pkgs['u']+pkgs['rr']
             install_queue = [x.matched_atom for x in queue]
             selected_by_user = set([x.matched_atom for x in queue if \
@@ -1506,7 +1508,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.Equo.FileUpdates.scanfs(dcache = False, quiet = True)
                 if self.Equo.FileUpdates.scandata:
                     if len(self.Equo.FileUpdates.scandata) > 0:
-                        self.set_page('filesconf')
+                        self.switch_notebook_page('filesconf')
                 if self.do_debug:
                     print "process_queue: all done"
 
@@ -1517,12 +1519,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         return state
 
     def ui_lock(self, lock):
-        self.ui.content.set_sensitive(not lock)
         self.ui.menubar.set_sensitive(not lock)
 
     def switch_notebook_page(self, page):
-        rb = self.pageButtons[page]
-        rb.set_active(True)
         self.on_PageButton_changed(None, page)
 
 ####### events
