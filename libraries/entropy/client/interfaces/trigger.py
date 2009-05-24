@@ -1280,10 +1280,6 @@ class Trigger:
                     f.close()
         return 0
 
-    '''
-    @description: insert kernel object into kernel modules db
-    @output: returns int() as exit status
-    '''
     def trigger_run_depmod(self, name):
         if os.access('/sbin/depmod',os.X_OK):
             if not etpConst['systemroot']:
@@ -1298,10 +1294,7 @@ class Trigger:
         sys_name = self.Entropy.SystemSettings['system']['name']
         return "title=%s (%s)\n" % (sys_name, os.path.basename(kernel),)
 
-    '''
-    @description: append kernel entry to grub.conf
-    @output: returns int() as exit status
-    '''
+    # FIXME: deprecated
     def trigger_configure_boot_grub(self, kernel, initramfs):
 
         if not os.path.isdir(etpConst['systemroot']+"/boot/grub"):
@@ -1357,6 +1350,7 @@ class Trigger:
         grub.flush()
         grub.close()
 
+    # FIXME: deprecated
     def trigger_remove_boot_grub(self, kernel,initramfs):
 
         if os.path.isdir(etpConst['systemroot']+"/boot/grub") and \
@@ -1400,6 +1394,7 @@ class Trigger:
             f.flush()
             f.close()
 
+    # FIXME: deprecated
     def trigger_get_grub_boot_dev(self):
 
         if etpConst['systemroot']:
