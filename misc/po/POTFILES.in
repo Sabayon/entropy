@@ -35,7 +35,6 @@
 ../libraries/entropy/client/interfaces/fetch.py
 ../libraries/entropy/client/interfaces/__init__.py
 ../libraries/entropy/client/interfaces/loaders.py
-../libraries/entropy/client/interfaces/metadata.py
 ../libraries/entropy/client/interfaces/methods.py
 ../libraries/entropy/client/interfaces/package.py
 ../libraries/entropy/client/interfaces/repository.py
