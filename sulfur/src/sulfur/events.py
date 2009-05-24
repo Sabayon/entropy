@@ -459,7 +459,7 @@ class SulfurApplicationEventsMixin:
             clean_n_quit(newrepo)
             return False
 
-    def on_PageButton_changed( self, widget, page ):
+    def on_PageButton_changed(self, widget, page, do_set = True):
 
         # do not put here actions for 'packages' and 'output'
         # but use on_PageButton_pressed
@@ -467,7 +467,8 @@ class SulfurApplicationEventsMixin:
             self.populate_files_update()
         elif page == "glsa":
             self.populate_advisories(None,'affected')
-        self.set_notebook_page(const.PAGES[page])
+        if do_set:
+            self.set_notebook_page(const.PAGES[page])
 
     def on_queueReviewAndInstall_clicked(self, widget):
         self.switch_notebook_page("queue")
@@ -990,6 +991,14 @@ class SulfurApplicationEventsMixin:
         w_col = widget.get_color().to_string()
         self.on_Preferences_toggled(None,True)
         setattr(SulfurConf,key,w_col)
+
+    def on_notebook_switch_page(self, widget, page_w, page_num):
+        page = "packages"
+        for page_n, c_page in const.PAGES.items():
+            if c_page == page_num:
+                page = page_n
+                break
+        return self.on_PageButton_changed(widget, page, do_set = False)
 
     def on_pkgSorter_changed(self, widget):
         busy_cursor(self.ui.main)
