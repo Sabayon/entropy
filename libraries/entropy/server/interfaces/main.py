@@ -1866,8 +1866,7 @@ class Server(Singleton, TextInterface):
             header = brown(" * "),
             back = True
         )
-        mydata = self.ClientService.extract_pkg_metadata(package_file,
-            etpBranch = self.SystemSettings['repositories']['branch'],
+        mydata = self.SpmService.extract_pkg_metadata(package_file,
             inject = inject)
         idpackage, revision, mydata = dbconn.handlePackage(mydata)
 
@@ -2817,8 +2816,8 @@ class Server(Singleton, TextInterface):
 
                 pkg_path = os.path.join(self.get_local_packages_directory(repo),
                     branch, pkg)
-                mydata = self.ClientService.extract_pkg_metadata(pkg_path,
-                    branch, inject = doinject)
+                mydata = self.SpmService.extract_pkg_metadata(pkg_path,
+                    inject = doinject)
 
                 # get previous revision
                 revision_avail = revisions_match.get(pkg)

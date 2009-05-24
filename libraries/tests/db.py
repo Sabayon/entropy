@@ -15,6 +15,7 @@ class LocalRepositoryTest(unittest.TestCase):
     def setUp(self):
         self.Client = Client(noclientdb = 2, indexing = False, xcache = False,
             repo_validation = False)
+        self.Spm = self.Client.Spm()
         self.test_db_name = "%s_test_suite" % (etpConst['dbnamerepoprefix'],)
         self.client_sysset_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
@@ -43,7 +44,7 @@ class LocalRepositoryTest(unittest.TestCase):
 
         # insert/compare
         test_pkg = _misc.get_test_package()
-        data = self.Client.extract_pkg_metadata(test_pkg, silent = True)
+        data = self.Spm.extract_pkg_metadata(test_pkg, silent = True)
         idpackage, rev, new_data = self.test_db.handlePackage(data)
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
@@ -80,7 +81,7 @@ class LocalRepositoryTest(unittest.TestCase):
 
         # insert/compare
         test_pkg = _misc.get_test_package2()
-        data = self.Client.extract_pkg_metadata(test_pkg, silent = True)
+        data = self.Spm.extract_pkg_metadata(test_pkg, silent = True)
         # Portage stores them this way
         data['changelog'] = u"#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"
         data['license'] = u'GPL-2'
@@ -123,7 +124,7 @@ class LocalRepositoryTest(unittest.TestCase):
 
         # insert/compare
         test_pkg = _misc.get_test_package3()
-        data = self.Client.extract_pkg_metadata(test_pkg, silent = True)
+        data = self.Spm.extract_pkg_metadata(test_pkg, silent = True)
         idpackage, rev, new_data = self.test_db.handlePackage(data)
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
@@ -159,7 +160,7 @@ class LocalRepositoryTest(unittest.TestCase):
     def test_db_import_export(self):
 
         test_pkg = _misc.get_test_package2()
-        data = self.Client.extract_pkg_metadata(test_pkg, silent = True)
+        data = self.Spm.extract_pkg_metadata(test_pkg, silent = True)
         # Portage stores them this way
         data['changelog'] = u"#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"
         data['license'] = u'GPL-2'

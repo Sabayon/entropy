@@ -31,7 +31,6 @@ from entropy.client.interfaces.dep import CalculatorsMixin
 from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
     MatchMixin
 from entropy.client.interfaces.fetch import FetchersMixin
-from entropy.client.interfaces.metadata import ExtractorsMixin
 from entropy.const import etpConst, etpCache
 from entropy.core import SystemSettings, SystemSettingsPlugin
 from entropy.exceptions import SystemDatabaseError, RepositoryError
@@ -159,7 +158,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
 
 class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixin, \
-        RepositoryMixin, MiscMixin, MatchMixin, FetchersMixin, ExtractorsMixin):
+        RepositoryMixin, MiscMixin, MatchMixin, FetchersMixin):
 
     def init_singleton(self, indexing = True, noclientdb = 0,
             xcache = True, user_xcache = False, repo_validation = True,

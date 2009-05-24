@@ -18,6 +18,7 @@ class LocalRepositoryTest(unittest.TestCase):
         self.mem_repo_desc = "This is a testing repository"
         self.Client = Client(noclientdb = 2, indexing = False, xcache = False,
             repo_validation = False)
+        self.Spm = self.Client.Spm()
         self.SystemSettings = SystemSettings()
 
     def tearDown(self):
@@ -74,7 +75,7 @@ class LocalRepositoryTest(unittest.TestCase):
         dbconn = self.Client.init_generic_memory_repository(
             self.mem_repoid, self.mem_repo_desc)
         test_pkg = _misc.get_test_package()
-        data = self.Client.extract_pkg_metadata(test_pkg, silent = True)
+        data = self.Spm.extract_pkg_metadata(test_pkg, silent = True)
         idpackage, rev, new_data = dbconn.handlePackage(data)
         self.assertEqual(data, new_data)
         self.Client.remove_repository(self.mem_repoid)
