@@ -1859,7 +1859,6 @@ class PortagePlugin:
     # This function extracts all the info from a .tbz2 file and returns them
     def extract_pkg_metadata(self, package, silent = False, inject = False):
 
-
         data = {}
         info_package = bold(os.path.basename(package))+": "
         system_settings = SystemSettings()
