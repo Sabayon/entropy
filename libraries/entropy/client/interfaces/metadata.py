@@ -454,15 +454,17 @@ class ExtractorsMixin:
         data['provide'] = set(portage_metadata['PROVIDE'].split())
         data['license'] = portage_metadata['LICENSE']
         data['useflags'] = []
-        for x in data['use'].split():
-            if x.startswith("+"):
-                x = x[1:]
-            elif x.startswith("-"):
-                x = x[1:]
-            if (x in portage_metadata['USE']) or (x in portage_metadata['USE_MASK']):
-                data['useflags'].append(x)
+
+        for my_use in data['iuse'].split():
+            if my_use[0] in ("-","+",):
+                my_use = my_use[1:]
+
+            if (my_use in portage_metadata['USE']) or \
+                (my_use in portage_metadata['USE_MASK']):
+                data['useflags'].append(my_use)
             else:
-                data['useflags'].append("-"+x)
+                data['useflags'].append("-"+my_use)
+
         # useflags must be a set, as returned by entropy.db.getPackageData
         data['useflags'] = set(data['useflags'])
         # sources must be a set, as returned by entropy.db.getPackageData
