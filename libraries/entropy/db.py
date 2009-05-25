@@ -782,19 +782,18 @@ class LocalRepository:
                 matches = self.atomMatch(atom, matchSlot = from_slot,
                     multiMatch = True)
                 found = False
-                if matches[1] == 0:
-                    # found atoms, check category
-                    for idpackage in matches[0]:
-                        myslot = self.retrieveSlot(idpackage)
-                        mycategory = self.retrieveCategory(idpackage)
-                        if mycategory == category:
-                            if  (myslot != to_slot) and \
-                            (action not in new_actions):
-                                new_actions.append(action)
-                                found = True
-                                break
-                    if found:
-                        continue
+                # found atoms, check category
+                for idpackage in matches[0]:
+                    myslot = self.retrieveSlot(idpackage)
+                    mycategory = self.retrieveCategory(idpackage)
+                    if mycategory == category:
+                        if  (myslot != to_slot) and \
+                        (action not in new_actions):
+                            new_actions.append(action)
+                            found = True
+                            break
+                if found:
+                    continue
                 # if we get here it means found == False
                 # search into dependencies
                 dep_atoms = self.searchDependency(atom_key, like = True,
@@ -810,16 +809,15 @@ class LocalRepository:
                 category = atom_key.split("/")[0]
                 matches = self.atomMatch(atom, multiMatch = True)
                 found = False
-                if matches[1] == 0:
-                    for idpackage in matches[0]:
-                        mycategory = self.retrieveCategory(idpackage)
-                        if (mycategory == category) and (action \
-                            not in new_actions):
-                            new_actions.append(action)
-                            found = True
-                            break
-                    if found:
-                        continue
+                for idpackage in matches[0]:
+                    mycategory = self.retrieveCategory(idpackage)
+                    if (mycategory == category) and (action \
+                        not in new_actions):
+                        new_actions.append(action)
+                        found = True
+                        break
+                if found:
+                    continue
                 # if we get here it means found == False
                 # search into dependencies
                 dep_atoms = self.searchDependency(atom_key, like = True,
@@ -927,44 +925,42 @@ class LocalRepository:
         matches = self.atomMatch(key_from, multiMatch = True)
         iddependencies = set()
 
-        if matches[1] == 0:
+        for idpackage in matches[0]:
 
-            for idpackage in matches[0]:
+            slot = self.retrieveSlot(idpackage)
+            old_atom = self.retrieveAtom(idpackage)
+            new_atom = old_atom.replace(key_from, key_to)
 
-                slot = self.retrieveSlot(idpackage)
-                old_atom = self.retrieveAtom(idpackage)
-                new_atom = old_atom.replace(key_from, key_to)
+            ### UPDATE DATABASE
+            # update category
+            self.setCategory(idpackage, cat_to)
+            # update name
+            self.setName(idpackage, name_to)
+            # update atom
+            self.setAtom(idpackage, new_atom)
 
-                ### UPDATE DATABASE
-                # update category
-                self.setCategory(idpackage, cat_to)
-                # update name
-                self.setName(idpackage, name_to)
-                # update atom
-                self.setAtom(idpackage, new_atom)
+            # look for packages we need to quickpkg again
+            # note: quickpkg_queue is simply ignored if self.clientDatabase
+            quickpkg_queue.add(key_to+":"+str(slot))
 
-                # look for packages we need to quickpkg again
-                # note: quickpkg_queue is simply ignored if self.clientDatabase
-                quickpkg_queue.add(key_to+":"+str(slot))
+            if not self.clientDatabase:
 
-                if not self.clientDatabase:
-
-                    # check for injection and warn the developer
-                    injected = self.isInjected(idpackage)
-                    if injected:
-                        mytxt = "%s: %s %s. %s !!! %s." % (
-                            bold(_("INJECT")),
-                            blue(str(new_atom)),
-                            red(_("has been injected")),
-                            red(_("quickpkg manually to update embedded db")),
-                            red(_("Repository database updated anyway")),
-                        )
-                        self.updateProgress(
-                            mytxt,
-                            importance = 1,
-                            type = "warning",
-                            header = darkred(" * ")
-                        )
+                # check for injection and warn the developer
+                injected = self.isInjected(idpackage)
+                if injected:
+                    mytxt = "%s: %s %s. %s !!! %s." % (
+                        bold(_("INJECT")),
+                        blue(str(new_atom)),
+                        red(_("has been injected")),
+                        red(_("quickpkg manually to update embedded db")),
+                        red(_("Repository database updated anyway")),
+                    )
+                    self.updateProgress(
+                        mytxt,
+                        importance = 1,
+                        type = "warning",
+                        header = darkred(" * ")
+                    )
 
         iddeps = self.searchDependency(key_from, like = True, multi = True)
         for iddep in iddeps:
@@ -1013,37 +1009,35 @@ class LocalRepository:
         matches = self.atomMatch(atom, multiMatch = True)
         iddependencies = set()
 
-        if matches[1] == 0:
+        matched_idpackages = matches[0]
+        for idpackage in matched_idpackages:
 
-            matched_idpackages = matches[0]
-            for idpackage in matched_idpackages:
+            ### UPDATE DATABASE
+            # update slot
+            self.setSlot(idpackage, slot_to)
 
-                ### UPDATE DATABASE
-                # update slot
-                self.setSlot(idpackage, slot_to)
+            # look for packages we need to quickpkg again
+            # note: quickpkg_queue is simply ignored if self.clientDatabase
+            quickpkg_queue.add(atom+":"+str(slot_to))
 
-                # look for packages we need to quickpkg again
-                # note: quickpkg_queue is simply ignored if self.clientDatabase
-                quickpkg_queue.add(atom+":"+str(slot_to))
+            if not self.clientDatabase:
 
-                if not self.clientDatabase:
-
-                    # check for injection and warn the developer
-                    injected = self.isInjected(idpackage)
-                    if injected:
-                        mytxt = "%s: %s %s. %s !!! %s." % (
-                            bold(_("INJECT")),
-                            blue(str(atom)),
-                            red(_("has been injected")),
-                            red(_("quickpkg manually to update embedded db")),
-                            red(_("Repository database updated anyway")),
-                        )
-                        self.updateProgress(
-                            mytxt,
-                            importance = 1,
-                            type = "warning",
-                            header = darkred(" * ")
-                        )
+                # check for injection and warn the developer
+                injected = self.isInjected(idpackage)
+                if injected:
+                    mytxt = "%s: %s %s. %s !!! %s." % (
+                        bold(_("INJECT")),
+                        blue(str(atom)),
+                        red(_("has been injected")),
+                        red(_("quickpkg manually to update embedded db")),
+                        red(_("Repository database updated anyway")),
+                    )
+                    self.updateProgress(
+                        mytxt,
+                        importance = 1,
+                        type = "warning",
+                        header = darkred(" * ")
+                    )
 
             # only if we've found VALID matches !
             iddeps = self.searchDependency(atomkey, like = True, multi = True)
@@ -4582,7 +4576,8 @@ class LocalRepository:
             user_package_mask_ids = set()
             for atom in self.SystemSettings['mask']:
                 matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-                if r != 0: continue
+                if r != 0:
+                    continue
                 user_package_mask_ids |= set(matches)
             self.SystemSettings[mykw] = user_package_mask_ids
         if idpackage in user_package_mask_ids:
@@ -4603,7 +4598,8 @@ class LocalRepository:
             user_package_unmask_ids = set()
             for atom in self.SystemSettings['unmask']:
                 matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-                if r != 0: continue
+                if r != 0:
+                    continue
                 user_package_unmask_ids |= set(matches)
             self.SystemSettings[mykw] = user_package_unmask_ids
         if idpackage in user_package_unmask_ids:
@@ -4627,7 +4623,8 @@ class LocalRepository:
                 repomask_ids = set()
                 for atom in repomask:
                     matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-                    if r != 0: continue
+                    if r != 0:
+                        continue
                     repomask_ids |= set(matches)
                 repos_mask[mask_repo_id] = repomask_ids
             if idpackage in repomask_ids:
@@ -4693,7 +4690,8 @@ class LocalRepository:
                     keyword_data_ids = set()
                     for atom in keyword_data:
                         matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-                        if r != 0: continue
+                        if r != 0:
+                            continue
                         keyword_data_ids |= matches
                     self.SystemSettings['keywords']['repositories'][reponame][kwd_key] = keyword_data_ids
                 if idpackage in keyword_data_ids:
@@ -4719,7 +4717,8 @@ class LocalRepository:
                 for atom in keyword_data:
                     # match atom
                     matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-                    if r != 0: continue
+                    if r != 0:
+                        continue
                     keyword_data_ids |= matches
                 self.SystemSettings['keywords']['packages'][reponame+kwd_key] = keyword_data_ids
             if idpackage in keyword_data_ids:
@@ -4981,7 +4980,10 @@ class LocalRepository:
 
         if not dbpkginfo:
             if extendedResults:
-                x = (-1, 1, None, None, None,)
+                if multiMatch:
+                    x = set()
+                else:
+                    x = (-1, 1, None, None, None,)
                 self.atomMatchStoreCache(
                     atom, caseSensitive, matchSlot,
                     multiMatch, matchBranches, matchTag,
@@ -4990,13 +4992,17 @@ class LocalRepository:
                 )
                 return x, 1
             else:
+                if multiMatch:
+                    x = set()
+                else:
+                    x = -1
                 self.atomMatchStoreCache(
                     atom, caseSensitive, matchSlot,
                     multiMatch, matchBranches, matchTag,
                     matchUse, packagesFilter, matchRevision,
-                    extendedResults, result = (-1, 1)
+                    extendedResults, result = (x, 1)
                 )
-                return -1, 1
+                return x, 1
 
         if multiMatch:
             if extendedResults:

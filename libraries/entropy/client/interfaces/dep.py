@@ -1446,11 +1446,10 @@ class CalculatorsMixin:
         system_pkg = self.clientDbconn.isSystemPackage(idpackage)
         if not system_pkg: return True
         # check if the package is slotted and exist more than one installed first
-        sysresults = self.clientDbconn.atomMatch(pkgkey, multiMatch = True)
-        if sysresults[1] == 0:
-            if len(sysresults[0]) < 2: return False
-            return True
-        return False
+        matches, rc = self.clientDbconn.atomMatch(pkgkey, multiMatch = True)
+        if len(matches) < 2:
+            return False
+        return True
 
 
     def get_removal_queue(self, idpackages, deep = False):
