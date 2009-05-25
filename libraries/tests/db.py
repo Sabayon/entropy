@@ -77,6 +77,19 @@ class LocalRepositoryTest(unittest.TestCase):
         masking_validation.clear()
         self.assertNotEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
 
+        # now test multimatch
+        idpackage, rev, new_data = self.test_db.addPackage(db_data,
+            do_remove = False)
+        results, rc = self.test_db.atomMatch(pkg_name, multiMatch = True)
+        self.assertEqual(2, len(results))
+        self.assert_(type(results) is set)
+        self.assert_(rc == 0)
+
+        results, rc = self.test_db.atomMatch(pkg_name+"foo", multiMatch = True)
+        self.assertEqual(0, len(results))
+        self.assert_(type(results) is set)
+        self.assert_(rc == 1)
+
     def test_db_insert_compare_match_utf(self):
 
         # insert/compare
