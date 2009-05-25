@@ -109,16 +109,12 @@ class Trigger:
                 functions.append('ebuild_postinstall')
                 break
 
-        # binutils configuration
-        if self.pkgdata['category']+"/"+self.pkgdata['name'] == "sys-devel/binutils":
-            functions.append("binutilsswitch")
-
         # opengl configuration
         if (self.pkgdata['category'] == "x11-drivers") and \
             (self.pkgdata['name'].startswith("nvidia-") or \
             self.pkgdata['name'].startswith("ati-")):
                 if "ebuild_postinstall" in functions:
-                    # disabling gentoo postinstall since we reimplemented it
+                    # disabling ebuild postinstall since we reimplemented it
                     functions.remove("ebuild_postinstall")
                 functions.append("openglsetup")
 
@@ -133,7 +129,7 @@ class Trigger:
 
             if x.startswith('/lib/modules/') and ("kernelmod" not in functions):
                 if "ebuild_postinstall" in functions:
-                    # disabling gentoo postinstall since we reimplemented it
+                    # disabling ebuild postinstall since we reimplemented it
                     functions.remove("ebuild_postinstall")
                 functions.append('kernelmod')
 
@@ -516,25 +512,6 @@ class Trigger:
                 f.close()
             except (OSError,IOError,):
                 pass
-
-    def trigger_binutilsswitch(self):
-        self.Entropy.clientLog.log(
-            ETP_LOGPRI_INFO,
-            ETP_LOGLEVEL_NORMAL,
-            "[POST] Configuring Binutils Profile..."
-        )
-        mytxt = "%s ..." % (_("Configuring Binutils Profile"),)
-        self.Entropy.updateProgress(
-            brown(mytxt),
-            importance = 0,
-            header = red("   ## ")
-        )
-        # get binutils profile
-        pkgsplit = self.Entropy.entropyTools.catpkgsplit(
-            self.pkgdata['category'] + "/" + self.pkgdata['name'] + "-" + self.pkgdata['version']
-        )
-        profile = self.pkgdata['chost']+"-"+pkgsplit[2]
-        self.trigger_set_binutils_profile(profile)
 
     def trigger_kernelmod(self):
         if self.pkgdata['category'] != "sys-kernel":
@@ -1244,21 +1221,6 @@ class Trigger:
             else:
                 subprocess.call('/usr/bin/gcc-config %s %s' % (
                     profile, redirect,), shell = True)
-        return 0
-
-    '''
-    @description: set chosen binutils profile
-    @output: returns int() as exit status
-    '''
-    def trigger_set_binutils_profile(self, profile):
-        if os.access(etpConst['systemroot']+'/usr/bin/binutils-config',os.X_OK):
-            redirect = ""
-            if etpUi['quiet']:
-                redirect = " &> /dev/null"
-            if etpConst['systemroot']:
-                subprocess.call("echo '/usr/bin/binutils-config %s' | chroot %s %s" % (profile,etpConst['systemroot'],redirect,), shell = True)
-            else:
-                subprocess.call('/usr/bin/binutils-config %s %s' % (profile,redirect,), shell = True)
         return 0
 
     '''
