@@ -1,4 +1,4 @@
-#!/usr/bin/python2 -O
+#!/usr/bin/python -O
 # -*- coding: iso-8859-1 -*-
 #    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >

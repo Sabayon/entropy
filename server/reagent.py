@@ -1,4 +1,4 @@
-#!/usr/bin/python2 -O
+#!/usr/bin/python -O
 '''
     # DESCRIPTION:
     # this application gets a .tbz2 file as input and creates a database entry
