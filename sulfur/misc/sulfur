@@ -1,4 +1,4 @@
-#!/usr/bin/python2 -O
+#!/usr/bin/python -O
 import sys, os
 if "--debug" in sys.argv:
     os.environ['SULFUR_DEBUG'] = "1"
