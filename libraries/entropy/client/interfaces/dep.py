@@ -311,7 +311,9 @@ class CalculatorsMixin:
         # multimatch support
         if multiMatch:
 
-            if dbpkginfo[1] != 1: # can be "0" or a string, but 1 means failure
+            if dbpkginfo[1] == 1:
+                dbpkginfo = (set(), 1)
+            else: # can be "0" or a string, but 1 means failure
                 if multiRepo:
                     data = set()
                     for q_id,q_repo in dbpkginfo[0]:
