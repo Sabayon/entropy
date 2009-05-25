@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Spritz 0.14\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-24 17:57+0200\n"
+"POT-Creation-Date: 2009-05-25 12:57+0200\n"
 "PO-Revision-Date: 2009-01-29 21:28+0100\n"
 "Last-Translator: Christian Schneiker <christian.schneiker@googlemail.com>\n"
 "Language-Team: Marian Laschober <Marian.Laschober@fh-hagenberg.at>\n"
@@ -539,7 +539,7 @@ msgstr "Vorbereiten auf Kopieren der ausgewählten Pakete nach"
 #: ../../libraries/entropy/client/services/system/methods.py:98
 #: ../../sulfur/src/sulfur/dialogs.py:987
 #: ../../sulfur/src/sulfur/dialogs.py:3334
-#: ../../sulfur/src/sulfur/sulfur.glade.h:122
+#: ../../sulfur/src/sulfur/sulfur.glade.h:123
 msgid "Note"
 msgstr "Hinweis"
 
@@ -1480,7 +1480,7 @@ msgid "cannot convert stream into object"
 msgstr "kann Stream nicht in Objekt umwandeln"
 
 #: ../../libraries/entropy/client/services/ugc/commands.py:601
-#: ../../sulfur/src/sulfur/sulfur.glade.h:241
+#: ../../sulfur/src/sulfur/sulfur.glade.h:242
 msgid "User Generated Content"
 msgstr "nutzergenerierter Inhalt"
 
@@ -1515,12 +1515,12 @@ msgstr "Verzeichnis existiert nicht"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:132
 #: ../../sulfur/src/sulfur/dialogs.py:406
-#: ../../sulfur/src/sulfur/sulfur.glade.h:242
+#: ../../sulfur/src/sulfur/sulfur.glade.h:243
 msgid "Username"
 msgstr "Benutzername"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:133
-#: ../../sulfur/src/sulfur/sulfur.glade.h:143
+#: ../../sulfur/src/sulfur/sulfur.glade.h:144
 msgid "Password"
 msgstr "Passwort"
 
@@ -2061,7 +2061,7 @@ msgstr "Füge dem Schwarzen Brett einen Eintrag hinzu"
 #: ../../sulfur/src/sulfur/dialogs.py:1533
 #: ../../sulfur/src/sulfur/dialogs.py:2181
 #: ../../sulfur/src/sulfur/dialogs.py:3936
-#: ../../sulfur/src/sulfur/sulfur.glade.h:227
+#: ../../sulfur/src/sulfur/sulfur.glade.h:228
 msgid "Title"
 msgstr "Name"
 
@@ -2439,7 +2439,7 @@ msgid "Set not found or unable to remove"
 msgstr "Keine Repositories online gefunden"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:980
-#: ../../sulfur/src/sulfur/sulfur.glade.h:104
+#: ../../sulfur/src/sulfur/sulfur.glade.h:105
 msgid "Libraries test"
 msgstr "Teste Programmbibliotheken"
 
@@ -2572,8 +2572,8 @@ msgstr "Bitte Melden"
 #: ../../libraries/entropy/client/interfaces/package.py:1910
 #: ../../libraries/entropy/client/interfaces/trigger.py:63
 #: ../../libraries/entropy/db.py:45 ../../libraries/entropy/security.py:253
-#: ../../server/server_reagent.py:645 ../../sulfur/src/sulfur/events.py:803
-#: ../../sulfur/src/sulfur/events.py:836
+#: ../../server/server_reagent.py:645 ../../sulfur/src/sulfur/events.py:804
+#: ../../sulfur/src/sulfur/events.py:837
 #: ../../sulfur/src/sulfur/sulfur.glade.h:72
 msgid "Error"
 msgstr "Fehler"
@@ -3145,7 +3145,7 @@ msgstr "Heruntergeladenen Inhalt einspeisen"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1435
 #: ../../libraries/entropy/db.py:3831
-#: ../../sulfur/src/sulfur/sulfur.glade.h:285
+#: ../../sulfur/src/sulfur/sulfur.glade.h:286
 msgid "please wait"
 msgstr "bitte warten"
 
@@ -5350,7 +5350,7 @@ msgid "Matched"
 msgstr "Entsprochen"
 
 #: ../../client/text_query.py:304 ../../client/text_query.py:1118
-#: ../../sulfur/src/sulfur/sulfur.glade.h:114
+#: ../../sulfur/src/sulfur/sulfur.glade.h:115
 msgid "Masked"
 msgstr "Maskiert"
 
@@ -5549,20 +5549,20 @@ msgid "version"
 msgstr "Version"
 
 #: ../../client/text_query.py:1126 ../../sulfur/src/sulfur/dialogs.py:1035
-#: ../../sulfur/src/sulfur/sulfur.glade.h:97
+#: ../../sulfur/src/sulfur/sulfur.glade.h:98
 msgid "Installed"
 msgstr "Installiert"
 
 #: ../../client/text_query.py:1132 ../../sulfur/src/sulfur/dialogs.py:1048
 #: ../../sulfur/src/sulfur/dialogs.py:1071
-#: ../../sulfur/src/sulfur/sulfur.glade.h:207
+#: ../../sulfur/src/sulfur/sulfur.glade.h:208
 msgid "Slot"
 msgstr "Slot"
 
 #: ../../client/text_query.py:1139 ../../client/text_ugc.py:559
 #: ../../sulfur/src/sulfur/dialogs.py:1067
 #: ../../sulfur/src/sulfur/dialogs.py:3931
-#: ../../sulfur/src/sulfur/sulfur.glade.h:206
+#: ../../sulfur/src/sulfur/sulfur.glade.h:207
 msgid "Size"
 msgstr "Größe"
 
@@ -5634,7 +5634,7 @@ msgstr "Kompiliert mit"
 #: ../../client/text_query.py:1212 ../../client/text_ugc.py:371
 #: ../../client/text_ugc.py:554 ../../sulfur/src/sulfur/dialogs.py:3940
 #: ../../sulfur/src/sulfur/dialogs.py:4298
-#: ../../sulfur/src/sulfur/sulfur.glade.h:102
+#: ../../sulfur/src/sulfur/sulfur.glade.h:103
 msgid "Keywords"
 msgstr "Schlüsselwürter"
 
@@ -5737,7 +5737,7 @@ msgid "Content"
 msgstr "Inhalt"
 
 #: ../../client/text_repositories.py:225 ../../server/server_activator.py:162
-#: ../../sulfur/src/sulfur/sulfur.glade.h:106
+#: ../../sulfur/src/sulfur/sulfur.glade.h:107
 msgid "Link"
 msgstr "Link"
 
@@ -5751,7 +5751,7 @@ msgstr "Bitte wähle durch Eingabe der jeweiligen Nummer"
 
 #: ../../client/text_repositories.py:286
 #: ../../sulfur/src/sulfur/dialogs.py:2239
-#: ../../sulfur/src/sulfur/sulfur.glade.h:124
+#: ../../sulfur/src/sulfur/sulfur.glade.h:125
 msgid "Notice board"
 msgstr "Schwarzes Brett"
 
@@ -6137,7 +6137,7 @@ msgid "Impact type"
 msgstr "Auswirkungstyp"
 
 #: ../../client/text_security.py:135
-#: ../../sulfur/src/sulfur/sulfur.glade.h:190
+#: ../../sulfur/src/sulfur/sulfur.glade.h:191
 msgid "Revised"
 msgstr "Bereinigt"
 
@@ -6146,12 +6146,12 @@ msgid "Announced"
 msgstr "Angekündigt"
 
 #: ../../client/text_security.py:143
-#: ../../sulfur/src/sulfur/sulfur.glade.h:219
+#: ../../sulfur/src/sulfur/sulfur.glade.h:220
 msgid "Synopsis"
 msgstr "Übersicht"
 
 #: ../../client/text_security.py:150
-#: ../../sulfur/src/sulfur/sulfur.glade.h:169
+#: ../../sulfur/src/sulfur/sulfur.glade.h:170
 msgid "References"
 msgstr "Referenzen"
 
@@ -6172,12 +6172,12 @@ msgid "unaffected versions"
 msgstr "nicht betroffene Versionen"
 
 #: ../../client/text_security.py:176
-#: ../../sulfur/src/sulfur/sulfur.glade.h:246
+#: ../../sulfur/src/sulfur/sulfur.glade.h:247
 msgid "Workaround"
 msgstr "Zwischenlösung"
 
 #: ../../client/text_security.py:180
-#: ../../sulfur/src/sulfur/sulfur.glade.h:186
+#: ../../sulfur/src/sulfur/sulfur.glade.h:187
 msgid "Resolution"
 msgstr "Lösung"
 
@@ -7357,7 +7357,7 @@ msgid "Regenerate Cache"
 msgstr "Regeneriere Cache"
 
 #: ../../sulfur/src/sulfur/dialogs.py:279
-#: ../../sulfur/src/sulfur/sulfur.glade.h:183
+#: ../../sulfur/src/sulfur/sulfur.glade.h:184
 #, fuzzy
 msgid "Repositories Notice Board"
 msgstr "Repositories Optionen"
@@ -7389,7 +7389,7 @@ msgstr "Hostname"
 
 #: ../../sulfur/src/sulfur/dialogs.py:405
 #: ../../sulfur/src/sulfur/dialogs.py:468
-#: ../../sulfur/src/sulfur/sulfur.glade.h:149
+#: ../../sulfur/src/sulfur/sulfur.glade.h:150
 msgid "Port"
 msgstr "Port"
 
@@ -7455,7 +7455,7 @@ msgid "Add USE"
 msgstr "Füge USE hinzu"
 
 #: ../../sulfur/src/sulfur/dialogs.py:787
-#: ../../sulfur/src/sulfur/sulfur.glade.h:175
+#: ../../sulfur/src/sulfur/sulfur.glade.h:176
 msgid "Remove USE"
 msgstr "Entferne USE"
 
@@ -7473,7 +7473,7 @@ msgid "Remove"
 msgstr "Lösche"
 
 #: ../../sulfur/src/sulfur/dialogs.py:809
-#: ../../sulfur/src/sulfur/sulfur.glade.h:170
+#: ../../sulfur/src/sulfur/sulfur.glade.h:171
 msgid "Refresh"
 msgstr "Aktualisiere"
 
@@ -7863,7 +7863,7 @@ msgid "License name"
 msgstr "Lizenzname"
 
 #: ../../sulfur/src/sulfur/dialogs.py:4290
-#: ../../sulfur/src/sulfur/sulfur.glade.h:118
+#: ../../sulfur/src/sulfur/sulfur.glade.h:119
 msgid "Mirrors"
 msgstr "Spiegel"
 
@@ -8209,25 +8209,25 @@ msgstr "Bist du WIRKLICH sicher?"
 msgid "Cannot install"
 msgstr "Kann ich nicht installieren"
 
-#: ../../sulfur/src/sulfur/events.py:520
+#: ../../sulfur/src/sulfur/events.py:521
 msgid "Please select at least one repository"
 msgstr "Bitte wähle zumindest ein Repository aus"
 
 #. Check there are any packages in the queue
-#: ../../sulfur/src/sulfur/events.py:556
+#: ../../sulfur/src/sulfur/events.py:557
 msgid "No packages in queue"
 msgstr "Keine Pakete in der Warteschlange"
 
-#: ../../sulfur/src/sulfur/events.py:606
+#: ../../sulfur/src/sulfur/events.py:607
 msgid "Queue is too old. Cannot load."
 msgstr "Warteschlange ist zu alt. Kann ich nicht laden."
 
-#: ../../sulfur/src/sulfur/events.py:648
+#: ../../sulfur/src/sulfur/events.py:649
 #, fuzzy
 msgid "license text"
 msgstr "Hinweis"
 
-#: ../../sulfur/src/sulfur/events.py:675
+#: ../../sulfur/src/sulfur/events.py:676
 #, fuzzy
 msgid ""
 "You have chosen to interrupt the processing. Are you sure you want to do it ?"
@@ -8236,52 +8236,52 @@ msgstr ""
 "sein und du solltest Entropy alle entsprechenden Anwendungen schließen "
 "lassen. Bist du sicher dass du abbrechen willst?"
 
-#: ../../sulfur/src/sulfur/events.py:745
+#: ../../sulfur/src/sulfur/events.py:746
 #, fuzzy
 msgid "Cleaning UGC cache of"
 msgstr "Lösche alte Paketdateien..."
 
-#: ../../sulfur/src/sulfur/events.py:746
+#: ../../sulfur/src/sulfur/events.py:747
 msgid "UGC cache cleared"
 msgstr "UGC Cache geleert"
 
-#: ../../sulfur/src/sulfur/events.py:759
+#: ../../sulfur/src/sulfur/events.py:760
 msgid "UGC credentials cleared"
 msgstr "UGC Zugriffskennungen geleert"
 
-#: ../../sulfur/src/sulfur/events.py:788
+#: ../../sulfur/src/sulfur/events.py:789
 #, fuzzy
 msgid "Package Set name"
 msgstr "Paketname"
 
-#: ../../sulfur/src/sulfur/events.py:789
+#: ../../sulfur/src/sulfur/events.py:790
 msgid "Package atoms"
 msgstr "Paket atoms"
 
-#: ../../sulfur/src/sulfur/events.py:793
+#: ../../sulfur/src/sulfur/events.py:794
 #, fuzzy
 msgid "Choose what Package Set you want to add"
 msgstr "Keine Repositories online gefunden"
 
-#: ../../sulfur/src/sulfur/events.py:822
+#: ../../sulfur/src/sulfur/events.py:823
 #, fuzzy
 msgid "Removable Package Set"
 msgstr "entfernte Pakete"
 
-#: ../../sulfur/src/sulfur/events.py:827
+#: ../../sulfur/src/sulfur/events.py:828
 msgid "Choose what Package Set you want to remove"
 msgstr "Wähle das Paket-Set, dass du entfernen möchtest"
 
-#: ../../sulfur/src/sulfur/events.py:849
+#: ../../sulfur/src/sulfur/events.py:850
 msgid "No missing dependencies found."
 msgstr "Keine fehlenden Abhängigkeiten gefunden."
 
-#: ../../sulfur/src/sulfur/events.py:884
+#: ../../sulfur/src/sulfur/events.py:885
 msgid "Missing dependencies found, but none of them are on the repositories."
 msgstr ""
 "Fehlende Abhängigkeiten gefunden aber keine ist in den Repositories vorhanden"
 
-#: ../../sulfur/src/sulfur/events.py:893
+#: ../../sulfur/src/sulfur/events.py:894
 msgid ""
 "Some missing dependencies have not been matched, others are going to be "
 "added to the queue."
@@ -8289,20 +8289,20 @@ msgstr ""
 "Einige fehlende Pakete konnten nicht gefunden werden, es werden andere in "
 "der Warteschlange hinzugefügt."
 
-#: ../../sulfur/src/sulfur/events.py:896
+#: ../../sulfur/src/sulfur/events.py:897
 msgid "All the missing dependencies are going to be added to the queue"
 msgstr "Alle fehlenden Abhängigkeiten werden zur Warteschlange hinzugefügt"
 
-#: ../../sulfur/src/sulfur/events.py:922
+#: ../../sulfur/src/sulfur/events.py:923
 #: ../../sulfur/src/sulfur/__init__.py:1609
 msgid "Aborting queue tasks."
 msgstr "Abbrechen der Warteschlangen-Aufgaben."
 
-#: ../../sulfur/src/sulfur/events.py:952
+#: ../../sulfur/src/sulfur/events.py:953
 msgid "Libraries test aborted"
 msgstr "Test der Programmbibliotheken abgebrochen"
 
-#: ../../sulfur/src/sulfur/events.py:961
+#: ../../sulfur/src/sulfur/events.py:962
 msgid ""
 "Some broken packages have not been matched, others are going to be added to "
 "the queue."
@@ -8310,7 +8310,7 @@ msgstr ""
 "Einige fehlerhafte Pakete konnten nicht gefunden werden, es werden andere in "
 "der Warteschlange hinzugefügt."
 
-#: ../../sulfur/src/sulfur/events.py:964
+#: ../../sulfur/src/sulfur/events.py:965
 #, fuzzy
 msgid "All the broken packages are going to be added to the queue"
 msgstr "Dies sind die Pakete, welche zum Entfernen vorgesehen werden"
@@ -8414,7 +8414,7 @@ msgid "Show Queued Packages"
 msgstr "Zeige Pakte in der Warteschlange"
 
 #: ../../sulfur/src/sulfur/__init__.py:570
-#: ../../sulfur/src/sulfur/sulfur.glade.h:150
+#: ../../sulfur/src/sulfur/sulfur.glade.h:151
 msgid "Preferences"
 msgstr "Einstellungen"
 
@@ -8726,7 +8726,7 @@ msgid "There are incomplete package sets, continue at your own risk"
 msgstr "Dies sind die Pakete, welche markiert werden würden"
 
 #: ../../sulfur/src/sulfur/views.py:1576
-#: ../../sulfur/src/sulfur/sulfur.glade.h:142
+#: ../../sulfur/src/sulfur/sulfur.glade.h:143
 msgid "Packages"
 msgstr "Pakete"
 
@@ -8797,7 +8797,7 @@ msgstr "Aktualisierung"
 
 #. Setup revision column
 #: ../../sulfur/src/sulfur/views.py:1960
-#: ../../sulfur/src/sulfur/sulfur.glade.h:191
+#: ../../sulfur/src/sulfur/sulfur.glade.h:192
 msgid "Revision"
 msgstr "Version"
 
@@ -9297,712 +9297,716 @@ msgid "Install a stand-alone package file"
 msgstr "Installiere ein einzelnes Paket"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:94
+msgid "Install from binary package..."
+msgstr "Installiere aus binärem Paket..."
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:95
 msgid "Install the selected Package Set"
 msgstr "Installiere das ausgewählte Paket Set"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:95
+#: ../../sulfur/src/sulfur/sulfur.glade.h:96
 msgid "Install the selected package"
 msgstr "Installiere ausgewähltes Paket"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:96
+#: ../../sulfur/src/sulfur/sulfur.glade.h:97
 #, fuzzy
 msgid "Installation"
 msgstr "Installiere"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:98
+#: ../../sulfur/src/sulfur/sulfur.glade.h:99
 msgid "Installed Packages"
 msgstr "Zeige installierte Pakete"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:99
+#: ../../sulfur/src/sulfur/sulfur.glade.h:100
 msgid "Interactivity"
 msgstr "Interaktivität"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:100
+#: ../../sulfur/src/sulfur/sulfur.glade.h:101
 msgid "Interface Colors"
 msgstr "Farben der Schnittstelle"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:101
+#: ../../sulfur/src/sulfur/sulfur.glade.h:102
 msgid "Kernel Tag"
 msgstr "Kernel-Bezeichnung"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:103
+#: ../../sulfur/src/sulfur/sulfur.glade.h:104
 msgid "Keywords (space separated)"
 msgstr "Schlüsselwörter (kommasepariert)"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:105
+#: ../../sulfur/src/sulfur/sulfur.glade.h:106
 msgid "Library test"
 msgstr "Test der Programmbibliotheken"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:107
+#: ../../sulfur/src/sulfur/sulfur.glade.h:108
 #, fuzzy
 msgid "Load User Generated Content"
 msgstr "behandelt Community-Funktionen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:108
+#: ../../sulfur/src/sulfur/sulfur.glade.h:109
 msgid "Load content"
 msgstr "Inhalt laden"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:109
+#: ../../sulfur/src/sulfur/sulfur.glade.h:110
 msgid "Location"
 msgstr "Ort"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:110
+#: ../../sulfur/src/sulfur/sulfur.glade.h:111
 msgid "MD5 Signature"
 msgstr "MD5 Signatur"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:111
+#: ../../sulfur/src/sulfur/sulfur.glade.h:112
 msgid "M_erge"
 msgstr "_Mergen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:112
+#: ../../sulfur/src/sulfur/sulfur.glade.h:113
 msgid "Mask the selected packages"
 msgstr "Maskiere das ausgewählte Paket"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:113
+#: ../../sulfur/src/sulfur/sulfur.glade.h:114
 msgid "Mask this package"
 msgstr "Paket maskieren"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:115
+#: ../../sulfur/src/sulfur/sulfur.glade.h:116
 msgid "Merge all"
 msgstr "Alle M_ergen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:116
+#: ../../sulfur/src/sulfur/sulfur.glade.h:117
 msgid "Messages"
 msgstr "Nachrichten"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:117
+#: ../../sulfur/src/sulfur/sulfur.glade.h:118
 msgid "Mirror updates"
 msgstr "Spiegel Updates"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:119
+#: ../../sulfur/src/sulfur/sulfur.glade.h:120
 msgid "Networking"
 msgstr "Netzwerk"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:120
+#: ../../sulfur/src/sulfur/sulfur.glade.h:121
 msgid "New backup"
 msgstr "Neues Backup"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:121
+#: ../../sulfur/src/sulfur/sulfur.glade.h:122
 msgid "Not done"
 msgstr "Nicht fertig"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:123
+#: ../../sulfur/src/sulfur/sulfur.glade.h:124
 #, fuzzy
 msgid "Notice Board Entry Information"
 msgstr "Wichtige Informationen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:125
+#: ../../sulfur/src/sulfur/sulfur.glade.h:126
 #, fuzzy
 msgid "Notice board Id"
 msgstr "Repository Name"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:126
+#: ../../sulfur/src/sulfur/sulfur.glade.h:127
 msgid "O_ther"
 msgstr "A_ndere"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:127
+#: ../../sulfur/src/sulfur/sulfur.glade.h:128
 #, fuzzy
 msgid "Output View"
 msgstr "Ausgabe"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:128
+#: ../../sulfur/src/sulfur/sulfur.glade.h:129
 msgid "Package (default)"
 msgstr "Paket (Standard)"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:129
+#: ../../sulfur/src/sulfur/sulfur.glade.h:130
 msgid "Package Info"
 msgstr "Paketinformation"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:130
+#: ../../sulfur/src/sulfur/sulfur.glade.h:131
 msgid "Package Information"
 msgstr "Paketinformation"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:131
+#: ../../sulfur/src/sulfur/sulfur.glade.h:132
 msgid "Package Masking"
 msgstr "Paketmaskierung"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:132
+#: ../../sulfur/src/sulfur/sulfur.glade.h:133
 msgid "Package Size"
 msgstr "Paketgröße"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:133
+#: ../../sulfur/src/sulfur/sulfur.glade.h:134
 msgid "Package category"
 msgstr "Paket Kategorien"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:134
+#: ../../sulfur/src/sulfur/sulfur.glade.h:135
 msgid "Package description"
 msgstr "Pakete Beschreibung"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:135
+#: ../../sulfur/src/sulfur/sulfur.glade.h:136
 #, fuzzy
 msgid "Package downgrade"
 msgstr "Paketname"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:136
+#: ../../sulfur/src/sulfur/sulfur.glade.h:137
 msgid "Package not installed"
 msgstr "Pakete nicht installiert"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:137
+#: ../../sulfur/src/sulfur/sulfur.glade.h:138
 msgid "Package reinstalled"
 msgstr "Pakete erneut installiert"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:138
+#: ../../sulfur/src/sulfur/sulfur.glade.h:139
 msgid "Package removed"
 msgstr "Pakete gelöscht"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:139
+#: ../../sulfur/src/sulfur/sulfur.glade.h:140
 #, fuzzy
 msgid "Package sub-description"
 msgstr "durchsuche Pakete nach Beschreibung"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:140
+#: ../../sulfur/src/sulfur/sulfur.glade.h:141
 #, fuzzy
 msgid "Package subtitle"
 msgstr "_Paket-Webseite"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:141
+#: ../../sulfur/src/sulfur/sulfur.glade.h:142
 msgid "Package updated"
 msgstr "Pakete aktualisiert"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:144
+#: ../../sulfur/src/sulfur/sulfur.glade.h:145
 msgid "Pinboard Id"
 msgstr "Pinwand ID"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:145
+#: ../../sulfur/src/sulfur/sulfur.glade.h:146
 #, fuzzy
 msgid "Pinboard Item Information"
 msgstr "zeige Systeminformationen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:146
+#: ../../sulfur/src/sulfur/sulfur.glade.h:147
 #, fuzzy
 msgid "Pinboard View"
 msgstr "Repository Name"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:147
+#: ../../sulfur/src/sulfur/sulfur.glade.h:148
 msgid "Please Confirm"
 msgstr "Bitte Bestätigen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:148
+#: ../../sulfur/src/sulfur/sulfur.glade.h:149
 msgid ""
 "Please submit this error to us providing as much information as possible."
 msgstr "Bitte sende diesen Fehler an und, mit soviel Information wie möglich."
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:151
+#: ../../sulfur/src/sulfur/sulfur.glade.h:152
 msgid "Prevents files belonging to a package being overwritten by another"
 msgstr ""
 "Verhindert, dass Dateien eines Paketes von einem anderen überschrieben werden"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:152
+#: ../../sulfur/src/sulfur/sulfur.glade.h:153
 #, fuzzy
 msgid "Process details"
 msgstr "Prozessiere Ergebnisse"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:153
+#: ../../sulfur/src/sulfur/sulfur.glade.h:154
 msgid "Process priority (nice)"
 msgstr "Prozess-Priorität (nice)"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:154
+#: ../../sulfur/src/sulfur/sulfur.glade.h:155
 #, fuzzy
 msgid "Process result"
 msgstr "Prozessiere Ergebnisse"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:155
+#: ../../sulfur/src/sulfur/sulfur.glade.h:156
 msgid "Processing at"
 msgstr "Verarbeite Position"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:156
+#: ../../sulfur/src/sulfur/sulfur.glade.h:157
 msgid "Protected files and directories"
 msgstr "Geschützte Dateien und Verzeichnisse"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:157
+#: ../../sulfur/src/sulfur/sulfur.glade.h:158
 msgid "Protected files and directories mask"
 msgstr "Maske für geschützte Dateien und Verzeichnisse"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:158
+#: ../../sulfur/src/sulfur/sulfur.glade.h:159
 msgid "Proxy Password"
 msgstr "Proxy Passwort"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:159
+#: ../../sulfur/src/sulfur/sulfur.glade.h:160
 msgid "Proxy Username"
 msgstr "Proxy Benutzername"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:160
+#: ../../sulfur/src/sulfur/sulfur.glade.h:161
 msgid "Q_ueue packages in selected Advisory"
 msgstr "_Pakete aus der gewählten Sicherheitswarnung hinzufügen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:161
+#: ../../sulfur/src/sulfur/sulfur.glade.h:162
 #, fuzzy
 msgid "Queue"
 msgstr "aufgereiht"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:162
+#: ../../sulfur/src/sulfur/sulfur.glade.h:163
 msgid "Queue Id"
 msgstr "Warteschlangen ID"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:163
+#: ../../sulfur/src/sulfur/sulfur.glade.h:164
 msgid "Queue Item Information"
 msgstr "Warteschlangen-Objekt-Information"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:164
+#: ../../sulfur/src/sulfur/sulfur.glade.h:165
 msgid "Queue View"
 msgstr "Warteschlangenansicht"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:165
+#: ../../sulfur/src/sulfur/sulfur.glade.h:166
 msgid "Queued"
 msgstr "aufgereiht"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:166
+#: ../../sulfur/src/sulfur/sulfur.glade.h:167
 msgid "Queued at"
 msgstr "Eingereiht an Position"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:167
+#: ../../sulfur/src/sulfur/sulfur.glade.h:168
 msgid "R_egenerate Cache"
 msgstr "_Cache regenerieren"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:168
+#: ../../sulfur/src/sulfur/sulfur.glade.h:169
 #, fuzzy
 msgid "R_epositories Notice Board"
 msgstr "Repositories Optionen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:171
+#: ../../sulfur/src/sulfur/sulfur.glade.h:172
 msgid "Reinstall the selected package"
 msgstr "Ausgewähltes Paket neu installieren"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:172
+#: ../../sulfur/src/sulfur/sulfur.glade.h:173
 #, fuzzy
 msgid "Reload"
 msgstr "WIRKLICH ?"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:173
+#: ../../sulfur/src/sulfur/sulfur.glade.h:174
 #, fuzzy
 msgid "Remote stdout file"
 msgstr "Statistiken des entfernten Computers für"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:174
+#: ../../sulfur/src/sulfur/sulfur.glade.h:175
 #, fuzzy
 msgid "Remove Selected"
 msgstr "Entferne das ausgewählte Paket"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:176
+#: ../../sulfur/src/sulfur/sulfur.glade.h:177
 msgid "Remove USE flags on atoms"
 msgstr "Lösche USE flags bei atoms"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:177
+#: ../../sulfur/src/sulfur/sulfur.glade.h:178
 msgid "Remove atoms"
 msgstr "Entferne atoms"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:178
+#: ../../sulfur/src/sulfur/sulfur.glade.h:179
 msgid "Remove packages on the remote server"
 msgstr "Lösche Pakete auf Remoteserver"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:179
+#: ../../sulfur/src/sulfur/sulfur.glade.h:180
 #, fuzzy
 msgid "Remove the selected Package Set"
 msgstr "Entferne das ausgewählte paket"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:180
+#: ../../sulfur/src/sulfur/sulfur.glade.h:181
 msgid "Remove the selected package"
 msgstr "Entferne das ausgewählte paket"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:181
+#: ../../sulfur/src/sulfur/sulfur.glade.h:182
 msgid "Remove the selected package and its configuration"
 msgstr "Entferne ausgewähltes Paket und seine Konfiguration"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:182
+#: ../../sulfur/src/sulfur/sulfur.glade.h:183
 #, fuzzy
 msgid "Repositories"
 msgstr "Repositories"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:184
+#: ../../sulfur/src/sulfur/sulfur.glade.h:185
 msgid "Repositories options"
 msgstr "Repositories Optionen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:185
+#: ../../sulfur/src/sulfur/sulfur.glade.h:186
 #, fuzzy
 msgid "Repository information"
 msgstr "zeige Repository Information"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:187
+#: ../../sulfur/src/sulfur/sulfur.glade.h:188
 msgid "Restore"
 msgstr "Wiederherstellen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:188
+#: ../../sulfur/src/sulfur/sulfur.glade.h:189
 msgid "Restore selected"
 msgstr "Stelle ausgewählte wieder her"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:189
+#: ../../sulfur/src/sulfur/sulfur.glade.h:190
 #, fuzzy
 msgid "Review for Install..."
 msgstr "Neu Installieren"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:192
+#: ../../sulfur/src/sulfur/sulfur.glade.h:193
 msgid "S_end Error Report"
 msgstr "_Sende Fehlerbericht"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:193
+#: ../../sulfur/src/sulfur/sulfur.glade.h:194
 #, fuzzy
 msgid "S_ervices"
 msgstr "Repository Services Port"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:194
+#: ../../sulfur/src/sulfur/sulfur.glade.h:195
 msgid "Save"
 msgstr "Speichern"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:195
+#: ../../sulfur/src/sulfur/sulfur.glade.h:196
 msgid "Search"
 msgstr "Suche"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:196
+#: ../../sulfur/src/sulfur/sulfur.glade.h:197
 #, fuzzy
 msgid "Secure Services Port"
 msgstr "Repository Services Port"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:197
+#: ../../sulfur/src/sulfur/sulfur.glade.h:198
 #, fuzzy
 msgid "Security"
 msgstr "Sicherheitskritische Warnungen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:198
+#: ../../sulfur/src/sulfur/sulfur.glade.h:199
 #, fuzzy
 msgid "Security updates"
 msgstr "Sicherheitskritische Warnungen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:199
+#: ../../sulfur/src/sulfur/sulfur.glade.h:200
 #, fuzzy
 msgid "Services Port"
 msgstr "Repository Services Port"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:200
+#: ../../sulfur/src/sulfur/sulfur.glade.h:201
 #, fuzzy
 msgid "Sets"
 msgstr "Status"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:201
+#: ../../sulfur/src/sulfur/sulfur.glade.h:202
 #, fuzzy
 msgid "Show ChangeLog"
 msgstr "Ä_nderungen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:202
+#: ../../sulfur/src/sulfur/sulfur.glade.h:203
 msgid "Show Selected"
 msgstr "Zeige ausgewählte"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:203
+#: ../../sulfur/src/sulfur/sulfur.glade.h:204
 msgid "Show all"
 msgstr "Zeige alle"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:204
+#: ../../sulfur/src/sulfur/sulfur.glade.h:205
 msgid "Show applied"
 msgstr "Zeige angewandte"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:205
+#: ../../sulfur/src/sulfur/sulfur.glade.h:206
 msgid "Show unapplied"
 msgstr "Zeige nicht angewandte"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:208
+#: ../../sulfur/src/sulfur/sulfur.glade.h:209
 msgid "Socket settings"
 msgstr "Socket Einstellungen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:209
+#: ../../sulfur/src/sulfur/sulfur.glade.h:210
 #, fuzzy
 msgid "Source Package Manager"
 msgstr "Starte Paketmanager"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:210
+#: ../../sulfur/src/sulfur/sulfur.glade.h:211
 msgid "Spm Info"
 msgstr "Spm Info"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:211
+#: ../../sulfur/src/sulfur/sulfur.glade.h:212
 msgid "Spm Sync"
 msgstr "Spm Sync"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:212
+#: ../../sulfur/src/sulfur/sulfur.glade.h:213
 #, fuzzy
 msgid "Spm tree updates"
 msgstr "Sicherheitskritische Warnungen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:213
+#: ../../sulfur/src/sulfur/sulfur.glade.h:214
 msgid "Submit a new document"
 msgstr "Reiche neues Dokument ein"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:214
+#: ../../sulfur/src/sulfur/sulfur.glade.h:215
 msgid "Successful mesage"
 msgstr "erfolgreiche Nachricht"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:215
+#: ../../sulfur/src/sulfur/sulfur.glade.h:216
 msgid "Sulfur"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:216
+#: ../../sulfur/src/sulfur/sulfur.glade.h:217
 msgid "Switch Sulfur to Advanced Mode"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:217
+#: ../../sulfur/src/sulfur/sulfur.glade.h:218
 msgid "Switch to"
 msgstr "Wechsle nach"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:218
+#: ../../sulfur/src/sulfur/sulfur.glade.h:219
 #, fuzzy
 msgid "Sync repositories to fetch latest updates"
 msgstr "zeige Repositories-Status"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:220
+#: ../../sulfur/src/sulfur/sulfur.glade.h:221
 msgid "System"
 msgstr "System"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:221
+#: ../../sulfur/src/sulfur/sulfur.glade.h:222
 msgid "System Database"
 msgstr "Systemdatenbank"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:222
+#: ../../sulfur/src/sulfur/sulfur.glade.h:223
 #, fuzzy
 msgid "System files"
 msgstr "System"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:223
+#: ../../sulfur/src/sulfur/sulfur.glade.h:224
 msgid "Terminal font"
 msgstr "Schriftart für Terminal"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:224
+#: ../../sulfur/src/sulfur/sulfur.glade.h:225
 msgid "Text on error message"
 msgstr "Text für Fehlermeldung"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:225
+#: ../../sulfur/src/sulfur/sulfur.glade.h:226
 msgid "Text on succ. message"
 msgstr "Text für erfolgreiche Meldung"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:226
+#: ../../sulfur/src/sulfur/sulfur.glade.h:227
 msgid "This is what they call \"nice level\""
 msgstr "Das ist, was man \"nice level\" nennt"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:228
+#: ../../sulfur/src/sulfur/sulfur.glade.h:229
 msgid "UGC Entry Information"
 msgstr "UGC Eintragsinformationen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:229
+#: ../../sulfur/src/sulfur/sulfur.glade.h:230
 msgid "URI"
 msgstr "URI"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:230
+#: ../../sulfur/src/sulfur/sulfur.glade.h:231
 #, fuzzy
 msgid "Undo Install Set action"
 msgstr "Installationsaktion rückgängig machen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:231
+#: ../../sulfur/src/sulfur/sulfur.glade.h:232
 msgid "Undo Install action"
 msgstr "Installationsaktion rückgängig machen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:232
+#: ../../sulfur/src/sulfur/sulfur.glade.h:233
 msgid "Undo Purge action"
 msgstr "Säuberungsaktion rückgängig machen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:233
+#: ../../sulfur/src/sulfur/sulfur.glade.h:234
 msgid "Undo Reinstall action"
 msgstr "Neuinstallationsaktion rückgängig machen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:234
+#: ../../sulfur/src/sulfur/sulfur.glade.h:235
 #, fuzzy
 msgid "Undo Remove Set action"
 msgstr "Entfernungsaktion rückgängig machen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:235
+#: ../../sulfur/src/sulfur/sulfur.glade.h:236
 msgid "Undo Remove action"
 msgstr "Entfernungsaktion rückgängig machen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:236
+#: ../../sulfur/src/sulfur/sulfur.glade.h:237
 msgid "Undo Update action"
 msgstr "Aktualisierungsaktion rückgängig machen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:237
+#: ../../sulfur/src/sulfur/sulfur.glade.h:238
 msgid "Unmask this package"
 msgstr "Paket demaskieren"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:238
+#: ../../sulfur/src/sulfur/sulfur.glade.h:239
 msgid "Update the selected package"
 msgstr "Ausgewähltes Paket aktualisieren"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:239
+#: ../../sulfur/src/sulfur/sulfur.glade.h:240
 msgid "Updates"
 msgstr "Aktualisierungen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:240
+#: ../../sulfur/src/sulfur/sulfur.glade.h:241
 msgid "User / Group"
 msgstr "Benutzer / Gruppe"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:243
+#: ../../sulfur/src/sulfur/sulfur.glade.h:244
 msgid "Version"
 msgstr "Version"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:244
+#: ../../sulfur/src/sulfur/sulfur.glade.h:245
 msgid "Website"
 msgstr "Webseite"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:245
+#: ../../sulfur/src/sulfur/sulfur.glade.h:246
 msgid "What you were doing"
 msgstr "Was hast du gemacht"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:247
+#: ../../sulfur/src/sulfur/sulfur.glade.h:248
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
 msgstr ""
 "Du <b>musst</b> die untenstehenden Lizenzbedingungen <b>akzeptieren</b>."
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:249
+#: ../../sulfur/src/sulfur/sulfur.glade.h:250
 msgid "Your E-mail"
 msgstr "Deine E-mail"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:250
+#: ../../sulfur/src/sulfur/sulfur.glade.h:251
 msgid "Your Full Name"
 msgstr "Dein voller Name"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:251
+#: ../../sulfur/src/sulfur/sulfur.glade.h:252
 msgid "_Abort"
 msgstr "_Abbruch"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:252
+#: ../../sulfur/src/sulfur/sulfur.glade.h:253
 msgid "_Accept License"
 msgstr "_Akteptiere Lizenz"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:253
+#: ../../sulfur/src/sulfur/sulfur.glade.h:254
 msgid "_Add All"
 msgstr "_Alle Hinzufügen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:254
+#: ../../sulfur/src/sulfur/sulfur.glade.h:255
 #, fuzzy
 msgid "_Add Set"
 msgstr "_Alle Hinzufügen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:255
+#: ../../sulfur/src/sulfur/sulfur.glade.h:256
 msgid "_Clear all cache"
 msgstr "_Lösche gesamten Cache"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:256
+#: ../../sulfur/src/sulfur/sulfur.glade.h:257
 msgid "_Clear all credentials"
 msgstr "_Lösche alle Zugriffskennungen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:257
+#: ../../sulfur/src/sulfur/sulfur.glade.h:258
 msgid "_Commit Actions"
 msgstr "_Übergebe Aktionen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:258
+#: ../../sulfur/src/sulfur/sulfur.glade.h:259
 msgid "_Details"
 msgstr "_Details"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:259
+#: ../../sulfur/src/sulfur/sulfur.glade.h:260
 msgid "_Enable"
 msgstr "_Aktivieren"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:260
+#: ../../sulfur/src/sulfur/sulfur.glade.h:261
 msgid "_Force repositories update"
 msgstr "Er_zwinge Repositories-Aktualisierung"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:261
+#: ../../sulfur/src/sulfur/sulfur.glade.h:262
 msgid "_Generate Login"
 msgstr "_Generiere Login"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:262
+#: ../../sulfur/src/sulfur/sulfur.glade.h:263
 msgid "_Help"
 msgstr "_Hilfe"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:263
+#: ../../sulfur/src/sulfur/sulfur.glade.h:264
 msgid "_Insert String"
 msgstr "_String eingeben"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:264
+#: ../../sulfur/src/sulfur/sulfur.glade.h:265
 msgid "_More"
 msgstr "_Mehr"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:265
+#: ../../sulfur/src/sulfur/sulfur.glade.h:266
 msgid "_Open Document"
 msgstr "_Öffne Dokument"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:266
+#: ../../sulfur/src/sulfur/sulfur.glade.h:267
 msgid "_Overview"
 msgstr "Ü_bersicht"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:267
+#: ../../sulfur/src/sulfur/sulfur.glade.h:268
 msgid "_Properties"
 msgstr "_Einstellungen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:268
+#: ../../sulfur/src/sulfur/sulfur.glade.h:269
 msgid "_Queue all vulnerable packages"
 msgstr "_Alle sicherheitskritischen Pakete hinzufügen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:269
+#: ../../sulfur/src/sulfur/sulfur.glade.h:270
 msgid "_Read License"
 msgstr "_Lizenz lesen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:270
+#: ../../sulfur/src/sulfur/sulfur.glade.h:271
 msgid "_References"
 msgstr "_Referenzen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:271
+#: ../../sulfur/src/sulfur/sulfur.glade.h:272
 #, fuzzy
 msgid "_Remote Repository Manager"
 msgstr "Repository Name"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:272
+#: ../../sulfur/src/sulfur/sulfur.glade.h:273
 msgid "_Remove All"
 msgstr "Alle _Entfernen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:273
+#: ../../sulfur/src/sulfur/sulfur.glade.h:274
 msgid "_Remove Login"
 msgstr "_Lösche Login"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:274
+#: ../../sulfur/src/sulfur/sulfur.glade.h:275
 msgid "_Remove Set"
 msgstr "_Entfernen Satz"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:275
+#: ../../sulfur/src/sulfur/sulfur.glade.h:276
 msgid "_SSL Connection"
 msgstr "_SSL Verbindung"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:276
+#: ../../sulfur/src/sulfur/sulfur.glade.h:277
 msgid "_Skip mirror"
 msgstr "Über_springe Spiegel"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:277
+#: ../../sulfur/src/sulfur/sulfur.glade.h:278
 #, fuzzy
 msgid "_Submit Document"
 msgstr "Service Status"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:278
+#: ../../sulfur/src/sulfur/sulfur.glade.h:279
 msgid "_Sulfur"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:279
+#: ../../sulfur/src/sulfur/sulfur.glade.h:280
 msgid "_Update Repositories"
 msgstr "_Aktualisiere Repositories"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:280
+#: ../../sulfur/src/sulfur/sulfur.glade.h:281
 msgid "emerge --sync"
 msgstr "emerge --sync"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:281
+#: ../../sulfur/src/sulfur/sulfur.glade.h:282
 msgid "emerge --sync ? (o;"
 msgstr "emerge --sync ? (o;"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:282
+#: ../../sulfur/src/sulfur/sulfur.glade.h:283
 msgid "http://www.sabayon.org"
 msgstr "http://www.sabayon.org"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:283
+#: ../../sulfur/src/sulfur/sulfur.glade.h:284
 msgid "kB/sec"
 msgstr "kB/sec"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:284
+#: ../../sulfur/src/sulfur/sulfur.glade.h:285
 msgid "localhost"
 msgstr "localhost"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:286
+#: ../../sulfur/src/sulfur/sulfur.glade.h:287
 msgid "root"
 msgstr "root"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:287
+#: ../../sulfur/src/sulfur/sulfur.glade.h:288
 msgid "type your password here"
 msgstr "gib dein Passwort hier ein"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:288
+#: ../../sulfur/src/sulfur/sulfur.glade.h:289
 msgid "type your username here"
 msgstr "gib deinen Benutzernamen hier ein"
 
@@ -10068,9 +10072,6 @@ msgstr "_Starte Paketmanager"
 #, fuzzy
 #~ msgid "Install Set"
 #~ msgstr "Installationsgröße"
-
-#~ msgid "Install from binary package..."
-#~ msgstr "Installiere aus binärem Paket..."
 
 #~ msgid "Purge"
 #~ msgstr "Säubern"
