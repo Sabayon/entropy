@@ -33,6 +33,7 @@ from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
 from entropy.client.interfaces.fetch import FetchersMixin
 from entropy.const import etpConst, etpCache
 from entropy.core import SystemSettings, SystemSettingsPlugin
+from entropy.misc import LogFile
 from entropy.exceptions import SystemDatabaseError, RepositoryError
 
 class ClientSystemSettingsPlugin(SystemSettingsPlugin):
@@ -189,7 +190,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         import entropy.tools as entropyTools
         self.dumpTools = dumpTools
         self.entropyTools = entropyTools
-        from entropy.misc import LogFile
         self.clientLog = LogFile(level = self.SystemSettings['system']['log_level'],
             filename = etpConst['equologfile'], header = "[client]")
 

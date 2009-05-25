@@ -28,10 +28,12 @@ import shutil
 from entropy.const import *
 from entropy.exceptions import *
 from entropy.i18n import _
-from entropy.output import TextInterface, brown, blue, bold, darkgreen, darkblue, red, purple, darkred, print_info, print_error, print_warning
+from entropy.output import TextInterface, brown, blue, bold, darkgreen, \
+    darkblue, red, purple, darkred, print_info, print_error, print_warning
 from entropy.misc import TimeScheduled
 from entropy.db import dbapi2, LocalRepository
 from entropy.client.interfaces.client import Client
+from entropy.cache import EntropyCacher
 
 class Package:
 
@@ -43,7 +45,7 @@ class Package:
             mytxt = _("A valid Client instance or subclass is needed")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
-        from entropy.cache import EntropyCacher
+
         self.Cacher = EntropyCacher()
         self.infoDict = {}
         self.prepared = False
