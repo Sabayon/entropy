@@ -328,9 +328,8 @@ class SecurityInterface:
             # XXX: does multimatch work correctly?
             for atom in unaff_atoms:
                 matches = self.Entropy.clientDbconn.atomMatch(atom, multiMatch = True)
-                if matches[1] == 0:
-                    for idpackage in matches[0]:
-                        unaffected_atoms.add((idpackage,0))
+                for idpackage in matches[0]:
+                    unaffected_atoms.add((idpackage,0))
 
             for atom in vul_atoms:
                 match = self.Entropy.clientDbconn.atomMatch(atom)

@@ -770,11 +770,10 @@ class Package:
                         matches = self.Entropy.atom_match(key,
                             matchSlot = slot, multiRepo = True,
                             multiMatch = True)
-                        if matches[1] == 0:
-                            for mymatch in matches[0]:
-                                if mymatch not in disk_cache:
-                                    disk_cache.append(mymatch)
-                                    taint = True
+                        for mymatch in matches[0]:
+                            if mymatch not in disk_cache:
+                                disk_cache.append(mymatch)
+                                taint = True
                         if taint:
                             mydata = {}
                             mylist = []

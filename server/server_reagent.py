@@ -546,9 +546,8 @@ def database(options):
         pkglist = set()
         for atom in myopts:
             pkg = dbconn.atomMatch(atom, multiMatch = True)
-            if pkg[1] == 0:
-                for idpackage in pkg[0]:
-                    pkglist.add(idpackage)
+            for idpackage in pkg[0]:
+                pkglist.add(idpackage)
 
         if not pkglist:
             print_error(brown(" * ")+red("%s." % (_("No packages found"),) ))
@@ -590,10 +589,9 @@ def database(options):
         else:
             for atom in atoms:
                 match = dbconn.atomMatch(atom, multiMatch = True)
-                if match[1] == 0:
-                    for x in match[0]:
-                        if dbconn.isInjected(x):
-                            idpackages.add(x)
+                for x in match[0]:
+                    if dbconn.isInjected(x):
+                        idpackages.add(x)
 
         if not idpackages:
             print_error(brown(" * ")+red("%s." % (_("No packages found"),) ))
