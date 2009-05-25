@@ -252,18 +252,19 @@ class SulfurApplicationEventsMixin:
             okDialog( self.ui.main, msg )
 
     def on_repoEdit_clicked( self, widget ):
-        self.addrepo_ui.repoSubmit.hide()
-        self.addrepo_ui.repoSubmitEdit.show()
-        self.addrepo_ui.repoInsert.hide()
-        self.addrepo_ui.repoidEntry.set_editable(False)
+        my = AddRepositoryWindow(self, self.ui.main, self.Equo)
+        my.addrepo_ui.repoSubmit.hide()
+        my.addrepo_ui.repoSubmitEdit.show()
+        my.addrepo_ui.repoInsert.hide()
+        my.addrepo_ui.repoidEntry.set_editable(False)
         # get selection
         selection = self.repoView.view.get_selection()
         repostuff = selection.get_selected()
         if repostuff[1] != None:
             repoid = self.repoView.get_repoid(repostuff)
             repodata = self.Equo.get_repository_settings(repoid)
-            self._load_repo_data(repodata)
-            self.addrepo_ui.addRepoWin.show()
+            my._load_repo_data(repodata)
+            my.load()
 
     def on_terminal_clear_activate(self, widget):
         self.output.text_written = []

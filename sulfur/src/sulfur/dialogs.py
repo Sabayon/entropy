@@ -70,8 +70,6 @@ class AddRepositoryWindow(MenuSkel):
         self.Equo = entropy
         self.Sulfur = application
         self.window = window
-
-    def load(self):
         self.addrepo_ui.repoSubmit.show()
         self.addrepo_ui.repoSubmitEdit.hide()
         self.addrepo_ui.repoInsert.show()
@@ -80,8 +78,10 @@ class AddRepositoryWindow(MenuSkel):
         self.addrepo_ui.repoidEntry.set_text("")
         self.addrepo_ui.repoDescEntry.set_text("")
         self.addrepo_ui.repodbEntry.set_text("")
-        self.addrepo_ui.addRepoWin.show()
         self.repoMirrorsView.populate()
+
+    def load(self):
+        self.addrepo_ui.addRepoWin.show()
 
     def _load_repo_data(self, repodata):
 
