@@ -241,7 +241,11 @@ class Trigger:
                 matches, rc = self.Entropy.clientDbconn.atomMatch(key,
                     multiMatch = True)
                 if len(matches) < 2:
+                    # do not revert back to xorg if more than one
+                    # package is installed
                     functions.append("openglsetup_xorg")
+                else:
+                    functions.append("openglsetup")
 
         for x in self.pkgdata['removecontent']:
             if x.startswith("/boot"):
