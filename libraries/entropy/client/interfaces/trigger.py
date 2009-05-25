@@ -203,7 +203,7 @@ class Trigger:
 
         functions = []
 
-        # Gentoo hook
+        # Portage hook
         if self.spm_support:
 
             while 1:
@@ -244,8 +244,6 @@ class Trigger:
                     # do not revert back to xorg if more than one
                     # package is installed
                     functions.append("openglsetup_xorg")
-                else:
-                    functions.append("openglsetup")
 
         for x in self.pkgdata['removecontent']:
             if x.startswith("/boot"):
