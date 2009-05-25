@@ -235,7 +235,13 @@ class Trigger:
                 # disabling gentoo postinstall since we reimplemented it
                 functions.remove("ebuild_postremove")
             if self.package_action in ("remove",):
-                functions.append("openglsetup_xorg")
+                # look if this package is the last one
+                key = "%s/%s" % (self.pkgdata['category'],
+                    self.pkgdata['name'],)
+                matches, rc = self.Entropy.clientDbconn.atomMatch(key,
+                    multiMatch = True)
+                if len(matches) < 2:
+                    functions.append("openglsetup_xorg")
 
         for x in self.pkgdata['removecontent']:
             if x.startswith("/boot"):
