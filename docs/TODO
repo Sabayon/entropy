@@ -4,9 +4,9 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
-    - Move Trigger.trigger_configure_boot_grub & friends to ebuild (make Trigger more agnostic)
-        -> next kernel 2.6.30
-        -> split kernel sources from kernel bins?
-
+    - Sulfur: iPhone navigation
     - Documentation + code style cleanup (NLnet Milestone 7)
 
+  1.0_beta2:
+
+    - PackageKit integration

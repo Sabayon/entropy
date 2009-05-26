@@ -553,6 +553,7 @@ def _showPackageInfo(foundAtoms, deps):
 def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps):
 
     runQueue = []
+    removalQueue = []
 
     if deps:
         print_info(red(" @@ ")+blue("%s ...") % (_("Calculating dependencies"),) )
@@ -610,7 +611,7 @@ def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps):
         for atomInfo in foundAtoms:
             runQueue.append(atomInfo)
 
-    return False, runQueue
+    return False, runQueue, removalQueue
 
 def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = [],
     savecwd = False):
@@ -624,7 +625,8 @@ def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = [],
     abort, myrc = _showPackageInfo(foundAtoms, deps)
     if abort: return myrc
 
-    abort, runQueue = _generateRunQueue(foundAtoms, deps, False, deepdeps)
+    abort, runQueue, removalQueue = _generateRunQueue(foundAtoms, deps,
+        False, deepdeps)
     if abort: return runQueue
 
     if etpUi['pretend']:
@@ -655,7 +657,9 @@ def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = [],
 
     return 0,0
 
-def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = False, onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = [], resume = False, skipfirst = False, dochecksum = True, multifetch = 1):
+def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = False,
+    onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = [],
+    resume = False, skipfirst = False, dochecksum = True, multifetch = 1):
 
     # check if I am root
     if (not Equo.entropyTools.is_root()):
@@ -693,11 +697,11 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
             dirscleanup()
             return myrc
 
-        abort, runQueue = _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps)
+        abort, runQueue, removalQueue = _generateRunQueue(foundAtoms, deps,
+            emptydeps, deepdeps)
         if abort:
             dirscleanup()
             return runQueue
-        removalQueue = [] # aka, conflicts
 
 
         if ((not runQueue) and (not removalQueue)):
