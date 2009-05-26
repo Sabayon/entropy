@@ -918,11 +918,12 @@ class LocalRepository:
     #    tainted binaries owning tainted iddependency and taint database
     def runTreeUpdatesMoveAction(self, move_command, quickpkg_queue):
 
-        key_from = move_command[0]
+        dep_from = move_command[0]
+        key_from = self.entropyTools.dep_getkey(dep_from)
         key_to = move_command[1]
         cat_to = key_to.split("/")[0]
         name_to = key_to.split("/")[1]
-        matches = self.atomMatch(key_from, multiMatch = True)
+        matches = self.atomMatch(dep_from, multiMatch = True)
         iddependencies = set()
 
         for idpackage in matches[0]:
