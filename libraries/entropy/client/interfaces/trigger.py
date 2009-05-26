@@ -43,7 +43,8 @@ class Trigger:
         self.validPhases = ("preinstall","postinstall","preremove","postremove")
         self.pkgdata = pkgdata
         self.prepared = False
-        self.triggers = set()
+        self.triggers = []
+        self._trigger_data = {}
 	self.package_action = package_action
 
         '''
@@ -81,7 +82,7 @@ class Trigger:
             raise InvalidData("InvalidData: %s" % (mytxt,))
 
     def prepare(self):
-        func = getattr(self,self.phase)
+        func = getattr(self, self.phase)
         self.triggers = func()
         self.prepared = True
         return len(self.triggers) > 0
@@ -90,10 +91,11 @@ class Trigger:
         for trigger in self.triggers:
             fname = 'trigger_%s' % (trigger,)
             if not hasattr(self,fname): continue
-            getattr(self,fname)()
+            getattr(self, fname)()
 
     def kill(self):
         self.prepared = False
+        self._trigger_data.clear()
         del self.triggers[:]
 
     def postinstall(self):
@@ -122,26 +124,37 @@ class Trigger:
         ldpaths = self.Entropy.entropyTools.collect_linker_paths()
         for x in self.pkgdata['content']:
 
-            if (x.startswith("/etc/conf.d") or \
-                x.startswith("/etc/init.d")) and \
-                ("conftouch" not in functions):
+            if x.startswith("/etc/conf.d") or x.startswith("/etc/init.d"):
+                c_items = self._trigger_data.setdefault('conftouch', set())
+                c_items.add(x)
+                if "conftouch" not in functions:
                     functions.append('conftouch')
 
-            if x.startswith('/lib/modules/') and ("kernelmod" not in functions):
-                if "ebuild_postinstall" in functions:
-                    # disabling ebuild postinstall since we reimplemented it
-                    functions.remove("ebuild_postinstall")
-                functions.append('kernelmod')
+            if "kernelmod" not in functions:
+                if x.startswith('/lib/modules/'):
+                    if x.split("/")[3]:
+                        self._trigger_data['kernelmod'] = x
+                        if "ebuild_postinstall" in functions:
+                            # disabling ebuild postinstall since
+                            # it's reimplemented
+                            functions.remove("ebuild_postinstall")
+                        functions.append('kernelmod')
 
-            if x.startswith('/boot/kernel-') and ("addbootablekernel" not in functions):
-                functions.append('addbootablekernel')
+            # FIXME: deprecated, will be removed
+            if x.startswith('/boot/kernel-'):
+                c_item = self._trigger_data.setdefault('addbootablekernel', set())
+                c_item.add(x)
+                if "addbootablekernel" not in functions:
+                    functions.append('addbootablekernel')
 
-            if x.startswith('/etc/env.d/') and ("env_update" not in functions):
-                functions.append('env_update')
+            if "env_update" not in functions:
+                if x.startswith('/etc/env.d/'):
+                    functions.append('env_update')
 
-            if (os.path.dirname(x) in ldpaths) and ("run_ldconfig" not in functions):
-                if x.find(".so") > -1:
-                    functions.append('run_ldconfig')
+            if "run_ldconfig" not in functions:
+                if (os.path.dirname(x) in ldpaths):
+                    if x.find(".so") > -1:
+                        functions.append('run_ldconfig')
 
         if self.pkgdata['trigger']:
             functions.append('call_ext_postinstall')
@@ -163,11 +176,11 @@ class Trigger:
                 functions.append('ebuild_preinstall')
                 break
 
+        # FIXME: deprecated
         for x in self.pkgdata['content']:
-            if x.startswith("/etc/init.d/") and ("initinform" not in functions):
-                functions.append('initinform')
-            if x.startswith("/boot") and ("mountboot" not in functions):
-                functions.append('mountboot')
+            if "mountboot" not in functions:
+                if x.startswith("/boot"):
+                    functions.append('mountboot')
 
         if self.pkgdata['trigger']:
             functions.append('call_ext_preinstall')
@@ -182,15 +195,28 @@ class Trigger:
         ldpaths = self.Entropy.entropyTools.collect_linker_paths()
 
         for x in self.pkgdata['removecontent']:
-            if x.startswith('/boot/kernel-') and ("removebootablekernel" not in functions):
-                functions.append('removebootablekernel')
-            if x.startswith('/etc/init.d/') and ("initdisable" not in functions):
-                functions.append('initdisable')
-            if x.startswith('/etc/env.d/') and ("env_update" not in functions):
-                functions.append('env_update')
-            if (os.path.dirname(x) in ldpaths) and ("run_ldconfig" not in functions):
-                if x.find(".so") > -1:
-                    functions.append('run_ldconfig')
+
+            # FIXME: deprecated
+            if x.startswith('/boot/kernel-'):
+                c_item = self._trigger_data.setdefault('removebootablekernel', set())
+                c_item.add(x)
+                if "removebootablekernel" not in functions:
+                    functions.append('removebootablekernel')
+
+            if x.startswith('/etc/init.d/'):
+                c_item = self._trigger_data.setdefault('initdisable', set())
+                c_item.add(x)
+                if "initdisable" not in functions:
+                    functions.append('initdisable')
+
+            if "env_update" not in functions:
+                if x.startswith('/etc/env.d/'):
+                    functions.append('env_update')
+
+            if "run_ldconfig" not in functions:
+                if (os.path.dirname(x) in ldpaths):
+                    if x.find(".so") > -1:
+                        functions.append('run_ldconfig')
 
         if self.pkgdata['trigger']:
             functions.append('call_ext_postremove')
@@ -231,9 +257,11 @@ class Trigger:
 
             if "ebuild_preremove" in functions:
                 functions.remove("ebuild_preremove")
+
             if "ebuild_postremove" in functions:
                 # disabling gentoo postinstall since we reimplemented it
                 functions.remove("ebuild_postremove")
+
             if self.package_action in ("remove",):
                 # look if this package is the last one
                 key = "%s/%s" % (self.pkgdata['category'],
@@ -245,6 +273,7 @@ class Trigger:
                     # package is installed
                     functions.append("openglsetup_xorg")
 
+        # FIXME: deprecated
         for x in self.pkgdata['removecontent']:
             if x.startswith("/boot"):
                 functions.append('mountboot')
@@ -496,6 +525,7 @@ class Trigger:
 
 
     def trigger_conftouch(self):
+
         self.Entropy.clientLog.log(
             ETP_LOGPRI_INFO,
             ETP_LOGLEVEL_NORMAL,
@@ -507,21 +537,22 @@ class Trigger:
             importance = 0,
             header = red("   ## ")
         )
-        for item in self.pkgdata['content']:
-            if not (item.startswith("/etc/conf.d") or item.startswith("/etc/conf.d")):
-                continue
-            if not os.path.isfile(item):
-                continue
-            if not os.access(item,os.W_OK):
+
+        for path in self._trigger_data['conftouch']:
+
+            path = etpConst['systemroot']+path
+            if not os.access(path, os.W_OK | os.F_OK):
                 continue
             try:
-                f = open(item,"abw")
-                f.flush()
-                f.close()
-            except (OSError,IOError,):
-                pass
+                f_item = open(path, "abw")
+            except (OSError, IOError,):
+                continue
+            f_item.flush()
+            f_item.close()
+
 
     def trigger_kernelmod(self):
+
         if self.pkgdata['category'] != "sys-kernel":
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
@@ -534,8 +565,10 @@ class Trigger:
                 importance = 0,
                 header = red("   ## ")
             )
-            item = 'a:1:'+self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
+            item = 'a:1:'+self.pkgdata['category'] + "/" + \
+                self.pkgdata['name'] + "-" + self.pkgdata['version']
             self.trigger_update_moduledb(item)
+
         mytxt = "%s ..." % (_("Running depmod"),)
         self.Entropy.updateProgress(
             brown(mytxt),
@@ -543,60 +576,51 @@ class Trigger:
             header = red("   ## ")
         )
         # get kernel modules dir name
-        name = ''
-        for item in self.pkgdata['content']:
-            item = etpConst['systemroot']+item
-            if item.startswith(etpConst['systemroot']+"/lib/modules/"):
-                name = item[len(etpConst['systemroot']):]
-                name = name.split("/")[3]
-                break
-        if name:
-            self.trigger_run_depmod(name)
+        name = self._trigger_data['kernelmod']
+        name = name.split("/")[3]
+        self.trigger_run_depmod(name)
 
     def trigger_initdisable(self):
-        for item in self.pkgdata['removecontent']:
-            item = etpConst['systemroot']+item
-            if item.startswith(etpConst['systemroot']+"/etc/init.d/") and os.path.isfile(item):
-                myroot = "/"
-                if etpConst['systemroot']:
-                    myroot = etpConst['systemroot']+"/"
-                runlevels_dir = etpConst['systemroot']+"/etc/runlevels"
-                runlevels = []
-                if os.path.isdir(runlevels_dir) and os.access(runlevels_dir,os.R_OK):
-                    runlevels = [x for x in os.listdir(runlevels_dir) \
-                        if os.path.isdir(os.path.join(runlevels_dir,x)) \
-                        and os.path.isfile(os.path.join(runlevels_dir,x,os.path.basename(item)))
-                    ]
-                for runlevel in runlevels:
-                    self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO,
-                        ETP_LOGLEVEL_NORMAL,
-                        "[POST] Removing boot service: %s, runlevel: %s" % (os.path.basename(item),runlevel,)
-                    )
-                    mytxt = "%s: %s : %s" % (brown(_("Removing boot service")),os.path.basename(item),runlevel,)
-                    self.Entropy.updateProgress(
-                        mytxt,
-                        importance = 0,
-                        header = red("   ## ")
-                    )
-                    cmd = 'ROOT="%s" rc-update del %s %s' % (myroot, os.path.basename(item), runlevel)
-                    subprocess.call(cmd, shell = True)
 
-    def trigger_initinform(self):
-        for item in self.pkgdata['content']:
-            item = etpConst['systemroot']+item
-            if item.startswith(etpConst['systemroot']+"/etc/init.d/") and not os.path.isfile(etpConst['systemroot']+item):
+        for item in self._trigger_data['initdisable']:
+
+            item = etpConst['systemroot'] + item
+            if not os.access(item, os.F_OK | os.W_OK):
+                continue
+
+            myroot = "/"
+            if etpConst['systemroot']:
+                myroot = etpConst['systemroot']+"/"
+            runlevels_dir = etpConst['systemroot']+"/etc/runlevels"
+            runlevels = []
+
+            if os.path.isdir(runlevels_dir) and os.access(runlevels_dir,os.R_OK):
+                runlevels = [x for x in os.listdir(runlevels_dir) \
+                    if os.path.isdir(os.path.join(runlevels_dir, x)) \
+                    and os.path.isfile(
+                        os.path.join(runlevels_dir, x, os.path.basename(item)))
+                ]
+
+            for runlevel in runlevels:
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
-                    "[PRE] A new service will be installed: %s" % (item,)
+                    "[POST] Removing boot service: %s, runlevel: %s" % (
+                        os.path.basename(item), runlevel,)
                 )
-                mytxt = "%s: %s" % (brown(_("A new service will be installed")),item,)
+                mytxt = "%s: %s : %s" % (
+                    brown(_("Removing boot service")),
+                    os.path.basename(item),
+                    runlevel,
+                )
                 self.Entropy.updateProgress(
                     mytxt,
                     importance = 0,
                     header = red("   ## ")
                 )
+                cmd = 'ROOT="%s" rc-update del %s %s' % (myroot,
+                    os.path.basename(item), runlevel)
+                subprocess.call(cmd, shell = True)
 
     def trigger_openglsetup(self):
         opengl = "xorg-x11"
@@ -672,13 +696,16 @@ class Trigger:
 
     # FIXME: deprecated
     def trigger_addbootablekernel(self):
+
         boot_mount = False
         if os.path.ismount("/boot"):
             boot_mount = True
-        kernels = [x for x in self.pkgdata['content'] if x.startswith("/boot/kernel-")]
+        kernels = sorted(self._trigger_data['addbootablekernel'])
         if boot_mount:
             kernels = [x[len("/boot"):] for x in kernels]
+
         for kernel in kernels:
+
             mykernel = kernel.split('/kernel-')[1]
             initramfs = "/boot/initramfs-"+mykernel
             if initramfs not in self.pkgdata['content']:
@@ -696,6 +723,7 @@ class Trigger:
                 _("Configuring GRUB bootloader"),
                 _("Adding the new kernel"),
             )
+
             self.Entropy.updateProgress(
                 brown(mytxt),
                 importance = 0,
@@ -705,12 +733,14 @@ class Trigger:
 
     # FIXME: deprecated
     def trigger_removebootablekernel(self):
-        kernels = [x for x in self.pkgdata['content'] if \
-            x.startswith("/boot/kernel-")]
+
+        kernels = sorted(self._trigger_data['removebootablekernel'])
         for kernel in kernels:
+
             initramfs = "/boot/initramfs-"+kernel[13:]
             if initramfs not in self.pkgdata['content']:
                 initramfs = ''
+
             # configure GRUB
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
@@ -721,6 +751,7 @@ class Trigger:
                 _("Configuring GRUB bootloader"),
                 _("Removing the selected kernel"),
             )
+
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 0,
@@ -1210,31 +1241,7 @@ class Trigger:
                 mydir = os.path.dirname(mydir)
                 content = os.listdir(mydir)
 
-    '''
-        Internal ones
-    '''
 
-    '''
-    @description: set chosen gcc profile
-    @output: returns int() as exit status
-    '''
-    def trigger_set_gcc_profile(self, profile):
-        if os.access(etpConst['systemroot']+'/usr/bin/gcc-config',os.X_OK):
-            redirect = ""
-            if etpUi['quiet']:
-                redirect = " &> /dev/null"
-            if etpConst['systemroot']:
-                subprocess.call("echo '/usr/bin/gcc-config %s' | chroot %s %s" % (
-                    profile, etpConst['systemroot'], redirect,), shell = True)
-            else:
-                subprocess.call('/usr/bin/gcc-config %s %s' % (
-                    profile, redirect,), shell = True)
-        return 0
-
-    '''
-    @description: updates moduledb
-    @output: returns int() as exit status
-    '''
     def trigger_update_moduledb(self, item):
         if os.access(etpConst['systemroot']+'/usr/sbin/module-rebuild',os.X_OK):
             if os.path.isfile(etpConst['systemroot']+self.MODULEDB_DIR+'moduledb'):
@@ -1260,6 +1267,7 @@ class Trigger:
                 myroot, name,), shell = True)
         return 0
 
+    # FIXME: deprecated
     def __get_entropy_kernel_grub_line(self, kernel):
         sys_name = self.Entropy.SystemSettings['system']['name']
         return "title=%s (%s)\n" % (sys_name, os.path.basename(kernel),)
