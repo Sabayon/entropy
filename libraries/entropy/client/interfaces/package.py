@@ -879,162 +879,169 @@ class Package:
         try:
             Spm = self.Entropy.Spm()
         except:
-            return -1 # no Portage support
+            return -1 # no Spm support
+
         portdb_dir = Spm.get_vdb_path()
-        if os.path.isdir(portdb_dir):
+        if not os.path.isdir(portdb_dir):
+            os.makedirs(portdb_dir)
 
-            # extract xpak from unpackDir+etpConst['packagecontentdir']+"/"+package
-            key = self.infoDict['category']+"/"+self.infoDict['name']
-            atomsfound = set()
-            dbdirs = os.listdir(portdb_dir)
-            if self.infoDict['category'] in dbdirs:
-                catdirs = os.listdir(portdb_dir+"/"+self.infoDict['category'])
-                dirsfound = set([self.infoDict['category']+"/"+x for x in catdirs if \
-                    key == self.entropyTools.dep_getkey(self.infoDict['category']+"/"+x)])
-                atomsfound.update(dirsfound)
+        category = self.infoDict['category']
+        name = self.infoDict['name']
+        key = category + "/" + name
 
-            ### REMOVE
-            # parse slot and match and remove
-            if atomsfound:
-                pkgToRemove = ''
-                for atom in atomsfound:
-                    atomslot = Spm.get_installed_package_slot(atom)
-                    # get slot from spm db
-                    if atomslot == self.infoDict['slot']:
-                        pkgToRemove = atom
-                        break
-                if (pkgToRemove):
-                    removePath = portdb_dir+pkgToRemove
-                    shutil.rmtree(removePath,True)
-                    try:
-                        os.rmdir(removePath)
-                    except OSError:
-                        pass
-            del atomsfound
+        atomsfound = set()
+        dbdirs = os.listdir(portdb_dir)
+        if category in dbdirs:
+            catdirs = os.listdir(portdb_dir + "/" + category)
+            dirsfound = set([category + "/" + x for x in catdirs if \
+                key == self.entropyTools.dep_getkey(category + "/" + x)])
+            atomsfound.update(dirsfound)
 
-            # we now install it
-            if ((self.infoDict['xpakstatus'] != None) and \
-                    os.path.isdir( self.infoDict['xpakpath'] + "/" + etpConst['entropyxpakdatarelativepath'])) or \
-                    self.infoDict['merge_from']:
-
-                if self.infoDict['merge_from']:
-                    copypath = self.infoDict['xpakdir']
-                    if not os.path.isdir(copypath):
-                        return 0
-                else:
-                    copypath = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
-
-                if not os.path.isdir(portdb_dir+self.infoDict['category']):
-                    os.makedirs(portdb_dir+self.infoDict['category'],0755)
-                destination = portdb_dir+self.infoDict['category']+"/"+self.infoDict['name']+"-"+self.infoDict['version']
-                if os.path.isdir(destination):
-                    shutil.rmtree(destination)
-
+        ### REMOVE
+        # parse slot and match and remove
+        if atomsfound:
+            pkg_to_remove = None
+            for atom in atomsfound:
+                atomslot = Spm.get_installed_package_slot(atom)
+                # get slot from spm db
+                if atomslot == self.infoDict['slot']:
+                    pkg_to_remove = atom
+                    break
+            if pkg_to_remove:
+                remove_path = portdb_dir + pkg_to_remove
+                shutil.rmtree(remove_path, True)
                 try:
-                    shutil.copytree(copypath,destination)
-                except (IOError,), e:
-                    mytxt = "%s: %s: %s: %s" % (red(_("QA")),
-                        brown(_("Cannot update Portage database to destination")),
-                        purple(destination),e,)
-                    self.Entropy.updateProgress(
-                        mytxt,
-                        importance = 1,
-                        type = "warning",
-                        header = darkred("   ## ")
-                    )
+                    os.rmdir(remove_path)
+                except OSError:
+                    pass
+        del atomsfound
 
-                # test if /var/cache/edb/counter is fine
-                if os.path.isfile(etpConst['edbcounter']):
-                    try:
-                        f = open(etpConst['edbcounter'],"r")
-                        counter = int(f.readline().strip())
-                        f.close()
-                    except:
-                        # need file recreation, parse spm tree
-                        counter = Spm.refill_counter()
-                else:
-                    counter = Spm.refill_counter()
+        # we now install it
+        xpak_rel_path = etpConst['entropyxpakdatarelativepath']
+        if ((self.infoDict['xpakstatus'] != None) and \
+                os.path.isdir( self.infoDict['xpakpath'] + "/" + xpak_rel_path)) or \
+                self.infoDict['merge_from']:
 
-                # write new counter to file
-                if os.path.isdir(destination):
-                    counter += 1
-                    f = open(destination+"/"+etpConst['spm']['xpak_entries']['counter'],"w")
-                    f.write(str(counter))
-                    f.flush()
-                    f.close()
-                    f = open(etpConst['edbcounter'],"w")
-                    f.write(str(counter))
-                    f.flush()
-                    f.close()
-                    # update counter inside clientDatabase
-                    self.Entropy.clientDbconn.insertCounter(newidpackage,counter)
-                else:
-                    mytxt = brown(_("Cannot update Portage counter, destination %s does not exist.") % (destination,))
-                    self.Entropy.updateProgress(
-                        red("QA: ")+mytxt,
-                        importance = 1,
-                        type = "warning",
-                        header = darkred("   ## ")
-                    )
-
-            user_inst_source = etpConst['install_sources']['user']
-            if self.infoDict['install_source'] != user_inst_source:
-                self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
-                    "Not updating Portage world file for: %s" % (self.infoDict['atom'],)
-                )
-                # only user selected packages in Portage world file
-                return 0
-
-            # add to Portage world
-            # key: key
-            # slot: self.infoDict['slot']
-            myslot = self.infoDict['slot']
-            if (self.infoDict['versiontag'] == self.infoDict['slot']) and self.infoDict['versiontag']:
-                # usually kernel packages
-                myslot = "0"
-            keyslot = key+":"+myslot
-            world_file = Spm.get_world_file()
-            world_atoms = set()
-
-            if os.access(world_file,os.R_OK) and os.path.isfile(world_file):
-                f = open(world_file,"r")
-                world_atoms = set([x.strip() for x in f.readlines() if x.strip()])
-                f.close()
+            if self.infoDict['merge_from']:
+                copypath = self.infoDict['xpakdir']
+                if not os.path.isdir(copypath):
+                    return 0
             else:
-                mytxt = brown(_("Cannot update Portage world file, destination %s does not exist.") % (world_file,))
+                copypath = self.infoDict['xpakpath'] + "/" + xpak_rel_path
+
+            if not os.path.isdir(portdb_dir + category):
+                os.makedirs(portdb_dir + category, 0755)
+            destination = portdb_dir + category + "/" + name + "-" + \
+                self.infoDict['version']
+
+            if os.path.isdir(destination):
+                shutil.rmtree(destination)
+
+            try:
+                shutil.copytree(copypath, destination)
+            except (IOError,), e:
+                mytxt = "%s: %s: %s: %s" % (red(_("QA")),
+                    brown(_("Cannot update Portage database to destination")),
+                    purple(destination),e,)
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = darkred("   ## ")
+                )
+
+            # test if /var/cache/edb/counter is fine
+            if os.path.isfile(etpConst['edbcounter']):
+                try:
+                    f = open(etpConst['edbcounter'],"r")
+                    counter = int(f.readline().strip())
+                    f.close()
+                except:
+                    # need file recreation, parse spm tree
+                    counter = Spm.refill_counter()
+            else:
+                counter = Spm.refill_counter()
+
+            # write new counter to file
+            if os.path.isdir(destination):
+                counter += 1
+                f = open(destination+"/"+etpConst['spm']['xpak_entries']['counter'],"w")
+                f.write(str(counter))
+                f.flush()
+                f.close()
+                f = open(etpConst['edbcounter'],"w")
+                f.write(str(counter))
+                f.flush()
+                f.close()
+                # update counter inside clientDatabase
+                self.Entropy.clientDbconn.insertCounter(newidpackage, counter)
+            else:
+                mytxt = brown(_("Cannot update Portage counter, destination %s does not exist.") % (destination,))
                 self.Entropy.updateProgress(
                     red("QA: ")+mytxt,
                     importance = 1,
                     type = "warning",
                     header = darkred("   ## ")
                 )
-                return 0
 
-            try:
-                if keyslot not in world_atoms and \
-                    os.access(os.path.dirname(world_file),os.W_OK) and \
-                    self.entropyTools.istextfile(world_file):
-                        world_atoms.discard(key)
-                        world_atoms.add(keyslot)
-                        world_atoms = sorted(list(world_atoms))
-                        world_file_tmp = world_file+".entropy_inst"
-                        f = open(world_file_tmp,"w")
-                        for item in world_atoms:
-                            f.write(item+"\n")
-                        f.flush()
-                        f.close()
-                        shutil.move(world_file_tmp,world_file)
-            except (UnicodeDecodeError,UnicodeEncodeError), e:
-                self.entropyTools.print_traceback(f = self.Entropy.clientLog)
-                mytxt = brown(_("Cannot update Portage world file, destination %s is corrupted.") % (world_file,))
-                self.Entropy.updateProgress(
-                    red("QA: ")+mytxt+": "+unicode(e),
-                    importance = 1,
-                    type = "warning",
-                    header = darkred("   ## ")
-                )
+        user_inst_source = etpConst['install_sources']['user']
+        if self.infoDict['install_source'] != user_inst_source:
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "Not updating Portage world file for: %s" % (self.infoDict['atom'],)
+            )
+            # only user selected packages in Portage world file
+            return 0
+
+        # add to Portage world
+        # key: key
+        # slot: self.infoDict['slot']
+        myslot = self.infoDict['slot']
+        if (self.infoDict['versiontag'] == self.infoDict['slot']) and self.infoDict['versiontag']:
+            # usually kernel packages
+            myslot = "0"
+        keyslot = key+":"+myslot
+        world_file = Spm.get_world_file()
+        world_atoms = set()
+
+        if os.access(world_file,os.R_OK) and os.path.isfile(world_file):
+            f = open(world_file,"r")
+            world_atoms = set([x.strip() for x in f.readlines() if x.strip()])
+            f.close()
+        else:
+            mytxt = brown(_("Cannot update Portage world file, destination %s does not exist.") % (world_file,))
+            self.Entropy.updateProgress(
+                red("QA: ")+mytxt,
+                importance = 1,
+                type = "warning",
+                header = darkred("   ## ")
+            )
+            return 0
+
+        try:
+            if keyslot not in world_atoms and \
+                os.access(os.path.dirname(world_file),os.W_OK) and \
+                self.entropyTools.istextfile(world_file):
+                    world_atoms.discard(key)
+                    world_atoms.add(keyslot)
+                    world_atoms = sorted(list(world_atoms))
+                    world_file_tmp = world_file+".entropy_inst"
+                    f = open(world_file_tmp,"w")
+                    for item in world_atoms:
+                        f.write(item+"\n")
+                    f.flush()
+                    f.close()
+                    shutil.move(world_file_tmp,world_file)
+        except (UnicodeDecodeError,UnicodeEncodeError), e:
+            self.entropyTools.print_traceback(f = self.Entropy.clientLog)
+            mytxt = brown(_("Cannot update Portage world file, destination %s is corrupted.") % (world_file,))
+            self.Entropy.updateProgress(
+                red("QA: ")+mytxt+": "+unicode(e),
+                importance = 1,
+                type = "warning",
+                header = darkred("   ## ")
+            )
 
         return 0
 
