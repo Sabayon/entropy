@@ -497,6 +497,10 @@ def search_orphaned_files(Equo = None):
                     filename.startswith("/usr/lib64/perl")):
                     continue
 
+                # filter symlinks, broken ones will be reported
+                if os.path.islink(filename) and os.path.lexists(filename):
+                    continue
+
                 mask = [x for x in Equo.SystemSettings['system_dirs_mask'] if \
                     filename.startswith(x)]
                 if mask:
