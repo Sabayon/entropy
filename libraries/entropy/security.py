@@ -325,7 +325,6 @@ class SecurityInterface:
             unaffected_atoms = set()
             if not vul_atoms:
                 return False
-            # XXX: does multimatch work correctly?
             for atom in unaff_atoms:
                 matches = self.Entropy.clientDbconn.atomMatch(atom, multiMatch = True)
                 for idpackage in matches[0]:
