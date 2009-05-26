@@ -6535,7 +6535,7 @@ gz</property>
   <widget class="GtkMenu" id="packageInstalled">
     <child>
       <widget class="GtkImageMenuItem" id="reinstall">
-        <property name="label">Reinstall</property>
+        <property name="label" translatable="yes">Reinstall</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Reinstall the selected package</property>
         <property name="use_underline">True</property>
@@ -6545,7 +6545,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="undoreinstall">
-        <property name="label">Undo Reinstall</property>
+        <property name="label" translatable="yes">Undo Reinstall</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Undo Reinstall action</property>
         <property name="use_underline">True</property>
@@ -6555,7 +6555,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="remove">
-        <property name="label">Remove</property>
+        <property name="label" translatable="yes">Remove</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Remove the selected package</property>
         <property name="use_underline">True</property>
@@ -6565,7 +6565,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="undoremove">
-        <property name="label">Undo Remove</property>
+        <property name="label" translatable="yes">Undo Remove</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Undo Remove action</property>
         <property name="use_underline">True</property>
@@ -6575,7 +6575,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="purge">
-        <property name="label">Purge</property>
+        <property name="label" translatable="yes">Purge</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Remove the selected package and its configuration</property>
         <property name="use_underline">True</property>
@@ -6585,7 +6585,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="undopurge">
-        <property name="label">Undo Purge</property>
+        <property name="label" translatable="yes">Undo Purge</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Undo Purge action</property>
         <property name="use_underline">True</property>
@@ -6595,7 +6595,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="unmask">
-        <property name="label">Enable</property>
+        <property name="label" translatable="yes">Enable</property>
         <property name="visible">True</property>
         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
         <property name="tooltip" translatable="yes">Unmask this package</property>
@@ -6606,7 +6606,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="mask">
-        <property name="label">Disable</property>
+        <property name="label" translatable="yes">Disable</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Mask the selected packages</property>
         <property name="use_underline">True</property>
@@ -6618,7 +6618,7 @@ gz</property>
   <widget class="GtkMenu" id="packageUpdates">
     <child>
       <widget class="GtkImageMenuItem" id="update">
-        <property name="label">Update</property>
+        <property name="label" translatable="yes">Update</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Update the selected package</property>
         <property name="use_underline">True</property>
@@ -6628,7 +6628,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="undoupdate">
-        <property name="label">Undo Update</property>
+        <property name="label" translatable="yes">Undo Update</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Undo Update action</property>
         <property name="use_underline">True</property>
@@ -6638,7 +6638,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="updateRemove">
-        <property name="label">Remove</property>
+        <property name="label" translatable="yes">Remove</property>
         <property name="visible">True</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
@@ -6647,7 +6647,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="updateUndoRemove">
-        <property name="label">Undo Remove</property>
+        <property name="label" translatable="yes">Undo Remove</property>
         <property name="visible">True</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
@@ -6656,7 +6656,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="updatePurge">
-        <property name="label">Purge</property>
+        <property name="label" translatable="yes">Purge</property>
         <property name="visible">True</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
@@ -6665,7 +6665,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="updateUndoPurge">
-        <property name="label">Undo Purge</property>
+        <property name="label" translatable="yes">Undo Purge</property>
         <property name="visible">True</property>
         <property name="use_underline">True</property>
         <property name="use_stock">False</property>
@@ -6674,7 +6674,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="updateMask">
-        <property name="label">Disable</property>
+        <property name="label" translatable="yes">Disable</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Mask this package</property>
         <property name="use_underline">True</property>
@@ -6686,7 +6686,7 @@ gz</property>
   <widget class="GtkMenu" id="packageInstall">
     <child>
       <widget class="GtkImageMenuItem" id="install">
-        <property name="label">Install</property>
+        <property name="label" translatable="yes">Install</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Install the selected package</property>
         <property name="use_underline">True</property>
@@ -6696,7 +6696,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="undoinstall">
-        <property name="label">Undo Install</property>
+        <property name="label" translatable="yes">Undo Install</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Undo Install action</property>
         <property name="use_underline">True</property>
@@ -6706,7 +6706,7 @@ gz</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="maskinstall">
-        <property name="label">Disable</property>
+        <property name="label" translatable="yes">Disable</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Mask this package</property>
         <property name="use_underline">True</property>
@@ -13233,7 +13233,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
   <widget class="GtkMenu" id="packageSet">
     <child>
       <widget class="GtkImageMenuItem" id="pkgsetInstall">
-        <property name="label">Install Set</property>
+        <property name="label" translatable="yes">Install Set</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Install the selected Package Set</property>
         <property name="use_underline">True</property>
@@ -13243,7 +13243,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="pkgsetUndoinstall">
-        <property name="label">Undo Install Set</property>
+        <property name="label" translatable="yes">Undo Install Set</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Undo Install Set action</property>
         <property name="use_underline">True</property>
@@ -13253,7 +13253,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="pkgsetRemove">
-        <property name="label">Remove Set</property>
+        <property name="label" translatable="yes">Remove Set</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Remove the selected Package Set</property>
         <property name="use_underline">True</property>
@@ -13263,7 +13263,7 @@ Please read them carefully and &lt;b&gt;make your choice&lt;/b&gt;.</property>
     </child>
     <child>
       <widget class="GtkImageMenuItem" id="pkgsetUndoremove">
-        <property name="label">Undo Remove Set</property>
+        <property name="label" translatable="yes">Undo Remove Set</property>
         <property name="visible">True</property>
         <property name="tooltip" translatable="yes">Undo Remove Set action</property>
         <property name="use_underline">True</property>
