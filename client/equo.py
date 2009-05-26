@@ -809,8 +809,8 @@ def main():
 
     except:
 
-        entropyTools.kill_threads()
         reset_cache()
+        entropyTools.kill_threads()
 
         Text = TextInterface()
         print_error(darkred(_("Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. Well, you know, shit happens.")))
