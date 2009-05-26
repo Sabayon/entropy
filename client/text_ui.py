@@ -722,7 +722,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         if runQueue:
 
             if (etpUi['ask'] or etpUi['pretend']):
-                mytxt = "%s %s:" % (blue(_("These are the packages that would be")),bold(_("merged")),)
+                mytxt = "%s:" % (blue(_("These are the packages that would be installed")),)
                 print_info(red(" @@ ")+mytxt)
 
             count = 0
@@ -828,9 +828,8 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 
             if (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']) and removalQueue:
                 mytxt = "%s %s (%s):" % (
-                    blue(_("These are the packages that would be")),
-                    bold(_("removed")),
-                    blue(_("conflicting/substituted")),
+                    blue(_("These are the packages that would be removed")),
+                    bold(_("conflicting/substituted")),
                 )
                 print_info(red(" @@ ")+mytxt)
 
