@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-25 12:57+0200\n"
+"POT-Creation-Date: 2009-05-26 17:17+0200\n"
 "PO-Revision-Date: 2009-03-05 12:19-0000\n"
 "Last-Translator: Andre Parhan <dyingmuppet@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -266,7 +266,7 @@ msgid "migrating database path from"
 msgstr "migreren van database pad vanaf"
 
 #: ../../libraries/entropy/server/interfaces/main.py:436
-#: ../../libraries/entropy/db.py:1169 ../../client/text_configuration.py:107
+#: ../../libraries/entropy/db.py:1164 ../../client/text_configuration.py:107
 msgid "to"
 msgstr "naar"
 
@@ -371,12 +371,12 @@ msgid "Running dependencies test"
 msgstr "Uitvoeren van afhankelijkheden test"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1047
-#: ../../client/text_ui.py:1578
+#: ../../client/text_ui.py:1581
 msgid "These are the dependencies not found"
 msgstr "Deze afhankelijkheden zijn niet gevonden"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1054
-#: ../../client/text_ui.py:1582
+#: ../../client/text_ui.py:1585
 msgid "Needed by"
 msgstr "Nodig voor"
 
@@ -389,7 +389,7 @@ msgid "Every dependency is satisfied. It's all fine."
 msgstr "Alle afhankelijkheden zijn voldaan. Alles zit goed."
 
 #: ../../libraries/entropy/server/interfaces/main.py:1107
-#: ../../client/text_ui.py:1628
+#: ../../client/text_ui.py:1631
 msgid "System is healthy"
 msgstr "Systeem is gezond"
 
@@ -467,8 +467,8 @@ msgstr "Dit zijn de pakketten die zouden worden uitgeschakeld"
 #: ../../libraries/entropy/server/interfaces/main.py:2984
 #: ../../libraries/entropy/server/interfaces/main.py:3232
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2960
-#: ../../server/server_reagent.py:503 ../../server/server_reagent.py:564
-#: ../../server/server_reagent.py:609
+#: ../../server/server_reagent.py:503 ../../server/server_reagent.py:563
+#: ../../server/server_reagent.py:607
 msgid "Would you like to continue ?"
 msgstr "Wilt u doorgaan ?"
 
@@ -529,7 +529,7 @@ msgstr "Voorbereiden van kopiëren van geselecteerde pakketten naar"
 #: ../../libraries/entropy/client/services/system/methods.py:98
 #: ../../sulfur/src/sulfur/dialogs.py:987
 #: ../../sulfur/src/sulfur/dialogs.py:3334
-#: ../../sulfur/src/sulfur/sulfur.glade.h:123
+#: ../../sulfur/src/sulfur/sulfur.glade.h:127
 msgid "Note"
 msgstr "Notitie"
 
@@ -652,8 +652,8 @@ msgid "Initializing Entropy database"
 msgstr "Initialiseren van Entropy database"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2697
-#: ../../libraries/entropy/db.py:886 ../../libraries/entropy/db.py:904
-#: ../../libraries/entropy/db.py:1106
+#: ../../libraries/entropy/db.py:884 ../../libraries/entropy/db.py:902
+#: ../../libraries/entropy/db.py:1101
 msgid "WARNING"
 msgstr "WAARSCHUWING"
 
@@ -706,8 +706,8 @@ msgstr "Herziening"
 #: ../../libraries/entropy/client/interfaces/repository.py:1383
 #: ../../libraries/entropy/client/interfaces/repository.py:1398
 #: ../../client/text_rescue.py:291 ../../client/text_rescue.py:304
-#: ../../client/text_ui.py:908 ../../client/text_ui.py:909
 #: ../../client/text_ui.py:911 ../../client/text_ui.py:912
+#: ../../client/text_ui.py:914 ../../client/text_ui.py:915
 #: ../../sulfur/src/sulfur/dialogs.py:5868
 #: ../../sulfur/src/sulfur/__init__.py:931
 #: ../../sulfur/src/sulfur/packages.py:93
@@ -1261,7 +1261,7 @@ msgstr "kopie"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2028
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2947
-#: ../../libraries/entropy/client/interfaces/package.py:512
+#: ../../libraries/entropy/client/interfaces/package.py:514
 msgid "remove"
 msgstr "verwijder"
 
@@ -1461,7 +1461,7 @@ msgid "cannot convert stream into object"
 msgstr "Kan stroom niet converteren naar object"
 
 #: ../../libraries/entropy/client/services/ugc/commands.py:601
-#: ../../sulfur/src/sulfur/sulfur.glade.h:242
+#: ../../sulfur/src/sulfur/sulfur.glade.h:258
 msgid "User Generated Content"
 msgstr "Gebruiker Gedefinieerde Inhoud"
 
@@ -1493,12 +1493,12 @@ msgstr "repository ondersteund geen EAPI3"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:132
 #: ../../sulfur/src/sulfur/dialogs.py:406
-#: ../../sulfur/src/sulfur/sulfur.glade.h:243
+#: ../../sulfur/src/sulfur/sulfur.glade.h:259
 msgid "Username"
 msgstr "Gebruikersnaam"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:133
-#: ../../sulfur/src/sulfur/sulfur.glade.h:144
+#: ../../sulfur/src/sulfur/sulfur.glade.h:148
 msgid "Password"
 msgstr "Wachtwoord"
 
@@ -1994,7 +1994,7 @@ msgstr "Voeg notitie bord invoer toe"
 #: ../../sulfur/src/sulfur/dialogs.py:1533
 #: ../../sulfur/src/sulfur/dialogs.py:2181
 #: ../../sulfur/src/sulfur/dialogs.py:3936
-#: ../../sulfur/src/sulfur/sulfur.glade.h:228
+#: ../../sulfur/src/sulfur/sulfur.glade.h:236
 msgid "Title"
 msgstr "Titel"
 
@@ -2003,7 +2003,7 @@ msgid "Notice link"
 msgstr "Notitie link"
 
 #: ../../libraries/entropy/client/misc.py:38
-#: ../../libraries/entropy/client/interfaces/package.py:43
+#: ../../libraries/entropy/client/interfaces/package.py:45
 #, fuzzy
 msgid "A valid Client instance or subclass is needed"
 msgstr "Een geldige Equo instantie of subklasse is nodig"
@@ -2063,24 +2063,24 @@ msgid "Checking %s"
 msgstr "Checken %s"
 
 #: ../../libraries/entropy/client/interfaces/dep.py:249
-#: ../../libraries/entropy/client/interfaces/dep.py:432
+#: ../../libraries/entropy/client/interfaces/dep.py:434
 msgid "server_repos needs serverInstance"
 msgstr "server_repos heeft serverInstance nodig"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1018
+#: ../../libraries/entropy/client/interfaces/dep.py:1020
 msgid "Sorting dependencies"
 msgstr "Sorteren van afhankelijkheden"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1101
+#: ../../libraries/entropy/client/interfaces/dep.py:1103
 #, fuzzy
 msgid "Calculating inverse dependencies for"
 msgstr "Berekenen van afhankelijkheden"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1193
+#: ../../libraries/entropy/client/interfaces/dep.py:1195
 msgid "Calculating available packages for"
 msgstr "Berekenen beschikbare pakketten voor"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1261
+#: ../../libraries/entropy/client/interfaces/dep.py:1263
 msgid "Calculating world packages"
 msgstr "Berekenen wereld pakketten"
 
@@ -2099,13 +2099,13 @@ msgstr "Geaggregeerde overdracht snelheid"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:196
 #: ../../libraries/entropy/client/interfaces/fetch.py:445
-#: ../../libraries/entropy/client/interfaces/package.py:1553
+#: ../../libraries/entropy/client/interfaces/package.py:1554
 msgid "second"
 msgstr "seconde"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:211
 #: ../../libraries/entropy/client/interfaces/fetch.py:461
-#: ../../libraries/entropy/client/interfaces/package.py:1568
+#: ../../libraries/entropy/client/interfaces/package.py:1569
 msgid "Error downloading from"
 msgstr "Fout tijdens het downloaden vanaf"
 
@@ -2132,13 +2132,13 @@ msgstr "fout: tijd verstreken"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:224
 #: ../../libraries/entropy/client/interfaces/fetch.py:479
-#: ../../libraries/entropy/client/interfaces/package.py:1577
+#: ../../libraries/entropy/client/interfaces/package.py:1578
 msgid "discarded download"
 msgstr "afgewezen download"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:227
 #: ../../libraries/entropy/client/interfaces/fetch.py:482
-#: ../../libraries/entropy/client/interfaces/package.py:1579
+#: ../../libraries/entropy/client/interfaces/package.py:1580
 msgid "unknown reason"
 msgstr "onbekende reden"
 
@@ -2147,17 +2147,17 @@ msgid "Downloading from"
 msgstr "Downloaden vanaf"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:443
-#: ../../libraries/entropy/client/interfaces/package.py:1551
+#: ../../libraries/entropy/client/interfaces/package.py:1552
 msgid "Successfully downloaded from"
 msgstr "Succesvol gedownload van"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:445
-#: ../../libraries/entropy/client/interfaces/package.py:1553
+#: ../../libraries/entropy/client/interfaces/package.py:1554
 msgid "at"
 msgstr "met"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:466
-#: ../../libraries/entropy/client/interfaces/package.py:1573
+#: ../../libraries/entropy/client/interfaces/package.py:1574
 msgid "file not available on this mirror"
 msgstr "bestand niet beschikbaar op deze mirror"
 
@@ -2360,7 +2360,7 @@ msgid "Set not found or unable to remove"
 msgstr "Set niet gevonden of onmogelijk te verwijderen"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:980
-#: ../../sulfur/src/sulfur/sulfur.glade.h:105
+#: ../../sulfur/src/sulfur/sulfur.glade.h:109
 msgid "Libraries test"
 msgstr "Bibliotheken test"
 
@@ -2394,56 +2394,56 @@ msgstr "vergelijken van gebroken bibliotheken/opstartbestanden"
 msgid "not a valid method"
 msgstr "geen geldige methode"
 
-#: ../../libraries/entropy/client/interfaces/package.py:68
+#: ../../libraries/entropy/client/interfaces/package.py:70
 msgid "Already prepared"
 msgstr "Al voorbereid"
 
-#: ../../libraries/entropy/client/interfaces/package.py:73
+#: ../../libraries/entropy/client/interfaces/package.py:75
 msgid "Not yet prepared"
 msgstr "Nog niet voorbereid"
 
-#: ../../libraries/entropy/client/interfaces/package.py:78
+#: ../../libraries/entropy/client/interfaces/package.py:80
 msgid "Action must be in"
 msgstr "Actie moet zijn in"
 
-#: ../../libraries/entropy/client/interfaces/package.py:111
+#: ../../libraries/entropy/client/interfaces/package.py:113
 #, fuzzy
 msgid "Checking package hash"
 msgstr "Nagaan van pakketten controlesom..."
 
-#: ../../libraries/entropy/client/interfaces/package.py:126
+#: ../../libraries/entropy/client/interfaces/package.py:128
 #, fuzzy
 msgid "Package hash"
 msgstr "Pakketten"
 
-#: ../../libraries/entropy/client/interfaces/package.py:128
+#: ../../libraries/entropy/client/interfaces/package.py:130
 msgid "does not match the recorded one"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:138
+#: ../../libraries/entropy/client/interfaces/package.py:140
 #, fuzzy
 msgid "matches"
 msgstr "Geen overeenkomsten"
 
-#: ../../libraries/entropy/client/interfaces/package.py:151
+#: ../../libraries/entropy/client/interfaces/package.py:153
 msgid "Checking package checksum..."
 msgstr "Nagaan van pakketten controlesom..."
 
-#: ../../libraries/entropy/client/interfaces/package.py:164
+#: ../../libraries/entropy/client/interfaces/package.py:166
 msgid "Package checksum matches"
 msgstr "Pakket controlesom komt overeen"
 
-#: ../../libraries/entropy/client/interfaces/package.py:181
+#: ../../libraries/entropy/client/interfaces/package.py:183
 #, python-format
 msgid "Package checksum does not match. Redownloading... attempt #%s"
 msgstr ""
 "Controlesom van Pakket komt niet overeen. Opnieuw downloaden... poging #%s"
 
-#: ../../libraries/entropy/client/interfaces/package.py:195
+#: ../../libraries/entropy/client/interfaces/package.py:197
 msgid "Cannot properly fetch package! Quitting."
 msgstr "Kan pakket niet juist binnenhalen! Afsluiten."
 
-#: ../../libraries/entropy/client/interfaces/package.py:207
+#: ../../libraries/entropy/client/interfaces/package.py:209
 msgid ""
 "Cannot properly fetch package or checksum does not match. Try download "
 "latest repositories."
@@ -2451,320 +2451,320 @@ msgstr ""
 "Kan pakket niet juist binnenhalen of controlesom komt niet overeen. Probeer "
 "de laatste repositories te downloaden."
 
-#: ../../libraries/entropy/client/interfaces/package.py:384
-#: ../../libraries/entropy/client/interfaces/package.py:935
-#: ../../libraries/entropy/client/interfaces/trigger.py:281
-#: ../../libraries/entropy/client/interfaces/trigger.py:877
-#: ../../libraries/entropy/client/interfaces/trigger.py:969
-#: ../../libraries/entropy/client/interfaces/trigger.py:1056
-#: ../../libraries/entropy/client/interfaces/trigger.py:1145
-#: ../../libraries/entropy/client/interfaces/trigger.py:1407
-#: ../../libraries/entropy/client/interfaces/trigger.py:1421
-#: ../../libraries/entropy/client/interfaces/trigger.py:1464
-#: ../../libraries/entropy/client/interfaces/trigger.py:1482
-#: ../../libraries/entropy/client/interfaces/trigger.py:1511
-#: ../../libraries/entropy/client/interfaces/trigger.py:1524
-#: ../../libraries/entropy/client/interfaces/trigger.py:1537
+#: ../../libraries/entropy/client/interfaces/package.py:386
+#: ../../libraries/entropy/client/interfaces/package.py:936
+#: ../../libraries/entropy/client/interfaces/trigger.py:314
+#: ../../libraries/entropy/client/interfaces/trigger.py:893
+#: ../../libraries/entropy/client/interfaces/trigger.py:985
+#: ../../libraries/entropy/client/interfaces/trigger.py:1072
+#: ../../libraries/entropy/client/interfaces/trigger.py:1161
+#: ../../libraries/entropy/client/interfaces/trigger.py:1385
+#: ../../libraries/entropy/client/interfaces/trigger.py:1399
+#: ../../libraries/entropy/client/interfaces/trigger.py:1442
+#: ../../libraries/entropy/client/interfaces/trigger.py:1460
+#: ../../libraries/entropy/client/interfaces/trigger.py:1489
+#: ../../libraries/entropy/client/interfaces/trigger.py:1502
+#: ../../libraries/entropy/client/interfaces/trigger.py:1515
 msgid "QA"
 msgstr "VA"
 
-#: ../../libraries/entropy/client/interfaces/package.py:385
+#: ../../libraries/entropy/client/interfaces/package.py:387
 msgid "Cannot run Spm pkg_config() for"
 msgstr "kan Spm pkg_config() niet starten voor"
 
-#: ../../libraries/entropy/client/interfaces/package.py:387
-#: ../../libraries/entropy/client/interfaces/trigger.py:284
-#: ../../libraries/entropy/client/interfaces/trigger.py:880
-#: ../../libraries/entropy/client/interfaces/trigger.py:972
-#: ../../libraries/entropy/client/interfaces/trigger.py:1059
-#: ../../libraries/entropy/client/interfaces/trigger.py:1148
+#: ../../libraries/entropy/client/interfaces/package.py:389
+#: ../../libraries/entropy/client/interfaces/trigger.py:317
+#: ../../libraries/entropy/client/interfaces/trigger.py:896
+#: ../../libraries/entropy/client/interfaces/trigger.py:988
+#: ../../libraries/entropy/client/interfaces/trigger.py:1075
+#: ../../libraries/entropy/client/interfaces/trigger.py:1164
 msgid "Please report it"
 msgstr "Rapporteer het alsjeblieft"
 
-#: ../../libraries/entropy/client/interfaces/package.py:388
-#: ../../libraries/entropy/client/interfaces/package.py:1613
-#: ../../libraries/entropy/client/interfaces/package.py:1643
-#: ../../libraries/entropy/client/interfaces/package.py:1713
-#: ../../libraries/entropy/client/interfaces/package.py:1719
-#: ../../libraries/entropy/client/interfaces/package.py:1744
-#: ../../libraries/entropy/client/interfaces/package.py:1769
-#: ../../libraries/entropy/client/interfaces/package.py:1897
-#: ../../libraries/entropy/client/interfaces/package.py:1910
-#: ../../libraries/entropy/client/interfaces/trigger.py:63
+#: ../../libraries/entropy/client/interfaces/package.py:390
+#: ../../libraries/entropy/client/interfaces/package.py:1614
+#: ../../libraries/entropy/client/interfaces/package.py:1644
+#: ../../libraries/entropy/client/interfaces/package.py:1714
+#: ../../libraries/entropy/client/interfaces/package.py:1720
+#: ../../libraries/entropy/client/interfaces/package.py:1745
+#: ../../libraries/entropy/client/interfaces/package.py:1770
+#: ../../libraries/entropy/client/interfaces/package.py:1898
+#: ../../libraries/entropy/client/interfaces/package.py:1911
+#: ../../libraries/entropy/client/interfaces/trigger.py:64
 #: ../../libraries/entropy/db.py:45 ../../libraries/entropy/security.py:253
-#: ../../server/server_reagent.py:645 ../../sulfur/src/sulfur/events.py:804
-#: ../../sulfur/src/sulfur/events.py:837
-#: ../../sulfur/src/sulfur/sulfur.glade.h:72
+#: ../../server/server_reagent.py:643 ../../sulfur/src/sulfur/events.py:805
+#: ../../sulfur/src/sulfur/events.py:838
+#: ../../sulfur/src/sulfur/sulfur.glade.h:74
 msgid "Error"
 msgstr "Fout"
 
-#: ../../libraries/entropy/client/interfaces/package.py:412
+#: ../../libraries/entropy/client/interfaces/package.py:414
 msgid "Removing from Entropy"
 msgstr "Verwijderen van Entropy"
 
 #. in this way we filter out directories
-#: ../../libraries/entropy/client/interfaces/package.py:454
+#: ../../libraries/entropy/client/interfaces/package.py:456
 msgid "Collision found during removal of"
 msgstr "Aanvaring gevonden tijdens verwijderen van"
 
-#: ../../libraries/entropy/client/interfaces/package.py:455
-#: ../../libraries/entropy/client/interfaces/package.py:1485
+#: ../../libraries/entropy/client/interfaces/package.py:457
+#: ../../libraries/entropy/client/interfaces/package.py:1486
 msgid "cannot overwrite"
 msgstr "kan niet overschrijven"
 
-#: ../../libraries/entropy/client/interfaces/package.py:494
+#: ../../libraries/entropy/client/interfaces/package.py:496
 msgid "Removing config file, never modified"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:513
-#: ../../libraries/entropy/client/interfaces/package.py:1443
+#: ../../libraries/entropy/client/interfaces/package.py:515
+#: ../../libraries/entropy/client/interfaces/package.py:1444
 msgid "Protecting config file"
 msgstr "Beschermen van configuratie bestand"
 
-#: ../../libraries/entropy/client/interfaces/package.py:528
+#: ../../libraries/entropy/client/interfaces/package.py:530
 msgid "This package contains a badly encoded file !!!"
 msgstr "Dit pakket bevat een slecht gecodeerd bestand !!!"
 
 #. inject into database
-#: ../../libraries/entropy/client/interfaces/package.py:828
+#: ../../libraries/entropy/client/interfaces/package.py:829
 msgid "Updating database"
 msgstr "Database actualiseren"
 
-#: ../../libraries/entropy/client/interfaces/package.py:855
+#: ../../libraries/entropy/client/interfaces/package.py:856
 msgid "Cleaning old package files..."
 msgstr "Oude pakket bestanden opruimen..."
 
-#: ../../libraries/entropy/client/interfaces/package.py:936
+#: ../../libraries/entropy/client/interfaces/package.py:937
 msgid "Cannot update Portage database to destination"
 msgstr "Kan niet naar de Portage database bestemming updaten"
 
-#: ../../libraries/entropy/client/interfaces/package.py:971
+#: ../../libraries/entropy/client/interfaces/package.py:972
 #, python-format
 msgid "Cannot update Portage counter, destination %s does not exist."
 msgstr "Kan Portage teller niet updaten, locatie %s bestaat niet."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1005
+#: ../../libraries/entropy/client/interfaces/package.py:1006
 #, python-format
 msgid "Cannot update Portage world file, destination %s does not exist."
 msgstr "Kan Portage wereld bestand niet updaten, locatie %s bestaat niet."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1030
+#: ../../libraries/entropy/client/interfaces/package.py:1031
 #, python-format
 msgid "Cannot update Portage world file, destination %s is corrupted."
 msgstr "Kan Portage wereld bestand niet updaten, locatie %s is corrupt."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1166
+#: ../../libraries/entropy/client/interfaces/package.py:1167
 #, python-format
 msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
 msgstr ""
 "%s is een bestand maar moet een map zijn !! verwijderen in 20 seconden..."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1187
+#: ../../libraries/entropy/client/interfaces/package.py:1188
 #, fuzzy, python-format
 msgid "%s is a directory when should be a symlink !! Removing in 20 seconds..."
 msgstr ""
 "%s is een map maar moet een bestand zijn !! verwijderen in 20 seconden..."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1270
+#: ../../libraries/entropy/client/interfaces/package.py:1271
 msgid "Automerging config file, never modified"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1304
+#: ../../libraries/entropy/client/interfaces/package.py:1305
 #, python-format
 msgid "%s is a directory when it should be a file !! Removing in 20 seconds..."
 msgstr ""
 "%s is een map maar moet een bestand zijn !! verwijderen in 20 seconden..."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1333
+#: ../../libraries/entropy/client/interfaces/package.py:1334
 msgid "File move error"
 msgstr "Bestand verplaats fout"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1333
+#: ../../libraries/entropy/client/interfaces/package.py:1334
 msgid "please report"
 msgstr "rapporteer het alsjeblieft"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1457
+#: ../../libraries/entropy/client/interfaces/package.py:1458
 msgid "Skipping file installation/removal"
 msgstr "Bestand installatie/verwijdering overslaan"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1470
+#: ../../libraries/entropy/client/interfaces/package.py:1471
 msgid "Cannot check CONFIG PROTECTION. Error"
 msgstr "Kan CONFIG PROTECTIE niet checken. Fout"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1484
+#: ../../libraries/entropy/client/interfaces/package.py:1485
 msgid "Collision found during install for"
 msgstr "Blokkade gevonden tijdens installatie van"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1533
-#: ../../libraries/entropy/client/interfaces/package.py:1627
+#: ../../libraries/entropy/client/interfaces/package.py:1534
+#: ../../libraries/entropy/client/interfaces/package.py:1628
 msgid "Downloading"
 msgstr "Downloaden"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1561
+#: ../../libraries/entropy/client/interfaces/package.py:1562
 msgid "Local path"
 msgstr "Lokale pad"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1592
+#: ../../libraries/entropy/client/interfaces/package.py:1593
 msgid "Downloading archive"
 msgstr "Archief downloaden"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1612
+#: ../../libraries/entropy/client/interfaces/package.py:1613
 msgid "Package cannot be fetched. Try to update repositories and retry"
 msgstr ""
 "Pakket kan niet worden binnengehaald. Probeer de repositories up-te-daten en "
 "probeer dan opnieuw"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1627
+#: ../../libraries/entropy/client/interfaces/package.py:1628
 msgid "archives"
 msgstr "archieven"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1642
+#: ../../libraries/entropy/client/interfaces/package.py:1643
 msgid "Some packages cannot be fetched. Try to update repositories and retry"
 msgstr ""
 "Sommige pakketten kunnen niet worden opgehaald. Probeer de repositories te "
 "updaten en probeer dan opnieuw"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1664
+#: ../../libraries/entropy/client/interfaces/package.py:1665
 msgid "Fetch for the chosen package is not available, unknown error."
 msgstr "Ophalen van het gekozen pakket is niet mogelijk, onbekende fout."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1673
+#: ../../libraries/entropy/client/interfaces/package.py:1674
 msgid "Installed package in queue vanished, skipping."
 msgstr "Geïnstalleerde pakket in wachtrij verdwenen, wordt overgeslagen."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1692
+#: ../../libraries/entropy/client/interfaces/package.py:1693
 msgid "Unpacking package"
 msgstr "Pakket uitpakken"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1700
+#: ../../libraries/entropy/client/interfaces/package.py:1701
 msgid "Merging package"
 msgstr "Pakket samenvoegen"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1711
+#: ../../libraries/entropy/client/interfaces/package.py:1712
 msgid "You are running out of disk space"
 msgstr "Je hebt bijna geen schijfruimte meer"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1712
+#: ../../libraries/entropy/client/interfaces/package.py:1713
 msgid "I bet, you're probably Michele"
 msgstr "Ik gok dat jij Michele bent"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1717
+#: ../../libraries/entropy/client/interfaces/package.py:1718
 msgid "An error occured while trying to unpack the package"
 msgstr "Een probleem deed zich voor tijdens het uitpakken"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1718
-#: ../../libraries/entropy/client/interfaces/package.py:1743
+#: ../../libraries/entropy/client/interfaces/package.py:1719
+#: ../../libraries/entropy/client/interfaces/package.py:1744
 msgid "Check if your system is healthy"
 msgstr "Ga na of je systeem gezond is"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1732
+#: ../../libraries/entropy/client/interfaces/package.py:1733
 msgid "Installing package"
 msgstr "Pakket Installeren"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1742
+#: ../../libraries/entropy/client/interfaces/package.py:1743
 msgid "An error occured while trying to install the package"
 msgstr "Een probleem deed zich voor tijdens het installeren van het pakket"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1757
+#: ../../libraries/entropy/client/interfaces/package.py:1758
 msgid "Removing data"
 msgstr "Verwijderen van data"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1767
+#: ../../libraries/entropy/client/interfaces/package.py:1768
 msgid "An error occured while trying to remove the package"
 msgstr "Een fout deed zich voor tijdens een poging het pakket te verwijderen"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1768
+#: ../../libraries/entropy/client/interfaces/package.py:1769
 msgid "Check if you have enough disk space on your hard disk"
 msgstr "Ga na of je genoeg ruimte over hebt op je harddisk"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1782
-#: ../../libraries/entropy/client/interfaces/package.py:1991
+#: ../../libraries/entropy/client/interfaces/package.py:1783
+#: ../../libraries/entropy/client/interfaces/package.py:1992
 msgid "Cleaning"
 msgstr "Opruimen"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1885
+#: ../../libraries/entropy/client/interfaces/package.py:1886
 msgid "Configuring package"
 msgstr "Configureren van pakket"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1895
-#: ../../libraries/entropy/client/interfaces/package.py:1908
+#: ../../libraries/entropy/client/interfaces/package.py:1896
+#: ../../libraries/entropy/client/interfaces/package.py:1909
 msgid "An error occured while trying to configure the package"
 msgstr "Een fout deed zich voor tijdens het configureren van het pakket"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1896
+#: ../../libraries/entropy/client/interfaces/package.py:1897
 msgid "Make sure that your system is healthy"
 msgstr "Ga na of je systeem gezond is"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1909
+#: ../../libraries/entropy/client/interfaces/package.py:1910
 msgid "It seems that the Source Package Manager entry is missing"
 msgstr "Het ziet ernaar uit dat de Source Pakket Manager ingang mist"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1938
+#: ../../libraries/entropy/client/interfaces/package.py:1939
 #: ../../sulfur/src/sulfur/entropyapi.py:117
 msgid "Fetching"
 msgstr "Ophalen"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1943
+#: ../../libraries/entropy/client/interfaces/package.py:1944
 msgid "Multi Fetching"
 msgstr "Multi Ophalen"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1944
-#: ../../libraries/entropy/client/interfaces/package.py:1960
+#: ../../libraries/entropy/client/interfaces/package.py:1945
+#: ../../libraries/entropy/client/interfaces/package.py:1961
 #: ../../client/text_query.py:380 ../../client/text_query.py:413
-#: ../../client/text_ui.py:1065 ../../server/server_reagent.py:501
+#: ../../client/text_ui.py:1068 ../../server/server_reagent.py:501
 msgid "packages"
 msgstr "Pakketten"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1949
+#: ../../libraries/entropy/client/interfaces/package.py:1950
 msgid "Fetching sources"
 msgstr "Binnenhalen van bronnen"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1954
+#: ../../libraries/entropy/client/interfaces/package.py:1955
 msgid "Verifying"
 msgstr "Verifiëren"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1959
+#: ../../libraries/entropy/client/interfaces/package.py:1960
 msgid "Multi Verification"
 msgstr "Multi Verificatie"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1966
+#: ../../libraries/entropy/client/interfaces/package.py:1967
 msgid "Unpacking"
 msgstr "Uitpakken"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1969
+#: ../../libraries/entropy/client/interfaces/package.py:1970
 msgid "Merging"
 msgstr "Samenvoegen"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1978
+#: ../../libraries/entropy/client/interfaces/package.py:1979
 msgid "Installing"
 msgstr "Installeren"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1983
+#: ../../libraries/entropy/client/interfaces/package.py:1984
 #: ../../client/text_rescue.py:532
 msgid "Removing"
 msgstr "Verwijderen"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1996
+#: ../../libraries/entropy/client/interfaces/package.py:1997
 msgid "Postinstall"
 msgstr "Post-installeer"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2001
+#: ../../libraries/entropy/client/interfaces/package.py:2002
 msgid "Preinstall"
 msgstr "Pre-installeer"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2006
+#: ../../libraries/entropy/client/interfaces/package.py:2007
 msgid "Preremove"
 msgstr "Pre-Verwijder"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2011
+#: ../../libraries/entropy/client/interfaces/package.py:2012
 msgid "Postremove"
 msgstr "Post-Verwijder"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2016
+#: ../../libraries/entropy/client/interfaces/package.py:2017
 msgid "Configuring"
 msgstr "Configureren"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2077
+#: ../../libraries/entropy/client/interfaces/package.py:2078
 msgid "An error occured. Action aborted."
 msgstr "Een fout deed zich voor. Actie afgebroken."
 
@@ -3042,8 +3042,8 @@ msgid "Injecting downloaded dump"
 msgstr "Injecteren van gedownloade dump"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1435
-#: ../../libraries/entropy/db.py:3831
-#: ../../sulfur/src/sulfur/sulfur.glade.h:286
+#: ../../libraries/entropy/db.py:3826
+#: ../../sulfur/src/sulfur/sulfur.glade.h:302
 msgid "please wait"
 msgstr "even wachten"
 
@@ -3142,152 +3142,144 @@ msgstr "Repositories synchronisatie"
 msgid "A valid Entropy Instance is needed"
 msgstr "Een geldige Entropy Instantie is nodig"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:62
+#: ../../libraries/entropy/client/interfaces/trigger.py:63
 msgid "Portage interface can't be loaded"
 msgstr "Portage interface kan niet worden geladen"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:65
+#: ../../libraries/entropy/client/interfaces/trigger.py:66
 msgid "please fix"
 msgstr "repareer aub"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:80
+#: ../../libraries/entropy/client/interfaces/trigger.py:81
 msgid "Valid phases"
 msgstr "Geldige fases"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:282
+#: ../../libraries/entropy/client/interfaces/trigger.py:315
 msgid "Cannot run External trigger for"
 msgstr "Kan Externe trekker niet starten voor"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:500
+#: ../../libraries/entropy/client/interfaces/trigger.py:534
 msgid "Updating {conf.d,init.d} mtime"
 msgstr "Updaten van {conf.d,init.d} mtime"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:526
-msgid "Configuring Binutils Profile"
-msgstr "Configureren van Binutils Profiel"
-
-#: ../../libraries/entropy/client/interfaces/trigger.py:546
+#: ../../libraries/entropy/client/interfaces/trigger.py:562
 msgid "Updating moduledb"
 msgstr "Updaten van moduledb"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:554
+#: ../../libraries/entropy/client/interfaces/trigger.py:572
 msgid "Running depmod"
 msgstr "Uitvoeren van depmod"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:591
+#: ../../libraries/entropy/client/interfaces/trigger.py:612
 msgid "Removing boot service"
 msgstr "opstart service wordt verwijderd"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:609
-msgid "A new service will be installed"
-msgstr "Een nieuwe service wordt geïnstalleerd"
-
-#: ../../libraries/entropy/client/interfaces/trigger.py:630
-#: ../../libraries/entropy/client/interfaces/trigger.py:663
+#: ../../libraries/entropy/client/interfaces/trigger.py:639
+#: ../../libraries/entropy/client/interfaces/trigger.py:672
 msgid "Reconfiguring OpenGL"
 msgstr "Her configureren van OpenGL"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:648
-#: ../../libraries/entropy/client/interfaces/trigger.py:681
+#: ../../libraries/entropy/client/interfaces/trigger.py:657
+#: ../../libraries/entropy/client/interfaces/trigger.py:690
 msgid "Eselect NOT found, cannot run OpenGL trigger"
 msgstr "Eselect NIET gevonden, kan OpenGL functie niet starten"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:711
-#: ../../libraries/entropy/client/interfaces/trigger.py:736
+#: ../../libraries/entropy/client/interfaces/trigger.py:723
+#: ../../libraries/entropy/client/interfaces/trigger.py:751
 msgid "Configuring GRUB bootloader"
 msgstr "Configureren van GRUB opstartbeheerder"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:712
+#: ../../libraries/entropy/client/interfaces/trigger.py:724
 msgid "Adding the new kernel"
 msgstr "Voeg de nieuwe kernel toe"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:737
+#: ../../libraries/entropy/client/interfaces/trigger.py:752
 msgid "Removing the selected kernel"
 msgstr "geselecteerde kernel wordt verwijderd"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:770
+#: ../../libraries/entropy/client/interfaces/trigger.py:786
 msgid "Mounted /boot successfully"
 msgstr "/boot succesvol aangekoppeld"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:781
+#: ../../libraries/entropy/client/interfaces/trigger.py:797
 msgid "Cannot mount /boot automatically !!"
 msgstr "Kan /boot niet automatisch aankoppelen !!"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:797
+#: ../../libraries/entropy/client/interfaces/trigger.py:813
 msgid "Regenerating"
 msgstr "Hergenereren"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:813
+#: ../../libraries/entropy/client/interfaces/trigger.py:829
 msgid "Updating environment"
 msgstr "Updaten van werkomgeving"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:878
-#: ../../libraries/entropy/client/interfaces/trigger.py:970
-#: ../../libraries/entropy/client/interfaces/trigger.py:1057
-#: ../../libraries/entropy/client/interfaces/trigger.py:1146
+#: ../../libraries/entropy/client/interfaces/trigger.py:894
+#: ../../libraries/entropy/client/interfaces/trigger.py:986
+#: ../../libraries/entropy/client/interfaces/trigger.py:1073
+#: ../../libraries/entropy/client/interfaces/trigger.py:1162
 msgid "Cannot run Portage trigger for"
 msgstr "Kan Portage functie niet starten voor"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:881
-#: ../../libraries/entropy/client/interfaces/trigger.py:973
-#: ../../libraries/entropy/client/interfaces/trigger.py:1060
-#: ../../libraries/entropy/client/interfaces/trigger.py:1149
+#: ../../libraries/entropy/client/interfaces/trigger.py:897
+#: ../../libraries/entropy/client/interfaces/trigger.py:989
+#: ../../libraries/entropy/client/interfaces/trigger.py:1076
+#: ../../libraries/entropy/client/interfaces/trigger.py:1165
 msgid "Attach this"
 msgstr "Koppel deze"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1408
+#: ../../libraries/entropy/client/interfaces/trigger.py:1386
 msgid "Cannot find df"
 msgstr "Kan df niet vinden"
 
 #. 'cannot match device /dev/foo with a grub one'
-#: ../../libraries/entropy/client/interfaces/trigger.py:1409
-#: ../../libraries/entropy/client/interfaces/trigger.py:1423
-#: ../../libraries/entropy/client/interfaces/trigger.py:1468
-#: ../../libraries/entropy/client/interfaces/trigger.py:1513
-#: ../../libraries/entropy/client/interfaces/trigger.py:1526
-#: ../../libraries/entropy/client/interfaces/trigger.py:1539
+#: ../../libraries/entropy/client/interfaces/trigger.py:1387
+#: ../../libraries/entropy/client/interfaces/trigger.py:1401
+#: ../../libraries/entropy/client/interfaces/trigger.py:1446
+#: ../../libraries/entropy/client/interfaces/trigger.py:1491
+#: ../../libraries/entropy/client/interfaces/trigger.py:1504
+#: ../../libraries/entropy/client/interfaces/trigger.py:1517
 msgid "Cannot properly configure the kernel"
 msgstr "Kan de kernel niet juist configureren"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1410
-#: ../../libraries/entropy/client/interfaces/trigger.py:1424
-#: ../../libraries/entropy/client/interfaces/trigger.py:1469
-#: ../../libraries/entropy/client/interfaces/trigger.py:1486
-#: ../../libraries/entropy/client/interfaces/trigger.py:1514
-#: ../../libraries/entropy/client/interfaces/trigger.py:1527
-#: ../../libraries/entropy/client/interfaces/trigger.py:1540
+#: ../../libraries/entropy/client/interfaces/trigger.py:1388
+#: ../../libraries/entropy/client/interfaces/trigger.py:1402
+#: ../../libraries/entropy/client/interfaces/trigger.py:1447
+#: ../../libraries/entropy/client/interfaces/trigger.py:1464
+#: ../../libraries/entropy/client/interfaces/trigger.py:1492
+#: ../../libraries/entropy/client/interfaces/trigger.py:1505
+#: ../../libraries/entropy/client/interfaces/trigger.py:1518
 msgid "Defaulting to"
 msgstr "Terugvallen naar"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1422
+#: ../../libraries/entropy/client/interfaces/trigger.py:1400
 msgid "Cannot find grub"
 msgstr "Kan grub niet vinden"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1465
+#: ../../libraries/entropy/client/interfaces/trigger.py:1443
 msgid "cannot match device"
 msgstr "kan het apparaat niet voldoen."
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1467
+#: ../../libraries/entropy/client/interfaces/trigger.py:1445
 msgid "with a grub one"
 msgstr "met een van grub"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1483
+#: ../../libraries/entropy/client/interfaces/trigger.py:1461
 msgid "grub translation not supported for"
 msgstr "grub vertaling wordt niet ondersteund voor"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1485
+#: ../../libraries/entropy/client/interfaces/trigger.py:1463
 msgid "Cannot properly configure grub.conf"
 msgstr "Kan grub.conf niet juist configureren"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1512
+#: ../../libraries/entropy/client/interfaces/trigger.py:1490
 msgid "cannot match grub device with a Linux one"
 msgstr "Kan grub apparaat niet herkennen als een van Linux"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1525
+#: ../../libraries/entropy/client/interfaces/trigger.py:1503
 msgid "cannot find generated device.map"
 msgstr "Kan gegenereerde 'device.map' niet vinden"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1538
+#: ../../libraries/entropy/client/interfaces/trigger.py:1516
 msgid "cannot run df /boot"
 msgstr "Kan 'df /boot' niet starten"
 
@@ -3405,11 +3397,11 @@ msgid "can't do that on a readonly database"
 msgstr "kan niet op een alleen-lezen database"
 
 #: ../../libraries/entropy/db.py:671 ../../libraries/entropy/db.py:740
-#: ../../libraries/entropy/db.py:1126 ../../libraries/entropy/db.py:4368
-#: ../../libraries/entropy/db.py:4388 ../../client/text_rescue.py:72
+#: ../../libraries/entropy/db.py:1121 ../../libraries/entropy/db.py:4363
+#: ../../libraries/entropy/db.py:4383 ../../client/text_rescue.py:72
 #: ../../client/text_rescue.py:224 ../../client/text_rescue.py:232
 #: ../../client/text_rescue.py:237 ../../client/text_ui.py:452
-#: ../../client/text_ui.py:1183 ../../client/text_ui.py:1275
+#: ../../client/text_ui.py:1186 ../../client/text_ui.py:1278
 msgid "ATTENTION"
 msgstr "ATTENTIE"
 
@@ -3429,117 +3421,117 @@ msgstr "forceren van pakketten metadata update"
 msgid "Updating system database using repository id"
 msgstr "Updaten van systeem database middels repository id"
 
-#: ../../libraries/entropy/db.py:837 ../../libraries/entropy/db.py:1166
+#: ../../libraries/entropy/db.py:835 ../../libraries/entropy/db.py:1161
 msgid "SPM"
 msgstr "SPM"
 
-#: ../../libraries/entropy/db.py:838
+#: ../../libraries/entropy/db.py:836
 msgid "Running fixpackages"
 msgstr "Uitvoeren van fixpackages"
 
-#: ../../libraries/entropy/db.py:839
+#: ../../libraries/entropy/db.py:837
 msgid "it could take a while"
 msgstr "Het kan even duren"
 
-#: ../../libraries/entropy/db.py:861
+#: ../../libraries/entropy/db.py:859
 msgid "ENTROPY"
 msgstr "ENTROPY"
 
-#: ../../libraries/entropy/db.py:862
+#: ../../libraries/entropy/db.py:860
 msgid "action"
 msgstr "actie"
 
-#: ../../libraries/entropy/db.py:887
+#: ../../libraries/entropy/db.py:885
 msgid "Cannot complete quickpkg for atoms"
 msgstr "Kan quickpkg voor atomen niet afronden"
 
-#: ../../libraries/entropy/db.py:889 ../../libraries/entropy/db.py:1109
+#: ../../libraries/entropy/db.py:887 ../../libraries/entropy/db.py:1104
 msgid "do it manually"
 msgstr "doe het handmatig"
 
-#: ../../libraries/entropy/db.py:905
+#: ../../libraries/entropy/db.py:903
 msgid "Cannot run SPM cleanup, error"
 msgstr "Kan SPM opruiming niet starten, fout"
 
-#: ../../libraries/entropy/db.py:956 ../../libraries/entropy/db.py:1035
+#: ../../libraries/entropy/db.py:953 ../../libraries/entropy/db.py:1030
 msgid "INJECT"
 msgstr "INJECTEREN"
 
-#: ../../libraries/entropy/db.py:958 ../../libraries/entropy/db.py:1037
+#: ../../libraries/entropy/db.py:955 ../../libraries/entropy/db.py:1032
 msgid "has been injected"
 msgstr "is geïnjecteerd"
 
-#: ../../libraries/entropy/db.py:959 ../../libraries/entropy/db.py:1038
+#: ../../libraries/entropy/db.py:956 ../../libraries/entropy/db.py:1033
 #, fuzzy
 msgid "quickpkg manually to update embedded db"
 msgstr "Je moet handmatig quickpkg doen om de embedded database bij te werken"
 
-#: ../../libraries/entropy/db.py:960 ../../libraries/entropy/db.py:1039
+#: ../../libraries/entropy/db.py:957 ../../libraries/entropy/db.py:1034
 #, fuzzy
 msgid "Repository database updated anyway"
 msgstr "Repository database zal toch worden geüpdate"
 
-#: ../../libraries/entropy/db.py:1089
+#: ../../libraries/entropy/db.py:1084
 msgid "repackaging"
 msgstr "opnieuw verpakken"
 
-#: ../../libraries/entropy/db.py:1107
+#: ../../libraries/entropy/db.py:1102
 msgid "Cannot complete quickpkg for atom"
 msgstr "Kan quickpkg voor atoom niet afronden"
 
-#: ../../libraries/entropy/db.py:1127
+#: ../../libraries/entropy/db.py:1122
 msgid "runTreeUpdatesQuickpkgAction did not run properly"
 msgstr "runTreeUpdatesQuickpkgAction is niet juist uitgevoerd"
 
-#: ../../libraries/entropy/db.py:1128
+#: ../../libraries/entropy/db.py:1123
 msgid "Please update packages manually"
 msgstr "update de pakketten handmatig a.u.b."
 
-#: ../../libraries/entropy/db.py:1167
+#: ../../libraries/entropy/db.py:1162
 msgid "Moving old entry"
 msgstr "Verplaatsen van oude ingang"
 
-#: ../../libraries/entropy/db.py:3794
+#: ../../libraries/entropy/db.py:3789
 msgid "baseinfo table not found. Either does not exist or corrupted."
 msgstr ""
 "baseinfo tabel niet gevonden. vermoedelijk bestaat deze niet of is corrupt."
 
-#: ../../libraries/entropy/db.py:3799
+#: ../../libraries/entropy/db.py:3794
 msgid "extrainfo table not found. Either does not exist or corrupted."
 msgstr ""
 "extrainfo tabel niet gevonden. vermoedelijk bestaat deze niet of is corrupt."
 
-#: ../../libraries/entropy/db.py:3831
+#: ../../libraries/entropy/db.py:3826
 msgid "Syncing current database"
 msgstr "Synchroniseren van huidige database"
 
-#: ../../libraries/entropy/db.py:3843
+#: ../../libraries/entropy/db.py:3838
 msgid "Removing entry"
 msgstr "Verwijderen van ingang"
 
-#: ../../libraries/entropy/db.py:3858
+#: ../../libraries/entropy/db.py:3853
 msgid "Adding entry"
 msgstr "Toevoegen van ingang"
 
-#: ../../libraries/entropy/db.py:3897
+#: ../../libraries/entropy/db.py:3892
 msgid ""
 "Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as "
 "possible !"
 msgstr "Repository EAPI > Entropy EAPI. update Equo/Entropy zo snel mogelijk !"
 
-#: ../../libraries/entropy/db.py:3915
+#: ../../libraries/entropy/db.py:3910
 msgid "Exporting database table"
 msgstr "Database tabel exporteren"
 
-#: ../../libraries/entropy/db.py:3954
+#: ../../libraries/entropy/db.py:3949
 msgid "Database Export completed."
 msgstr "Database Export voltooid."
 
-#: ../../libraries/entropy/db.py:4369
+#: ../../libraries/entropy/db.py:4364
 msgid "cannot open Spm counter file for"
 msgstr "kan Spm teller bestand niet openen voor"
 
-#: ../../libraries/entropy/db.py:4389
+#: ../../libraries/entropy/db.py:4384
 msgid "counter for atom is duplicated, ignoring"
 msgstr "teller voor atoom is gedupliceerd, negeren"
 
@@ -3564,7 +3556,7 @@ msgstr "Onderbroken"
 msgid "Selected number"
 msgstr "Geselecteerd nummer"
 
-#: ../../libraries/entropy/output.py:615 ../../client/text_ui.py:979
+#: ../../libraries/entropy/output.py:615 ../../client/text_ui.py:982
 msgid "Please select an option"
 msgstr "selecteer een optie"
 
@@ -3693,75 +3685,75 @@ msgstr "Waarschuwing"
 msgid "advisory broken"
 msgstr "defecte 'advisory'"
 
-#: ../../libraries/entropy/security.py:528
-#: ../../libraries/entropy/security.py:537
+#: ../../libraries/entropy/security.py:526
+#: ../../libraries/entropy/security.py:535
+#: ../../libraries/entropy/security.py:564
 #: ../../libraries/entropy/security.py:566
-#: ../../libraries/entropy/security.py:568
-#: ../../libraries/entropy/security.py:589
-#: ../../libraries/entropy/security.py:599
-#: ../../libraries/entropy/security.py:611
-#: ../../libraries/entropy/security.py:625
-#: ../../libraries/entropy/security.py:635
-#: ../../libraries/entropy/security.py:645
-#: ../../libraries/entropy/security.py:655
-#: ../../libraries/entropy/security.py:676
-#: ../../libraries/entropy/security.py:686
+#: ../../libraries/entropy/security.py:587
+#: ../../libraries/entropy/security.py:597
+#: ../../libraries/entropy/security.py:609
+#: ../../libraries/entropy/security.py:623
+#: ../../libraries/entropy/security.py:633
+#: ../../libraries/entropy/security.py:643
+#: ../../libraries/entropy/security.py:653
+#: ../../libraries/entropy/security.py:674
+#: ../../libraries/entropy/security.py:684
 msgid "Security Advisories"
 msgstr "Beveiligings Adviesen"
 
-#: ../../libraries/entropy/security.py:528
+#: ../../libraries/entropy/security.py:526
 msgid "testing service connection"
 msgstr "service connecties worden getest"
 
-#: ../../libraries/entropy/security.py:537
+#: ../../libraries/entropy/security.py:535
 msgid "getting latest GLSAs"
 msgstr "ophalen van de laatste GLSA's"
 
-#: ../../libraries/entropy/security.py:566
+#: ../../libraries/entropy/security.py:564
 msgid "updated successfully"
 msgstr "succesvol bijgewerkt"
 
-#: ../../libraries/entropy/security.py:568
+#: ../../libraries/entropy/security.py:566
 msgid "already up to date"
 msgstr "is reeds bijgewerkt."
 
-#: ../../libraries/entropy/security.py:589
+#: ../../libraries/entropy/security.py:587
 msgid "unable to download the package, sorry"
 msgstr "onmogelijk pakket te downloaden, sorry"
 
-#: ../../libraries/entropy/security.py:599
+#: ../../libraries/entropy/security.py:597
 msgid "Verifying checksum"
 msgstr "Controleren van controlesom"
 
-#: ../../libraries/entropy/security.py:611
+#: ../../libraries/entropy/security.py:609
 msgid "cannot download the checksum, sorry"
 msgstr "Kan controlesom niet downloaden, helaas"
 
-#: ../../libraries/entropy/security.py:625
+#: ../../libraries/entropy/security.py:623
 msgid "cannot open packages, sorry"
 msgstr "kan pakketten niet openen"
 
-#: ../../libraries/entropy/security.py:635
+#: ../../libraries/entropy/security.py:633
 msgid "cannot read the checksum, sorry"
 msgstr "Kan controlesom niet lezen, helaas"
 
-#: ../../libraries/entropy/security.py:645
+#: ../../libraries/entropy/security.py:643
 msgid "digest verification failed, sorry"
 msgstr "'digest' verificatie mislukt"
 
-#: ../../libraries/entropy/security.py:655
+#: ../../libraries/entropy/security.py:653
 msgid "verification Successful"
 msgstr "verificatie succesvol"
 
-#: ../../libraries/entropy/security.py:663
+#: ../../libraries/entropy/security.py:661
 msgid "Return status not valid"
 msgstr "Geef status ongeldig"
 
-#: ../../libraries/entropy/security.py:676
+#: ../../libraries/entropy/security.py:674
 msgid "digest verification failed, try again later"
 msgstr "digest verificatie mislukt, probeer het later opnieuw"
 
-#: ../../libraries/entropy/security.py:686
+#: ../../libraries/entropy/security.py:684
 msgid "installing"
 msgstr "installeren"
 
@@ -5202,12 +5194,12 @@ msgstr "Geen Veranderingen-Log beschikbaar"
 msgid "Inverse Dependencies Search"
 msgstr "Tegengestelde afhankelijkheden"
 
-#: ../../client/text_query.py:295 ../../client/text_ui.py:1640
+#: ../../client/text_query.py:295 ../../client/text_ui.py:1643
 msgid "Matched"
 msgstr "Overeenkomend"
 
 #: ../../client/text_query.py:304 ../../client/text_query.py:1118
-#: ../../sulfur/src/sulfur/sulfur.glade.h:115
+#: ../../sulfur/src/sulfur/sulfur.glade.h:119
 msgid "Masked"
 msgstr "Afgeschermd"
 
@@ -5311,10 +5303,10 @@ msgstr "Totaal verbruikte ruimte"
 msgid "Removal Search"
 msgstr "Zoek op verwijderde"
 
-#: ../../client/text_query.py:633 ../../client/text_ui.py:621
-#: ../../client/text_ui.py:687 ../../client/text_ui.py:1211
-#: ../../client/text_ui.py:1303 ../../server/server_reagent.py:554
-#: ../../server/server_reagent.py:599
+#: ../../client/text_query.py:633 ../../client/text_ui.py:622
+#: ../../client/text_ui.py:691 ../../client/text_ui.py:1214
+#: ../../client/text_ui.py:1306 ../../server/server_reagent.py:553
+#: ../../server/server_reagent.py:597
 msgid "No packages found"
 msgstr "Geen pakketten gevonden"
 
@@ -5328,8 +5320,8 @@ msgstr "De volgende pakketten zullen worden toegevoegd voor verwijdering"
 
 #: ../../client/text_query.py:667 ../../client/text_smart.py:110
 #: ../../client/text_smart.py:260 ../../client/text_smart.py:401
-#: ../../client/text_ui.py:606 ../../client/text_ui.py:839
-#: ../../client/text_ui.py:1006 ../../client/text_ui.py:1384
+#: ../../client/text_ui.py:607 ../../client/text_ui.py:842
+#: ../../client/text_ui.py:1009 ../../client/text_ui.py:1387
 msgid "from"
 msgstr "van"
 
@@ -5405,20 +5397,20 @@ msgid "version"
 msgstr "versie"
 
 #: ../../client/text_query.py:1126 ../../sulfur/src/sulfur/dialogs.py:1035
-#: ../../sulfur/src/sulfur/sulfur.glade.h:98
+#: ../../sulfur/src/sulfur/sulfur.glade.h:102
 msgid "Installed"
 msgstr "Geïnstalleerd"
 
 #: ../../client/text_query.py:1132 ../../sulfur/src/sulfur/dialogs.py:1048
 #: ../../sulfur/src/sulfur/dialogs.py:1071
-#: ../../sulfur/src/sulfur/sulfur.glade.h:208
+#: ../../sulfur/src/sulfur/sulfur.glade.h:216
 msgid "Slot"
 msgstr "Slot"
 
 #: ../../client/text_query.py:1139 ../../client/text_ugc.py:559
 #: ../../sulfur/src/sulfur/dialogs.py:1067
 #: ../../sulfur/src/sulfur/dialogs.py:3931
-#: ../../sulfur/src/sulfur/sulfur.glade.h:207
+#: ../../sulfur/src/sulfur/sulfur.glade.h:215
 msgid "Size"
 msgstr "Grootte"
 
@@ -5490,7 +5482,7 @@ msgstr "gecompileerd met"
 #: ../../client/text_query.py:1212 ../../client/text_ugc.py:371
 #: ../../client/text_ugc.py:554 ../../sulfur/src/sulfur/dialogs.py:3940
 #: ../../sulfur/src/sulfur/dialogs.py:4298
-#: ../../sulfur/src/sulfur/sulfur.glade.h:103
+#: ../../sulfur/src/sulfur/sulfur.glade.h:107
 msgid "Keywords"
 msgstr "Keywords"
 
@@ -5498,7 +5490,7 @@ msgstr "Keywords"
 msgid "Created"
 msgstr "Aangemaakt"
 
-#: ../../client/text_query.py:1224 ../../client/text_ui.py:1002
+#: ../../client/text_query.py:1224 ../../client/text_ui.py:1005
 #: ../../sulfur/src/sulfur/dialogs.py:6227
 msgid "License"
 msgstr "Licentie"
@@ -5592,7 +5584,7 @@ msgid "Content"
 msgstr "Inhoud"
 
 #: ../../client/text_repositories.py:225 ../../server/server_activator.py:162
-#: ../../sulfur/src/sulfur/sulfur.glade.h:107
+#: ../../sulfur/src/sulfur/sulfur.glade.h:111
 msgid "Link"
 msgstr "Link"
 
@@ -5606,7 +5598,7 @@ msgstr "Kies a.u.b. een door het identificatie nummer te typen."
 
 #: ../../client/text_repositories.py:286
 #: ../../sulfur/src/sulfur/dialogs.py:2239
-#: ../../sulfur/src/sulfur/sulfur.glade.h:125
+#: ../../sulfur/src/sulfur/sulfur.glade.h:129
 msgid "Notice board"
 msgstr "Notitie Bord"
 
@@ -5691,7 +5683,7 @@ msgid "Now checking dependency atoms validity"
 msgstr "Checken van afhankelijke atomen validiteit"
 
 #: ../../client/text_rescue.py:187 ../../client/text_ui.py:406
-#: ../../client/text_ui.py:597
+#: ../../client/text_ui.py:598
 msgid "atom"
 msgstr "atoom"
 
@@ -5899,15 +5891,15 @@ msgstr "Verder gaan met toevoegen ?"
 msgid "Database update completed"
 msgstr "Database update voltooid"
 
-#: ../../client/text_rescue.py:627 ../../server/server_reagent.py:656
+#: ../../client/text_rescue.py:627 ../../server/server_reagent.py:654
 msgid "No backed up databases found"
 msgstr "Geen gebackupte databasen gevonden"
 
-#: ../../client/text_rescue.py:642 ../../server/server_reagent.py:671
+#: ../../client/text_rescue.py:642 ../../server/server_reagent.py:669
 msgid "Select the database you want to restore"
 msgstr "Selecteer de database die je wilt herstellen"
 
-#: ../../client/text_rescue.py:646 ../../server/server_reagent.py:675
+#: ../../client/text_rescue.py:646 ../../server/server_reagent.py:673
 msgid "Entropy installed packages database restore tool"
 msgstr "Entropy geïnstalleerde pakketten database herstel gereedschap"
 
@@ -5983,7 +5975,7 @@ msgstr "Achtergrond"
 msgid "Exploitable"
 msgstr "Exploiteerbaarheid"
 
-#: ../../client/text_security.py:124 ../../sulfur/src/sulfur/sulfur.glade.h:91
+#: ../../client/text_security.py:124 ../../sulfur/src/sulfur/sulfur.glade.h:93
 msgid "Impact"
 msgstr "Inslag"
 
@@ -5992,7 +5984,7 @@ msgid "Impact type"
 msgstr "Inslag type"
 
 #: ../../client/text_security.py:135
-#: ../../sulfur/src/sulfur/sulfur.glade.h:191
+#: ../../sulfur/src/sulfur/sulfur.glade.h:199
 msgid "Revised"
 msgstr "Herzien"
 
@@ -6001,12 +5993,12 @@ msgid "Announced"
 msgstr "Aangekondigd"
 
 #: ../../client/text_security.py:143
-#: ../../sulfur/src/sulfur/sulfur.glade.h:220
+#: ../../sulfur/src/sulfur/sulfur.glade.h:228
 msgid "Synopsis"
 msgstr "Samenvatting"
 
 #: ../../client/text_security.py:150
-#: ../../sulfur/src/sulfur/sulfur.glade.h:170
+#: ../../sulfur/src/sulfur/sulfur.glade.h:175
 msgid "References"
 msgstr "Referenties"
 
@@ -6027,12 +6019,12 @@ msgid "unaffected versions"
 msgstr "onaangetast versies"
 
 #: ../../client/text_security.py:176
-#: ../../sulfur/src/sulfur/sulfur.glade.h:247
+#: ../../sulfur/src/sulfur/sulfur.glade.h:263
 msgid "Workaround"
 msgstr "Omzeiling"
 
 #: ../../client/text_security.py:180
-#: ../../sulfur/src/sulfur/sulfur.glade.h:187
+#: ../../sulfur/src/sulfur/sulfur.glade.h:195
 msgid "Resolution"
 msgstr "Resolutie"
 
@@ -6094,7 +6086,7 @@ msgid "directory does not exist"
 msgstr "map bestaat niet"
 
 #: ../../client/text_smart.py:157 ../../client/text_ui.py:448
-#: ../../sulfur/src/sulfur/events.py:402
+#: ../../sulfur/src/sulfur/events.py:403
 msgid "is not a valid Entropy package"
 msgstr "is geen geldig Entropy pakket"
 
@@ -6308,7 +6300,7 @@ msgstr "Voer document pad in"
 msgid "Document path"
 msgstr "Document pad"
 
-#: ../../client/text_ugc.py:382 ../../sulfur/src/sulfur/sulfur.glade.h:60
+#: ../../client/text_ugc.py:382 ../../sulfur/src/sulfur/sulfur.glade.h:61
 msgid "Document type"
 msgstr "Document type"
 
@@ -6350,13 +6342,13 @@ msgstr "Misvormd commando"
 
 #: ../../client/text_ui.py:128 ../../client/text_ui.py:141
 #: ../../client/text_ui.py:156 ../../client/text_ui.py:165
-#: ../../client/text_ui.py:172 ../../client/text_ui.py:704
-#: ../../client/text_ui.py:1348 ../../server/server_reagent.py:805
+#: ../../client/text_ui.py:172 ../../client/text_ui.py:708
+#: ../../client/text_ui.py:1351 ../../server/server_reagent.py:803
 msgid "Nothing to do"
 msgstr "Niets te doen"
 
-#: ../../client/text_ui.py:186 ../../client/text_ui.py:662
-#: ../../client/text_ui.py:1172 ../../client/text_ui.py:1252
+#: ../../client/text_ui.py:186 ../../client/text_ui.py:666
+#: ../../client/text_ui.py:1175 ../../client/text_ui.py:1255
 msgid "Running with"
 msgstr "Starten met"
 
@@ -6377,13 +6369,13 @@ msgid "Packages matching already up to date"
 msgstr "Overeenkomende pakketten zijn reeds bijgewerkt"
 
 #. None or {}
-#: ../../client/text_ui.py:225 ../../client/text_ui.py:944
-#: ../../client/text_ui.py:1435
+#: ../../client/text_ui.py:225 ../../client/text_ui.py:947
+#: ../../client/text_ui.py:1438
 msgid "Nothing to resume"
 msgstr "Niks om te hervatten"
 
-#: ../../client/text_ui.py:236 ../../client/text_ui.py:957
-#: ../../client/text_ui.py:1443
+#: ../../client/text_ui.py:236 ../../client/text_ui.py:960
+#: ../../client/text_ui.py:1446
 msgid "Resume cache corrupted"
 msgstr "Her start cache corrupt"
 
@@ -6438,19 +6430,19 @@ msgstr ""
 msgid "Unable to switch to branch"
 msgstr ""
 
-#: ../../client/text_ui.py:379 ../../client/text_ui.py:570
+#: ../../client/text_ui.py:379 ../../client/text_ui.py:571
 msgid "Every package matching"
 msgstr "Alle overeenkomende pakketten"
 
-#: ../../client/text_ui.py:381 ../../client/text_ui.py:572
+#: ../../client/text_ui.py:381 ../../client/text_ui.py:573
 msgid "is masked"
 msgstr "is gemaskeerd"
 
-#: ../../client/text_ui.py:402 ../../client/text_ui.py:593
+#: ../../client/text_ui.py:402 ../../client/text_ui.py:594
 msgid "matching"
 msgstr "overeenkomend"
 
-#: ../../client/text_ui.py:404 ../../client/text_ui.py:595
+#: ../../client/text_ui.py:404 ../../client/text_ui.py:596
 msgid "is broken"
 msgstr "is beschadigd"
 
@@ -6458,22 +6450,22 @@ msgstr "is beschadigd"
 msgid "in repositories"
 msgstr "in repositories"
 
-#: ../../client/text_ui.py:424 ../../client/text_ui.py:1195
-#: ../../client/text_ui.py:1287
+#: ../../client/text_ui.py:424 ../../client/text_ui.py:1198
+#: ../../client/text_ui.py:1290
 msgid "When you wrote"
 msgstr "Toen je schreef"
 
-#: ../../client/text_ui.py:426 ../../client/text_ui.py:1197
-#: ../../client/text_ui.py:1289
+#: ../../client/text_ui.py:426 ../../client/text_ui.py:1200
+#: ../../client/text_ui.py:1292
 msgid "You Meant(tm)"
 msgstr "U bedoelde(tm)"
 
-#: ../../client/text_ui.py:427 ../../client/text_ui.py:1198
-#: ../../client/text_ui.py:1290
+#: ../../client/text_ui.py:427 ../../client/text_ui.py:1201
+#: ../../client/text_ui.py:1293
 msgid "one of these below?"
 msgstr "een van de onderstaande?"
 
-#: ../../client/text_ui.py:450 ../../sulfur/src/sulfur/events.py:404
+#: ../../client/text_ui.py:450 ../../sulfur/src/sulfur/events.py:405
 msgid "is not compiled with the same architecture of the system"
 msgstr "is niet gecompileerd met de zelfde architectuur als het systeem"
 
@@ -6482,11 +6474,11 @@ msgid "Skipped"
 msgstr "Overgeslagen"
 
 #. now print the selected packages
-#: ../../client/text_ui.py:468 ../../client/text_ui.py:1310
+#: ../../client/text_ui.py:468 ../../client/text_ui.py:1313
 msgid "These are the chosen packages"
 msgstr "Dit zijn de gekozen pakketten"
 
-#: ../../client/text_ui.py:492 ../../client/text_ui.py:782
+#: ../../client/text_ui.py:492 ../../client/text_ui.py:786
 msgid "Not available"
 msgstr "Niet beschikbaar"
 
@@ -6499,10 +6491,11 @@ msgid "Switch repo"
 msgstr "Wissel repo"
 
 #: ../../client/text_ui.py:530 ../../client/text_ui.py:532
+#: ../../sulfur/src/sulfur/sulfur.glade.h:177
 msgid "Reinstall"
 msgstr "Herinstalleer"
 
-#: ../../client/text_ui.py:535
+#: ../../client/text_ui.py:535 ../../sulfur/src/sulfur/sulfur.glade.h:94
 msgid "Install"
 msgstr "Installeer"
 
@@ -6518,8 +6511,8 @@ msgstr "Downgrade"
 msgid "Action"
 msgstr "Actie"
 
-#: ../../client/text_ui.py:543 ../../client/text_ui.py:1228
-#: ../../client/text_ui.py:1345
+#: ../../client/text_ui.py:543 ../../client/text_ui.py:1231
+#: ../../client/text_ui.py:1348
 msgid "Packages involved"
 msgstr "Pakketten die betrokken zijn"
 
@@ -6527,181 +6520,178 @@ msgstr "Pakketten die betrokken zijn"
 msgid "Would you like to continue with dependencies calculation ?"
 msgstr "Wil je doorgaan met de afhankelijkheden calculatie ?"
 
-#: ../../client/text_ui.py:558
+#: ../../client/text_ui.py:559
 msgid "Calculating dependencies"
 msgstr "Berekenen van afhankelijkheden"
 
-#: ../../client/text_ui.py:562
+#: ../../client/text_ui.py:563
 msgid "Cannot find needed dependencies"
 msgstr "Kan benodigde afhankelijkheden niet vinden"
 
-#: ../../client/text_ui.py:601
+#: ../../client/text_ui.py:602
 msgid "Not found"
 msgstr "Niet gevonden"
 
-#: ../../client/text_ui.py:604
+#: ../../client/text_ui.py:605
 msgid "Probably needed by"
 msgstr "Waarschijnlijk gebruikt door"
 
-#: ../../client/text_ui.py:646
+#: ../../client/text_ui.py:648
 msgid "sources fetch"
 msgstr "bronnen ophaal"
 
-#: ../../client/text_ui.py:721 ../../client/text_ui.py:827
-msgid "These are the packages that would be"
-msgstr "Deze pakketten zullen worden "
+#: ../../client/text_ui.py:725
+#, fuzzy
+msgid "These are the packages that would be installed"
+msgstr "Dit zijn de pakketten die zouden worden uitgeschakeld"
 
-#: ../../client/text_ui.py:721
-msgid "merged"
-msgstr "samengevoegd"
+#: ../../client/text_ui.py:831 ../../sulfur/src/sulfur/packages.py:555
+msgid "These are the packages that would be removed"
+msgstr "Volgende pakketten worden verwijderd"
 
-#: ../../client/text_ui.py:828
-msgid "removed"
-msgstr "verwijderd"
-
-#: ../../client/text_ui.py:829
+#: ../../client/text_ui.py:832
 msgid "conflicting/substituted"
 msgstr "conflicterend/vervangen"
 
 #. show download info
-#: ../../client/text_ui.py:844
+#: ../../client/text_ui.py:847
 msgid "Packages needing to be installed/updated/downgraded"
 msgstr "Pakketten die moeten worden geïnstalleerd/geüpdate/gedowngrade"
 
-#: ../../client/text_ui.py:846
+#: ../../client/text_ui.py:849
 msgid "Packages needing to be removed"
 msgstr "Pakketten die moeten worden verwijderd"
 
-#: ../../client/text_ui.py:850
+#: ../../client/text_ui.py:853
 msgid "Packages needing to be installed"
 msgstr "Pakketten die moeten worden geïnstalleerd"
 
-#: ../../client/text_ui.py:855
+#: ../../client/text_ui.py:858
 msgid "Packages needing to be reinstalled"
 msgstr "Pakketten die moeten worden geherinstalleerd"
 
-#: ../../client/text_ui.py:860
+#: ../../client/text_ui.py:863
 msgid "Packages needing to be updated"
 msgstr "Pakketten die moeten worden geüpdate"
 
-#: ../../client/text_ui.py:865
+#: ../../client/text_ui.py:868
 msgid "Packages needing to be downgraded"
 msgstr "Pakketten die moeten worden gedowngrade"
 
-#: ../../client/text_ui.py:875
+#: ../../client/text_ui.py:878
 msgid "Download size"
 msgstr "Download grootte"
 
-#: ../../client/text_ui.py:881
+#: ../../client/text_ui.py:884
 msgid "Used disk space"
 msgstr "Gebruikte schijf ruimte"
 
-#: ../../client/text_ui.py:883 ../../sulfur/src/sulfur/packages.py:476
+#: ../../client/text_ui.py:886 ../../sulfur/src/sulfur/packages.py:476
 msgid "Freed disk space"
 msgstr "Vrijgemaakte schijfruimte"
 
-#: ../../client/text_ui.py:895
+#: ../../client/text_ui.py:898
 msgid "You need at least"
 msgstr "Je hebt minimaal nodig"
 
-#: ../../client/text_ui.py:897
+#: ../../client/text_ui.py:900
 msgid "of free space"
 msgstr "aan vrije ruimte"
 
-#: ../../client/text_ui.py:905
+#: ../../client/text_ui.py:908
 msgid "You don't have enough space for the installation. Free some space into"
 msgstr ""
 "Je hebt niet genoeg ruimte voor de installatie. Maak meer ruimte vrij in"
 
-#: ../../client/text_ui.py:915
+#: ../../client/text_ui.py:918
 msgid "Would you like to execute the queue ?"
 msgstr "Wilt u de wachtrij uitvoeren ?"
 
-#: ../../client/text_ui.py:955 ../../client/text_ui.py:1441
+#: ../../client/text_ui.py:958 ../../client/text_ui.py:1444
 msgid "Resuming previous operations"
 msgstr "Doorgaan met vorige acties"
 
-#: ../../client/text_ui.py:980
+#: ../../client/text_ui.py:983
 msgid "Read the license"
 msgstr "Lees de licentie"
 
-#: ../../client/text_ui.py:981
+#: ../../client/text_ui.py:984
 msgid "Accept the license (I've read it)"
 msgstr "Accepteer de licentie (Ik heb 'm gelezen)"
 
-#: ../../client/text_ui.py:982
+#: ../../client/text_ui.py:985
 msgid "Accept the license and don't ask anymore (I've read it)"
 msgstr "Accepteer de licentie en vraag er niet meer om (gelezen)"
 
-#: ../../client/text_ui.py:983
+#: ../../client/text_ui.py:986
 msgid "Quit"
 msgstr "Afsluiten"
 
 #. wait user interaction
-#: ../../client/text_ui.py:985
+#: ../../client/text_ui.py:988
 msgid "Your choice (type a number and press enter)"
 msgstr "Jouw keuze (typ een nummer en druk op enter)"
 
-#: ../../client/text_ui.py:998
+#: ../../client/text_ui.py:1001
 msgid "You need to accept the licenses below"
 msgstr "Je moet de licentie hieronder accepteren"
 
-#: ../../client/text_ui.py:1002
+#: ../../client/text_ui.py:1005
 msgid "needed by"
 msgstr "nodig voor"
 
-#: ../../client/text_ui.py:1022
+#: ../../client/text_ui.py:1025
 msgid "No file viewer"
 msgstr "Geen bestand viewer"
 
-#: ../../client/text_ui.py:1022
+#: ../../client/text_ui.py:1025
 msgid "License saved into"
 msgstr "Licentie opgeslagen in"
 
-#: ../../client/text_ui.py:1063 ../../client/text_ui.py:1088
+#: ../../client/text_ui.py:1066 ../../client/text_ui.py:1091
 msgid "fetch"
 msgstr "ophalen"
 
-#: ../../client/text_ui.py:1113
+#: ../../client/text_ui.py:1116
 #, fuzzy
 msgid "Download complete"
 msgstr "Download voltooid"
 
-#: ../../client/text_ui.py:1130
+#: ../../client/text_ui.py:1133
 msgid "install"
 msgstr "Installeer"
 
-#: ../../client/text_ui.py:1159
+#: ../../client/text_ui.py:1162
 #, fuzzy
 msgid "Installation complete"
 msgstr "Installatie voltooid"
 
-#: ../../client/text_ui.py:1185 ../../client/text_ui.py:1277
+#: ../../client/text_ui.py:1188 ../../client/text_ui.py:1280
 msgid "is not installed"
 msgstr "is niet geïnstalleerd"
 
-#: ../../client/text_ui.py:1224 ../../client/text_ui.py:1341
+#: ../../client/text_ui.py:1227 ../../client/text_ui.py:1344
 msgid "Installed from"
 msgstr "geïnstalleerd vanaf"
 
-#: ../../client/text_ui.py:1231
+#: ../../client/text_ui.py:1234
 msgid "Would you like to configure them now ?"
 msgstr "Wil je ze nu configureren ?"
 
 #. every package matching app-foo is masked
-#: ../../client/text_ui.py:1329
+#: ../../client/text_ui.py:1332
 msgid "vital package"
 msgstr "vitaal pakket"
 
-#: ../../client/text_ui.py:1330
+#: ../../client/text_ui.py:1333
 msgid "Removal forbidden"
 msgstr "Verwijderen verboden"
 
-#: ../../client/text_ui.py:1340
+#: ../../client/text_ui.py:1343
 msgid "Disk size"
 msgstr "Schijf grootte"
 
-#: ../../client/text_ui.py:1353
+#: ../../client/text_ui.py:1356
 msgid ""
 "Would you like to look for packages that can be removed along with the "
 "selected above ?"
@@ -6709,69 +6699,69 @@ msgstr ""
 "Wil je zoeken naar pakketten die kunnen worden verwijderd naast de "
 "geselecteerde pakketten hierboven ?"
 
-#: ../../client/text_ui.py:1356 ../../server/server_reagent.py:374
+#: ../../client/text_ui.py:1359 ../../server/server_reagent.py:374
 msgid "Would you like to remove them now ?"
 msgstr "Wilt u ze nu verwijderen ?"
 
-#: ../../client/text_ui.py:1372
+#: ../../client/text_ui.py:1375
 msgid "This is the new removal queue"
 msgstr "Dit is de wachtrij voor verwijdering"
 
-#: ../../client/text_ui.py:1397
+#: ../../client/text_ui.py:1400
 msgid "Would you like to proceed ?"
 msgstr "Wilt u doorgaan ?"
 
-#: ../../client/text_ui.py:1399
+#: ../../client/text_ui.py:1402
 msgid "Would you like to proceed with a selective removal ?"
 msgstr "Wil je doorgaan met een selectieve verwijdering ?"
 
-#: ../../client/text_ui.py:1406
+#: ../../client/text_ui.py:1409
 msgid "Would you like to skip this step then ?"
 msgstr "Wil je deze stap dan maar overslaan ?"
 
-#: ../../client/text_ui.py:1411
+#: ../../client/text_ui.py:1414
 msgid "Starting removal in"
 msgstr "Start verwijderen in"
 
-#: ../../client/text_ui.py:1475
+#: ../../client/text_ui.py:1478
 msgid "Remove this one ?"
 msgstr "Verwijder deze ?"
 
-#: ../../client/text_ui.py:1511
+#: ../../client/text_ui.py:1514
 msgid "All done"
 msgstr "Alles verwerkt"
 
-#: ../../client/text_ui.py:1517
+#: ../../client/text_ui.py:1520
 msgid "Running unused packages test, pay attention, there are false positives"
 msgstr ""
 "Starten van ongebruikte pakketten test, houdt aandacht, er zijn valse "
 "positieven"
 
-#: ../../client/text_ui.py:1540
+#: ../../client/text_ui.py:1543
 msgid "Running dependency test"
 msgstr "Start afhankelijkheids test"
 
-#: ../../client/text_ui.py:1587
+#: ../../client/text_ui.py:1590
 msgid "Would you like to install the available packages ?"
 msgstr "Wil je de beschikbare pakketten installeren ?"
 
-#: ../../client/text_ui.py:1592 ../../client/text_ui.py:1669
+#: ../../client/text_ui.py:1595 ../../client/text_ui.py:1672
 msgid "Installing available packages in"
 msgstr "Installeren van beschikbare pakketten in"
 
-#: ../../client/text_ui.py:1593 ../../client/text_ui.py:1670
+#: ../../client/text_ui.py:1596 ../../client/text_ui.py:1673
 msgid "10 seconds"
 msgstr "10 seconden"
 
-#: ../../client/text_ui.py:1634
+#: ../../client/text_ui.py:1637
 msgid "Libraries/Executables statistics"
 msgstr "Statistieken van Bibliotheken/Opstartbestanden"
 
-#: ../../client/text_ui.py:1636
+#: ../../client/text_ui.py:1639
 msgid "Not matched"
 msgstr "Niet overeenkomend"
 
-#: ../../client/text_ui.py:1663
+#: ../../client/text_ui.py:1666
 msgid "Would you like to install them ?"
 msgstr "Will je ze installeren ?"
 
@@ -7007,7 +6997,7 @@ msgstr "Transformeren van database"
 msgid "Database transform complete"
 msgstr "Database transformatie compleet"
 
-#: ../../server/server_reagent.py:364 ../../server/server_reagent.py:557
+#: ../../server/server_reagent.py:364 ../../server/server_reagent.py:556
 msgid "These are the packages that would be removed from the database"
 msgstr "De volgende pakketten zullen worden verwijderd van de database"
 
@@ -7082,34 +7072,34 @@ msgstr "Dit zijn de pakketten die zouden worden gemarkeerd"
 msgid "Matching packages to remove"
 msgstr "Overeenkomende pakketten voor verwijderen"
 
-#: ../../server/server_reagent.py:568 ../../server/server_reagent.py:613
+#: ../../server/server_reagent.py:567 ../../server/server_reagent.py:611
 msgid "Removing selected packages"
 msgstr "Verwijderen van geselecteerde pakketten"
 
-#: ../../server/server_reagent.py:570 ../../server/server_reagent.py:617
+#: ../../server/server_reagent.py:569 ../../server/server_reagent.py:615
 msgid "Packages removed. To remove binary packages, run activator."
 msgstr ""
 "Pakketten verwijderd. Voor verwijdering van binaire pakketten, start "
 "activator."
 
-#: ../../server/server_reagent.py:576
+#: ../../server/server_reagent.py:575
 msgid "Searching injected packages to remove"
 msgstr "Zoeken naar pakketten die kunnen worden verwijderd"
 
-#: ../../server/server_reagent.py:602
+#: ../../server/server_reagent.py:600
 msgid "These are the injected packages pulled in for removal"
 msgstr "Dit zijn de pakketten die zullen worden verwijderd"
 
-#: ../../server/server_reagent.py:635
+#: ../../server/server_reagent.py:633
 msgid "Bumping Repository database"
 msgstr "Bijwerken Repository database"
 
-#: ../../server/server_reagent.py:758
+#: ../../server/server_reagent.py:756
 #, fuzzy
 msgid "No package sets found"
 msgstr "Geen pakketten gevonden"
 
-#: ../../server/server_reagent.py:768
+#: ../../server/server_reagent.py:766
 #, fuzzy
 msgid "package set not found"
 msgstr "Geen pakketten gevonden"
@@ -7192,7 +7182,7 @@ msgid "Regenerate Cache"
 msgstr "Hergenereer Cache"
 
 #: ../../sulfur/src/sulfur/dialogs.py:279
-#: ../../sulfur/src/sulfur/sulfur.glade.h:184
+#: ../../sulfur/src/sulfur/sulfur.glade.h:192
 msgid "Repositories Notice Board"
 msgstr "Repositories Notitie Bord"
 
@@ -7216,13 +7206,13 @@ msgstr "Naam van de Connectie"
 
 #: ../../sulfur/src/sulfur/dialogs.py:404
 #: ../../sulfur/src/sulfur/dialogs.py:467
-#: ../../sulfur/src/sulfur/sulfur.glade.h:87
+#: ../../sulfur/src/sulfur/sulfur.glade.h:89
 msgid "Hostname"
 msgstr "Hostnaam"
 
 #: ../../sulfur/src/sulfur/dialogs.py:405
 #: ../../sulfur/src/sulfur/dialogs.py:468
-#: ../../sulfur/src/sulfur/sulfur.glade.h:150
+#: ../../sulfur/src/sulfur/sulfur.glade.h:154
 msgid "Port"
 msgstr "Poort"
 
@@ -7288,7 +7278,7 @@ msgid "Add USE"
 msgstr "USE Toevoegen"
 
 #: ../../sulfur/src/sulfur/dialogs.py:787
-#: ../../sulfur/src/sulfur/sulfur.glade.h:176
+#: ../../sulfur/src/sulfur/sulfur.glade.h:184
 msgid "Remove USE"
 msgstr "Verwijder USE"
 
@@ -7302,11 +7292,12 @@ msgid "Add"
 msgstr "Toevoegen"
 
 #: ../../sulfur/src/sulfur/dialogs.py:804
+#: ../../sulfur/src/sulfur/sulfur.glade.h:181
 msgid "Remove"
 msgstr "Verwijderen"
 
 #: ../../sulfur/src/sulfur/dialogs.py:809
-#: ../../sulfur/src/sulfur/sulfur.glade.h:171
+#: ../../sulfur/src/sulfur/sulfur.glade.h:176
 msgid "Refresh"
 msgstr "Vernieuwen"
 
@@ -7584,7 +7575,7 @@ msgid "Insert output parameters"
 msgstr "Voer uitvoer parameters in"
 
 #: ../../sulfur/src/sulfur/dialogs.py:3335
-#: ../../sulfur/src/sulfur/sulfur.glade.h:76
+#: ../../sulfur/src/sulfur/sulfur.glade.h:78
 msgid "Extended note"
 msgstr "Uitgebreide notitie"
 
@@ -7654,7 +7645,7 @@ msgid "Expand to browse"
 msgstr "Uitvouwen om te doorzoeken"
 
 #: ../../sulfur/src/sulfur/dialogs.py:3929
-#: ../../sulfur/src/sulfur/sulfur.glade.h:88
+#: ../../sulfur/src/sulfur/sulfur.glade.h:90
 msgid "Identifier"
 msgstr "Identifier"
 
@@ -7682,7 +7673,7 @@ msgid "License name"
 msgstr "Licentie naam"
 
 #: ../../sulfur/src/sulfur/dialogs.py:4290
-#: ../../sulfur/src/sulfur/sulfur.glade.h:119
+#: ../../sulfur/src/sulfur/sulfur.glade.h:123
 msgid "Mirrors"
 msgstr "Mirrors"
 
@@ -7967,125 +7958,125 @@ msgstr "Je moet een van de %s drukken"
 msgid "or the"
 msgstr "of de"
 
-#: ../../sulfur/src/sulfur/events.py:281
+#: ../../sulfur/src/sulfur/events.py:282
 msgid "Are you sure ?"
 msgstr "Weet u het zeker?"
 
-#: ../../sulfur/src/sulfur/events.py:294
+#: ../../sulfur/src/sulfur/events.py:295
 msgid "Error saving parameter"
 msgstr "Fout bij opslaan parameter"
 
-#: ../../sulfur/src/sulfur/events.py:295
+#: ../../sulfur/src/sulfur/events.py:296
 #: ../../sulfur/src/sulfur/__init__.py:784
 msgid "An issue occured while saving a preference"
 msgstr "Er deed zich een fout voor bij het opslaan van de voorkeuren"
 
-#: ../../sulfur/src/sulfur/events.py:296
+#: ../../sulfur/src/sulfur/events.py:297
 #: ../../sulfur/src/sulfur/__init__.py:757
 #: ../../sulfur/src/sulfur/__init__.py:785
 msgid "Parameter"
 msgstr "Parameter"
 
-#: ../../sulfur/src/sulfur/events.py:296
+#: ../../sulfur/src/sulfur/events.py:297
 msgid "not saved"
 msgstr "niet opgeslagen"
 
-#: ../../sulfur/src/sulfur/events.py:309 ../../sulfur/src/sulfur/events.py:315
-#: ../../sulfur/src/sulfur/events.py:321 ../../sulfur/src/sulfur/events.py:345
-#: ../../sulfur/src/sulfur/events.py:356 ../../sulfur/src/sulfur/events.py:367
+#: ../../sulfur/src/sulfur/events.py:310 ../../sulfur/src/sulfur/events.py:316
+#: ../../sulfur/src/sulfur/events.py:322 ../../sulfur/src/sulfur/events.py:346
+#: ../../sulfur/src/sulfur/events.py:357 ../../sulfur/src/sulfur/events.py:368
 msgid "New"
 msgstr "Nieuw"
 
-#: ../../sulfur/src/sulfur/events.py:309 ../../sulfur/src/sulfur/events.py:315
-#: ../../sulfur/src/sulfur/events.py:321
+#: ../../sulfur/src/sulfur/events.py:310 ../../sulfur/src/sulfur/events.py:316
+#: ../../sulfur/src/sulfur/events.py:322
 msgid "Please insert a new path"
 msgstr "Voer een nieuw pad in"
 
-#: ../../sulfur/src/sulfur/events.py:346 ../../sulfur/src/sulfur/events.py:357
-#: ../../sulfur/src/sulfur/events.py:368
+#: ../../sulfur/src/sulfur/events.py:347 ../../sulfur/src/sulfur/events.py:358
+#: ../../sulfur/src/sulfur/events.py:369
 msgid "Please edit the selected path"
 msgstr "verander het geselecteerde pad"
 
-#: ../../sulfur/src/sulfur/events.py:388
+#: ../../sulfur/src/sulfur/events.py:389
 msgid "You have chosen to install this package"
 msgstr "Je hebt dit pakket gekozen voor installatie"
 
-#: ../../sulfur/src/sulfur/events.py:390
+#: ../../sulfur/src/sulfur/events.py:391
 msgid "Are you supa sure?"
 msgstr "Bent u héél zeker?"
 
-#: ../../sulfur/src/sulfur/events.py:408
+#: ../../sulfur/src/sulfur/events.py:409
 msgid "Cannot install"
 msgstr "Kan niet installeren"
 
-#: ../../sulfur/src/sulfur/events.py:521
+#: ../../sulfur/src/sulfur/events.py:522
 msgid "Please select at least one repository"
 msgstr "Selecteer tenminste één repository"
 
 #. Check there are any packages in the queue
-#: ../../sulfur/src/sulfur/events.py:557
+#: ../../sulfur/src/sulfur/events.py:558
 msgid "No packages in queue"
 msgstr "De wachtrij is leeg"
 
-#: ../../sulfur/src/sulfur/events.py:607
+#: ../../sulfur/src/sulfur/events.py:608
 msgid "Queue is too old. Cannot load."
 msgstr "De wachtrij is te oud en kon niet geladen worden."
 
-#: ../../sulfur/src/sulfur/events.py:649
+#: ../../sulfur/src/sulfur/events.py:650
 #, fuzzy
 msgid "license text"
 msgstr "Let op de tekst"
 
-#: ../../sulfur/src/sulfur/events.py:676
+#: ../../sulfur/src/sulfur/events.py:677
 msgid ""
 "You have chosen to interrupt the processing. Are you sure you want to do it ?"
 msgstr ""
 "Je hebt ervoor gekozen de behandeling stop te zetten. Weet je zeker dat je "
 "dit wilt ?"
 
-#: ../../sulfur/src/sulfur/events.py:746
+#: ../../sulfur/src/sulfur/events.py:747
 msgid "Cleaning UGC cache of"
 msgstr "Opruimen van GGI cache voor"
 
-#: ../../sulfur/src/sulfur/events.py:747
+#: ../../sulfur/src/sulfur/events.py:748
 msgid "UGC cache cleared"
 msgstr "GGI cache geleegd"
 
-#: ../../sulfur/src/sulfur/events.py:760
+#: ../../sulfur/src/sulfur/events.py:761
 msgid "UGC credentials cleared"
 msgstr "GGI gegevens geleegd"
 
-#: ../../sulfur/src/sulfur/events.py:789
+#: ../../sulfur/src/sulfur/events.py:790
 msgid "Package Set name"
 msgstr "Pakket Set naam"
 
-#: ../../sulfur/src/sulfur/events.py:790
+#: ../../sulfur/src/sulfur/events.py:791
 msgid "Package atoms"
 msgstr "Pakket atomen"
 
-#: ../../sulfur/src/sulfur/events.py:794
+#: ../../sulfur/src/sulfur/events.py:795
 msgid "Choose what Package Set you want to add"
 msgstr "Kies welke Pakket Set je wilt toevoegen"
 
-#: ../../sulfur/src/sulfur/events.py:823
+#: ../../sulfur/src/sulfur/events.py:824
 msgid "Removable Package Set"
 msgstr "Verwijderbare Pakket Set"
 
-#: ../../sulfur/src/sulfur/events.py:828
+#: ../../sulfur/src/sulfur/events.py:829
 msgid "Choose what Package Set you want to remove"
 msgstr "Kies welke Pakket Set je wilt verwijderen"
 
-#: ../../sulfur/src/sulfur/events.py:850
+#: ../../sulfur/src/sulfur/events.py:851
 msgid "No missing dependencies found."
 msgstr "Geen missende afhankelijkheden gevonden."
 
-#: ../../sulfur/src/sulfur/events.py:885
+#: ../../sulfur/src/sulfur/events.py:886
 msgid "Missing dependencies found, but none of them are on the repositories."
 msgstr ""
 "Missende afhankelijkheden gevonden, maar geen een van hen bestaan in de "
 "repositories."
 
-#: ../../sulfur/src/sulfur/events.py:894
+#: ../../sulfur/src/sulfur/events.py:895
 msgid ""
 "Some missing dependencies have not been matched, others are going to be "
 "added to the queue."
@@ -8093,21 +8084,21 @@ msgstr ""
 "Sommige missende afhankelijkheden komen niet overeen, anderen zullen worden "
 "toegevoegd aan de wachtrij."
 
-#: ../../sulfur/src/sulfur/events.py:897
+#: ../../sulfur/src/sulfur/events.py:898
 msgid "All the missing dependencies are going to be added to the queue"
 msgstr ""
 "Alle missende afhankelijkheden zullen worden toegevoegd aan de wachtrij"
 
-#: ../../sulfur/src/sulfur/events.py:923
+#: ../../sulfur/src/sulfur/events.py:924
 #: ../../sulfur/src/sulfur/__init__.py:1609
 msgid "Aborting queue tasks."
 msgstr "Beëindigen gegeven taken."
 
-#: ../../sulfur/src/sulfur/events.py:953
+#: ../../sulfur/src/sulfur/events.py:954
 msgid "Libraries test aborted"
 msgstr "Bibliotheken test geannuleerd"
 
-#: ../../sulfur/src/sulfur/events.py:962
+#: ../../sulfur/src/sulfur/events.py:963
 msgid ""
 "Some broken packages have not been matched, others are going to be added to "
 "the queue."
@@ -8115,7 +8106,7 @@ msgstr ""
 "Sommige gebroken pakketten komen niet overeen, anderen zullen worden "
 "toegevoegd aan de wachtrij."
 
-#: ../../sulfur/src/sulfur/events.py:965
+#: ../../sulfur/src/sulfur/events.py:966
 msgid "All the broken packages are going to be added to the queue"
 msgstr "Alle gebroken pakketten zullen worden toegevoegd aan de wachtrij"
 
@@ -8217,7 +8208,7 @@ msgid "Show Queued Packages"
 msgstr "Toon in Wachtrij geplaatste pakketten"
 
 #: ../../sulfur/src/sulfur/__init__.py:570
-#: ../../sulfur/src/sulfur/sulfur.glade.h:151
+#: ../../sulfur/src/sulfur/sulfur.glade.h:155
 msgid "Preferences"
 msgstr "Voorkeuren"
 
@@ -8452,10 +8443,6 @@ msgstr "Vrijgemaakte schijfruimte"
 msgid "Needed space"
 msgstr "Benodigde schijfruimte"
 
-#: ../../sulfur/src/sulfur/packages.py:555
-msgid "These are the packages that would be removed"
-msgstr "Volgende pakketten worden verwijderd"
-
 #: ../../sulfur/src/sulfur/packages.py:825
 msgid "Set from"
 msgstr "Set van"
@@ -8519,7 +8506,7 @@ msgid "There are incomplete package sets, continue at your own risk"
 msgstr "Dit zijn incomplete pakket sets, ga door op je eigen risico"
 
 #: ../../sulfur/src/sulfur/views.py:1576
-#: ../../sulfur/src/sulfur/sulfur.glade.h:143
+#: ../../sulfur/src/sulfur/sulfur.glade.h:147
 msgid "Packages"
 msgstr "Pakketten"
 
@@ -8585,12 +8572,13 @@ msgid "Active"
 msgstr "Actief"
 
 #: ../../sulfur/src/sulfur/views.py:1952
+#: ../../sulfur/src/sulfur/sulfur.glade.h:254
 msgid "Update"
 msgstr "Update"
 
 #. Setup revision column
 #: ../../sulfur/src/sulfur/views.py:1960
-#: ../../sulfur/src/sulfur/sulfur.glade.h:192
+#: ../../sulfur/src/sulfur/sulfur.glade.h:200
 msgid "Revision"
 msgstr "Herziening"
 
@@ -8956,6 +8944,10 @@ msgid "Dependencies test"
 msgstr "Afhankelijkheden test"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:57
+msgid "Disable"
+msgstr "Uitschakelen"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:58
 msgid ""
 "Disabled\n"
 "Removal only\n"
@@ -8965,644 +8957,688 @@ msgstr ""
 "Alleen verwijderen\n"
 "Installeer+Verwijderen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:61
+#: ../../sulfur/src/sulfur/sulfur.glade.h:62
 msgid "Done"
 msgstr "Klaar"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:62
+#: ../../sulfur/src/sulfur/sulfur.glade.h:63
 msgid "Download Path"
 msgstr "Download Map"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:63
+#: ../../sulfur/src/sulfur/sulfur.glade.h:64
 msgid "Download only"
 msgstr "Download alleen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:64
+#: ../../sulfur/src/sulfur/sulfur.glade.h:65
 msgid "Download source code"
 msgstr "Download bron code"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:65
+#: ../../sulfur/src/sulfur/sulfur.glade.h:66
 msgid "Download speed limit"
 msgstr "Download snelheidslimiet"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:66
+#: ../../sulfur/src/sulfur/sulfur.glade.h:67
+msgid "Enable"
+msgstr "Activeer"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:68
 msgid "Enable _all"
 msgstr "Activeer _alles"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:67
+#: ../../sulfur/src/sulfur/sulfur.glade.h:69
 msgid "Entropy API"
 msgstr "Entropy API"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:68
+#: ../../sulfur/src/sulfur/sulfur.glade.h:70
 msgid "Entropy Package Manager"
 msgstr "Entropy Pakket Beheerder"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:69
+#: ../../sulfur/src/sulfur/sulfur.glade.h:71
 msgid "Entropy Repository Manager"
 msgstr "Entropy Repositorie Beheerder"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:70
+#: ../../sulfur/src/sulfur/sulfur.glade.h:72
 msgid "Entropy Service Connection Manager"
 msgstr "Entropy Service Connectie Beheerder"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:71
+#: ../../sulfur/src/sulfur/sulfur.glade.h:73
 msgid "Entropy can keep a backup of your updated configuration files"
 msgstr "Entropy kan een back-up bewaren van je geüpdate configuratie bestanden"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:73
+#: ../../sulfur/src/sulfur/sulfur.glade.h:75
 msgid "Error message"
 msgstr "Fout melding"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:74
+#: ../../sulfur/src/sulfur/sulfur.glade.h:76
 msgid "Errored at"
 msgstr "Fout gemaakt in"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:75
+#: ../../sulfur/src/sulfur/sulfur.glade.h:77
 msgid "Example: http://proxy:1234"
 msgstr "Voorbeeld: http://proxy:1234"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:77
+#: ../../sulfur/src/sulfur/sulfur.glade.h:79
 msgid "External Trigger"
 msgstr "Externe Trekker"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:78
+#: ../../sulfur/src/sulfur/sulfur.glade.h:80
 msgid "FTP Proxy"
 msgstr "FTP proxy"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:79
+#: ../../sulfur/src/sulfur/sulfur.glade.h:81
 msgid "General"
 msgstr "Generiek"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:80
+#: ../../sulfur/src/sulfur/sulfur.glade.h:82
 msgid "Generic title 1"
 msgstr "Generieke titel 1"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:81
+#: ../../sulfur/src/sulfur/sulfur.glade.h:83
 msgid "Generic title 2"
 msgstr "Generieke titel 2"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:82
+#: ../../sulfur/src/sulfur/sulfur.glade.h:84
 msgid "Get Spm environment information"
 msgstr "Haal Spm omgeving informatie op"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:83
+#: ../../sulfur/src/sulfur/sulfur.glade.h:85
 msgid "Get output"
 msgstr "Neem uitvoer"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:84
+#: ../../sulfur/src/sulfur/sulfur.glade.h:86
 msgid "Get package information"
 msgstr "Haal Pakket informatie op"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:85
+#: ../../sulfur/src/sulfur/sulfur.glade.h:87
 msgid "Get updates related to the chosen categories"
 msgstr "Haal updates op gerelateerd aan de gekozen categorieën"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:86
+#: ../../sulfur/src/sulfur/sulfur.glade.h:88
 msgid "HTTP Proxy"
 msgstr "HTTP Proxy"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:89
+#: ../../sulfur/src/sulfur/sulfur.glade.h:91
 msgid "If selected, packages will be downloaded only"
 msgstr "Wanneer geselecteerd, zullen pakketten alleen worden gedownload"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:90
+#: ../../sulfur/src/sulfur/sulfur.glade.h:92
 msgid "Ignored protected files"
 msgstr "Negeer beschermde bestanden"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:92
+#: ../../sulfur/src/sulfur/sulfur.glade.h:95
+msgid "Install Set"
+msgstr "Installeer Set"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:96
 msgid "Install Size"
 msgstr "Installatie Grootte"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:93
+#: ../../sulfur/src/sulfur/sulfur.glade.h:97
 msgid "Install a stand-alone package file"
 msgstr "Installeer een alleen-staand pakket"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:94
+#: ../../sulfur/src/sulfur/sulfur.glade.h:98
 msgid "Install from binary package..."
 msgstr "Installeer vanuit binair pakket..."
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:95
+#: ../../sulfur/src/sulfur/sulfur.glade.h:99
 msgid "Install the selected Package Set"
 msgstr "Installeer het geselecteerde Pakket Set"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:96
+#: ../../sulfur/src/sulfur/sulfur.glade.h:100
 msgid "Install the selected package"
 msgstr "Installeer geselecteerd pakket"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:97
+#: ../../sulfur/src/sulfur/sulfur.glade.h:101
 #, fuzzy
 msgid "Installation"
 msgstr "Installeren"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:99
+#: ../../sulfur/src/sulfur/sulfur.glade.h:103
 msgid "Installed Packages"
 msgstr "Geïnstalleerde Pakketten"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:100
+#: ../../sulfur/src/sulfur/sulfur.glade.h:104
 msgid "Interactivity"
 msgstr "Interactiviteit"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:101
+#: ../../sulfur/src/sulfur/sulfur.glade.h:105
 msgid "Interface Colors"
 msgstr "Interface Kleuren"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:102
+#: ../../sulfur/src/sulfur/sulfur.glade.h:106
 msgid "Kernel Tag"
 msgstr "Kernel Tag"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:104
+#: ../../sulfur/src/sulfur/sulfur.glade.h:108
 msgid "Keywords (space separated)"
 msgstr "Sleutel woorden (met spaties gescheiden)"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:106
+#: ../../sulfur/src/sulfur/sulfur.glade.h:110
 msgid "Library test"
 msgstr "Bibliotheken test"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:108
+#: ../../sulfur/src/sulfur/sulfur.glade.h:112
 msgid "Load User Generated Content"
 msgstr "Laad Gebruiker Gegenereerde Inhoud"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:109
+#: ../../sulfur/src/sulfur/sulfur.glade.h:113
 msgid "Load content"
 msgstr "Laad inhoud"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:110
+#: ../../sulfur/src/sulfur/sulfur.glade.h:114
 msgid "Location"
 msgstr "Locatie"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:111
+#: ../../sulfur/src/sulfur/sulfur.glade.h:115
 msgid "MD5 Signature"
 msgstr "MD5 Sleutel"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:112
+#: ../../sulfur/src/sulfur/sulfur.glade.h:116
 msgid "M_erge"
 msgstr "_Samenvoegen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:113
+#: ../../sulfur/src/sulfur/sulfur.glade.h:117
 msgid "Mask the selected packages"
 msgstr "Maskeer de geselecteerde pakketten"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:114
+#: ../../sulfur/src/sulfur/sulfur.glade.h:118
 msgid "Mask this package"
 msgstr "Maskeer dit pakket"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:116
+#: ../../sulfur/src/sulfur/sulfur.glade.h:120
 msgid "Merge all"
 msgstr "Alles samenvoegen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:117
+#: ../../sulfur/src/sulfur/sulfur.glade.h:121
 msgid "Messages"
 msgstr "Meldingen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:118
+#: ../../sulfur/src/sulfur/sulfur.glade.h:122
 msgid "Mirror updates"
 msgstr "Mirror updates"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:120
+#: ../../sulfur/src/sulfur/sulfur.glade.h:124
 msgid "Networking"
 msgstr "Netwerken"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:121
+#: ../../sulfur/src/sulfur/sulfur.glade.h:125
 msgid "New backup"
 msgstr "Nieuwe back up"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:122
+#: ../../sulfur/src/sulfur/sulfur.glade.h:126
 msgid "Not done"
 msgstr "Niet gereed"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:124
+#: ../../sulfur/src/sulfur/sulfur.glade.h:128
 msgid "Notice Board Entry Information"
 msgstr "Notite Bord Invoer Informatie"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:126
+#: ../../sulfur/src/sulfur/sulfur.glade.h:130
 msgid "Notice board Id"
 msgstr "Notitie bord Id"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:127
+#: ../../sulfur/src/sulfur/sulfur.glade.h:131
 msgid "O_ther"
 msgstr "_Overig"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:128
+#: ../../sulfur/src/sulfur/sulfur.glade.h:132
 msgid "Output View"
 msgstr "Uitvoer Weergave"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:129
+#: ../../sulfur/src/sulfur/sulfur.glade.h:133
 msgid "Package (default)"
 msgstr "Pakket (standaard)"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:130
+#: ../../sulfur/src/sulfur/sulfur.glade.h:134
 msgid "Package Info"
 msgstr "Pakket Info"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:131
+#: ../../sulfur/src/sulfur/sulfur.glade.h:135
 msgid "Package Information"
 msgstr "Pakket Informatie"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:132
+#: ../../sulfur/src/sulfur/sulfur.glade.h:136
 msgid "Package Masking"
 msgstr "Pakket Maskeren"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:133
+#: ../../sulfur/src/sulfur/sulfur.glade.h:137
 msgid "Package Size"
 msgstr "Pakket grootte"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:134
+#: ../../sulfur/src/sulfur/sulfur.glade.h:138
 msgid "Package category"
 msgstr "Pakket categorie"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:135
+#: ../../sulfur/src/sulfur/sulfur.glade.h:139
 msgid "Package description"
 msgstr "Pakket omschrijving"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:136
+#: ../../sulfur/src/sulfur/sulfur.glade.h:140
 #, fuzzy
 msgid "Package downgrade"
 msgstr "Pakket Naam"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:137
+#: ../../sulfur/src/sulfur/sulfur.glade.h:141
 msgid "Package not installed"
 msgstr "Pakket niet geïnstalleerd"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:138
+#: ../../sulfur/src/sulfur/sulfur.glade.h:142
 msgid "Package reinstalled"
 msgstr "Pakket geherinstalleerd"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:139
+#: ../../sulfur/src/sulfur/sulfur.glade.h:143
 msgid "Package removed"
 msgstr "Pakket Verwijderd"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:140
+#: ../../sulfur/src/sulfur/sulfur.glade.h:144
 msgid "Package sub-description"
 msgstr "Pakket sub-omschrijving"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:141
+#: ../../sulfur/src/sulfur/sulfur.glade.h:145
 msgid "Package subtitle"
 msgstr "Pakketten ondertitel"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:142
+#: ../../sulfur/src/sulfur/sulfur.glade.h:146
 msgid "Package updated"
 msgstr "Pakketten geüpdatet"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:145
+#: ../../sulfur/src/sulfur/sulfur.glade.h:149
 msgid "Pinboard Id"
 msgstr "Prikbord Id"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:146
+#: ../../sulfur/src/sulfur/sulfur.glade.h:150
 msgid "Pinboard Item Information"
 msgstr "Prikbord Item informatie"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:147
+#: ../../sulfur/src/sulfur/sulfur.glade.h:151
 msgid "Pinboard View"
 msgstr "Prikbord Weergave"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:148
+#: ../../sulfur/src/sulfur/sulfur.glade.h:152
 msgid "Please Confirm"
 msgstr "Bevestig alstublieft"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:149
+#: ../../sulfur/src/sulfur/sulfur.glade.h:153
 msgid ""
 "Please submit this error to us providing as much information as possible."
 msgstr "Stuur deze fout a.u.b. naar ons op met zoveel mogelijk informatie."
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:152
+#: ../../sulfur/src/sulfur/sulfur.glade.h:156
 msgid "Prevents files belonging to a package being overwritten by another"
 msgstr ""
 "Beschermd bestanden behorende tot een pakket tegen overschrijving door een "
 "ander"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:153
+#: ../../sulfur/src/sulfur/sulfur.glade.h:157
 #, fuzzy
 msgid "Process details"
 msgstr "Proces gegevens"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:154
+#: ../../sulfur/src/sulfur/sulfur.glade.h:158
 msgid "Process priority (nice)"
 msgstr "Prioriteit van processen (nice)"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:155
+#: ../../sulfur/src/sulfur/sulfur.glade.h:159
 msgid "Process result"
 msgstr "Proces gegevens"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:156
+#: ../../sulfur/src/sulfur/sulfur.glade.h:160
 msgid "Processing at"
 msgstr "Proces op"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:157
+#: ../../sulfur/src/sulfur/sulfur.glade.h:161
 msgid "Protected files and directories"
 msgstr "Beschermde bestanden en mappen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:158
+#: ../../sulfur/src/sulfur/sulfur.glade.h:162
 msgid "Protected files and directories mask"
 msgstr "Beschermde bestanden en mappen gemaskeerd"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:159
+#: ../../sulfur/src/sulfur/sulfur.glade.h:163
 msgid "Proxy Password"
 msgstr "Proxy Wachtwoord"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:160
+#: ../../sulfur/src/sulfur/sulfur.glade.h:164
 msgid "Proxy Username"
 msgstr "Proxy Gebruikersnaam"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:161
+#: ../../sulfur/src/sulfur/sulfur.glade.h:165
+msgid "Purge"
+msgstr "Volledig verwijderen"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:166
 msgid "Q_ueue packages in selected Advisory"
 msgstr "_Zet geselecteerde Advisory pakketten in de wachtrij"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:162
+#: ../../sulfur/src/sulfur/sulfur.glade.h:167
 #, fuzzy
 msgid "Queue"
 msgstr "In Wachtrij"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:163
+#: ../../sulfur/src/sulfur/sulfur.glade.h:168
 msgid "Queue Id"
 msgstr "Wachtrij Id"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:164
+#: ../../sulfur/src/sulfur/sulfur.glade.h:169
 msgid "Queue Item Information"
 msgstr "Wachtrij Item Informatie"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:165
+#: ../../sulfur/src/sulfur/sulfur.glade.h:170
 msgid "Queue View"
 msgstr "Wachtrij weergave"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:166
+#: ../../sulfur/src/sulfur/sulfur.glade.h:171
 msgid "Queued"
 msgstr "In Wachtrij"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:167
+#: ../../sulfur/src/sulfur/sulfur.glade.h:172
 msgid "Queued at"
 msgstr "Wachtrij op"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:168
+#: ../../sulfur/src/sulfur/sulfur.glade.h:173
 msgid "R_egenerate Cache"
 msgstr "Hergenereer Cache"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:169
+#: ../../sulfur/src/sulfur/sulfur.glade.h:174
 msgid "R_epositories Notice Board"
 msgstr "R_epositories Notitie Bord"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:172
+#: ../../sulfur/src/sulfur/sulfur.glade.h:178
 msgid "Reinstall the selected package"
 msgstr "Herinstalleer geselecteerd pakket"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:173
+#: ../../sulfur/src/sulfur/sulfur.glade.h:179
 #, fuzzy
 msgid "Reload"
 msgstr "upload"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:174
+#: ../../sulfur/src/sulfur/sulfur.glade.h:180
 msgid "Remote stdout file"
 msgstr "Extern stdout bestand"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:175
+#: ../../sulfur/src/sulfur/sulfur.glade.h:182
 msgid "Remove Selected"
 msgstr "Verwijder Geselecteerde"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:177
+#: ../../sulfur/src/sulfur/sulfur.glade.h:183
+msgid "Remove Set"
+msgstr "Verwijder Set"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:185
 msgid "Remove USE flags on atoms"
 msgstr "Verwijder USE vlaggen in atomen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:178
+#: ../../sulfur/src/sulfur/sulfur.glade.h:186
 msgid "Remove atoms"
 msgstr "Verwijder atomen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:179
+#: ../../sulfur/src/sulfur/sulfur.glade.h:187
 msgid "Remove packages on the remote server"
 msgstr "Verwijder pakketten van server op afstand"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:180
+#: ../../sulfur/src/sulfur/sulfur.glade.h:188
 msgid "Remove the selected Package Set"
 msgstr "Verwijder het geselecteerde Pakket Set"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:181
+#: ../../sulfur/src/sulfur/sulfur.glade.h:189
 msgid "Remove the selected package"
 msgstr "Verwijder geselecteerd pakket"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:182
+#: ../../sulfur/src/sulfur/sulfur.glade.h:190
 msgid "Remove the selected package and its configuration"
 msgstr "Verwijder geselecteerde en configuratie"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:183
+#: ../../sulfur/src/sulfur/sulfur.glade.h:191
 #, fuzzy
 msgid "Repositories"
 msgstr "repositories"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:185
+#: ../../sulfur/src/sulfur/sulfur.glade.h:193
 msgid "Repositories options"
 msgstr "Repositories opties"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:186
+#: ../../sulfur/src/sulfur/sulfur.glade.h:194
 msgid "Repository information"
 msgstr "Repository informatie"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:188
+#: ../../sulfur/src/sulfur/sulfur.glade.h:196
 msgid "Restore"
 msgstr "Herstel"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:189
+#: ../../sulfur/src/sulfur/sulfur.glade.h:197
 msgid "Restore selected"
 msgstr "Herstel geselecteerde"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:190
+#: ../../sulfur/src/sulfur/sulfur.glade.h:198
 msgid "Review for Install..."
 msgstr "Herzien voor Installatie..."
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:193
+#: ../../sulfur/src/sulfur/sulfur.glade.h:201
 msgid "S_end Error Report"
 msgstr "_Fout melden"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:194
+#: ../../sulfur/src/sulfur/sulfur.glade.h:202
 #, fuzzy
 msgid "S_ervices"
 msgstr "_Services"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:195
+#: ../../sulfur/src/sulfur/sulfur.glade.h:203
 msgid "Save"
 msgstr "Opslaan"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:196
+#: ../../sulfur/src/sulfur/sulfur.glade.h:204
 msgid "Search"
 msgstr "Zoeken"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:197
+#: ../../sulfur/src/sulfur/sulfur.glade.h:205
 msgid "Secure Services Port"
 msgstr "Beveiligde Services Poort"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:198
+#: ../../sulfur/src/sulfur/sulfur.glade.h:206
 #, fuzzy
 msgid "Security"
 msgstr "Beveiligings updates"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:199
+#: ../../sulfur/src/sulfur/sulfur.glade.h:207
 msgid "Security updates"
 msgstr "Beveiligings updates"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:200
+#: ../../sulfur/src/sulfur/sulfur.glade.h:208
 msgid "Services Port"
 msgstr "Services Poort"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:201
+#: ../../sulfur/src/sulfur/sulfur.glade.h:209
 msgid "Sets"
 msgstr "Sets"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:202
+#: ../../sulfur/src/sulfur/sulfur.glade.h:210
 msgid "Show ChangeLog"
 msgstr "Bekijk Veranderingen-Log"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:203
+#: ../../sulfur/src/sulfur/sulfur.glade.h:211
 msgid "Show Selected"
 msgstr "Geeft Geselecteerde Weer"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:204
+#: ../../sulfur/src/sulfur/sulfur.glade.h:212
 msgid "Show all"
 msgstr "geef alles weer"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:205
+#: ../../sulfur/src/sulfur/sulfur.glade.h:213
 msgid "Show applied"
 msgstr "Toegepaste weergeven"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:206
+#: ../../sulfur/src/sulfur/sulfur.glade.h:214
 msgid "Show unapplied"
 msgstr "Niet toegepaste weergeven"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:209
+#: ../../sulfur/src/sulfur/sulfur.glade.h:217
 msgid "Socket settings"
 msgstr "Socket Instellingen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:210
+#: ../../sulfur/src/sulfur/sulfur.glade.h:218
 msgid "Source Package Manager"
 msgstr "Source Pakketten Beheerder"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:211
+#: ../../sulfur/src/sulfur/sulfur.glade.h:219
 msgid "Spm Info"
 msgstr "Spm Info"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:212
+#: ../../sulfur/src/sulfur/sulfur.glade.h:220
 msgid "Spm Sync"
 msgstr "Spm Sync"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:213
+#: ../../sulfur/src/sulfur/sulfur.glade.h:221
 msgid "Spm tree updates"
 msgstr "Spm boom updates"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:214
+#: ../../sulfur/src/sulfur/sulfur.glade.h:222
 msgid "Submit a new document"
 msgstr "Voeg een nieuw document toe"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:215
+#: ../../sulfur/src/sulfur/sulfur.glade.h:223
 msgid "Successful mesage"
 msgstr "succesvol bericht"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:216
+#: ../../sulfur/src/sulfur/sulfur.glade.h:224
 msgid "Sulfur"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:217
+#: ../../sulfur/src/sulfur/sulfur.glade.h:225
 msgid "Switch Sulfur to Advanced Mode"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:218
+#: ../../sulfur/src/sulfur/sulfur.glade.h:226
 msgid "Switch to"
 msgstr "Wissel naar"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:219
+#: ../../sulfur/src/sulfur/sulfur.glade.h:227
 #, fuzzy
 msgid "Sync repositories to fetch latest updates"
 msgstr "geef repositories status weer"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:221
+#: ../../sulfur/src/sulfur/sulfur.glade.h:229
 msgid "System"
 msgstr "Systeem"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:222
+#: ../../sulfur/src/sulfur/sulfur.glade.h:230
 msgid "System Database"
 msgstr "Systeem Database"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:223
+#: ../../sulfur/src/sulfur/sulfur.glade.h:231
 #, fuzzy
 msgid "System files"
 msgstr "Systeem"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:224
+#: ../../sulfur/src/sulfur/sulfur.glade.h:232
 msgid "Terminal font"
 msgstr "Terminal lettertype"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:225
+#: ../../sulfur/src/sulfur/sulfur.glade.h:233
 msgid "Text on error message"
 msgstr "Tekst bij fout melding"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:226
+#: ../../sulfur/src/sulfur/sulfur.glade.h:234
 msgid "Text on succ. message"
 msgstr "Tekst bij succes melding"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:227
+#: ../../sulfur/src/sulfur/sulfur.glade.h:235
 msgid "This is what they call \"nice level\""
 msgstr "Dit is wat ze noemen, \"nice level\""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:229
+#: ../../sulfur/src/sulfur/sulfur.glade.h:237
 msgid "UGC Entry Information"
 msgstr "GGI Invoer Informatie"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:230
+#: ../../sulfur/src/sulfur/sulfur.glade.h:238
 msgid "URI"
 msgstr "URI"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:231
+#: ../../sulfur/src/sulfur/sulfur.glade.h:239
+msgid "Undo Install"
+msgstr "Installatie ongedaan maken"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:240
+msgid "Undo Install Set"
+msgstr "Installatie Set ongedaan maken"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:241
 msgid "Undo Install Set action"
 msgstr "Installatie Set actie ongedaan maken"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:232
+#: ../../sulfur/src/sulfur/sulfur.glade.h:242
 msgid "Undo Install action"
 msgstr "Installatie actie ongedaan maken"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:233
+#: ../../sulfur/src/sulfur/sulfur.glade.h:243
+msgid "Undo Purge"
+msgstr "Installatie ongedaan maken"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:244
 msgid "Undo Purge action"
 msgstr "Installatie actie ongedaan maken"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:234
+#: ../../sulfur/src/sulfur/sulfur.glade.h:245
+msgid "Undo Reinstall"
+msgstr "Herinstallatie ongedaan maken"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:246
 msgid "Undo Reinstall action"
 msgstr "Herinstallatie actie ongedaan maken"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:235
+#: ../../sulfur/src/sulfur/sulfur.glade.h:247
+msgid "Undo Remove"
+msgstr "Verwijderen ongedaan maken"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:248
+msgid "Undo Remove Set"
+msgstr "Verwijderen Set ongedaan maken"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:249
 msgid "Undo Remove Set action"
 msgstr "Verwijder Set actie ongedaan maken"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:236
+#: ../../sulfur/src/sulfur/sulfur.glade.h:250
 msgid "Undo Remove action"
 msgstr "Verwijderen ongedaan maken"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:237
+#: ../../sulfur/src/sulfur/sulfur.glade.h:251
+msgid "Undo Update"
+msgstr "Update ongedaan maken"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:252
 msgid "Undo Update action"
 msgstr "Update ongedaan maken"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:238
+#: ../../sulfur/src/sulfur/sulfur.glade.h:253
 msgid "Unmask this package"
 msgstr "Demaskeer dit pakket"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:239
+#: ../../sulfur/src/sulfur/sulfur.glade.h:255
 msgid "Update the selected package"
 msgstr "Update geselecteerd pakket"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:240
+#: ../../sulfur/src/sulfur/sulfur.glade.h:256
 msgid "Updates"
 msgstr "Updates"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:241
+#: ../../sulfur/src/sulfur/sulfur.glade.h:257
 msgid "User / Group"
 msgstr "Gebruiker / Groep"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:244
+#: ../../sulfur/src/sulfur/sulfur.glade.h:260
 msgid "Version"
 msgstr "Versie"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:245
+#: ../../sulfur/src/sulfur/sulfur.glade.h:261
 msgid "Website"
 msgstr "Website"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:246
+#: ../../sulfur/src/sulfur/sulfur.glade.h:262
 msgid "What you were doing"
 msgstr "Waar was je mee bezig"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:248
+#: ../../sulfur/src/sulfur/sulfur.glade.h:264
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
@@ -9610,159 +9646,159 @@ msgstr ""
 "Je <b>moet</b> onderstaande licentie accepteren.\n"
 "Lees goed door <b>en maak een keuze</b>."
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:250
+#: ../../sulfur/src/sulfur/sulfur.glade.h:266
 msgid "Your E-mail"
 msgstr "Je e-mail"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:251
+#: ../../sulfur/src/sulfur/sulfur.glade.h:267
 msgid "Your Full Name"
 msgstr "Je volledige naam"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:252
+#: ../../sulfur/src/sulfur/sulfur.glade.h:268
 msgid "_Abort"
 msgstr "_Annuleer"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:253
+#: ../../sulfur/src/sulfur/sulfur.glade.h:269
 msgid "_Accept License"
 msgstr "_Accepteer Licentie"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:254
+#: ../../sulfur/src/sulfur/sulfur.glade.h:270
 msgid "_Add All"
 msgstr "_Alles toevoegen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:255
+#: ../../sulfur/src/sulfur/sulfur.glade.h:271
 msgid "_Add Set"
 msgstr "Set _Toevoegen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:256
+#: ../../sulfur/src/sulfur/sulfur.glade.h:272
 msgid "_Clear all cache"
 msgstr "_Alle cache opruimen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:257
+#: ../../sulfur/src/sulfur/sulfur.glade.h:273
 msgid "_Clear all credentials"
 msgstr "_Alle gegevens opruimen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:258
+#: ../../sulfur/src/sulfur/sulfur.glade.h:274
 msgid "_Commit Actions"
 msgstr "_Voer Acties uit"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:259
+#: ../../sulfur/src/sulfur/sulfur.glade.h:275
 msgid "_Details"
 msgstr "_Details"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:260
+#: ../../sulfur/src/sulfur/sulfur.glade.h:276
 msgid "_Enable"
 msgstr "_Activeer"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:261
+#: ../../sulfur/src/sulfur/sulfur.glade.h:277
 msgid "_Force repositories update"
 msgstr "_Forseer repositories update"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:262
+#: ../../sulfur/src/sulfur/sulfur.glade.h:278
 msgid "_Generate Login"
 msgstr "_Genereer Log in"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:263
+#: ../../sulfur/src/sulfur/sulfur.glade.h:279
 msgid "_Help"
 msgstr "_Help"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:264
+#: ../../sulfur/src/sulfur/sulfur.glade.h:280
 msgid "_Insert String"
 msgstr "_Voer Reeks in"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:265
+#: ../../sulfur/src/sulfur/sulfur.glade.h:281
 msgid "_More"
 msgstr "_Meer"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:266
+#: ../../sulfur/src/sulfur/sulfur.glade.h:282
 msgid "_Open Document"
 msgstr "_Open Document"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:267
+#: ../../sulfur/src/sulfur/sulfur.glade.h:283
 msgid "_Overview"
 msgstr "_Overzicht"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:268
+#: ../../sulfur/src/sulfur/sulfur.glade.h:284
 msgid "_Properties"
 msgstr "_Eigenschappen"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:269
+#: ../../sulfur/src/sulfur/sulfur.glade.h:285
 msgid "_Queue all vulnerable packages"
 msgstr "_Som alle kwetsbare pakketten op"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:270
+#: ../../sulfur/src/sulfur/sulfur.glade.h:286
 msgid "_Read License"
 msgstr "_Accepteer Licentie"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:271
+#: ../../sulfur/src/sulfur/sulfur.glade.h:287
 msgid "_References"
 msgstr "_Afhankelijkheden"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:272
+#: ../../sulfur/src/sulfur/sulfur.glade.h:288
 msgid "_Remote Repository Manager"
 msgstr "_Repository Beheerder op afstand"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:273
+#: ../../sulfur/src/sulfur/sulfur.glade.h:289
 msgid "_Remove All"
 msgstr "_Verwijder Alles"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:274
+#: ../../sulfur/src/sulfur/sulfur.glade.h:290
 msgid "_Remove Login"
 msgstr "V_erwijderen Log in"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:275
+#: ../../sulfur/src/sulfur/sulfur.glade.h:291
 msgid "_Remove Set"
 msgstr "_Verwijder Set"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:276
+#: ../../sulfur/src/sulfur/sulfur.glade.h:292
 msgid "_SSL Connection"
 msgstr "_SSL Connectie"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:277
+#: ../../sulfur/src/sulfur/sulfur.glade.h:293
 msgid "_Skip mirror"
 msgstr "_Sla mirror over"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:278
+#: ../../sulfur/src/sulfur/sulfur.glade.h:294
 msgid "_Submit Document"
 msgstr "V_oeg Document toe"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:279
+#: ../../sulfur/src/sulfur/sulfur.glade.h:295
 msgid "_Sulfur"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:280
+#: ../../sulfur/src/sulfur/sulfur.glade.h:296
 msgid "_Update Repositories"
 msgstr "_Update Repositories"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:281
+#: ../../sulfur/src/sulfur/sulfur.glade.h:297
 msgid "emerge --sync"
 msgstr "emerge --sync"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:282
+#: ../../sulfur/src/sulfur/sulfur.glade.h:298
 msgid "emerge --sync ? (o;"
 msgstr "emerge --sync ? (o;"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:283
+#: ../../sulfur/src/sulfur/sulfur.glade.h:299
 msgid "http://www.sabayon.org"
 msgstr "http://www.sabayon.org"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:284
+#: ../../sulfur/src/sulfur/sulfur.glade.h:300
 msgid "kB/sec"
 msgstr "kB/sec"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:285
+#: ../../sulfur/src/sulfur/sulfur.glade.h:301
 msgid "localhost"
 msgstr "locale host"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:287
+#: ../../sulfur/src/sulfur/sulfur.glade.h:303
 msgid "root"
 msgstr "root"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:288
+#: ../../sulfur/src/sulfur/sulfur.glade.h:304
 msgid "type your password here"
 msgstr "voer uw password hier in"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:289
+#: ../../sulfur/src/sulfur/sulfur.glade.h:305
 msgid "type your username here"
 msgstr "voer uw gebruikersnaam hier in"
 
@@ -9779,6 +9815,21 @@ msgstr ""
 #, fuzzy
 msgid "_Load Package Manager"
 msgstr "_Start Pakketten Beheerder"
+
+#~ msgid "Configuring Binutils Profile"
+#~ msgstr "Configureren van Binutils Profiel"
+
+#~ msgid "A new service will be installed"
+#~ msgstr "Een nieuwe service wordt geïnstalleerd"
+
+#~ msgid "These are the packages that would be"
+#~ msgstr "Deze pakketten zullen worden "
+
+#~ msgid "merged"
+#~ msgstr "samengevoegd"
+
+#~ msgid "removed"
+#~ msgstr "verwijderd"
 
 #~ msgid "Entropy database is probably corrupted! I won't stop you here btw..."
 #~ msgstr ""
@@ -9818,42 +9869,6 @@ msgstr "_Start Pakketten Beheerder"
 
 #~ msgid "Packages To Install"
 #~ msgstr "Pakketten Voor Installatie"
-
-#~ msgid "Disable"
-#~ msgstr "Uitschakelen"
-
-#~ msgid "Enable"
-#~ msgstr "Activeer"
-
-#~ msgid "Install Set"
-#~ msgstr "Installeer Set"
-
-#~ msgid "Purge"
-#~ msgstr "Volledig verwijderen"
-
-#~ msgid "Remove Set"
-#~ msgstr "Verwijder Set"
-
-#~ msgid "Undo Install"
-#~ msgstr "Installatie ongedaan maken"
-
-#~ msgid "Undo Install Set"
-#~ msgstr "Installatie Set ongedaan maken"
-
-#~ msgid "Undo Purge"
-#~ msgstr "Installatie ongedaan maken"
-
-#~ msgid "Undo Reinstall"
-#~ msgstr "Herinstallatie ongedaan maken"
-
-#~ msgid "Undo Remove"
-#~ msgstr "Verwijderen ongedaan maken"
-
-#~ msgid "Undo Remove Set"
-#~ msgstr "Verwijderen Set ongedaan maken"
-
-#~ msgid "Undo Update"
-#~ msgstr "Update ongedaan maken"
 
 #~ msgid "_File"
 #~ msgstr "_Bestand"

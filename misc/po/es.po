@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-05-25 12:57+0200\n"
+"POT-Creation-Date: 2009-05-26 17:17+0200\n"
 "PO-Revision-Date: 2009-04-08 23:46-0000\n"
 "Last-Translator: Daniel Halens Rodriguez <daniel.halens@sabayonlinux.org>\n"
 "Language-Team:  <es@li.org>\n"
@@ -263,7 +263,7 @@ msgid "migrating database path from"
 msgstr "migrando la ruta de la base de datos desde"
 
 #: ../../libraries/entropy/server/interfaces/main.py:436
-#: ../../libraries/entropy/db.py:1169 ../../client/text_configuration.py:107
+#: ../../libraries/entropy/db.py:1164 ../../client/text_configuration.py:107
 msgid "to"
 msgstr "a"
 
@@ -367,12 +367,12 @@ msgid "Running dependencies test"
 msgstr "Ejecutando test de dependencias"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1047
-#: ../../client/text_ui.py:1578
+#: ../../client/text_ui.py:1581
 msgid "These are the dependencies not found"
 msgstr "Dependencias no encontradas"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1054
-#: ../../client/text_ui.py:1582
+#: ../../client/text_ui.py:1585
 msgid "Needed by"
 msgstr "Requeridas por"
 
@@ -385,7 +385,7 @@ msgid "Every dependency is satisfied. It's all fine."
 msgstr "Todas las dependencias están satisfechas. Todo está bien."
 
 #: ../../libraries/entropy/server/interfaces/main.py:1107
-#: ../../client/text_ui.py:1628
+#: ../../client/text_ui.py:1631
 msgid "System is healthy"
 msgstr "El sistema está en buen estado"
 
@@ -469,8 +469,8 @@ msgstr "Estos son los paquetes que serán marcados"
 #: ../../libraries/entropy/server/interfaces/main.py:2984
 #: ../../libraries/entropy/server/interfaces/main.py:3232
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2960
-#: ../../server/server_reagent.py:503 ../../server/server_reagent.py:564
-#: ../../server/server_reagent.py:609
+#: ../../server/server_reagent.py:503 ../../server/server_reagent.py:563
+#: ../../server/server_reagent.py:607
 msgid "Would you like to continue ?"
 msgstr "¿ Desea continuar ?"
 
@@ -532,7 +532,7 @@ msgstr "Preparándose para copiar los paquetes seleccionados a"
 #: ../../libraries/entropy/client/services/system/methods.py:98
 #: ../../sulfur/src/sulfur/dialogs.py:987
 #: ../../sulfur/src/sulfur/dialogs.py:3334
-#: ../../sulfur/src/sulfur/sulfur.glade.h:123
+#: ../../sulfur/src/sulfur/sulfur.glade.h:127
 msgid "Note"
 msgstr "Nota"
 
@@ -656,8 +656,8 @@ msgid "Initializing Entropy database"
 msgstr "Inicializando la base de datos de Entropy"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2697
-#: ../../libraries/entropy/db.py:886 ../../libraries/entropy/db.py:904
-#: ../../libraries/entropy/db.py:1106
+#: ../../libraries/entropy/db.py:884 ../../libraries/entropy/db.py:902
+#: ../../libraries/entropy/db.py:1101
 msgid "WARNING"
 msgstr "CUIDADO"
 
@@ -710,8 +710,8 @@ msgstr "revisión"
 #: ../../libraries/entropy/client/interfaces/repository.py:1383
 #: ../../libraries/entropy/client/interfaces/repository.py:1398
 #: ../../client/text_rescue.py:291 ../../client/text_rescue.py:304
-#: ../../client/text_ui.py:908 ../../client/text_ui.py:909
 #: ../../client/text_ui.py:911 ../../client/text_ui.py:912
+#: ../../client/text_ui.py:914 ../../client/text_ui.py:915
 #: ../../sulfur/src/sulfur/dialogs.py:5868
 #: ../../sulfur/src/sulfur/__init__.py:931
 #: ../../sulfur/src/sulfur/packages.py:93
@@ -1266,7 +1266,7 @@ msgstr "copia"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2028
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2947
-#: ../../libraries/entropy/client/interfaces/package.py:512
+#: ../../libraries/entropy/client/interfaces/package.py:514
 msgid "remove"
 msgstr "eliminar"
 
@@ -1467,7 +1467,7 @@ msgid "cannot convert stream into object"
 msgstr "no se pudo convertir el flujo en un objeto"
 
 #: ../../libraries/entropy/client/services/ugc/commands.py:601
-#: ../../sulfur/src/sulfur/sulfur.glade.h:242
+#: ../../sulfur/src/sulfur/sulfur.glade.h:258
 msgid "User Generated Content"
 msgstr "Contenido Generado por el Usuario"
 
@@ -1498,12 +1498,12 @@ msgstr "el repositorio no soporta EAPI3"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:132
 #: ../../sulfur/src/sulfur/dialogs.py:406
-#: ../../sulfur/src/sulfur/sulfur.glade.h:243
+#: ../../sulfur/src/sulfur/sulfur.glade.h:259
 msgid "Username"
 msgstr "Nombre de Usuario"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:133
-#: ../../sulfur/src/sulfur/sulfur.glade.h:144
+#: ../../sulfur/src/sulfur/sulfur.glade.h:148
 msgid "Password"
 msgstr "Contraseña"
 
@@ -2012,7 +2012,7 @@ msgstr "Añadir entrada en el tablón de anuncios"
 #: ../../sulfur/src/sulfur/dialogs.py:1533
 #: ../../sulfur/src/sulfur/dialogs.py:2181
 #: ../../sulfur/src/sulfur/dialogs.py:3936
-#: ../../sulfur/src/sulfur/sulfur.glade.h:228
+#: ../../sulfur/src/sulfur/sulfur.glade.h:236
 msgid "Title"
 msgstr "Título"
 
@@ -2021,7 +2021,7 @@ msgid "Notice link"
 msgstr "Link del anuncio"
 
 #: ../../libraries/entropy/client/misc.py:38
-#: ../../libraries/entropy/client/interfaces/package.py:43
+#: ../../libraries/entropy/client/interfaces/package.py:45
 msgid "A valid Client instance or subclass is needed"
 msgstr "Se necesita una instancia o subclase Client válida"
 
@@ -2080,23 +2080,23 @@ msgid "Checking %s"
 msgstr "Comprobando %s"
 
 #: ../../libraries/entropy/client/interfaces/dep.py:249
-#: ../../libraries/entropy/client/interfaces/dep.py:432
+#: ../../libraries/entropy/client/interfaces/dep.py:434
 msgid "server_repos needs serverInstance"
 msgstr "server_repos necesita serverInstance"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1018
+#: ../../libraries/entropy/client/interfaces/dep.py:1020
 msgid "Sorting dependencies"
 msgstr "Reordenando dependencias"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1101
+#: ../../libraries/entropy/client/interfaces/dep.py:1103
 msgid "Calculating inverse dependencies for"
 msgstr "Calculando las dependencias inversas para"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1193
+#: ../../libraries/entropy/client/interfaces/dep.py:1195
 msgid "Calculating available packages for"
 msgstr "Calculando los paquetes disponibles para"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1261
+#: ../../libraries/entropy/client/interfaces/dep.py:1263
 msgid "Calculating world packages"
 msgstr "Calculando los paquetes en world"
 
@@ -2116,13 +2116,13 @@ msgstr "descarga descartada"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:196
 #: ../../libraries/entropy/client/interfaces/fetch.py:445
-#: ../../libraries/entropy/client/interfaces/package.py:1553
+#: ../../libraries/entropy/client/interfaces/package.py:1554
 msgid "second"
 msgstr "segundo"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:211
 #: ../../libraries/entropy/client/interfaces/fetch.py:461
-#: ../../libraries/entropy/client/interfaces/package.py:1568
+#: ../../libraries/entropy/client/interfaces/package.py:1569
 msgid "Error downloading from"
 msgstr "Error descargando desde"
 
@@ -2150,13 +2150,13 @@ msgstr "errores al eliminar"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:224
 #: ../../libraries/entropy/client/interfaces/fetch.py:479
-#: ../../libraries/entropy/client/interfaces/package.py:1577
+#: ../../libraries/entropy/client/interfaces/package.py:1578
 msgid "discarded download"
 msgstr "descarga descartada"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:227
 #: ../../libraries/entropy/client/interfaces/fetch.py:482
-#: ../../libraries/entropy/client/interfaces/package.py:1579
+#: ../../libraries/entropy/client/interfaces/package.py:1580
 msgid "unknown reason"
 msgstr "razón desconocida"
 
@@ -2165,17 +2165,17 @@ msgid "Downloading from"
 msgstr "Descargando desde"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:443
-#: ../../libraries/entropy/client/interfaces/package.py:1551
+#: ../../libraries/entropy/client/interfaces/package.py:1552
 msgid "Successfully downloaded from"
 msgstr "Correctamente descargado desde"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:445
-#: ../../libraries/entropy/client/interfaces/package.py:1553
+#: ../../libraries/entropy/client/interfaces/package.py:1554
 msgid "at"
 msgstr "a"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:466
-#: ../../libraries/entropy/client/interfaces/package.py:1573
+#: ../../libraries/entropy/client/interfaces/package.py:1574
 msgid "file not available on this mirror"
 msgstr "archivo no disponible en este mirror"
 
@@ -2384,7 +2384,7 @@ msgid "Set not found or unable to remove"
 msgstr "El Set no se ha encontrado o no se puede eliminar"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:980
-#: ../../sulfur/src/sulfur/sulfur.glade.h:105
+#: ../../sulfur/src/sulfur/sulfur.glade.h:109
 msgid "Libraries test"
 msgstr "Comprobación de bibliotecas"
 
@@ -2418,56 +2418,56 @@ msgstr "Haciendo coincidir bibliotecas y ejecutables rotos"
 msgid "not a valid method"
 msgstr "no es un método válido"
 
-#: ../../libraries/entropy/client/interfaces/package.py:68
+#: ../../libraries/entropy/client/interfaces/package.py:70
 msgid "Already prepared"
 msgstr "Ya está preparada"
 
-#: ../../libraries/entropy/client/interfaces/package.py:73
+#: ../../libraries/entropy/client/interfaces/package.py:75
 msgid "Not yet prepared"
 msgstr "Aún no está preparada"
 
-#: ../../libraries/entropy/client/interfaces/package.py:78
+#: ../../libraries/entropy/client/interfaces/package.py:80
 msgid "Action must be in"
 msgstr "La acción debe estar en"
 
-#: ../../libraries/entropy/client/interfaces/package.py:111
+#: ../../libraries/entropy/client/interfaces/package.py:113
 #, fuzzy
 msgid "Checking package hash"
 msgstr "Comprobando la comprobación de suma del paquete..."
 
-#: ../../libraries/entropy/client/interfaces/package.py:126
+#: ../../libraries/entropy/client/interfaces/package.py:128
 #, fuzzy
 msgid "Package hash"
 msgstr "Paquetes"
 
-#: ../../libraries/entropy/client/interfaces/package.py:128
+#: ../../libraries/entropy/client/interfaces/package.py:130
 msgid "does not match the recorded one"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:138
+#: ../../libraries/entropy/client/interfaces/package.py:140
 #, fuzzy
 msgid "matches"
 msgstr "Sin coincidencias"
 
-#: ../../libraries/entropy/client/interfaces/package.py:151
+#: ../../libraries/entropy/client/interfaces/package.py:153
 msgid "Checking package checksum..."
 msgstr "Comprobando la comprobación de suma del paquete..."
 
-#: ../../libraries/entropy/client/interfaces/package.py:164
+#: ../../libraries/entropy/client/interfaces/package.py:166
 msgid "Package checksum matches"
 msgstr "La comprobación de suma del paquete coincide"
 
-#: ../../libraries/entropy/client/interfaces/package.py:181
+#: ../../libraries/entropy/client/interfaces/package.py:183
 #, python-format
 msgid "Package checksum does not match. Redownloading... attempt #%s"
 msgstr ""
 "La comprobación de suma no coincide. Volviendo a descargar... intento #%s"
 
-#: ../../libraries/entropy/client/interfaces/package.py:195
+#: ../../libraries/entropy/client/interfaces/package.py:197
 msgid "Cannot properly fetch package! Quitting."
 msgstr "¡No se pudo obtener el paquete correctamente! Saliendo."
 
-#: ../../libraries/entropy/client/interfaces/package.py:207
+#: ../../libraries/entropy/client/interfaces/package.py:209
 msgid ""
 "Cannot properly fetch package or checksum does not match. Try download "
 "latest repositories."
@@ -2475,330 +2475,330 @@ msgstr ""
 "No se pudo obtener el paquete correctamente o la comprobación de suma no "
 "coincide. Prueba a descargar los últimos repositorios."
 
-#: ../../libraries/entropy/client/interfaces/package.py:384
-#: ../../libraries/entropy/client/interfaces/package.py:935
-#: ../../libraries/entropy/client/interfaces/trigger.py:281
-#: ../../libraries/entropy/client/interfaces/trigger.py:877
-#: ../../libraries/entropy/client/interfaces/trigger.py:969
-#: ../../libraries/entropy/client/interfaces/trigger.py:1056
-#: ../../libraries/entropy/client/interfaces/trigger.py:1145
-#: ../../libraries/entropy/client/interfaces/trigger.py:1407
-#: ../../libraries/entropy/client/interfaces/trigger.py:1421
-#: ../../libraries/entropy/client/interfaces/trigger.py:1464
-#: ../../libraries/entropy/client/interfaces/trigger.py:1482
-#: ../../libraries/entropy/client/interfaces/trigger.py:1511
-#: ../../libraries/entropy/client/interfaces/trigger.py:1524
-#: ../../libraries/entropy/client/interfaces/trigger.py:1537
+#: ../../libraries/entropy/client/interfaces/package.py:386
+#: ../../libraries/entropy/client/interfaces/package.py:936
+#: ../../libraries/entropy/client/interfaces/trigger.py:314
+#: ../../libraries/entropy/client/interfaces/trigger.py:893
+#: ../../libraries/entropy/client/interfaces/trigger.py:985
+#: ../../libraries/entropy/client/interfaces/trigger.py:1072
+#: ../../libraries/entropy/client/interfaces/trigger.py:1161
+#: ../../libraries/entropy/client/interfaces/trigger.py:1385
+#: ../../libraries/entropy/client/interfaces/trigger.py:1399
+#: ../../libraries/entropy/client/interfaces/trigger.py:1442
+#: ../../libraries/entropy/client/interfaces/trigger.py:1460
+#: ../../libraries/entropy/client/interfaces/trigger.py:1489
+#: ../../libraries/entropy/client/interfaces/trigger.py:1502
+#: ../../libraries/entropy/client/interfaces/trigger.py:1515
 msgid "QA"
 msgstr "Control de calidad"
 
-#: ../../libraries/entropy/client/interfaces/package.py:385
+#: ../../libraries/entropy/client/interfaces/package.py:387
 #, fuzzy
 msgid "Cannot run Spm pkg_config() for"
 msgstr "no se pudo abrir el contador del administrador de paquetes fuente para"
 
-#: ../../libraries/entropy/client/interfaces/package.py:387
-#: ../../libraries/entropy/client/interfaces/trigger.py:284
-#: ../../libraries/entropy/client/interfaces/trigger.py:880
-#: ../../libraries/entropy/client/interfaces/trigger.py:972
-#: ../../libraries/entropy/client/interfaces/trigger.py:1059
-#: ../../libraries/entropy/client/interfaces/trigger.py:1148
+#: ../../libraries/entropy/client/interfaces/package.py:389
+#: ../../libraries/entropy/client/interfaces/trigger.py:317
+#: ../../libraries/entropy/client/interfaces/trigger.py:896
+#: ../../libraries/entropy/client/interfaces/trigger.py:988
+#: ../../libraries/entropy/client/interfaces/trigger.py:1075
+#: ../../libraries/entropy/client/interfaces/trigger.py:1164
 msgid "Please report it"
 msgstr "Por favor, reporta el error"
 
-#: ../../libraries/entropy/client/interfaces/package.py:388
-#: ../../libraries/entropy/client/interfaces/package.py:1613
-#: ../../libraries/entropy/client/interfaces/package.py:1643
-#: ../../libraries/entropy/client/interfaces/package.py:1713
-#: ../../libraries/entropy/client/interfaces/package.py:1719
-#: ../../libraries/entropy/client/interfaces/package.py:1744
-#: ../../libraries/entropy/client/interfaces/package.py:1769
-#: ../../libraries/entropy/client/interfaces/package.py:1897
-#: ../../libraries/entropy/client/interfaces/package.py:1910
-#: ../../libraries/entropy/client/interfaces/trigger.py:63
+#: ../../libraries/entropy/client/interfaces/package.py:390
+#: ../../libraries/entropy/client/interfaces/package.py:1614
+#: ../../libraries/entropy/client/interfaces/package.py:1644
+#: ../../libraries/entropy/client/interfaces/package.py:1714
+#: ../../libraries/entropy/client/interfaces/package.py:1720
+#: ../../libraries/entropy/client/interfaces/package.py:1745
+#: ../../libraries/entropy/client/interfaces/package.py:1770
+#: ../../libraries/entropy/client/interfaces/package.py:1898
+#: ../../libraries/entropy/client/interfaces/package.py:1911
+#: ../../libraries/entropy/client/interfaces/trigger.py:64
 #: ../../libraries/entropy/db.py:45 ../../libraries/entropy/security.py:253
-#: ../../server/server_reagent.py:645 ../../sulfur/src/sulfur/events.py:804
-#: ../../sulfur/src/sulfur/events.py:837
-#: ../../sulfur/src/sulfur/sulfur.glade.h:72
+#: ../../server/server_reagent.py:643 ../../sulfur/src/sulfur/events.py:805
+#: ../../sulfur/src/sulfur/events.py:838
+#: ../../sulfur/src/sulfur/sulfur.glade.h:74
 msgid "Error"
 msgstr "Error"
 
-#: ../../libraries/entropy/client/interfaces/package.py:412
+#: ../../libraries/entropy/client/interfaces/package.py:414
 msgid "Removing from Entropy"
 msgstr "Eliminando de Entropy"
 
 #. in this way we filter out directories
-#: ../../libraries/entropy/client/interfaces/package.py:454
+#: ../../libraries/entropy/client/interfaces/package.py:456
 msgid "Collision found during removal of"
 msgstr "Se encontró una colisión durante la eliminación de"
 
-#: ../../libraries/entropy/client/interfaces/package.py:455
-#: ../../libraries/entropy/client/interfaces/package.py:1485
+#: ../../libraries/entropy/client/interfaces/package.py:457
+#: ../../libraries/entropy/client/interfaces/package.py:1486
 msgid "cannot overwrite"
 msgstr "no se puede sobrescribir"
 
-#: ../../libraries/entropy/client/interfaces/package.py:494
+#: ../../libraries/entropy/client/interfaces/package.py:496
 msgid "Removing config file, never modified"
 msgstr "El archivo de configuración nunca se modificó. Eliminando"
 
-#: ../../libraries/entropy/client/interfaces/package.py:513
-#: ../../libraries/entropy/client/interfaces/package.py:1443
+#: ../../libraries/entropy/client/interfaces/package.py:515
+#: ../../libraries/entropy/client/interfaces/package.py:1444
 msgid "Protecting config file"
 msgstr "Protegiendo el archivo de configuración"
 
-#: ../../libraries/entropy/client/interfaces/package.py:528
+#: ../../libraries/entropy/client/interfaces/package.py:530
 msgid "This package contains a badly encoded file !!!"
 msgstr "¡¡¡ Este paquete contiene un archivo mal codificado !!!"
 
 #. inject into database
-#: ../../libraries/entropy/client/interfaces/package.py:828
+#: ../../libraries/entropy/client/interfaces/package.py:829
 msgid "Updating database"
 msgstr "Actualizando en la base de datos"
 
-#: ../../libraries/entropy/client/interfaces/package.py:855
+#: ../../libraries/entropy/client/interfaces/package.py:856
 msgid "Cleaning old package files..."
 msgstr "Limpiando los archivos antiguos del paquete..."
 
-#: ../../libraries/entropy/client/interfaces/package.py:936
+#: ../../libraries/entropy/client/interfaces/package.py:937
 msgid "Cannot update Portage database to destination"
 msgstr "No se pudo actualizar la base de datos de Portage al destino"
 
-#: ../../libraries/entropy/client/interfaces/package.py:971
+#: ../../libraries/entropy/client/interfaces/package.py:972
 #, python-format
 msgid "Cannot update Portage counter, destination %s does not exist."
 msgstr ""
 "No se pudo actualizar el contador de Portage porque el destino %s no existe."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1005
+#: ../../libraries/entropy/client/interfaces/package.py:1006
 #, python-format
 msgid "Cannot update Portage world file, destination %s does not exist."
 msgstr ""
 "No se pudo actualizar el archivo world de Portage porque el archivo de "
 "destino %s no existe."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1030
+#: ../../libraries/entropy/client/interfaces/package.py:1031
 #, python-format
 msgid "Cannot update Portage world file, destination %s is corrupted."
 msgstr ""
 "No se pudo actualizar el archivo world de Portage porque el archivo de "
 "destino %s está corrupto."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1166
+#: ../../libraries/entropy/client/interfaces/package.py:1167
 #, python-format
 msgid "%s is a file when should be a directory !! Removing in 20 seconds..."
 msgstr ""
 "%s es un archivo que debería de ser un directorio. Eliminándolo en 20 "
 "segundos..."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1187
+#: ../../libraries/entropy/client/interfaces/package.py:1188
 #, fuzzy, python-format
 msgid "%s is a directory when should be a symlink !! Removing in 20 seconds..."
 msgstr ""
 "%s es un directorio que debería de ser un archivo. Eliminándolo en 20 "
 "segundos..."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1270
+#: ../../libraries/entropy/client/interfaces/package.py:1271
 msgid "Automerging config file, never modified"
 msgstr "El archivo de configuración nunca se modificó. Autouniendo"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1304
+#: ../../libraries/entropy/client/interfaces/package.py:1305
 #, python-format
 msgid "%s is a directory when it should be a file !! Removing in 20 seconds..."
 msgstr ""
 "%s es un directorio que debería de ser un archivo. Eliminándolo en 20 "
 "segundos..."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1333
+#: ../../libraries/entropy/client/interfaces/package.py:1334
 msgid "File move error"
 msgstr "Error moviendo archivo"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1333
+#: ../../libraries/entropy/client/interfaces/package.py:1334
 msgid "please report"
 msgstr "por favor, reporta el error"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1457
+#: ../../libraries/entropy/client/interfaces/package.py:1458
 msgid "Skipping file installation/removal"
 msgstr "Omitiendo instalación/eliminación del archivo"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1470
+#: ../../libraries/entropy/client/interfaces/package.py:1471
 msgid "Cannot check CONFIG PROTECTION. Error"
 msgstr "No se pudo comprobar CONFIG PROTECTION. Error"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1484
+#: ../../libraries/entropy/client/interfaces/package.py:1485
 msgid "Collision found during install for"
 msgstr "Colisión encontrada durante la instalación de"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1533
-#: ../../libraries/entropy/client/interfaces/package.py:1627
+#: ../../libraries/entropy/client/interfaces/package.py:1534
+#: ../../libraries/entropy/client/interfaces/package.py:1628
 msgid "Downloading"
 msgstr "Descargando"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1561
+#: ../../libraries/entropy/client/interfaces/package.py:1562
 msgid "Local path"
 msgstr "Ruta local"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1592
+#: ../../libraries/entropy/client/interfaces/package.py:1593
 msgid "Downloading archive"
 msgstr "Descargando el archivo"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1612
+#: ../../libraries/entropy/client/interfaces/package.py:1613
 msgid "Package cannot be fetched. Try to update repositories and retry"
 msgstr ""
 "No se pudo obtener el paquete. Prueba a actualizar los repositorios e "
 "inténtalo de nuevo"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1627
+#: ../../libraries/entropy/client/interfaces/package.py:1628
 msgid "archives"
 msgstr "archivos"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1642
+#: ../../libraries/entropy/client/interfaces/package.py:1643
 msgid "Some packages cannot be fetched. Try to update repositories and retry"
 msgstr ""
 "No se pudieron obtener algunos paquetes. Prueba a actualizar los "
 "repositorios e inténtalo de nuevo"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1664
+#: ../../libraries/entropy/client/interfaces/package.py:1665
 msgid "Fetch for the chosen package is not available, unknown error."
 msgstr ""
 "La descarga del paquete seleccionado no está disponible, error desconocido."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1673
+#: ../../libraries/entropy/client/interfaces/package.py:1674
 msgid "Installed package in queue vanished, skipping."
 msgstr "Paquete instalado en cola desapareció, omitiendo."
 
-#: ../../libraries/entropy/client/interfaces/package.py:1692
+#: ../../libraries/entropy/client/interfaces/package.py:1693
 msgid "Unpacking package"
 msgstr "Desempaquetando el paquete"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1700
+#: ../../libraries/entropy/client/interfaces/package.py:1701
 msgid "Merging package"
 msgstr "Uniendo paquete"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1711
+#: ../../libraries/entropy/client/interfaces/package.py:1712
 msgid "You are running out of disk space"
 msgstr "Te estás quedando sin espacio en el disco duro"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1712
+#: ../../libraries/entropy/client/interfaces/package.py:1713
 msgid "I bet, you're probably Michele"
 msgstr "Apuesto a que probablemente eres Michele"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1717
+#: ../../libraries/entropy/client/interfaces/package.py:1718
 msgid "An error occured while trying to unpack the package"
 msgstr "Ocurrió un error al intentar desempaquetar el paquete"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1718
-#: ../../libraries/entropy/client/interfaces/package.py:1743
+#: ../../libraries/entropy/client/interfaces/package.py:1719
+#: ../../libraries/entropy/client/interfaces/package.py:1744
 msgid "Check if your system is healthy"
 msgstr "Comprueba si tu sistema está en buen estado"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1732
+#: ../../libraries/entropy/client/interfaces/package.py:1733
 msgid "Installing package"
 msgstr "Instalando el paquete"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1742
+#: ../../libraries/entropy/client/interfaces/package.py:1743
 msgid "An error occured while trying to install the package"
 msgstr "Ocurrió un error mientras se intentaba instalar el paquete"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1757
+#: ../../libraries/entropy/client/interfaces/package.py:1758
 msgid "Removing data"
 msgstr "Eliminando datos"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1767
+#: ../../libraries/entropy/client/interfaces/package.py:1768
 msgid "An error occured while trying to remove the package"
 msgstr "Ocurrió un error al intentar eliminar el paquete"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1768
+#: ../../libraries/entropy/client/interfaces/package.py:1769
 msgid "Check if you have enough disk space on your hard disk"
 msgstr "Comprueba si tienes suficiente espacio libre en tu disco duro"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1782
-#: ../../libraries/entropy/client/interfaces/package.py:1991
+#: ../../libraries/entropy/client/interfaces/package.py:1783
+#: ../../libraries/entropy/client/interfaces/package.py:1992
 msgid "Cleaning"
 msgstr "Limpiando"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1885
+#: ../../libraries/entropy/client/interfaces/package.py:1886
 msgid "Configuring package"
 msgstr "Configurando el paquete"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1895
-#: ../../libraries/entropy/client/interfaces/package.py:1908
+#: ../../libraries/entropy/client/interfaces/package.py:1896
+#: ../../libraries/entropy/client/interfaces/package.py:1909
 msgid "An error occured while trying to configure the package"
 msgstr "Ocurrió un error mientras se intentaba configurar el paquete"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1896
+#: ../../libraries/entropy/client/interfaces/package.py:1897
 msgid "Make sure that your system is healthy"
 msgstr "Asegúrate de que tu sistema está en buen estado"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1909
+#: ../../libraries/entropy/client/interfaces/package.py:1910
 msgid "It seems that the Source Package Manager entry is missing"
 msgstr ""
 
-#: ../../libraries/entropy/client/interfaces/package.py:1938
+#: ../../libraries/entropy/client/interfaces/package.py:1939
 #: ../../sulfur/src/sulfur/entropyapi.py:117
 msgid "Fetching"
 msgstr "Adquiriendo"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1943
+#: ../../libraries/entropy/client/interfaces/package.py:1944
 msgid "Multi Fetching"
 msgstr "Adquiriendo"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1944
-#: ../../libraries/entropy/client/interfaces/package.py:1960
+#: ../../libraries/entropy/client/interfaces/package.py:1945
+#: ../../libraries/entropy/client/interfaces/package.py:1961
 #: ../../client/text_query.py:380 ../../client/text_query.py:413
-#: ../../client/text_ui.py:1065 ../../server/server_reagent.py:501
+#: ../../client/text_ui.py:1068 ../../server/server_reagent.py:501
 msgid "packages"
 msgstr "paquetes"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1949
+#: ../../libraries/entropy/client/interfaces/package.py:1950
 msgid "Fetching sources"
 msgstr "Obteniendo segmentos"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1954
+#: ../../libraries/entropy/client/interfaces/package.py:1955
 msgid "Verifying"
 msgstr "Verificando"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1959
+#: ../../libraries/entropy/client/interfaces/package.py:1960
 msgid "Multi Verification"
 msgstr "Multiverificación"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1966
+#: ../../libraries/entropy/client/interfaces/package.py:1967
 msgid "Unpacking"
 msgstr "Desempaquetando"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1969
+#: ../../libraries/entropy/client/interfaces/package.py:1970
 msgid "Merging"
 msgstr "Uniendo"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1978
+#: ../../libraries/entropy/client/interfaces/package.py:1979
 msgid "Installing"
 msgstr "Instalando"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1983
+#: ../../libraries/entropy/client/interfaces/package.py:1984
 #: ../../client/text_rescue.py:532
 msgid "Removing"
 msgstr "Eliminando"
 
-#: ../../libraries/entropy/client/interfaces/package.py:1996
+#: ../../libraries/entropy/client/interfaces/package.py:1997
 msgid "Postinstall"
 msgstr "Postinstalación"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2001
+#: ../../libraries/entropy/client/interfaces/package.py:2002
 msgid "Preinstall"
 msgstr "Preinstalación"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2006
+#: ../../libraries/entropy/client/interfaces/package.py:2007
 msgid "Preremove"
 msgstr "Preliminación"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2011
+#: ../../libraries/entropy/client/interfaces/package.py:2012
 msgid "Postremove"
 msgstr "Posteliminación"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2016
+#: ../../libraries/entropy/client/interfaces/package.py:2017
 msgid "Configuring"
 msgstr "Configurando"
 
-#: ../../libraries/entropy/client/interfaces/package.py:2077
+#: ../../libraries/entropy/client/interfaces/package.py:2078
 msgid "An error occured. Action aborted."
 msgstr "Ocurrió un error. Acción cancelada."
 
@@ -3078,8 +3078,8 @@ msgid "Injecting downloaded dump"
 msgstr "Inyectando los elementos descargados"
 
 #: ../../libraries/entropy/client/interfaces/repository.py:1435
-#: ../../libraries/entropy/db.py:3831
-#: ../../sulfur/src/sulfur/sulfur.glade.h:286
+#: ../../libraries/entropy/db.py:3826
+#: ../../sulfur/src/sulfur/sulfur.glade.h:302
 msgid "please wait"
 msgstr "espera por favor"
 
@@ -3186,153 +3186,145 @@ msgstr "Sincronización de los repositorios"
 msgid "A valid Entropy Instance is needed"
 msgstr "Se necesita una instancia válida de Entropy"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:62
+#: ../../libraries/entropy/client/interfaces/trigger.py:63
 msgid "Portage interface can't be loaded"
 msgstr "La se pudo cargar la interfaz de Portage"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:65
+#: ../../libraries/entropy/client/interfaces/trigger.py:66
 msgid "please fix"
 msgstr "arréglalo por favor"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:80
+#: ../../libraries/entropy/client/interfaces/trigger.py:81
 msgid "Valid phases"
 msgstr "Fases válidas"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:282
+#: ../../libraries/entropy/client/interfaces/trigger.py:315
 msgid "Cannot run External trigger for"
 msgstr "No se pudo ejecutar el activador externo para"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:500
+#: ../../libraries/entropy/client/interfaces/trigger.py:534
 msgid "Updating {conf.d,init.d} mtime"
 msgstr "Actualizando mtime de {conf.d,init.d}"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:526
-msgid "Configuring Binutils Profile"
-msgstr "Configurando el perfil de Binutils"
-
-#: ../../libraries/entropy/client/interfaces/trigger.py:546
+#: ../../libraries/entropy/client/interfaces/trigger.py:562
 msgid "Updating moduledb"
 msgstr "Actualizando moduledb"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:554
+#: ../../libraries/entropy/client/interfaces/trigger.py:572
 msgid "Running depmod"
 msgstr "Ejecutando depmod"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:591
+#: ../../libraries/entropy/client/interfaces/trigger.py:612
 msgid "Removing boot service"
 msgstr "Eliminando servicio de arranque"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:609
-msgid "A new service will be installed"
-msgstr "Se instalará un nuevo servicio"
-
-#: ../../libraries/entropy/client/interfaces/trigger.py:630
-#: ../../libraries/entropy/client/interfaces/trigger.py:663
+#: ../../libraries/entropy/client/interfaces/trigger.py:639
+#: ../../libraries/entropy/client/interfaces/trigger.py:672
 msgid "Reconfiguring OpenGL"
 msgstr "Reconfigurando OpenGL"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:648
-#: ../../libraries/entropy/client/interfaces/trigger.py:681
+#: ../../libraries/entropy/client/interfaces/trigger.py:657
+#: ../../libraries/entropy/client/interfaces/trigger.py:690
 msgid "Eselect NOT found, cannot run OpenGL trigger"
 msgstr "NO se encontró Eselect: no se puede ejecutar el activador de OpenGL"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:711
-#: ../../libraries/entropy/client/interfaces/trigger.py:736
+#: ../../libraries/entropy/client/interfaces/trigger.py:723
+#: ../../libraries/entropy/client/interfaces/trigger.py:751
 msgid "Configuring GRUB bootloader"
 msgstr "Configurando el cargador de arranque GRUB"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:712
+#: ../../libraries/entropy/client/interfaces/trigger.py:724
 msgid "Adding the new kernel"
 msgstr "Añadiendo el nuevo kernel"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:737
+#: ../../libraries/entropy/client/interfaces/trigger.py:752
 msgid "Removing the selected kernel"
 msgstr "Eliminando el kernel seleccionado"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:770
+#: ../../libraries/entropy/client/interfaces/trigger.py:786
 msgid "Mounted /boot successfully"
 msgstr "/boot se montó correctamente"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:781
+#: ../../libraries/entropy/client/interfaces/trigger.py:797
 msgid "Cannot mount /boot automatically !!"
 msgstr "¡¡ No se pudo montar /boot automáticamente !!"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:797
+#: ../../libraries/entropy/client/interfaces/trigger.py:813
 msgid "Regenerating"
 msgstr "Regenerando"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:813
+#: ../../libraries/entropy/client/interfaces/trigger.py:829
 msgid "Updating environment"
 msgstr "Actualizando el entorno"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:878
-#: ../../libraries/entropy/client/interfaces/trigger.py:970
-#: ../../libraries/entropy/client/interfaces/trigger.py:1057
-#: ../../libraries/entropy/client/interfaces/trigger.py:1146
+#: ../../libraries/entropy/client/interfaces/trigger.py:894
+#: ../../libraries/entropy/client/interfaces/trigger.py:986
+#: ../../libraries/entropy/client/interfaces/trigger.py:1073
+#: ../../libraries/entropy/client/interfaces/trigger.py:1162
 msgid "Cannot run Portage trigger for"
 msgstr "No se puede ejecutar el activador de Portage para"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:881
-#: ../../libraries/entropy/client/interfaces/trigger.py:973
-#: ../../libraries/entropy/client/interfaces/trigger.py:1060
-#: ../../libraries/entropy/client/interfaces/trigger.py:1149
+#: ../../libraries/entropy/client/interfaces/trigger.py:897
+#: ../../libraries/entropy/client/interfaces/trigger.py:989
+#: ../../libraries/entropy/client/interfaces/trigger.py:1076
+#: ../../libraries/entropy/client/interfaces/trigger.py:1165
 #, fuzzy
 msgid "Attach this"
 msgstr "Adjunta este"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1408
+#: ../../libraries/entropy/client/interfaces/trigger.py:1386
 msgid "Cannot find df"
 msgstr "No se pudo encontrar el comando df"
 
 #. 'cannot match device /dev/foo with a grub one'
-#: ../../libraries/entropy/client/interfaces/trigger.py:1409
-#: ../../libraries/entropy/client/interfaces/trigger.py:1423
-#: ../../libraries/entropy/client/interfaces/trigger.py:1468
-#: ../../libraries/entropy/client/interfaces/trigger.py:1513
-#: ../../libraries/entropy/client/interfaces/trigger.py:1526
-#: ../../libraries/entropy/client/interfaces/trigger.py:1539
+#: ../../libraries/entropy/client/interfaces/trigger.py:1387
+#: ../../libraries/entropy/client/interfaces/trigger.py:1401
+#: ../../libraries/entropy/client/interfaces/trigger.py:1446
+#: ../../libraries/entropy/client/interfaces/trigger.py:1491
+#: ../../libraries/entropy/client/interfaces/trigger.py:1504
+#: ../../libraries/entropy/client/interfaces/trigger.py:1517
 msgid "Cannot properly configure the kernel"
 msgstr "No se pudo configurar el kernel correctamente"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1410
-#: ../../libraries/entropy/client/interfaces/trigger.py:1424
-#: ../../libraries/entropy/client/interfaces/trigger.py:1469
-#: ../../libraries/entropy/client/interfaces/trigger.py:1486
-#: ../../libraries/entropy/client/interfaces/trigger.py:1514
-#: ../../libraries/entropy/client/interfaces/trigger.py:1527
-#: ../../libraries/entropy/client/interfaces/trigger.py:1540
+#: ../../libraries/entropy/client/interfaces/trigger.py:1388
+#: ../../libraries/entropy/client/interfaces/trigger.py:1402
+#: ../../libraries/entropy/client/interfaces/trigger.py:1447
+#: ../../libraries/entropy/client/interfaces/trigger.py:1464
+#: ../../libraries/entropy/client/interfaces/trigger.py:1492
+#: ../../libraries/entropy/client/interfaces/trigger.py:1505
+#: ../../libraries/entropy/client/interfaces/trigger.py:1518
 msgid "Defaulting to"
 msgstr "Poniendo por defecto"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1422
+#: ../../libraries/entropy/client/interfaces/trigger.py:1400
 msgid "Cannot find grub"
 msgstr "No se pudo encontrar grub"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1465
+#: ../../libraries/entropy/client/interfaces/trigger.py:1443
 msgid "cannot match device"
 msgstr "no se puede hacer coincidir el dispositivo"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1467
+#: ../../libraries/entropy/client/interfaces/trigger.py:1445
 msgid "with a grub one"
 msgstr "con uno de grub"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1483
+#: ../../libraries/entropy/client/interfaces/trigger.py:1461
 msgid "grub translation not supported for"
 msgstr "la traducción de grub no está soportada para"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1485
+#: ../../libraries/entropy/client/interfaces/trigger.py:1463
 msgid "Cannot properly configure grub.conf"
 msgstr "No se pudo configurar grub.conf apropiadamente"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1512
+#: ../../libraries/entropy/client/interfaces/trigger.py:1490
 msgid "cannot match grub device with a Linux one"
 msgstr "no se puede hacer coincidir un dispositivo de grub con uno de linux"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1525
+#: ../../libraries/entropy/client/interfaces/trigger.py:1503
 msgid "cannot find generated device.map"
 msgstr "no se puede encontrar el archivo device.map generado"
 
-#: ../../libraries/entropy/client/interfaces/trigger.py:1538
+#: ../../libraries/entropy/client/interfaces/trigger.py:1516
 msgid "cannot run df /boot"
 msgstr "no se puede ejecutar df /boot"
 
@@ -3447,11 +3439,11 @@ msgid "can't do that on a readonly database"
 msgstr "no se puede hacer eso en una base de datos de solo lectura"
 
 #: ../../libraries/entropy/db.py:671 ../../libraries/entropy/db.py:740
-#: ../../libraries/entropy/db.py:1126 ../../libraries/entropy/db.py:4368
-#: ../../libraries/entropy/db.py:4388 ../../client/text_rescue.py:72
+#: ../../libraries/entropy/db.py:1121 ../../libraries/entropy/db.py:4363
+#: ../../libraries/entropy/db.py:4383 ../../client/text_rescue.py:72
 #: ../../client/text_rescue.py:224 ../../client/text_rescue.py:232
 #: ../../client/text_rescue.py:237 ../../client/text_ui.py:452
-#: ../../client/text_ui.py:1183 ../../client/text_ui.py:1275
+#: ../../client/text_ui.py:1186 ../../client/text_ui.py:1278
 msgid "ATTENTION"
 msgstr "ATENCIÓN"
 
@@ -3471,103 +3463,103 @@ msgstr "forzando la actualización de los metadatos de los paquetes"
 msgid "Updating system database using repository id"
 msgstr "Actualizando la base de datos del sistema usando la id del repositorio"
 
-#: ../../libraries/entropy/db.py:837 ../../libraries/entropy/db.py:1166
+#: ../../libraries/entropy/db.py:835 ../../libraries/entropy/db.py:1161
 msgid "SPM"
 msgstr "Administrador de Paquetes Fuente"
 
-#: ../../libraries/entropy/db.py:838
+#: ../../libraries/entropy/db.py:836
 msgid "Running fixpackages"
 msgstr "Ejecutando fixpackages"
 
-#: ../../libraries/entropy/db.py:839
+#: ../../libraries/entropy/db.py:837
 msgid "it could take a while"
 msgstr "puede tardar un tiempo"
 
-#: ../../libraries/entropy/db.py:861
+#: ../../libraries/entropy/db.py:859
 msgid "ENTROPY"
 msgstr "ENTROPY"
 
-#: ../../libraries/entropy/db.py:862
+#: ../../libraries/entropy/db.py:860
 msgid "action"
 msgstr "acción"
 
-#: ../../libraries/entropy/db.py:887
+#: ../../libraries/entropy/db.py:885
 msgid "Cannot complete quickpkg for atoms"
 msgstr "No se pudo completar quickpkg para los siguientes atoms:"
 
-#: ../../libraries/entropy/db.py:889 ../../libraries/entropy/db.py:1109
+#: ../../libraries/entropy/db.py:887 ../../libraries/entropy/db.py:1104
 msgid "do it manually"
 msgstr "hazlo manualmente"
 
-#: ../../libraries/entropy/db.py:905
+#: ../../libraries/entropy/db.py:903
 msgid "Cannot run SPM cleanup, error"
 msgstr "No se pudo ejecutar la limpieza del Administrador de Paquetes Fuente"
 
-#: ../../libraries/entropy/db.py:956 ../../libraries/entropy/db.py:1035
+#: ../../libraries/entropy/db.py:953 ../../libraries/entropy/db.py:1030
 msgid "INJECT"
 msgstr "INYECCIÓN"
 
-#: ../../libraries/entropy/db.py:958 ../../libraries/entropy/db.py:1037
+#: ../../libraries/entropy/db.py:955 ../../libraries/entropy/db.py:1032
 msgid "has been injected"
 msgstr "ha sido inyectado"
 
-#: ../../libraries/entropy/db.py:959 ../../libraries/entropy/db.py:1038
+#: ../../libraries/entropy/db.py:956 ../../libraries/entropy/db.py:1033
 #, fuzzy
 msgid "quickpkg manually to update embedded db"
 msgstr ""
 "Debes hacerle quickpkg manualmente para actualizar la base de datos "
 "incrustada"
 
-#: ../../libraries/entropy/db.py:960 ../../libraries/entropy/db.py:1039
+#: ../../libraries/entropy/db.py:957 ../../libraries/entropy/db.py:1034
 #, fuzzy
 msgid "Repository database updated anyway"
 msgstr "La base de datos del repositorio será actualizada en cualquier caso"
 
-#: ../../libraries/entropy/db.py:1089
+#: ../../libraries/entropy/db.py:1084
 msgid "repackaging"
 msgstr "reempaquetando"
 
-#: ../../libraries/entropy/db.py:1107
+#: ../../libraries/entropy/db.py:1102
 msgid "Cannot complete quickpkg for atom"
 msgstr "No se pudo completar quickpkg para el atom"
 
-#: ../../libraries/entropy/db.py:1127
+#: ../../libraries/entropy/db.py:1122
 msgid "runTreeUpdatesQuickpkgAction did not run properly"
 msgstr "runTreeUpdatesQuickpkgAction no se ejecutó correctamente"
 
-#: ../../libraries/entropy/db.py:1128
+#: ../../libraries/entropy/db.py:1123
 msgid "Please update packages manually"
 msgstr "Por favor, actualiza los paquetes manualmente"
 
-#: ../../libraries/entropy/db.py:1167
+#: ../../libraries/entropy/db.py:1162
 msgid "Moving old entry"
 msgstr "Moviendo la entrada antigua"
 
-#: ../../libraries/entropy/db.py:3794
+#: ../../libraries/entropy/db.py:3789
 msgid "baseinfo table not found. Either does not exist or corrupted."
 msgstr ""
 "no se ha encontrado la tabla baseinfo. Puede que no exista o que esté "
 "corrupta."
 
-#: ../../libraries/entropy/db.py:3799
+#: ../../libraries/entropy/db.py:3794
 msgid "extrainfo table not found. Either does not exist or corrupted."
 msgstr ""
 "no se ha encontrado la tabla extrainfo. Puede que no exista o que esté "
 "corrupta."
 
-#: ../../libraries/entropy/db.py:3831
+#: ../../libraries/entropy/db.py:3826
 msgid "Syncing current database"
 msgstr "Sincronizando la base de datos actual"
 
-#: ../../libraries/entropy/db.py:3843
+#: ../../libraries/entropy/db.py:3838
 msgid "Removing entry"
 msgstr "Eliminando entrada"
 
-#: ../../libraries/entropy/db.py:3858
+#: ../../libraries/entropy/db.py:3853
 msgid "Adding entry"
 msgstr "Añadiendo entrada"
 
-#: ../../libraries/entropy/db.py:3897
+#: ../../libraries/entropy/db.py:3892
 msgid ""
 "Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as "
 "possible !"
@@ -3575,19 +3567,19 @@ msgstr ""
 "La EAPI del repositorio es mayor que la EAPI de Entropy. ¡ Actualiza Equo y "
 "Entropy lo antes posible !"
 
-#: ../../libraries/entropy/db.py:3915
+#: ../../libraries/entropy/db.py:3910
 msgid "Exporting database table"
 msgstr "Exportando la tabla de la base de datos"
 
-#: ../../libraries/entropy/db.py:3954
+#: ../../libraries/entropy/db.py:3949
 msgid "Database Export completed."
 msgstr "Exportación de la base de datos completada."
 
-#: ../../libraries/entropy/db.py:4369
+#: ../../libraries/entropy/db.py:4364
 msgid "cannot open Spm counter file for"
 msgstr "no se pudo abrir el contador del administrador de paquetes fuente para"
 
-#: ../../libraries/entropy/db.py:4389
+#: ../../libraries/entropy/db.py:4384
 msgid "counter for atom is duplicated, ignoring"
 msgstr "el contador para el atom está duplicado, ignorando"
 
@@ -3612,7 +3604,7 @@ msgstr "Interrumpido"
 msgid "Selected number"
 msgstr "Número seleccionado"
 
-#: ../../libraries/entropy/output.py:615 ../../client/text_ui.py:979
+#: ../../libraries/entropy/output.py:615 ../../client/text_ui.py:982
 msgid "Please select an option"
 msgstr "Selecciona una opción por favor"
 
@@ -3743,75 +3735,75 @@ msgstr "Atención"
 msgid "advisory broken"
 msgstr "Aviso roto"
 
-#: ../../libraries/entropy/security.py:528
-#: ../../libraries/entropy/security.py:537
+#: ../../libraries/entropy/security.py:526
+#: ../../libraries/entropy/security.py:535
+#: ../../libraries/entropy/security.py:564
 #: ../../libraries/entropy/security.py:566
-#: ../../libraries/entropy/security.py:568
-#: ../../libraries/entropy/security.py:589
-#: ../../libraries/entropy/security.py:599
-#: ../../libraries/entropy/security.py:611
-#: ../../libraries/entropy/security.py:625
-#: ../../libraries/entropy/security.py:635
-#: ../../libraries/entropy/security.py:645
-#: ../../libraries/entropy/security.py:655
-#: ../../libraries/entropy/security.py:676
-#: ../../libraries/entropy/security.py:686
+#: ../../libraries/entropy/security.py:587
+#: ../../libraries/entropy/security.py:597
+#: ../../libraries/entropy/security.py:609
+#: ../../libraries/entropy/security.py:623
+#: ../../libraries/entropy/security.py:633
+#: ../../libraries/entropy/security.py:643
+#: ../../libraries/entropy/security.py:653
+#: ../../libraries/entropy/security.py:674
+#: ../../libraries/entropy/security.py:684
 msgid "Security Advisories"
 msgstr "Avisos de seguridad"
 
-#: ../../libraries/entropy/security.py:528
+#: ../../libraries/entropy/security.py:526
 msgid "testing service connection"
 msgstr "comprobando conexión al servicio"
 
-#: ../../libraries/entropy/security.py:537
+#: ../../libraries/entropy/security.py:535
 msgid "getting latest GLSAs"
 msgstr "adquiriendo los últimos GLSAs"
 
-#: ../../libraries/entropy/security.py:566
+#: ../../libraries/entropy/security.py:564
 msgid "updated successfully"
 msgstr "actualizados correctamente"
 
-#: ../../libraries/entropy/security.py:568
+#: ../../libraries/entropy/security.py:566
 msgid "already up to date"
 msgstr "ya estaban actualizados"
 
-#: ../../libraries/entropy/security.py:589
+#: ../../libraries/entropy/security.py:587
 msgid "unable to download the package, sorry"
 msgstr "no se ha podido descargar el paquete"
 
-#: ../../libraries/entropy/security.py:599
+#: ../../libraries/entropy/security.py:597
 msgid "Verifying checksum"
 msgstr "Verificando la comprobación de suma"
 
-#: ../../libraries/entropy/security.py:611
+#: ../../libraries/entropy/security.py:609
 msgid "cannot download the checksum, sorry"
 msgstr "no se pudo descargar la comprobación de suma"
 
-#: ../../libraries/entropy/security.py:625
+#: ../../libraries/entropy/security.py:623
 msgid "cannot open packages, sorry"
 msgstr "no se pudieron abrir los paquetes"
 
-#: ../../libraries/entropy/security.py:635
+#: ../../libraries/entropy/security.py:633
 msgid "cannot read the checksum, sorry"
 msgstr "no se pudo leer la comprobación de suma"
 
-#: ../../libraries/entropy/security.py:645
+#: ../../libraries/entropy/security.py:643
 msgid "digest verification failed, sorry"
 msgstr "ha fallado la verificación de la firma"
 
-#: ../../libraries/entropy/security.py:655
+#: ../../libraries/entropy/security.py:653
 msgid "verification Successful"
 msgstr "verificación correcta"
 
-#: ../../libraries/entropy/security.py:663
+#: ../../libraries/entropy/security.py:661
 msgid "Return status not valid"
 msgstr "Estado de retorno no válido"
 
-#: ../../libraries/entropy/security.py:676
+#: ../../libraries/entropy/security.py:674
 msgid "digest verification failed, try again later"
 msgstr "la verificación de firma ha fallado, inténtalo mas tarde"
 
-#: ../../libraries/entropy/security.py:686
+#: ../../libraries/entropy/security.py:684
 msgid "installing"
 msgstr "instalando"
 
@@ -5267,12 +5259,12 @@ msgstr "No existe un ChangeLog disponible"
 msgid "Inverse Dependencies Search"
 msgstr "Dependencias inversas"
 
-#: ../../client/text_query.py:295 ../../client/text_ui.py:1640
+#: ../../client/text_query.py:295 ../../client/text_ui.py:1643
 msgid "Matched"
 msgstr "Coincidentes"
 
 #: ../../client/text_query.py:304 ../../client/text_query.py:1118
-#: ../../sulfur/src/sulfur/sulfur.glade.h:115
+#: ../../sulfur/src/sulfur/sulfur.glade.h:119
 msgid "Masked"
 msgstr "Enmascarado"
 
@@ -5376,10 +5368,10 @@ msgstr "Espacio total desperdiciado"
 msgid "Removal Search"
 msgstr "Búsqueda de Eliminados"
 
-#: ../../client/text_query.py:633 ../../client/text_ui.py:621
-#: ../../client/text_ui.py:687 ../../client/text_ui.py:1211
-#: ../../client/text_ui.py:1303 ../../server/server_reagent.py:554
-#: ../../server/server_reagent.py:599
+#: ../../client/text_query.py:633 ../../client/text_ui.py:622
+#: ../../client/text_ui.py:691 ../../client/text_ui.py:1214
+#: ../../client/text_ui.py:1306 ../../server/server_reagent.py:553
+#: ../../server/server_reagent.py:597
 msgid "No packages found"
 msgstr "No se han encontrado paquetes"
 
@@ -5393,8 +5385,8 @@ msgstr "Estos son los paquetes que serán añadidos a la cola de eliminación"
 
 #: ../../client/text_query.py:667 ../../client/text_smart.py:110
 #: ../../client/text_smart.py:260 ../../client/text_smart.py:401
-#: ../../client/text_ui.py:606 ../../client/text_ui.py:839
-#: ../../client/text_ui.py:1006 ../../client/text_ui.py:1384
+#: ../../client/text_ui.py:607 ../../client/text_ui.py:842
+#: ../../client/text_ui.py:1009 ../../client/text_ui.py:1387
 msgid "from"
 msgstr "desde"
 
@@ -5471,20 +5463,20 @@ msgid "version"
 msgstr "versión"
 
 #: ../../client/text_query.py:1126 ../../sulfur/src/sulfur/dialogs.py:1035
-#: ../../sulfur/src/sulfur/sulfur.glade.h:98
+#: ../../sulfur/src/sulfur/sulfur.glade.h:102
 msgid "Installed"
 msgstr "Instalado"
 
 #: ../../client/text_query.py:1132 ../../sulfur/src/sulfur/dialogs.py:1048
 #: ../../sulfur/src/sulfur/dialogs.py:1071
-#: ../../sulfur/src/sulfur/sulfur.glade.h:208
+#: ../../sulfur/src/sulfur/sulfur.glade.h:216
 msgid "Slot"
 msgstr "Bloque"
 
 #: ../../client/text_query.py:1139 ../../client/text_ugc.py:559
 #: ../../sulfur/src/sulfur/dialogs.py:1067
 #: ../../sulfur/src/sulfur/dialogs.py:3931
-#: ../../sulfur/src/sulfur/sulfur.glade.h:207
+#: ../../sulfur/src/sulfur/sulfur.glade.h:215
 msgid "Size"
 msgstr "Tamaño"
 
@@ -5555,7 +5547,7 @@ msgstr "Compilado con"
 #: ../../client/text_query.py:1212 ../../client/text_ugc.py:371
 #: ../../client/text_ugc.py:554 ../../sulfur/src/sulfur/dialogs.py:3940
 #: ../../sulfur/src/sulfur/dialogs.py:4298
-#: ../../sulfur/src/sulfur/sulfur.glade.h:103
+#: ../../sulfur/src/sulfur/sulfur.glade.h:107
 msgid "Keywords"
 msgstr "Palabras clave"
 
@@ -5563,7 +5555,7 @@ msgstr "Palabras clave"
 msgid "Created"
 msgstr "Creado"
 
-#: ../../client/text_query.py:1224 ../../client/text_ui.py:1002
+#: ../../client/text_query.py:1224 ../../client/text_ui.py:1005
 #: ../../sulfur/src/sulfur/dialogs.py:6227
 msgid "License"
 msgstr "Licencia"
@@ -5657,7 +5649,7 @@ msgid "Content"
 msgstr "Contenido"
 
 #: ../../client/text_repositories.py:225 ../../server/server_activator.py:162
-#: ../../sulfur/src/sulfur/sulfur.glade.h:107
+#: ../../sulfur/src/sulfur/sulfur.glade.h:111
 msgid "Link"
 msgstr "Enlace"
 
@@ -5671,7 +5663,7 @@ msgstr "Elige una escribiendo su identificador"
 
 #: ../../client/text_repositories.py:286
 #: ../../sulfur/src/sulfur/dialogs.py:2239
-#: ../../sulfur/src/sulfur/sulfur.glade.h:125
+#: ../../sulfur/src/sulfur/sulfur.glade.h:129
 msgid "Notice board"
 msgstr "Tablón de anuncios"
 
@@ -5756,7 +5748,7 @@ msgid "Now checking dependency atoms validity"
 msgstr "Comprobando la validez de los atoms dependencia"
 
 #: ../../client/text_rescue.py:187 ../../client/text_ui.py:406
-#: ../../client/text_ui.py:597
+#: ../../client/text_ui.py:598
 msgid "atom"
 msgstr "atom"
 
@@ -5965,15 +5957,15 @@ msgstr "¿ Continuar añadiendo?"
 msgid "Database update completed"
 msgstr "Actualización de la base de datos completada"
 
-#: ../../client/text_rescue.py:627 ../../server/server_reagent.py:656
+#: ../../client/text_rescue.py:627 ../../server/server_reagent.py:654
 msgid "No backed up databases found"
 msgstr "No se han encontrado bases de datos guardadas"
 
-#: ../../client/text_rescue.py:642 ../../server/server_reagent.py:671
+#: ../../client/text_rescue.py:642 ../../server/server_reagent.py:669
 msgid "Select the database you want to restore"
 msgstr "Elige la base de datos que quieras restaurar"
 
-#: ../../client/text_rescue.py:646 ../../server/server_reagent.py:675
+#: ../../client/text_rescue.py:646 ../../server/server_reagent.py:673
 msgid "Entropy installed packages database restore tool"
 msgstr ""
 "Herramienta de restauración de bases de datos de paquetes instalados de "
@@ -6048,7 +6040,7 @@ msgstr "Acerca del paquete"
 msgid "Exploitable"
 msgstr "Explotable"
 
-#: ../../client/text_security.py:124 ../../sulfur/src/sulfur/sulfur.glade.h:91
+#: ../../client/text_security.py:124 ../../sulfur/src/sulfur/sulfur.glade.h:93
 msgid "Impact"
 msgstr "Impacto"
 
@@ -6057,7 +6049,7 @@ msgid "Impact type"
 msgstr "Tipo de impacto"
 
 #: ../../client/text_security.py:135
-#: ../../sulfur/src/sulfur/sulfur.glade.h:191
+#: ../../sulfur/src/sulfur/sulfur.glade.h:199
 msgid "Revised"
 msgstr "Revisado"
 
@@ -6066,12 +6058,12 @@ msgid "Announced"
 msgstr "Anunciado"
 
 #: ../../client/text_security.py:143
-#: ../../sulfur/src/sulfur/sulfur.glade.h:220
+#: ../../sulfur/src/sulfur/sulfur.glade.h:228
 msgid "Synopsis"
 msgstr "Sinopsis"
 
 #: ../../client/text_security.py:150
-#: ../../sulfur/src/sulfur/sulfur.glade.h:170
+#: ../../sulfur/src/sulfur/sulfur.glade.h:175
 msgid "References"
 msgstr "Referencias"
 
@@ -6092,12 +6084,12 @@ msgid "unaffected versions"
 msgstr "versiones no afectadas"
 
 #: ../../client/text_security.py:176
-#: ../../sulfur/src/sulfur/sulfur.glade.h:247
+#: ../../sulfur/src/sulfur/sulfur.glade.h:263
 msgid "Workaround"
 msgstr "Solución manual"
 
 #: ../../client/text_security.py:180
-#: ../../sulfur/src/sulfur/sulfur.glade.h:187
+#: ../../sulfur/src/sulfur/sulfur.glade.h:195
 msgid "Resolution"
 msgstr "Resolución"
 
@@ -6159,7 +6151,7 @@ msgid "directory does not exist"
 msgstr "directorio no existe"
 
 #: ../../client/text_smart.py:157 ../../client/text_ui.py:448
-#: ../../sulfur/src/sulfur/events.py:402
+#: ../../sulfur/src/sulfur/events.py:403
 msgid "is not a valid Entropy package"
 msgstr "no es un paquete de Entropy válido"
 
@@ -6375,7 +6367,7 @@ msgstr "Escribe la ruta del documento"
 msgid "Document path"
 msgstr "Ruta del documento"
 
-#: ../../client/text_ugc.py:382 ../../sulfur/src/sulfur/sulfur.glade.h:60
+#: ../../client/text_ugc.py:382 ../../sulfur/src/sulfur/sulfur.glade.h:61
 msgid "Document type"
 msgstr "Tipo de documento"
 
@@ -6417,13 +6409,13 @@ msgstr "Comando personalizado"
 
 #: ../../client/text_ui.py:128 ../../client/text_ui.py:141
 #: ../../client/text_ui.py:156 ../../client/text_ui.py:165
-#: ../../client/text_ui.py:172 ../../client/text_ui.py:704
-#: ../../client/text_ui.py:1348 ../../server/server_reagent.py:805
+#: ../../client/text_ui.py:172 ../../client/text_ui.py:708
+#: ../../client/text_ui.py:1351 ../../server/server_reagent.py:803
 msgid "Nothing to do"
 msgstr "Nada que hacer"
 
-#: ../../client/text_ui.py:186 ../../client/text_ui.py:662
-#: ../../client/text_ui.py:1172 ../../client/text_ui.py:1252
+#: ../../client/text_ui.py:186 ../../client/text_ui.py:666
+#: ../../client/text_ui.py:1175 ../../client/text_ui.py:1255
 msgid "Running with"
 msgstr "Ejecutando con"
 
@@ -6444,13 +6436,13 @@ msgid "Packages matching already up to date"
 msgstr "Coincidencias de paquetes ya actualizadas"
 
 #. None or {}
-#: ../../client/text_ui.py:225 ../../client/text_ui.py:944
-#: ../../client/text_ui.py:1435
+#: ../../client/text_ui.py:225 ../../client/text_ui.py:947
+#: ../../client/text_ui.py:1438
 msgid "Nothing to resume"
 msgstr "Nada que continuar"
 
-#: ../../client/text_ui.py:236 ../../client/text_ui.py:957
-#: ../../client/text_ui.py:1443
+#: ../../client/text_ui.py:236 ../../client/text_ui.py:960
+#: ../../client/text_ui.py:1446
 msgid "Resume cache corrupted"
 msgstr "La caché para continuar está corrupta"
 
@@ -6505,19 +6497,19 @@ msgstr ""
 msgid "Unable to switch to branch"
 msgstr ""
 
-#: ../../client/text_ui.py:379 ../../client/text_ui.py:570
+#: ../../client/text_ui.py:379 ../../client/text_ui.py:571
 msgid "Every package matching"
 msgstr "Todos los paquetes coincidentes"
 
-#: ../../client/text_ui.py:381 ../../client/text_ui.py:572
+#: ../../client/text_ui.py:381 ../../client/text_ui.py:573
 msgid "is masked"
 msgstr "está enmascarado"
 
-#: ../../client/text_ui.py:402 ../../client/text_ui.py:593
+#: ../../client/text_ui.py:402 ../../client/text_ui.py:594
 msgid "matching"
 msgstr "coincidente con"
 
-#: ../../client/text_ui.py:404 ../../client/text_ui.py:595
+#: ../../client/text_ui.py:404 ../../client/text_ui.py:596
 msgid "is broken"
 msgstr "está roto"
 
@@ -6525,22 +6517,22 @@ msgstr "está roto"
 msgid "in repositories"
 msgstr "en los repositorios"
 
-#: ../../client/text_ui.py:424 ../../client/text_ui.py:1195
-#: ../../client/text_ui.py:1287
+#: ../../client/text_ui.py:424 ../../client/text_ui.py:1198
+#: ../../client/text_ui.py:1290
 msgid "When you wrote"
 msgstr "Cuando escribiste"
 
-#: ../../client/text_ui.py:426 ../../client/text_ui.py:1197
-#: ../../client/text_ui.py:1289
+#: ../../client/text_ui.py:426 ../../client/text_ui.py:1200
+#: ../../client/text_ui.py:1292
 msgid "You Meant(tm)"
 msgstr "¿en realidad quisiste decir"
 
-#: ../../client/text_ui.py:427 ../../client/text_ui.py:1198
-#: ../../client/text_ui.py:1290
+#: ../../client/text_ui.py:427 ../../client/text_ui.py:1201
+#: ../../client/text_ui.py:1293
 msgid "one of these below?"
 msgstr "alguno de los siguientes paquetes?"
 
-#: ../../client/text_ui.py:450 ../../sulfur/src/sulfur/events.py:404
+#: ../../client/text_ui.py:450 ../../sulfur/src/sulfur/events.py:405
 msgid "is not compiled with the same architecture of the system"
 msgstr "no está compilado con la misma arquitectura que el sistema"
 
@@ -6549,11 +6541,11 @@ msgid "Skipped"
 msgstr "Omitido"
 
 #. now print the selected packages
-#: ../../client/text_ui.py:468 ../../client/text_ui.py:1310
+#: ../../client/text_ui.py:468 ../../client/text_ui.py:1313
 msgid "These are the chosen packages"
 msgstr "Estos son los paquetes elegidos"
 
-#: ../../client/text_ui.py:492 ../../client/text_ui.py:782
+#: ../../client/text_ui.py:492 ../../client/text_ui.py:786
 msgid "Not available"
 msgstr "No disponible"
 
@@ -6566,10 +6558,11 @@ msgid "Switch repo"
 msgstr "Cambiar repositorio"
 
 #: ../../client/text_ui.py:530 ../../client/text_ui.py:532
+#: ../../sulfur/src/sulfur/sulfur.glade.h:177
 msgid "Reinstall"
 msgstr "Reinstalar"
 
-#: ../../client/text_ui.py:535
+#: ../../client/text_ui.py:535 ../../sulfur/src/sulfur/sulfur.glade.h:94
 msgid "Install"
 msgstr "Instalar"
 
@@ -6585,8 +6578,8 @@ msgstr "Desactualizar"
 msgid "Action"
 msgstr "Acción"
 
-#: ../../client/text_ui.py:543 ../../client/text_ui.py:1228
-#: ../../client/text_ui.py:1345
+#: ../../client/text_ui.py:543 ../../client/text_ui.py:1231
+#: ../../client/text_ui.py:1348
 msgid "Packages involved"
 msgstr "Paquetes involucrados"
 
@@ -6594,180 +6587,177 @@ msgstr "Paquetes involucrados"
 msgid "Would you like to continue with dependencies calculation ?"
 msgstr "¿ Quieres seguir con el cálculo de dependencias ?"
 
-#: ../../client/text_ui.py:558
+#: ../../client/text_ui.py:559
 msgid "Calculating dependencies"
 msgstr "Calculando dependencias"
 
-#: ../../client/text_ui.py:562
+#: ../../client/text_ui.py:563
 msgid "Cannot find needed dependencies"
 msgstr "No se pudieron encontrar las dependencias necesarias"
 
-#: ../../client/text_ui.py:601
+#: ../../client/text_ui.py:602
 msgid "Not found"
 msgstr "No encontrado"
 
-#: ../../client/text_ui.py:604
+#: ../../client/text_ui.py:605
 msgid "Probably needed by"
 msgstr "Probablemente necesitado por"
 
-#: ../../client/text_ui.py:646
+#: ../../client/text_ui.py:648
 msgid "sources fetch"
 msgstr "descarga de código fuente"
 
-#: ../../client/text_ui.py:721 ../../client/text_ui.py:827
-msgid "These are the packages that would be"
-msgstr "Estos son los paquetes que serán"
+#: ../../client/text_ui.py:725
+#, fuzzy
+msgid "These are the packages that would be installed"
+msgstr "Estos son los paquetes que serán marcados"
 
-#: ../../client/text_ui.py:721
-msgid "merged"
-msgstr "unidos"
+#: ../../client/text_ui.py:831 ../../sulfur/src/sulfur/packages.py:555
+msgid "These are the packages that would be removed"
+msgstr "Paquetes que serán eliminados"
 
-#: ../../client/text_ui.py:828
-msgid "removed"
-msgstr "eliminados"
-
-#: ../../client/text_ui.py:829
+#: ../../client/text_ui.py:832
 msgid "conflicting/substituted"
 msgstr "contradictorios/sustituidos"
 
 #. show download info
-#: ../../client/text_ui.py:844
+#: ../../client/text_ui.py:847
 msgid "Packages needing to be installed/updated/downgraded"
 msgstr "Paquetes que necesitan ser instalados/actualizados/desactualizados"
 
-#: ../../client/text_ui.py:846
+#: ../../client/text_ui.py:849
 msgid "Packages needing to be removed"
 msgstr "Paquetes que necesitan ser eliminados"
 
-#: ../../client/text_ui.py:850
+#: ../../client/text_ui.py:853
 msgid "Packages needing to be installed"
 msgstr "Paquetes que necesitan ser instalados"
 
-#: ../../client/text_ui.py:855
+#: ../../client/text_ui.py:858
 msgid "Packages needing to be reinstalled"
 msgstr "Paquetes que necesitan ser reinstalados"
 
-#: ../../client/text_ui.py:860
+#: ../../client/text_ui.py:863
 msgid "Packages needing to be updated"
 msgstr "Paquetes que necesitan ser actualizados"
 
-#: ../../client/text_ui.py:865
+#: ../../client/text_ui.py:868
 msgid "Packages needing to be downgraded"
 msgstr "Paquetes que necesitan ser desactualizados"
 
-#: ../../client/text_ui.py:875
+#: ../../client/text_ui.py:878
 msgid "Download size"
 msgstr "Tamaño de la descarga"
 
-#: ../../client/text_ui.py:881
+#: ../../client/text_ui.py:884
 msgid "Used disk space"
 msgstr "Espacio en disco usado"
 
-#: ../../client/text_ui.py:883 ../../sulfur/src/sulfur/packages.py:476
+#: ../../client/text_ui.py:886 ../../sulfur/src/sulfur/packages.py:476
 msgid "Freed disk space"
 msgstr "Espacio liberado en disco"
 
-#: ../../client/text_ui.py:895
+#: ../../client/text_ui.py:898
 msgid "You need at least"
 msgstr "Necesitas al menos"
 
-#: ../../client/text_ui.py:897
+#: ../../client/text_ui.py:900
 msgid "of free space"
 msgstr "de espacio libre"
 
-#: ../../client/text_ui.py:905
+#: ../../client/text_ui.py:908
 msgid "You don't have enough space for the installation. Free some space into"
 msgstr ""
 "No dispones de suficiente espacio para la instalación. Libera algo de "
 "espacio en"
 
-#: ../../client/text_ui.py:915
+#: ../../client/text_ui.py:918
 msgid "Would you like to execute the queue ?"
 msgstr "¿ Deseas ejecutar la cola ?"
 
-#: ../../client/text_ui.py:955 ../../client/text_ui.py:1441
+#: ../../client/text_ui.py:958 ../../client/text_ui.py:1444
 msgid "Resuming previous operations"
 msgstr "Continuando las operaciones previas"
 
-#: ../../client/text_ui.py:980
+#: ../../client/text_ui.py:983
 msgid "Read the license"
 msgstr "Leer la licencia"
 
-#: ../../client/text_ui.py:981
+#: ../../client/text_ui.py:984
 msgid "Accept the license (I've read it)"
 msgstr "Aceptar la licencia (la he leído)"
 
-#: ../../client/text_ui.py:982
+#: ../../client/text_ui.py:985
 msgid "Accept the license and don't ask anymore (I've read it)"
 msgstr "Aceptar la licencia y no preguntar nunca más (la he leído)"
 
-#: ../../client/text_ui.py:983
+#: ../../client/text_ui.py:986
 msgid "Quit"
 msgstr "Salir"
 
 #. wait user interaction
-#: ../../client/text_ui.py:985
+#: ../../client/text_ui.py:988
 msgid "Your choice (type a number and press enter)"
 msgstr "Tu elección (escribe un número y presiona enter)"
 
-#: ../../client/text_ui.py:998
+#: ../../client/text_ui.py:1001
 msgid "You need to accept the licenses below"
 msgstr "Debes aceptar las siguientes licencias"
 
-#: ../../client/text_ui.py:1002
+#: ../../client/text_ui.py:1005
 msgid "needed by"
 msgstr "requerida por"
 
-#: ../../client/text_ui.py:1022
+#: ../../client/text_ui.py:1025
 msgid "No file viewer"
 msgstr "No hay visor de archivos"
 
-#: ../../client/text_ui.py:1022
+#: ../../client/text_ui.py:1025
 msgid "License saved into"
 msgstr "La licencia ha sido guardada en"
 
-#: ../../client/text_ui.py:1063 ../../client/text_ui.py:1088
+#: ../../client/text_ui.py:1066 ../../client/text_ui.py:1091
 msgid "fetch"
 msgstr "descargando"
 
-#: ../../client/text_ui.py:1113
+#: ../../client/text_ui.py:1116
 msgid "Download complete"
 msgstr "Descarga completada"
 
-#: ../../client/text_ui.py:1130
+#: ../../client/text_ui.py:1133
 msgid "install"
 msgstr "instalando"
 
-#: ../../client/text_ui.py:1159
+#: ../../client/text_ui.py:1162
 msgid "Installation complete"
 msgstr "Instalación completada"
 
-#: ../../client/text_ui.py:1185 ../../client/text_ui.py:1277
+#: ../../client/text_ui.py:1188 ../../client/text_ui.py:1280
 msgid "is not installed"
 msgstr "no está instalado"
 
-#: ../../client/text_ui.py:1224 ../../client/text_ui.py:1341
+#: ../../client/text_ui.py:1227 ../../client/text_ui.py:1344
 msgid "Installed from"
 msgstr "Instalado desde"
 
-#: ../../client/text_ui.py:1231
+#: ../../client/text_ui.py:1234
 msgid "Would you like to configure them now ?"
 msgstr "¿ Quieres continuar con la configuración ?"
 
 #. every package matching app-foo is masked
-#: ../../client/text_ui.py:1329
+#: ../../client/text_ui.py:1332
 msgid "vital package"
 msgstr "paquete vital"
 
-#: ../../client/text_ui.py:1330
+#: ../../client/text_ui.py:1333
 msgid "Removal forbidden"
 msgstr "Eliminación prohibida"
 
-#: ../../client/text_ui.py:1340
+#: ../../client/text_ui.py:1343
 msgid "Disk size"
 msgstr "Tamaño ocupado en disco"
 
-#: ../../client/text_ui.py:1353
+#: ../../client/text_ui.py:1356
 msgid ""
 "Would you like to look for packages that can be removed along with the "
 "selected above ?"
@@ -6775,69 +6765,69 @@ msgstr ""
 "¿ Quieres buscar paquetes que puedan ser eliminados junto con los ya "
 "seleccionados?"
 
-#: ../../client/text_ui.py:1356 ../../server/server_reagent.py:374
+#: ../../client/text_ui.py:1359 ../../server/server_reagent.py:374
 msgid "Would you like to remove them now ?"
 msgstr "¿ Deseas eliminarlos ahora ?"
 
-#: ../../client/text_ui.py:1372
+#: ../../client/text_ui.py:1375
 msgid "This is the new removal queue"
 msgstr "Esta es la nueva cola de eliminación"
 
-#: ../../client/text_ui.py:1397
+#: ../../client/text_ui.py:1400
 msgid "Would you like to proceed ?"
 msgstr "¿ Quieres continuar ?"
 
-#: ../../client/text_ui.py:1399
+#: ../../client/text_ui.py:1402
 msgid "Would you like to proceed with a selective removal ?"
 msgstr "¿ Quieres continuar con una eliminación selectiva?"
 
-#: ../../client/text_ui.py:1406
+#: ../../client/text_ui.py:1409
 msgid "Would you like to skip this step then ?"
 msgstr "¿ Entonces, quieres saltarte este paso ?"
 
-#: ../../client/text_ui.py:1411
+#: ../../client/text_ui.py:1414
 msgid "Starting removal in"
 msgstr "Empezando la eliminación en"
 
-#: ../../client/text_ui.py:1475
+#: ../../client/text_ui.py:1478
 msgid "Remove this one ?"
 msgstr "¿ Eliminar este ?"
 
-#: ../../client/text_ui.py:1511
+#: ../../client/text_ui.py:1514
 msgid "All done"
 msgstr "Todo está hecho"
 
-#: ../../client/text_ui.py:1517
+#: ../../client/text_ui.py:1520
 msgid "Running unused packages test, pay attention, there are false positives"
 msgstr ""
 "Ejecutando el test de paquetes sin usar. Presta atención, hay falsos "
 "positivos"
 
-#: ../../client/text_ui.py:1540
+#: ../../client/text_ui.py:1543
 msgid "Running dependency test"
 msgstr "Ejecutando test de dependencias"
 
-#: ../../client/text_ui.py:1587
+#: ../../client/text_ui.py:1590
 msgid "Would you like to install the available packages ?"
 msgstr "¿ Quieres instalar los paquetes disponibles?"
 
-#: ../../client/text_ui.py:1592 ../../client/text_ui.py:1669
+#: ../../client/text_ui.py:1595 ../../client/text_ui.py:1672
 msgid "Installing available packages in"
 msgstr "Instalando los paquetes disponibles en"
 
-#: ../../client/text_ui.py:1593 ../../client/text_ui.py:1670
+#: ../../client/text_ui.py:1596 ../../client/text_ui.py:1673
 msgid "10 seconds"
 msgstr "10 segundos"
 
-#: ../../client/text_ui.py:1634
+#: ../../client/text_ui.py:1637
 msgid "Libraries/Executables statistics"
 msgstr "Estadísticas de las Bibliotecas/Ejecutables"
 
-#: ../../client/text_ui.py:1636
+#: ../../client/text_ui.py:1639
 msgid "Not matched"
 msgstr "No coincidentes"
 
-#: ../../client/text_ui.py:1663
+#: ../../client/text_ui.py:1666
 msgid "Would you like to install them ?"
 msgstr "¿Desea instalarlos?"
 
@@ -7078,7 +7068,7 @@ msgstr "Transformando desde la base de datos"
 msgid "Database transform complete"
 msgstr "Transformación de la base de datos completada"
 
-#: ../../server/server_reagent.py:364 ../../server/server_reagent.py:557
+#: ../../server/server_reagent.py:364 ../../server/server_reagent.py:556
 msgid "These are the packages that would be removed from the database"
 msgstr "Estos son los paquetes que serán eliminados de la base de datos"
 
@@ -7155,33 +7145,33 @@ msgstr "Estos son los paquetes que serán marcados"
 msgid "Matching packages to remove"
 msgstr "Buscando los paquetes para eliminar"
 
-#: ../../server/server_reagent.py:568 ../../server/server_reagent.py:613
+#: ../../server/server_reagent.py:567 ../../server/server_reagent.py:611
 msgid "Removing selected packages"
 msgstr "Eliminando los paquetes seleccionados"
 
-#: ../../server/server_reagent.py:570 ../../server/server_reagent.py:617
+#: ../../server/server_reagent.py:569 ../../server/server_reagent.py:615
 msgid "Packages removed. To remove binary packages, run activator."
 msgstr ""
 "Paquetes eliminados. Para eliminar paquetes binarios, ejecuta el activador."
 
-#: ../../server/server_reagent.py:576
+#: ../../server/server_reagent.py:575
 msgid "Searching injected packages to remove"
 msgstr "Buscando paquetes inyectados para eliminar"
 
-#: ../../server/server_reagent.py:602
+#: ../../server/server_reagent.py:600
 msgid "These are the injected packages pulled in for removal"
 msgstr "Estos son los paquetes inyectados puestos para eliminar"
 
-#: ../../server/server_reagent.py:635
+#: ../../server/server_reagent.py:633
 msgid "Bumping Repository database"
 msgstr "Sacudiendo la base de datos del repositorio"
 
-#: ../../server/server_reagent.py:758
+#: ../../server/server_reagent.py:756
 #, fuzzy
 msgid "No package sets found"
 msgstr "[set]No se han encontrado paquetes"
 
-#: ../../server/server_reagent.py:768
+#: ../../server/server_reagent.py:766
 #, fuzzy
 msgid "package set not found"
 msgstr "[set]No se han encontrado paquetes"
@@ -7265,7 +7255,7 @@ msgid "Regenerate Cache"
 msgstr "Regenerar caché"
 
 #: ../../sulfur/src/sulfur/dialogs.py:279
-#: ../../sulfur/src/sulfur/sulfur.glade.h:184
+#: ../../sulfur/src/sulfur/sulfur.glade.h:192
 msgid "Repositories Notice Board"
 msgstr "Tablón de Anuncios de los Repositorios"
 
@@ -7289,13 +7279,13 @@ msgstr "Nombre de la conexión"
 
 #: ../../sulfur/src/sulfur/dialogs.py:404
 #: ../../sulfur/src/sulfur/dialogs.py:467
-#: ../../sulfur/src/sulfur/sulfur.glade.h:87
+#: ../../sulfur/src/sulfur/sulfur.glade.h:89
 msgid "Hostname"
 msgstr "Nombre de Host"
 
 #: ../../sulfur/src/sulfur/dialogs.py:405
 #: ../../sulfur/src/sulfur/dialogs.py:468
-#: ../../sulfur/src/sulfur/sulfur.glade.h:150
+#: ../../sulfur/src/sulfur/sulfur.glade.h:154
 msgid "Port"
 msgstr "Puerto"
 
@@ -7361,7 +7351,7 @@ msgid "Add USE"
 msgstr "Añadir USE"
 
 #: ../../sulfur/src/sulfur/dialogs.py:787
-#: ../../sulfur/src/sulfur/sulfur.glade.h:176
+#: ../../sulfur/src/sulfur/sulfur.glade.h:184
 msgid "Remove USE"
 msgstr "Eliminar USE"
 
@@ -7375,11 +7365,12 @@ msgid "Add"
 msgstr "Añadir"
 
 #: ../../sulfur/src/sulfur/dialogs.py:804
+#: ../../sulfur/src/sulfur/sulfur.glade.h:181
 msgid "Remove"
 msgstr "Eliminar"
 
 #: ../../sulfur/src/sulfur/dialogs.py:809
-#: ../../sulfur/src/sulfur/sulfur.glade.h:171
+#: ../../sulfur/src/sulfur/sulfur.glade.h:176
 msgid "Refresh"
 msgstr "Actualizar"
 
@@ -7657,7 +7648,7 @@ msgid "Insert output parameters"
 msgstr "Escribe los parámetros de salida"
 
 #: ../../sulfur/src/sulfur/dialogs.py:3335
-#: ../../sulfur/src/sulfur/sulfur.glade.h:76
+#: ../../sulfur/src/sulfur/sulfur.glade.h:78
 msgid "Extended note"
 msgstr "Nota extendida"
 
@@ -7727,7 +7718,7 @@ msgid "Expand to browse"
 msgstr "Expandir para navegar"
 
 #: ../../sulfur/src/sulfur/dialogs.py:3929
-#: ../../sulfur/src/sulfur/sulfur.glade.h:88
+#: ../../sulfur/src/sulfur/sulfur.glade.h:90
 msgid "Identifier"
 msgstr "Identificador"
 
@@ -7755,7 +7746,7 @@ msgid "License name"
 msgstr "Licencia"
 
 #: ../../sulfur/src/sulfur/dialogs.py:4290
-#: ../../sulfur/src/sulfur/sulfur.glade.h:119
+#: ../../sulfur/src/sulfur/sulfur.glade.h:123
 msgid "Mirrors"
 msgstr "Mirrors"
 
@@ -8040,127 +8031,127 @@ msgstr "Debes presionar"
 msgid "or the"
 msgstr "o"
 
-#: ../../sulfur/src/sulfur/events.py:281
+#: ../../sulfur/src/sulfur/events.py:282
 msgid "Are you sure ?"
 msgstr "¿ Estás seguro ?"
 
-#: ../../sulfur/src/sulfur/events.py:294
+#: ../../sulfur/src/sulfur/events.py:295
 msgid "Error saving parameter"
 msgstr "Error guardando el parámetro"
 
-#: ../../sulfur/src/sulfur/events.py:295
+#: ../../sulfur/src/sulfur/events.py:296
 #: ../../sulfur/src/sulfur/__init__.py:784
 msgid "An issue occured while saving a preference"
 msgstr "Ocurrió un problema al intentar guardar una preferencia"
 
-#: ../../sulfur/src/sulfur/events.py:296
+#: ../../sulfur/src/sulfur/events.py:297
 #: ../../sulfur/src/sulfur/__init__.py:757
 #: ../../sulfur/src/sulfur/__init__.py:785
 msgid "Parameter"
 msgstr "Parámetro"
 
-#: ../../sulfur/src/sulfur/events.py:296
+#: ../../sulfur/src/sulfur/events.py:297
 msgid "not saved"
 msgstr "no guardado"
 
-#: ../../sulfur/src/sulfur/events.py:309 ../../sulfur/src/sulfur/events.py:315
-#: ../../sulfur/src/sulfur/events.py:321 ../../sulfur/src/sulfur/events.py:345
-#: ../../sulfur/src/sulfur/events.py:356 ../../sulfur/src/sulfur/events.py:367
+#: ../../sulfur/src/sulfur/events.py:310 ../../sulfur/src/sulfur/events.py:316
+#: ../../sulfur/src/sulfur/events.py:322 ../../sulfur/src/sulfur/events.py:346
+#: ../../sulfur/src/sulfur/events.py:357 ../../sulfur/src/sulfur/events.py:368
 msgid "New"
 msgstr "Nuevo"
 
-#: ../../sulfur/src/sulfur/events.py:309 ../../sulfur/src/sulfur/events.py:315
-#: ../../sulfur/src/sulfur/events.py:321
+#: ../../sulfur/src/sulfur/events.py:310 ../../sulfur/src/sulfur/events.py:316
+#: ../../sulfur/src/sulfur/events.py:322
 msgid "Please insert a new path"
 msgstr "Inserta una nueva ruta por favor"
 
-#: ../../sulfur/src/sulfur/events.py:346 ../../sulfur/src/sulfur/events.py:357
-#: ../../sulfur/src/sulfur/events.py:368
+#: ../../sulfur/src/sulfur/events.py:347 ../../sulfur/src/sulfur/events.py:358
+#: ../../sulfur/src/sulfur/events.py:369
 msgid "Please edit the selected path"
 msgstr "Edita la ruta seleccionada por favor"
 
-#: ../../sulfur/src/sulfur/events.py:388
+#: ../../sulfur/src/sulfur/events.py:389
 msgid "You have chosen to install this package"
 msgstr "Has elegido instalar este paquete"
 
-#: ../../sulfur/src/sulfur/events.py:390
+#: ../../sulfur/src/sulfur/events.py:391
 msgid "Are you supa sure?"
 msgstr "¿Estás completamente seguro?"
 
-#: ../../sulfur/src/sulfur/events.py:408
+#: ../../sulfur/src/sulfur/events.py:409
 msgid "Cannot install"
 msgstr "No se pudo instalar"
 
-#: ../../sulfur/src/sulfur/events.py:521
+#: ../../sulfur/src/sulfur/events.py:522
 msgid "Please select at least one repository"
 msgstr "Selecciona al menos un repositorio por favor"
 
 #. Check there are any packages in the queue
-#: ../../sulfur/src/sulfur/events.py:557
+#: ../../sulfur/src/sulfur/events.py:558
 msgid "No packages in queue"
 msgstr "No hay paquetes en la cola"
 
-#: ../../sulfur/src/sulfur/events.py:607
+#: ../../sulfur/src/sulfur/events.py:608
 msgid "Queue is too old. Cannot load."
 msgstr "No se puede cargar la cola porque es muy antigua."
 
-#: ../../sulfur/src/sulfur/events.py:649
+#: ../../sulfur/src/sulfur/events.py:650
 #, fuzzy
 msgid "license text"
 msgstr "Texto del anuncio"
 
-#: ../../sulfur/src/sulfur/events.py:676
+#: ../../sulfur/src/sulfur/events.py:677
 msgid ""
 "You have chosen to interrupt the processing. Are you sure you want to do it ?"
 msgstr "Has elegido interrumpir el proceso. ¿Estás seguro?"
 
-#: ../../sulfur/src/sulfur/events.py:746
+#: ../../sulfur/src/sulfur/events.py:747
 msgid "Cleaning UGC cache of"
 msgstr "Eliminando la caché UGC de"
 
-#: ../../sulfur/src/sulfur/events.py:747
+#: ../../sulfur/src/sulfur/events.py:748
 msgid "UGC cache cleared"
 msgstr "Caché UGC eliminada"
 
-#: ../../sulfur/src/sulfur/events.py:760
+#: ../../sulfur/src/sulfur/events.py:761
 msgid "UGC credentials cleared"
 msgstr "Credenciales UGC eliminadas"
 
-#: ../../sulfur/src/sulfur/events.py:789
+#: ../../sulfur/src/sulfur/events.py:790
 #, fuzzy
 msgid "Package Set name"
 msgstr "[set]Nombre del Set de Paquetes"
 
-#: ../../sulfur/src/sulfur/events.py:790
+#: ../../sulfur/src/sulfur/events.py:791
 #, fuzzy
 msgid "Package atoms"
 msgstr "Nombre del paquete"
 
-#: ../../sulfur/src/sulfur/events.py:794
+#: ../../sulfur/src/sulfur/events.py:795
 #, fuzzy
 msgid "Choose what Package Set you want to add"
 msgstr "[set]Elige el tipo de lista que quieras ver"
 
-#: ../../sulfur/src/sulfur/events.py:823
+#: ../../sulfur/src/sulfur/events.py:824
 #, fuzzy
 msgid "Removable Package Set"
 msgstr "[set]Eliminar el Set de Paquetes seleccionado"
 
-#: ../../sulfur/src/sulfur/events.py:828
+#: ../../sulfur/src/sulfur/events.py:829
 #, fuzzy
 msgid "Choose what Package Set you want to remove"
 msgstr "[set]Elige la que quieras eliminar"
 
-#: ../../sulfur/src/sulfur/events.py:850
+#: ../../sulfur/src/sulfur/events.py:851
 msgid "No missing dependencies found."
 msgstr "No se han encontrado dependencias perdidas."
 
-#: ../../sulfur/src/sulfur/events.py:885
+#: ../../sulfur/src/sulfur/events.py:886
 msgid "Missing dependencies found, but none of them are on the repositories."
 msgstr ""
 "Se han encontrado dependencias perdidas pero ninguna se encuentra disponible."
 
-#: ../../sulfur/src/sulfur/events.py:894
+#: ../../sulfur/src/sulfur/events.py:895
 msgid ""
 "Some missing dependencies have not been matched, others are going to be "
 "added to the queue."
@@ -8168,20 +8159,20 @@ msgstr ""
 "Algunas dependencias perdidas no se han podido hacer coincidir; otras se "
 "añadirán a la cola."
 
-#: ../../sulfur/src/sulfur/events.py:897
+#: ../../sulfur/src/sulfur/events.py:898
 msgid "All the missing dependencies are going to be added to the queue"
 msgstr "Todas las dependencias perdidas serán añadidas a la cola"
 
-#: ../../sulfur/src/sulfur/events.py:923
+#: ../../sulfur/src/sulfur/events.py:924
 #: ../../sulfur/src/sulfur/__init__.py:1609
 msgid "Aborting queue tasks."
 msgstr "Cancelando las tareas en cola."
 
-#: ../../sulfur/src/sulfur/events.py:953
+#: ../../sulfur/src/sulfur/events.py:954
 msgid "Libraries test aborted"
 msgstr "Test de comprobación de bibliotecas abortado"
 
-#: ../../sulfur/src/sulfur/events.py:962
+#: ../../sulfur/src/sulfur/events.py:963
 msgid ""
 "Some broken packages have not been matched, others are going to be added to "
 "the queue."
@@ -8189,7 +8180,7 @@ msgstr ""
 "Algunos paquetes rotos no se han podido hacer coincidir; otros se añadirán a "
 "la cola."
 
-#: ../../sulfur/src/sulfur/events.py:965
+#: ../../sulfur/src/sulfur/events.py:966
 msgid "All the broken packages are going to be added to the queue"
 msgstr "Todos los paquetes rotos serán añadidos a la cola"
 
@@ -8291,7 +8282,7 @@ msgid "Show Queued Packages"
 msgstr "Mostrar Paquetes en cola"
 
 #: ../../sulfur/src/sulfur/__init__.py:570
-#: ../../sulfur/src/sulfur/sulfur.glade.h:151
+#: ../../sulfur/src/sulfur/sulfur.glade.h:155
 msgid "Preferences"
 msgstr "Preferencias"
 
@@ -8527,10 +8518,6 @@ msgstr "Espacio liberado"
 msgid "Needed space"
 msgstr "Espacio requerido"
 
-#: ../../sulfur/src/sulfur/packages.py:555
-msgid "These are the packages that would be removed"
-msgstr "Paquetes que serán eliminados"
-
 #: ../../sulfur/src/sulfur/packages.py:825
 msgid "Set from"
 msgstr "Set procedente de"
@@ -8596,7 +8583,7 @@ msgid "There are incomplete package sets, continue at your own risk"
 msgstr "[set]Estos son los paquetes que serán marcados"
 
 #: ../../sulfur/src/sulfur/views.py:1576
-#: ../../sulfur/src/sulfur/sulfur.glade.h:143
+#: ../../sulfur/src/sulfur/sulfur.glade.h:147
 msgid "Packages"
 msgstr "Paquetes"
 
@@ -8662,12 +8649,13 @@ msgid "Active"
 msgstr "Activado"
 
 #: ../../sulfur/src/sulfur/views.py:1952
+#: ../../sulfur/src/sulfur/sulfur.glade.h:254
 msgid "Update"
 msgstr "Actualizar"
 
 #. Setup revision column
 #: ../../sulfur/src/sulfur/views.py:1960
-#: ../../sulfur/src/sulfur/sulfur.glade.h:192
+#: ../../sulfur/src/sulfur/sulfur.glade.h:200
 msgid "Revision"
 msgstr "Revisión"
 
@@ -9037,6 +9025,10 @@ msgid "Dependencies test"
 msgstr "Test de dependencias"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:57
+msgid "Disable"
+msgstr "Deshabilitado"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:58
 msgid ""
 "Disabled\n"
 "Removal only\n"
@@ -9046,655 +9038,699 @@ msgstr ""
 "Sólo eliminar\n"
 "Instalar+Eliminar"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:61
+#: ../../sulfur/src/sulfur/sulfur.glade.h:62
 msgid "Done"
 msgstr "Hecho"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:62
+#: ../../sulfur/src/sulfur/sulfur.glade.h:63
 msgid "Download Path"
 msgstr "Ruta de descarga"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:63
+#: ../../sulfur/src/sulfur/sulfur.glade.h:64
 msgid "Download only"
 msgstr "Sólo descargar"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:64
+#: ../../sulfur/src/sulfur/sulfur.glade.h:65
 msgid "Download source code"
 msgstr "Descargar el código fuente"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:65
+#: ../../sulfur/src/sulfur/sulfur.glade.h:66
 msgid "Download speed limit"
 msgstr "Velocidad límite de descarga"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:66
+#: ../../sulfur/src/sulfur/sulfur.glade.h:67
+msgid "Enable"
+msgstr "Habilitar"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:68
 msgid "Enable _all"
 msgstr "Habilitar _todos"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:67
+#: ../../sulfur/src/sulfur/sulfur.glade.h:69
 msgid "Entropy API"
 msgstr "API de Entropy"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:68
+#: ../../sulfur/src/sulfur/sulfur.glade.h:70
 msgid "Entropy Package Manager"
 msgstr "Administrador de Paquetes de Entropy"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:69
+#: ../../sulfur/src/sulfur/sulfur.glade.h:71
 msgid "Entropy Repository Manager"
 msgstr "Administrador de Repositorios de Entropy"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:70
+#: ../../sulfur/src/sulfur/sulfur.glade.h:72
 msgid "Entropy Service Connection Manager"
 msgstr "Administrador de Conexión del Servicio Entropy"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:71
+#: ../../sulfur/src/sulfur/sulfur.glade.h:73
 msgid "Entropy can keep a backup of your updated configuration files"
 msgstr ""
 "Entropy puede mantener una copia de seguridad de tus archivos de "
 "configuración actualizados"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:73
+#: ../../sulfur/src/sulfur/sulfur.glade.h:75
 msgid "Error message"
 msgstr "Mensaje de error"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:74
+#: ../../sulfur/src/sulfur/sulfur.glade.h:76
 msgid "Errored at"
 msgstr "Erróneo en"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:75
+#: ../../sulfur/src/sulfur/sulfur.glade.h:77
 msgid "Example: http://proxy:1234"
 msgstr "Ejemplo: http://proxy:1234"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:77
+#: ../../sulfur/src/sulfur/sulfur.glade.h:79
 msgid "External Trigger"
 msgstr "Activador externo"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:78
+#: ../../sulfur/src/sulfur/sulfur.glade.h:80
 msgid "FTP Proxy"
 msgstr "Proxy FTP"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:79
+#: ../../sulfur/src/sulfur/sulfur.glade.h:81
 msgid "General"
 msgstr "General"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:80
+#: ../../sulfur/src/sulfur/sulfur.glade.h:82
 msgid "Generic title 1"
 msgstr "Título genérico 1"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:81
+#: ../../sulfur/src/sulfur/sulfur.glade.h:83
 msgid "Generic title 2"
 msgstr "Título genérico 2"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:82
+#: ../../sulfur/src/sulfur/sulfur.glade.h:84
 #, fuzzy
 msgid "Get Spm environment information"
 msgstr "[comRep]Obtener la información del entorno del adm. de paq. fuente"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:83
+#: ../../sulfur/src/sulfur/sulfur.glade.h:85
 #, fuzzy
 msgid "Get output"
 msgstr "[comRep]Obtener la salida"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:84
+#: ../../sulfur/src/sulfur/sulfur.glade.h:86
 msgid "Get package information"
 msgstr "Obtener información del paquete"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:85
+#: ../../sulfur/src/sulfur/sulfur.glade.h:87
 #, fuzzy
 msgid "Get updates related to the chosen categories"
 msgstr ""
 "[comRep]Obtener actualizaciones relacionadas con las categorías elegidas"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:86
+#: ../../sulfur/src/sulfur/sulfur.glade.h:88
 msgid "HTTP Proxy"
 msgstr "Proxy HTTP"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:89
+#: ../../sulfur/src/sulfur/sulfur.glade.h:91
 msgid "If selected, packages will be downloaded only"
 msgstr "Si está seleccionado, los paquetes sólo se descargarán"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:90
+#: ../../sulfur/src/sulfur/sulfur.glade.h:92
 msgid "Ignored protected files"
 msgstr "Archivos Protegidos ignorados"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:92
+#: ../../sulfur/src/sulfur/sulfur.glade.h:95
+msgid "Install Set"
+msgstr "Instalar Set"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:96
 msgid "Install Size"
 msgstr "Tamaño instalado"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:93
+#: ../../sulfur/src/sulfur/sulfur.glade.h:97
 msgid "Install a stand-alone package file"
 msgstr "Instala un archivo de paquete autónomo"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:94
+#: ../../sulfur/src/sulfur/sulfur.glade.h:98
 msgid "Install from binary package..."
 msgstr "Instalar desde un paquete binario..."
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:95
+#: ../../sulfur/src/sulfur/sulfur.glade.h:99
 msgid "Install the selected Package Set"
 msgstr "Instalar el Set de Paquetes seleccionado"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:96
+#: ../../sulfur/src/sulfur/sulfur.glade.h:100
 msgid "Install the selected package"
 msgstr "Instalar el paquete seleccionado"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:97
+#: ../../sulfur/src/sulfur/sulfur.glade.h:101
 #, fuzzy
 msgid "Installation"
 msgstr "Instalando"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:99
+#: ../../sulfur/src/sulfur/sulfur.glade.h:103
 msgid "Installed Packages"
 msgstr "Paquetes instalados"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:100
+#: ../../sulfur/src/sulfur/sulfur.glade.h:104
 msgid "Interactivity"
 msgstr "Interactividad"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:101
+#: ../../sulfur/src/sulfur/sulfur.glade.h:105
 msgid "Interface Colors"
 msgstr "Colores del interfaz"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:102
+#: ../../sulfur/src/sulfur/sulfur.glade.h:106
 msgid "Kernel Tag"
 msgstr "Tag del kernel"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:104
+#: ../../sulfur/src/sulfur/sulfur.glade.h:108
 msgid "Keywords (space separated)"
 msgstr "Palabras clave (separadas por espacios)"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:106
+#: ../../sulfur/src/sulfur/sulfur.glade.h:110
 msgid "Library test"
 msgstr "Comprobación de bibliotecas"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:108
+#: ../../sulfur/src/sulfur/sulfur.glade.h:112
 msgid "Load User Generated Content"
 msgstr "Cargar Contenido Generado por los Usuarios"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:109
+#: ../../sulfur/src/sulfur/sulfur.glade.h:113
 msgid "Load content"
 msgstr "Cargar contenido"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:110
+#: ../../sulfur/src/sulfur/sulfur.glade.h:114
 msgid "Location"
 msgstr "Procedencia"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:111
+#: ../../sulfur/src/sulfur/sulfur.glade.h:115
 msgid "MD5 Signature"
 msgstr "Firma MD5"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:112
+#: ../../sulfur/src/sulfur/sulfur.glade.h:116
 msgid "M_erge"
 msgstr "M_erge"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:113
+#: ../../sulfur/src/sulfur/sulfur.glade.h:117
 msgid "Mask the selected packages"
 msgstr "Enmascara los paquetes seleccionados"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:114
+#: ../../sulfur/src/sulfur/sulfur.glade.h:118
 msgid "Mask this package"
 msgstr "Enmascarar este paquete"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:116
+#: ../../sulfur/src/sulfur/sulfur.glade.h:120
 msgid "Merge all"
 msgstr "_Merge a todo"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:117
+#: ../../sulfur/src/sulfur/sulfur.glade.h:121
 msgid "Messages"
 msgstr "Mensajes"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:118
+#: ../../sulfur/src/sulfur/sulfur.glade.h:122
 msgid "Mirror updates"
 msgstr "Actualizs. de los mirrors"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:120
+#: ../../sulfur/src/sulfur/sulfur.glade.h:124
 msgid "Networking"
 msgstr "Red"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:121
+#: ../../sulfur/src/sulfur/sulfur.glade.h:125
 msgid "New backup"
 msgstr "Nueva copia de seguridad"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:122
+#: ../../sulfur/src/sulfur/sulfur.glade.h:126
 #, fuzzy
 msgid "Not done"
 msgstr "[comRep]No finalizado"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:124
+#: ../../sulfur/src/sulfur/sulfur.glade.h:128
 #, fuzzy
 msgid "Notice Board Entry Information"
 msgstr "[comRep]Información de la Entrada del Tablón de Anuncios"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:126
+#: ../../sulfur/src/sulfur/sulfur.glade.h:130
 #, fuzzy
 msgid "Notice board Id"
 msgstr "[comRep]ID del tablón de anuncios"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:127
+#: ../../sulfur/src/sulfur/sulfur.glade.h:131
 msgid "O_ther"
 msgstr "_Otros"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:128
+#: ../../sulfur/src/sulfur/sulfur.glade.h:132
 msgid "Output View"
 msgstr "Ver la salida"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:129
+#: ../../sulfur/src/sulfur/sulfur.glade.h:133
 msgid "Package (default)"
 msgstr "Paquete (por defecto)"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:130
+#: ../../sulfur/src/sulfur/sulfur.glade.h:134
 msgid "Package Info"
 msgstr "Información del Paquete"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:131
+#: ../../sulfur/src/sulfur/sulfur.glade.h:135
 msgid "Package Information"
 msgstr "Información del Paquete"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:132
+#: ../../sulfur/src/sulfur/sulfur.glade.h:136
 msgid "Package Masking"
 msgstr "Enmascaramiento de Paquetes"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:133
+#: ../../sulfur/src/sulfur/sulfur.glade.h:137
 msgid "Package Size"
 msgstr "Paquete"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:134
+#: ../../sulfur/src/sulfur/sulfur.glade.h:138
 msgid "Package category"
 msgstr "Categorías de paquetes"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:135
+#: ../../sulfur/src/sulfur/sulfur.glade.h:139
 msgid "Package description"
 msgstr "Descripción del paquete"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:136
+#: ../../sulfur/src/sulfur/sulfur.glade.h:140
 #, fuzzy
 msgid "Package downgrade"
 msgstr "Nombre del paquete"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:137
+#: ../../sulfur/src/sulfur/sulfur.glade.h:141
 msgid "Package not installed"
 msgstr "Paquete no instalado"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:138
+#: ../../sulfur/src/sulfur/sulfur.glade.h:142
 msgid "Package reinstalled"
 msgstr "Paquete reinstalado"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:139
+#: ../../sulfur/src/sulfur/sulfur.glade.h:143
 msgid "Package removed"
 msgstr "Paquete eliminado"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:140
+#: ../../sulfur/src/sulfur/sulfur.glade.h:144
 msgid "Package sub-description"
 msgstr "Subdesripción de paquete"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:141
+#: ../../sulfur/src/sulfur/sulfur.glade.h:145
 msgid "Package subtitle"
 msgstr "Subtítulo de paquete"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:142
+#: ../../sulfur/src/sulfur/sulfur.glade.h:146
 msgid "Package updated"
 msgstr "Paquete actualizado"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:145
+#: ../../sulfur/src/sulfur/sulfur.glade.h:149
 msgid "Pinboard Id"
 msgstr "Id del Tablón de Notas"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:146
+#: ../../sulfur/src/sulfur/sulfur.glade.h:150
 #, fuzzy
 msgid "Pinboard Item Information"
 msgstr "[comRep]Información del Ítem del Tablón de Notas"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:147
+#: ../../sulfur/src/sulfur/sulfur.glade.h:151
 msgid "Pinboard View"
 msgstr "Vista del Tablón de Notas"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:148
+#: ../../sulfur/src/sulfur/sulfur.glade.h:152
 msgid "Please Confirm"
 msgstr "Confirma por favor"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:149
+#: ../../sulfur/src/sulfur/sulfur.glade.h:153
 msgid ""
 "Please submit this error to us providing as much information as possible."
 msgstr ""
 "Por favor, envíanos este error añadiendo toda la información que puedas."
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:152
+#: ../../sulfur/src/sulfur/sulfur.glade.h:156
 msgid "Prevents files belonging to a package being overwritten by another"
 msgstr ""
 "Evita que los archivos pertenecientes a un paquete sean sobrescritos por otro"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:153
+#: ../../sulfur/src/sulfur/sulfur.glade.h:157
 #, fuzzy
 msgid "Process details"
 msgstr "Resultado del proceso"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:154
+#: ../../sulfur/src/sulfur/sulfur.glade.h:158
 msgid "Process priority (nice)"
 msgstr "Prioridad de proceso (nice)"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:155
+#: ../../sulfur/src/sulfur/sulfur.glade.h:159
 msgid "Process result"
 msgstr "Resultado del proceso"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:156
+#: ../../sulfur/src/sulfur/sulfur.glade.h:160
 msgid "Processing at"
 msgstr "Procesando a"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:157
+#: ../../sulfur/src/sulfur/sulfur.glade.h:161
 msgid "Protected files and directories"
 msgstr "Archivos y directorios protegidos"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:158
+#: ../../sulfur/src/sulfur/sulfur.glade.h:162
 msgid "Protected files and directories mask"
 msgstr "Archivos y máscara de directorios protegidos"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:159
+#: ../../sulfur/src/sulfur/sulfur.glade.h:163
 msgid "Proxy Password"
 msgstr "Contraseña del proxy"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:160
+#: ../../sulfur/src/sulfur/sulfur.glade.h:164
 msgid "Proxy Username"
 msgstr "Nombre de usuario del proxy"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:161
+#: ../../sulfur/src/sulfur/sulfur.glade.h:165
+msgid "Purge"
+msgstr "Purgar"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:166
 msgid "Q_ueue packages in selected Advisory"
 msgstr "E_ncolar los paquetes del aviso seleccionado"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:162
+#: ../../sulfur/src/sulfur/sulfur.glade.h:167
 #, fuzzy
 msgid "Queue"
 msgstr "En cola"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:163
+#: ../../sulfur/src/sulfur/sulfur.glade.h:168
 msgid "Queue Id"
 msgstr "ID de cola"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:164
+#: ../../sulfur/src/sulfur/sulfur.glade.h:169
 msgid "Queue Item Information"
 msgstr "Información del Ítem en Cola"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:165
+#: ../../sulfur/src/sulfur/sulfur.glade.h:170
 #, fuzzy
 msgid "Queue View"
 msgstr "[comRep]Ver la cola"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:166
+#: ../../sulfur/src/sulfur/sulfur.glade.h:171
 msgid "Queued"
 msgstr "En cola"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:167
+#: ../../sulfur/src/sulfur/sulfur.glade.h:172
 msgid "Queued at"
 msgstr "En cola desde"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:168
+#: ../../sulfur/src/sulfur/sulfur.glade.h:173
 msgid "R_egenerate Cache"
 msgstr "Re_generar caché"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:169
+#: ../../sulfur/src/sulfur/sulfur.glade.h:174
 msgid "R_epositories Notice Board"
 msgstr "Ta_blón de Anuncios de los Repositorios"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:172
+#: ../../sulfur/src/sulfur/sulfur.glade.h:178
 msgid "Reinstall the selected package"
 msgstr "Reinstalar el paquete seleccionado"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:173
+#: ../../sulfur/src/sulfur/sulfur.glade.h:179
 #, fuzzy
 msgid "Reload"
 msgstr "subida"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:174
+#: ../../sulfur/src/sulfur/sulfur.glade.h:180
 msgid "Remote stdout file"
 msgstr "Archivo stdout remoto"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:175
+#: ../../sulfur/src/sulfur/sulfur.glade.h:182
 msgid "Remove Selected"
 msgstr "Eliminar Seleccionados"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:177
+#: ../../sulfur/src/sulfur/sulfur.glade.h:183
+msgid "Remove Set"
+msgstr "Eliminar Set"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:185
 msgid "Remove USE flags on atoms"
 msgstr "Eliminar parámetros USE de los atoms"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:178
+#: ../../sulfur/src/sulfur/sulfur.glade.h:186
 msgid "Remove atoms"
 msgstr "Eliminar Atoms"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:179
+#: ../../sulfur/src/sulfur/sulfur.glade.h:187
 msgid "Remove packages on the remote server"
 msgstr "Eliminar paquetes en el servidor remoto"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:180
+#: ../../sulfur/src/sulfur/sulfur.glade.h:188
 msgid "Remove the selected Package Set"
 msgstr "Eliminar el Set de Paquetes seleccionado"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:181
+#: ../../sulfur/src/sulfur/sulfur.glade.h:189
 msgid "Remove the selected package"
 msgstr "Eliminar el paquete seleccionado"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:182
+#: ../../sulfur/src/sulfur/sulfur.glade.h:190
 msgid "Remove the selected package and its configuration"
 msgstr "Eliminar el paquete seleccionado y su configuración"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:183
+#: ../../sulfur/src/sulfur/sulfur.glade.h:191
 #, fuzzy
 msgid "Repositories"
 msgstr "repositorios"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:185
+#: ../../sulfur/src/sulfur/sulfur.glade.h:193
 msgid "Repositories options"
 msgstr "Opciones del repositorio"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:186
+#: ../../sulfur/src/sulfur/sulfur.glade.h:194
 msgid "Repository information"
 msgstr "Información del repositorio"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:188
+#: ../../sulfur/src/sulfur/sulfur.glade.h:196
 msgid "Restore"
 msgstr "Restaurar"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:189
+#: ../../sulfur/src/sulfur/sulfur.glade.h:197
 msgid "Restore selected"
 msgstr "Restaurar seleccionados"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:190
+#: ../../sulfur/src/sulfur/sulfur.glade.h:198
 msgid "Review for Install..."
 msgstr "Revisar para instalar..."
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:193
+#: ../../sulfur/src/sulfur/sulfur.glade.h:201
 msgid "S_end Error Report"
 msgstr "_Enviar el Informe de Errores"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:194
+#: ../../sulfur/src/sulfur/sulfur.glade.h:202
 #, fuzzy
 msgid "S_ervices"
 msgstr "_Servicios"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:195
+#: ../../sulfur/src/sulfur/sulfur.glade.h:203
 msgid "Save"
 msgstr "Guardar"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:196
+#: ../../sulfur/src/sulfur/sulfur.glade.h:204
 msgid "Search"
 msgstr "Buscar"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:197
+#: ../../sulfur/src/sulfur/sulfur.glade.h:205
 msgid "Secure Services Port"
 msgstr "Puerto para los Servicios de Seguridad"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:198
+#: ../../sulfur/src/sulfur/sulfur.glade.h:206
 #, fuzzy
 msgid "Security"
 msgstr "Actualizaciones de seguridad"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:199
+#: ../../sulfur/src/sulfur/sulfur.glade.h:207
 msgid "Security updates"
 msgstr "Actualizaciones de seguridad"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:200
+#: ../../sulfur/src/sulfur/sulfur.glade.h:208
 msgid "Services Port"
 msgstr "Puerto para los Servicios"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:201
+#: ../../sulfur/src/sulfur/sulfur.glade.h:209
 msgid "Sets"
 msgstr "Sets"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:202
+#: ../../sulfur/src/sulfur/sulfur.glade.h:210
 msgid "Show ChangeLog"
 msgstr "Mostrar Changelog"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:203
+#: ../../sulfur/src/sulfur/sulfur.glade.h:211
 msgid "Show Selected"
 msgstr "Mostrar seleccionados"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:204
+#: ../../sulfur/src/sulfur/sulfur.glade.h:212
 msgid "Show all"
 msgstr "Mostrar todo"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:205
+#: ../../sulfur/src/sulfur/sulfur.glade.h:213
 msgid "Show applied"
 msgstr "Mostrar aplicados"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:206
+#: ../../sulfur/src/sulfur/sulfur.glade.h:214
 msgid "Show unapplied"
 msgstr "Mostrar no aplicados"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:209
+#: ../../sulfur/src/sulfur/sulfur.glade.h:217
 msgid "Socket settings"
 msgstr "Configuración de socket"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:210
+#: ../../sulfur/src/sulfur/sulfur.glade.h:218
 msgid "Source Package Manager"
 msgstr "Administrador de Paquetes Fuente"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:211
+#: ../../sulfur/src/sulfur/sulfur.glade.h:219
 msgid "Spm Info"
 msgstr "Info. del Adm. Paq. Fuente"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:212
+#: ../../sulfur/src/sulfur/sulfur.glade.h:220
 msgid "Spm Sync"
 msgstr "Sinc. Adm. Paq. Fuente"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:213
+#: ../../sulfur/src/sulfur/sulfur.glade.h:221
 msgid "Spm tree updates"
 msgstr "Árbol de actualizaciones del admin. paqs. fuente"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:214
+#: ../../sulfur/src/sulfur/sulfur.glade.h:222
 msgid "Submit a new document"
 msgstr "Enviar un nuevo documento"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:215
+#: ../../sulfur/src/sulfur/sulfur.glade.h:223
 msgid "Successful mesage"
 msgstr "Mensaje"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:216
+#: ../../sulfur/src/sulfur/sulfur.glade.h:224
 msgid "Sulfur"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:217
+#: ../../sulfur/src/sulfur/sulfur.glade.h:225
 msgid "Switch Sulfur to Advanced Mode"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:218
+#: ../../sulfur/src/sulfur/sulfur.glade.h:226
 msgid "Switch to"
 msgstr "Cambiar a"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:219
+#: ../../sulfur/src/sulfur/sulfur.glade.h:227
 #, fuzzy
 msgid "Sync repositories to fetch latest updates"
 msgstr "muestra el estado de los repositorios"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:221
+#: ../../sulfur/src/sulfur/sulfur.glade.h:229
 msgid "System"
 msgstr "Sistema"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:222
+#: ../../sulfur/src/sulfur/sulfur.glade.h:230
 msgid "System Database"
 msgstr "BD del sistema"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:223
+#: ../../sulfur/src/sulfur/sulfur.glade.h:231
 #, fuzzy
 msgid "System files"
 msgstr "Sistema"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:224
+#: ../../sulfur/src/sulfur/sulfur.glade.h:232
 msgid "Terminal font"
 msgstr "Fuente de la consola"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:225
+#: ../../sulfur/src/sulfur/sulfur.glade.h:233
 msgid "Text on error message"
 msgstr "Texto en mensajes de error"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:226
+#: ../../sulfur/src/sulfur/sulfur.glade.h:234
 msgid "Text on succ. message"
 msgstr "Texto en mensajes"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:227
+#: ../../sulfur/src/sulfur/sulfur.glade.h:235
 msgid "This is what they call \"nice level\""
 msgstr "Esto es lo que se suele llamar \"nivel de nice\""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:229
+#: ../../sulfur/src/sulfur/sulfur.glade.h:237
 msgid "UGC Entry Information"
 msgstr "Información de la Entrada UGC"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:230
+#: ../../sulfur/src/sulfur/sulfur.glade.h:238
 msgid "URI"
 msgstr "URI"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:231
+#: ../../sulfur/src/sulfur/sulfur.glade.h:239
+msgid "Undo Install"
+msgstr "Deshacer Instalación"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:240
+msgid "Undo Install Set"
+msgstr "Deshacer Instalación de Set"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:241
 msgid "Undo Install Set action"
 msgstr "Deshacer acción de Instalación de Set"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:232
+#: ../../sulfur/src/sulfur/sulfur.glade.h:242
 msgid "Undo Install action"
 msgstr "Deshacer acción de Instalación"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:233
+#: ../../sulfur/src/sulfur/sulfur.glade.h:243
+msgid "Undo Purge"
+msgstr "Deshacer Purgar"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:244
 msgid "Undo Purge action"
 msgstr "Deshacer acción de Purgar"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:234
+#: ../../sulfur/src/sulfur/sulfur.glade.h:245
+msgid "Undo Reinstall"
+msgstr "Deshacer Reinstalación"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:246
 msgid "Undo Reinstall action"
 msgstr "Deshacer acción de Reinstalación"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:235
+#: ../../sulfur/src/sulfur/sulfur.glade.h:247
+msgid "Undo Remove"
+msgstr "Deshacer Eliminar"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:248
+msgid "Undo Remove Set"
+msgstr "Deshacer Eliminar Set"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:249
 msgid "Undo Remove Set action"
 msgstr "Deshacer acción de Eliminar Set"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:236
+#: ../../sulfur/src/sulfur/sulfur.glade.h:250
 msgid "Undo Remove action"
 msgstr "Deshacer acción de Eliminar"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:237
+#: ../../sulfur/src/sulfur/sulfur.glade.h:251
+msgid "Undo Update"
+msgstr "Deshacer Actualizar"
+
+#: ../../sulfur/src/sulfur/sulfur.glade.h:252
 msgid "Undo Update action"
 msgstr "Deshacer acción de Actualizar"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:238
+#: ../../sulfur/src/sulfur/sulfur.glade.h:253
 msgid "Unmask this package"
 msgstr "Desenmascarar este paquete"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:239
+#: ../../sulfur/src/sulfur/sulfur.glade.h:255
 msgid "Update the selected package"
 msgstr "Actualizar el paquete seleccionado"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:240
+#: ../../sulfur/src/sulfur/sulfur.glade.h:256
 msgid "Updates"
 msgstr "Actualizaciones"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:241
+#: ../../sulfur/src/sulfur/sulfur.glade.h:257
 msgid "User / Group"
 msgstr "Usuario / Grupo"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:244
+#: ../../sulfur/src/sulfur/sulfur.glade.h:260
 msgid "Version"
 msgstr "Versión"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:245
+#: ../../sulfur/src/sulfur/sulfur.glade.h:261
 msgid "Website"
 msgstr "Sitio web"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:246
+#: ../../sulfur/src/sulfur/sulfur.glade.h:262
 msgid "What you were doing"
 msgstr "Lo que estabas haciendo"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:248
+#: ../../sulfur/src/sulfur/sulfur.glade.h:264
 msgid ""
 "You <b>need to accept</b> the licenses below.\n"
 "Please read them carefully and <b>make your choice</b>."
@@ -9702,159 +9738,159 @@ msgstr ""
 "Debes <b>aceptar</b> las siguientes licencias.\n"
 "Por favor, léelas cuidadosamente y <b>toma tu decisión</b>."
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:250
+#: ../../sulfur/src/sulfur/sulfur.glade.h:266
 msgid "Your E-mail"
 msgstr "Tu email"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:251
+#: ../../sulfur/src/sulfur/sulfur.glade.h:267
 msgid "Your Full Name"
 msgstr "Tu nombre completo"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:252
+#: ../../sulfur/src/sulfur/sulfur.glade.h:268
 msgid "_Abort"
 msgstr "_Abortar"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:253
+#: ../../sulfur/src/sulfur/sulfur.glade.h:269
 msgid "_Accept License"
 msgstr "_Aceptar licencia"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:254
+#: ../../sulfur/src/sulfur/sulfur.glade.h:270
 msgid "_Add All"
 msgstr "Añadir _todas"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:255
+#: ../../sulfur/src/sulfur/sulfur.glade.h:271
 msgid "_Add Set"
 msgstr "Aña_dir Set"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:256
+#: ../../sulfur/src/sulfur/sulfur.glade.h:272
 msgid "_Clear all cache"
 msgstr "_Limpiar toda la caché"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:257
+#: ../../sulfur/src/sulfur/sulfur.glade.h:273
 msgid "_Clear all credentials"
 msgstr "Limpiar todas las cre_denciales"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:258
+#: ../../sulfur/src/sulfur/sulfur.glade.h:274
 msgid "_Commit Actions"
 msgstr "_Ejecutar acciones"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:259
+#: ../../sulfur/src/sulfur/sulfur.glade.h:275
 msgid "_Details"
 msgstr "_Detalles"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:260
+#: ../../sulfur/src/sulfur/sulfur.glade.h:276
 msgid "_Enable"
 msgstr "_Habilitar"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:261
+#: ../../sulfur/src/sulfur/sulfur.glade.h:277
 msgid "_Force repositories update"
 msgstr "_Forzar la actualización de repositorios"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:262
+#: ../../sulfur/src/sulfur/sulfur.glade.h:278
 msgid "_Generate Login"
 msgstr "_Generar Login"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:263
+#: ../../sulfur/src/sulfur/sulfur.glade.h:279
 msgid "_Help"
 msgstr "A_yuda"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:264
+#: ../../sulfur/src/sulfur/sulfur.glade.h:280
 msgid "_Insert String"
 msgstr "_Insertar cadena"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:265
+#: ../../sulfur/src/sulfur/sulfur.glade.h:281
 msgid "_More"
 msgstr "_Más"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:266
+#: ../../sulfur/src/sulfur/sulfur.glade.h:282
 msgid "_Open Document"
 msgstr "Abrir Doc_umento"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:267
+#: ../../sulfur/src/sulfur/sulfur.glade.h:283
 msgid "_Overview"
 msgstr "_General"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:268
+#: ../../sulfur/src/sulfur/sulfur.glade.h:284
 msgid "_Properties"
 msgstr "_Propiedades"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:269
+#: ../../sulfur/src/sulfur/sulfur.glade.h:285
 msgid "_Queue all vulnerable packages"
 msgstr "_Encolar todos los paquetes vulnerables"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:270
+#: ../../sulfur/src/sulfur/sulfur.glade.h:286
 msgid "_Read License"
 msgstr "_Leer licencia"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:271
+#: ../../sulfur/src/sulfur/sulfur.glade.h:287
 msgid "_References"
 msgstr "_Referencias"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:272
+#: ../../sulfur/src/sulfur/sulfur.glade.h:288
 msgid "_Remote Repository Manager"
 msgstr "Administrador de _Repositorios Remotos"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:273
+#: ../../sulfur/src/sulfur/sulfur.glade.h:289
 msgid "_Remove All"
 msgstr "_Eliminar todas"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:274
+#: ../../sulfur/src/sulfur/sulfur.glade.h:290
 msgid "_Remove Login"
 msgstr "_Eliminar Login"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:275
+#: ../../sulfur/src/sulfur/sulfur.glade.h:291
 msgid "_Remove Set"
 msgstr "_Eliminar Set"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:276
+#: ../../sulfur/src/sulfur/sulfur.glade.h:292
 msgid "_SSL Connection"
 msgstr "Cone_xión SSL"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:277
+#: ../../sulfur/src/sulfur/sulfur.glade.h:293
 msgid "_Skip mirror"
 msgstr "_Omitir mirror"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:278
+#: ../../sulfur/src/sulfur/sulfur.glade.h:294
 msgid "_Submit Document"
 msgstr "Enviar Docu_mento"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:279
+#: ../../sulfur/src/sulfur/sulfur.glade.h:295
 msgid "_Sulfur"
 msgstr ""
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:280
+#: ../../sulfur/src/sulfur/sulfur.glade.h:296
 msgid "_Update Repositories"
 msgstr "A_ctualizar repositorios"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:281
+#: ../../sulfur/src/sulfur/sulfur.glade.h:297
 msgid "emerge --sync"
 msgstr "emerge --sync"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:282
+#: ../../sulfur/src/sulfur/sulfur.glade.h:298
 msgid "emerge --sync ? (o;"
 msgstr "¿ emerge --sync ? (o;"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:283
+#: ../../sulfur/src/sulfur/sulfur.glade.h:299
 msgid "http://www.sabayon.org"
 msgstr "http://www.sabayon.org"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:284
+#: ../../sulfur/src/sulfur/sulfur.glade.h:300
 msgid "kB/sec"
 msgstr "kB/seg"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:285
+#: ../../sulfur/src/sulfur/sulfur.glade.h:301
 msgid "localhost"
 msgstr "localhost"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:287
+#: ../../sulfur/src/sulfur/sulfur.glade.h:303
 msgid "root"
 msgstr "root"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:288
+#: ../../sulfur/src/sulfur/sulfur.glade.h:304
 msgid "type your password here"
 msgstr "escribe tu contraseña aquí"
 
-#: ../../sulfur/src/sulfur/sulfur.glade.h:289
+#: ../../sulfur/src/sulfur/sulfur.glade.h:305
 msgid "type your username here"
 msgstr "escribe tu nombre de usuario aquí"
 
@@ -9871,6 +9907,21 @@ msgstr ""
 #, fuzzy
 msgid "_Load Package Manager"
 msgstr "_Ejecutar el administrador de paquetes"
+
+#~ msgid "Configuring Binutils Profile"
+#~ msgstr "Configurando el perfil de Binutils"
+
+#~ msgid "A new service will be installed"
+#~ msgstr "Se instalará un nuevo servicio"
+
+#~ msgid "These are the packages that would be"
+#~ msgstr "Estos son los paquetes que serán"
+
+#~ msgid "merged"
+#~ msgstr "unidos"
+
+#~ msgid "removed"
+#~ msgstr "eliminados"
 
 #~ msgid "Entropy database is probably corrupted! I won't stop you here btw..."
 #~ msgstr ""
@@ -9914,42 +9965,6 @@ msgstr "_Ejecutar el administrador de paquetes"
 
 #~ msgid "Packages To Install"
 #~ msgstr "Paquetes a instalar"
-
-#~ msgid "Disable"
-#~ msgstr "Deshabilitado"
-
-#~ msgid "Enable"
-#~ msgstr "Habilitar"
-
-#~ msgid "Install Set"
-#~ msgstr "Instalar Set"
-
-#~ msgid "Purge"
-#~ msgstr "Purgar"
-
-#~ msgid "Remove Set"
-#~ msgstr "Eliminar Set"
-
-#~ msgid "Undo Install"
-#~ msgstr "Deshacer Instalación"
-
-#~ msgid "Undo Install Set"
-#~ msgstr "Deshacer Instalación de Set"
-
-#~ msgid "Undo Purge"
-#~ msgstr "Deshacer Purgar"
-
-#~ msgid "Undo Reinstall"
-#~ msgstr "Deshacer Reinstalación"
-
-#~ msgid "Undo Remove"
-#~ msgstr "Deshacer Eliminar"
-
-#~ msgid "Undo Remove Set"
-#~ msgstr "Deshacer Eliminar Set"
-
-#~ msgid "Undo Update"
-#~ msgstr "Deshacer Actualizar"
 
 #~ msgid "_File"
 #~ msgstr "_Archivo"
