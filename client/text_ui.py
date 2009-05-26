@@ -827,7 +827,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         if removalQueue:
 
             if (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']) and removalQueue:
-                mytxt = "%s %s (%s):" % (
+                mytxt = "%s (%s):" % (
                     blue(_("These are the packages that would be removed")),
                     bold(_("conflicting/substituted")),
                 )
