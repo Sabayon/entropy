@@ -63,7 +63,7 @@ class Lifo:
     def pop(self):
         try:
             idx = max(self.__buf)
-        except ValueError:
+        except (ValueError, TypeError,):
             return None
         return self.__buf.pop(idx)
 
