@@ -22,7 +22,8 @@ entropy-install:
 	mkdir -p $(DESTDIR)/etc/init.d
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/services
 
-	cp libraries $(DESTDIR)/$(LIBDIR)/entropy/ -Ra
+	cp libraries/entropy $(DESTDIR)/$(LIBDIR)/entropy/libraries/ -Ra
+	install -m 644 libraries/entropy/revision $(DESTDIR)/$(LIBDIR)/entropy/libraries/
 	install -m 755 services/repository-admin-daemon $(DESTDIR)/usr/sbin/
 	install -m 755 services/repository-services-daemon.example $(DESTDIR)/usr/sbin/
 	install -m 755 misc/entropy.sh $(DESTDIR)/usr/sbin/
