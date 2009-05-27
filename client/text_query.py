@@ -26,6 +26,7 @@ from entropy.output import darkgreen, darkred, red, blue, \
     brown, purple, bold, print_info, print_error, print_generic
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.i18n import _
+import entropy.tools as entropyTools
 
 
 def query(options):
@@ -472,8 +473,15 @@ def search_orphaned_files(Equo = None):
     tdbconn = Equo.open_generic_database(filepath)
     tdbconn.initializeDatabase()
     tdbconn.dropAllIndexes()
-    lib64_str = "/usr/lib64"
-    lib64_len = len(lib64_str)
+
+    import re
+    reverse_symlink_map = Equo.SystemSettings['system_rev_symlinks']
+    system_dirs_mask = [x for x in Equo.SystemSettings['system_dirs_mask'] \
+        if entropyTools.is_valid_path(x)]
+    system_dirs_mask_regexp = []
+    for mask in Equo.SystemSettings['system_dirs_mask']:
+        reg_mask = re.compile(mask)
+        system_dirs_mask_regexp.append(reg_mask)
 
     count = 0
     for xdir in dirs:
@@ -485,26 +493,27 @@ def search_orphaned_files(Equo = None):
             foundFiles = {}
             for filename in files:
 
-                # failter python compiled objects?
-                if filename.endswith(".pyo") or \
-                    filename.endswith(".pyc") or \
-                    filename == '.keep':
-                    continue
-
                 filename = os.path.join(currentdir, filename)
-                if filename.endswith(".ph") and \
-                    (filename.startswith("/usr/lib/perl") or \
-                    filename.startswith("/usr/lib64/perl")):
-                    continue
 
                 # filter symlinks, broken ones will be reported
                 if os.path.islink(filename) and os.path.lexists(filename):
                     continue
 
-                mask = [x for x in Equo.SystemSettings['system_dirs_mask'] if \
-                    filename.startswith(x)]
-                if mask:
+                do_cont = False
+                for mask in system_dirs_mask:
+                    if filename.startswith(mask):
+                        do_cont = True
+                        break
+                if do_cont:
                     continue
+
+                for mask in system_dirs_mask_regexp:
+                    if mask.match(filename):
+                        do_cont = True
+                        break
+                if do_cont:
+                    continue
+
                 count += 1
                 if not etpUi['quiet'] and ((count == 0) or (count % 500 == 0)):
                     count = 0
@@ -542,8 +551,13 @@ def search_orphaned_files(Equo = None):
 
     def gen_cont(idpackage):
         for path in clientDbconn.retrieveContent(idpackage):
-            if path.startswith(lib64_str):
-                path = "/usr/lib%s" % (path[lib64_len:],)
+            # reverse sym
+            for sym_dir in reverse_symlink_map:
+                if path.startswith(sym_dir):
+                    for sym_child in reverse_symlink_map[sym_dir]:
+                        yield (sym_child+path[len(sym_dir):],)
+            # real path also
+            yield (os.path.realpath(path),)
             yield (path,)
 
     for idpackage in idpackages:
