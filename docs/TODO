@@ -6,7 +6,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
     - Sulfur: iPhone navigation
     - grouping categories Sulfur (through UGC packages tagging?)
-    - equo query orphans /lib64/modules (e symlink)
     - Documentation + code style cleanup (NLnet Milestone 7)
 
   1.0_beta2:
