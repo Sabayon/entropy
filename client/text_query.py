@@ -166,6 +166,7 @@ def search_belongs(files, idreturn = False, dbconn = None, Equo = None):
     pkg_data = set() # when idreturn is True
     results = {}
     flatresults = {}
+    reverse_symlink_map = Equo.SystemSettings['system_rev_symlinks']
     for xfile in files:
         like = False
         if xfile.find("*") != -1:
@@ -173,6 +174,20 @@ def search_belongs(files, idreturn = False, dbconn = None, Equo = None):
             like = True
         results[xfile] = set()
         idpackages = clientDbconn.searchBelongs(xfile, like)
+        if not idpackages:
+            # try real path if possible
+            idpackages = clientDbconn.searchBelongs(
+                os.path.realpath(xfile), like)
+        if not idpackages:
+            # try using reverse symlink mapping
+            for sym_dir in reverse_symlink_map:
+                if xfile.startswith(sym_dir):
+                    for sym_child in reverse_symlink_map[sym_dir]:
+                        my_file = sym_child+xfile[len(sym_dir):]
+                        idpackages = clientDbconn.searchBelongs(my_file, like)
+                        if idpackages:
+                            break
+
         for idpackage in idpackages:
             if not flatresults.get(idpackage):
                 results[xfile].add(idpackage)
