@@ -606,10 +606,7 @@ class Package:
         portdb_dir = Spm.get_vdb_path()
         remove_path = portdb_dir+atom
         key = self.entropyTools.dep_getkey(atom)
-        others_installed = Spm.search_keys(key)
-        if others_installed is None:
-            others_installed = []
-        others_installed = [x for x in others_installed if \
+        others_installed = [x for x in Spm.search_keys(key) if \
             self.entropyTools.dep_getkey(x) == key]
         if atom in others_installed:
             others_installed.remove(atom)
