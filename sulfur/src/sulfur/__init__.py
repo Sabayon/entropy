@@ -1075,6 +1075,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def update_repositories(self, repos):
 
         self.disable_ugc = True
+        self.hide_notebook_tabs_for_install()
         """
         # set steps
         progress_step = float(1)/(len(repos))
@@ -1097,23 +1098,27 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.progress_log(_('You must run this application as root'),
                 extra = "repositories")
             self.disable_ugc = False
+            self.show_notebook_tabs_after_install()
             return 1
         except MissingParameter:
             msg = "%s: %s" % (_('No repositories specified in'),
                 etpConst['repositoriesconf'],)
             self.progress_log( msg, extra = "repositories")
             self.disable_ugc = False
+            self.show_notebook_tabs_after_install()
             return 127
         except OnlineMirrorError:
             self.progress_log(
                 _('You are not connected to the Internet. You should.'),
                 extra = "repositories")
             self.disable_ugc = False
+            self.show_notebook_tabs_after_install()
             return 126
         except Exception, e:
             msg = "%s: %s" % (_('Unhandled exception'),e,)
             self.progress_log(msg, extra = "repositories")
             self.disable_ugc = False
+            self.show_notebook_tabs_after_install()
             return 2
 
         self.__repo_update_rc = -1000
@@ -1153,6 +1158,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         initconfig_entropy_constants(etpSys['rootdir'])
 
         self.disable_ugc = False
+        self.show_notebook_tabs_after_install()
         return not repoConn.syncErrors
 
     def reset_progress_text(self):
