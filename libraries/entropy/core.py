@@ -291,6 +291,7 @@ class SystemSettings(Singleton):
             'conflicting_tagged_packages': {},
             'system_dirs': etpConst['confdir']+"/fsdirs.conf",
             'system_dirs_mask': etpConst['confdir']+"/fsdirsmask.conf",
+            'system_rev_symlinks': etpConst['confdir']+"/fssymlinks.conf",
             'socket_service': etpConst['socketconf'],
             'system': etpConst['entropyconf'],
             'repositories': etpConst['repositoriesconf'],
@@ -300,17 +301,21 @@ class SystemSettings(Singleton):
             'repos_system_mask', 'system_mask', 'repos_mask',
             'repos_license_whitelist', 'system_package_sets',
             'conflicting_tagged_packages', 'system_dirs',
-            'system_dirs_mask', 'socket_service', 'system'
+            'system_dirs_mask', 'socket_service', 'system',
+            'system_rev_symlinks'
         ])
         self.__setting_files_pre_run.extend(['repositories'])
 
         ## XXX trunk support, for a while - exp. date 10/10/2009
         trunk_fsdirs_conf = "../conf/fsdirs.conf"
         trunk_fsdirsmask_conf = "../conf/fsdirsmask.conf"
+        trunk_fssymlinks_conf = "../conf/fssymlinks.conf"
         if os.path.isfile(trunk_fsdirs_conf):
             self.__setting_files['system_dirs'] = trunk_fsdirs_conf
         if os.path.isfile(trunk_fsdirsmask_conf):
             self.__setting_files['system_dirs_mask'] = trunk_fsdirsmask_conf
+        if os.path.isfile(trunk_fssymlinks_conf):
+            self.__setting_files['system_rev_symlinks'] = trunk_fssymlinks_conf
 
         dmp_dir = etpConst['dumpstoragedir']
         self.__mtime_files.update({
@@ -860,6 +865,17 @@ class SystemSettings(Singleton):
         @return list parsed data
         """
         return self.__generic_parser(self.__setting_files['system_dirs_mask'])
+
+    def system_rev_symlinks_parser(self):
+        setting_file = self.__setting_files['system_rev_symlinks']
+        raw_data = self.__generic_parser(setting_file)
+        data = {}
+        for line in raw_data:
+            line = line.split()
+            if len(line) < 2:
+                continue
+            data[line[0]] = frozenset(line[1:])
+        return data
 
     def conflicting_tagged_packages_parser(self):
         """
