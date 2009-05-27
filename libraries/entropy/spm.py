@@ -473,11 +473,9 @@ class PortagePlugin:
         name = key_split[1]
         cat_dir = os.path.join(self.get_vdb_path(),cat)
         if not os.path.isdir(cat_dir):
-            return None
-        dir_content = [os.path.join(cat,x) for x in os.listdir(cat_dir) if x.startswith(name)]
-        if not dir_content:
-            return None
-        return dir_content
+            return []
+        return [os.path.join(cat,x) for x in os.listdir(cat_dir) if \
+            x.startswith(name)]
 
     # create a .tbz2 file in the specified path
     def quickpkg(self, atom, dirpath):
