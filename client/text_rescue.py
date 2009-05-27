@@ -125,6 +125,8 @@ def database(options):
         portagePackages = Spm.get_installed_packages()
         portagePackages = portagePackages[0]
 
+        Spm = Equo.Spm()
+
         # do for each database
         maxcount = str(len(portagePackages))
         count = 0
@@ -144,7 +146,7 @@ def database(options):
             Equo.entropyTools.append_xpak(temptbz2,portagePackage)
             # now extract info
             try:
-                mydata = Equo.extract_pkg_metadata(temptbz2, silent = True)
+                mydata = Spm.extract_pkg_metadata(temptbz2, silent = True)
             except Exception, e:
                 Equo.entropyTools.print_traceback()
                 Equo.clientLog.log(
@@ -577,7 +579,7 @@ def database(options):
                 Equo.entropyTools.append_xpak(temptbz2,atom)
                 # now extract info
                 try:
-                    mydata = Equo.extract_pkg_metadata(temptbz2, silent = True)
+                    mydata = Spm.extract_pkg_metadata(temptbz2, silent = True)
                 except Exception, e:
                     Equo.clientLog.log(
                         ETP_LOGPRI_INFO,

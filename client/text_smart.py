@@ -173,13 +173,16 @@ def InflateHandler(mytbz2s, savedir):
     branch = Equo.SystemSettings['repositories']['branch']
     print_info(brown(" %s: " % (_("Using branch"),))+bold(branch))
 
+    Spm = Equo.Spm()
+    Qa = Equo.QA()
+
     # analyze files
     for tbz2 in mytbz2s:
         print_info(darkgreen(" * ")+darkred("Inflating: ")+tbz2, back = True)
         etptbz2path = savedir+"/"+os.path.basename(tbz2)
         if os.path.realpath(tbz2) != os.path.realpath(etptbz2path): # can convert a file without copying
             shutil.copy2(tbz2,etptbz2path)
-        mydata = Equo.extract_pkg_metadata(etptbz2path)
+        mydata = Spm.extract_pkg_metadata(etptbz2path)
         # append arbitrary revision
         mydata['revision'] = 9999
         mydata['download'] = mydata['download'][:-5]+"~9999.tbz2"
@@ -196,8 +199,7 @@ def InflateHandler(mytbz2s, savedir):
         mydbconn.initializeDatabase()
         idpackage, yyy, xxx = mydbconn.addPackage(mydata, revision = mydata['revision'])
         del yyy, xxx
-        myQA = Equo.QA()
-        myQA.scan_missing_dependencies([idpackage], mydbconn)
+        Qa.scan_missing_dependencies([idpackage], mydbconn)
         mydbconn.closeDB()
         Equo.entropyTools.aggregate_edb(tbz2file = etptbz2path, dbfile = dbpath)
         os.remove(dbpath)
