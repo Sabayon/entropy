@@ -868,7 +868,7 @@ class Server:
         product = self.SystemSettings['repositories']['product']
         #db_dir = self.Entropy.get_local_database_dir(repo)
         rss_path = self.Entropy.get_local_database_rss_file(repo)
-        rss_light_path = self.Entropy.get_local_database_rss_light_file(repo)
+        rss_light_path = self.Entropy.get_local_database_rsslight_file(repo)
         rss_dump_name = etpConst['rss-dump-name']
         db_revision_path = self.Entropy.get_local_database_revision_file(repo)
 
@@ -1038,7 +1038,7 @@ class Server:
             if not download:
                 critical.append(data['database_rss_file'])
         database_rss_light_file = \
-            self.Entropy.get_local_database_rss_light_file(repo)
+            self.Entropy.get_local_database_rsslight_file(repo)
 
         extra_text_files.append(database_rss_light_file)
         if os.path.isfile(database_rss_light_file) or download:
