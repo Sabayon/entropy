@@ -549,7 +549,7 @@ def database(options):
             rc = "Yes"
             if etpUi['ask']: rc = Equo.askQuestion(">>   %s" % (_("Continue with adding ?"),) )
             if rc == "No":
-                Equo._resources_run_remove_lock()
+                Equo.resources_remove_lock()
                 return 0
             # now analyze
 
@@ -612,7 +612,7 @@ def database(options):
 
             print_info(brown(" @@ ")+blue("%s." % (_("Database update completed"),)))
 
-        Equo._resources_run_remove_lock()
+        Equo.resources_remove_lock()
         return 0
 
     elif (options[0] == "backup"):
