@@ -195,7 +195,9 @@ def xtermTitleReset():
                         if home != '' and pwd.startswith(home):
                                 pwd = '~' + pwd[len(home):]
                         default_xterm_title = '\x1b]0;%s@%s:%s\x07' % (
-                                os.getenv('LOGNAME', ''), os.getenv('HOSTNAME', '').split('.', 1)[0], pwd)
+                            os.getenv('LOGNAME', ''),
+                            os.getenv('HOSTNAME', '').split('.', 1)[0],
+                            pwd)
         xtermTitle(default_xterm_title, raw=True)
 
 def notitles():
