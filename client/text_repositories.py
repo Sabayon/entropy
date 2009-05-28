@@ -201,7 +201,7 @@ def check_notice_board_availability(reponame):
     except:
         show_err()
         return None
-    data = myrss.getEntries()
+    data = myrss.get_entries()
     if data == None:
         show_err()
     return data

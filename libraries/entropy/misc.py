@@ -370,6 +370,7 @@ class RSS:
                 broken = True
 
         if not os.path.isfile(self.__file) or broken:
+
             self.__title = self.__feed_title
             self.__description = self.__feed_description
             self.__language = self.__feed_language
@@ -382,7 +383,9 @@ class RSS:
             rss_f.write('')
             rss_f.flush()
             rss_f.close()
+
         else:
+
             self.__rssdoc = self.xmldoc.getElementsByTagName("rss")[0]
             self.__channel = self.__rssdoc.getElementsByTagName("channel")[0]
             title_obj = self.__channel.getElementsByTagName("title")[0]
@@ -448,7 +451,9 @@ class RSS:
                     self.__items[mycounter]['dc:creator'] = \
                         dcs[0].firstChild.data.strip()
 
-    def addItem(self, title, link = '', description = '', pubDate = ''):
+
+    def add_item(self, title, link = '', description = '', pubDate = ''):
+
         self.__itemscounter += 1
         self.__items[self.__itemscounter] = {}
         self.__items[self.__itemscounter]['title'] = title
@@ -468,16 +473,16 @@ class RSS:
                 description + str(self.__itemscounter)
         return self.__itemscounter
 
-    def removeEntry(self, key):
+    def remove_entry(self, key):
         if key in self.__items:
             del self.__items[key]
             self.__itemscounter -= 1
         return self.__itemscounter
 
-    def getEntries(self):
+    def get_entries(self):
         return self.__items, self.__itemscounter
 
-    def writeChanges(self, reverse = True):
+    def write_changes(self, reverse = True):
 
         # filter entries to fit in maxentries
         if self.__itemscounter > self.__maxentries:
@@ -534,7 +539,7 @@ class RSS:
 
             # sanity check, you never know
             if not self.__items.has_key(key):
-                self.removeEntry(key)
+                self.remove_entry(key)
                 continue
             k_error = False
             for item in ('title', 'link', 'guid', 'description', 'pubDate',):
@@ -542,7 +547,7 @@ class RSS:
                     k_error = True
                     break
             if k_error:
-                self.removeEntry(key)
+                self.remove_entry(key)
                 continue
 
             # item

@@ -836,8 +836,8 @@ class Server:
         self.download_notice_board(repo)
         rss_main = RSS(rss_path, rss_title, rss_description,
             maxentries = 20)
-        rss_main.addItem(title, link, description = notice_text)
-        rss_main.writeChanges()
+        rss_main.add_item(title, link, description = notice_text)
+        rss_main.write_changes()
         status = self.upload_notice_board(repo)
         return status
 
@@ -849,7 +849,7 @@ class Server:
         if not (os.path.isfile(rss_path) and os.access(rss_path, os.R_OK)):
             return None
         rss_main = RSS(rss_path, '', '')
-        return rss_main.getEntries()
+        return rss_main.get_entries()
 
     def remove_from_notice_board(self, identifier, repo = None):
 
@@ -859,8 +859,8 @@ class Server:
         if not (os.path.isfile(rss_path) and os.access(rss_path, os.R_OK)):
             return 0
         rss_main = RSS(rss_path, rss_title, rss_description)
-        data = rss_main.removeEntry(identifier)
-        rss_main.writeChanges()
+        data = rss_main.remove_entry(identifier)
+        rss_main.write_changes()
         return data
 
     def update_rss_feed(self, repo = None):
@@ -910,7 +910,7 @@ class Server:
                     mylink = link + "?search=" + atom.split("~")[0] + \
                         "&arch=" + etpConst['currentarch'] + "&product="+product
                     description = atom + ": " + added_items[atom]['description']
-                    rss_main.addItem(title = "Added/Updated" + title,
+                    rss_main.add_item(title = "Added/Updated" + title,
                         link = mylink, description = description)
             removed_items = db_actions.get("removed")
 
@@ -918,7 +918,7 @@ class Server:
                 for atom in removed_items:
                     description = atom + ": " + \
                         removed_items[atom]['description']
-                    rss_main.addItem(title = "Removed" + title, link = link,
+                    rss_main.add_item(title = "Removed" + title, link = link,
                         description = description)
 
             light_items = db_actions.get('light')
@@ -930,11 +930,11 @@ class Server:
                         "&arch=" + etpConst['currentarch'] + "&product=" + \
                         product
                     description = light_items[atom]['description']
-                    rss_light.addItem(title = "[" + revision + "] " + atom,
+                    rss_light.add_item(title = "[" + revision + "] " + atom,
                         link = mylink, description = description)
-                rss_light.writeChanges()
+                rss_light.write_changes()
 
-        rss_main.writeChanges()
+        rss_main.write_changes()
         self.Entropy.rssMessages.clear()
         self.dumpTools.removeobj(rss_dump_name)
 

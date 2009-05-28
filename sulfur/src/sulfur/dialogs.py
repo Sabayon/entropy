@@ -357,7 +357,7 @@ class NoticeBoardWindow(MenuSkel):
             except:
                 entropyTools.print_traceback()
                 continue
-            items, entries_len = myrss.getEntries()
+            items, entries_len = myrss.get_entries()
             items = items.copy()
             items_keys = sorted(items.keys())
             for key in items_keys:
