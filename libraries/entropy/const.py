@@ -337,6 +337,8 @@ def const_default_settings(rootdir):
         # by equo inside triggerTools
         'triggername': "trigger",
         'trigger_sh_interpreter': "/usr/sbin/entropy.sh",
+        # entropy hardware hash generator executable
+        'etp_hw_hash_gen': rootdir+"/usr/bin/entropy_hwgen.sh",
         # proxy configuration constants, used system wide
         'proxy': {
             'ftp': None,

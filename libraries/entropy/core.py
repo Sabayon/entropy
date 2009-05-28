@@ -292,6 +292,7 @@ class SystemSettings(Singleton):
             'system_dirs': etpConst['confdir']+"/fsdirs.conf",
             'system_dirs_mask': etpConst['confdir']+"/fsdirsmask.conf",
             'system_rev_symlinks': etpConst['confdir']+"/fssymlinks.conf",
+            'hw_hash': etpConst['confdir']+"/.hw.hash",
             'socket_service': etpConst['socketconf'],
             'system': etpConst['entropyconf'],
             'repositories': etpConst['repositoriesconf'],
@@ -302,7 +303,7 @@ class SystemSettings(Singleton):
             'repos_license_whitelist', 'system_package_sets',
             'conflicting_tagged_packages', 'system_dirs',
             'system_dirs_mask', 'socket_service', 'system',
-            'system_rev_symlinks'
+            'system_rev_symlinks', 'hw_hash'
         ])
         self.__setting_files_pre_run.extend(['repositories'])
 
@@ -866,7 +867,43 @@ class SystemSettings(Singleton):
         """
         return self.__generic_parser(self.__setting_files['system_dirs_mask'])
 
+    def hw_hash_parser(self):
+        """
+        Hardware hash metadata parser and generator. It returns a theorically
+        unique SHA256 hash bound to the computer running this Framework.
+
+        @return basestring containing SHA256 hexdigest
+        """
+        hw_hash_file = self.__setting_files['hw_hash']
+        if os.access(hw_hash_file, os.R_OK | os.F_OK):
+            hash_f = open(hw_hash_file, "r")
+            hash_data = hash_f.readline().strip()
+            hash_f.close()
+            return hash_data
+
+        hash_file_dir = os.path.dirname(hw_hash_file)
+        hw_hash_exec = etpConst['etp_hw_hash_gen']
+        if os.access(hash_file_dir, os.W_OK) and \
+            os.access(hw_hash_exec, os.X_OK | os.F_OK | os.R_OK):
+            pipe = os.popen('{ ' + hw_hash_exec + '; } 2>&1', 'r')
+            hash_data = pipe.read().strip()
+            sts = pipe.close()
+            if sts != None:
+                return None
+            hash_f = open(hw_hash_file, "w")
+            hash_f.write(hash_data)
+            hash_f.flush()
+            hash_f.close()
+            return hash_data
+
     def system_rev_symlinks_parser(self):
+        """
+        Parser returning important system symlinks mapping. For example:
+            {'/usr/lib': ['/usr/lib64']}
+        Useful for reverse matching files belonging to packages.
+
+        @return dict containing the mapping
+        """
         setting_file = self.__setting_files['system_rev_symlinks']
         raw_data = self.__generic_parser(setting_file)
         data = {}
