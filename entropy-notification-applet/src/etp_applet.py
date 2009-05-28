@@ -244,13 +244,16 @@ class EntropyApplet:
         )
 
     def show_service_available(self):
-        self.show_alert(
-            _("Sabayon updates service loaded"),
-            "%s: %s." % (
-                _("Entropy DBus service loaded"),
-                _("your Sabayon will notify you once updates are available"),
+        def do_show():
+            self.show_alert(
+                _("Sabayon updates service loaded"),
+                "%s: %s." % (
+                    _("Entropy DBus service loaded"),
+                    _("your Sabayon will notify you once updates are available"),
+                )
             )
-        )
+            return False
+        gobject.timeout_add(3000, do_show)
 
     def new_updates_signal(self):
         if not etp_applet_config.settings['APPLET_ENABLED']:
