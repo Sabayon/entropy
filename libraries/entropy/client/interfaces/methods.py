@@ -690,7 +690,7 @@ class MiscMixin:
         if etpConst['entropygid'] != None:
             os.chown(filepath,-1,etpConst['entropygid'])
 
-    def _resources_run_create_lock(self):
+    def resources_create_lock(self):
         self.create_pid_file_lock(etpConst['locks']['using_resources'])
 
     def resources_remove_lock(self):

@@ -1767,7 +1767,7 @@ class Repository:
             return 4
 
         # lock
-        self.Entropy._resources_run_create_lock()
+        self.Entropy.resources_create_lock()
         try:
             rc = self.run_sync()
         except:

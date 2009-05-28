@@ -2068,7 +2068,7 @@ class Package:
             return 21
 
         # lock
-        self.Entropy._resources_run_create_lock()
+        self.Entropy.resources_create_lock()
 
         try:
             rc = self.run_stepper(xterm_header)

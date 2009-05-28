@@ -500,7 +500,7 @@ def database(options):
         if rc == "No":
             return 0
 
-        Equo._resources_run_create_lock()
+        Equo.resources_create_lock()
 
         if toBeRemoved:
             mytxt = blue("%s. %s:") % (

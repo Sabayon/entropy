@@ -617,14 +617,14 @@ class SecurityInterface:
             return 4
 
         # lock
-        self.Entropy._resources_run_create_lock()
+        self.Entropy.resources_create_lock()
         try:
-            rc = self.run_fetch()
+            rc_lock = self.run_fetch()
         except:
             self.Entropy.resources_remove_lock()
             raise
-        if rc != 0:
-            return rc
+        if rc_lock != 0:
+            return rc_lock
 
         self.Entropy.resources_remove_lock()
 
