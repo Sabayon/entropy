@@ -383,9 +383,14 @@ class Client(Base):
             with open(rel_file,"r") as f:
                 release_string = f.read(512)
 
+        hw_hash = self.SystemSettings['hw_hash']
+        if not hw_hash:
+            hw_hash = ''
+
         mydict = {
             'branch': self.SystemSettings['repositories']['branch'],
             'release_string': release_string,
+            'hw_hash': hw_hash,
             'pkgkeys': ' '.join(pkgkeys),
         }
         xml_string = self.entropyTools.xml_from_dict(mydict)

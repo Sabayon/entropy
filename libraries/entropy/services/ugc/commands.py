@@ -602,11 +602,13 @@ class UGC(SocketCommands):
 
         branch = mydict.get('branch')
         release_string = mydict.get('release_string')
+        hw_hash = mydict.get('hw_hash')
         pkgkeys = mydict.get('pkgkeys').split()
         ip_addr = self._get_session_ip_address(authenticator)
 
         ugc = self._load_ugc_interface()
-        done = ugc.do_download_stats(branch, release_string, pkgkeys, ip_addr)
+        done = ugc.do_download_stats(branch, release_string, hw_hash, pkgkeys,
+            ip_addr)
         if not done:
             return done,'stats not stored'
         return done,'ok'

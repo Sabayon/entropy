@@ -126,6 +126,22 @@ class Server(RemoteDatabase):
             KEY `entropy_ip_locations_id` (`entropy_ip_locations_id`)
             );
         """,
+        'entropy_hardware_usage': """
+            CREATE TABLE `entropy_hardware_usage` (
+            `entropy_hardware_usage_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `entropy_distribution_usage_id` INT UNSIGNED NOT NULL,
+            `entropy_hardware_hash` VARCHAR ( 64 ),
+            FOREIGN KEY  (`entropy_distribution_usage_id`) REFERENCES `entropy_distribution_usage` (`entropy_distribution_usage_id`)
+            );
+        """,
+        #'entropy_hardware_store': """
+        #    CREATE TABLE `entropy_hardware_store` (
+        #    `entropy_hardware_store_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+        #    `entropy_hardware_usage_id` INT UNSIGNED NOT NULL,
+        #    `uname` VARCHAR ( 64 ),
+        #    FOREIGN KEY  (`entropy_hardware_usage_id`) REFERENCES `entropy_hardware_usage` (`entropy_hardware_usage_id`)
+        #    );
+        #""",
         'entropy_branches': """
             CREATE TABLE `entropy_branches` (
             `entropy_branches_id` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
@@ -1182,9 +1198,10 @@ class Server(RemoteDatabase):
         if do_commit: self.commit()
         return True
 
-    def do_download_stats(self, branch, release_string, pkgkeys, ip_addr, do_commit = False):
-        self.check_connection()
+    def do_download_stats(self, branch, release_string, hw_hash, pkgkeys,
+        ip_addr, do_commit = False):
 
+        self.check_connection()
         branch_id = self.get_entropy_branches_id(branch)
         if branch_id == -1:
             branch_id = self.insert_entropy_branch(branch)
@@ -1196,6 +1213,7 @@ class Server(RemoteDatabase):
         self.do_downloads(pkgkeys, ip_addr = ip_addr)
 
         entropy_distribution_usage_id = self.is_user_ip_available_in_entropy_distribution_usage(ip_addr)
+
         hits = 1
         if self.STATS_MAP['installer'] in pkgkeys:
             hits = 0
@@ -1212,6 +1230,7 @@ class Server(RemoteDatabase):
                     hits,
                 )
             )
+            entropy_distribution_usage_id = self.lastrowid()
         else:
             self.execute_query("""
             UPDATE entropy_distribution_usage SET `entropy_branches_id` = %s, 
@@ -1226,8 +1245,24 @@ class Server(RemoteDatabase):
                 )
             )
 
+        # store hardware hash if set
+        if hw_hash:
+            # entropy_hardware_usage
+            self.do_entropy_hardware_usage_stats(entropy_distribution_usage_id,
+                hw_hash)
+
         if do_commit: self.commit()
         return True
+
+    def do_entropy_hardware_usage_stats(self, entropy_distribution_usage_id, hw_hash):
+
+        self.execute_query('INSERT INTO entropy_hardware_usage VALUES (%s,%s,%s)', (
+                None,
+                entropy_distribution_usage_id,
+                hw_hash,
+            )
+        )
+        return self.lastrowid()
 
     def is_user_ip_available_in_entropy_distribution_usage(self, ip_address):
         self.check_connection()
