@@ -693,11 +693,11 @@ class MiscMixin:
     def _resources_run_create_lock(self):
         self.create_pid_file_lock(etpConst['locks']['using_resources'])
 
-    def _resources_run_remove_lock(self):
+    def resources_remove_lock(self):
         if os.path.isfile(etpConst['locks']['using_resources']):
             os.remove(etpConst['locks']['using_resources'])
 
-    def _resources_run_check_lock(self):
+    def resources_check_lock(self):
         rc = self.check_pid_file_lock(etpConst['locks']['using_resources'])
         return rc
 

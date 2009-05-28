@@ -491,7 +491,7 @@ def database(options):
             return 0
 
         # check lock file
-        gave_up = Equo.lock_check(Equo._resources_run_check_lock)
+        gave_up = Equo.lock_check(Equo.resources_check_lock)
         if gave_up:
             print_info(red(" %s." % (_("Entropy locked, giving up"),)))
             return 2

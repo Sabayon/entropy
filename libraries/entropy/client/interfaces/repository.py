@@ -1045,7 +1045,7 @@ class Repository:
                 header = darkred(" @@ ")
             )
             self.syncErrors = True
-            self.Entropy._resources_run_remove_lock()
+            self.Entropy.resources_remove_lock()
             return 128
 
         if not self.noEquoCheck:
@@ -1757,13 +1757,13 @@ class Repository:
             header = darkred(" @@ ")
         )
 
-        gave_up = self.Entropy.lock_check(self.Entropy._resources_run_check_lock)
+        gave_up = self.Entropy.lock_check(self.Entropy.resources_check_lock)
         if gave_up:
             return 3
 
         locked = self.Entropy.application_lock_check()
         if locked:
-            self.Entropy._resources_run_remove_lock()
+            self.Entropy.resources_remove_lock()
             return 4
 
         # lock
@@ -1771,12 +1771,12 @@ class Repository:
         try:
             rc = self.run_sync()
         except:
-            self.Entropy._resources_run_remove_lock()
+            self.Entropy.resources_remove_lock()
             raise
         if rc: return rc
 
         # remove lock
-        self.Entropy._resources_run_remove_lock()
+        self.Entropy.resources_remove_lock()
 
         if (self.notAvailable >= len(self.reponames)):
             return 2

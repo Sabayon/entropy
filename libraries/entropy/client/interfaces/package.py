@@ -2058,13 +2058,13 @@ class Package:
     def run(self, xterm_header = None):
         self.error_on_not_prepared()
 
-        gave_up = self.Entropy.lock_check(self.Entropy._resources_run_check_lock)
+        gave_up = self.Entropy.lock_check(self.Entropy.resources_check_lock)
         if gave_up:
             return 20
 
         locked = self.Entropy.application_lock_check()
         if locked:
-            self.Entropy._resources_run_remove_lock()
+            self.Entropy.resources_remove_lock()
             return 21
 
         # lock
@@ -2073,11 +2073,11 @@ class Package:
         try:
             rc = self.run_stepper(xterm_header)
         except:
-            self.Entropy._resources_run_remove_lock()
+            self.Entropy.resources_remove_lock()
             raise
 
         # remove lock
-        self.Entropy._resources_run_remove_lock()
+        self.Entropy.resources_remove_lock()
 
         if rc != 0:
             self.Entropy.updateProgress(

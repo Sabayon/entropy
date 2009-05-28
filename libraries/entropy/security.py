@@ -607,13 +607,13 @@ class SecurityInterface:
         )
 
         gave_up = self.Entropy.lock_check(
-            self.Entropy._resources_run_check_lock)
+            self.Entropy.resources_check_lock)
         if gave_up:
             return 7
 
         locked = self.Entropy.application_lock_check()
         if locked:
-            self.Entropy._resources_run_remove_lock()
+            self.Entropy.resources_remove_lock()
             return 4
 
         # lock
@@ -621,12 +621,12 @@ class SecurityInterface:
         try:
             rc = self.run_fetch()
         except:
-            self.Entropy._resources_run_remove_lock()
+            self.Entropy.resources_remove_lock()
             raise
         if rc != 0:
             return rc
 
-        self.Entropy._resources_run_remove_lock()
+        self.Entropy.resources_remove_lock()
 
         if self.advisories_changed:
             advtext = "%s: %s" % (
@@ -668,7 +668,7 @@ class SecurityInterface:
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy._resources_run_remove_lock()
+            self.Entropy.resources_remove_lock()
             return 1
 
         mytxt = "%s: %s %s" % (
@@ -697,7 +697,7 @@ class SecurityInterface:
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy._resources_run_remove_lock()
+            self.Entropy.resources_remove_lock()
             return 2
 
         # verify digest
@@ -714,7 +714,7 @@ class SecurityInterface:
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy._resources_run_remove_lock()
+            self.Entropy.resources_remove_lock()
             return 3
         elif status == 2:
             mytxt = "%s: %s." % (
@@ -727,7 +727,7 @@ class SecurityInterface:
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy._resources_run_remove_lock()
+            self.Entropy.resources_remove_lock()
             return 4
         elif status == 3:
             mytxt = "%s: %s." % (
@@ -740,7 +740,7 @@ class SecurityInterface:
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy._resources_run_remove_lock()
+            self.Entropy.resources_remove_lock()
             return 5
         elif status == 0:
             mytxt = "%s: %s." % (
@@ -781,7 +781,7 @@ class SecurityInterface:
                 type = "error",
                 header = red("   ## ")
             )
-            self.Entropy._resources_run_remove_lock()
+            self.Entropy.resources_remove_lock()
             return 6
 
         mytxt = "%s: %s %s" % (
