@@ -17,6 +17,7 @@ entropy-install:
 
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/libraries
 	mkdir -p $(DESTDIR)/usr/sbin
+	mkdir -p $(DESTDIR)/usr/bin
 	mkdir -p $(DESTDIR)/etc/entropy
 	mkdir -p $(DESTDIR)/etc/env.d
 	mkdir -p $(DESTDIR)/etc/init.d
