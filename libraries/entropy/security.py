@@ -19,7 +19,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
-
+# pylint ~ ok
 import os
 import shutil
 from entropy.exceptions import IncorrectParameter, InvalidData
@@ -166,30 +166,34 @@ class SecurityInterface:
             not os.access(self.download_package_checksum, os.R_OK):
             return 1
 
-        f = open(self.download_package_checksum)
+        f_down = open(self.download_package_checksum)
+        read_err = False
         try:
-            checksum = f.readline().strip().split()[0]
-            f.close()
+            checksum = f_down.readline().strip().split()[0]
         except (OSError, IOError, IndexError,):
+            read_err = True
+
+        f_down.close()
+        if read_err:
             return 2
 
+        self.advisories_changed = True
         if checksum == self.previous_checksum:
             self.advisories_changed = False
-        else:
-            self.advisories_changed = True
+
         md5res = self.entropyTools.compare_md5(self.download_package, checksum)
         if not md5res:
             return 3
         return 0
 
     def __unpack_advisories(self):
-        rc = self.entropyTools.uncompress_tar_bz2(
+        rc_unpack = self.entropyTools.uncompress_tar_bz2(
             self.download_package,
             self.unpacked_package,
             catchEmpty = True
         )
         const_setup_perms(self.unpacked_package, etpConst['entropygid'])
-        return rc
+        return rc_unpack
 
     def __clear_previous_advisories(self):
         if os.listdir(etpConst['securitydir']):
@@ -332,12 +336,12 @@ class SecurityInterface:
                     try:
                         del adv_metadata[key]['affected'][a_key]
                     except KeyError:
-                        pass
+                        continue
                 try:
                     if not adv_metadata[key]['affected']:
                         del adv_metadata[key]
                 except KeyError:
-                    pass
+                    continue
 
         return adv_metadata
 
