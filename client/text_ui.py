@@ -1109,8 +1109,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                         Equo.UGC.add_download_stats(myrepo, mypkgkeys)
             except:
                 pass
-        t = ParallelTask(spawn_ugc)
-        t.start()
+        spawn_ugc()
 
     if onlyfetch:
         print_info(red(" @@ ")+blue("%s." % (_("Download complete"),) ))

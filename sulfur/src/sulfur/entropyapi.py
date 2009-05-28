@@ -157,8 +157,7 @@ class QueueExecutor:
                                 mypkgkeys)
                 except:
                     pass
-            t = ParallelTask(spawn_ugc)
-            t.start()
+            spawn_ugc()
 
         self.Sulfur.ui.skipMirror.hide()
 
