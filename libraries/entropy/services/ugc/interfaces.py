@@ -1246,8 +1246,9 @@ class Server(RemoteDatabase):
             )
 
         # store hardware hash if set
-        if hw_hash:
-            # entropy_hardware_usage
+        if hw_hash and not \
+            self.is_entropy_hardware_usage_stats_available(entropy_distribution_usage_id):
+
             self.do_entropy_hardware_usage_stats(entropy_distribution_usage_id,
                 hw_hash)
 
@@ -1262,7 +1263,14 @@ class Server(RemoteDatabase):
                 hw_hash,
             )
         )
-        return self.lastrowid()
+
+    def is_entropy_hardware_usage_stats_available(self, entropy_distribution_usage_id):
+        self.check_connection()
+        self.execute_query('SELECT entropy_hardware_usage_id  FROM entropy_hardware_usage WHERE `entropy_distribution_usage_id` = %s',(entropy_distribution_usage_id,))
+        data = self.fetchone()
+        if data:
+            return True
+        return False
 
     def is_user_ip_available_in_entropy_distribution_usage(self, ip_address):
         self.check_connection()
