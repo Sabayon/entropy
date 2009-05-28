@@ -4,11 +4,16 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
-    - machine hash (attach to UGC stats)
     - Sulfur: iPhone navigation
-    - grouping categories Sulfur (through UGC packages tagging?)
+    - grouping categories Sulfur (through UGC packages tagging? - hwdb)
     - Documentation + code style cleanup (NLnet Milestone 7)
 
   1.0_beta2:
 
     - PackageKit integration
+
+
+  2.0:
+
+    - PackageKit improved support
+    - UGC based on XML requests (all the commands into one string)
