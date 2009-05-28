@@ -266,8 +266,8 @@ class NoticeBoardWindow(MenuSkel):
 
     def __init__( self, window, entropy ):
 
-        from entropy.misc import rssFeed
-        self.rssFeed = rssFeed
+        from entropy.misc import RSS
+        self.RSS = RSS
         self.Entropy = entropy
         self.window = window
 
@@ -353,7 +353,7 @@ class NoticeBoardWindow(MenuSkel):
             }
             parent = self.model.append( None, (master_dict,) )
             try:
-                myrss = self.rssFeed(self.repoids[repoid],'','')
+                myrss = self.RSS(self.repoids[repoid],'','')
             except:
                 entropyTools.print_traceback()
                 continue

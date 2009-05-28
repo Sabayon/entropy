@@ -29,7 +29,7 @@ from entropy.const import *
 from entropy.output import *
 from entropy.exceptions import *
 from entropy.client.interfaces import Client
-from entropy.misc import rssFeed
+from entropy.misc import RSS
 Equo = Client(noclientdb = True)
 from entropy.i18n import _
 
@@ -197,7 +197,7 @@ def check_notice_board_availability(reponame):
         return
 
     try:
-        myrss = rssFeed(board_file,'','')
+        myrss = RSS(board_file,'','')
     except:
         show_err()
         return None

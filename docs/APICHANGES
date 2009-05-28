@@ -12,7 +12,7 @@ From SVN 3112 there have been several API changes:
 
   - SocketUrlFetcher has been removed
 
-  - rssFeed features several private class property moves
+  - rssFeed features several private class property moves (class now also called RSS)
 
   - entropyTools, dumpTools, outputTools, entropyConstants, exceptionTools have been
     moved under the entropy package, except for exceptionTools, for others backward

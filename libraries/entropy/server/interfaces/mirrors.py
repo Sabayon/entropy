@@ -29,7 +29,7 @@ from entropy.exceptions import OnlineMirrorError, IncorrectParameter, \
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, darkblue
 from entropy.const import etpConst, etpSys
 from entropy.i18n import _
-from entropy.misc import rssFeed
+from entropy.misc import RSS
 from entropy.transceivers import FtpInterface
 from entropy.db import dbapi2
 
@@ -834,7 +834,7 @@ class Server:
             link = srv_set['rss']['website_url']
 
         self.download_notice_board(repo)
-        rss_main = rssFeed(rss_path, rss_title, rss_description,
+        rss_main = RSS(rss_path, rss_title, rss_description,
             maxentries = 20)
         rss_main.addItem(title, link, description = notice_text)
         rss_main.writeChanges()
@@ -848,7 +848,7 @@ class Server:
             self.download_notice_board(repo)
         if not (os.path.isfile(rss_path) and os.access(rss_path, os.R_OK)):
             return None
-        rss_main = rssFeed(rss_path, '', '')
+        rss_main = RSS(rss_path, '', '')
         return rss_main.getEntries()
 
     def remove_from_notice_board(self, identifier, repo = None):
@@ -858,7 +858,7 @@ class Server:
         rss_description = "Inform about important distribution activities."
         if not (os.path.isfile(rss_path) and os.access(rss_path, os.R_OK)):
             return 0
-        rss_main = rssFeed(rss_path, rss_title, rss_description)
+        rss_main = RSS(rss_path, rss_title, rss_description)
         data = rss_main.removeEntry(identifier)
         rss_main.writeChanges()
         return data
@@ -880,7 +880,7 @@ class Server:
 
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
 
-        rss_main = rssFeed(rss_path, rss_title, rss_description,
+        rss_main = RSS(rss_path, rss_title, rss_description,
             maxentries = srv_set['rss']['max_entries'])
         # load dump
         db_actions = self.Cacher.pop(rss_dump_name)
@@ -923,7 +923,7 @@ class Server:
 
             light_items = db_actions.get('light')
             if light_items:
-                rss_light = rssFeed(rss_light_path, rss_title, rss_description,
+                rss_light = RSS(rss_light_path, rss_title, rss_description,
                     maxentries = srv_set['rss']['light_max_entries'])
                 for atom in light_items:
                     mylink = link + "?search=" + atom.split("~")[0] + \
