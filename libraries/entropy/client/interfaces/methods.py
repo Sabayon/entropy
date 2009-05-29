@@ -1160,7 +1160,7 @@ class MiscMixin:
         @type branch basestring
         @return None
         """
-        self.Cacher.sync(wait = True)
+        self.Cacher.discard()
         self.Cacher.stop()
         self.purge_cache(showProgress = False)
         self.close_all_repositories()
@@ -1522,7 +1522,7 @@ class MatchMixin:
         if not callable(f):
             raise IncorrectParameter('IncorrectParameter: %s: %s' % (_("not a valid method"),method,) )
 
-        self.Cacher.sync(wait = True)
+        self.Cacher.discard()
         done = f(match, dry_run)
         if done and not dry_run:
             self.SystemSettings.clear()

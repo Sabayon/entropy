@@ -124,7 +124,7 @@ class CacheMixin:
                 )
 
     def clear_dump_cache(self, dump_name, skip = []):
-        self.Cacher.sync(wait = True)
+        self.Cacher.discard()
         self.SystemSettings._clear_dump_cache(dump_name, skip = skip)
 
     def update_ugc_cache(self, repository):

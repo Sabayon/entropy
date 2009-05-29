@@ -1262,7 +1262,7 @@ class SystemSettings(Singleton):
         """
         Internal method, go away!
         """
-        self.__cacher.sync(wait = True)
+        self.__cacher.discard()
         self._clear_dump_cache(etpCache['world_available'])
         self._clear_dump_cache(etpCache['world_update'])
         self._clear_dump_cache(etpCache['check_package_update'])
