@@ -4234,6 +4234,12 @@ class LocalRepository:
                     CREATE INDEX IF NOT EXISTS useflagsindex ON useflagsreference ( flagname );
                 """)
 
+    def dropContentIndex(self, only_file = False):
+        with self.__write_mutex:
+            self.cursor.execute("DROP INDEX IF EXISTS contentindex_file")
+            if not only_file:
+                self.cursor.executescript("DROP INDEX IF EXISTS contentindex_couple;")
+
     def createContentIndex(self):
         if self.indexing:
             with self.__write_mutex:
