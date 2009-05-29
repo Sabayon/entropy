@@ -2749,12 +2749,21 @@ class LocalRepository:
             obj.add(path)
         return data
 
-    def retrieveNeededLibraryPaths(self, needed_library_name):
+    def retrieveNeededLibraryPaths(self, needed_library_name, elfclass = -1):
         if not self.doesTableExist('neededlibrarypaths'):
             return set()
-        self.cursor.execute("""
-            SELECT path FROM neededlibrarypaths WHERE library = (?)
-        """, (needed_library_name,))
+        if elfclass != -1:
+            self.cursor.execute("""
+                SELECT path FROM neededlibrarypaths, neededreference, needed
+                WHERE neededlibrarypaths.library = (?) AND
+                needed.elfclass = (?) AND
+                neededreference.library = neededlibrarypaths.library AND
+                needed.idneeded = neededreference.idneeded
+            """, (needed_library_name, elfclass,))
+        else:
+            self.cursor.execute("""
+                SELECT path FROM neededlibrarypaths WHERE library = (?)
+            """, (needed_library_name,))
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveConflicts(self, idpackage):
@@ -3175,32 +3184,22 @@ class LocalRepository:
 
     def resolveNeeded(self, needed, elfclass = -1):
 
-        cache = self.fetchSearchCache(needed, 'resolveNeeded')
-        if cache != None: return cache
+        #cache = self.fetchSearchCache(needed, 'resolveNeeded2')
+        #if cache != None: return cache
 
-        ldpaths = self.entropyTools.collect_linker_paths()
-        mypaths = [os.path.join(x, needed) for x in ldpaths]
+        mypaths = self.retrieveNeededLibraryPaths(needed, elfclass)
 
-        query = """
-        SELECT idpackage,file FROM content WHERE content.file IN (%s)
-        """ % ( ('?,'*len(mypaths))[:-1], )
+        idpackages = set()
+        for mypath in mypaths:
+            self.cursor.execute("""
+            SELECT idpackage FROM content WHERE file = (?)
+            """, (mypath,))
+            idpackages |= self.fetchall2set(self.cursor.fetchall())
 
-        self.cursor.execute(query, mypaths)
-        results = self.cursor.fetchall()
+        return idpackages
 
-        if elfclass == -1:
-            mydata = set(results)
-        else:
-            mydata = set()
-            for data in results:
-                if not os.access(data[1], os.R_OK):
-                    continue
-                myclass = self.entropyTools.read_elf_class(data[1])
-                if myclass == elfclass:
-                    mydata.add(data)
-
-        self.storeSearchCache(needed, 'resolveNeeded', mydata)
-        return mydata
+        #self.storeSearchCache(needed, 'resolveNeeded2', idpackages)
+        #return mydata
 
     def isSourceAvailable(self, source):
         self.cursor.execute('SELECT idsource FROM sourcesreference WHERE source = (?)', (source,))
