@@ -874,6 +874,17 @@ class LocalRepository:
                 quickpkg_atoms |= self.runTreeUpdatesSlotmoveAction(command[1:],
                     quickpkg_atoms)
 
+            mytxt = "%s: %s." % (
+                bold(_("ENTROPY")),
+                blue(_("package move actions complete")),
+            )
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = purple(" @@ ")
+            )
+
         if quickpkg_atoms and not self.clientDatabase:
             # quickpkg package and packages owning it as a dependency
             try:
@@ -905,6 +916,17 @@ class LocalRepository:
                     e,
                 )
                 self.entropyTools.print_traceback()
+
+        mytxt = "%s: %s." % (
+            bold(_("ENTROPY")),
+            blue(_("package moves completed successfully")),
+        )
+        self.updateProgress(
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = brown(" @@ ")
+        )
 
         # discard cache
         self.clearCache()
