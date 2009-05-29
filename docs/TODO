@@ -4,14 +4,15 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
+    - fill db's needed_paths
+    - entropy service DSA pubkey auth
+    - Documentation + code style cleanup (NLnet Milestone 7)
     - Sulfur: iPhone navigation
     - grouping categories Sulfur (through UGC packages tagging? - hwdb)
-    - Documentation + code style cleanup (NLnet Milestone 7)
 
   1.0_beta2:
 
     - PackageKit integration
-
 
   2.0:
 
