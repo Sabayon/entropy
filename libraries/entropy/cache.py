@@ -168,7 +168,7 @@ class EntropyCacher(Singleton):
         """
         self.__cache_buffer.clear()
         with self.__cache_lock:
-            return
+            self.__cache_buffer.clear() # make sure twice
 
     def push(self, key, data, async = True):
         """
