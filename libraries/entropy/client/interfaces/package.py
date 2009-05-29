@@ -1058,6 +1058,9 @@ class Package:
         # installed packages database SHOULD never have more than one package for scope (key+slot)
         data['injected'] = False
         data['counter'] = -1 # spm counter will be set in self._install_package_into_spm_database()
+        # there is no need to store needed paths into db
+        if data.get('needed_paths'):
+            del data['needed_paths']
 
         idpackage, rev, x = self.Entropy.clientDbconn.handlePackage(
             etpData = data, forcedRevision = data['revision'],
