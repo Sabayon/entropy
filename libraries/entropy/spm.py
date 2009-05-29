@@ -1769,6 +1769,24 @@ class PortagePlugin:
 
         return sorted(pkg_needed)
 
+    def _extract_pkg_metadata_needed_paths(self, needed_libs):
+
+        data = {}
+        ldpaths = self.entropyTools.collect_linker_paths()
+
+        for needed_lib, elf_class in needed_libs:
+            for ldpath in ldpaths:
+                my_lib = os.path.join(ldpath, needed_lib)
+                if not os.access(my_lib, os.R_OK):
+                    continue
+                myclass = self.entropyTools.read_elf_class(my_lib)
+                if myclass != elf_class:
+                    continue
+                obj = data.setdefault(needed_lib, set())
+                obj.add(my_lib)
+
+        return data
+
     def _extract_pkg_metadata_messages(self, log_dir, category, name, version, silent = False):
 
         pkg_messages = []
@@ -1939,6 +1957,7 @@ class PortagePlugin:
         data['keywords'] = set(data['keywords'])
         needed_file = os.path.join(tbz2TmpDir,etpConst['spm']['xpak_entries']['needed'])
         data['needed'] = self._extract_pkg_metadata_needed(needed_file)
+        data['needed_paths'] = self._extract_pkg_metadata_needed_paths(data['needed'])
         content_file = os.path.join(tbz2TmpDir,etpConst['spm']['xpak_entries']['contents'])
         data['content'] = self._extract_pkg_metadata_content(content_file, filepath)
         data['disksize'] = self.entropyTools.sum_file_sizes(data['content'])

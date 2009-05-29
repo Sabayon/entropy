@@ -281,6 +281,11 @@ class Schema:
                 library VARCHAR
             );
 
+            CREATE TABLE neededlibrarypaths (
+                library VARCHAR,
+                path VARCHAR
+            );
+
             CREATE TABLE treeupdates (
                 repository VARCHAR PRIMARY KEY,
                 digest VARCHAR
@@ -1406,6 +1411,10 @@ class LocalRepository:
         # package signatures
         if etpData.get('signatures'):
             self.insertSignatures(idpackage, etpData['signatures'])
+        # needed libraries paths
+        if etpData.get('needed_paths'):
+            for lib in sorted(etpData['needed_paths']):
+                self.insertNeededPaths(lib, etpData['needed_paths'][lib])
 
         # spm phases
         if etpData.get('spm_phases') != None:
@@ -1790,6 +1799,11 @@ class LocalRepository:
                 return (idpackage, xfile, content[xfile],)
             self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',map(my_cmap, content))
 
+    def insertNeededPaths(self, library, paths):
+        with self.__write_mutex:
+            self.cursor.executemany('INSERT INTO neededlibrarypaths VALUES (?,?)',
+                ((library, x,) for x in paths))
+
     def insertAutomergefiles(self, idpackage, automerge_data):
         with self.__write_mutex:
             self.cursor.executemany('INSERT INTO automergefiles VALUES (?,?,?)',
@@ -2079,6 +2093,7 @@ class LocalRepository:
         self.cleanupSources()
         self.cleanupEclasses()
         self.cleanupNeeded()
+        self.cleanupNeededPaths()
         self.cleanupDependencies()
         self.cleanupChangelogs()
 
@@ -2105,6 +2120,12 @@ class LocalRepository:
             self.cursor.execute("""
             DELETE FROM neededreference 
             WHERE idneeded NOT IN (SELECT idneeded FROM needed)""")
+
+    def cleanupNeededPaths(self):
+        with self.__write_mutex:
+            self.cursor.execute("""
+            DELETE FROM neededlibrarypaths 
+            WHERE library NOT IN (SELECT library FROM neededreference)""")
 
     def cleanupDependencies(self):
         with self.__write_mutex:
@@ -2359,6 +2380,7 @@ class LocalRepository:
             'sources': sources,
             'eclasses': self.retrieveEclasses(idpackage),
             'needed': self.retrieveNeeded(idpackage, extended = True),
+            'needed_paths': self.retrieveNeededPaths(idpackage),
             'provide': self.retrieveProvide(idpackage),
             'conflicts': self.retrieveConflicts(idpackage),
             'licensedata': self.retrieveLicensedata(idpackage),
@@ -2711,6 +2733,29 @@ class LocalRepository:
             needed = data
 
         return needed
+
+    def retrieveNeededPaths(self, idpackage):
+        if not self.doesTableExist('neededlibrarypaths'):
+            return {}
+        self.cursor.execute("""
+            SELECT neededlibrarypaths.library, neededlibrarypaths.path FROM
+            neededlibrarypaths, neededreference, needed WHERE
+            needed.idpackage = (?) AND needed.idneeded = neededreference.idneeded
+            AND neededreference.library = neededlibrarypaths.library
+        """, (idpackage,))
+        data = {}
+        for lib, path in self.cursor.fetchall():
+            obj = data.setdefault(lib, set())
+            obj.add(path)
+        return data
+
+    def retrieveNeededLibraryPaths(self, needed_library_name):
+        if not self.doesTableExist('neededlibrarypaths'):
+            return set()
+        self.cursor.execute("""
+            SELECT path FROM neededlibrarypaths WHERE library = (?)
+        """, (needed_library_name,))
+        return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveConflicts(self, idpackage):
         self.cursor.execute('SELECT conflict FROM conflicts WHERE idpackage = (?)', (idpackage,))
@@ -3072,7 +3117,8 @@ class LocalRepository:
         return result
 
     def retrieveUnusedIdpackages(self):
-        # WARNING: never remove this, otherwise equo.db (client database) dependstable will be always broken (trust me)
+        # WARNING: never remove this, otherwise equo.db (client database)
+        # dependstable will be always broken (trust me)
         # sanity check on the table
         if not self.isDependsTableSane(): # is empty, need generation
             self.regenerateDependsTable(output = False)
@@ -3082,9 +3128,9 @@ class LocalRepository:
         """)
         return self.fetchall2list(self.cursor.fetchall())
 
-    # You must provide the full atom to this function
-    # WARNING: this function does not support branches
     def isPackageAvailable(self, pkgatom):
+        # You must provide the full atom to this function
+        # WARNING: this function does not support branches
         pkgatom = self.entropyTools.remove_package_operators(pkgatom)
         self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?)', (pkgatom,))
         result = self.cursor.fetchone()
@@ -3801,6 +3847,9 @@ class LocalRepository:
         if not self.doesTableExist('packagespmphases'):
             self.createPackagespmphases()
 
+        if not self.doesTableExist('neededlibrarypaths'):
+            self.createNeededlibrarypathsTable()
+
         self.readOnly = old_readonly
         self.connection.commit()
 
@@ -4202,6 +4251,7 @@ class LocalRepository:
         self.createCompileFlagsIndex()
         self.createPackagesetsIndex()
         self.createAutomergefilesIndex()
+        self.createNeededlibrarypathsIndex()
 
     def createPackagesetsIndex(self):
         if self.indexing:
@@ -4211,6 +4261,14 @@ class LocalRepository:
                     self.commitChanges()
                 except self.dbapi2.OperationalError:
                     pass
+
+    def createNeededlibrarypathsIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.execute("""
+                    CREATE INDEX IF NOT EXISTS neededlibpaths_library
+                    ON neededlibrarypaths ( library )
+                """)
 
     def createAutomergefilesIndex(self):
         if self.indexing:
@@ -4448,6 +4506,15 @@ class LocalRepository:
         self.cursor.execute('DROP TABLE counters')
         self.cursor.execute('ALTER TABLE counterstemp RENAME TO counters')
         self.commitChanges()
+
+    def createNeededlibrarypathsTable(self):
+        with self.__write_mutex:
+            self.cursor.execute("""
+                CREATE TABLE neededlibrarypaths (
+                    library VARCHAR,
+                    path VARCHAR
+                );
+            """)
 
     def createInstalledTableSource(self):
         with self.__write_mutex:
