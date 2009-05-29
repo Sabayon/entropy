@@ -954,10 +954,11 @@ class CalculatorsMixin:
         for needed in repodata:
             for myrepo in matched_repos:
                 mydbc = self.open_repository(myrepo)
-                solved_needed = mydbc.resolveNeeded(needed, elfclass = repodata[needed])
+                solved_needed = mydbc.resolveNeeded(needed,
+                    repodata[needed])
                 found = False
-                for idpackage,myfile in solved_needed:
-                    x = (idpackage,myrepo)
+                for idpackage in solved_needed:
+                    x = (idpackage, myrepo)
                     if x in matched_deps:
                         found_matches.add(x)
                         found = True
