@@ -37,19 +37,19 @@ class EntropyCacher(Singleton):
 
     import entropy.dump as dumpTools
     import entropy.tools as entropyTools
-    import threading
     import copy
-    __alive = False
-    __cache_writer = None
-    __cache_buffer = Lifo()
-    __cache_lock = threading.Lock()
+
     def init_singleton(self):
         """
         Singleton overloaded method. Equals to __init__.
         This is the place where all the properties initialization
         takes place.
         """
-        pass
+        import threading
+        self.__alive = False
+        self.__cache_writer = None
+        self.__cache_buffer = Lifo()
+        self.__cache_lock = threading.Lock()
 
     def __copy_obj(self, obj):
         """
@@ -147,7 +147,9 @@ class EntropyCacher(Singleton):
         @return None
         """
         if not self.__alive:
+            self.__cache_buffer.clear()
             return
+
         watch_dog = 10
         while self.__cache_buffer.is_filled() and ((watch_dog > 0) or wait) \
             and self.__alive:
@@ -155,6 +157,18 @@ class EntropyCacher(Singleton):
             if not wait:
                 watch_dog -= 1
             time.sleep(0.5)
+
+        self.__cache_buffer.clear()
+
+    def discard(self):
+        """
+        This method makes buffered cache to be discarded synchronously.
+
+        @return None
+        """
+        self.__cache_buffer.clear()
+        with self.__cache_lock:
+            return
 
     def push(self, key, data, async = True):
         """
