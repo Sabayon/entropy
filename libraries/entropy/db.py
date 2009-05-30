@@ -4638,6 +4638,7 @@ class LocalRepository:
         mydata = set()
         am = self.atomMatch
         up = self.updateProgress
+        self.clearDependsTable()
         for iddep, atom in depends:
             count += 1
 
