@@ -3803,16 +3803,13 @@ class LocalRepository:
         old_readonly = self.readOnly
         self.readOnly = False
 
-        if not self.doesTableExist("licenses_accepted") and \
-            (self.dbname == etpConst['clientdbid']):
+        if not self.doesTableExist("licenses_accepted"):
             self.createLicensesAcceptedTable()
 
-        if not self.doesTableExist("installedtable") and \
-            (self.dbname == etpConst['clientdbid']):
+        if not self.doesTableExist("installedtable"):
             self.createInstalledTable()
 
-        if self.doesTableExist("installedtable") and \
-            not self.doesColumnInTableExist("installedtable","source"):
+        if not self.doesColumnInTableExist("installedtable", "source"):
             self.createInstalledTableSource()
 
         if not self.doesTableExist('packagesets'):
