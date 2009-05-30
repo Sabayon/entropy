@@ -3809,9 +3809,6 @@ class LocalRepository:
             (self.dbname == etpConst['clientdbid']):
             self.createLicensesAcceptedTable()
 
-        if not self.doesTableExist("counters"):
-            self.createCountersTable()
-
         if not self.doesTableExist("installedtable") and \
             (self.dbname == etpConst['clientdbid']):
             self.createInstalledTable()
@@ -4200,10 +4197,6 @@ class LocalRepository:
             return mydata[0]
         except:
             return ""
-
-    def createCountersTable(self):
-        with self.__write_mutex:
-            self.cursor.execute("CREATE TABLE IF NOT EXISTS counters ( counter INTEGER, idpackage INTEGER PRIMARY KEY, branch VARCHAR );")
 
     def dropAllIndexes(self):
         self.cursor.execute('SELECT name FROM SQLITE_MASTER WHERE type = "index"')
