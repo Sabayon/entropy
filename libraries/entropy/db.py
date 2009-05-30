@@ -1750,8 +1750,6 @@ class LocalRepository:
             self.commitChanges()
 
     def removeLicensedata(self, license_name):
-        if not self.doesTableExist("licensedata"):
-            return
         with self.__write_mutex:
             self.cursor.execute('DELETE FROM licensedata WHERE licensename = (?)', (license_name,))
 
@@ -3015,8 +3013,6 @@ class LocalRepository:
     def retrieveLicensedata(self, idpackage):
 
         # insert license information
-        if not self.doesTableExist("licensedata"):
-            return {}
         licenses = self.retrieveLicense(idpackage)
         if licenses == None:
             return {}
@@ -3040,8 +3036,6 @@ class LocalRepository:
 
     def retrieveLicensedataKeys(self, idpackage):
 
-        if not self.doesTableExist("licensedata"):
-            return set()
         licenses = self.retrieveLicense(idpackage)
         if licenses == None:
             return set()
@@ -3059,9 +3053,6 @@ class LocalRepository:
         return licdata
 
     def retrieveLicenseText(self, license_name):
-
-        if not self.doesTableExist("licensedata"):
-            return None
 
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
 
@@ -3265,8 +3256,6 @@ class LocalRepository:
         return False
 
     def isLicensedataKeyAvailable(self, license_name):
-        if not self.doesTableExist("licensedata"):
-            return True
         self.cursor.execute('SELECT licensename FROM licensedata WHERE licensename = (?)', (license_name,))
         result = self.cursor.fetchone()
         if not result:
@@ -3815,9 +3804,6 @@ class LocalRepository:
 
         old_readonly = self.readOnly
         self.readOnly = False
-
-        if not self.doesTableExist("licensedata"):
-            self.createLicensedataTable()
 
         if not self.doesTableExist("licenses_accepted") and \
             (self.dbname == etpConst['clientdbid']):
@@ -4373,8 +4359,6 @@ class LocalRepository:
 
     def createLicensedataIndex(self):
         if self.indexing:
-            if not self.doesTableExist("licensedata"):
-                return
             with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS licensedataindex ON licensedata ( licensename )')
 
