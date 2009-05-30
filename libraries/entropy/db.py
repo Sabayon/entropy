@@ -2786,7 +2786,7 @@ class LocalRepository:
     def setNeededLibraryIdpackages(self, library_map):
         if not self.doesTableExist('neededlibraryidpackages'):
             self.createNeededlibraryidpackagesTable()
-        self.cursor.execute('INSERT INTO neededlibraryidpackages VALUES (?,?)', library_map)
+        self.cursor.executemany('INSERT INTO neededlibraryidpackages VALUES (?,?)', library_map)
 
     def retrieveConflicts(self, idpackage):
         self.cursor.execute('SELECT conflict FROM conflicts WHERE idpackage = (?)', (idpackage,))
