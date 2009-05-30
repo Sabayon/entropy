@@ -3131,11 +3131,13 @@ class LocalRepository:
         return result
 
     def retrieveUnusedIdpackages(self):
+
         # WARNING: never remove this, otherwise equo.db (client database)
         # dependstable will be always broken (trust me)
         # sanity check on the table
         if not self.isDependsTableSane(): # is empty, need generation
             self.regenerateDependsTable(output = False)
+
         self.cursor.execute("""
         SELECT idpackage FROM baseinfo 
         WHERE idpackage NOT IN (SELECT idpackage FROM dependstable) ORDER BY atom
@@ -3857,6 +3859,9 @@ class LocalRepository:
         if not self.doesTableExist('neededlibraryidpackages'):
             self.createNeededlibraryidpackagesTable()
 
+        if not self.doesTableExist('dependstable'):
+            self.createDependsTable()
+
         self.readOnly = old_readonly
         self.connection.commit()
 
@@ -4165,9 +4170,8 @@ class LocalRepository:
     def createDependsTable(self):
         with self.__write_mutex:
             self.cursor.executescript("""
-                DROP TABLE IF EXISTS dependstable;
-                CREATE TABLE dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );
-                INSERT into dependstable VALUES (-1,-1);
+                CREATE TABLE IF NOT EXISTS dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );
+                INSERT INTO dependstable VALUES (-1,-1);
             """)
             if self.indexing:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS dependsindex_idpackage ON dependstable ( idpackage )')
@@ -4613,13 +4617,16 @@ class LocalRepository:
                     self.connection.commit() # we don't care much about syncing the database since it's quite trivial
 
     def clearDependsTable(self):
-        if not self.doesTableExist("dependstable"): return
-        self.cursor.execute("DROP TABLE IF EXISTS dependstable")
+        if not self.doesTableExist("dependstable"):
+            return
+        self.cursor.executescript("""
+            DELETE FROM dependstable;
+            INSERT INTO dependstable VALUES (-1,-1);
+        """)
 
     def regenerateDependsTable(self, output = True):
 
         depends = self.listAllDependencies()
-        self.createDependsTable()
         count = 0
         total = len(depends)
         mydata = set()
@@ -4627,17 +4634,20 @@ class LocalRepository:
         up = self.updateProgress
         for iddep, atom in depends:
             count += 1
+
             if output and ((count == 0) or (count % 150 == 0) or \
                 (count == total)):
-
                 up( red("Resolving %s") % (atom,), importance = 0,
                     type = "info", back = True, count = (count, total)
                 )
+
             idpackage, rc = am(atom)
-            if idpackage == -1: continue
+            if idpackage == -1:
+                continue
             mydata.add((iddep, idpackage))
 
-        if mydata: self.addDependsRelationToDependsTable(mydata)
+        if mydata:
+            self.addDependsRelationToDependsTable(mydata)
 
         # now validate dependstable
         self.sanitizeDependsTable()
