@@ -287,7 +287,7 @@ class Schema:
             );
 
             CREATE TABLE neededlibraryidpackages (
-                idpackage INTEGER PRIMARY KEY,
+                idpackage INTEGER,
                 library VARCHAR
             );
 
@@ -4277,6 +4277,8 @@ class LocalRepository:
                     self.cursor.executescript("""
                         CREATE INDEX IF NOT EXISTS neededlibidpackages_library
                         ON neededlibraryidpackages ( library );
+                        CREATE INDEX IF NOT EXISTS neededlibidpackages_idpackage
+                        ON neededlibraryidpackages ( idpackage );
                     """)
                 except self.dbapi2.OperationalError:
                     pass
@@ -4540,7 +4542,7 @@ class LocalRepository:
         with self.__write_mutex:
             self.cursor.execute("""
                 CREATE TABLE neededlibraryidpackages (
-                    idpackage INTEGER PRIMARY KEY,
+                    idpackage INTEGER,
                     library VARCHAR
                 );
             """)
@@ -4651,15 +4653,15 @@ class LocalRepository:
             )
         self.cursor.executescript("""
             DELETE FROM neededlibraryidpackages;
-            INSERT INTO neededlibraryidpackages VALUES (
-                SELECT distinct(baseinfo.idpackage), neededlibrarypaths.library FROM
+            INSERT INTO neededlibraryidpackages (idpackage, library)
+                SELECT distinct(baseinfo.idpackage) as idpackage, neededlibrarypaths.library as library FROM
                 neededlibrarypaths, baseinfo, content, needed, neededreference
                 WHERE neededlibrarypaths.library = neededreference.library AND
                 neededreference.idneeded = needed.idneeded AND
                 needed.idpackage = content.idpackage AND
                 baseinfo.idpackage = needed.idpackage AND
-                content.file = neededlibrarypaths.path ORDER BY baseinfo.idpackage
-            );
+                content.file = neededlibrarypaths.path ORDER BY baseinfo.idpackage;
+
         """)
         if output:
             self.updateProgress(
