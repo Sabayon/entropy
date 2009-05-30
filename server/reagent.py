@@ -111,6 +111,7 @@ myopts = [
     (1,'deptest',3,_('look for unsatisfied dependencies')),
     (1,'libtest',3,_('look for missing libraries')),
     (1,'depends',3,_('regenerate the depends table')),
+    (1,'libpaths',2,_('regenerate the library paths table')),
     None,
     (1,'cleanup',3,_('remove downloaded packages and clean temp. directories)')),
     None,
@@ -199,10 +200,15 @@ elif (options[0] == "libtest"):
     x = server_reagent.Entropy.close_server_databases()
     raise SystemExit(0)
 
-# deptest tool
 elif (options[0] == "depends"):
     import server_reagent
     rc = server_reagent.Entropy.depends_table_initialize()
+    server_reagent.Entropy.close_server_databases()
+    raise SystemExit(rc)
+
+elif (options[0] == "libpaths"):
+    import server_reagent
+    rc = server_reagent.Entropy.library_paths_table_initialize()
     server_reagent.Entropy.close_server_databases()
     raise SystemExit(rc)
 

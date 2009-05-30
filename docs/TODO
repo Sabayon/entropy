@@ -4,7 +4,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
-    - fill db's needed_paths
+    - generate neededlibrarypaths file => idpackage match just like reverse deps
     - entropy service DSA pubkey auth
     - Documentation + code style cleanup (NLnet Milestone 7)
     - Sulfur: iPhone navigation

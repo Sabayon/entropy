@@ -323,6 +323,10 @@ look for missing libraries
 
 regenerate the depends table
 
+=item B<libpaths>
+
+regenerate the library paths table
+
 =item B<cleanup>
 
 remove downloaded packages and clean temp. directories)
