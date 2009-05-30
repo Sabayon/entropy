@@ -4438,7 +4438,6 @@ class LocalRepository:
                 """)
 
     def regenerateCountersTable(self, vdb_path, output = False):
-        self.createCountersTable()
         # this is necessary now, counters table should be empty
         self.cursor.execute("DELETE FROM counters;")
         # assign a counter to an idpackage
