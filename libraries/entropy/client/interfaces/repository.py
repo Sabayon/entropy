@@ -518,19 +518,10 @@ class Repository:
                 return None,None,None
         return data['added'],data['removed'],data['checksum']
 
-    def get_eapi3_database_treeupdates(self, eapi3_interface, repo, session):
+    def get_eapi3_repository_metadata(self, eapi3_interface, repo, session):
         product = self.Entropy.SystemSettings['repositories']['product']
         self.socket.setdefaulttimeout(self.big_socket_timeout)
-        data = eapi3_interface.CmdInterface.get_repository_treeupdates(
-            session, repo, etpConst['currentarch'], product
-        )
-        if not isinstance(data,dict): return None,None
-        return data.get('digest'), data.get('actions')
-
-    def get_eapi3_package_sets(self, eapi3_interface, repo, session):
-        product = self.Entropy.SystemSettings['repositories']['product']
-        self.socket.setdefaulttimeout(self.big_socket_timeout)
-        data = eapi3_interface.CmdInterface.get_package_sets(
+        data = eapi3_interface.CmdInterface.get_repository_metadata(
             session, repo, etpConst['currentarch'], product
         )
         if not isinstance(data,dict): return {}
@@ -688,27 +679,39 @@ class Repository:
 
         del added_segments
 
-        # get treeupdates stuff
-        dbdigest, treeupdates_actions = self.get_eapi3_database_treeupdates(eapi3_interface, repo, session)
-        if dbdigest == None:
-            mydbconn.closeDB()
-            prepare_exit(eapi3_interface, session)
-            mytxt = "%s: %s" % ( blue(_("EAPI3 Service status")), darkred(_("treeupdates data not available")),)
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "info",
-                header = blue("  # "),
-            )
-            return None
+        repo_metadata = self.get_eapi3_repository_metadata(eapi3_interface,
+            repo, session)
+        metadata_elements = ("sets", "treeupdates_actions",
+            "treeupdates_digest", "library_idpackages",)
+        for elem in metadata_elements:
+            if elem not in repo_metadata:
+                mydbconn.closeDB()
+                prepare_exit(eapi3_interface, session)
+                mytxt = "%s: %s" % (
+                    blue(_("EAPI3 Service status")),
+                    darkred(_("cannot fetch repository metadata")),
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 0,
+                    type = "info",
+                    header = blue("  # "),
+                )
+                return None
 
+        # update treeupdates
         try:
-            mydbconn.setRepositoryUpdatesDigest(repo, dbdigest)
-            mydbconn.bumpTreeUpdatesActions(treeupdates_actions)
-        except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
+            mydbconn.setRepositoryUpdatesDigest(repo,
+                repo_metadata['treeupdates_digest'])
+            mydbconn.bumpTreeUpdatesActions(
+                repo_metadata['treeupdates_actions'])
+        except (self.dbapi2.Error,):
             mydbconn.closeDB()
             prepare_exit(eapi3_interface, session)
-            mytxt = "%s: %s" % (blue(_("EAPI3 Service status")), darkred(_("cannot update treeupdates data")),)
+            mytxt = "%s: %s" % (
+                blue(_("EAPI3 Service status")),
+                darkred(_("cannot update treeupdates data")),
+            )
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 0,
@@ -717,16 +720,37 @@ class Repository:
             )
             return None
 
-
-        # get updated package sets
-        repo_sets = self.get_eapi3_package_sets(eapi3_interface, repo, session)
+        # update package sets
         try:
             mydbconn.clearPackageSets()
-            mydbconn.insertPackageSets(repo_sets)
-        except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
+            mydbconn.insertPackageSets(repo_metadata['sets'])
+        except (self.dbapi2.Error,):
             mydbconn.closeDB()
             prepare_exit(eapi3_interface, session)
-            mytxt = "%s: %s" % (blue(_("EAPI3 Service status")), darkred(_("cannot update package sets data")),)
+            mytxt = "%s: %s" % (
+                blue(_("EAPI3 Service status")),
+                darkred(_("cannot update package sets data")),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = blue("  # "),
+            )
+            return None
+
+        # update libraries <=> idpackages map
+        try:
+            mydbconn.clearNeededLibraryIdpackages()
+            mydbconn.setNeededLibraryIdpackages(
+                repo_metadata['library_idpackages'])
+        except (self.dbapi2.Error,):
+            mydbconn.closeDB()
+            prepare_exit(eapi3_interface, session)
+            mytxt = "%s: %s" % (
+                blue(_("EAPI3 Service status")),
+                darkred(_("cannot update library data")),
+            )
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 0,
