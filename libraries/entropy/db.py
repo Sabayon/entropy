@@ -3809,9 +3809,6 @@ class LocalRepository:
             (self.dbname == etpConst['clientdbid']):
             self.createLicensesAcceptedTable()
 
-        if not self.doesTableExist("trashedcounters"):
-            self.createTrashedcountersTable()
-
         if not self.doesTableExist("counters"):
             self.createCountersTable()
 
@@ -4588,10 +4585,6 @@ class LocalRepository:
     def createLicensesAcceptedTable(self):
         with self.__write_mutex:
             self.cursor.execute('CREATE TABLE licenses_accepted ( licensename VARCHAR UNIQUE );')
-
-    def createTrashedcountersTable(self):
-        with self.__write_mutex:
-            self.cursor.execute('CREATE TABLE trashedcounters ( counter INTEGER );')
 
     def createInstalledTable(self):
         with self.__write_mutex:
