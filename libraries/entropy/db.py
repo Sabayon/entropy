@@ -28,7 +28,7 @@ from entropy.const import etpConst, etpCache
 from entropy.exceptions import IncorrectParameter, InvalidAtom, \
     SystemDatabaseError, OperationNotPermitted
 from entropy.i18n import _
-from entropy.output import brown, bold, red, blue, darkred, darkgreen, \
+from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen, \
     TextInterface
 from entropy.cache import EntropyCacher
 from entropy.core import Singleton, SystemSettings
@@ -284,6 +284,11 @@ class Schema:
             CREATE TABLE neededlibrarypaths (
                 library VARCHAR,
                 path VARCHAR
+            );
+
+            CREATE TABLE neededlibraryidpackages (
+                idpackage INTEGER PRIMARY KEY,
+                library VARCHAR
             );
 
             CREATE TABLE treeupdates (
@@ -3849,6 +3854,9 @@ class LocalRepository:
         if not self.doesTableExist('neededlibrarypaths'):
             self.createNeededlibrarypathsTable()
 
+        if not self.doesTableExist('neededlibraryidpackages'):
+            self.createNeededlibraryidpackagesTable()
+
         self.readOnly = old_readonly
         self.connection.commit()
 
@@ -4251,6 +4259,7 @@ class LocalRepository:
         self.createPackagesetsIndex()
         self.createAutomergefilesIndex()
         self.createNeededlibrarypathsIndex()
+        self.createNeededlibraryidpackagesIndex()
 
     def createPackagesetsIndex(self):
         if self.indexing:
@@ -4261,25 +4270,37 @@ class LocalRepository:
                 except self.dbapi2.OperationalError:
                     pass
 
+    def createNeededlibraryidpackagesIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                try:
+                    self.cursor.executescript("""
+                        CREATE INDEX IF NOT EXISTS neededlibidpackages_library
+                        ON neededlibraryidpackages ( library );
+                    """)
+                except self.dbapi2.OperationalError:
+                    pass
+
     def createNeededlibrarypathsIndex(self):
         if self.indexing:
             with self.__write_mutex:
-                self.cursor.execute("""
-                    CREATE INDEX IF NOT EXISTS neededlibpaths_library
-                    ON neededlibrarypaths ( library )
-                """)
+                try:
+                    self.cursor.execute("""
+                        CREATE INDEX IF NOT EXISTS neededlibpaths_library
+                        ON neededlibrarypaths ( library )
+                    """)
+                except self.dbapi2.OperationalError:
+                    pass
 
     def createAutomergefilesIndex(self):
         if self.indexing:
             with self.__write_mutex:
                 try:
-                    self.cursor.execute("""
+                    self.cursor.executescript("""
                         CREATE INDEX IF NOT EXISTS automergefiles_idpackage 
-                        ON automergefiles ( idpackage )
-                    """)
-                    self.cursor.execute("""
+                        ON automergefiles ( idpackage );
                         CREATE INDEX IF NOT EXISTS automergefiles_file_md5 
-                        ON automergefiles ( configfile, md5 )
+                        ON automergefiles ( configfile, md5 );
                     """)
                 except self.dbapi2.OperationalError:
                     pass
@@ -4515,6 +4536,15 @@ class LocalRepository:
                 );
             """)
 
+    def createNeededlibraryidpackagesTable(self):
+        with self.__write_mutex:
+            self.cursor.execute("""
+                CREATE TABLE neededlibraryidpackages (
+                    idpackage INTEGER PRIMARY KEY,
+                    library VARCHAR
+                );
+            """)
+
     def createInstalledTableSource(self):
         with self.__write_mutex:
             self.cursor.execute('ALTER TABLE installedtable ADD source INTEGER;')
@@ -4584,11 +4614,6 @@ class LocalRepository:
         if not self.doesTableExist("dependstable"): return
         self.cursor.execute("DROP TABLE IF EXISTS dependstable")
 
-    '''
-       @description: recreate dependstable table in the chosen database, it's used for caching searchDepends requests
-       @input Nothing
-       @output: Nothing
-    '''
     def regenerateDependsTable(self, output = True):
 
         depends = self.listAllDependencies()
@@ -4614,6 +4639,35 @@ class LocalRepository:
 
         # now validate dependstable
         self.sanitizeDependsTable()
+
+    def regenerateLibrarypathsidpackageTable(self, output = True):
+
+        if output:
+            self.updateProgress(
+                "%s ..." % (
+                    purple(_("Resolving libraries, please wait")),
+                ),
+                importance = 0, type = "info", back = True
+            )
+        self.cursor.executescript("""
+            DELETE FROM neededlibraryidpackages;
+            INSERT INTO neededlibraryidpackages VALUES (
+                SELECT distinct(baseinfo.idpackage), neededlibrarypaths.library FROM
+                neededlibrarypaths, baseinfo, content, needed, neededreference
+                WHERE neededlibrarypaths.library = neededreference.library AND
+                neededreference.idneeded = needed.idneeded AND
+                needed.idpackage = content.idpackage AND
+                baseinfo.idpackage = needed.idpackage AND
+                content.file = neededlibrarypaths.path ORDER BY baseinfo.idpackage
+            );
+        """)
+        if output:
+            self.updateProgress(
+                "%s" % (
+                    purple(_("Libraries solved, all fine")),
+                ),
+                importance = 0, type = "info"
+            )
 
     def moveCountersToBranch(self, to_branch):
         with self.__write_mutex:
