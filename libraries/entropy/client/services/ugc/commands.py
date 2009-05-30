@@ -343,6 +343,18 @@ class Client(Base):
         )
         return self.do_generic_handler(cmd, session_id, tries = 5)
 
+    def get_repository_metadata(self, session_id, repository, arch, product):
+
+        cmd = "%s %s %s %s %s %s" % (
+            session_id,
+            'repository_server:get_repository_metadata',
+            repository,
+            arch,
+            product,
+            self.SystemSettings['repositories']['branch'],
+        )
+        return self.do_generic_handler(cmd, session_id, tries = 5)
+
     def get_package_information(self, session_id, idpackages, repository, arch, product):
 
         cmd = "%s %s %s %s %s %s %s %s" % (

@@ -74,6 +74,16 @@ class Repository(SocketCommands):
                 'desc': "returns repository package sets metadata",
                 'syntax': "<SESSION_ID> repository_server:get_package_sets <repository> <arch> <product> <branch>",
                 'from': unicode(self), # from what class
+            },
+            'repository_server:get_repository_metadata': {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_repository_metadata,
+                'args': ["myargs"],
+                'as_user': False,
+                'desc': "returns repository metadata (package sets, treeupdates, libraries <=> idpackages map)",
+                'syntax': "<SESSION_ID> repository_server:get_repository_metadata <repository> <arch> <product> <branch>",
+                'from': unicode(self), # from what class
             }
         }
 
@@ -113,6 +123,43 @@ class Repository(SocketCommands):
         added_ids = myids - foreign_idpackages
 
         return {'removed': removed_ids, 'added': added_ids, 'checksum': mychecksum}
+
+    def docmd_repository_metadata(self, myargs):
+
+        self.trash_old_databases()
+
+        if len(myargs) < 4:
+            return None
+        repository = myargs[0]
+        arch = myargs[1]
+        product = myargs[2]
+        try:
+            branch = str(myargs[3])
+        except (UnicodeEncodeError,UnicodeDecodeError,):
+            return None
+
+        x = (repository,arch,product,branch,)
+        valid = self.HostInterface.is_repository_available(x)
+        if not valid:
+            return valid
+
+        cached = self.HostInterface.get_dcache((repository, arch, product, branch, 'docmd_repository_metadata'), repository)
+        if cached != None:
+            return cached
+
+        metadata = {}
+        dbpath = self.get_database_path(repository, arch, product, branch)
+        dbconn = self.HostInterface.open_db(dbpath, docache = False)
+        metadata['sets'] = dbconn.retrievePackageSets()
+        metadata['treeupdates_actions'] = dbconn.listAllTreeUpdatesActions()
+        metadata['treeupdates_digest'] = dbconn.retrieveRepositoryUpdatesDigest(repository)
+        metadata['library_idpackages'] = dbconn.retrieveNeededLibraryIdpackages()
+
+        self.HostInterface.set_dcache((repository, arch, product, branch, 'docmd_repository_metadata'), data, repository)
+        dbconn.closeDB()
+
+        return metadata
+
 
     def docmd_package_sets(self, myargs):
 
