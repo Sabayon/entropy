@@ -2005,7 +2005,8 @@ class LocalRepository:
                         branch,
                         )
                     )
-                except self.dbapi2.IntegrityError: # we have a PRIMARY KEY we need to remove
+                except self.dbapi2.IntegrityError:
+                    # we have a PRIMARY KEY we need to remove
                     self._migrateCountersTable()
                     self.cursor.execute(
                     'INSERT into counters VALUES '
@@ -2016,7 +2017,8 @@ class LocalRepository:
                         )
                     )
                 except:
-                    if self.dbname == etpConst['clientdbid']: # force only for client database
+                    if self.dbname == etpConst['clientdbid']:
+                        # force only for client database
                         if self.doesTableExist("counters"):
                             raise
                         self.cursor.execute(
@@ -4524,13 +4526,17 @@ class LocalRepository:
             self._migrateCountersTable()
 
     def _migrateCountersTable(self):
-        self.cursor.execute('DROP TABLE IF EXISTS counterstemp;')
-        self.cursor.execute('CREATE TABLE counterstemp ( counter INTEGER, idpackage INTEGER, branch VARCHAR, PRIMARY KEY(idpackage,branch) );')
-        self.cursor.execute('select * from counters')
-        countersdata = self.cursor.fetchall()
-        self.cursor.executemany('INSERT INTO counterstemp VALUES (?,?,?)', countersdata)
-        self.cursor.execute('DROP TABLE counters')
-        self.cursor.execute('ALTER TABLE counterstemp RENAME TO counters')
+        self.cursor.executescript("""
+            DROP TABLE IF EXISTS counterstemp;
+            CREATE TABLE counterstemp (
+                counter INTEGER, idpackage INTEGER, branch VARCHAR,
+                PRIMARY KEY(idpackage,branch)
+            );
+            INSERT INTO counterstemp (counter, idpackage, branch)
+                SELECT counter, idpackage, branch FROM counters;
+            DROP TABLE counters;
+            ALTER TABLE counterstemp RENAME TO counters;
+        """)
         self.commitChanges()
 
     def createNeededlibrarypathsTable(self):
