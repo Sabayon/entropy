@@ -2771,6 +2771,13 @@ class LocalRepository:
             """, (needed_library_name,))
         return self.fetchall2set(self.cursor.fetchall())
 
+    def retrieveNeededLibraryIdpackages(self):
+        # neededlibraryidpackages
+        if not self.doesTableExist('neededlibraryidpackages'):
+            return []
+        self.cursor.execute('SELECT idpackage, library FROM neededlibraryidpackages')
+        return self.cursor.fetchall()
+
     def retrieveConflicts(self, idpackage):
         self.cursor.execute('SELECT conflict FROM conflicts WHERE idpackage = (?)', (idpackage,))
         return self.fetchall2set(self.cursor.fetchall())
