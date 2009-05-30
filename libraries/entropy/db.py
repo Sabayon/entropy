@@ -3002,8 +3002,6 @@ class LocalRepository:
 
     def retrieveCategoryDescription(self, category):
         data = {}
-        if not self.doesTableExist("categoriesdescription"):
-            return data
         self.cursor.execute('SELECT description,locale FROM categoriesdescription WHERE category = (?)', (category,))
         description_data = self.cursor.fetchall()
         for description, locale in description_data:
@@ -3816,9 +3814,6 @@ class LocalRepository:
         if self.doesTableExist("installedtable") and \
             not self.doesColumnInTableExist("installedtable","source"):
             self.createInstalledTableSource()
-
-        if not self.doesTableExist("categoriesdescription"):
-            self.createCategoriesdescriptionTable()
 
         if not self.doesTableExist('packagesets'):
             self.createPackagesetsTable()
