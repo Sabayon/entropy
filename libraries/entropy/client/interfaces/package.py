@@ -1105,10 +1105,11 @@ class Package:
             except OSError:
                 continue # skip file
             ftype = package_content[encoded_path]
-            if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
+
             if 'dir' == ftype and \
                 not stat.S_ISDIR(exist.st_mode) and \
-                os.path.isdir(path): # workaround for directory symlink issues
+                os.path.isdir(path):
+                # workaround for directory symlink issues
                 path = os.path.realpath(path)
 
             copystat = False
