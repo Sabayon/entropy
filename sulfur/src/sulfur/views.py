@@ -553,9 +553,9 @@ class EntropyPackageView:
             if (len(objs) == 1) and (row != self.last_row):
                 self.last_row = row
                 return False
-            self.load_menu(widget,event,objs = objs)
+            did_something = self.load_menu(widget,event,objs = objs)
             self.last_row = row
-            return True
+            return did_something
 
     def load_menu(self, widget, event, objs = None):
 
@@ -568,12 +568,12 @@ class EntropyPackageView:
 
         event_x = event.x
         if event_x < 10:
-            return True
+            return False
 
         try:
             row, column, x, y = widget.get_path_at_pos(int(event_x),int(event.y))
         except TypeError:
-            return True
+            return False
 
         self.event_click_pos = x,y
         if column.get_title() == self.pkgcolumn_text:
@@ -605,6 +605,8 @@ class EntropyPackageView:
                 elif len(installable_objs) == objs_len:
                     self.run_install_menu_stuff(installable_objs)
 
+                return True
+
         elif len(objs) == 1:
             obj = objs[0]
             distance = 0
@@ -615,6 +617,7 @@ class EntropyPackageView:
                 obj.voted = float(vote)
                 # submit vote
                 self.spawn_vote_submit(obj)
+                return True
 
         return False
 
