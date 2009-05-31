@@ -634,7 +634,7 @@ class SocketHost:
 
         def handle_command_string(self, string):
             # validate command
-            args = string.strip().split()
+            args = string.strip().split(" ")
             session = args[0]
             if (session in self.HostInterface.initialization_commands) or \
                 (session in self.HostInterface.no_session_commands) or \
