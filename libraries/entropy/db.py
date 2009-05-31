@@ -376,7 +376,6 @@ class LocalRepository:
         self.srv_sys_settings_plugin = \
             etpConst['system_settings_plugins_ids']['server_plugin']
         self.dbMatchCacheKey = etpCache['dbMatch']
-        self.dbSearchCacheKey = etpCache['dbSearch']
         self.dbname = dbname
         self.lockRemote = lockRemote
         self.client_settings_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
@@ -2429,22 +2428,10 @@ class LocalRepository:
                     except OSError: pass
 
         do_clear("%s/%s/" % (self.dbMatchCacheKey, self.dbname,))
-        do_clear("%s/%s/" % (self.dbSearchCacheKey, self.dbname,))
         if depends:
             do_clear(etpCache['depends_tree'])
             do_clear(etpCache['dep_tree'])
             do_clear(etpCache['filter_satisfied_deps'])
-
-    def fetchSearchCache(self, key, function, extra_hash = 0):
-        if self.xcache:
-            c_hash = "%s/%s/%s/%s" % (self.dbSearchCacheKey, self.dbname, key, "%s%s" % (hash(function), extra_hash,),)
-            cached = self.Cacher.pop(c_hash)
-            if cached != None: return cached
-
-    def storeSearchCache(self, key, function, search_cache_data, extra_hash = 0):
-        if self.xcache:
-            c_hash = "%s/%s/%s/%s" % (self.dbSearchCacheKey, self.dbname, key, "%s%s" % (hash(function), extra_hash,),)
-            self.Cacher.push(c_hash, search_cache_data)
 
     def retrieveRepositoryUpdatesDigest(self, repository):
         if not self.doesTableExist("treeupdates"):
@@ -3199,9 +3186,6 @@ class LocalRepository:
 
     def resolveNeeded(self, needed, elfclass = -1):
 
-        #cache = self.fetchSearchCache(needed, 'resolveNeeded2')
-        #if cache != None: return cache
-
         mypaths = self.retrieveNeededLibraryPaths(needed, elfclass)
 
         idpackages = set()
@@ -3212,9 +3196,6 @@ class LocalRepository:
             idpackages |= self.fetchall2set(self.cursor.fetchall())
 
         return idpackages
-
-        #self.storeSearchCache(needed, 'resolveNeeded2', idpackages)
-        #return mydata
 
     def isSourceAvailable(self, source):
         self.cursor.execute('SELECT idsource FROM sourcesreference WHERE source = (?)', (source,))
