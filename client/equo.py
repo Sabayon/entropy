@@ -820,7 +820,6 @@ def main():
         entropyTools.print_exception()
 
         import traceback
-        from entropy.qa import ErrorReportInterface
         exception_data = ""
         try:
             ferror = open("/tmp/equoerror.txt","w")
@@ -857,10 +856,17 @@ def main():
         email = readtext(_("Your E-Mail address:"))
         description = readtext(_("What you were doing:"))
         errorText = ''.join(errorText)
-        error = ErrorReportInterface()
+
+        from entropy.client.interfaces.qa import UGCErrorReportInterface
+        try:
+            error = UGCErrorReportInterface( )
+        except (IncorrectParameter, OnlineMirrorError,):
+            from entropy.qa import ErrorReportInterface
+            error = ErrorReportInterface()
+
         error.prepare(errorText, name, email, '\n'.join([unicode(x) for x in exception_data]), description)
         result = error.submit()
-        if (result):
+        if result:
             print_error(darkgreen(_("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible.")))
         else:
             print_error(darkred(_("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org.")))
