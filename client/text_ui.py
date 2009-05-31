@@ -606,7 +606,7 @@ def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps):
                         for crying_atomdata in crying_atoms:
                             print_error(red("        # ")+" ["+blue(_("from"))+":"+brown(crying_atomdata[1])+"] "+darkred(crying_atomdata[0]))
 
-            return True, (127, -1)
+            return True, (127, -1), []
     else:
         for atomInfo in foundAtoms:
             runQueue.append(atomInfo)
