@@ -710,7 +710,6 @@ class Client(Base):
         import zlib
         xml_string = self.entropyTools.xml_from_dict_extended(error_data)
         xml_comp_string = zlib.compress(xml_string)
-        #print len(xml_comp_string.split(" "))
 
         cmd = "%s %s %s" % (
             session_id,
