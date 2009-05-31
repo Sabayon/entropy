@@ -51,8 +51,18 @@ class Repository(SocketCommands):
                 'cb': self.docmd_pkginfo,
                 'args': ["myargs"],
                 'as_user': False,
-                'desc': "returns idpackage differences against the latest available repository",
+                'desc': "returns metadata of the provided idpackages",
                 'syntax': "<SESSION_ID> repository_server:pkginfo <content fmt True/False> <repository> <arch> <product> <branch> <idpackage>",
+                'from': unicode(self), # from what class
+            },
+            'repository_server:pkginfo_strict':    {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_pkginfo,
+                'args': ["myargs", "False"],
+                'as_user': False,
+                'desc': "returns metadata of the provided idpackages excluding 'content'",
+                'syntax': "<SESSION_ID> repository_server:pkginfo_strict <content fmt True/False> <repository> <arch> <product> <branch> <idpackage>",
                 'from': unicode(self), # from what class
             },
             'repository_server:treeupdates':    {
@@ -233,7 +243,7 @@ class Repository(SocketCommands):
         return data
 
 
-    def docmd_pkginfo(self, myargs):
+    def docmd_pkginfo(self, myargs, get_content = True):
 
         self.trash_old_databases()
 
@@ -263,8 +273,12 @@ class Repository(SocketCommands):
         if not valid:
             return valid
 
+        get_cont_cache = '_cont'
+        if not get_content:
+            get_cont_cache = ''
+
         cached = self.HostInterface.get_dcache(
-            (repository, arch, product, branch, idpackages, 'docmd_pkginfo'),
+            (repository, arch, product, branch, idpackages, 'docmd_pkginfo'+get_cont_cache),
             repository
         )
         if cached != None:
@@ -278,7 +292,8 @@ class Repository(SocketCommands):
             try:
                 mydata = dbconn.getPackageData(
                     idpackage,
-                    content_insert_formatted = format_content_for_insert
+                    content_insert_formatted = format_content_for_insert,
+                    get_content = get_content
                 )
             except:
                 tb = self.entropyTools.get_traceback()
@@ -289,7 +304,7 @@ class Repository(SocketCommands):
             result[idpackage] = mydata.copy()
 
         self.HostInterface.set_dcache(
-            (repository, arch, product, branch, idpackages, 'docmd_pkginfo'),
+            (repository, arch, product, branch, idpackages, 'docmd_pkginfo'+get_cont_cache),
             result,
             repository
         )

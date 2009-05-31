@@ -378,6 +378,29 @@ class Client(Base):
 
         return data
 
+    def get_strict_package_information(self, session_id, idpackages, repository, arch, product):
+
+        cmd = "%s %s %s %s %s %s %s %s" % (
+            session_id,
+            'repository_server:pkginfo_strict',
+            True,
+            repository,
+            arch,
+            product,
+            self.SystemSettings['repositories']['branch'],
+            ' '.join([str(x) for x in idpackages]),
+        )
+
+        # enable zlib compression
+        compression = self.set_gzip_compression(session_id, True)
+
+        data = self.do_generic_handler(cmd, session_id, compression = compression)
+
+        # disable compression
+        self.set_gzip_compression(session_id, False)
+
+        return data
+
     def ugc_do_downloads(self, session_id, pkgkeys):
 
         cmd = "%s %s %s" % (
