@@ -707,7 +707,7 @@ class Client(Base):
 
     def report_error(self, session_id, error_data):
 
-        xml_string = self.entropyTools.xml_from_dict(error_data)
+        xml_string = self.entropyTools.xml_from_dict_extended(error_data)
 
         cmd = "%s %s %s" % (
             session_id,

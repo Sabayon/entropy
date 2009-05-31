@@ -786,7 +786,7 @@ class UGC(SocketCommands):
 
         xml_string = ' '.join(myargs)
         try:
-            mydict = self.entropyTools.dict_from_xml(xml_string)
+            mydict = self.entropyTools.dict_from_xml_extended(xml_string)
         except Exception, e:
             return None, "error: %s" % (e,)
 
