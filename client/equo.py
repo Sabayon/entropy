@@ -734,7 +734,6 @@ def main():
             writeerrorstatus(0)
 
         entropyTools.kill_threads()
-        entropyTools.ebeep(count = 1)
         raise SystemExit(rc)
 
     except SystemDatabaseError:
