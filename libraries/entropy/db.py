@@ -289,8 +289,7 @@ class Schema:
             CREATE TABLE neededlibraryidpackages (
                 idpackage INTEGER,
                 library VARCHAR,
-                elfclass INTEGER,
-                PRIMARY KEY(library,elfclass)
+                elfclass INTEGER
             );
 
             CREATE TABLE treeupdates (
@@ -4256,6 +4255,8 @@ class LocalRepository:
                         ON neededlibraryidpackages ( library );
                         CREATE INDEX IF NOT EXISTS neededlibidpackages_idpackage
                         ON neededlibraryidpackages ( idpackage );
+                        CREATE INDEX IF NOT EXISTS neededlibidpackages_lib_elf
+                        ON neededlibraryidpackages ( library, elfclass );
                     """)
                 except self.dbapi2.OperationalError:
                     pass
@@ -4424,6 +4425,7 @@ class LocalRepository:
                 """)
 
     def regenerateCountersTable(self, vdb_path, output = False):
+
         # this is necessary now, counters table should be empty
         self.cursor.execute("DELETE FROM counters;")
         # assign a counter to an idpackage
@@ -4523,8 +4525,7 @@ class LocalRepository:
                 CREATE TABLE neededlibraryidpackages (
                     idpackage INTEGER,
                     library VARCHAR,
-                    elfclass INTEGER,
-                    PRIMARY KEY(library,elfclass)
+                    elfclass INTEGER
                 );
             """)
 
