@@ -793,10 +793,10 @@ class UGC(SocketCommands):
             return None, "error: %s" % (e,)
 
         subject = 'Entropy Error Reporting Handler'
-        destination_email = 'entropy.errors@sabayon.org'
-        sender_email = mydict.get('email', 'anonymous@sabayon.org')
+        destination_email = 'entropy.errors@sabayonlinux.org'
+        sender_email = mydict.get('email', 'www-data@sabayonlinux.org')
         if not self.entropyTools.is_valid_email(sender_email):
-            sender_email = 'anonymous@sabayon.org'
+            sender_email = 'www-data@sabayonlinux.org'
         keys_to_file = ['errordata', 'processes', 'lspci', 'dmesg', 'locale']
 
         # call it over
