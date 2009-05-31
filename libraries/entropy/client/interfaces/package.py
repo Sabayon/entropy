@@ -1108,6 +1108,9 @@ class Package:
         data['injected'] = False
         # spm counter will be set in self._install_package_into_spm_database()
         data['counter'] = -1
+        # branch must be always set properly, it could happen it's not
+        # when installing packages through their .tbz2s
+        data['branch'] = self.Entropy.SystemSettings['repositories']['branch']
         # there is no need to store needed paths into db
         if data.get('needed_paths'):
             del data['needed_paths']
