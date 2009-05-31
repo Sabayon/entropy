@@ -546,7 +546,10 @@ def showDocument(mydict, repository, pkgkey):
             title,
         )
     )
-    text = mydict['ddata'].tostring()
+    if isinstance(mydict['ddata'], basestring):
+        text = mydict['ddata']
+    else:
+        text = mydict['ddata'].tostring()
     text = unicode(text,'raw_unicode_escape')
     _my_formatted_print(text,"\t%s: " % (blue(_("Content")),),"\t")
 
