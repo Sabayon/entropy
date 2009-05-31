@@ -940,12 +940,15 @@ class Server:
 
 
     def dump_database_to_file(self, db_path, destination_path, opener,
-        repo = None):
+        exclude_tables = None, repo = None):
+
+        if not exclude_tables:
+            exclude_tables = []
 
         f_out = opener(destination_path, "wb")
         dbconn = self.Entropy.open_server_repository(db_path,
             just_reading = True, repo = repo)
-        dbconn.doDatabaseExport(f_out)
+        dbconn.doDatabaseExport(f_out, exclude_tables = exclude_tables)
         self.Entropy.close_server_database(dbconn)
         f_out.close()
 
@@ -1058,10 +1061,22 @@ class Server:
                     self.Entropy.get_local_database_dir(repo),
                     etpConst[cmethod[3]])
                 critical.append(data['dump_path'])
+
                 data['dump_path_digest'] = os.path.join(
                     self.Entropy.get_local_database_dir(repo),
                     etpConst[cmethod[4]])
                 critical.append(data['dump_path_digest'])
+
+                data['dump_path_light'] = os.path.join(
+                    self.Entropy.get_local_database_dir(repo),
+                    etpConst[cmethod[5]])
+                critical.append(data['dump_path_light'])
+
+                data['dump_path_digest_light'] = os.path.join(
+                    self.Entropy.get_local_database_dir(repo),
+                    etpConst[cmethod[6]])
+                critical.append(data['dump_path_digest_light'])
+
                 data['database_path'] = \
                     self.Entropy.get_local_database_file(repo)
                 critical.append(data['database_path'])
@@ -1210,6 +1225,25 @@ class Server:
             type = "info",
             header = brown("    # ")
         )
+        self.Entropy.updateProgress(
+            "%s: %s" % (
+                _("dump light"),
+                blue(upload_data['dump_path_light']),
+            ),
+            importance = 0,
+            type = "info",
+            header = brown("    # ")
+        )
+        self.Entropy.updateProgress(
+            "%s: %s" % (
+                _("dump light checksum"),
+                blue(upload_data['dump_path_digest_light']),
+            ),
+            importance = 0,
+            type = "info",
+            header = brown("    # ")
+        )
+
         self.Entropy.updateProgress(
             "%s: %s" % (_("opener"), blue(str(cmethod[0])),),
             importance = 0,
@@ -1534,11 +1568,19 @@ class Server:
             if 2 not in disabled_eapis:
                 self._show_eapi2_upload_messages(crippled_uri, database_path,
                     upload_data, cmethod, repo)
+
                 # create compressed dump + checksum
                 self.dump_database_to_file(database_path,
                     upload_data['dump_path'], cmethod[0], repo = repo)
                 self.create_file_checksum(upload_data['dump_path'],
                     upload_data['dump_path_digest'])
+
+                self.dump_database_to_file(database_path,
+                    upload_data['dump_path_light'], cmethod[0],
+                    exclude_tables = ["content"], repo = repo)
+                self.create_file_checksum(upload_data['dump_path'],
+                    upload_data['dump_path_digest_light'])
+
 
             # EAPI 1
             if 1 not in disabled_eapis:
