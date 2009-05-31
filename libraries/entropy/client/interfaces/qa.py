@@ -68,6 +68,7 @@ class UGCErrorReportInterface(ErrorReportInterface):
             # enable UGC
             from entropy.client.services.ugc.interfaces import Client as ugc
             self.entropy.UGC = ugc(self.entropy)
+
         if repository_id not in self.__system_settings['repositories']['order']:
             raise IncorrectParameter('invalid repository_id provided')
         if not self.entropy.UGC.is_repository_eapi3_aware(repository_id):
@@ -80,9 +81,16 @@ class UGCErrorReportInterface(ErrorReportInterface):
 
         @return submission status -- bool
         """
+
+        def convert_to_str(el):
+            if not isinstance(el, basestring):
+                el = str(el)
+            return el
+
         if self.generated:
+            params = dict((x, convert_to_str(y)) for x, y in self.params.items())
             done, err_msg = self.entropy.UGC.report_error(self.__repository_id,
-                self.params)
+                params)
             if done:
                 return True
             return False
