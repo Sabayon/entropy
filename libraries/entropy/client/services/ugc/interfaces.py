@@ -175,7 +175,6 @@ class Client:
     def logout(self, repository):
         return self.store.remove_login(repository)
 
-    # eval(func) must have session as first param
     def do_cmd(self, repository, login_required, func, args, kwargs):
 
         if not self.TxLocks.has_key(repository):
@@ -219,9 +218,17 @@ class Client:
                         return logged, error
                     break
 
-            rslt = eval("srv.CmdInterface.%s" % (func,))(*args,**kwargs)
-            srv.close_session(session)
-            srv.disconnect()
+            try:
+                cmd_func = getattr(srv.CmdInterface, func)
+            except AttributeError:
+                return False, 'local function not available'
+            rslt = cmd_func(*args,**kwargs)
+            try:
+                srv.close_session(session)
+                srv.disconnect()
+            except ConnectionError:
+                return False, 'no connection'
+
             return rslt
 
     def get_comments(self, repository, pkgkey):
