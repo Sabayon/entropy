@@ -3959,7 +3959,11 @@ class LocalRepository:
         retcode = subprocess.call(sqlite3_exec, shell = True)
         return retcode
 
-    def doDatabaseExport(self, dumpfile, gentle_with_tables = True):
+    def doDatabaseExport(self, dumpfile, gentle_with_tables = True,
+        exclude_tables = None):
+
+        if not exclude_tables:
+            exclude_tables = []
 
         dumpfile.write("BEGIN TRANSACTION;\n")
         self.cursor.execute("SELECT name, type, sql FROM sqlite_master WHERE sql NOT NULL AND type=='table'")
@@ -3984,6 +3988,9 @@ class LocalRepository:
                 if sql.startswith(t_cmd) and gentle_with_tables:
                     sql = "CREATE TABLE IF NOT EXISTS"+sql[len(t_cmd):]
                 dumpfile.write("%s;\n" % sql)
+
+            if name in exclude_tables:
+                continue
 
             self.cursor.execute("PRAGMA table_info('%s')" % name)
             cols = [str(r[1]) for r in self.cursor.fetchall()]
