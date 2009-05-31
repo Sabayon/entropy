@@ -1578,7 +1578,7 @@ class Server:
                 self.dump_database_to_file(database_path,
                     upload_data['dump_path_light'], cmethod[0],
                     exclude_tables = ["content"], repo = repo)
-                self.create_file_checksum(upload_data['dump_path'],
+                self.create_file_checksum(upload_data['dump_path_light'],
                     upload_data['dump_path_digest_light'])
 
 
