@@ -4330,10 +4330,11 @@ class LocalRepository:
     def createContentIndex(self):
         if self.indexing:
             with self.__write_mutex:
-                self.cursor.executescript("""
-                    CREATE INDEX IF NOT EXISTS contentindex_couple ON content ( idpackage );
-                    CREATE INDEX IF NOT EXISTS contentindex_file ON content ( file );
-                """)
+                if self.doesTableExist("content"):
+                    self.cursor.executescript("""
+                        CREATE INDEX IF NOT EXISTS contentindex_couple ON content ( idpackage );
+                        CREATE INDEX IF NOT EXISTS contentindex_file ON content ( file );
+                    """)
 
     def createConfigProtectReferenceIndex(self):
         if self.indexing:
