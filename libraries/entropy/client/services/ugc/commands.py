@@ -707,11 +707,15 @@ class Client(Base):
 
     def report_error(self, session_id, error_data):
 
-        xml_string = self.dumpTools.xml_from_dict_extended(error_data)
+        import zlib
+        xml_string = self.entropyTools.xml_from_dict_extended(error_data)
+        xml_comp_string = zlib.compress(xml_string)
+        #print len(xml_comp_string.split(" "))
 
         cmd = "%s %s %s" % (
             session_id,
             'ugc:report_error',
-            xml_string,
+            xml_comp_string,
         )
+
         return self.do_generic_handler(cmd, session_id)

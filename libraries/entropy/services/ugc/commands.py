@@ -784,8 +784,10 @@ class UGC(SocketCommands):
         if not myargs:
             return None, 'wrong arguments'
 
-        xml_string = ' '.join(myargs)
+        import zlib
+        comp_xml_string = ' '.join(myargs)
         try:
+            xml_string = zlib.decompress(comp_xml_string)
             mydict = self.entropyTools.dict_from_xml_extended(xml_string)
         except Exception, e:
             return None, "error: %s" % (e,)
