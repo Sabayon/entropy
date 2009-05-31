@@ -22,6 +22,7 @@
 from entropy.qa import ErrorReportInterface
 from entropy.client.interfaces import Client
 from entropy.core import SystemSettings
+from entropy.const import etpConst
 from entropy.exceptions import IncorrectParameter, OnlineMirrorError, \
     PermissionDenied
 from entropy.i18n import _
@@ -47,7 +48,7 @@ class UGCErrorReportInterface(ErrorReportInterface):
             print("cannot report error")
     """
 
-    def __init__(self, repository_id):
+    def __init__(self, repository_id = None):
         """
         object constructor, repository_id must be a valid repository
         identifier.
@@ -56,13 +57,17 @@ class UGCErrorReportInterface(ErrorReportInterface):
         @type basestring
         """
         ErrorReportInterface.__init__(self)
+        self.__system_settings = SystemSettings()
+
+        if repository_id == None:
+            repository_id = etpConst['officialserverrepositoryid']
+
         self.entropy = Client()
         self.__repository_id = repository_id
         if self.entropy.UGC == None:
             # enable UGC
             from entropy.client.services.ugc.interfaces import Client as ugc
             self.entropy.UGC = ugc(self.entropy)
-        self.__system_settings = SystemSettings()
         if repository_id not in self.__system_settings['repositories']['order']:
             raise IncorrectParameter('invalid repository_id provided')
         if not self.entropy.UGC.is_repository_eapi3_aware(repository_id):
