@@ -421,7 +421,16 @@ class RemoteConnectionMenu(MenuSkel):
 
     def set_connection_object(self, obj):
         self.cm_ui.connManagerHostnameEntry.set_text(obj['hostname'])
-        self.cm_ui.connManagerPortSpinButton.set_value(float(obj['port']))
+        try:
+            self.cm_ui.connManagerPortSpinButton.set_value(float(obj['port']))
+        except ValueError:
+            if obj['ssl']:
+                self.cm_ui.connManagerPortSpinButton.set_value(
+                    float(etpConst['socket_service']['ssl_port']))
+            else:
+                self.cm_ui.connManagerPortSpinButton.set_value(
+                    float(etpConst['socket_service']['port']))
+
         self.cm_ui.connManagerUsernameEntry.set_text(obj['user'])
         self.cm_ui.connManagerPasswordEntry.set_text('')
         self.cm_ui.connManagerSSLCheckButton.set_active(obj['ssl'])
