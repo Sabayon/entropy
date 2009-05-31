@@ -704,3 +704,14 @@ class Client(Base):
             xml_string,
         )
         return self.do_generic_handler(cmd, session_id)
+
+    def report_error(self, session_id, error_data):
+
+        xml_string = self.entropyTools.xml_from_dict(error_data)
+
+        cmd = "%s %s %s" % (
+            session_id,
+            'ugc:report_error',
+            xml_string,
+        )
+        return self.do_generic_handler(cmd, session_id)

@@ -26,6 +26,7 @@ import shutil
 from entropy.services.skel import SocketCommands
 from entropy.const import etpConst
 from entropy.services.ugc.interfaces import Server
+from entropy.misc import EmailSender
 
 class UGC(SocketCommands):
 
@@ -45,7 +46,8 @@ class UGC(SocketCommands):
         ]
         self.raw_commands = [
             'ugc:add_comment', 'ugc:edit_comment',
-            'ugc:register_stream','ugc:do_download_stats'
+            'ugc:register_stream','ugc:do_download_stats',
+            'ugc:report_error'
         ]
 
         self.valid_commands = {
@@ -247,6 +249,16 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "send information regarding downloads and distribution used",
                 'syntax': "<SESSION_ID> ugc:do_download_stats <valid xml formatted data>",
+                'from': unicode(self), # from what class
+            },
+            'ugc:report_error':    {
+                'auth': False,
+                'built_in': False,
+                'cb': self.docmd_do_report_error,
+                'args': ["authenticator","myargs"],
+                'as_user': False,
+                'desc': "submit an Entropy Error Report",
+                'syntax': "<SESSION_ID> ugc:report_error <valid xml formatted data>",
                 'from': unicode(self), # from what class
             },
         }
@@ -766,3 +778,62 @@ class UGC(SocketCommands):
             return None,'no metadata available'
 
         return metadata,'ok'
+
+    def docmd_do_report_error(self, authenticator, myargs):
+
+        if not myargs:
+            return None, 'wrong arguments'
+
+        xml_string = ' '.join(myargs)
+        try:
+            mydict = self.entropyTools.dict_from_xml(xml_string)
+        except Exception, e:
+            return None, "error: %s" % (e,)
+
+        subject = 'Entropy Error Reporting Handler'
+        destination_email = 'entropy.errors@sabayon.org'
+        sender_email = mydict.get('email', 'anonymous@sabayon.org')
+        keys_to_file = ['errordata', 'processes', 'lspci', 'dmesg', 'locale']
+
+        # call it over
+        mail_txt = ''
+        for key in sorted(mydict):
+            if key in keys_to_file:
+                continue
+            mail_txt += u'%s: %s\n' % (key, mydict.get(key),)
+
+        from datetime import datetime
+        import time
+        import tempfile
+        date = datetime.fromtimestamp(time.time())
+
+        # add ip address
+        ip_addr = self._get_session_ip_address(authenticator)
+        mail_txt += u'ip_address: %s\n' % (ip_addr,)
+        mail_txt += u'date: %s\n' % (date,)
+
+        files = []
+        rm_paths = []
+        for key in keys_to_file:
+            if key not in mydict:
+                continue
+            fd, path = tempfile.mkstemp(suffix = "__%s.txt" % (key,))
+            try:
+                f_path = open(path, "w")
+                f_path.write(mydict.get(key,''))
+                f_path.flush()
+                f_path.close()
+            except IOError:
+                continue
+            files.append(path)
+            rm_paths.append(path)
+
+        sender = EmailSender()
+        sender.send_mime_email(sender_email, [destination_email], subject,
+            mail_txt, files)
+        del sender
+
+        for rm_path in rm_paths:
+            os.remove(rm_path)
+
+        return True,'ok'

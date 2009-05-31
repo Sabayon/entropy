@@ -340,6 +340,9 @@ class Client:
             return self.remove_comment(repository, iddoc)
         return None,'type not supported locally'
 
+    def report_error(self, repository, error_data):
+        return self.do_cmd(repository, False, "report_error", [error_data], {})
+
 
 class AuthStore(Singleton):
 
