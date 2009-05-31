@@ -507,8 +507,6 @@ class ErrorReportInterface:
         self.params['lspci'] = getstatusoutput('/usr/sbin/lspci')[1]
         self.params['dmesg'] = getstatusoutput('dmesg')[1]
         self.params['locale'] = getstatusoutput('locale -v')[1]
-        # just for a while, won't hurt
-        self.params['stacktrace'] += "\n\n"+self.params['locale']
 
         self.generated = True
 
@@ -522,5 +520,3 @@ class ErrorReportInterface:
         else:
             mytxt = _("Not prepared yet")
             raise PermissionDenied("PermissionDenied: %s" % (mytxt,))
-
-
