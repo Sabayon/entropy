@@ -224,11 +224,6 @@ class Package:
             if rc != 0: break
         return rc
 
-    '''
-    @description: unpack the given package file into the unpack dir
-    @input infoDict: dictionary containing package information
-    @output: 0 = all fine, >0 = error!
-    '''
     def __unpack_package(self):
 
         if not self.infoDict['merge_from']:
@@ -249,9 +244,22 @@ class Package:
                 os.remove(self.infoDict['pkgpath'])
             self.infoDict['verified'] = False
             rc = self.fetch_step()
-            if rc != 0: return rc
+            if rc != 0:
+                return rc
 
         if not self.infoDict['merge_from']:
+
+            # extract entropy database from package file
+            # in order to avoid having to read content data
+            # from the repository database, which, in future
+            # is allowed to not provide such info.
+            pkg_dbdir = os.path.dirname(self.infoDict['pkgdbpath'])
+            if not os.path.isdir(pkg_dbdir):
+                os.makedirs(pkg_dbdir, 0755)
+            # extract edb
+            self.entropyTools.extract_edb(self.infoDict['pkgpath'],
+                self.infoDict['pkgdbpath'])
+
             unpack_tries = 3
             while 1:
                 unpack_tries -= 1
@@ -263,11 +271,21 @@ class Package:
                         catchEmpty = True
                     )
                 except EOFError:
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"EOFError on "+self.infoDict['pkgpath'])
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL, 
+                        "EOFError on " + self.infoDict['pkgpath']
+                    )
                     rc = 1
-                except (UnicodeEncodeError, UnicodeDecodeError, self.dumpTools.pickle.PicklingError,):
-                    # this will make devs to actually catch the right exception and prepare a fix
-                    self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Raising Unicode/Pickling Error for "+self.infoDict['pkgpath'])
+                except (UnicodeEncodeError, UnicodeDecodeError,
+                    self.dumpTools.pickle.PicklingError,):
+                    # this will make devs to actually catch the
+                    # right exception and prepare a fix
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "Raising Unicode/Pickling Error for " + \
+                            self.infoDict['pkgpath']
+                    )
                     rc = self.entropyTools.uncompress_tar_bz2(
                         self.infoDict['pkgpath'],self.infoDict['imagedir'],
                         catchEmpty = True
@@ -279,13 +297,17 @@ class Package:
                 # otherwise, try to download it again
                 self.infoDict['verified'] = False
                 f_rc = self.fetch_step()
-                if f_rc != 0: return f_rc
+                if f_rc != 0:
+                    return f_rc
+
         else:
+
             pid = os.fork()
             if pid > 0:
                 os.waitpid(pid, 0)
             else:
-                self.__fill_image_dir(self.infoDict['merge_from'],self.infoDict['imagedir'])
+                self.__fill_image_dir(self.infoDict['merge_from'],
+                    self.infoDict['imagedir'])
                 os._exit(0)
 
         # unpack xpak ?
@@ -1051,13 +1073,41 @@ class Package:
     def _install_package_into_database(self):
 
         # fetch info
+        smart_pkg = self.infoDict['smartpackage']
         dbconn = self.Entropy.open_repository(self.infoDict['repository'])
-        data = dbconn.getPackageData(self.infoDict['idpackage'], content_insert_formatted = True)
+
+        if smart_pkg or self.infoDict['merge_from']:
+
+            data = dbconn.getPackageData(self.infoDict['idpackage'],
+                content_insert_formatted = True)
+
+        else:
+
+            # normal repositories
+            data = dbconn.getPackageData(self.infoDict['idpackage'],
+                get_content = False)
+            pkg_dbconn = self.Entropy.open_generic_database(
+                self.infoDict['pkgdbpath'])
+            # it is safe to consider that package dbs coming from repos
+            # contain only one entry
+            content = []
+            for pkg_idpackage in pkg_dbconn.listAllIdpackages():
+                content += pkg_dbconn.retrieveContent(
+                    pkg_idpackage, extended = True,
+                    formatted = True, insert_formatted = True
+                )
+            real_idpk = self.infoDict['idpackage']
+            content = [(real_idpk, x, y,) for orig_idpk, x, y in content]
+            data['content'] = content
+            pkg_dbconn.closeDB()
+
         # open client db
         # always set data['injected'] to False
-        # installed packages database SHOULD never have more than one package for scope (key+slot)
+        # installed packages database SHOULD never have more
+        # than one package for scope (key+slot)
         data['injected'] = False
-        data['counter'] = -1 # spm counter will be set in self._install_package_into_spm_database()
+        # spm counter will be set in self._install_package_into_spm_database()
+        data['counter'] = -1
         # there is no need to store needed paths into db
         if data.get('needed_paths'):
             del data['needed_paths']
@@ -1088,7 +1138,11 @@ class Package:
     def __fill_image_dir(self, mergeFrom, imageDir):
 
         dbconn = self.Entropy.open_repository(self.infoDict['repository'])
-        package_content = dbconn.retrieveContent(self.infoDict['idpackage'], extended = True, formatted = True)
+        # this is triggered by merge_from infoDict metadata
+        # even if repositories are allowed to not have content
+        # metadata, in this particular case, it is mandatory
+        package_content = dbconn.retrieveContent(
+            self.infoDict['idpackage'], extended = True, formatted = True)
         contents = sorted(package_content)
 
         # collect files
@@ -2254,6 +2308,9 @@ class Package:
             self.infoDict['pkgpath'] = etpConst['entropyworkdir']+"/"+self.infoDict['download']
         self.infoDict['unpackdir'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']
         self.infoDict['imagedir'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']+"/"+etpConst['entropyimagerelativepath']
+
+        self.infoDict['pkgdbpath'] = os.path.join(self.infoDict['unpackdir'],
+            "edb/pkg.db")
 
         # spm xpak data
         self.infoDict['xpakpath'] = etpConst['entropyunpackdir'] + "/" + \
