@@ -891,7 +891,9 @@ class Repository:
             do_db_update_transfer = False
             rc = 0
             # some variables
-            dumpfile = os.path.join(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'],etpConst['etpdatabasedump'])
+            dumpfile = os.path.join(
+                self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'],
+                etpConst['etpdatabasedumplight'])
             dbfile = os.path.join(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'],etpConst['etpdatabasefile'])
             dbfile_old = dbfile+".sync"
             cmethod = self.__validate_compression_method(repo)
