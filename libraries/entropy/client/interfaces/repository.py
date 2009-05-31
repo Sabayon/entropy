@@ -649,7 +649,11 @@ class Repository:
                     prepare_exit(eapi3_interface, session)
                     return None
                 elif isinstance(pkgdata,tuple):
-                    mytxt = "%s: %s, %s. %s" % ( blue(_("Service status")), pkgdata[0], pkgdata[1], darkred("Error processing the command"),)
+                    mytxt = "%s: %s, %s. %s" % (
+                        blue(_("Service status")),
+                        pkgdata[0], pkgdata[1],
+                        darkred("Error processing the command"),
+                    )
                     self.Entropy.updateProgress(
                         mytxt, importance = 1, type = "info",
                         header = "\t", count = (count,maxcount,)
@@ -666,7 +670,11 @@ class Repository:
                             ignore_exceptions = False
                         )
                 except (IOError,EOFError,OSError,), e:
-                    mytxt = "%s: %s: %s." % ( blue(_("Local status")), darkred("Error storing data"), e,)
+                    mytxt = "%s: %s: %s." % (
+                        blue(_("Local status")),
+                        darkred("Error storing data"),
+                        e,
+                    )
                     self.Entropy.updateProgress(
                         mytxt, importance = 1, type = "info",
                         header = "\t", count = (count,maxcount,)
