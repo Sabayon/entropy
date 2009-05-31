@@ -500,7 +500,7 @@ class ErrorReportInterface:
         self.params['system_version'] = "N/A"
         if os.access(etpConst['systemreleasefile'], os.R_OK):
             f_rel = open(etpConst['systemreleasefile'], "r")
-            self.params['system_version'] = f_rel.readlines()
+            self.params['system_version'] = f_rel.readline().strip()
             f_rel.close()
 
         self.params['processes'] = getstatusoutput('ps auxf')[1]
