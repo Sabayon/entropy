@@ -353,6 +353,7 @@ class EntropyPackageView:
         self.set_pixbuf_to_image(self.img_pkg_update_undopurge,self.pkg_purge)
 
         treeview.set_fixed_height_mode(True)
+        self.view_expanded = True
         self.view = treeview
         self.view.connect("button-press-event", self.on_view_button_press)
         self.view.connect("enter-notify-event",self.treeview_enter_notify)
@@ -1249,6 +1250,13 @@ class EntropyPackageView:
         options = self.model_injector_rotation['repository']
         self.__do_change_sorting_by_column(options)
 
+    def on_selection_column_clicked(self, widget):
+        if self.view_expanded:
+            self.view.collapse_all()
+        else:
+            self.view.expand_all()
+        self.view_expanded = not self.view_expanded
+
     def setupView( self ):
 
         store = gtk.TreeStore( gobject.TYPE_PYOBJECT )
@@ -1265,8 +1273,10 @@ class EntropyPackageView:
         column1.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column1.set_fixed_width( self.selection_width+40 )
         column1.set_sort_column_id( -1 )
+        column1.set_clickable(True)
+        column1.connect("clicked", self.on_selection_column_clicked)
         self.view.append_column( column1 )
-        column1.set_clickable( False )
+        column1.set_clickable( True )
 
         self.create_text_column( _( "Package" ), 'namedesc' , size = 300,
             expand = True, set_height = myheight, clickable = True,
@@ -1387,6 +1397,7 @@ class EntropyPackageView:
             widget.set_property('enable-search',True)
 
         self.view.expand_all()
+        self.view_expanded = True
 
 
     def atom_search(self, model, column, key, iterator):
