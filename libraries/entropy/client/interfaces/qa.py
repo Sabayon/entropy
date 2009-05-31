@@ -88,9 +88,8 @@ class UGCErrorReportInterface(ErrorReportInterface):
             return el
 
         if self.generated:
-            params = dict((x, convert_to_str(y)) for x, y in self.params.items())
             done, err_msg = self.entropy.UGC.report_error(self.__repository_id,
-                params)
+                self.params)
             if done:
                 return True
             return False
