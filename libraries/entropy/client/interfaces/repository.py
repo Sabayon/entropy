@@ -625,7 +625,7 @@ class Repository:
                     return False
 
                 fetch_count += 1
-                pkgdata = eapi3_interface.CmdInterface.get_package_information(
+                pkgdata = eapi3_interface.CmdInterface.get_strict_package_information(
                     session, segment, repo, etpConst['currentarch'], product
                 )
                 if pkgdata == None:
