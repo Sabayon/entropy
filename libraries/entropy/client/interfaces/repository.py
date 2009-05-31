@@ -48,11 +48,11 @@ class Repository:
 
         self.supported_download_items = (
             "db","rev","ck",
-            "lock","mask","system_mask","dbdump", "conflicting_tagged",
-            "dbdumpck","lic_whitelist","make.conf",
-            "package.mask","package.unmask","package.keywords","profile.link",
-            "package.use","server.cert","ca.cert","meta_file",
-            "notice_board"
+            "lock","mask", "system_mask", "dbdump", "conflicting_tagged",
+            "dbdumplight", "dbdumplightck", "dbdumpck", "lic_whitelist",
+            "make.conf", "package.mask", "package.unmask", "package.keywords",
+            "profile.link", "package.use", "server.cert", "ca.cert",
+            "meta_file", "notice_board"
         )
         self.big_socket_timeout = 25
         self.Entropy = EquoInstance
@@ -198,17 +198,23 @@ class Repository:
         ec_cm2 = None
         ec_cm3 = None
         ec_cm4 = None
+        ec_cm5 = None
+        ec_cm6 = None
         if cmethod != None:
             ec_cm2 = etpConst[cmethod[2]]
             ec_cm3 = etpConst[cmethod[3]]
             ec_cm4 = etpConst[cmethod[4]]
+            ec_cm5 = etpConst[cmethod[5]]
+            ec_cm6 = etpConst[cmethod[6]]
 
         mymap = {
             'db': ("%s/%s" % (repo_db,ec_cm2,),"%s/%s" % (repo_dbpath,ec_cm2,),),
             'dbdump': ("%s/%s" % (repo_db,ec_cm3,),"%s/%s" % (repo_dbpath,ec_cm3,),),
+            'dbdumplight': ("%s/%s" % (repo_db,ec_cm5,),"%s/%s" % (repo_dbpath,ec_cm5,),),
             'rev': ("%s/%s" % (repo_db,ec_rev,),"%s/%s" % (repo_dbpath,ec_rev,),),
             'ck': ("%s/%s" % (repo_db,ec_hash,),"%s/%s" % (repo_dbpath,ec_hash,),),
             'dbdumpck': ("%s/%s" % (repo_db,ec_cm4,),"%s/%s" % (repo_dbpath,ec_cm4,),),
+            'dbdumplightck': ("%s/%s" % (repo_db,ec_cm6,),"%s/%s" % (repo_dbpath,ec_cm6,),),
             'mask': ("%s/%s" % (repo_db,ec_maskfile,),"%s/%s" % (repo_dbpath,ec_maskfile,),),
             'system_mask': ("%s/%s" % (repo_db,ec_sysmaskfile,),"%s/%s" % (repo_dbpath,ec_sysmaskfile,),),
             'conflicting_tagged': ("%s/%s" % (repo_db,ec_confl_taged,),"%s/%s" % (repo_dbpath,ec_confl_taged,),),
@@ -246,10 +252,10 @@ class Repository:
             remove_eapi1(repo_dbpath, dbfilenameid)
         elif self.dbformat_eapi in (2,3,):
             remove_eapi1(repo_dbpath, dbfilenameid)
-            if os.path.isfile(repo_dbpath+"/"+cmethod[4]):
-                os.remove(repo_dbpath+"/"+cmethod[4])
-            if os.path.isfile(repo_dbpath+"/"+etpConst[cmethod[3]]):
-                os.remove(repo_dbpath+"/"+etpConst[cmethod[3]])
+            if os.path.isfile(repo_dbpath+"/"+cmethod[6]):
+                os.remove(repo_dbpath+"/"+cmethod[6])
+            if os.path.isfile(repo_dbpath+"/"+etpConst[cmethod[5]]):
+                os.remove(repo_dbpath+"/"+etpConst[cmethod[5]])
             if os.path.isfile(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile']):
                 os.remove(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile'])
         else:
@@ -272,7 +278,7 @@ class Repository:
             if os.path.isfile(myfile):
                 os.remove(myfile)
         elif self.dbformat_eapi == 2:
-            myfile = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+etpConst[cmethod[3]]
+            myfile = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+etpConst[cmethod[5]]
             try:
                 mycall = getattr(self.entropyTools,cmethod[1])
                 path = mycall(myfile)
@@ -303,9 +309,9 @@ class Repository:
             except:
                 return -1
         elif self.dbformat_eapi == 2:
-            dbfile = etpConst[cmethod[3]]
+            dbfile = etpConst[cmethod[5]]
             try:
-                f = open(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+etpConst[cmethod[4]],"r")
+                f = open(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+etpConst[cmethod[6]],"r")
                 md5hash = f.readline().strip()
                 md5hash = md5hash.split()[0]
                 f.close()
@@ -409,9 +415,13 @@ class Repository:
     def check_downloaded_database(self, repo, cmethod):
         dbfilename = etpConst['etpdatabasefile']
         if self.dbformat_eapi == 2:
-            dbfilename = etpConst[cmethod[3]]
+            dbfilename = etpConst[cmethod[5]]
         # verify checksum
-        mytxt = "%s %s %s" % (red(_("Checking downloaded database")),darkgreen(dbfilename),red("..."))
+        mytxt = "%s %s %s" % (
+            red(_("Checking downloaded database")),
+            darkgreen(dbfilename),
+            red("..."),
+        )
         self.Entropy.updateProgress(
             mytxt,
             importance = 0,
@@ -1300,8 +1310,8 @@ class Repository:
         hashfile = etpConst['etpdatabasehashfile']
         downitem = 'ck'
         if self.dbformat_eapi == 2: # EAPI = 2
-            hashfile = etpConst[cmethod[4]]
-            downitem = 'dbdumpck'
+            hashfile = etpConst[cmethod[6]]
+            downitem = 'dbdumplightck'
 
         mytxt = "%s %s %s" % (red(_("Downloading checksum")),darkgreen(hashfile),red("..."),)
         # download checksum
@@ -1348,7 +1358,10 @@ class Repository:
     def handle_database_download(self, repo, cmethod):
 
         def show_repo_locked_message():
-            mytxt = "%s: %s." % (bold(_("Attention")),red(_("remote database got suddenly locked")),)
+            mytxt = "%s: %s." % (
+                bold(_("Attention")),
+                red(_("remote database got suddenly locked")),
+            )
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 1,
@@ -1369,7 +1382,9 @@ class Repository:
         if self.dbformat_eapi == 2:
             # start a check in background
             self.load_background_repository_lock_check(repo)
-            down_status = self.download_item("dbdump", repo, cmethod, lock_status_func = self.repository_lock_scanner_status, disallow_redirect = True)
+            down_status = self.download_item("dbdumplight", repo, cmethod,
+                lock_status_func = self.repository_lock_scanner_status,
+                disallow_redirect = True)
             if self.current_repository_got_locked:
                 self.kill_previous_repository_lock_scanner()
                 show_repo_locked_message()
@@ -1378,7 +1393,9 @@ class Repository:
             # start a check in background
             self.load_background_repository_lock_check(repo)
             self.dbformat_eapi = 1
-            down_status = self.download_item("db", repo, cmethod, lock_status_func = self.repository_lock_scanner_status, disallow_redirect = True)
+            down_status = self.download_item("db", repo, cmethod,
+                lock_status_func = self.repository_lock_scanner_status,
+                disallow_redirect = True)
             if self.current_repository_got_locked:
                 self.kill_previous_repository_lock_scanner()
                 show_repo_locked_message()
@@ -1463,7 +1480,7 @@ class Repository:
         # load the dump into database
         mytxt = "%s %s, %s %s" % (
             red(_("Injecting downloaded dump")),
-            darkgreen(etpConst[cmethod[3]]),
+            darkgreen(etpConst[cmethod[5]]),
             red(_("please wait")),
             red("..."),
         )
