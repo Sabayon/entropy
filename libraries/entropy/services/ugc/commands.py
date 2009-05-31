@@ -784,9 +784,9 @@ class UGC(SocketCommands):
         if not myargs:
             return None, 'wrong arguments'
 
-        xml_string = ' '.join(myargs)
+        py_string = ' '.join(myargs)
         try:
-            mydict = self.entropyTools.dict_from_xml_extended(xml_string)
+            mydict = self.dumpTools.unserialize_string(py_string)
         except Exception, e:
             return None, "error: %s" % (e,)
 
