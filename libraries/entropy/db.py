@@ -288,7 +288,9 @@ class Schema:
 
             CREATE TABLE neededlibraryidpackages (
                 idpackage INTEGER,
-                library VARCHAR
+                library VARCHAR,
+                elfclass INTEGER,
+                PRIMARY KEY(library,elfclass)
             );
 
             CREATE TABLE treeupdates (
@@ -2761,19 +2763,18 @@ class LocalRepository:
     def retrieveNeededLibraryIdpackages(self):
         if not self.doesTableExist('neededlibraryidpackages'):
             return []
-        self.cursor.execute('SELECT idpackage, library FROM neededlibraryidpackages')
+        self.cursor.execute('SELECT idpackage, library, elfclass FROM neededlibraryidpackages')
         return self.cursor.fetchall()
 
     def clearNeededLibraryIdpackages(self):
         if not self.doesTableExist('neededlibraryidpackages'):
-            self.createNeededlibraryidpackagesTable()
             return
         self.cursor.execute('DELETE FROM neededlibraryidpackages')
 
     def setNeededLibraryIdpackages(self, library_map):
         if not self.doesTableExist('neededlibraryidpackages'):
-            self.createNeededlibraryidpackagesTable()
-        self.cursor.executemany('INSERT INTO neededlibraryidpackages VALUES (?,?)', library_map)
+            return
+        self.cursor.executemany('INSERT INTO neededlibraryidpackages VALUES (?,?,?)', library_map)
 
     def retrieveConflicts(self, idpackage):
         self.cursor.execute('SELECT conflict FROM conflicts WHERE idpackage = (?)', (idpackage,))
@@ -3186,16 +3187,18 @@ class LocalRepository:
 
     def resolveNeeded(self, needed, elfclass = -1):
 
-        mypaths = self.retrieveNeededLibraryPaths(needed, elfclass)
+        args = [needed]
+        elfclass_txt = ''
+        if elfclass != -1:
+            elfclass_txt = ' AND elfclass = (?)'
+            args.append(elfclass)
 
-        idpackages = set()
-        for mypath in mypaths:
-            self.cursor.execute("""
-            SELECT idpackage FROM content WHERE file = (?)
-            """, (mypath,))
-            idpackages |= self.fetchall2set(self.cursor.fetchall())
+        self.cursor.execute("""
+            SELECT idpackage FROM neededlibraryidpackages
+            WHERE library = (?)
+        """ + elfclass_txt, args)
 
-        return idpackages
+        return self.fetchall2set(self.cursor.fetchall())
 
     def isSourceAvailable(self, source):
         self.cursor.execute('SELECT idsource FROM sourcesreference WHERE source = (?)', (source,))
@@ -3829,6 +3832,8 @@ class LocalRepository:
             self.createNeededlibrarypathsTable()
 
         if not self.doesTableExist('neededlibraryidpackages'):
+            self.createNeededlibraryidpackagesTable()
+        elif not self.doesColumnInTableExist("neededlibraryidpackages", "elfclass"):
             self.createNeededlibraryidpackagesTable()
 
         if not self.doesTableExist('dependstable'):
@@ -4513,10 +4518,13 @@ class LocalRepository:
 
     def createNeededlibraryidpackagesTable(self):
         with self.__write_mutex:
-            self.cursor.execute("""
+            self.cursor.executescript("""
+                DROP TABLE IF EXISTS neededlibraryidpackages;
                 CREATE TABLE neededlibraryidpackages (
                     idpackage INTEGER,
-                    library VARCHAR
+                    library VARCHAR,
+                    elfclass INTEGER,
+                    PRIMARY KEY(library,elfclass)
                 );
             """)
 
@@ -4629,14 +4637,19 @@ class LocalRepository:
             )
         self.cursor.executescript("""
             DELETE FROM neededlibraryidpackages;
-            INSERT INTO neededlibraryidpackages (idpackage, library)
-                SELECT distinct(baseinfo.idpackage) as idpackage, neededlibrarypaths.library as library FROM
-                neededlibrarypaths, baseinfo, content, needed, neededreference
-                WHERE neededlibrarypaths.library = neededreference.library AND
-                neededreference.idneeded = needed.idneeded AND
-                needed.idpackage = content.idpackage AND
-                baseinfo.idpackage = needed.idpackage AND
-                content.file = neededlibrarypaths.path ORDER BY baseinfo.idpackage;
+            INSERT INTO neededlibraryidpackages (idpackage, library, elfclass)
+                SELECT
+                    distinct(baseinfo.idpackage) as idpackage,
+                    neededlibrarypaths.library as library,
+                    needed.elfclass as elfclass
+                FROM
+                    neededlibrarypaths, baseinfo, content, needed, neededreference
+                WHERE
+                    neededlibrarypaths.library = neededreference.library AND
+                    neededreference.idneeded = needed.idneeded AND
+                    needed.idpackage = content.idpackage AND
+                    baseinfo.idpackage = needed.idpackage AND
+                    content.file = neededlibrarypaths.path ORDER BY baseinfo.idpackage;
 
         """)
         if output:
