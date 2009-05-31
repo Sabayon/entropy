@@ -285,7 +285,17 @@ def const_default_settings(rootdir):
         'etpdatabasedumpgzip': default_etp_dbfile+".dump.gz",
         # Entropy sqlite database dump file
         'etpdatabasedump': default_etp_dbfile+".dump",
+
+        # Entropy sqlite database dump file (bzipped2) light ver
+        'etpdatabasedumplightbzip2': default_etp_dbfile+".dumplight.bz2",
+        # Entropy sqlite database dump file (gzipped) light ver
+        'etpdatabasedumplightgzip': default_etp_dbfile+".dumplight.gz",
+        # Entropy sqlite database dump file, light ver (no content)
+        'etpdatabasedumplighthashfilebz2': default_etp_dbfile+".dumplight.bz2.md5",
+        'etpdatabasedumplighthashfilegzip': default_etp_dbfile+".dumplight.gz.md5",
+        'etpdatabasedumplight': default_etp_dbfile+".dumplight",
         # expiration based server-side packages removal
+
         'etpdatabaseexpbasedpkgsrm': default_etp_dbfile+".fatscope",
 
         # Entropy default compressed database format
@@ -294,9 +304,11 @@ def const_default_settings(rootdir):
         'etpdatabasesupportedcformats': ["bz2", "gz"],
         'etpdatabasecompressclasses': {
             "bz2": (bz2.BZ2File, "unpack_bzip2", "etpdatabasefilebzip2",
-                "etpdatabasedumpbzip2", "etpdatabasedumphashfilebz2"),
+                "etpdatabasedumpbzip2", "etpdatabasedumphashfilebz2",
+                "etpdatabasedumplightbzip2", "etpdatabasedumplighthashfilebz2"),
             "gz": (gzip.GzipFile, "unpack_gzip", "etpdatabasefilegzip",
-                "etpdatabasedumpgzip", "etpdatabasedumphashfilegzip")
+                "etpdatabasedumpgzip", "etpdatabasedumphashfilegzip",
+                "etpdatabasedumplightgzip", "etpdatabasedumplighthashfilegzip")
         },
         # enable/disable packages RSS feed feature
         'rss-feed': True,
