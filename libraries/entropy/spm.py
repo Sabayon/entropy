@@ -1783,7 +1783,7 @@ class PortagePlugin:
                 if myclass != elf_class:
                     continue
                 obj = data.setdefault(needed_lib, set())
-                obj.add(my_lib)
+                obj.add((my_lib, myclass,))
 
         return data
 
