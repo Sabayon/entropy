@@ -817,48 +817,70 @@ def aggregate_edb(tbz2file,dbfile):
     f.close()
 
 def extract_edb(tbz2file, dbpath = None):
-    old = open(tbz2file,"rb")
+    old = open(tbz2file, "rb")
     if not dbpath:
-        dbpath = tbz2file[:-5]+".db"
-    db = open(dbpath,"wb")
+        dbpath = tbz2file[:-5] + ".db"
 
     # position old to the end
-    old.seek(0,2)
+    old.seek(0, 2)
     # read backward until we find
     bytes = old.tell()
     counter = bytes
-    dbcontent = []
+    db_tmp_path = dbpath+".edb_tmp"
+    db_tmp = open(db_tmp_path, "wb")
 
     db_tag = etpConst['databasestarttag']
     db_tag_len = len(etpConst['databasestarttag'])
+    entry_point = db_tag[::-1][0]
+    written = False
 
     while counter >= 0:
-        old.seek(counter-bytes,2)
+        old.seek(counter-bytes, 2)
         byte = old.read(1)
-        if byte == "|":
-            old.seek(counter-bytes-(db_tag_len-1),2)
-            chunk = old.read((db_tag_len-1))+byte
+        if byte == entry_point:
+            old.seek(counter-bytes-(db_tag_len-1), 2)
+            chunk = old.read((db_tag_len-1)) + byte
             if chunk == db_tag:
                 break
-        dbcontent.append(byte)
+        db_tmp.write(byte)
+        written = True
         counter -= 1
-    if not dbcontent:
-        db.flush()
+
+    if not written:
+        db_tmp.flush()
+        db_tmp.close()
         old.close()
-        db.close()
         try:
             os.remove(dbpath)
         except OSError:
             return None
         return None
-    dbcontent.reverse()
-    for x in dbcontent:
-        db.write(x)
 
+    old.close()
+    db_tmp.flush()
+    db_tmp.close()
+    db = open(dbpath, "wb")
+    db_tmp = open(db_tmp_path, "rb")
+
+    db_tmp.seek(0, 2)
+    counter = db_tmp.tell()
+
+    # reverse content
+    chunk_len = 8
+    times = 0
+    while counter > 0:
+        times += 1
+        if chunk_len > counter:
+            chunk_len = counter
+        read_at = chunk_len * times * -1
+        db_tmp.seek(read_at, 2)
+        db.write(db_tmp.read(chunk_len)[::-1])
+        counter -= chunk_len
+
+    db_tmp.close()
     db.flush()
     db.close()
-    old.close()
-    del dbcontent
+    os.remove(db_tmp_path)
     return dbpath
 
 def remove_edb(tbz2file, savedir):
