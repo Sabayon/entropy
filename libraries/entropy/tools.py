@@ -838,7 +838,11 @@ def extract_edb(tbz2file, dbpath = None):
         old.seek(counter-bytes, 2)
         byte = old.read(1)
         if byte == entry_point:
-            old.seek(counter-bytes-(db_tag_len-1), 2)
+            try:
+                old.seek(counter-bytes-(db_tag_len-1), 2)
+            except IOError:
+                written = False
+                break
             chunk = old.read((db_tag_len-1)) + byte
             if chunk == db_tag:
                 break
