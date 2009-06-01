@@ -6344,7 +6344,7 @@ class ExceptionDialog:
 
     def show(self):
         import entropy.tools
-        from entropy.qa import ErrorReportInterface
+
         errmsg = entropy.tools.get_traceback()
         conntest = entropy.tools.get_remote_data(etpConst['conntestlink'])
         rc, (name,mail,description) = errorMessage(
@@ -6355,7 +6355,14 @@ class ExceptionDialog:
             showreport = conntest
         )
         if rc == -1:
-            error = ErrorReportInterface()
+
+            from entropy.client.interfaces.qa import UGCErrorReportInterface
+            try:
+                error = UGCErrorReportInterface( )
+            except (IncorrectParameter, OnlineMirrorError,):
+                from entropy.qa import ErrorReportInterface
+                error = ErrorReportInterface()
+
             error.prepare(errmsg, name, mail, description = description)
             result = error.submit()
             if result:
