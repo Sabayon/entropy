@@ -3182,20 +3182,33 @@ class LocalRepository:
             return True
         return False
 
-    def resolveNeeded(self, needed, elfclass = -1):
+    def resolveNeeded(self, needed, elfclass = -1, extended = False):
 
         args = [needed]
         elfclass_txt = ''
-        if elfclass != -1:
-            elfclass_txt = ' AND elfclass = (?)'
-            args.append(elfclass)
 
-        self.cursor.execute("""
-            SELECT idpackage FROM neededlibraryidpackages
-            WHERE library = (?)
-        """ + elfclass_txt, args)
-
-        return self.fetchall2set(self.cursor.fetchall())
+        if extended:
+            if elfclass != -1:
+                elfclass_txt = ' AND neededlibraryidpackages.elfclass = (?)'
+                args.append(elfclass)
+            self.cursor.execute("""
+                SELECT neededlibraryidpackages.idpackage,
+                neededlibrarypaths.path
+                FROM neededlibraryidpackages, neededlibrarypaths
+                WHERE neededlibraryidpackages.library = (?) AND
+                neededlibraryidpackages.library = neededlibrarypaths.library AND
+                neededlibraryidpackages.elfclass = neededlibrarypaths.elfclass
+            """ + elfclass_txt, args)
+            return self.cursor.fetchall()
+        else:
+            if elfclass != -1:
+                elfclass_txt = ' AND elfclass = (?)'
+                args.append(elfclass)
+            self.cursor.execute("""
+                SELECT idpackage FROM neededlibraryidpackages
+                WHERE library = (?)
+            """ + elfclass_txt, args)
+            return self.fetchall2set(self.cursor.fetchall())
 
     def isSourceAvailable(self, source):
         self.cursor.execute('SELECT idsource FROM sourcesreference WHERE source = (?)', (source,))
