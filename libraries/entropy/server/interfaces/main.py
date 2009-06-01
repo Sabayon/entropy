@@ -1462,12 +1462,53 @@ class Server(Singleton, TextInterface):
 
                 errors, m_fine_uris, m_broken_uris = downloader.go()
 
-                if errors:
-                    my_broken_uris = [
-                        (self.entropyTools.extract_ftp_host_from_uri(x), y,) \
-                        for x, y in m_broken_uris]
+                if not errors:
+                    for downloaded_path, idpackage in \
+                        download_queue[from_branch]:
 
-                    reason = my_broken_uris[0][1]
+                        self.updateProgress(
+                            "[%s=>%s|%s|%s] %s: %s" % (
+                                darkgreen(from_branch),
+                                darkred(branch),
+                                brown(repo),
+                                dbconn.retrieveAtom(idpackage),
+                                blue(_("checking package hash")),
+                                darkgreen(os.path.basename(downloaded_path)),
+                            ),
+                            importance = 0,
+                            type = "info",
+                            header = brown("   "),
+                            back = True
+                        )
+
+                        md5hash = self.entropyTools.md5sum(downloaded_path)
+                        db_md5hash = dbconn.retrieveDigest(idpackage)
+                        if md5hash != db_md5hash:
+                            errors = True
+                            self.updateProgress(
+                                "[%s=>%s|%s|%s] %s: %s" % (
+                                    darkgreen(from_branch),
+                                    darkred(branch),
+                                    brown(repo),
+                                    dbconn.retrieveAtom(idpackage),
+                                    blue(_("hash does not match for")),
+                                    darkgreen(os.path.basename(downloaded_path)),
+                                ),
+                                importance = 0,
+                                type = "error",
+                                header = brown("   ")
+                            )
+                            continue
+
+
+
+                if errors:
+                    reason = _("wrong md5")
+                    if m_broken_uris:
+                        my_broken_uris = [
+                        (self.entropyTools.extract_ftp_host_from_uri(x), y,) \
+                            for x, y in m_broken_uris]
+                        reason = my_broken_uris[0][1]
 
                     self.updateProgress(
                         "[%s=>%s|%s] %s, %s: %s" % (
