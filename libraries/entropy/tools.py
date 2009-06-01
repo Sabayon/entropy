@@ -731,7 +731,7 @@ def unpack_xpak(xpakfile, tmpdir = None):
         del xpakdata
         try:
             os.remove(xpakfile)
-        except:
+        except OSError:
             pass
     except:
         return None
@@ -830,7 +830,7 @@ def extract_edb(tbz2file, dbpath = None):
     db_tmp = open(db_tmp_path, "wb")
 
     db_tag = etpConst['databasestarttag']
-    db_tag_len = len(etpConst['databasestarttag'])
+    db_tag_len = len(db_tag)
     entry_point = db_tag[::-1][0]
     written = False
 
@@ -888,23 +888,26 @@ def extract_edb(tbz2file, dbpath = None):
     return dbpath
 
 def remove_edb(tbz2file, savedir):
-    old = open(tbz2file,"rb")
-    new = open(savedir+"/"+os.path.basename(tbz2file),"wb")
+    old = open(tbz2file, "rb")
+    new = open(savedir+"/"+os.path.basename(tbz2file), "wb")
 
     # position old to the end
-    old.seek(0,2)
+    old.seek(0, 2)
     # read backward until we find
     bytes = old.tell()
     counter = bytes
+    db_tag = etpConst['databasestarttag']
+    db_tag_len = len(db_tag)
+    entry_point = db_tag[::-1][0]
 
     while counter >= 0:
-        old.seek(counter-bytes,2)
+        old.seek(counter-bytes, 2)
         byte = old.read(1)
-        if byte == "|":
-            old.seek(counter-bytes-31,2) # wth I can't use len(etpConst['databasestarttag']) ???
-            chunk = old.read(31)+byte
-            if chunk == etpConst['databasestarttag']:
-                old.seek(counter-bytes-32,2)
+        if byte == entry_point:
+            old.seek(counter-bytes-(db_tag_len-1), 2)
+            chunk = old.read((db_tag_len-1)) + byte
+            if chunk == db_tag:
+                old.seek(counter-bytes-(db_tag_len), 2)
                 break
         counter -= 1
 
