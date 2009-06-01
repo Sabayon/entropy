@@ -1938,7 +1938,10 @@ class Server(Singleton, TextInterface):
             repo = repo)
         downloadfile = os.path.basename(download_url)
         destination_path = os.path.join(upload_dir, downloadfile)
-        shutil.move(package_file, destination_path)
+        try:
+            os.rename(package_file, destination_path)
+        except OSError:
+            shutil.move(package_file, destination_path)
 
         dbconn.commitChanges()
         return idpackage, destination_path
