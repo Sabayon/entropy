@@ -1,0 +1,568 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.cache.EntropyCacher</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.cache-module.html">Module&nbsp;cache</a> ::
+        Class&nbsp;EntropyCacher
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class EntropyCacher</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy_" name="uml_class_diagram_for_entropy_">
+<area shape="rect" href="entropy.dump-module.html" title="# DESCRIPTION: # load/save a data to file by dumping its structure" alt="" coords="17,140,217,159"/>
+<area shape="rect" href="entropy.tools-module.html" title="# DESCRIPTION: # generic tools for all the handlers applications" alt="" coords="17,159,217,177"/>
+<area shape="rect" href="javascript:void(0);" title="entropy.cache.EntropyCacher.copy" alt="" coords="17,177,217,196"/>
+<area shape="rect" href="entropy.cache.EntropyCacher-class.html#init_singleton" title="Singleton overloaded method." alt="" coords="17,199,217,217"/>
+<area shape="rect" href="entropy.cache.EntropyCacher-class.html#__del__" title="entropy.cache.EntropyCacher.__del__" alt="" coords="17,217,217,236"/>
+<area shape="rect" href="entropy.cache.EntropyCacher-class.html#start" title="This is the method used to start the asynchronous cache writer but also the whole cacher." alt="" coords="17,236,217,255"/>
+<area shape="rect" href="entropy.cache.EntropyCacher-class.html#is_started" title="Return whether start is called or not." alt="" coords="17,255,217,273"/>
+<area shape="rect" href="entropy.cache.EntropyCacher-class.html#stop" title="This method stops the execution of the cacher, which won&#39;t accept cache &#160;writes anymore." alt="" coords="17,273,217,292"/>
+<area shape="rect" href="entropy.cache.EntropyCacher-class.html#sync" title="This method can be called anytime and forces the instance to flush all the &#160;cache writes queued to disk." alt="" coords="17,292,217,311"/>
+<area shape="rect" href="entropy.cache.EntropyCacher-class.html#discard" title="This method makes buffered cache to be discarded synchronously." alt="" coords="17,311,217,329"/>
+<area shape="rect" href="entropy.cache.EntropyCacher-class.html#push" title="This is the place where data is either added to the write queue or written &#160;to disk (if async == False) only and only if start() method has been &#160;called." alt="" coords="17,329,217,348"/>
+<area shape="rect" href="entropy.cache.EntropyCacher-class.html#pop" title="This is the place where data is retrieved from cache." alt="" coords="17,348,217,367"/>
+<area shape="rect" href="entropy.cache.EntropyCacher-class.html" title="Entropy asynchronous and synchronous cache writer and reader." alt="" coords="16,123,219,368"/>
+<area shape="rect" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="33,36,201,55"/>
+<area shape="rect" href="entropy.core.Singleton-class.html#is_destroyed" title="In our world, Singleton instances may be destroyed, this is done by setting a private bool var __is_destroyed" alt="" coords="33,55,201,73"/>
+<area shape="rect" href="entropy.core.Singleton-class.html#is_singleton" title="Return if the instance is a singleton" alt="" coords="33,73,201,92"/>
+<area shape="rect" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton" alt="" coords="32,11,203,93"/>
+</map>
+  <img src="uml_class_diagram_for_entropy_.gif" alt='' usemap="#uml_class_diagram_for_entropy_" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>Entropy asynchronous and synchronous cache writer and reader. This 
+  class is a Singleton and contains a thread doing the cache writes 
+  asynchronously, thus it must be stopped before your application is 
+  terminated calling the stop() method.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.cache.EntropyCacher-class.html#init_singleton" class="summary-sig-name">init_singleton</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Singleton overloaded method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.init_singleton">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__del__"></a><span class="summary-sig-name">__del__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.__del__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.cache.EntropyCacher-class.html#start" class="summary-sig-name">start</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      This is the method used to start the asynchronous cache writer but 
+      also the whole cacher.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.start">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.cache.EntropyCacher-class.html#is_started" class="summary-sig-name">is_started</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return whether start is called or not.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.is_started">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.cache.EntropyCacher-class.html#stop" class="summary-sig-name">stop</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      This method stops the execution of the cacher, which won't accept 
+      cache writes anymore.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.stop">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.cache.EntropyCacher-class.html#sync" class="summary-sig-name">sync</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">wait</span>=<span class="summary-sig-default">False</span>)</span><br />
+      This method can be called anytime and forces the instance to flush 
+      all the cache writes queued to disk.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.sync">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.cache.EntropyCacher-class.html#discard" class="summary-sig-name">discard</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      This method makes buffered cache to be discarded synchronously.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.discard">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.cache.EntropyCacher-class.html#push" class="summary-sig-name">push</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>,
+        <span class="summary-sig-arg">data</span>,
+        <span class="summary-sig-arg">async</span>=<span class="summary-sig-default">True</span>)</span><br />
+      This is the place where data is either added to the write queue or 
+      written to disk (if async == False) only and only if start() method 
+      has been called.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.push">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">Python object</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.cache.EntropyCacher-class.html#pop" class="summary-sig-name">pop</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>)</span><br />
+      This is the place where data is retrieved from cache.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.pop">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
+      <code><a href="entropy.core.Singleton-class.html#is_destroyed">is_destroyed</a></code>,
+      <code><a href="entropy.core.Singleton-class.html#is_singleton">is_singleton</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__init__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__str__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== STATIC METHODS ==================== -->
+<a name="section-StaticMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Static Methods</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
+      <code><a href="entropy.core.Singleton-class.html#__new__">__new__</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="init_singleton"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">init_singleton</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.init_singleton">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Singleton overloaded method. Equals to __init__. This is the place 
+  where all the properties initialization takes place.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="start"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">start</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.start">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This is the method used to start the asynchronous cache writer but 
+  also the whole cacher. If this method is not called, the instance will 
+  always trash and cache write request.</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="is_started"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_started</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.is_started">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return whether start is called or not. This equals to checking if the 
+  cacher is running, thus is writing cache to disk.</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="stop"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">stop</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.stop">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This method stops the execution of the cacher, which won't accept 
+  cache writes anymore. The thread responsible of writing to disk is 
+  stopped here and the Cacher will be back to being inactive. A watchdog 
+  will avoid the thread to freeze the call if the write buffer is 
+  overloaded.</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="sync"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">sync</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">wait</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.sync">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This method can be called anytime and forces the instance to flush all
+  the cache writes queued to disk. If wait == False a watchdog prevents 
+  this call to get stuck in case of write buffer overloads.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>wait</code></strong> (bool) - indicates if waiting until done (synchronous mode) or not</li>
+    </ul></dd>
+    <dt>Returns:</dt>
+        <dd>None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="discard"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">discard</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.discard">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This method makes buffered cache to be discarded synchronously.</p>
+  <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="push"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">push</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">key</span>,
+        <span class="sig-arg">data</span>,
+        <span class="sig-arg">async</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.push">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This is the place where data is either added to the write queue or 
+  written to disk (if async == False) only and only if start() method has 
+  been called.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>key</code></strong> (basestring) - cache data identifier</li>
+        <li><strong class="pname"><code>data</code></strong> (any picklable object) - picklable object</li>
+        <li><strong class="pname"><code>async</code></strong> (bool) - store cache asynchronously or not</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>nothing</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="pop"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">pop</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">key</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher.pop">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This is the place where data is retrieved from cache. You must know 
+  the cache identifier used when push() was called.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>key</code></strong> (basestring) - cache data identifier</li>
+    </ul></dd>
+    <dt>Returns: Python object</dt>
+        <dd>object stored into the stack or None (if stack is empty)</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:47 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

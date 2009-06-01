@@ -1,0 +1,417 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.client.interfaces.methods.MatchMixin</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.client-module.html">Package&nbsp;client</a> ::
+        <a href="entropy.client.interfaces-module.html">Package&nbsp;interfaces</a> ::
+        <a href="entropy.client.interfaces.methods-module.html">Module&nbsp;methods</a> ::
+        Class&nbsp;MatchMixin
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class MatchMixin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__8" name="uml_class_diagram_for_entropy__8">
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#get_package_action" title="entropy.client.interfaces.methods.MatchMixin.get_package_action" alt="" coords="17,36,508,55"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#get_masked_package_reason" title="entropy.client.interfaces.methods.MatchMixin.get_masked_package_reason" alt="" coords="17,55,508,73"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#get_match_conflicts" title="entropy.client.interfaces.methods.MatchMixin.get_match_conflicts" alt="" coords="17,73,508,92"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#is_match_masked" title="entropy.client.interfaces.methods.MatchMixin.is_match_masked" alt="" coords="17,92,508,111"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#is_match_masked_by_user" title="entropy.client.interfaces.methods.MatchMixin.is_match_masked_by_user" alt="" coords="17,111,508,129"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#is_match_unmasked_by_user" title="entropy.client.interfaces.methods.MatchMixin.is_match_unmasked_by_user" alt="" coords="17,129,508,148"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#mask_match" title="entropy.client.interfaces.methods.MatchMixin.mask_match" alt="" coords="17,148,508,167"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#unmask_match" title="entropy.client.interfaces.methods.MatchMixin.unmask_match" alt="" coords="17,167,508,185"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#unmask_match_by_atom" title="entropy.client.interfaces.methods.MatchMixin.unmask_match_by_atom" alt="" coords="17,185,508,204"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#unmask_match_by_keyslot" title="entropy.client.interfaces.methods.MatchMixin.unmask_match_by_keyslot" alt="" coords="17,204,508,223"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#mask_match_by_atom" title="entropy.client.interfaces.methods.MatchMixin.mask_match_by_atom" alt="" coords="17,223,508,241"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#mask_match_by_keyslot" title="entropy.client.interfaces.methods.MatchMixin.mask_match_by_keyslot" alt="" coords="17,241,508,260"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#unmask_match_generic" title="entropy.client.interfaces.methods.MatchMixin.unmask_match_generic" alt="" coords="17,260,508,279"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#mask_match_generic" title="entropy.client.interfaces.methods.MatchMixin.mask_match_generic" alt="" coords="17,279,508,297"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html#clear_match_mask" title="entropy.client.interfaces.methods.MatchMixin.clear_match_mask" alt="" coords="17,297,508,316"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MatchMixin-class.html" title="entropy.client.interfaces.methods.MatchMixin" alt="" coords="16,11,509,317"/>
+<area shape="rect" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="221,347,304,373"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__8.gif" alt='' usemap="#uml_class_diagram_for_entropy__8" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_package_action"></a><span class="summary-sig-name">get_package_action</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.get_package_action">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_masked_package_reason"></a><span class="summary-sig-name">get_masked_package_reason</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.get_masked_package_reason">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_match_conflicts"></a><span class="summary-sig-name">get_match_conflicts</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.get_match_conflicts">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_match_masked"></a><span class="summary-sig-name">is_match_masked</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>,
+        <span class="summary-sig-arg">live_check</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.is_match_masked">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_match_masked_by_user"></a><span class="summary-sig-name">is_match_masked_by_user</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>,
+        <span class="summary-sig-arg">live_check</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.is_match_masked_by_user">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_match_unmasked_by_user"></a><span class="summary-sig-name">is_match_unmasked_by_user</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>,
+        <span class="summary-sig-arg">live_check</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.is_match_unmasked_by_user">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="mask_match"></a><span class="summary-sig-name">mask_match</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>,
+        <span class="summary-sig-arg">method</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">atom</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">dry_run</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">clean_all_cache</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.mask_match">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="unmask_match"></a><span class="summary-sig-name">unmask_match</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>,
+        <span class="summary-sig-arg">method</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">atom</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">dry_run</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">clean_all_cache</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.unmask_match">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="unmask_match_by_atom"></a><span class="summary-sig-name">unmask_match_by_atom</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>,
+        <span class="summary-sig-arg">dry_run</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.unmask_match_by_atom">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="unmask_match_by_keyslot"></a><span class="summary-sig-name">unmask_match_by_keyslot</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>,
+        <span class="summary-sig-arg">dry_run</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.unmask_match_by_keyslot">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="mask_match_by_atom"></a><span class="summary-sig-name">mask_match_by_atom</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>,
+        <span class="summary-sig-arg">dry_run</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.mask_match_by_atom">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="mask_match_by_keyslot"></a><span class="summary-sig-name">mask_match_by_keyslot</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>,
+        <span class="summary-sig-arg">dry_run</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.mask_match_by_keyslot">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="unmask_match_generic"></a><span class="summary-sig-name">unmask_match_generic</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>,
+        <span class="summary-sig-arg">keyword</span>,
+        <span class="summary-sig-arg">dry_run</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.unmask_match_generic">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="mask_match_generic"></a><span class="summary-sig-name">mask_match_generic</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>,
+        <span class="summary-sig-arg">keyword</span>,
+        <span class="summary-sig-arg">dry_run</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.mask_match_generic">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="clear_match_mask"></a><span class="summary-sig-name">clear_match_mask</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>,
+        <span class="summary-sig-arg">dry_run</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MatchMixin.clear_match_mask">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:48 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

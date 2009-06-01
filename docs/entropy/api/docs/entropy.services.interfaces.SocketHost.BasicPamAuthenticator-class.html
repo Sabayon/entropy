@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.services.interfaces.SocketHost.BasicPamAuthenticator</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.services-module.html">Package&nbsp;services</a> ::
+        <a href="entropy.services.interfaces-module.html">Module&nbsp;interfaces</a> ::
+        <a href="entropy.services.interfaces.SocketHost-class.html">Class&nbsp;SocketHost</a> ::
+        Class&nbsp;BasicPamAuthenticator
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class BasicPamAuthenticator</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.BasicPamAuthenticator">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__67" name="uml_class_diagram_for_entropy__67">
+<area shape="rect" href="entropy.tools-module.html" title="# DESCRIPTION: # generic tools for all the handlers applications" alt="" coords="17,103,279,121"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#__init__" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator.__init__" alt="" coords="17,124,279,143"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#docmd_login" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator.docmd_login" alt="" coords="17,143,279,161"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#docmd_userdata" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator.docmd_userdata" alt="" coords="17,161,279,180"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#docmd_logout" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator.docmd_logout" alt="" coords="17,180,279,199"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#set_exc_permissions" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator.set_exc_permissions" alt="" coords="17,199,279,217"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#hide_login_data" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator.hide_login_data" alt="" coords="17,217,279,236"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#terminate_instance" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator.terminate_instance" alt="" coords="17,236,279,255"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator" alt="" coords="16,85,280,256"/>
+<area shape="rect" href="entropy.services.skel.SocketAuthenticator-class.html#set_session" title="entropy.services.skel.SocketAuthenticator.set_session" alt="" coords="69,36,227,55"/>
+<area shape="rect" href="entropy.services.skel.SocketAuthenticator-class.html" title="entropy.services.skel.SocketAuthenticator" alt="" coords="68,11,228,56"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__67.gif" alt='' usemap="#uml_class_diagram_for_entropy__67" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">HostInterface</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.BasicPamAuthenticator.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_login"></a><span class="summary-sig-name">docmd_login</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">arguments</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.BasicPamAuthenticator.docmd_login">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_userdata"></a><span class="summary-sig-name">docmd_userdata</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.BasicPamAuthenticator.docmd_userdata">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_logout"></a><span class="summary-sig-name">docmd_logout</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.BasicPamAuthenticator.docmd_logout">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_exc_permissions"></a><span class="summary-sig-name">set_exc_permissions</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">uid</span>,
+        <span class="summary-sig-arg">gid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.BasicPamAuthenticator.set_exc_permissions">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="hide_login_data"></a><span class="summary-sig-name">hide_login_data</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">args</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.BasicPamAuthenticator.hide_login_data">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="terminate_instance"></a><span class="summary-sig-name">terminate_instance</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.BasicPamAuthenticator.terminate_instance">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.services.skel.SocketAuthenticator-class.html">skel.SocketAuthenticator</a></code></b>:
+      <code><a href="entropy.services.skel.SocketAuthenticator-class.html#set_session">set_session</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">HostInterface</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.BasicPamAuthenticator.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="entropy.services.skel.SocketAuthenticator-class.html#__init__">skel.SocketAuthenticator.__init__</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:52 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,1870 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.server.interfaces.main.Server</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.server-module.html">Package&nbsp;server</a> ::
+        <a href="entropy.server.interfaces-module.html">Package&nbsp;interfaces</a> ::
+        <a href="entropy.server.interfaces.main-module.html">Module&nbsp;main</a> ::
+        Class&nbsp;Server
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Server</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__60" name="uml_class_diagram_for_entropy__60">
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#init_singleton" title="entropy.server.interfaces.main.Server.init_singleton" alt="" coords="17,260,1175,279"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#destroy" title="entropy.server.interfaces.main.Server.destroy" alt="" coords="17,279,1175,297"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#is_destroyed" title="In our world, Singleton instances may be destroyed, this is done by setting a private bool var __is_destroyed" alt="" coords="17,297,1175,316"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#__del__" title="entropy.server.interfaces.main.Server.__del__" alt="" coords="17,316,1175,335"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#ensure_paths" title="entropy.server.interfaces.main.Server.ensure_paths" alt="" coords="17,335,1175,353"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#migrate_repository_databases_to_new_branched_path" title="entropy.server.interfaces.main.Server.migrate_repository_databases_to_new_branched_path" alt="" coords="17,353,1175,372"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#setup_services" title="entropy.server.interfaces.main.Server.setup_services" alt="" coords="17,372,1175,391"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#setup_entropy_settings" title="entropy.server.interfaces.main.Server.setup_entropy_settings" alt="" coords="17,391,1175,409"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#close_server_databases" title="entropy.server.interfaces.main.Server.close_server_databases" alt="" coords="17,409,1175,428"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#close_server_database" title="entropy.server.interfaces.main.Server.close_server_database" alt="" coords="17,428,1175,447"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#get_available_repositories" title="entropy.server.interfaces.main.Server.get_available_repositories" alt="" coords="17,447,1175,465"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#switch_default_repository" title="entropy.server.interfaces.main.Server.switch_default_repository" alt="" coords="17,465,1175,484"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#setup_community_repositories_settings" title="entropy.server.interfaces.main.Server.setup_community_repositories_settings" alt="" coords="17,484,1175,503"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#update_database_package_sets" title="entropy.server.interfaces.main.Server.update_database_package_sets" alt="" coords="17,521,1175,540"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html" title="entropy.server.interfaces.main.Server" alt="" coords="16,235,1176,541"/>
+<area shape="rect" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="284,101,452,120"/>
+<area shape="rect" href="entropy.core.Singleton-class.html#is_singleton" title="Return if the instance is a singleton" alt="" coords="284,120,452,139"/>
+<area shape="rect" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton" alt="" coords="283,76,453,140"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#updateProgress" title="entropy.output.TextInterface.updateProgress" alt="" coords="505,36,1145,55"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#askQuestion" title="entropy.output.TextInterface.askQuestion" alt="" coords="505,55,1145,73"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#inputBox" title="entropy.output.TextInterface.inputBox" alt="" coords="505,73,1145,92"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#cycleDone" title="entropy.output.TextInterface.cycleDone" alt="" coords="505,92,1145,111"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#setTitle" title="entropy.output.TextInterface.setTitle" alt="" coords="505,111,1145,129"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#setTotalCycles" title="entropy.output.TextInterface.setTotalCycles" alt="" coords="505,129,1145,148"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#outputInstanceTest" title="entropy.output.TextInterface.outputInstanceTest" alt="" coords="505,148,1145,167"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#nocolor" title="entropy.output.TextInterface.nocolor" alt="" coords="505,167,1145,185"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#notitles" title="entropy.output.TextInterface.notitles" alt="" coords="505,185,1145,204"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html" title="entropy.output.TextInterface" alt="" coords="504,11,1147,205"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__60.gif" alt='' usemap="#uml_class_diagram_for_entropy__60" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="init_singleton"></a><span class="summary-sig-name">init_singleton</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">default_repository</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">save_repository</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">community_repo</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">fake_default_repo</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">fake_default_repo_id</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">::fake::</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">fake_default_repo_desc</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">this is a fake repository</code><code class="variable-quote">'</code></span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.init_singleton">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="destroy"></a><span class="summary-sig-name">destroy</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.server.interfaces.main.Server-class.html#is_destroyed" class="summary-sig-name">is_destroyed</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      In our world, Singleton instances may be destroyed, this is done by 
+      setting a private bool var __is_destroyed</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.is_destroyed">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__del__"></a><span class="summary-sig-name">__del__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.__del__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="ensure_paths"></a><span class="summary-sig-name">ensure_paths</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.ensure_paths">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="migrate_repository_databases_to_new_branched_path"></a><span class="summary-sig-name">migrate_repository_databases_to_new_branched_path</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.migrate_repository_databases_to_new_branched_path">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setup_services"></a><span class="summary-sig-name">setup_services</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.setup_services">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setup_entropy_settings"></a><span class="summary-sig-name">setup_entropy_settings</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.setup_entropy_settings">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="close_server_databases"></a><span class="summary-sig-name">close_server_databases</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.close_server_databases">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="close_server_database"></a><span class="summary-sig-name">close_server_database</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">dbinstance</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.close_server_database">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_available_repositories"></a><span class="summary-sig-name">get_available_repositories</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_available_repositories">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="switch_default_repository"></a><span class="summary-sig-name">switch_default_repository</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>,
+        <span class="summary-sig-arg">save</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">handle_uninitialized</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.switch_default_repository">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setup_community_repositories_settings"></a><span class="summary-sig-name">setup_community_repositories_settings</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.setup_community_repositories_settings">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="handle_uninitialized_repository"></a><span class="summary-sig-name">handle_uninitialized_repository</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.handle_uninitialized_repository">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="show_interface_status"></a><span class="summary-sig-name">show_interface_status</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.show_interface_status">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="save_default_repository"></a><span class="summary-sig-name">save_default_repository</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.save_default_repository">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="toggle_repository"></a><span class="summary-sig-name">toggle_repository</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>,
+        <span class="summary-sig-arg">enable</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.toggle_repository">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="backup_entropy_settings"></a><span class="summary-sig-name">backup_entropy_settings</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.backup_entropy_settings">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_repository_initialized"></a><span class="summary-sig-name">is_repository_initialized</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.is_repository_initialized">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="do_server_repository_sync_lock"></a><span class="summary-sig-name">do_server_repository_sync_lock</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>,
+        <span class="summary-sig-arg">no_upload</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.do_server_repository_sync_lock">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="init_generic_memory_server_repository"></a><span class="summary-sig-name">init_generic_memory_server_repository</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>,
+        <span class="summary-sig-arg">description</span>,
+        <span class="summary-sig-arg">mirrors</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">community_repo</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">service_url</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.init_generic_memory_server_repository">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="open_memory_database"></a><span class="summary-sig-name">open_memory_database</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">dbname</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.open_memory_database">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="open_server_repository"></a><span class="summary-sig-name">open_server_repository</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">read_only</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">no_upload</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">just_reading</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">indexing</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">warnings</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">do_cache</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">use_branch</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">lock_remote</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">is_new</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.open_server_repository">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="deps_tester"></a><span class="summary-sig-name">deps_tester</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">default_repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.deps_tester">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="dependencies_test"></a><span class="summary-sig-name">dependencies_test</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.dependencies_test">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="libraries_test"></a><span class="summary-sig-name">libraries_test</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">get_files</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.libraries_test">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="orphaned_spm_packages_test"></a><span class="summary-sig-name">orphaned_spm_packages_test</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.orphaned_spm_packages_test">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="depends_table_initialize"></a><span class="summary-sig-name">depends_table_initialize</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.depends_table_initialize">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="library_paths_table_initialize"></a><span class="summary-sig-name">library_paths_table_initialize</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.library_paths_table_initialize">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="create_empty_database"></a><span class="summary-sig-name">create_empty_database</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">dbpath</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.create_empty_database">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="tag_packages"></a><span class="summary-sig-name">tag_packages</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package_tag</span>,
+        <span class="summary-sig-arg">idpackages</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">ask</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.tag_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.server.interfaces.main.Server-class.html#flushback_packages" class="summary-sig-name">flushback_packages</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">from_branches</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">ask</span>=<span class="summary-sig-default">True</span>)</span><br />
+      When creating a new branch, for space reasons, packages are not moved
+      to a new location.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.flushback_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="move_packages"></a><span class="summary-sig-name">move_packages</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">matches</span>,
+        <span class="summary-sig-arg">to_repo</span>,
+        <span class="summary-sig-arg">from_repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">ask</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">do_copy</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">new_tag</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">pull_deps</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.move_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="package_injector"></a><span class="summary-sig-name">package_injector</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package_file</span>,
+        <span class="summary-sig-arg">inject</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.package_injector">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="add_packages_to_repository"></a><span class="summary-sig-name">add_packages_to_repository</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">packages_data</span>,
+        <span class="summary-sig-arg">ask</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.add_packages_to_repository">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="inject_database_into_packages"></a><span class="summary-sig-name">inject_database_into_packages</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">injection_data</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.inject_database_into_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="check_config_file_updates"></a><span class="summary-sig-name">check_config_file_updates</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.check_config_file_updates">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="quickpkg"></a><span class="summary-sig-name">quickpkg</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">atom</span>,
+        <span class="summary-sig-arg">storedir</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.quickpkg">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="remove_packages"></a><span class="summary-sig-name">remove_packages</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackages</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.remove_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="bump_database"></a><span class="summary-sig-name">bump_database</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.bump_database">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_remote_mirrors"></a><span class="summary-sig-name">get_remote_mirrors</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_remote_mirrors">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_remote_packages_relative_path"></a><span class="summary-sig-name">get_remote_packages_relative_path</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_remote_packages_relative_path">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_remote_database_relative_path"></a><span class="summary-sig-name">get_remote_database_relative_path</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_remote_database_relative_path">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_file"></a><span class="summary-sig-name">get_local_database_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_store_directory"></a><span class="summary-sig-name">get_local_store_directory</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_store_directory">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_upload_directory"></a><span class="summary-sig-name">get_local_upload_directory</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_upload_directory">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_packages_directory"></a><span class="summary-sig-name">get_local_packages_directory</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_packages_directory">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_taint_file"></a><span class="summary-sig-name">get_local_database_taint_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_taint_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_revision_file"></a><span class="summary-sig-name">get_local_database_revision_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_revision_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_timestamp_file"></a><span class="summary-sig-name">get_local_database_timestamp_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_timestamp_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_ca_cert_file"></a><span class="summary-sig-name">get_local_database_ca_cert_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_ca_cert_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_server_cert_file"></a><span class="summary-sig-name">get_local_database_server_cert_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_server_cert_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_mask_file"></a><span class="summary-sig-name">get_local_database_mask_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_mask_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_system_mask_file"></a><span class="summary-sig-name">get_local_database_system_mask_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_system_mask_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_confl_tagged_file"></a><span class="summary-sig-name">get_local_database_confl_tagged_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_confl_tagged_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_licensewhitelist_file"></a><span class="summary-sig-name">get_local_database_licensewhitelist_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_licensewhitelist_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_rss_file"></a><span class="summary-sig-name">get_local_database_rss_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_rss_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_rsslight_file"></a><span class="summary-sig-name">get_local_database_rsslight_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_rsslight_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_notice_board_file"></a><span class="summary-sig-name">get_local_database_notice_board_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_notice_board_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_treeupdates_file"></a><span class="summary-sig-name">get_local_database_treeupdates_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_treeupdates_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_compressed_metafiles_file"></a><span class="summary-sig-name">get_local_database_compressed_metafiles_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_compressed_metafiles_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_metafiles_not_found_file"></a><span class="summary-sig-name">get_local_database_metafiles_not_found_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_metafiles_not_found_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_exp_based_pkgs_rm_whitelist_file"></a><span class="summary-sig-name">get_local_exp_based_pkgs_rm_whitelist_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_exp_based_pkgs_rm_whitelist_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_sets_dir"></a><span class="summary-sig-name">get_local_database_sets_dir</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_sets_dir">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_dir"></a><span class="summary-sig-name">get_local_database_dir</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_dir">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_missing_dependencies_blacklist_file"></a><span class="summary-sig-name">get_missing_dependencies_blacklist_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_missing_dependencies_blacklist_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_missing_dependencies_blacklist"></a><span class="summary-sig-name">get_missing_dependencies_blacklist</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_missing_dependencies_blacklist">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="add_missing_dependencies_blacklist_items"></a><span class="summary-sig-name">add_missing_dependencies_blacklist_items</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">items</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.add_missing_dependencies_blacklist_items">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_database_revision"></a><span class="summary-sig-name">get_local_database_revision</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_database_revision">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_remote_database_revision"></a><span class="summary-sig-name">get_remote_database_revision</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_remote_database_revision">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_branch_from_download_relative_uri"></a><span class="summary-sig-name">get_branch_from_download_relative_uri</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mypath</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_branch_from_download_relative_uri">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_current_timestamp"></a><span class="summary-sig-name">get_current_timestamp</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_current_timestamp">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="package_set_list"></a><span class="summary-sig-name">package_set_list</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.package_set_list">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="package_set_search"></a><span class="summary-sig-name">package_set_search</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.package_set_search">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="package_set_match"></a><span class="summary-sig-name">package_set_match</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.package_set_match">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="atom_match"></a><span class="summary-sig-name">atom_match</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.atom_match">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="scan_package_changes"></a><span class="summary-sig-name">scan_package_changes</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.scan_package_changes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_match_expired"></a><span class="summary-sig-name">is_match_expired</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.is_match_expired">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_counter_trashed"></a><span class="summary-sig-name">is_counter_trashed</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">counter</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.is_counter_trashed">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="transform_package_into_injected"></a><span class="summary-sig-name">transform_package_into_injected</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackage</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.transform_package_into_injected">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="initialize_server_database"></a><span class="summary-sig-name">initialize_server_database</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">empty</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">warnings</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.initialize_server_database">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="match_packages"></a><span class="summary-sig-name">match_packages</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">packages</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.match_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_remote_package_checksum"></a><span class="summary-sig-name">get_remote_package_checksum</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>,
+        <span class="summary-sig-arg">filename</span>,
+        <span class="summary-sig-arg">branch</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_remote_package_checksum">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="verify_remote_packages"></a><span class="summary-sig-name">verify_remote_packages</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">packages</span>,
+        <span class="summary-sig-arg">ask</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.verify_remote_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="verify_local_packages"></a><span class="summary-sig-name">verify_local_packages</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">packages</span>,
+        <span class="summary-sig-arg">ask</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.verify_local_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="switch_packages_branch"></a><span class="summary-sig-name">switch_packages_branch</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackages</span>,
+        <span class="summary-sig-arg">from_branch</span>,
+        <span class="summary-sig-arg">to_branch</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.switch_packages_branch">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_entropy_sets"></a><span class="summary-sig-name">get_entropy_sets</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_entropy_sets">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_configured_package_sets"></a><span class="summary-sig-name">get_configured_package_sets</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">validate</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_configured_package_sets">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="update_database_package_sets"></a><span class="summary-sig-name">update_database_package_sets</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">dbconn</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.update_database_package_sets">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
+      <code><a href="entropy.core.Singleton-class.html#is_singleton">is_singleton</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__init__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__str__</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.output.TextInterface-class.html">output.TextInterface</a></code></b>:
+      <code><a href="entropy.output.TextInterface-class.html#askQuestion">askQuestion</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#cycleDone">cycleDone</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#inputBox">inputBox</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#nocolor">nocolor</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#notitles">notitles</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#outputInstanceTest">outputInstanceTest</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#setTitle">setTitle</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#setTotalCycles">setTotalCycles</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#updateProgress">updateProgress</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== STATIC METHODS ==================== -->
+<a name="section-StaticMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Static Methods</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
+      <code><a href="entropy.core.Singleton-class.html#__new__">__new__</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="is_destroyed"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_destroyed</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.is_destroyed">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>In our world, Singleton instances may be destroyed, this is done by 
+  setting a private bool var __is_destroyed</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>instance status, if destroyed or not</dd>
+    <dt>Overrides:
+        <a href="entropy.core.Singleton-class.html#is_destroyed">core.Singleton.is_destroyed</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="flushback_packages"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">flushback_packages</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">from_branches</span>,
+        <span class="sig-arg">repo</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">ask</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.flushback_packages">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>When creating a new branch, for space reasons, packages are not moved 
+  to a new location. This works fine until old branch is removed. To avoid 
+  inconsistences, before deciding to do that, all the packages in the old 
+  branch should be flushed back to the the currently configured branch.</p>
+  <p>@param from_branches -- list of branches to move packages from @type 
+  from_branches -- list @param repo -- repository to work on @type repo -- 
+  str @param ask -- user interactivity @type ask -- bool</p>
+  <p>@return status</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:51 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

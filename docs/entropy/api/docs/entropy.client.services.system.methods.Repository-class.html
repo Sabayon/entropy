@@ -1,0 +1,746 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.client.services.system.methods.Repository</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.client-module.html">Package&nbsp;client</a> ::
+        <a href="entropy.client.services-module.html">Package&nbsp;services</a> ::
+        <a href="entropy.client.services.system-module.html">Package&nbsp;system</a> ::
+        <a href="entropy.client.services.system.methods-module.html">Module&nbsp;methods</a> ::
+        Class&nbsp;Repository
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Repository</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__16" name="uml_class_diagram_for_entropy__16">
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html#__init__" title="entropy.client.services.system.methods.Repository.__init__" alt="" coords="17,353,1028,372"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html#sync_spm" title="entropy.client.services.system.methods.Repository.sync_spm" alt="" coords="17,372,1028,391"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html#compile_atoms" title="entropy.client.services.system.methods.Repository.compile_atoms" alt="" coords="17,391,1028,409"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html#spm_remove_atoms" title="entropy.client.services.system.methods.Repository.spm_remove_atoms" alt="" coords="17,409,1028,428"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html#get_spm_categories_updates" title="entropy.client.services.system.methods.Repository.get_spm_categories_updates" alt="" coords="17,428,1028,447"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html#get_spm_categories_installed" title="entropy.client.services.system.methods.Repository.get_spm_categories_installed" alt="" coords="17,447,1028,465"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html#enable_uses_for_atoms" title="entropy.client.services.system.methods.Repository.enable_uses_for_atoms" alt="" coords="17,465,1028,484"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html#disable_uses_for_atoms" title="entropy.client.services.system.methods.Repository.disable_uses_for_atoms" alt="" coords="17,484,1028,503"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html#get_spm_atoms_info" title="entropy.client.services.system.methods.Repository.get_spm_atoms_info" alt="" coords="17,503,1028,521"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html#run_spm_info" title="entropy.client.services.system.methods.Repository.run_spm_info" alt="" coords="17,521,1028,540"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html#run_custom_shell_command" title="entropy.client.services.system.methods.Repository.run_custom_shell_command" alt="" coords="17,540,1028,559"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html#get_spm_glsa_data" title="entropy.client.services.system.methods.Repository.get_spm_glsa_data" alt="" coords="17,559,1028,577"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html#get_available_repositories" title="entropy.client.services.system.methods.Repository.get_available_repositories" alt="" coords="17,577,1028,596"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html#add_notice_board_entry" title="entropy.client.services.system.methods.Repository.add_notice_board_entry" alt="" coords="17,615,1028,633"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html" title="entropy.client.services.system.methods.Repository" alt="" coords="16,328,1029,635"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#get_available_commands" title="entropy.client.services.system.methods.BaseMixin.get_available_commands" alt="" coords="321,36,724,55"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#get_queue" title="entropy.client.services.system.methods.BaseMixin.get_queue" alt="" coords="321,55,724,73"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#get_queue_item_by_id" title="entropy.client.services.system.methods.BaseMixin.get_queue_item_by_id" alt="" coords="321,73,724,92"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#get_queue_id_stdout" title="entropy.client.services.system.methods.BaseMixin.get_queue_id_stdout" alt="" coords="321,92,724,111"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#get_queue_id_result" title="entropy.client.services.system.methods.BaseMixin.get_queue_id_result" alt="" coords="321,111,724,129"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#remove_queue_ids" title="entropy.client.services.system.methods.BaseMixin.remove_queue_ids" alt="" coords="321,129,724,148"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#pause_queue" title="entropy.client.services.system.methods.BaseMixin.pause_queue" alt="" coords="321,148,724,167"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#kill_processing_queue_id" title="entropy.client.services.system.methods.BaseMixin.kill_processing_queue_id" alt="" coords="321,167,724,185"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#swap_items_in_queue" title="entropy.client.services.system.methods.BaseMixin.swap_items_in_queue" alt="" coords="321,185,724,204"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#get_pinboard_data" title="entropy.client.services.system.methods.BaseMixin.get_pinboard_data" alt="" coords="321,204,724,223"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#add_to_pinboard" title="entropy.client.services.system.methods.BaseMixin.add_to_pinboard" alt="" coords="321,223,724,241"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#remove_from_pinboard" title="entropy.client.services.system.methods.BaseMixin.remove_from_pinboard" alt="" coords="321,241,724,260"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#set_pinboard_items_done" title="entropy.client.services.system.methods.BaseMixin.set_pinboard_items_done" alt="" coords="321,260,724,279"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#write_to_running_command_pipe" title="entropy.client.services.system.methods.BaseMixin.write_to_running_command_pipe" alt="" coords="321,279,724,297"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html" title="entropy.client.services.system.methods.BaseMixin" alt="" coords="320,11,725,299"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__16.gif" alt='' usemap="#uml_class_diagram_for_entropy__16" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.services.system.methods.Repository-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="sync_spm"></a><span class="summary-sig-name">sync_spm</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.sync_spm">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="compile_atoms"></a><span class="summary-sig-name">compile_atoms</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">atoms</span>,
+        <span class="summary-sig-arg">pretend</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">oneshot</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">verbose</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">nocolor</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">fetchonly</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">buildonly</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">nodeps</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">custom_use</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">ldflags</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">cflags</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.compile_atoms">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="spm_remove_atoms"></a><span class="summary-sig-name">spm_remove_atoms</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">atoms</span>,
+        <span class="summary-sig-arg">pretend</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">verbose</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">nocolor</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.spm_remove_atoms">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_spm_categories_updates"></a><span class="summary-sig-name">get_spm_categories_updates</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">categories</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.get_spm_categories_updates">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_spm_categories_installed"></a><span class="summary-sig-name">get_spm_categories_installed</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">categories</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.get_spm_categories_installed">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="enable_uses_for_atoms"></a><span class="summary-sig-name">enable_uses_for_atoms</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">atoms</span>,
+        <span class="summary-sig-arg">useflags</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.enable_uses_for_atoms">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="disable_uses_for_atoms"></a><span class="summary-sig-name">disable_uses_for_atoms</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">atoms</span>,
+        <span class="summary-sig-arg">useflags</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.disable_uses_for_atoms">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_spm_atoms_info"></a><span class="summary-sig-name">get_spm_atoms_info</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">atoms</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.get_spm_atoms_info">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="run_spm_info"></a><span class="summary-sig-name">run_spm_info</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.run_spm_info">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="run_custom_shell_command"></a><span class="summary-sig-name">run_custom_shell_command</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">command</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.run_custom_shell_command">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_spm_glsa_data"></a><span class="summary-sig-name">get_spm_glsa_data</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">list_type</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">affected</code><code class="variable-quote">'</code></span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.get_spm_glsa_data">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_available_repositories"></a><span class="summary-sig-name">get_available_repositories</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.get_available_repositories">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_default_repository"></a><span class="summary-sig-name">set_default_repository</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.set_default_repository">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_available_entropy_packages"></a><span class="summary-sig-name">get_available_entropy_packages</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.get_available_entropy_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_entropy_idpackage_information"></a><span class="summary-sig-name">get_entropy_idpackage_information</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackage</span>,
+        <span class="summary-sig-arg">repoid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.get_entropy_idpackage_information">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="remove_entropy_packages"></a><span class="summary-sig-name">remove_entropy_packages</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">matched_atoms</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.remove_entropy_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="search_entropy_packages"></a><span class="summary-sig-name">search_entropy_packages</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">search_type</span>,
+        <span class="summary-sig-arg">search_string</span>,
+        <span class="summary-sig-arg">repoid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.search_entropy_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="move_entropy_packages_to_repository"></a><span class="summary-sig-name">move_entropy_packages_to_repository</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackages</span>,
+        <span class="summary-sig-arg">from_repo</span>,
+        <span class="summary-sig-arg">to_repo</span>,
+        <span class="summary-sig-arg">do_copy</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.move_entropy_packages_to_repository">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="scan_entropy_packages_database_changes"></a><span class="summary-sig-name">scan_entropy_packages_database_changes</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.scan_entropy_packages_database_changes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="run_entropy_database_updates"></a><span class="summary-sig-name">run_entropy_database_updates</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">to_add</span>,
+        <span class="summary-sig-arg">to_remove</span>,
+        <span class="summary-sig-arg">to_inject</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.run_entropy_database_updates">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="run_entropy_dependency_test"></a><span class="summary-sig-name">run_entropy_dependency_test</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.run_entropy_dependency_test">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="run_entropy_library_test"></a><span class="summary-sig-name">run_entropy_library_test</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.run_entropy_library_test">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="run_entropy_treeupdates"></a><span class="summary-sig-name">run_entropy_treeupdates</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.run_entropy_treeupdates">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="scan_entropy_mirror_updates"></a><span class="summary-sig-name">scan_entropy_mirror_updates</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repositories</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.scan_entropy_mirror_updates">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="run_entropy_mirror_updates"></a><span class="summary-sig-name">run_entropy_mirror_updates</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repository_data</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.run_entropy_mirror_updates">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="run_entropy_checksum_test"></a><span class="summary-sig-name">run_entropy_checksum_test</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>,
+        <span class="summary-sig-arg">mode</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">local</code><code class="variable-quote">'</code></span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.run_entropy_checksum_test">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_notice_board"></a><span class="summary-sig-name">get_notice_board</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.get_notice_board">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="remove_notice_board_entries"></a><span class="summary-sig-name">remove_notice_board_entries</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>,
+        <span class="summary-sig-arg">entry_ids</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.remove_notice_board_entries">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="add_notice_board_entry"></a><span class="summary-sig-name">add_notice_board_entry</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>,
+        <span class="summary-sig-arg">title</span>,
+        <span class="summary-sig-arg">notice_text</span>,
+        <span class="summary-sig-arg">link</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.add_notice_board_entry">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.client.services.system.methods.BaseMixin-class.html">BaseMixin</a></code></b>:
+      <code><a href="entropy.client.services.system.methods.BaseMixin-class.html#add_to_pinboard">add_to_pinboard</a></code>,
+      <code><a href="entropy.client.services.system.methods.BaseMixin-class.html#get_available_commands">get_available_commands</a></code>,
+      <code><a href="entropy.client.services.system.methods.BaseMixin-class.html#get_pinboard_data">get_pinboard_data</a></code>,
+      <code><a href="entropy.client.services.system.methods.BaseMixin-class.html#get_queue">get_queue</a></code>,
+      <code><a href="entropy.client.services.system.methods.BaseMixin-class.html#get_queue_id_result">get_queue_id_result</a></code>,
+      <code><a href="entropy.client.services.system.methods.BaseMixin-class.html#get_queue_id_stdout">get_queue_id_stdout</a></code>,
+      <code><a href="entropy.client.services.system.methods.BaseMixin-class.html#get_queue_item_by_id">get_queue_item_by_id</a></code>,
+      <code><a href="entropy.client.services.system.methods.BaseMixin-class.html#kill_processing_queue_id">kill_processing_queue_id</a></code>,
+      <code><a href="entropy.client.services.system.methods.BaseMixin-class.html#pause_queue">pause_queue</a></code>,
+      <code><a href="entropy.client.services.system.methods.BaseMixin-class.html#remove_from_pinboard">remove_from_pinboard</a></code>,
+      <code><a href="entropy.client.services.system.methods.BaseMixin-class.html#remove_queue_ids">remove_queue_ids</a></code>,
+      <code><a href="entropy.client.services.system.methods.BaseMixin-class.html#set_pinboard_items_done">set_pinboard_items_done</a></code>,
+      <code><a href="entropy.client.services.system.methods.BaseMixin-class.html#swap_items_in_queue">swap_items_in_queue</a></code>,
+      <code><a href="entropy.client.services.system.methods.BaseMixin-class.html#write_to_running_command_pipe">write_to_running_command_pipe</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#Repository.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="entropy.client.services.system.methods.BaseMixin-class.html#__init__">BaseMixin.__init__</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:49 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

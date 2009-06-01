@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.exceptions.EntropyException</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.exceptions-module.html">Module&nbsp;exceptions</a> ::
+        Class&nbsp;EntropyException
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class EntropyException</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.exceptions-pysrc.html#EntropyException">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__29" name="uml_class_diagram_for_entropy__29">
+<area shape="rect" href="entropy.exceptions.CommandNotFound-class.html" title="A required binary was not available or executable" alt="" coords="16,416,144,443"/>
+<area shape="rect" href="entropy.exceptions.InvalidLocation-class.html" title="Data was not found when it was expected to exist or was specified incorrectly" alt="" coords="195,416,293,443"/>
+<area shape="rect" href="entropy.exceptions.DirectoryNotFound-class.html" title="A directory was not found when it was expected to exist" alt="" coords="104,472,227,499"/>
+<area shape="rect" href="entropy.exceptions.FileNotFound-class.html" title="A file was not found when it was expected to exist" alt="" coords="277,472,368,499"/>
+<area shape="rect" href="entropy.exceptions.PermissionDenied-class.html" title="Permission denied" alt="" coords="344,416,464,443"/>
+<area shape="rect" href="entropy.exceptions.MissingParameter-class.html" title="A parameter is required for the action requested but was not passed" alt="" coords="515,416,635,443"/>
+<area shape="rect" href="entropy.exceptions.ParseError-class.html" title="An error was generated while attempting to parse the request" alt="" coords="685,416,763,443"/>
+<area shape="rect" href="javascript:void(0);" title="exceptions.Exception.__new__" alt="" coords="2079,273,2204,292"/>
+<area shape="rect" href="javascript:void(0);" title="Common base class for all non&#45;exit exceptions." alt="" coords="2077,248,2205,293"/>
+<area shape="rect" href="entropy.exceptions.EntropyException-class.html#__init__" title="x.__init__(...) initializes x; see x.__class__.__doc__ for signature" alt="" coords="2083,348,2200,367"/>
+<area shape="rect" href="entropy.exceptions.EntropyException-class.html#__str__" title="str(x)" alt="" coords="2083,367,2200,385"/>
+<area shape="rect" href="entropy.exceptions.EntropyException-class.html" title="General superclass for Entropy exceptions" alt="" coords="2081,323,2201,387"/>
+<area shape="rect" href="entropy.exceptions.InterruptError-class.html" title="Raised to interrupt a thread or process" alt="" coords="813,416,901,443"/>
+<area shape="rect" href="entropy.exceptions.EntropyPackageException-class.html" title="Malformed or missing package data" alt="" coords="952,416,1120,443"/>
+<area shape="rect" href="entropy.exceptions.FtpError-class.html" title="FTP errors" alt="" coords="1171,416,1232,443"/>
+<area shape="rect" href="entropy.exceptions.InvalidDependString-class.html" title="An invalid depend string has been encountered" alt="" coords="1283,416,1411,443"/>
+<area shape="rect" href="entropy.exceptions.SSLError-class.html" title="SSL support is not available" alt="" coords="1461,416,1528,443"/>
+<area shape="rect" href="entropy.exceptions.InvalidAtom-class.html" title="Atom not properly formatted" alt="" coords="1579,416,1659,443"/>
+<area shape="rect" href="entropy.exceptions.QueueError-class.html" title="Action queue issue" alt="" coords="1709,416,1789,443"/>
+<area shape="rect" href="entropy.exceptions.ReadOnlyFileSystem-class.html" title="Read&#45;only file system" alt="" coords="1840,416,1976,443"/>
+<area shape="rect" href="entropy.exceptions.InvalidData-class.html" title="An incorrect formatting was passed instead of the expected one" alt="" coords="2027,416,2104,443"/>
+<area shape="rect" href="entropy.exceptions.InvalidVersionString-class.html" title="An invalid version string has been encountered" alt="" coords="2155,416,2283,443"/>
+<area shape="rect" href="entropy.exceptions.SecurityViolation-class.html" title="An incorrect formatting was passed instead of the expected one" alt="" coords="2333,416,2445,443"/>
+<area shape="rect" href="entropy.exceptions.InvalidPackageSet-class.html" title="Package set does not exist" alt="" coords="2496,416,2616,443"/>
+<area shape="rect" href="entropy.exceptions.OperationNotPermitted-class.html" title="An operation was not permitted operating system" alt="" coords="2667,416,2813,443"/>
+<area shape="rect" href="entropy.exceptions.InvalidDataType-class.html" title="An incorrect type was passed instead of the expected one" alt="" coords="2864,416,2968,443"/>
+<area shape="rect" href="entropy.exceptions.IncorrectParameter-class.html" title="A parameter of the wrong type was passed" alt="" coords="3019,416,3144,443"/>
+<area shape="rect" href="entropy.exceptions.OnlineMirrorError-class.html" title="Mirror issue" alt="" coords="3195,416,3307,443"/>
+<area shape="rect" href="entropy.exceptions.CacheCorruptionError-class.html" title="On&#45;Disk cache Corruption indication" alt="" coords="3357,416,3496,443"/>
+<area shape="rect" href="entropy.exceptions.ConnectionError-class.html" title="Cannot connect to service" alt="" coords="3547,416,3653,443"/>
+<area shape="rect" href="entropy.exceptions.SPMError-class.html" title="Source Package Manager generic errors" alt="" coords="3704,416,3776,443"/>
+<area shape="rect" href="entropy.exceptions.RepositoryError-class.html" title="Cannot open repository database" alt="" coords="3827,416,3931,443"/>
+<area shape="rect" href="entropy.exceptions.SystemDatabaseError-class.html" title="Cannot open system database" alt="" coords="3981,416,4123,443"/>
+<area shape="rect" href="entropy.exceptions.LibraryNotFound-class.html" title="A required library was not available or executable" alt="" coords="4173,416,4283,443"/>
+<area shape="rect" href="entropy.exceptions.CorruptionError-class.html" title="Corruption indication" alt="" coords="4333,416,4435,443"/>
+<area shape="rect" href="javascript:void(0);" title="exceptions.BaseException.args" alt="" coords="2064,28,2219,47"/>
+<area shape="rect" href="javascript:void(0);" title="exception message" alt="" coords="2064,47,2219,65"/>
+<area shape="rect" href="javascript:void(0);" title="x.__delattr__(&#39;name&#39;) &lt;==&gt; del x.name" alt="" coords="2064,68,2219,87"/>
+<area shape="rect" href="javascript:void(0);" title="x.__getattribute__(&#39;name&#39;) &lt;==&gt; x.name" alt="" coords="2064,87,2219,105"/>
+<area shape="rect" href="javascript:void(0);" title="x[y]" alt="" coords="2064,105,2219,124"/>
+<area shape="rect" href="javascript:void(0);" title="x[i:j]" alt="" coords="2064,124,2219,143"/>
+<area shape="rect" href="javascript:void(0);" title="helper for pickle" alt="" coords="2064,143,2219,161"/>
+<area shape="rect" href="javascript:void(0);" title="repr(x)" alt="" coords="2064,161,2219,180"/>
+<area shape="rect" href="javascript:void(0);" title="x.__setattr__(&#39;name&#39;, value) &lt;==&gt; x.name = value" alt="" coords="2064,180,2219,199"/>
+<area shape="rect" href="javascript:void(0);" title="exceptions.BaseException.__setstate__" alt="" coords="2064,199,2219,217"/>
+<area shape="rect" href="javascript:void(0);" title="Common base class for all exceptions" alt="" coords="2063,11,2220,219"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__29.gif" alt='' usemap="#uml_class_diagram_for_entropy__29" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>General superclass for Entropy exceptions</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.exceptions.EntropyException-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.exceptions-pysrc.html#EntropyException.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.exceptions.EntropyException-class.html#__str__" class="summary-sig-name">__str__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      str(x)</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.exceptions-pysrc.html#EntropyException.__str__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>exceptions.Exception</code></b>:
+      <code>__new__</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>exceptions.BaseException</code></b>:
+      <code>__delattr__</code>,
+      <code>__getattribute__</code>,
+      <code>__getitem__</code>,
+      <code>__getslice__</code>,
+      <code>__reduce__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__setstate__</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__hash__</code>,
+      <code>__reduce_ex__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>exceptions.BaseException</code></b>:
+      <code>args</code>,
+      <code>message</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">value</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.exceptions-pysrc.html#EntropyException.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>x.__init__(...) initializes x; see x.__class__.__doc__ for 
+  signature</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__str__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__str__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Informal representation operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.exceptions-pysrc.html#EntropyException.__str__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>str(x)</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__str__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:50 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

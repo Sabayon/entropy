@@ -1,0 +1,442 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.services.system.commands.Base</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.services-module.html">Package&nbsp;services</a> ::
+        <a href="entropy.services.system-module.html">Package&nbsp;system</a> ::
+        <a href="entropy.services.system.commands-module.html">Module&nbsp;commands</a> ::
+        Class&nbsp;Base
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Base</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__78" name="uml_class_diagram_for_entropy__78">
+<area shape="rect" href="entropy.tools-module.html" title="# DESCRIPTION: # generic tools for all the handlers applications" alt="" coords="405,135,725,153"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html#__init__" title="entropy.services.system.commands.Base.__init__" alt="" coords="405,156,725,175"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html#docmd_get_queue" title="entropy.services.system.commands.Base.docmd_get_queue" alt="" coords="405,175,725,193"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html#docmd_get_queue_item_by_id" title="entropy.services.system.commands.Base.docmd_get_queue_item_by_id" alt="" coords="405,193,725,212"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html#docmd_get_queue_id_stdout" title="entropy.services.system.commands.Base.docmd_get_queue_id_stdout" alt="" coords="405,212,725,231"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html#docmd_get_queue_id_result" title="entropy.services.system.commands.Base.docmd_get_queue_id_result" alt="" coords="405,231,725,249"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html#docmd_remove_queue_ids" title="entropy.services.system.commands.Base.docmd_remove_queue_ids" alt="" coords="405,249,725,268"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html#docmd_pause_queue" title="entropy.services.system.commands.Base.docmd_pause_queue" alt="" coords="405,268,725,287"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html#docmd_kill_processing_queue_id" title="entropy.services.system.commands.Base.docmd_kill_processing_queue_id" alt="" coords="405,287,725,305"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html#docmd_swap_items_in_queue" title="entropy.services.system.commands.Base.docmd_swap_items_in_queue" alt="" coords="405,305,725,324"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html#docmd_get_pinboard_data" title="entropy.services.system.commands.Base.docmd_get_pinboard_data" alt="" coords="405,324,725,343"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html#docmd_add_to_pinboard" title="entropy.services.system.commands.Base.docmd_add_to_pinboard" alt="" coords="405,343,725,361"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html#docmd_remove_from_pinboard" title="entropy.services.system.commands.Base.docmd_remove_from_pinboard" alt="" coords="405,361,725,380"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html#docmd_set_pinboard_items_done" title="entropy.services.system.commands.Base.docmd_set_pinboard_items_done" alt="" coords="405,380,725,399"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html#docmd_write_to_running_command_pipe" title="entropy.services.system.commands.Base.docmd_write_to_running_command_pipe" alt="" coords="405,399,725,417"/>
+<area shape="rect" href="entropy.services.system.commands.Base-class.html" title="entropy.services.system.commands.Base" alt="" coords="404,117,727,419"/>
+<area shape="rect" href="entropy.services.skel.SocketCommands-class.html#inst_name" title="entropy.services.skel.SocketCommands.inst_name" alt="" coords="17,28,1113,47"/>
+<area shape="rect" href="entropy.services.skel.SocketCommands-class.html#__str__" title="entropy.services.skel.SocketCommands.__str__" alt="" coords="17,49,1113,68"/>
+<area shape="rect" href="entropy.services.skel.SocketCommands-class.html#register" title="entropy.services.skel.SocketCommands.register" alt="" coords="17,68,1113,87"/>
+<area shape="rect" href="entropy.services.skel.SocketCommands-class.html" title="entropy.services.skel.SocketCommands" alt="" coords="16,11,1115,88"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__78.gif" alt='' usemap="#uml_class_diagram_for_entropy__78" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.services.system.commands.Base-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">HostInterface</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_queue"></a><span class="summary-sig-name">docmd_get_queue</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.docmd_get_queue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_queue_item_by_id"></a><span class="summary-sig-name">docmd_get_queue_item_by_id</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.docmd_get_queue_item_by_id">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_queue_id_stdout"></a><span class="summary-sig-name">docmd_get_queue_id_stdout</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.docmd_get_queue_id_stdout">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_queue_id_result"></a><span class="summary-sig-name">docmd_get_queue_id_result</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.docmd_get_queue_id_result">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_remove_queue_ids"></a><span class="summary-sig-name">docmd_remove_queue_ids</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.docmd_remove_queue_ids">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_pause_queue"></a><span class="summary-sig-name">docmd_pause_queue</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.docmd_pause_queue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_kill_processing_queue_id"></a><span class="summary-sig-name">docmd_kill_processing_queue_id</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.docmd_kill_processing_queue_id">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_swap_items_in_queue"></a><span class="summary-sig-name">docmd_swap_items_in_queue</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.docmd_swap_items_in_queue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_pinboard_data"></a><span class="summary-sig-name">docmd_get_pinboard_data</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.docmd_get_pinboard_data">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_add_to_pinboard"></a><span class="summary-sig-name">docmd_add_to_pinboard</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.docmd_add_to_pinboard">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_remove_from_pinboard"></a><span class="summary-sig-name">docmd_remove_from_pinboard</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.docmd_remove_from_pinboard">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_set_pinboard_items_done"></a><span class="summary-sig-name">docmd_set_pinboard_items_done</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.docmd_set_pinboard_items_done">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_write_to_running_command_pipe"></a><span class="summary-sig-name">docmd_write_to_running_command_pipe</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.docmd_write_to_running_command_pipe">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.services.skel.SocketCommands-class.html">skel.SocketCommands</a></code></b>:
+      <code><a href="entropy.services.skel.SocketCommands-class.html#__str__">__str__</a></code>,
+      <code><a href="entropy.services.skel.SocketCommands-class.html#register">register</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.services.skel.SocketCommands-class.html">skel.SocketCommands</a></code></b>:
+      <code><a href="entropy.services.skel.SocketCommands-class.html#inst_name">inst_name</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">HostInterface</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.services.system.commands-pysrc.html#Base.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="entropy.services.skel.SocketCommands-class.html#__init__">skel.SocketCommands.__init__</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:53 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

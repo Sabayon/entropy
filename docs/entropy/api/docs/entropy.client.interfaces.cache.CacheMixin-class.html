@@ -1,0 +1,388 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.client.interfaces.cache.CacheMixin</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.client-module.html">Package&nbsp;client</a> ::
+        <a href="entropy.client.interfaces-module.html">Package&nbsp;interfaces</a> ::
+        <a href="entropy.client.interfaces.cache-module.html">Module&nbsp;cache</a> ::
+        Class&nbsp;CacheMixin
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class CacheMixin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__2" name="uml_class_diagram_for_entropy__2">
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#validate_repositories_cache" title="entropy.client.interfaces.cache.CacheMixin.validate_repositories_cache" alt="" coords="17,36,577,55"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#store_repository_list_cache" title="entropy.client.interfaces.cache.CacheMixin.store_repository_list_cache" alt="" coords="17,55,577,73"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#generate_cache" title="entropy.client.interfaces.cache.CacheMixin.generate_cache" alt="" coords="17,73,577,92"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#do_configcache" title="entropy.client.interfaces.cache.CacheMixin.do_configcache" alt="" coords="17,92,577,111"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#do_depcache" title="entropy.client.interfaces.cache.CacheMixin.do_depcache" alt="" coords="17,111,577,129"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#purge_cache" title="entropy.client.interfaces.cache.CacheMixin.purge_cache" alt="" coords="17,129,577,148"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#clear_dump_cache" title="entropy.client.interfaces.cache.CacheMixin.clear_dump_cache" alt="" coords="17,148,577,167"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#update_ugc_cache" title="entropy.client.interfaces.cache.CacheMixin.update_ugc_cache" alt="" coords="17,167,577,185"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#repository_move_clear_cache" title="entropy.client.interfaces.cache.CacheMixin.repository_move_clear_cache" alt="" coords="17,185,577,204"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_available_packages_chash" title="entropy.client.interfaces.cache.CacheMixin.get_available_packages_chash" alt="" coords="17,204,577,223"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#all_repositories_checksum" title="entropy.client.interfaces.cache.CacheMixin.all_repositories_checksum" alt="" coords="17,223,577,241"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_available_packages_cache" title="entropy.client.interfaces.cache.CacheMixin.get_available_packages_cache" alt="" coords="17,241,577,260"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_world_update_cache" title="entropy.client.interfaces.cache.CacheMixin.get_world_update_cache" alt="" coords="17,260,577,279"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_world_update_cache_hash" title="entropy.client.interfaces.cache.CacheMixin.get_world_update_cache_hash" alt="" coords="17,279,577,297"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html" title="entropy.client.interfaces.cache.CacheMixin" alt="" coords="16,11,579,299"/>
+<area shape="rect" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="256,328,339,355"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__2.gif" alt='' usemap="#uml_class_diagram_for_entropy__2" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="validate_repositories_cache"></a><span class="summary-sig-name">validate_repositories_cache</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.validate_repositories_cache">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="store_repository_list_cache"></a><span class="summary-sig-name">store_repository_list_cache</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.store_repository_list_cache">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="generate_cache"></a><span class="summary-sig-name">generate_cache</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">depcache</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">configcache</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">client_purge</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">install_queue</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.generate_cache">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="do_configcache"></a><span class="summary-sig-name">do_configcache</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.do_configcache">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="do_depcache"></a><span class="summary-sig-name">do_depcache</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">do_install_queue</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.do_depcache">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="purge_cache"></a><span class="summary-sig-name">purge_cache</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">showProgress</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">client_purge</span>=<span class="summary-sig-default">True</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.purge_cache">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="clear_dump_cache"></a><span class="summary-sig-name">clear_dump_cache</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">dump_name</span>,
+        <span class="summary-sig-arg">skip</span>=<span class="summary-sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.clear_dump_cache">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="update_ugc_cache"></a><span class="summary-sig-name">update_ugc_cache</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repository</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.update_ugc_cache">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="repository_move_clear_cache"></a><span class="summary-sig-name">repository_move_clear_cache</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.repository_move_clear_cache">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_available_packages_chash"></a><span class="summary-sig-name">get_available_packages_chash</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">branch</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.get_available_packages_chash">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="all_repositories_checksum"></a><span class="summary-sig-name">all_repositories_checksum</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.all_repositories_checksum">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_available_packages_cache"></a><span class="summary-sig-name">get_available_packages_cache</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">myhash</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.get_available_packages_cache">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_world_update_cache"></a><span class="summary-sig-name">get_world_update_cache</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">empty_deps</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">db_digest</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.get_world_update_cache">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_world_update_cache_hash"></a><span class="summary-sig-name">get_world_update_cache_hash</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">db_digest</span>,
+        <span class="summary-sig-arg">empty_deps</span>,
+        <span class="summary-sig-arg">branch</span>,
+        <span class="summary-sig-arg">ignore_spm_downgrades</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.get_world_update_cache_hash">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:47 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

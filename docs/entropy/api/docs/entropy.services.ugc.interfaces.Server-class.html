@@ -1,0 +1,2193 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.services.ugc.interfaces.Server</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.services-module.html">Package&nbsp;services</a> ::
+        <a href="entropy.services.ugc-module.html">Package&nbsp;ugc</a> ::
+        <a href="entropy.services.ugc.interfaces-module.html">Module&nbsp;interfaces</a> ::
+        Class&nbsp;Server
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class Server</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__82" name="uml_class_diagram_for_entropy__82">
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#SQL_TABLES" title="entropy.services.ugc.interfaces.Server.SQL_TABLES" alt="" coords="17,364,393,383"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#VOTE_RANGE" title="entropy.services.ugc.interfaces.Server.VOTE_RANGE" alt="" coords="17,383,393,401"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#VIRUS_CHECK_EXEC" title="entropy.services.ugc.interfaces.Server.VIRUS_CHECK_EXEC" alt="" coords="17,401,393,420"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#VIRUS_CHECK_ARGS" title="entropy.services.ugc.interfaces.Server.VIRUS_CHECK_ARGS" alt="" coords="17,420,393,439"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#gdata" title="entropy.services.ugc.interfaces.Server.gdata" alt="" coords="17,439,393,457"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#YouTube" title="entropy.services.ugc.interfaces.Server.YouTube" alt="" coords="17,457,393,476"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#YouTubeService" title="entropy.services.ugc.interfaces.Server.YouTubeService" alt="" coords="17,476,393,495"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#entropy_docs_title_len" title="entropy.services.ugc.interfaces.Server.entropy_docs_title_len" alt="" coords="17,495,393,513"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#entropy_docs_description_len" title="entropy.services.ugc.interfaces.Server.entropy_docs_description_len" alt="" coords="17,513,393,532"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#entropy_docs_keyword_len" title="entropy.services.ugc.interfaces.Server.entropy_docs_keyword_len" alt="" coords="17,532,393,551"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#COMMENTS_SCORE_WEIGHT" title="entropy.services.ugc.interfaces.Server.COMMENTS_SCORE_WEIGHT" alt="" coords="17,551,393,569"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#DOCS_SCORE_WEIGHT" title="entropy.services.ugc.interfaces.Server.DOCS_SCORE_WEIGHT" alt="" coords="17,569,393,588"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#VOTES_SCORE_WEIGHT" title="entropy.services.ugc.interfaces.Server.VOTES_SCORE_WEIGHT" alt="" coords="17,588,393,607"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#STATS_MAP" title="dependencies:..." alt="" coords="17,607,393,625"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#__init__" title="entropy.services.ugc.interfaces.Server.__init__" alt="" coords="17,628,393,647"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#get_current_time" title="entropy.services.ugc.interfaces.Server.get_current_time" alt="" coords="17,647,393,665"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#cache_results" title="entropy.services.ugc.interfaces.Server.cache_results" alt="" coords="17,665,393,684"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#get_cache_item_key" title="entropy.services.ugc.interfaces.Server.get_cache_item_key" alt="" coords="17,684,393,703"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#cache_result" title="entropy.services.ugc.interfaces.Server.cache_result" alt="" coords="17,703,393,721"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#get_cached_result" title="entropy.services.ugc.interfaces.Server.get_cached_result" alt="" coords="17,721,393,740"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#setup_store_path" title="entropy.services.ugc.interfaces.Server.setup_store_path" alt="" coords="17,740,393,759"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#initialize_tables" title="entropy.services.ugc.interfaces.Server.initialize_tables" alt="" coords="17,759,393,777"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#initialize_doctypes" title="entropy.services.ugc.interfaces.Server.initialize_doctypes" alt="" coords="17,777,393,796"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#is_iddoctype_available" title="entropy.services.ugc.interfaces.Server.is_iddoctype_available" alt="" coords="17,796,393,815"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#is_pkgkey_available" title="entropy.services.ugc.interfaces.Server.is_pkgkey_available" alt="" coords="17,815,393,833"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#is_iddoc_available" title="entropy.services.ugc.interfaces.Server.is_iddoc_available" alt="" coords="17,833,393,852"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#insert_iddoctype" title="entropy.services.ugc.interfaces.Server.insert_iddoctype" alt="" coords="17,852,393,871"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html#get_youtube_service" title="entropy.services.ugc.interfaces.Server.get_youtube_service" alt="" coords="17,889,393,908"/>
+<area shape="rect" href="entropy.services.ugc.interfaces.Server-class.html" title="entropy.services.ugc.interfaces.Server" alt="" coords="16,347,395,909"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html#check_connection" title="entropy.services.skel.RemoteDatabase.check_connection" alt="" coords="104,36,307,55"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html#set_connection_data" title="entropy.services.skel.RemoteDatabase.set_connection_data" alt="" coords="104,55,307,73"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html#check_connection_data" title="entropy.services.skel.RemoteDatabase.check_connection_data" alt="" coords="104,73,307,92"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html#connect" title="entropy.services.skel.RemoteDatabase.connect" alt="" coords="104,92,307,111"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html#disconnect" title="entropy.services.skel.RemoteDatabase.disconnect" alt="" coords="104,111,307,129"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html#commit" title="entropy.services.skel.RemoteDatabase.commit" alt="" coords="104,129,307,148"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html#execute_script" title="entropy.services.skel.RemoteDatabase.execute_script" alt="" coords="104,148,307,167"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html#execute_query" title="entropy.services.skel.RemoteDatabase.execute_query" alt="" coords="104,167,307,185"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html#execute_many" title="entropy.services.skel.RemoteDatabase.execute_many" alt="" coords="104,185,307,204"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html#fetchone" title="entropy.services.skel.RemoteDatabase.fetchone" alt="" coords="104,204,307,223"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html#fetchall" title="entropy.services.skel.RemoteDatabase.fetchall" alt="" coords="104,223,307,241"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html#fetchmany" title="entropy.services.skel.RemoteDatabase.fetchmany" alt="" coords="104,241,307,260"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html#lastrowid" title="entropy.services.skel.RemoteDatabase.lastrowid" alt="" coords="104,260,307,279"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html#fetchone2set" title="entropy.services.skel.RemoteDatabase.fetchone2set" alt="" coords="104,297,307,316"/>
+<area shape="rect" href="entropy.services.skel.RemoteDatabase-class.html" title="entropy.services.skel.RemoteDatabase" alt="" coords="103,11,308,317"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__82.gif" alt='' usemap="#uml_class_diagram_for_entropy__82" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.services.ugc.interfaces.Server-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">connection_data</span>,
+        <span class="summary-sig-arg">store_path</span>,
+        <span class="summary-sig-arg">store_url</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_current_time"></a><span class="summary-sig-name">get_current_time</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_current_time">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="cache_results"></a><span class="summary-sig-name">cache_results</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.cache_results">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_cache_item_key"></a><span class="summary-sig-name">get_cache_item_key</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cache_item</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_cache_item_key">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="cache_result"></a><span class="summary-sig-name">cache_result</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cache_item</span>,
+        <span class="summary-sig-arg">r</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.cache_result">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_cached_result"></a><span class="summary-sig-name">get_cached_result</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">cache_item</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_cached_result">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setup_store_path"></a><span class="summary-sig-name">setup_store_path</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">path</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.setup_store_path">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="initialize_tables"></a><span class="summary-sig-name">initialize_tables</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.initialize_tables">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="initialize_doctypes"></a><span class="summary-sig-name">initialize_doctypes</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.initialize_doctypes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_iddoctype_available"></a><span class="summary-sig-name">is_iddoctype_available</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoctype</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.is_iddoctype_available">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_pkgkey_available"></a><span class="summary-sig-name">is_pkgkey_available</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.is_pkgkey_available">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_iddoc_available"></a><span class="summary-sig-name">is_iddoc_available</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.is_iddoc_available">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_iddoctype"></a><span class="summary-sig-name">insert_iddoctype</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoctype</span>,
+        <span class="summary-sig-arg">description</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_iddoctype">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_pkgkey"></a><span class="summary-sig-name">insert_pkgkey</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_pkgkey">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_download"></a><span class="summary-sig-name">insert_download</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>,
+        <span class="summary-sig-arg">ddate</span>,
+        <span class="summary-sig-arg">count</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_download">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_entropy_branch"></a><span class="summary-sig-name">insert_entropy_branch</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">branch</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_entropy_branch">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_entropy_release_string"></a><span class="summary-sig-name">insert_entropy_release_string</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">release_string</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_entropy_release_string">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_entropy_ip_locations_id"></a><span class="summary-sig-name">insert_entropy_ip_locations_id</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">ip_latitude</span>,
+        <span class="summary-sig-arg">ip_longitude</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_entropy_ip_locations_id">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="handle_entropy_ip_locations_id"></a><span class="summary-sig-name">handle_entropy_ip_locations_id</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">ip_addr</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.handle_entropy_ip_locations_id">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="update_download"></a><span class="summary-sig-name">update_download</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddownload</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.update_download">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="store_download_data"></a><span class="summary-sig-name">store_download_data</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddownloads</span>,
+        <span class="summary-sig-arg">ip_addr</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.store_download_data">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_date"></a><span class="summary-sig-name">get_date</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_date">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_datetime"></a><span class="summary-sig-name">get_datetime</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_datetime">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_iddownload"></a><span class="summary-sig-name">get_iddownload</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>,
+        <span class="summary-sig-arg">ddate</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_iddownload">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_idkey"></a><span class="summary-sig-name">get_idkey</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_idkey">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_iddoctype"></a><span class="summary-sig-name">get_iddoctype</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_iddoctype">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_entropy_branches_id"></a><span class="summary-sig-name">get_entropy_branches_id</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">branch</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_entropy_branches_id">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_entropy_release_strings_id"></a><span class="summary-sig-name">get_entropy_release_strings_id</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">release_string</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_entropy_release_strings_id">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_entropy_ip_locations_id"></a><span class="summary-sig-name">get_entropy_ip_locations_id</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">ip_latitude</span>,
+        <span class="summary-sig-arg">ip_longitude</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_entropy_ip_locations_id">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_pkgkey"></a><span class="summary-sig-name">get_pkgkey</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idkey</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_pkgkey">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_ugc_metadata"></a><span class="summary-sig-name">get_ugc_metadata</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_ugc_metadata">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_ugc_keywords"></a><span class="summary-sig-name">get_ugc_keywords</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_ugc_keywords">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_ugc_metadata_doctypes"></a><span class="summary-sig-name">get_ugc_metadata_doctypes</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey</span>,
+        <span class="summary-sig-arg">typeslist</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_ugc_metadata_doctypes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_ugc_metadata_doctypes_by_identifiers"></a><span class="summary-sig-name">get_ugc_metadata_doctypes_by_identifiers</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">identifiers</span>,
+        <span class="summary-sig-arg">typeslist</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_ugc_metadata_doctypes_by_identifiers">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_ugc_metadata_by_identifiers"></a><span class="summary-sig-name">get_ugc_metadata_by_identifiers</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">identifiers</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_ugc_metadata_by_identifiers">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_ugc_vote"></a><span class="summary-sig-name">get_ugc_vote</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_ugc_vote">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_ugc_allvotes"></a><span class="summary-sig-name">get_ugc_allvotes</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_ugc_allvotes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_ugc_downloads"></a><span class="summary-sig-name">get_ugc_downloads</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_ugc_downloads">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_ugc_alldownloads"></a><span class="summary-sig-name">get_ugc_alldownloads</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_ugc_alldownloads">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_iddoc_userid"></a><span class="summary-sig-name">get_iddoc_userid</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_iddoc_userid">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_total_comments_count"></a><span class="summary-sig-name">get_total_comments_count</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_total_comments_count">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_total_documents_count"></a><span class="summary-sig-name">get_total_documents_count</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_total_documents_count">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_total_votes_count"></a><span class="summary-sig-name">get_total_votes_count</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_total_votes_count">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_total_downloads_count"></a><span class="summary-sig-name">get_total_downloads_count</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_total_downloads_count">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_score_ranking"></a><span class="summary-sig-name">get_user_score_ranking</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_score_ranking">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_users_scored_count"></a><span class="summary-sig-name">get_users_scored_count</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_users_scored_count">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_user_score_available"></a><span class="summary-sig-name">is_user_score_available</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.is_user_score_available">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="calculate_user_score"></a><span class="summary-sig-name">calculate_user_score</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.calculate_user_score">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="update_user_score"></a><span class="summary-sig-name">update_user_score</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.update_user_score">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_score"></a><span class="summary-sig-name">get_user_score</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_score">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_users_score_ranking"></a><span class="summary-sig-name">get_users_score_ranking</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">offset</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">count</span>=<span class="summary-sig-default">0</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_users_score_ranking">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_votes_average"></a><span class="summary-sig-name">get_user_votes_average</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_votes_average">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_alldocs"></a><span class="summary-sig-name">get_user_alldocs</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_alldocs">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_docs"></a><span class="summary-sig-name">get_user_docs</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_docs">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_comments"></a><span class="summary-sig-name">get_user_comments</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_comments">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_votes"></a><span class="summary-sig-name">get_user_votes</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_votes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_generic_doctype"></a><span class="summary-sig-name">get_user_generic_doctype</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>,
+        <span class="summary-sig-arg">doctype</span>,
+        <span class="summary-sig-arg">doctype_sql_cmp</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">=</code><code class="variable-quote">'</code></span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_generic_doctype">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_generic_doctype_count"></a><span class="summary-sig-name">get_user_generic_doctype_count</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>,
+        <span class="summary-sig-arg">doctype</span>,
+        <span class="summary-sig-arg">doctype_sql_cmp</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">=</code><code class="variable-quote">'</code></span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_generic_doctype_count">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_comments_count"></a><span class="summary-sig-name">get_user_comments_count</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_comments_count">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_docs_count"></a><span class="summary-sig-name">get_user_docs_count</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_docs_count">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_images_count"></a><span class="summary-sig-name">get_user_images_count</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_images_count">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_files_count"></a><span class="summary-sig-name">get_user_files_count</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_files_count">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_yt_videos_count"></a><span class="summary-sig-name">get_user_yt_videos_count</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_yt_videos_count">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_votes_count"></a><span class="summary-sig-name">get_user_votes_count</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_votes_count">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_user_stats"></a><span class="summary-sig-name">get_user_stats</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_user_stats">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_distribution_stats"></a><span class="summary-sig-name">get_distribution_stats</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_distribution_stats">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="search_pkgkey_items"></a><span class="summary-sig-name">search_pkgkey_items</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey_string</span>,
+        <span class="summary-sig-arg">iddoctypes</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">results_offset</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">results_limit</span>=<span class="summary-sig-default">30</span>,
+        <span class="summary-sig-arg">order_by</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.search_pkgkey_items">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="search_username_items"></a><span class="summary-sig-name">search_username_items</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey_string</span>,
+        <span class="summary-sig-arg">iddoctypes</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">results_offset</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">results_limit</span>=<span class="summary-sig-default">30</span>,
+        <span class="summary-sig-arg">order_by</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.search_username_items">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="search_content_items"></a><span class="summary-sig-name">search_content_items</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey_string</span>,
+        <span class="summary-sig-arg">iddoctypes</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">results_offset</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">results_limit</span>=<span class="summary-sig-default">30</span>,
+        <span class="summary-sig-arg">order_by</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.search_content_items">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="search_keyword_items"></a><span class="summary-sig-name">search_keyword_items</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">keyword_string</span>,
+        <span class="summary-sig-arg">iddoctypes</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">results_offset</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">results_limit</span>=<span class="summary-sig-default">30</span>,
+        <span class="summary-sig-arg">order_by</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.search_keyword_items">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="search_iddoc_item"></a><span class="summary-sig-name">search_iddoc_item</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc_string</span>,
+        <span class="summary-sig-arg">iddoctypes</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">results_offset</span>=<span class="summary-sig-default">0</span>,
+        <span class="summary-sig-arg">results_limit</span>=<span class="summary-sig-default">30</span>,
+        <span class="summary-sig-arg">order_by</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.search_iddoc_item">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="handle_pkgkey"></a><span class="summary-sig-name">handle_pkgkey</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.handle_pkgkey">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_flood_control_check"></a><span class="summary-sig-name">insert_flood_control_check</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_flood_control_check">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_generic_doc"></a><span class="summary-sig-name">insert_generic_doc</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idkey</span>,
+        <span class="summary-sig-arg">userid</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">doc_type</span>,
+        <span class="summary-sig-arg">data</span>,
+        <span class="summary-sig-arg">title</span>,
+        <span class="summary-sig-arg">description</span>,
+        <span class="summary-sig-arg">keywords</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_generic_doc">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_keywords"></a><span class="summary-sig-name">insert_keywords</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc</span>,
+        <span class="summary-sig-arg">keywords</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_keywords">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="remove_keywords"></a><span class="summary-sig-name">remove_keywords</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.remove_keywords">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_comment"></a><span class="summary-sig-name">insert_comment</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey</span>,
+        <span class="summary-sig-arg">userid</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">comment</span>,
+        <span class="summary-sig-arg">title</span>,
+        <span class="summary-sig-arg">keywords</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_comment">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="edit_comment"></a><span class="summary-sig-name">edit_comment</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc</span>,
+        <span class="summary-sig-arg">new_comment</span>,
+        <span class="summary-sig-arg">new_title</span>,
+        <span class="summary-sig-arg">new_keywords</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.edit_comment">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="remove_comment"></a><span class="summary-sig-name">remove_comment</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.remove_comment">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="do_vote"></a><span class="summary-sig-name">do_vote</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey</span>,
+        <span class="summary-sig-arg">userid</span>,
+        <span class="summary-sig-arg">vote</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.do_vote">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="has_user_already_voted"></a><span class="summary-sig-name">has_user_already_voted</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey</span>,
+        <span class="summary-sig-arg">userid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.has_user_already_voted">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="do_downloads"></a><span class="summary-sig-name">do_downloads</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkeys</span>,
+        <span class="summary-sig-arg">ip_addr</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.do_downloads">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="do_download_stats"></a><span class="summary-sig-name">do_download_stats</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">branch</span>,
+        <span class="summary-sig-arg">release_string</span>,
+        <span class="summary-sig-arg">hw_hash</span>,
+        <span class="summary-sig-arg">pkgkeys</span>,
+        <span class="summary-sig-arg">ip_addr</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.do_download_stats">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="do_entropy_hardware_usage_stats"></a><span class="summary-sig-name">do_entropy_hardware_usage_stats</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_distribution_usage_id</span>,
+        <span class="summary-sig-arg">hw_hash</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.do_entropy_hardware_usage_stats">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_entropy_hardware_usage_stats_available"></a><span class="summary-sig-name">is_entropy_hardware_usage_stats_available</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_distribution_usage_id</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.is_entropy_hardware_usage_stats_available">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_user_ip_available_in_entropy_distribution_usage"></a><span class="summary-sig-name">is_user_ip_available_in_entropy_distribution_usage</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">ip_address</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.is_user_ip_available_in_entropy_distribution_usage">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_document"></a><span class="summary-sig-name">insert_document</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey</span>,
+        <span class="summary-sig-arg">userid</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">text</span>,
+        <span class="summary-sig-arg">title</span>,
+        <span class="summary-sig-arg">description</span>,
+        <span class="summary-sig-arg">keywords</span>,
+        <span class="summary-sig-arg">doc_type</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_document">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="edit_document"></a><span class="summary-sig-name">edit_document</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc</span>,
+        <span class="summary-sig-arg">new_document</span>,
+        <span class="summary-sig-arg">new_title</span>,
+        <span class="summary-sig-arg">new_keywords</span>,
+        <span class="summary-sig-arg">do_commit</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.edit_document">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="remove_document"></a><span class="summary-sig-name">remove_document</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.remove_document">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="scan_for_viruses"></a><span class="summary-sig-name">scan_for_viruses</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">filepath</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.scan_for_viruses">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_generic_file"></a><span class="summary-sig-name">insert_generic_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey</span>,
+        <span class="summary-sig-arg">userid</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">file_path</span>,
+        <span class="summary-sig-arg">file_name</span>,
+        <span class="summary-sig-arg">doc_type</span>,
+        <span class="summary-sig-arg">title</span>,
+        <span class="summary-sig-arg">description</span>,
+        <span class="summary-sig-arg">keywords</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_generic_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_image"></a><span class="summary-sig-name">insert_image</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey</span>,
+        <span class="summary-sig-arg">userid</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">image_path</span>,
+        <span class="summary-sig-arg">file_name</span>,
+        <span class="summary-sig-arg">title</span>,
+        <span class="summary-sig-arg">description</span>,
+        <span class="summary-sig-arg">keywords</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_image">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_file"></a><span class="summary-sig-name">insert_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey</span>,
+        <span class="summary-sig-arg">userid</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">file_path</span>,
+        <span class="summary-sig-arg">file_name</span>,
+        <span class="summary-sig-arg">title</span>,
+        <span class="summary-sig-arg">description</span>,
+        <span class="summary-sig-arg">keywords</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="delete_image"></a><span class="summary-sig-name">delete_image</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.delete_image">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="delete_file"></a><span class="summary-sig-name">delete_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.delete_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="delete_generic_file"></a><span class="summary-sig-name">delete_generic_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc</span>,
+        <span class="summary-sig-arg">doc_type</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.delete_generic_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="insert_youtube_video"></a><span class="summary-sig-name">insert_youtube_video</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgkey</span>,
+        <span class="summary-sig-arg">userid</span>,
+        <span class="summary-sig-arg">username</span>,
+        <span class="summary-sig-arg">video_path</span>,
+        <span class="summary-sig-arg">file_name</span>,
+        <span class="summary-sig-arg">title</span>,
+        <span class="summary-sig-arg">description</span>,
+        <span class="summary-sig-arg">keywords</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.insert_youtube_video">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="remove_youtube_video"></a><span class="summary-sig-name">remove_youtube_video</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">iddoc</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.remove_youtube_video">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_youtube_service"></a><span class="summary-sig-name">get_youtube_service</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.get_youtube_service">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.services.skel.RemoteDatabase-class.html">skel.RemoteDatabase</a></code></b>:
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#check_connection">check_connection</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#check_connection_data">check_connection_data</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#column_in_table_exists">column_in_table_exists</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#commit">commit</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#connect">connect</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#disconnect">disconnect</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#execute_many">execute_many</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#execute_query">execute_query</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#execute_script">execute_script</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#fetchall">fetchall</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#fetchall2list">fetchall2list</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#fetchall2set">fetchall2set</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#fetchmany">fetchmany</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#fetchone">fetchone</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#fetchone2list">fetchone2list</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#fetchone2set">fetchone2set</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#lastrowid">lastrowid</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#set_connection_data">set_connection_data</a></code>,
+      <code><a href="entropy.services.skel.RemoteDatabase-class.html#table_exists">table_exists</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="entropy.services.ugc.interfaces.Server-class.html#SQL_TABLES" class="summary-name">SQL_TABLES</a> = <code title="{'entropy_base': '''
+            CREATE TABLE `entropy_base` (
+            `idkey` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+            `key` VARCHAR( 255 )  collate utf8_bin NOT NULL,
+            KEY `key` (`key`)
+            );
+        ''',
+ 'entropy_branches': '''
+..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">entropy_base</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">\n            CREATE TABLE `ent</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="VOTE_RANGE"></a><span class="summary-name">VOTE_RANGE</span> = <code title="[1, 2, 3, 4, 5]"><code class="variable-group">[</code>1<code class="variable-op">, </code>2<code class="variable-op">, </code>3<code class="variable-op">, </code>4<code class="variable-op">, </code>5<code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="VIRUS_CHECK_EXEC"></a><span class="summary-name">VIRUS_CHECK_EXEC</span> = <code title="'/usr/bin/clamscan'"><code class="variable-quote">'</code><code class="variable-string">/usr/bin/clamscan</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="VIRUS_CHECK_ARGS"></a><span class="summary-name">VIRUS_CHECK_ARGS</span> = <code title="[]"><code class="variable-group">[</code><code class="variable-group">]</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="gdata"></a><span class="summary-name">gdata</span> = <code title="None">None</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="YouTube"></a><span class="summary-name">YouTube</span> = <code title="None">None</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="YouTubeService"></a><span class="summary-name">YouTubeService</span> = <code title="None">None</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="entropy_docs_title_len"></a><span class="summary-name">entropy_docs_title_len</span> = <code title="512">512</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="entropy_docs_description_len"></a><span class="summary-name">entropy_docs_description_len</span> = <code title="4000">4000</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="entropy_docs_keyword_len"></a><span class="summary-name">entropy_docs_keyword_len</span> = <code title="100">100</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="COMMENTS_SCORE_WEIGHT"></a><span class="summary-name">COMMENTS_SCORE_WEIGHT</span> = <code title="5">5</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="DOCS_SCORE_WEIGHT"></a><span class="summary-name">DOCS_SCORE_WEIGHT</span> = <code title="10">10</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="VOTES_SCORE_WEIGHT"></a><span class="summary-name">VOTES_SCORE_WEIGHT</span> = <code title="2">2</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="entropy.services.ugc.interfaces.Server-class.html#STATS_MAP" class="summary-name">STATS_MAP</a> = <code title="{'installer': 'installer'}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">installer</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">installer</code><code class="variable-quote">'</code><code class="variable-group">}</code></code><br />
+      dependencies:...
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">connection_data</span>,
+        <span class="sig-arg">store_path</span>,
+        <span class="sig-arg">store_url</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.services.ugc.interfaces-pysrc.html#Server.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="entropy.services.skel.RemoteDatabase-class.html#__init__">skel.RemoteDatabase.__init__</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== CLASS VARIABLE DETAILS ==================== -->
+<a name="section-ClassVariableDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variable Details</span></td>
+</tr>
+</table>
+<a name="SQL_TABLES"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">SQL_TABLES</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">entropy_base</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'''</code><code class="variable-string"></code>
+<code class="variable-string">            CREATE TABLE `entropy_base` (</code>
+<code class="variable-string">            `idkey` INT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,</code>
+<code class="variable-string">            `key` VARCHAR( 255 )  collate utf8_bin NOT NULL,</code>
+<code class="variable-string">            KEY `key` (`key`)</code>
+<code class="variable-string">            );</code>
+<code class="variable-string">        </code><code class="variable-quote">'''</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">entropy_branches</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'''</code><code class="variable-string"></code>
+<code class="variable-ellipsis">...</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="STATS_MAP"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">STATS_MAP</h3>
+  <pre class="literalblock">
+
+dependencies:
+    dev-python/gdata
+
+</pre>
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">installer</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">installer</code><code class="variable-quote">'</code><code class="variable-group">}</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:53 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

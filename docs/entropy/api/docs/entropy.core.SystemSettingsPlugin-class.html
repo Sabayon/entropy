@@ -1,0 +1,341 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.core.SystemSettingsPlugin</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.core-module.html">Module&nbsp;core</a> ::
+        Class&nbsp;SystemSettingsPlugin
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class SystemSettingsPlugin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettingsPlugin">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__22" name="uml_class_diagram_for_entropy__22">
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#__init__" title="SystemSettingsPlugin constructor." alt="" coords="457,36,711,55"/>
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#get_id" title="Returns the unique plugin id passed at construction time." alt="" coords="457,55,711,73"/>
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#add_parser" title="You must call this method in order to add your custom parsers to the plugin." alt="" coords="457,73,711,92"/>
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#parse" title="This method is called by SystemSettings instance when building its settings metadata." alt="" coords="457,92,711,111"/>
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html" title="This is a plugin base class for all SystemSettings plugins." alt="" coords="456,11,712,112"/>
+<area shape="rect" href="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin-class.html" title="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin" alt="" coords="16,141,379,168"/>
+<area shape="rect" href="entropy.server.interfaces.main.ServerSystemSettingsPlugin-class.html" title="entropy.server.interfaces.main.ServerSystemSettingsPlugin" alt="" coords="429,141,739,168"/>
+<area shape="rect" href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html" title="entropy.client.interfaces.client.ClientSystemSettingsPlugin" alt="" coords="789,141,1096,168"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__22.gif" alt='' usemap="#uml_class_diagram_for_entropy__22" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>This is a plugin base class for all SystemSettings plugins. It allows 
+  to add extra parsers (though metadata) to SystemSettings. Just inherit 
+  from this class and call add_parser to add your custom parsers. 
+  SystemSettings will call the parse method, as explained below.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettingsPlugin-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">plugin_id</span>,
+        <span class="summary-sig-arg">helper_interface</span>)</span><br />
+      SystemSettingsPlugin constructor.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettingsPlugin.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettingsPlugin-class.html#get_id" class="summary-sig-name">get_id</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns the unique plugin id passed at construction time.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettingsPlugin.get_id">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettingsPlugin-class.html#add_parser" class="summary-sig-name">add_parser</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">parser_id</span>,
+        <span class="summary-sig-arg">parser_callable</span>)</span><br />
+      You must call this method in order to add your custom
+parsers to the plugin.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettingsPlugin.add_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettingsPlugin-class.html#parse" class="summary-sig-name">parse</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">system_settings_instance</span>)</span><br />
+      This method is called by SystemSettings instance when building its 
+      settings metadata.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettingsPlugin.parse">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">plugin_id</span>,
+        <span class="sig-arg">helper_interface</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettingsPlugin.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+SystemSettingsPlugin constructor.
+
+@param plugin_id -- plugin identifier, must be unique
+@type plugin_id basestring
+@param helper_interface -- any Python instance that could
+    be of help to your parsers
+@type handler_instance instance
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_id"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_id</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettingsPlugin.get_id">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns the unique plugin id passed at construction time.</p>
+  <p>@return plugin identifier</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="add_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">add_parser</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">parser_id</span>,
+        <span class="sig-arg">parser_callable</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettingsPlugin.add_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+You must call this method in order to add your custom
+parsers to the plugin.
+Please note, if your parser method ends with &quot;_parser&quot;
+it will be automatically added this way:
+
+method: foo_parser
+    parser_id =&gt; foo
+method: another_fabulous_parser
+    parser_id =&gt; another_fabulous
+
+@param parser_id -- parser identifier, must be unique
+@type parser_id basestring
+@param parser_callable -- any callable function which has
+    the following signature: callable(system_settings_instance)
+    can return True to stop further parsers calls
+@type parser_callable callable
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="parse"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">parse</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">system_settings_instance</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettingsPlugin.parse">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This method is called by SystemSettings instance when building its 
+  settings metadata.</p>
+  <p>Returned data from parser will be put into the SystemSettings dict 
+  using plugin_id and parser_id keys. If returned data is None, 
+  SystemSettings dict won't be changed.</p>
+  <p>@param system_settings_instance -- SystemSettings instance @type 
+  system_settings_instance SystemSettings instance</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:49 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

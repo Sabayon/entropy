@@ -1,0 +1,819 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.client.interfaces.methods.MiscMixin</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.client-module.html">Package&nbsp;client</a> ::
+        <a href="entropy.client.interfaces-module.html">Package&nbsp;interfaces</a> ::
+        <a href="entropy.client.interfaces.methods-module.html">Module&nbsp;methods</a> ::
+        Class&nbsp;MiscMixin
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class MiscMixin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__9" name="uml_class_diagram_for_entropy__9">
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#reload_constants" title="entropy.client.interfaces.methods.MiscMixin.reload_constants" alt="" coords="17,36,319,55"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#setup_default_file_perms" title="entropy.client.interfaces.methods.MiscMixin.setup_default_file_perms" alt="" coords="17,55,319,73"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#check_pid_file_lock" title="entropy.client.interfaces.methods.MiscMixin.check_pid_file_lock" alt="" coords="17,73,319,92"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#create_pid_file_lock" title="entropy.client.interfaces.methods.MiscMixin.create_pid_file_lock" alt="" coords="17,92,319,111"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#application_lock_check" title="entropy.client.interfaces.methods.MiscMixin.application_lock_check" alt="" coords="17,111,319,129"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#lock_check" title="entropy.client.interfaces.methods.MiscMixin.lock_check" alt="" coords="17,129,319,148"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#backup_constant" title="entropy.client.interfaces.methods.MiscMixin.backup_constant" alt="" coords="17,148,319,167"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#set_priority" title="entropy.client.interfaces.methods.MiscMixin.set_priority" alt="" coords="17,167,319,185"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#reload_repositories_config" title="entropy.client.interfaces.methods.MiscMixin.reload_repositories_config" alt="" coords="17,185,319,204"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#switch_chroot" title="entropy.client.interfaces.methods.MiscMixin.switch_chroot" alt="" coords="17,204,319,223"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#get_file_viewer" title="entropy.client.interfaces.methods.MiscMixin.get_file_viewer" alt="" coords="17,223,319,241"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#get_file_editor" title="entropy.client.interfaces.methods.MiscMixin.get_file_editor" alt="" coords="17,241,319,260"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#add_user_package_set" title="entropy.client.interfaces.methods.MiscMixin.add_user_package_set" alt="" coords="17,260,319,279"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#resources_remove_lock" title="entropy.client.interfaces.methods.MiscMixin.resources_remove_lock" alt="" coords="17,297,319,316"/>
+<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html" title="entropy.client.interfaces.methods.MiscMixin" alt="" coords="16,11,320,317"/>
+<area shape="rect" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="127,347,209,373"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__9.gif" alt='' usemap="#uml_class_diagram_for_entropy__9" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="reload_constants"></a><span class="summary-sig-name">reload_constants</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.reload_constants">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setup_default_file_perms"></a><span class="summary-sig-name">setup_default_file_perms</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">filepath</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.setup_default_file_perms">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="check_pid_file_lock"></a><span class="summary-sig-name">check_pid_file_lock</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pidfile</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.check_pid_file_lock">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="create_pid_file_lock"></a><span class="summary-sig-name">create_pid_file_lock</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pidfile</span>,
+        <span class="summary-sig-arg">mypid</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.create_pid_file_lock">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="application_lock_check"></a><span class="summary-sig-name">application_lock_check</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">silent</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.application_lock_check">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="lock_check"></a><span class="summary-sig-name">lock_check</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">check_function</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.lock_check">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="backup_constant"></a><span class="summary-sig-name">backup_constant</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">constant_name</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.backup_constant">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_priority"></a><span class="summary-sig-name">set_priority</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">low</span>=<span class="summary-sig-default">0</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.set_priority">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="reload_repositories_config"></a><span class="summary-sig-name">reload_repositories_config</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repositories</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.reload_repositories_config">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="switch_chroot"></a><span class="summary-sig-name">switch_chroot</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">chroot</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.switch_chroot">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_file_viewer"></a><span class="summary-sig-name">get_file_viewer</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.get_file_viewer">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_file_editor"></a><span class="summary-sig-name">get_file_editor</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.get_file_editor">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="add_user_package_set"></a><span class="summary-sig-name">add_user_package_set</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">set_name</span>,
+        <span class="summary-sig-arg">set_atoms</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.add_user_package_set">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="remove_user_package_set"></a><span class="summary-sig-name">remove_user_package_set</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">set_name</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.remove_user_package_set">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="is_installed_idpackage_in_system_mask"></a><span class="summary-sig-name">is_installed_idpackage_in_system_mask</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackage</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.is_installed_idpackage_in_system_mask">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_branch_from_download_relative_uri"></a><span class="summary-sig-name">get_branch_from_download_relative_uri</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">db_download_uri</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.get_branch_from_download_relative_uri">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="swap_branch_in_download_relative_uri"></a><span class="summary-sig-name">swap_branch_in_download_relative_uri</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">new_branch</span>,
+        <span class="summary-sig-arg">db_download_uri</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.swap_branch_in_download_relative_uri">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="unused_packages_test"></a><span class="summary-sig-name">unused_packages_test</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">dbconn</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.unused_packages_test">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_licenses_to_accept"></a><span class="summary-sig-name">get_licenses_to_accept</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">install_queue</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.get_licenses_to_accept">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_text_license"></a><span class="summary-sig-name">get_text_license</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">license_name</span>,
+        <span class="summary-sig-arg">repoid</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.get_text_license">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="libraries_test"></a><span class="summary-sig-name">libraries_test</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">dbconn</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">broken_symbols</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">task_bombing_func</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.libraries_test">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.methods.MiscMixin-class.html#set_branch" class="summary-sig-name">set_branch</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">branch</span>)</span><br />
+      Set new Entropy branch.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.set_branch">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_meant_packages"></a><span class="summary-sig-name">get_meant_packages</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">search_term</span>,
+        <span class="summary-sig-arg">from_installed</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">valid_repos</span>=<span class="summary-sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.get_meant_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="list_repo_categories"></a><span class="summary-sig-name">list_repo_categories</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.list_repo_categories">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="list_repo_packages_in_category"></a><span class="summary-sig-name">list_repo_packages_in_category</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">category</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.list_repo_packages_in_category">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_category_description_data"></a><span class="summary-sig-name">get_category_description_data</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">category</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.get_category_description_data">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="list_installed_packages_in_category"></a><span class="summary-sig-name">list_installed_packages_in_category</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">category</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.list_installed_packages_in_category">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_package_match_config_protect"></a><span class="summary-sig-name">get_package_match_config_protect</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">match</span>,
+        <span class="summary-sig-arg">mask</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.get_package_match_config_protect">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_installed_package_config_protect"></a><span class="summary-sig-name">get_installed_package_config_protect</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackage</span>,
+        <span class="summary-sig-arg">mask</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.get_installed_package_config_protect">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_system_config_protect"></a><span class="summary-sig-name">get_system_config_protect</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mask</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.get_system_config_protect">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="inject_entropy_database_into_package"></a><span class="summary-sig-name">inject_entropy_database_into_package</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package_filename</span>,
+        <span class="summary-sig-arg">data</span>,
+        <span class="summary-sig-arg">treeupdates_actions</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.inject_entropy_database_into_package">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_tmp_dbpath"></a><span class="summary-sig-name">get_tmp_dbpath</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.get_tmp_dbpath">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="quickpkg"></a><span class="summary-sig-name">quickpkg</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">atomstring</span>,
+        <span class="summary-sig-arg">savedir</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.quickpkg">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="quickpkg_handler"></a><span class="summary-sig-name">quickpkg_handler</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkgdata</span>,
+        <span class="summary-sig-arg">dirpath</span>,
+        <span class="summary-sig-arg">edb</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">portdbPath</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">fake</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">compression</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">bz2</code><code class="variable-quote">'</code></span>,
+        <span class="summary-sig-arg">shiftpath</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.quickpkg_handler">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="resources_check_lock"></a><span class="summary-sig-name">resources_check_lock</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.resources_check_lock">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="resources_create_lock"></a><span class="summary-sig-name">resources_create_lock</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.resources_create_lock">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="resources_remove_lock"></a><span class="summary-sig-name">resources_remove_lock</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.resources_remove_lock">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="set_branch"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_branch</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">branch</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.set_branch">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set new Entropy branch. This is NOT thread-safe. Please note that if 
+  you call this method all your repository instance references will become 
+  invalid. This is caused by close_all_repositories and SystemSettings 
+  clear methods. Once you changed branch, the repository databases won't be
+  available until you fetch them (through Repositories class)</p>
+  <p>@param branch -- new branch @type branch basestring @return None</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:48 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

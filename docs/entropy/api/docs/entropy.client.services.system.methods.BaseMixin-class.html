@@ -1,0 +1,404 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.client.services.system.methods.BaseMixin</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.client-module.html">Package&nbsp;client</a> ::
+        <a href="entropy.client.services-module.html">Package&nbsp;services</a> ::
+        <a href="entropy.client.services.system-module.html">Package&nbsp;system</a> ::
+        <a href="entropy.client.services.system.methods-module.html">Module&nbsp;methods</a> ::
+        Class&nbsp;BaseMixin
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class BaseMixin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__15" name="uml_class_diagram_for_entropy__15">
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#__init__" title="entropy.client.services.system.methods.BaseMixin.__init__" alt="" coords="17,36,420,55"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#get_available_commands" title="entropy.client.services.system.methods.BaseMixin.get_available_commands" alt="" coords="17,55,420,73"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#get_queue" title="entropy.client.services.system.methods.BaseMixin.get_queue" alt="" coords="17,73,420,92"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#get_queue_item_by_id" title="entropy.client.services.system.methods.BaseMixin.get_queue_item_by_id" alt="" coords="17,92,420,111"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#get_queue_id_stdout" title="entropy.client.services.system.methods.BaseMixin.get_queue_id_stdout" alt="" coords="17,111,420,129"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#get_queue_id_result" title="entropy.client.services.system.methods.BaseMixin.get_queue_id_result" alt="" coords="17,129,420,148"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#remove_queue_ids" title="entropy.client.services.system.methods.BaseMixin.remove_queue_ids" alt="" coords="17,148,420,167"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#pause_queue" title="entropy.client.services.system.methods.BaseMixin.pause_queue" alt="" coords="17,167,420,185"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#kill_processing_queue_id" title="entropy.client.services.system.methods.BaseMixin.kill_processing_queue_id" alt="" coords="17,185,420,204"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#swap_items_in_queue" title="entropy.client.services.system.methods.BaseMixin.swap_items_in_queue" alt="" coords="17,204,420,223"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#get_pinboard_data" title="entropy.client.services.system.methods.BaseMixin.get_pinboard_data" alt="" coords="17,223,420,241"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#add_to_pinboard" title="entropy.client.services.system.methods.BaseMixin.add_to_pinboard" alt="" coords="17,241,420,260"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#remove_from_pinboard" title="entropy.client.services.system.methods.BaseMixin.remove_from_pinboard" alt="" coords="17,260,420,279"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#set_pinboard_items_done" title="entropy.client.services.system.methods.BaseMixin.set_pinboard_items_done" alt="" coords="17,279,420,297"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html#write_to_running_command_pipe" title="entropy.client.services.system.methods.BaseMixin.write_to_running_command_pipe" alt="" coords="17,297,420,316"/>
+<area shape="rect" href="entropy.client.services.system.methods.BaseMixin-class.html" title="entropy.client.services.system.methods.BaseMixin" alt="" coords="16,11,421,317"/>
+<area shape="rect" href="entropy.client.services.system.methods.Repository-class.html" title="entropy.client.services.system.methods.Repository" alt="" coords="180,347,257,373"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__15.gif" alt='' usemap="#uml_class_diagram_for_entropy__15" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">SystemManagerClientInstance</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_available_commands"></a><span class="summary-sig-name">get_available_commands</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.get_available_commands">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_queue"></a><span class="summary-sig-name">get_queue</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">extended</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.get_queue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_queue_item_by_id"></a><span class="summary-sig-name">get_queue_item_by_id</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_id</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.get_queue_item_by_id">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_queue_id_stdout"></a><span class="summary-sig-name">get_queue_id_stdout</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_id</span>,
+        <span class="summary-sig-arg">last_bytes</span>=<span class="summary-sig-default">0</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.get_queue_id_stdout">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_queue_id_result"></a><span class="summary-sig-name">get_queue_id_result</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_id</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.get_queue_id_result">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="remove_queue_ids"></a><span class="summary-sig-name">remove_queue_ids</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_ids</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.remove_queue_ids">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="pause_queue"></a><span class="summary-sig-name">pause_queue</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">do_queue</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.pause_queue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="kill_processing_queue_id"></a><span class="summary-sig-name">kill_processing_queue_id</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_id</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.kill_processing_queue_id">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="swap_items_in_queue"></a><span class="summary-sig-name">swap_items_in_queue</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_id1</span>,
+        <span class="summary-sig-arg">queue_id2</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.swap_items_in_queue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_pinboard_data"></a><span class="summary-sig-name">get_pinboard_data</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.get_pinboard_data">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="add_to_pinboard"></a><span class="summary-sig-name">add_to_pinboard</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">note</span>,
+        <span class="summary-sig-arg">extended_text</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.add_to_pinboard">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="remove_from_pinboard"></a><span class="summary-sig-name">remove_from_pinboard</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pinboard_ids</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.remove_from_pinboard">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_pinboard_items_done"></a><span class="summary-sig-name">set_pinboard_items_done</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pinboard_ids</span>,
+        <span class="summary-sig-arg">done_status</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.set_pinboard_items_done">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="write_to_running_command_pipe"></a><span class="summary-sig-name">write_to_running_command_pipe</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">queue_id</span>,
+        <span class="summary-sig-arg">write_to_stdout</span>,
+        <span class="summary-sig-arg">txt</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.services.system.methods-pysrc.html#BaseMixin.write_to_running_command_pipe">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:49 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

@@ -1,0 +1,595 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.services.ugc.commands.UGC</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.services-module.html">Package&nbsp;services</a> ::
+        <a href="entropy.services.ugc-module.html">Package&nbsp;ugc</a> ::
+        <a href="entropy.services.ugc.commands-module.html">Module&nbsp;commands</a> ::
+        Class&nbsp;UGC
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class UGC</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__81" name="uml_class_diagram_for_entropy__81">
+<area shape="rect" href="entropy.dump-module.html" title="# DESCRIPTION: # load/save a data to file by dumping its structure" alt="" coords="369,135,761,153"/>
+<area shape="rect" href="entropy.tools-module.html" title="# DESCRIPTION: # generic tools for all the handlers applications" alt="" coords="369,153,761,172"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html#__init__" title="entropy.services.ugc.commands.UGC.__init__" alt="" coords="369,175,761,193"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html#docmd_register_stream" title="entropy.services.ugc.commands.UGC.docmd_register_stream" alt="" coords="369,193,761,212"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html#docmd_add_comment" title="entropy.services.ugc.commands.UGC.docmd_add_comment" alt="" coords="369,212,761,231"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html#docmd_remove_comment" title="entropy.services.ugc.commands.UGC.docmd_remove_comment" alt="" coords="369,231,761,249"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html#docmd_edit_comment" title="entropy.services.ugc.commands.UGC.docmd_edit_comment" alt="" coords="369,249,761,268"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html#docmd_remove_image" title="entropy.services.ugc.commands.UGC.docmd_remove_image" alt="" coords="369,268,761,287"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html#docmd_remove_file" title="entropy.services.ugc.commands.UGC.docmd_remove_file" alt="" coords="369,287,761,305"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html#docmd_remove_youtube_video" title="entropy.services.ugc.commands.UGC.docmd_remove_youtube_video" alt="" coords="369,305,761,324"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html#docmd_do_vote" title="entropy.services.ugc.commands.UGC.docmd_do_vote" alt="" coords="369,324,761,343"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html#docmd_do_downloads" title="entropy.services.ugc.commands.UGC.docmd_do_downloads" alt="" coords="369,343,761,361"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html#docmd_do_download_stats" title="entropy.services.ugc.commands.UGC.docmd_do_download_stats" alt="" coords="369,361,761,380"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html#docmd_get_comments" title="entropy.services.ugc.commands.UGC.docmd_get_comments" alt="" coords="369,380,761,399"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html#docmd_get_comments_by_identifiers" title="entropy.services.ugc.commands.UGC.docmd_get_comments_by_identifiers" alt="" coords="369,399,761,417"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html#docmd_do_report_error" title="entropy.services.ugc.commands.UGC.docmd_do_report_error" alt="" coords="369,436,761,455"/>
+<area shape="rect" href="entropy.services.ugc.commands.UGC-class.html" title="entropy.services.ugc.commands.UGC" alt="" coords="368,117,763,456"/>
+<area shape="rect" href="entropy.services.skel.SocketCommands-class.html#inst_name" title="entropy.services.skel.SocketCommands.inst_name" alt="" coords="17,28,1113,47"/>
+<area shape="rect" href="entropy.services.skel.SocketCommands-class.html#__str__" title="entropy.services.skel.SocketCommands.__str__" alt="" coords="17,49,1113,68"/>
+<area shape="rect" href="entropy.services.skel.SocketCommands-class.html#register" title="entropy.services.skel.SocketCommands.register" alt="" coords="17,68,1113,87"/>
+<area shape="rect" href="entropy.services.skel.SocketCommands-class.html" title="entropy.services.skel.SocketCommands" alt="" coords="16,11,1115,88"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__81.gif" alt='' usemap="#uml_class_diagram_for_entropy__81" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.services.ugc.commands.UGC-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">HostInterface</span>,
+        <span class="summary-sig-arg">connection_data</span>,
+        <span class="summary-sig-arg">store_path</span>,
+        <span class="summary-sig-arg">store_url</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_register_stream"></a><span class="summary-sig-name">docmd_register_stream</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">authenticator</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_register_stream">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_add_comment"></a><span class="summary-sig-name">docmd_add_comment</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">authenticator</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_add_comment">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_remove_comment"></a><span class="summary-sig-name">docmd_remove_comment</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">authenticator</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_remove_comment">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_edit_comment"></a><span class="summary-sig-name">docmd_edit_comment</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">authenticator</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_edit_comment">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_remove_image"></a><span class="summary-sig-name">docmd_remove_image</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">authenticator</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_remove_image">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_remove_file"></a><span class="summary-sig-name">docmd_remove_file</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">authenticator</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_remove_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_remove_youtube_video"></a><span class="summary-sig-name">docmd_remove_youtube_video</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">authenticator</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_remove_youtube_video">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_do_vote"></a><span class="summary-sig-name">docmd_do_vote</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">authenticator</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_do_vote">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_do_downloads"></a><span class="summary-sig-name">docmd_do_downloads</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">authenticator</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_do_downloads">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_do_download_stats"></a><span class="summary-sig-name">docmd_do_download_stats</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">authenticator</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_do_download_stats">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_comments"></a><span class="summary-sig-name">docmd_get_comments</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_get_comments">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_comments_by_identifiers"></a><span class="summary-sig-name">docmd_get_comments_by_identifiers</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_get_comments_by_identifiers">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_documents_by_identifiers"></a><span class="summary-sig-name">docmd_get_documents_by_identifiers</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_get_documents_by_identifiers">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_allvotes"></a><span class="summary-sig-name">docmd_get_allvotes</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_get_allvotes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_alldownloads"></a><span class="summary-sig-name">docmd_get_alldownloads</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_get_alldownloads">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_vote"></a><span class="summary-sig-name">docmd_get_vote</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_get_vote">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_downloads"></a><span class="summary-sig-name">docmd_get_downloads</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_get_downloads">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_textdocs"></a><span class="summary-sig-name">docmd_get_textdocs</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_get_textdocs">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_textdocs_by_identifiers"></a><span class="summary-sig-name">docmd_get_textdocs_by_identifiers</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_get_textdocs_by_identifiers">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_get_alldocs"></a><span class="summary-sig-name">docmd_get_alldocs</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_get_alldocs">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="docmd_do_report_error"></a><span class="summary-sig-name">docmd_do_report_error</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">authenticator</span>,
+        <span class="summary-sig-arg">myargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.docmd_do_report_error">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.services.skel.SocketCommands-class.html">skel.SocketCommands</a></code></b>:
+      <code><a href="entropy.services.skel.SocketCommands-class.html#__str__">__str__</a></code>,
+      <code><a href="entropy.services.skel.SocketCommands-class.html#register">register</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.services.skel.SocketCommands-class.html">skel.SocketCommands</a></code></b>:
+      <code><a href="entropy.services.skel.SocketCommands-class.html#inst_name">inst_name</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">HostInterface</span>,
+        <span class="sig-arg">connection_data</span>,
+        <span class="sig-arg">store_path</span>,
+        <span class="sig-arg">store_url</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.services.ugc.commands-pysrc.html#UGC.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="entropy.services.skel.SocketCommands-class.html#__init__">skel.SocketCommands.__init__</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:53 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

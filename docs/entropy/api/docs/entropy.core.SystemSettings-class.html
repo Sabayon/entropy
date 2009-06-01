@@ -1,0 +1,2046 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.core.SystemSettings</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.core-module.html">Module&nbsp;core</a> ::
+        Class&nbsp;SystemSettings
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class SystemSettings</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__21" name="uml_class_diagram_for_entropy__21">
+<area shape="rect" href="entropy.tools-module.html" title="# DESCRIPTION: # generic tools for all the handlers applications" alt="" coords="17,140,313,159"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#init_singleton" title="Replaces __init__ because SystemSettings is a Singleton." alt="" coords="17,161,313,180"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#destroy" title="Overloaded method from Singleton." alt="" coords="17,180,313,199"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#add_plugin" title="This method lets you add custom parsers to SystemSettings." alt="" coords="17,199,313,217"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#remove_plugin" title="This method lets you remove previously added custom parsers from &#160;SystemSettings through its plugin identifier." alt="" coords="17,217,313,236"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#__setitem__" title="dict method." alt="" coords="17,236,313,255"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#__getitem__" title="dict method." alt="" coords="17,255,313,273"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#__delitem__" title="dict method." alt="" coords="17,273,313,292"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#__iter__" title="dict method." alt="" coords="17,292,313,311"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#__contains__" title="dict method." alt="" coords="17,311,313,329"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#__cmp__" title="dict method." alt="" coords="17,329,313,348"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#__hash__" title="dict method." alt="" coords="17,348,313,367"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#__len__" title="dict method." alt="" coords="17,367,313,385"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#get" title="dict method." alt="" coords="17,385,313,404"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#repositories_parser" title="Setup Entropy Client repository settings reading them from the relative &#160;config file specified in etpConst[&#39;repositoriesconf&#39;]" alt="" coords="17,423,313,441"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html" title="This is the place where all the Entropy settings are stored if they are not considered instance constants (etpConst)." alt="" coords="16,123,315,443"/>
+<area shape="rect" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="81,36,249,55"/>
+<area shape="rect" href="entropy.core.Singleton-class.html#is_destroyed" title="In our world, Singleton instances may be destroyed, this is done by setting a private bool var __is_destroyed" alt="" coords="81,55,249,73"/>
+<area shape="rect" href="entropy.core.Singleton-class.html#is_singleton" title="Return if the instance is a singleton" alt="" coords="81,73,249,92"/>
+<area shape="rect" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton" alt="" coords="80,11,251,93"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__21.gif" alt='' usemap="#uml_class_diagram_for_entropy__21" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>This is the place where all the Entropy settings are stored if they 
+  are not considered instance constants (etpConst). For example, here we 
+  store package masking cache information and settings. Also, this class 
+  mimics a dictionary (even if not inheriting it due to issues with the 
+  Singleton class).</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#init_singleton" class="summary-sig-name">init_singleton</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Replaces __init__ because SystemSettings is a Singleton.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.init_singleton">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#destroy" class="summary-sig-name">destroy</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Overloaded method from Singleton.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.destroy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#add_plugin" class="summary-sig-name">add_plugin</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">system_settings_plugin_instance</span>)</span><br />
+      This method lets you add custom parsers to SystemSettings.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.add_plugin">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#remove_plugin" class="summary-sig-name">remove_plugin</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">plugin_id</span>)</span><br />
+      This method lets you remove previously added custom parsers from 
+      SystemSettings through its plugin identifier.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.remove_plugin">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#__setitem__" class="summary-sig-name">__setitem__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mykey</span>,
+        <span class="summary-sig-arg">myvalue</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__setitem__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#__getitem__" class="summary-sig-name">__getitem__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mykey</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__getitem__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#__delitem__" class="summary-sig-name">__delitem__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mykey</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__delitem__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#__iter__" class="summary-sig-name">__iter__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__iter__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#__contains__" class="summary-sig-name">__contains__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">item</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__contains__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#__cmp__" class="summary-sig-name">__cmp__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">other</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__cmp__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#__hash__" class="summary-sig-name">__hash__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__hash__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#__len__" class="summary-sig-name">__len__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__len__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#get" class="summary-sig-name">get</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mykey</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.get">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#has_key" class="summary-sig-name">has_key</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mykey</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.has_key">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#copy" class="summary-sig-name">copy</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.copy">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#fromkeys" class="summary-sig-name">fromkeys</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">seq</span>,
+        <span class="summary-sig-arg">val</span>=<span class="summary-sig-default">None</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.fromkeys">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#items" class="summary-sig-name">items</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.items">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#iteritems" class="summary-sig-name">iteritems</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.iteritems">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#iterkeys" class="summary-sig-name">iterkeys</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.iterkeys">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#keys" class="summary-sig-name">keys</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.keys">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#pop" class="summary-sig-name">pop</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mykey</span>,
+        <span class="summary-sig-arg">default</span>=<span class="summary-sig-default">None</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.pop">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#popitem" class="summary-sig-name">popitem</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.popitem">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#setdefault" class="summary-sig-name">setdefault</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mykey</span>,
+        <span class="summary-sig-arg">default</span>=<span class="summary-sig-default">None</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.setdefault">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#update" class="summary-sig-name">update</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">kwargs</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.update">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#values" class="summary-sig-name">values</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.values">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#clear" class="summary-sig-name">clear</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      dict method.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.clear">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#set_persistent_setting" class="summary-sig-name">set_persistent_setting</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">persistent_dict</span>)</span><br />
+      Make metadata persistent, the input dict will be merged with the base
+      one at every reset call (clear()).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.set_persistent_setting">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#unset_persistent_setting" class="summary-sig-name">unset_persistent_setting</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">persistent_key</span>)</span><br />
+      Remove dict key from persistent dictionary</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.unset_persistent_setting">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#get_setting_files_data" class="summary-sig-name">get_setting_files_data</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a copy of the internal *files* dictionary.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.get_setting_files_data">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#get_mtime_files_data" class="summary-sig-name">get_mtime_files_data</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a copy of the internal *mtime* dictionary.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.get_mtime_files_data">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#keywords_parser" class="summary-sig-name">keywords_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parser returning package keyword masking metadata read from 
+      package.keywords file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.keywords_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#unmask_parser" class="summary-sig-name">unmask_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parser returning package unmasking metadata read from package.unmask 
+      file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.unmask_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#mask_parser" class="summary-sig-name">mask_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parser returning package masking metadata read from package.mask 
+      file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.mask_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#system_mask_parser" class="summary-sig-name">system_mask_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parser returning system packages mask metadata read from 
+      package.system_mask file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_mask_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#license_mask_parser" class="summary-sig-name">license_mask_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parser returning packages masked by license metadata read from 
+      license.mask file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.license_mask_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#repos_license_whitelist_parser" class="summary-sig-name">repos_license_whitelist_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parser returning licenses considered accepted by default (= GPL 
+      compatibles) read from package.lic_whitelist.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repos_license_whitelist_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#repos_mask_parser" class="summary-sig-name">repos_mask_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parser returning packages masked at repository level read from 
+      packages.db.mask inside the repository database directory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repos_mask_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#repos_system_mask_parser" class="summary-sig-name">repos_system_mask_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parser returning system packages mask metadata read from 
+      packages.db.system_mask file inside the repository directory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repos_system_mask_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#system_package_sets_parser" class="summary-sig-name">system_package_sets_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parser returning system defined package sets read from 
+      /etc/entropy/packages/sets.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_package_sets_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#system_dirs_parser" class="summary-sig-name">system_dirs_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parser returning directories considered part of the base system.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_dirs_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#system_dirs_mask_parser" class="summary-sig-name">system_dirs_mask_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parser returning directories NOT considered part of the base system.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_dirs_mask_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#hw_hash_parser" class="summary-sig-name">hw_hash_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Hardware hash metadata parser and generator.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.hw_hash_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#system_rev_symlinks_parser" class="summary-sig-name">system_rev_symlinks_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parser returning important system symlinks mapping.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_rev_symlinks_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#conflicting_tagged_packages_parser" class="summary-sig-name">conflicting_tagged_packages_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parser returning packages that could have been installed because they
+      aren't in the same scope, but ending up creating critical issues.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.conflicting_tagged_packages_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#socket_service_parser" class="summary-sig-name">socket_service_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parses socket service configuration file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.socket_service_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#system_parser" class="summary-sig-name">system_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Parses Entropy system configuration file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#repositories_parser" class="summary-sig-name">repositories_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Setup Entropy Client repository settings reading them from the 
+      relative config file specified in etpConst['repositoriesconf']</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repositories_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">Singleton</a></code></b>:
+      <code><a href="entropy.core.Singleton-class.html#is_destroyed">is_destroyed</a></code>,
+      <code><a href="entropy.core.Singleton-class.html#is_singleton">is_singleton</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__getattribute__</code>,
+      <code>__init__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__str__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== STATIC METHODS ==================== -->
+<a name="section-StaticMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Static Methods</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">Singleton</a></code></b>:
+      <code><a href="entropy.core.Singleton-class.html#__new__">__new__</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="init_singleton"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">init_singleton</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.init_singleton">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Replaces __init__ because SystemSettings is a Singleton. see Singleton
+  API reference for more information.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="destroy"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">destroy</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.destroy">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Overloaded method from Singleton. &quot;Destroys&quot; the 
+  instance.</p>
+  <p>@return None</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="add_plugin"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">add_plugin</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">system_settings_plugin_instance</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.add_plugin">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+This method lets you add custom parsers to SystemSettings.
+Mind that you are responsible of handling your plugin instance
+and remove it before it is destroyed. You can remove the plugin
+instance at any time by issuing remove_plugin.
+Every add_plugin or remove_plugin method will also issue clear()
+for you. This could be bad and it might be removed in future.
+
+@param plugin_id -- plugin identifier
+@type plugin_id basestring
+@param system_settings_plugin_instance -- valid SystemSettingsPlugin
+    instance
+@type system_settings_plugin_instance SystemSettingsPlugin instance
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="remove_plugin"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remove_plugin</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">plugin_id</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.remove_plugin">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This method lets you remove previously added custom parsers from 
+  SystemSettings through its plugin identifier. If plugin_id is not 
+  available, KeyError exception will be raised. Every add_plugin or 
+  remove_plugin method will also issue clear() for you. This could be bad 
+  and it might be removed in future.</p>
+  <p>@param plugin_id -- plugin identifier @type plugin_id basestring</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="__setitem__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__setitem__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">mykey</span>,
+        <span class="sig-arg">myvalue</span>)</span>
+    <br /><em class="fname">(Index assignment operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__setitem__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="__getitem__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__getitem__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">mykey</span>)</span>
+    <br /><em class="fname">(Indexing operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__getitem__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="__delitem__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__delitem__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">mykey</span>)</span>
+    <br /><em class="fname">(Index deletion operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__delitem__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="__iter__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__iter__</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__iter__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="__contains__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__contains__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">item</span>)</span>
+    <br /><em class="fname">(In operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__contains__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="__cmp__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__cmp__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">other</span>)</span>
+    <br /><em class="fname">(Comparison operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__cmp__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="__hash__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__hash__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Hashing function)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__hash__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__hash__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__len__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__len__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Length operator)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.__len__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="get"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">mykey</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.get">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="has_key"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">has_key</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">mykey</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.has_key">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="copy"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">copy</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.copy">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="fromkeys"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">fromkeys</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">seq</span>,
+        <span class="sig-arg">val</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.fromkeys">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="items"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">items</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.items">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="iteritems"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">iteritems</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.iteritems">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="iterkeys"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">iterkeys</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.iterkeys">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="keys"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">keys</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.keys">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="pop"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">pop</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">mykey</span>,
+        <span class="sig-arg">default</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.pop">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="popitem"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">popitem</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.popitem">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="setdefault"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">setdefault</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">mykey</span>,
+        <span class="sig-arg">default</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.setdefault">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="update"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">update</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">kwargs</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.update">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="values"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">values</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.values">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="clear"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">clear</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.clear">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>dict method. See Python dict API reference. Settings are also 
+  re-initialized here.</p>
+  <p>@return None</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="set_persistent_setting"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_persistent_setting</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">persistent_dict</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.set_persistent_setting">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Make metadata persistent, the input dict will be merged with the base 
+  one at every reset call (clear()).</p>
+  <p>@param persistent_dict -- dictionary to merge @type persistent_dict 
+  dict</p>
+  <p>@return None</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="unset_persistent_setting"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">unset_persistent_setting</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">persistent_key</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.unset_persistent_setting">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove dict key from persistent dictionary</p>
+  <p>@param persistent_key -- key to remove @type persistent_dict dict</p>
+  <p>@return None</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_setting_files_data"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_setting_files_data</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.get_setting_files_data">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a copy of the internal *files* dictionary. This dict contains 
+  config file paths and their identifiers.</p>
+  <p>@return dict __setting_files</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_mtime_files_data"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_mtime_files_data</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.get_mtime_files_data">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a copy of the internal *mtime* dictionary. This dict contains 
+  config file paths and their current mtime.</p>
+  <p>@return dict __mtime_files</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="keywords_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">keywords_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.keywords_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parser returning package keyword masking metadata read from 
+  package.keywords file. This file contains package mask or unmask 
+  directives based on package keywords.</p>
+  <p>@return dict data</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="unmask_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">unmask_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.unmask_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parser returning package unmasking metadata read from package.unmask 
+  file. This file contains package unmask directives, allowing to enable 
+  experimental or *secret* packages.</p>
+  <p>@return list parsed data</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="mask_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">mask_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.mask_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parser returning package masking metadata read from package.mask file.
+  This file contains package mask directives, allowing to disable 
+  experimental or *secret* packages.</p>
+  <p>@return list parsed data</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="system_mask_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">system_mask_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_mask_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parser returning system packages mask metadata read from 
+  package.system_mask file. This file contains packages that should be 
+  always kept installed, extending the already defined (in repository 
+  database) set of atoms.</p>
+  <p>@return list parsed data</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="license_mask_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">license_mask_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.license_mask_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parser returning packages masked by license metadata read from 
+  license.mask file. Packages shipped with licenses listed there will be 
+  masked.</p>
+  <p>@return list parsed data</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="repos_license_whitelist_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">repos_license_whitelist_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repos_license_whitelist_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parser returning licenses considered accepted by default (= GPL 
+  compatibles) read from package.lic_whitelist.</p>
+  <p>@return dict parsed data</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="repos_mask_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">repos_mask_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repos_mask_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parser returning packages masked at repository level read from 
+  packages.db.mask inside the repository database directory.</p>
+  <p>@return dict parsed data</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="repos_system_mask_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">repos_system_mask_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repos_system_mask_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parser returning system packages mask metadata read from 
+  packages.db.system_mask file inside the repository directory. This file 
+  contains packages that should be always kept installed, extending the 
+  already defined (in repository database) set of atoms.</p>
+  <p>@return dict parsed data</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="system_package_sets_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">system_package_sets_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_package_sets_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parser returning system defined package sets read from 
+  /etc/entropy/packages/sets.</p>
+  <p>@return dict parsed data</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="system_dirs_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">system_dirs_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_dirs_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parser returning directories considered part of the base system.</p>
+  <p>@return list parsed data</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="system_dirs_mask_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">system_dirs_mask_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_dirs_mask_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parser returning directories NOT considered part of the base system. 
+  Settings here overlay system_dirs_parser.</p>
+  <p>@return list parsed data</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="hw_hash_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">hw_hash_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.hw_hash_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Hardware hash metadata parser and generator. It returns a theorically 
+  unique SHA256 hash bound to the computer running this Framework.</p>
+  <p>@return basestring containing SHA256 hexdigest</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="system_rev_symlinks_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">system_rev_symlinks_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_rev_symlinks_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+Parser returning important system symlinks mapping. For example:
+    {'/usr/lib': ['/usr/lib64']}
+Useful for reverse matching files belonging to packages.
+
+@return dict containing the mapping
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="conflicting_tagged_packages_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">conflicting_tagged_packages_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.conflicting_tagged_packages_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parser returning packages that could have been installed because they 
+  aren't in the same scope, but ending up creating critical issues. You can
+  see it as a configurable conflict map.</p>
+  <p>@return dict parsed data</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="socket_service_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">socket_service_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.socket_service_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parses socket service configuration file. This file contains 
+  information about Entropy remote service ports and SSL.</p>
+  <p>@return dict data</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="system_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">system_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parses Entropy system configuration file.</p>
+  <p>@return dict data</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="repositories_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">repositories_parser</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repositories_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Setup Entropy Client repository settings reading them from the 
+  relative config file specified in etpConst['repositoriesconf']</p>
+  <p>@return None</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:49 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

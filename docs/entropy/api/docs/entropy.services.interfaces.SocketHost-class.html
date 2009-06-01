@@ -1,0 +1,689 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.services.interfaces.SocketHost</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.services-module.html">Package&nbsp;services</a> ::
+        <a href="entropy.services.interfaces-module.html">Module&nbsp;interfaces</a> ::
+        Class&nbsp;SocketHost
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class SocketHost</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__66" name="uml_class_diagram_for_entropy__66">
+<area shape="rect" href="javascript:void(0);" title="entropy.services.interfaces.SocketHost.socket" alt="" coords="17,28,705,47"/>
+<area shape="rect" href="javascript:void(0);" title="entropy.services.interfaces.SocketHost.SocketServer" alt="" coords="17,47,705,65"/>
+<area shape="rect" href="javascript:void(0);" title="entropy.services.interfaces.SocketHost.Thread" alt="" coords="17,65,705,84"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator" alt="" coords="17,84,705,103"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServer-class.html" title="entropy.services.interfaces.SocketHost.HostServer" alt="" coords="17,103,705,121"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.RequestHandler-class.html" title="entropy.services.interfaces.SocketHost.RequestHandler" alt="" coords="17,121,705,140"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.CommandProcessor-class.html" title="entropy.services.interfaces.SocketHost.CommandProcessor" alt="" coords="17,140,705,159"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.BuiltInCommands-class.html" title="entropy.services.interfaces.SocketHost.BuiltInCommands" alt="" coords="17,159,705,177"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html#__init__" title="entropy.services.interfaces.SocketHost.__init__" alt="" coords="17,180,705,199"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html#killall" title="entropy.services.interfaces.SocketHost.killall" alt="" coords="17,199,705,217"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html#append_eos" title="entropy.services.interfaces.SocketHost.append_eos" alt="" coords="17,217,705,236"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html#setup_ssl" title="entropy.services.interfaces.SocketHost.setup_ssl" alt="" coords="17,236,705,255"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html#create_ca_server_certs" title="entropy.services.interfaces.SocketHost.create_ca_server_certs" alt="" coords="17,255,705,273"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html#create_ssl_key_pair" title="entropy.services.interfaces.SocketHost.create_ssl_key_pair" alt="" coords="17,273,705,292"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html#create_ssl_certificate_request" title="entropy.services.interfaces.SocketHost.create_ssl_certificate_request" alt="" coords="17,292,705,311"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html#setup_external_command_classes" title="entropy.services.interfaces.SocketHost.setup_external_command_classes" alt="" coords="17,311,705,329"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html#setup_commands" title="entropy.services.interfaces.SocketHost.setup_commands" alt="" coords="17,329,705,348"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html#disable_commands" title="entropy.services.interfaces.SocketHost.disable_commands" alt="" coords="17,348,705,367"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html#start_local_output_interface" title="entropy.services.interfaces.SocketHost.start_local_output_interface" alt="" coords="17,367,705,385"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html#setup_authenticator" title="entropy.services.interfaces.SocketHost.setup_authenticator" alt="" coords="17,385,705,404"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html#start_python_garbage_collector" title="entropy.services.interfaces.SocketHost.start_python_garbage_collector" alt="" coords="17,404,705,423"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html#updateProgress" title="entropy.services.interfaces.SocketHost.updateProgress" alt="" coords="17,441,705,460"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost-class.html" title="entropy.services.interfaces.SocketHost" alt="" coords="16,11,707,461"/>
+<area shape="rect" href="entropy.services.system.interfaces.Server-class.html" title="entropy.services.system.interfaces.Server" alt="" coords="176,491,333,517"/>
+<area shape="rect" href="entropy.services.repository.interfaces.Server-class.html" title="entropy.services.repository.interfaces.Server" alt="" coords="384,491,555,517"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__66.gif" alt='' usemap="#uml_class_diagram_for_entropy__66" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== NESTED CLASSES ==================== -->
+<a name="section-NestedClasses"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Nested Classes</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html" class="summary-name">BasicPamAuthenticator</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="entropy.services.interfaces.SocketHost.HostServer-class.html" class="summary-name">HostServer</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="entropy.services.interfaces.SocketHost.RequestHandler-class.html" class="summary-name">RequestHandler</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="entropy.services.interfaces.SocketHost.CommandProcessor-class.html" class="summary-name">CommandProcessor</a>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="entropy.services.interfaces.SocketHost.BuiltInCommands-class.html" class="summary-name">BuiltInCommands</a>
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">service_interface</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwds</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="killall"></a><span class="summary-sig-name">killall</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.killall">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="append_eos"></a><span class="summary-sig-name">append_eos</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">data</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.append_eos">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setup_ssl"></a><span class="summary-sig-name">setup_ssl</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.setup_ssl">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="create_ca_server_certs"></a><span class="summary-sig-name">create_ca_server_certs</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">serial</span>,
+        <span class="summary-sig-arg">digest</span>,
+        <span class="summary-sig-arg">not_before</span>,
+        <span class="summary-sig-arg">not_after</span>,
+        <span class="summary-sig-arg">ca_pkey_dest</span>,
+        <span class="summary-sig-arg">ca_cert_dest</span>,
+        <span class="summary-sig-arg">server_key</span>,
+        <span class="summary-sig-arg">server_cert</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.create_ca_server_certs">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="create_ssl_key_pair"></a><span class="summary-sig-name">create_ssl_key_pair</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">keytype</span>,
+        <span class="summary-sig-arg">bits</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.create_ssl_key_pair">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="create_ssl_certificate_request"></a><span class="summary-sig-name">create_ssl_certificate_request</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pkey</span>,
+        <span class="summary-sig-arg">digest</span>,
+        <span class="summary-sig-arg">**name</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.create_ssl_certificate_request">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setup_external_command_classes"></a><span class="summary-sig-name">setup_external_command_classes</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.setup_external_command_classes">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setup_commands"></a><span class="summary-sig-name">setup_commands</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.setup_commands">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="disable_commands"></a><span class="summary-sig-name">disable_commands</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.disable_commands">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="start_local_output_interface"></a><span class="summary-sig-name">start_local_output_interface</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.start_local_output_interface">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setup_authenticator"></a><span class="summary-sig-name">setup_authenticator</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.setup_authenticator">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="start_python_garbage_collector"></a><span class="summary-sig-name">start_python_garbage_collector</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.start_python_garbage_collector">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="start_session_garbage_collector"></a><span class="summary-sig-name">start_session_garbage_collector</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.start_session_garbage_collector">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="python_garbage_collect"></a><span class="summary-sig-name">python_garbage_collect</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.python_garbage_collect">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="gc_clean"></a><span class="summary-sig-name">gc_clean</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.gc_clean">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="setup_hostname"></a><span class="summary-sig-name">setup_hostname</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.setup_hostname">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_ip_address"></a><span class="summary-sig-name">get_ip_address</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">ifname</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.get_ip_address">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_md5_hash"></a><span class="summary-sig-name">get_md5_hash</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.get_md5_hash">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_new_session"></a><span class="summary-sig-name">get_new_session</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">ip_address</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.get_new_session">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="update_session_time"></a><span class="summary-sig-name">update_session_time</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">session</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.update_session_time">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="set_session_running"></a><span class="summary-sig-name">set_session_running</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">session</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.set_session_running">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="unset_session_running"></a><span class="summary-sig-name">unset_session_running</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">session</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.unset_session_running">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="destroy_session"></a><span class="summary-sig-name">destroy_session</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">session</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.destroy_session">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="go"></a><span class="summary-sig-name">go</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.go">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="store_rc"></a><span class="summary-sig-name">store_rc</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">rc</span>,
+        <span class="summary-sig-arg">session</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.store_rc">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_rc"></a><span class="summary-sig-name">get_rc</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">session</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.get_rc">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="transmit"></a><span class="summary-sig-name">transmit</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">channel</span>,
+        <span class="summary-sig-arg">data</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.transmit">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="updateProgress"></a><span class="summary-sig-name">updateProgress</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.updateProgress">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:52 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
