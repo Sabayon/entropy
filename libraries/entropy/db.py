@@ -437,14 +437,19 @@ class LocalRepository:
         self.cursor = self.connection.cursor()
 
         if not self.skipChecks:
-            if os.access(self.dbFile, os.W_OK) and \
-                self.doesTableExist('baseinfo') and \
-                self.doesTableExist('extrainfo'):
+            try:
+                if os.access(self.dbFile, os.W_OK) and \
+                    self.doesTableExist('baseinfo') and \
+                    self.doesTableExist('extrainfo'):
 
-                if self.entropyTools.islive() and etpConst['systemroot']:
-                    self.databaseStructureUpdates()
-                else:
-                    self.databaseStructureUpdates()
+                    if self.entropyTools.islive() and etpConst['systemroot']:
+                        self.databaseStructureUpdates()
+                    else:
+                        self.databaseStructureUpdates()
+            except self.dbapi2.Error:
+                self.cursor.close()
+                self.connection.close()
+                raise
 
         # now we can set this to False
         self.dbclosed = False
@@ -1382,14 +1387,14 @@ class LocalRepository:
         with self.__write_mutex:
 
             self.cursor.execute("""
-            INSERT into baseinfo VALUES (%s,?,?,?,?,?,?,?,?,?,?,?)""" % (
+            INSERT INTO baseinfo VALUES (%s,?,?,?,?,?,?,?,?,?,?,?)""" % (
                 myidpackage_string,), mybaseinfo_data)
             if idpackage == None:
                 idpackage = self.cursor.lastrowid
 
             # extrainfo
             self.cursor.execute(
-                'INSERT into extrainfo VALUES (?,?,?,?,?,?,?,?)',
+                'INSERT INTO extrainfo VALUES (?,?,?,?,?,?,?,?)',
                 (   idpackage,
                     etpData['description'],
                     etpData['homepage'],
