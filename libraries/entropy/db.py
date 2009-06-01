@@ -1805,7 +1805,7 @@ class LocalRepository:
 
     def insertNeededPaths(self, library, paths):
         with self.__write_mutex:
-            self.cursor.executemany('INSERT INTO neededlibrarypaths VALUES (?,?,?)',
+            self.cursor.executemany('REPLACE INTO neededlibrarypaths VALUES (?,?,?)',
                 ((library, path, elfclass,) for path, elfclass in paths))
 
     def insertAutomergefiles(self, idpackage, automerge_data):
@@ -4288,6 +4288,10 @@ class LocalRepository:
                     self.cursor.executescript("""
                         CREATE INDEX IF NOT EXISTS neededlibpaths_library
                         ON neededlibrarypaths ( library );
+                        CREATE INDEX IF NOT EXISTS neededlibpaths_elf
+                        ON neededlibrarypaths ( elfclass );
+                        CREATE INDEX IF NOT EXISTS neededlibpaths_path
+                        ON neededlibrarypaths ( path );
                         CREATE INDEX IF NOT EXISTS neededlibpaths_library_elf
                         ON neededlibrarypaths ( library, elfclass );
                     """)
@@ -4671,18 +4675,19 @@ class LocalRepository:
             DELETE FROM neededlibraryidpackages;
             INSERT INTO neededlibraryidpackages (idpackage, library, elfclass)
                 SELECT
-                    distinct(baseinfo.idpackage) as idpackage,
-                    neededlibrarypaths.library as library,
+                    baseinfo.idpackage as idpackage,
+                    neededreference.library as library,
                     neededlibrarypaths.elfclass as elfclass
                 FROM
-                    neededlibrarypaths, baseinfo, content, needed, neededreference
+                    baseinfo, neededlibrarypaths, needed, neededreference, content
                 WHERE
-                    neededlibrarypaths.elfclass = needed.elfclass AND
-                    neededlibrarypaths.library = neededreference.library AND
                     neededreference.idneeded = needed.idneeded AND
                     needed.idpackage = content.idpackage AND
                     baseinfo.idpackage = needed.idpackage AND
-                    content.file = neededlibrarypaths.path ORDER BY baseinfo.idpackage;
+                    neededlibrarypaths.library = neededreference.library AND
+                    neededlibrarypaths.elfclass = needed.elfclass AND
+                    content.file = neededlibrarypaths.path
+                GROUP BY idpackage, library;
 
         """)
         if output:
