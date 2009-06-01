@@ -829,6 +829,7 @@ class UGC(SocketCommands):
                 f_path.close()
             except IOError:
                 continue
+            os.close(fd)
             files.append(path)
             rm_paths.append(path)
 
