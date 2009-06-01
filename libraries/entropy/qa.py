@@ -361,7 +361,8 @@ class QAInterface:
         idpackage_map = {}
         idpackage_map_reverse = {}
         for needed, elfclass in neededs:
-            data_solved = dbconn.resolveNeeded(needed, elfclass)
+            data_solved = dbconn.resolveNeeded(needed, elfclass = elfclass,
+                extended = True)
             data_size = len(data_solved)
             data_solved = set([x for x in data_solved if x[0] \
                 not in idpackages_cache])
