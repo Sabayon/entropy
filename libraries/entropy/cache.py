@@ -56,8 +56,10 @@ class EntropyCacher(Singleton):
         Return a copy of an object done by the standard
         library "copy" module.
 
-        @param obj object to copy
-        @return copied object
+        @param obj: object to copy
+        @type obj: any Python object
+        @rtype: copied object
+        @return: copied object
         """
         return self.copy.deepcopy(obj)
 
@@ -92,7 +94,7 @@ class EntropyCacher(Singleton):
         called, the instance will always trash and cache write
         request.
 
-        @return None
+        @return: None
         """
         with self.__cache_lock:
             self.__cache_buffer.clear()
@@ -109,7 +111,7 @@ class EntropyCacher(Singleton):
         checking if the cacher is running, thus is writing cache
         to disk.
 
-        @return None
+        @return: None
         """
         return self.__alive
 
@@ -121,7 +123,7 @@ class EntropyCacher(Singleton):
         inactive. A watchdog will avoid the thread to freeze the
         call if the write buffer is overloaded.
 
-        @return None
+        @return: None
         """
 
         self.__alive = False
@@ -144,7 +146,11 @@ class EntropyCacher(Singleton):
         a watchdog prevents this call to get stuck in case of write
         buffer overloads.
 
-        @return None
+        @param wait: indicates if waiting until done (synchronous mode)
+            or not
+        @type wait: bool
+
+        @return: None
         """
         if not self.__alive:
             self.__cache_buffer.clear()
@@ -164,7 +170,7 @@ class EntropyCacher(Singleton):
         """
         This method makes buffered cache to be discarded synchronously.
 
-        @return None
+        @return: None
         """
         self.__cache_buffer.clear()
         with self.__cache_lock:
@@ -176,12 +182,14 @@ class EntropyCacher(Singleton):
         to the write queue or written to disk (if async == False)
         only and only if start() method has been called.
 
-        @param key cache data identifier
-        @type key basestring
-        @param data picklable object
-        @type data any picklable object
-        @param async store cache asynchronously or not
-        @type async bool
+        @param key: cache data identifier
+        @type key: basestring
+        @param data: picklable object
+        @type data: any picklable object
+        @param async: store cache asynchronously or not
+        @type async: bool
+        @rtype: None
+        @return: nothing
         """
         if not self.__alive:
             return
@@ -197,8 +205,10 @@ class EntropyCacher(Singleton):
         You must know the cache identifier used when push()
         was called.
 
-        @param key cache data identifier
-        @type key basestring
+        @param key: cache data identifier
+        @type key: basestring
+        @rtype: Python object
+        @return: object stored into the stack or None (if stack is empty)
         """
         with self.__cache_lock:
             l_o = self.dumpTools.loadobj

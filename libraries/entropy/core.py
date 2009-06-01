@@ -51,7 +51,8 @@ class Singleton(object):
         In our world, Singleton instances may be destroyed,
         this is done by setting a private bool var __is_destroyed
 
-        @return bool
+        @rtype: bool
+        @return: instance status, if destroyed or not
         """
         return self.__is_destroyed
 
@@ -59,7 +60,8 @@ class Singleton(object):
         """
         Return if the instance is a singleton
 
-        @return bool
+        @rtype: bool
+        @return: class singleton property, if singleton or not
         """
         return self.__is_singleton
 
