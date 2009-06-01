@@ -283,7 +283,8 @@ class Schema:
 
             CREATE TABLE neededlibrarypaths (
                 library VARCHAR,
-                path VARCHAR
+                path VARCHAR,
+                elfclass INTEGER
             );
 
             CREATE TABLE neededlibraryidpackages (
@@ -1804,8 +1805,8 @@ class LocalRepository:
 
     def insertNeededPaths(self, library, paths):
         with self.__write_mutex:
-            self.cursor.executemany('INSERT INTO neededlibrarypaths VALUES (?,?)',
-                ((library, x,) for x in paths))
+            self.cursor.executemany('INSERT INTO neededlibrarypaths VALUES (?,?,?)',
+                ((library, path, elfclass,) for path, elfclass in paths))
 
     def insertAutomergefiles(self, idpackage, automerge_data):
         with self.__write_mutex:
@@ -2731,32 +2732,29 @@ class LocalRepository:
         if not self.doesTableExist('neededlibrarypaths'):
             return {}
         self.cursor.execute("""
-            SELECT neededlibrarypaths.library, neededlibrarypaths.path FROM
+            SELECT neededlibrarypaths.library, neededlibrarypaths.path,
+            neededlibrarypaths.elfclass FROM
             neededlibrarypaths, neededreference, needed WHERE
             needed.idpackage = (?) AND needed.idneeded = neededreference.idneeded
             AND neededreference.library = neededlibrarypaths.library
         """, (idpackage,))
         data = {}
-        for lib, path in self.cursor.fetchall():
+        for lib, path, elfclass in self.cursor.fetchall():
             obj = data.setdefault(lib, set())
-            obj.add(path)
+            obj.add((path, elfclass))
         return data
 
-    def retrieveNeededLibraryPaths(self, needed_library_name, elfclass = -1):
+    def retrieveNeededLibraryPaths(self, needed_library_name, elfclass):
         if not self.doesTableExist('neededlibrarypaths'):
             return set()
-        if elfclass != -1:
-            self.cursor.execute("""
-                SELECT path FROM neededlibrarypaths, neededreference, needed
-                WHERE neededlibrarypaths.library = (?) AND
-                needed.elfclass = (?) AND
-                neededreference.library = neededlibrarypaths.library AND
-                needed.idneeded = neededreference.idneeded
-            """, (needed_library_name, elfclass,))
-        else:
-            self.cursor.execute("""
-                SELECT path FROM neededlibrarypaths WHERE library = (?)
-            """, (needed_library_name,))
+        self.cursor.execute("""
+            SELECT path FROM neededlibrarypaths, neededreference, needed
+            WHERE neededlibrarypaths.library = (?) AND
+            neededlibrarypaths.elfclass = (?) AND
+            neededreference.library = neededlibrarypaths.library AND
+            needed.elfclass = neededlibrarypaths.elfclass AND
+            needed.idneeded = neededreference.idneeded
+        """, (needed_library_name, elfclass,))
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveNeededLibraryIdpackages(self):
@@ -3829,6 +3827,8 @@ class LocalRepository:
 
         if not self.doesTableExist('neededlibrarypaths'):
             self.createNeededlibrarypathsTable()
+        elif not self.doesColumnInTableExist("neededlibrarypaths", "elfclass"):
+            self.createNeededlibrarypathsColumn()
 
         if not self.doesTableExist('neededlibraryidpackages'):
             self.createNeededlibraryidpackagesTable()
@@ -4272,9 +4272,11 @@ class LocalRepository:
         if self.indexing:
             with self.__write_mutex:
                 try:
-                    self.cursor.execute("""
+                    self.cursor.executescript("""
                         CREATE INDEX IF NOT EXISTS neededlibpaths_library
-                        ON neededlibrarypaths ( library )
+                        ON neededlibrarypaths ( library );
+                        CREATE INDEX IF NOT EXISTS neededlibpaths_library_elf
+                        ON neededlibrarypaths ( library, elfclass );
                     """)
                 except self.dbapi2.OperationalError:
                     pass
@@ -4522,8 +4524,16 @@ class LocalRepository:
             self.cursor.execute("""
                 CREATE TABLE neededlibrarypaths (
                     library VARCHAR,
-                    path VARCHAR
+                    path VARCHAR,
+                    elfclass INTEGER
                 );
+            """)
+
+    def createNeededlibrarypathsColumn(self):
+        with self.__write_mutex:
+            self.cursor.executescript("""
+                ALTER TABLE neededlibrarypaths ADD elfclass INTEGER;
+                UPDATE neededlibrarypaths SET elfclass = 0;
             """)
 
     def createNeededlibraryidpackagesTable(self):
@@ -4650,10 +4660,11 @@ class LocalRepository:
                 SELECT
                     distinct(baseinfo.idpackage) as idpackage,
                     neededlibrarypaths.library as library,
-                    needed.elfclass as elfclass
+                    neededlibrarypaths.elfclass as elfclass
                 FROM
                     neededlibrarypaths, baseinfo, content, needed, neededreference
                 WHERE
+                    neededlibrarypaths.elfclass = needed.elfclass AND
                     neededlibrarypaths.library = neededreference.library AND
                     neededreference.idneeded = needed.idneeded AND
                     needed.idpackage = content.idpackage AND
