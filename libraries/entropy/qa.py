@@ -21,9 +21,11 @@
 '''
 # pylint ~ok
 import os
+import tempfile
 from entropy.const import etpConst
 from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown
-from entropy.exceptions import IncorrectParameter, PermissionDenied
+from entropy.exceptions import IncorrectParameter, PermissionDenied, \
+    SystemDatabaseError
 from entropy.i18n import _
 from entropy.core import SystemSettings
 
@@ -458,6 +460,52 @@ class QAInterface:
         # always discard -1 in set
         matchcache.discard(-1)
         return matchcache
+
+    def __analyze_package_edb(self, pkg_path):
+
+        from entropy.db import LocalRepository, dbapi2
+        fd, tmp_path = tempfile.mkstemp()
+        extract_path = self.entropyTools.extract_edb(pkg_path, tmp_path)
+        if extract_path is None:
+            os.remove(tmp_path)
+            os.close(fd)
+            return False # error!
+        try:
+            dbc = LocalRepository(
+                readOnly = False,
+                dbFile = tmp_path,
+                clientDatabase = True,
+                dbname = 'qa_testing',
+                xcache = False,
+                indexing = False,
+                OutputInterface = self.Output,
+                skipChecks = False
+            )
+        except dbapi2.Error:
+            os.remove(tmp_path)
+            os.close(fd)
+            return False
+
+        valid = True
+        try:
+            dbc.validateDatabase()
+        except SystemDatabaseError:
+            valid = False
+
+        dbc.closeDB()
+        os.remove(tmp_path)
+        os.close(fd)
+
+        return valid
+
+    def entropy_package_checks(self, package_path):
+        qa_methods = [self.__analyze_package_edb]
+        for method in qa_methods:
+            qa_rc = method(package_path)
+            if not qa_rc:
+                return False
+        return True
+
 
 class ErrorReportInterface:
 
