@@ -25,8 +25,9 @@ import os
 import shutil
 import time
 from entropy.exceptions import OnlineMirrorError, IncorrectParameter, \
-    ConnectionError, InvalidDataType
-from entropy.output import red, darkgreen, bold, brown, blue, darkred, darkblue
+    ConnectionError, InvalidDataType, EntropyPackageException
+from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
+    darkblue, purple
 from entropy.const import etpConst, etpSys
 from entropy.i18n import _
 from entropy.misc import RSS
@@ -2602,9 +2603,11 @@ class Server:
             back = True
         )
 
+        my_qa = self.Entropy.QA()
         successfull_mirrors = set()
         broken_mirrors = set()
         check_data = ()
+        upload_queue_qa_checked = set()
         mirrors_tainted = False
         mirror_errors = False
         mirrors_errors = False
@@ -2715,6 +2718,52 @@ class Server:
 
             try:
 
+                # QA tests before beginning
+                qa_pkgs = [x[0] for x in upload if x[0] not in \
+                    upload_queue_qa_checked]
+
+                qa_total = len(qa_pkgs)
+                qa_count = 0
+                qa_some_faulty = []
+                for upload_package in qa_pkgs:
+                    qa_count += 1
+                    self.Entropy.updateProgress(
+                        "[repo:%s|%s|branch:%s] %s: %s" % (
+                            brown(repo),
+                            red("sync"),
+                            self.SystemSettings['repositories']['branch'],
+                            purple(_("QA checking package file")),
+                            darkgreen(os.path.basename(upload_package)),
+                        ),
+                        importance = 0,
+                        type = "info",
+                        header = purple(" @@ "),
+                        back = True,
+                        count = (qa_count, qa_total,)
+                    )
+                    upload_queue_qa_checked.add(upload_package)
+                    result = my_qa.entropy_package_checks(upload_package)
+                    if not result:
+                        # call wolfman-911
+                        qa_some_faulty.append(os.path.basename(upload_package))
+
+                if qa_some_faulty:
+                    for qa_faulty_pkg in qa_some_faulty:
+                        self.Entropy.updateProgress(
+                            "[repo:%s|%s|branch:%s] %s: %s" % (
+                                brown(repo),
+                                red("sync"),
+                                self.SystemSettings['repositories']['branch'],
+                                red(_("faulty package file, please fix")),
+                                blue(os.path.basename(qa_faulty_pkg)),
+                            ),
+                            importance = 1,
+                            type = "error",
+                            header = darkred(" @@ ")
+                        )
+                    raise EntropyPackageException(
+                        'EntropyPackageException: cannot continue')
+
                 if removal:
                     self._sync_run_removal_queue(removal,
                         self.SystemSettings['repositories']['branch'], repo)
@@ -2762,6 +2811,11 @@ class Server:
                     header = darkgreen(" * ")
                 )
                 continue
+
+            except EntropyPackageException:
+
+                # so that people will realize this is a very bad thing
+                raise
 
             except Exception, err:
 
