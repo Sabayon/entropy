@@ -4539,7 +4539,7 @@ class LocalRepository:
 
     def createNeededlibrarypathsTable(self):
         with self.__write_mutex:
-            self.cursor.execute("""
+            self.cursor.executescript("""
                 DROP TABLE IF EXISTS neededlibrarypaths;
                 CREATE TABLE neededlibrarypaths (
                     library VARCHAR,
