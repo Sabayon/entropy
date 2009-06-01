@@ -840,12 +840,13 @@ def extract_edb(tbz2file, dbpath = None):
         dbcontent.append(byte)
         counter -= 1
     if not dbcontent:
+        db.flush()
         old.close()
         db.close()
         try:
             os.remove(dbpath)
-        except:
-            pass
+        except OSError:
+            return None
         return None
     dbcontent.reverse()
     for x in dbcontent:
@@ -854,6 +855,7 @@ def extract_edb(tbz2file, dbpath = None):
     db.flush()
     db.close()
     old.close()
+    del dbcontent
     return dbpath
 
 def remove_edb(tbz2file, savedir):
