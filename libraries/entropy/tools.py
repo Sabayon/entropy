@@ -829,13 +829,16 @@ def extract_edb(tbz2file, dbpath = None):
     counter = bytes
     dbcontent = []
 
+    db_tag = etpConst['databasestarttag']
+    db_tag_len = len(etpConst['databasestarttag'])
+
     while counter >= 0:
         old.seek(counter-bytes,2)
         byte = old.read(1)
         if byte == "|":
-            old.seek(counter-bytes-31,2)
-            chunk = old.read(31)+byte
-            if chunk == etpConst['databasestarttag']:
+            old.seek(counter-bytes-(db_tag_len-1),2)
+            chunk = old.read((db_tag_len-1))+byte
+            if chunk == db_tag:
                 break
         dbcontent.append(byte)
         counter -= 1
