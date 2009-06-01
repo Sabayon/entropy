@@ -284,7 +284,8 @@ class Schema:
             CREATE TABLE neededlibrarypaths (
                 library VARCHAR,
                 path VARCHAR,
-                elfclass INTEGER
+                elfclass INTEGER,
+                PRIMARY KEY(library, path, elfclass)
             );
 
             CREATE TABLE neededlibraryidpackages (
@@ -1805,7 +1806,7 @@ class LocalRepository:
 
     def insertNeededPaths(self, library, paths):
         with self.__write_mutex:
-            self.cursor.executemany('REPLACE INTO neededlibrarypaths VALUES (?,?,?)',
+            self.cursor.executemany('INSERT OR IGNORE INTO neededlibrarypaths VALUES (?,?,?)',
                 ((library, path, elfclass,) for path, elfclass in paths))
 
     def insertAutomergefiles(self, idpackage, automerge_data):
@@ -3840,8 +3841,8 @@ class LocalRepository:
 
         if not self.doesTableExist('neededlibrarypaths'):
             self.createNeededlibrarypathsTable()
-        elif not self.doesColumnInTableExist("neededlibrarypaths", "elfclass"):
-            self.createNeededlibrarypathsColumn()
+        if not self.doesColumnInTableExist("neededlibrarypaths", "elfclass"):
+            self.createNeededlibrarypathsTable()
 
         if not self.doesTableExist('neededlibraryidpackages'):
             self.createNeededlibraryidpackagesTable()
@@ -4539,18 +4540,13 @@ class LocalRepository:
     def createNeededlibrarypathsTable(self):
         with self.__write_mutex:
             self.cursor.execute("""
+                DROP TABLE IF EXISTS neededlibrarypaths;
                 CREATE TABLE neededlibrarypaths (
                     library VARCHAR,
                     path VARCHAR,
-                    elfclass INTEGER
+                    elfclass INTEGER,
+                    PRIMARY KEY(library, path, elfclass)
                 );
-            """)
-
-    def createNeededlibrarypathsColumn(self):
-        with self.__write_mutex:
-            self.cursor.executescript("""
-                ALTER TABLE neededlibrarypaths ADD elfclass INTEGER;
-                UPDATE neededlibrarypaths SET elfclass = 0;
             """)
 
     def createNeededlibraryidpackagesTable(self):
