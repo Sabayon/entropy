@@ -834,7 +834,7 @@ def extract_edb(tbz2file, dbpath = None):
     give_up_threshold = 1024000 * 30 # 30Mb
     entry_point = db_tag[::-1][0]
     written = False
-    max_read_len = db_tag_len - 1
+    max_read_len = 8
 
     while counter >= 0:
         cur_threshold = abs((counter-bytes))
@@ -905,7 +905,7 @@ def extract_edb(tbz2file, dbpath = None):
     db_tmp.close()
     db.flush()
     db.close()
-    os.remove(db_tmp_path)
+    #os.remove(db_tmp_path)
     return dbpath
 
 def remove_edb(tbz2file, savedir):
