@@ -831,10 +831,15 @@ def extract_edb(tbz2file, dbpath = None):
 
     db_tag = etpConst['databasestarttag']
     db_tag_len = len(db_tag)
+    give_up_threshold = 1024000 * 3 # 3mb
     entry_point = db_tag[::-1][0]
     written = False
 
     while counter >= 0:
+        cur_threshold = abs((counter-bytes))
+        if cur_threshold >= give_up_threshold:
+            written = False
+            break
         old.seek(counter-bytes, 2)
         byte = old.read(1)
         if byte == entry_point:
