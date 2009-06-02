@@ -741,52 +741,74 @@ def suck_xpak(tbz2file, outputpath):
 
     xpakpath = outputpath+"/"+os.path.basename(tbz2file)[:-5]+".xpak"
     old = open(tbz2file,"rb")
-    db = open(xpakpath,"wb")
-    db_tmp = open(xpakpath+".reverse","wb")
-    allowWrite = False
+    db_tmp_path = xpakpath+".reverse"
+    db_tmp = open(db_tmp_path,"wb")
+    allow_write = False
 
     # position old to the end
     old.seek(0, os.SEEK_END)
     # read backward until we find
     bytes = old.tell()
-    counter = bytes
+    counter = bytes - 1
+    xpak_end = "XPAKSTOP"
+    xpak_start = "XPAKPACK"
+    xpak_entry_point = "X"
+    xpak_tag_len = len(xpak_start)
+    chunk_len = 3
 
     while counter >= 0:
-        old.seek(counter-bytes, os.SEEK_END)
-        byte = old.read(1)
-        if byte == "P" or byte == "K":
-            old.seek(counter-bytes-7, os.SEEK_END)
-            chunk = old.read(7)+byte
-            if chunk == "XPAKPACK":
-                allowWrite = False
-                db_tmp.write(chunk[::-1])
+
+        old.seek(counter - bytes, os.SEEK_END)
+        read_bytes = old.read(chunk_len)
+        read_len = len(read_bytes)
+
+        entry_idx = read_bytes.rfind(xpak_entry_point)
+        if entry_idx != -1:
+
+            cut_gotten = read_bytes[entry_idx:]
+            offset = xpak_tag_len - len(cut_gotten)
+            chunk = cut_gotten + old.read(offset)
+
+            if (not allow_write) and (chunk == xpak_end):
+                allow_write = True
+                to_write = read_bytes[:entry_idx][::-1]
+                db_tmp.write(to_write)
+                counter -= read_len
+                continue
+
+            elif allow_write and (chunk == xpak_start):
+                to_write = cut_gotten[::-1]
+                db_tmp.write(to_write)
                 break
-            elif chunk == "XPAKSTOP":
-                allowWrite = True
-                old.seek(counter-bytes, os.SEEK_END)
-        if (allowWrite):
-            db_tmp.write(byte)
-        counter -= 1
+
+        if allow_write:
+            db_tmp.write(read_bytes[::-1])
+
+        counter -= read_len
 
     db_tmp.flush()
     db_tmp.close()
-    db_tmp = open(xpakpath+".reverse","rb")
+    db_tmp = open(db_tmp_path,"rb")
+    db = open(xpakpath,"wb")
+
     # now reverse from db_tmp to db
     db_tmp.seek(0, os.SEEK_END)
     bytes = db_tmp.tell()
-    counter = bytes
+    counter = bytes - 1
     while counter >= 0:
-        db_tmp.seek(counter-bytes, os.SEEK_END)
-        byte = db_tmp.read(1)
-        db.write(byte)
+        db_tmp.seek(counter)
+        read_data = db_tmp.read(1)
+        db.write(read_data)
         counter -= 1
+    db.write(xpak_end)
+
 
     db.flush()
     db.close()
     db_tmp.close()
     old.close()
     try:
-        os.remove(xpakpath+".reverse")
+        os.remove(db_tmp_path)
     except OSError:
         pass
     return xpakpath
@@ -841,7 +863,7 @@ def extract_edb(tbz2file, dbpath = None):
         if cur_threshold >= give_up_threshold:
             written = False
             break
-        old.seek(counter-bytes, 2)
+        old.seek(counter-bytes, os.SEEK_END)
         read_bytes = old.read(max_read_len)
         read_len = len(read_bytes)
         entry_idx = read_bytes.rfind(entry_point)
