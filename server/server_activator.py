@@ -65,7 +65,16 @@ def sync(options, justTidy = False):
 
         errors = False
         if not justTidy:
-            mirrors_tainted, mirrors_errors, successfull_mirrors, broken_mirrors, check_data = Entropy.MirrorsService.sync_packages(ask = not do_noask, pretend = etpUi['pretend'])
+
+            mirrors_tainted, mirrors_errors, successfull_mirrors, \
+                broken_mirrors, check_data = Entropy.MirrorsService.sync_packages(
+                    ask = not do_noask, pretend = etpUi['pretend'])
+
+            if mirrors_errors and not successfull_mirrors:
+                errors = True
+                print_error(darkred(" !!! ")+red(_("Aborting !")))
+                continue
+
             if not successfull_mirrors:
                 continue
             elif not mirrors_errors:

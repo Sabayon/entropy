@@ -2584,6 +2584,58 @@ class Server:
         )
         return errors, m_fine_uris, m_broken_uris
 
+    def run_package_files_qa_checks(self, packages_list, repo = None):
+
+        if repo == None:
+            repo = self.Entropy.default_repository
+
+        my_qa = self.Entropy.QA()
+
+        qa_total = len(packages_list)
+        qa_count = 0
+        qa_some_faulty = []
+
+        for upload_package in packages_list:
+            qa_count += 1
+
+            self.Entropy.updateProgress(
+                "[repo:%s|%s|branch:%s] %s: %s" % (
+                    brown(repo),
+                    red("sync"),
+                    self.SystemSettings['repositories']['branch'],
+                    purple(_("QA checking package file")),
+                    darkgreen(os.path.basename(upload_package)),
+                ),
+                importance = 0,
+                type = "info",
+                header = purple(" @@ "),
+                back = True,
+                count = (qa_count, qa_total,)
+            )
+
+            result = my_qa.entropy_package_checks(upload_package)
+            if not result:
+                # call wolfman-911
+                qa_some_faulty.append(os.path.basename(upload_package))
+
+        if qa_some_faulty:
+
+            for qa_faulty_pkg in qa_some_faulty:
+                self.Entropy.updateProgress(
+                    "[repo:%s|%s|branch:%s] %s: %s" % (
+                        brown(repo),
+                        red("sync"),
+                        self.SystemSettings['repositories']['branch'],
+                        red(_("faulty package file, please fix")),
+                        blue(os.path.basename(qa_faulty_pkg)),
+                    ),
+                    importance = 1,
+                    type = "error",
+                    header = darkred(" @@ ")
+                )
+            raise EntropyPackageException(
+                'EntropyPackageException: cannot continue')
+
 
     def sync_packages(self, ask = True, pretend = False, packages_check = False,
         repo = None):
@@ -2603,7 +2655,7 @@ class Server:
             back = True
         )
 
-        my_qa = self.Entropy.QA()
+
         successfull_mirrors = set()
         broken_mirrors = set()
         check_data = ()
@@ -2718,51 +2770,12 @@ class Server:
 
             try:
 
-                # QA tests before beginning
-                qa_pkgs = [x[0] for x in upload if x[0] not in \
-                    upload_queue_qa_checked]
+                # QA checks
+                qa_package_files = [x[0] for x in upload if x[0] \
+                    not in upload_queue_qa_checked]
+                upload_queue_qa_checked |= set(qa_package_files)
 
-                qa_total = len(qa_pkgs)
-                qa_count = 0
-                qa_some_faulty = []
-                for upload_package in qa_pkgs:
-                    qa_count += 1
-                    self.Entropy.updateProgress(
-                        "[repo:%s|%s|branch:%s] %s: %s" % (
-                            brown(repo),
-                            red("sync"),
-                            self.SystemSettings['repositories']['branch'],
-                            purple(_("QA checking package file")),
-                            darkgreen(os.path.basename(upload_package)),
-                        ),
-                        importance = 0,
-                        type = "info",
-                        header = purple(" @@ "),
-                        back = True,
-                        count = (qa_count, qa_total,)
-                    )
-                    upload_queue_qa_checked.add(upload_package)
-                    result = my_qa.entropy_package_checks(upload_package)
-                    if not result:
-                        # call wolfman-911
-                        qa_some_faulty.append(os.path.basename(upload_package))
-
-                if qa_some_faulty:
-                    for qa_faulty_pkg in qa_some_faulty:
-                        self.Entropy.updateProgress(
-                            "[repo:%s|%s|branch:%s] %s: %s" % (
-                                brown(repo),
-                                red("sync"),
-                                self.SystemSettings['repositories']['branch'],
-                                red(_("faulty package file, please fix")),
-                                blue(os.path.basename(qa_faulty_pkg)),
-                            ),
-                            importance = 1,
-                            type = "error",
-                            header = darkred(" @@ ")
-                        )
-                    raise EntropyPackageException(
-                        'EntropyPackageException: cannot continue')
+                self.run_package_files_qa_checks(qa_package_files, repo = repo)
 
                 if removal:
                     self._sync_run_removal_queue(removal,
@@ -2814,8 +2827,26 @@ class Server:
 
             except EntropyPackageException:
 
+                mirrors_errors = True
+                broken_mirrors.add(uri)
+                successfull_mirrors.clear()
                 # so that people will realize this is a very bad thing
-                raise
+                self.Entropy.updateProgress(
+                    "[repo:%s|%s|branch:%s] %s: %s, %s: %s" % (
+                        repo,
+                        red(_("sync")),
+                        self.SystemSettings['repositories']['branch'],
+                        darkred(_("you must package them again")),
+                        Exception,
+                        _("error"),
+                        err,
+                    ),
+                    importance = 1,
+                    type = "error",
+                    header = darkred(" !!! ")
+                )
+                return mirrors_tainted, mirrors_errors, successfull_mirrors, \
+                    broken_mirrors, check_data
 
             except Exception, err:
 
