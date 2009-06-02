@@ -825,15 +825,16 @@ def extract_edb(tbz2file, dbpath = None):
     old.seek(0, 2)
     # read backward until we find
     bytes = old.tell()
-    counter = bytes
+    counter = bytes - 1
     db_tmp_path = dbpath+".edb_tmp"
     db_tmp = open(db_tmp_path, "wb")
 
     db_tag = etpConst['databasestarttag']
     db_tag_len = len(db_tag)
-    give_up_threshold = 1024000 * 3 # 3mb
+    give_up_threshold = 1024000 * 30 # 30Mb
     entry_point = db_tag[::-1][0]
     written = False
+    max_read_len = db_tag_len / 2 # AT MOST its half, code limitation
 
     while counter >= 0:
         cur_threshold = abs((counter-bytes))
@@ -841,19 +842,22 @@ def extract_edb(tbz2file, dbpath = None):
             written = False
             break
         old.seek(counter-bytes, 2)
-        byte = old.read(1)
-        if byte == entry_point:
-            try:
-                old.seek(counter-bytes-(db_tag_len-1), 2)
-            except IOError:
-                written = False
-                break
-            chunk = old.read((db_tag_len-1)) + byte
+        read_bytes = old.read(max_read_len)
+        read_len = len(read_bytes)
+        entry_idx = read_bytes.find(entry_point)
+        if entry_idx != -1:
+            rollback = old.tell() - (read_len - entry_idx)
+            old.seek(rollback)
+            chunk = old.read((db_tag_len))
             if chunk == db_tag:
+                # let it write the whole tag
+                # we will drop it later on
+                db_tmp.write(read_bytes[::-1])
+                written = True
                 break
-        db_tmp.write(byte)
+        db_tmp.write(read_bytes[::-1])
         written = True
-        counter -= 1
+        counter -= read_len
 
     if not written:
         db_tmp.flush()
@@ -868,6 +872,7 @@ def extract_edb(tbz2file, dbpath = None):
     old.close()
     db_tmp.flush()
     db_tmp.close()
+
     db = open(dbpath, "wb")
     db_tmp = open(db_tmp_path, "rb")
 
@@ -875,16 +880,26 @@ def extract_edb(tbz2file, dbpath = None):
     counter = db_tmp.tell()
 
     # reverse content
-    chunk_len = 8
+    chunk_len = max_read_len
     times = 0
+    skip_tag_len = db_tag_len
     while counter > 0:
         times += 1
         if chunk_len > counter:
             chunk_len = counter
         read_at = chunk_len * times * -1
         db_tmp.seek(read_at, 2)
-        db.write(db_tmp.read(chunk_len)[::-1])
-        counter -= chunk_len
+        read_data = db_tmp.read(chunk_len)
+        read_len = len(read_data)
+        # skip tag
+        if skip_tag_len > 0:
+            if read_len > skip_tag_len:
+                db.write(read_data[skip_tag_len:][::-1])
+            skip_tag_len -= read_len
+            counter -= read_len
+            continue
+        db.write(read_data[::-1])
+        counter -= read_len
 
     db_tmp.close()
     db.flush()
