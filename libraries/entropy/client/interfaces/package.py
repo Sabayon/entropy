@@ -716,6 +716,7 @@ class Package:
         self.Entropy.clear_dump_cache(etpCache['world_available'])
         self.Entropy.clear_dump_cache(etpCache['world_update'])
 
+    # FIXME: deprecated
     def __update_world_cache(self):
         if self.Entropy.xcache and (self.action in ("install","remove",)):
             wc_dir = os.path.dirname(os.path.join(etpConst['dumpstoragedir'],etpCache['world_update']))
