@@ -746,16 +746,16 @@ def suck_xpak(tbz2file, outputpath):
     allowWrite = False
 
     # position old to the end
-    old.seek(0,2)
+    old.seek(0, os.SEEK_END)
     # read backward until we find
     bytes = old.tell()
     counter = bytes
 
     while counter >= 0:
-        old.seek(counter-bytes,2)
+        old.seek(counter-bytes, os.SEEK_END)
         byte = old.read(1)
         if byte == "P" or byte == "K":
-            old.seek(counter-bytes-7,2)
+            old.seek(counter-bytes-7, os.SEEK_END)
             chunk = old.read(7)+byte
             if chunk == "XPAKPACK":
                 allowWrite = False
@@ -763,7 +763,7 @@ def suck_xpak(tbz2file, outputpath):
                 break
             elif chunk == "XPAKSTOP":
                 allowWrite = True
-                old.seek(counter-bytes,2)
+                old.seek(counter-bytes, os.SEEK_END)
         if (allowWrite):
             db_tmp.write(byte)
         counter -= 1
@@ -772,11 +772,11 @@ def suck_xpak(tbz2file, outputpath):
     db_tmp.close()
     db_tmp = open(xpakpath+".reverse","rb")
     # now reverse from db_tmp to db
-    db_tmp.seek(0,2)
+    db_tmp.seek(0, os.SEEK_END)
     bytes = db_tmp.tell()
     counter = bytes
     while counter >= 0:
-        db_tmp.seek(counter-bytes,2)
+        db_tmp.seek(counter-bytes, os.SEEK_END)
         byte = db_tmp.read(1)
         db.write(byte)
         counter -= 1
@@ -913,7 +913,7 @@ def remove_edb(tbz2file, savedir):
     new = open(savedir+"/"+os.path.basename(tbz2file), "wb")
 
     # position old to the end
-    old.seek(0, 2)
+    old.seek(0, os.SEEK_END)
     # read backward until we find
     bytes = old.tell()
     counter = bytes
@@ -922,13 +922,13 @@ def remove_edb(tbz2file, savedir):
     entry_point = db_tag[::-1][0]
 
     while counter >= 0:
-        old.seek(counter-bytes, 2)
+        old.seek(counter-bytes, os.SEEK_END)
         byte = old.read(1)
         if byte == entry_point:
-            old.seek(counter-bytes-(db_tag_len-1), 2)
+            old.seek(counter-bytes-(db_tag_len-1), os.SEEK_END)
             chunk = old.read((db_tag_len-1)) + byte
             if chunk == db_tag:
-                old.seek(counter-bytes-(db_tag_len), 2)
+                old.seek(counter-bytes-(db_tag_len), os.SEEK_END)
                 break
         counter -= 1
 
@@ -2461,15 +2461,15 @@ def open_buffer():
 
 def seek_till_newline(f):
     count = 0
-    f.seek(count,2)
+    f.seek(count, os.SEEK_END)
     size = f.tell()
     while count > (size*-1):
         count -= 1
-        f.seek(count,2)
+        f.seek(count, os.SEEK_END)
         myc = f.read(1)
         if myc == "\n":
             break
-    f.seek(count+1,2)
+    f.seek(count+1, os.SEEK_END)
     pos = f.tell()
     f.truncate(pos)
 
