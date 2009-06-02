@@ -905,7 +905,7 @@ def extract_edb(tbz2file, dbpath = None):
     db_tmp.close()
     db.flush()
     db.close()
-    #os.remove(db_tmp_path)
+    os.remove(db_tmp_path)
     return dbpath
 
 def remove_edb(tbz2file, savedir):
