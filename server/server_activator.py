@@ -77,22 +77,22 @@ def sync(options, justTidy = False):
 
             if not successfull_mirrors:
                 continue
-            elif not mirrors_errors:
-                if mirrors_tainted:
-                    if (not do_noask) and etpConst['rss-feed']:
-                        Entropy.rssMessages['commitmessage'] = readtext(">> %s: " % (_("Please insert a commit message"),) )
-                    elif etpConst['rss-feed']:
-                        Entropy.rssMessages['commitmessage'] = "Autodriven Update"
-                errors, fine, broken = sync_remote_databases()
-                if not errors:
-                    Entropy.MirrorsService.lock_mirrors(lock = False)
-                if not errors and not do_noask:
-                    rc = Entropy.askQuestion(_("Should I continue with the tidy procedure ?"))
-                    if rc == "No":
-                        continue
-                elif errors:
-                    print_error(darkred(" !!! ")+red(_("Aborting !")))
+
+            if mirrors_tainted:
+                if (not do_noask) and etpConst['rss-feed']:
+                    Entropy.rssMessages['commitmessage'] = readtext(">> %s: " % (_("Please insert a commit message"),) )
+                elif etpConst['rss-feed']:
+                    Entropy.rssMessages['commitmessage'] = "Autodriven Update"
+            errors, fine, broken = sync_remote_databases()
+            if not errors:
+                Entropy.MirrorsService.lock_mirrors(lock = False)
+            if not errors and not do_noask:
+                rc = Entropy.askQuestion(_("Should I continue with the tidy procedure ?"))
+                if rc == "No":
                     continue
+            elif errors:
+                print_error(darkred(" !!! ")+red(_("Aborting !")))
+                continue
 
         if not errors:
             Entropy.MirrorsService.tidy_mirrors(ask = not do_noask, pretend = etpUi['pretend'])
