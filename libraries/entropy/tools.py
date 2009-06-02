@@ -822,7 +822,7 @@ def extract_edb(tbz2file, dbpath = None):
         dbpath = tbz2file[:-5] + ".db"
 
     # position old to the end
-    old.seek(0, 2)
+    old.seek(0, os.SEEK_END)
     # read backward until we find
     bytes = old.tell()
     counter = bytes - 1
@@ -834,7 +834,7 @@ def extract_edb(tbz2file, dbpath = None):
     give_up_threshold = 1024000 * 30 # 30Mb
     entry_point = db_tag[::-1][0]
     written = False
-    max_read_len = db_tag_len / 2 # AT MOST its half, code limitation
+    max_read_len = db_tag_len - 1
 
     while counter >= 0:
         cur_threshold = abs((counter-bytes))
@@ -844,15 +844,16 @@ def extract_edb(tbz2file, dbpath = None):
         old.seek(counter-bytes, 2)
         read_bytes = old.read(max_read_len)
         read_len = len(read_bytes)
-        entry_idx = read_bytes.find(entry_point)
+        entry_idx = read_bytes.rfind(entry_point)
         if entry_idx != -1:
-            rollback = old.tell() - (read_len - entry_idx)
-            old.seek(rollback)
-            chunk = old.read((db_tag_len))
+            rollback = (read_len - entry_idx) * -1
+            old.seek(rollback, os.SEEK_CUR)
+            chunk = old.read(db_tag_len)
             if chunk == db_tag:
                 # let it write the whole tag
                 # we will drop it later on
-                db_tmp.write(read_bytes[::-1])
+                to_write = read_bytes[entry_idx:][::-1]
+                db_tmp.write(to_write)
                 written = True
                 break
         db_tmp.write(read_bytes[::-1])
@@ -876,7 +877,7 @@ def extract_edb(tbz2file, dbpath = None):
     db = open(dbpath, "wb")
     db_tmp = open(db_tmp_path, "rb")
 
-    db_tmp.seek(0, 2)
+    db_tmp.seek(0, os.SEEK_END)
     counter = db_tmp.tell()
 
     # reverse content
@@ -888,14 +889,14 @@ def extract_edb(tbz2file, dbpath = None):
         if chunk_len > counter:
             chunk_len = counter
         read_at = chunk_len * times * -1
-        db_tmp.seek(read_at, 2)
+        db_tmp.seek(read_at, os.SEEK_END)
         read_data = db_tmp.read(chunk_len)
         read_len = len(read_data)
         # skip tag
         if skip_tag_len > 0:
-            if read_len > skip_tag_len:
-                db.write(read_data[skip_tag_len:][::-1])
             skip_tag_len -= read_len
+            if skip_tag_len < 0:
+                db.write(read_data[::-1][skip_tag_len:])
             counter -= read_len
             continue
         db.write(read_data[::-1])
