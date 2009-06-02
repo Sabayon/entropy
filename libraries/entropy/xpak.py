@@ -266,7 +266,7 @@ class tbz2:
 		myfile=open(self.file,"a+")
 		if not myfile:
 			raise IOError
-		myfile.seek(-self.xpaksize,2) # 0,2 or -0,2 just mean EOF.
+		myfile.seek(-self.xpaksize,os.SEEK_END) # 0,2 or -0,2 just mean EOF.
 		myfile.truncate()
 		myfile.write(xpdata+encodeint(len(xpdata))+"STOP")
 		myfile.flush()
@@ -300,7 +300,7 @@ class tbz2:
 					return 1
 			self.filestat=mystat
 			a=open(self.file,"r")
-			a.seek(-16,2)
+			a.seek(-16,os.SEEK_END)
 			trailer=a.read()
 			self.infosize=0
 			self.xpaksize=0
@@ -312,7 +312,7 @@ class tbz2:
 				return 0
 			self.infosize=decodeint(trailer[8:12])
 			self.xpaksize=self.infosize+8
-			a.seek(-(self.xpaksize),2)
+			a.seek(-(self.xpaksize),os.SEEK_END)
 			header=a.read(16)
 			if header[0:8]!="XPAKPACK":
 				a.close()

@@ -1110,7 +1110,7 @@ class Base:
 
         def is_last_newline(f):
             try:
-                f.seek(-1,2)
+                f.seek(-1,os.SEEK_END)
                 last = f.read(1)
                 if last == "\n":
                     return True

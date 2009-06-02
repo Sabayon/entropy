@@ -125,7 +125,7 @@ class UrlFetcher:
             os.access(self.__path_to_save,os.W_OK) and self.__resume:
 
             self.localfile = open(self.__path_to_save,"awb")
-            self.localfile.seek(0,2)
+            self.localfile.seek(0,os.SEEK_END)
             self.__startingposition = int(self.localfile.tell())
             self.__resumed = True
 

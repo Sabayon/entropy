@@ -229,13 +229,13 @@ class Base(SocketCommands):
             text = ''
         else:
             f = open(file_path,"r")
-            f.seek(0,2)
+            f.seek(0,os.SEEK_END)
             tell_me = f.tell()
             if bytes_from_tail < 1:
                 bytes_from_tail = tell_me
             if bytes_from_tail > tell_me:
                 bytes_from_tail = tell_me
-            f.seek(-1*bytes_from_tail,2)
+            f.seek(-1*bytes_from_tail,os.SEEK_END)
             text = f.read()
             f.close()
 

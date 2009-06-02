@@ -2446,7 +2446,7 @@ class Package:
                 # check size first
                 repo_size = dbconn.retrieveSize(idpackage)
                 f = open(os.path.join(etpConst['entropyworkdir'],self.infoDict['download']),"r")
-                f.seek(0,2)
+                f.seek(0,os.SEEK_END)
                 disk_size = f.tell()
                 f.close()
                 if repo_size == disk_size:
@@ -2503,7 +2503,7 @@ class Package:
             down_path = os.path.join(etp_workdir,download)
             if os.path.isfile(down_path):
                 with open(down_path,"r") as f:
-                    f.seek(0,2)
+                    f.seek(0,os.SEEK_END)
                     disk_size = f.tell()
                 if repo_size == disk_size:
                     temp_already_downloaded_count += 1
