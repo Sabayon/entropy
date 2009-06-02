@@ -712,11 +712,9 @@ class Package:
         self.Entropy.clear_dump_cache(etpCache['dbMatch']+etpConst['clientdbid']+"/")
         self.Entropy.clear_dump_cache(etpCache['dbSearch']+etpConst['clientdbid']+"/")
 
-        self.__update_available_cache()
-        try:
-            self.__update_world_cache()
-        except:
-            self.Entropy.clear_dump_cache(etpCache['world_update'])
+        # clear caches, the bad way
+        self.Entropy.clear_dump_cache(etpCache['world_available'])
+        self.Entropy.clear_dump_cache(etpCache['world_update'])
 
     def __update_world_cache(self):
         if self.Entropy.xcache and (self.action in ("install","remove",)):
@@ -768,59 +766,6 @@ class Package:
 
         elif (not self.Entropy.xcache) or (self.action in ("install",)):
             self.Entropy.clear_dump_cache(etpCache['world_update'])
-
-    def __update_available_cache(self):
-
-        # update world available cache
-        if self.Entropy.xcache and (self.action in ("remove","install")):
-
-            branch = self.Entropy.SystemSettings['repositories']['branch']
-            c_hash = self.Entropy.get_available_packages_chash(branch)
-
-            disk_cache = self.Entropy.get_available_packages_cache(
-                myhash = c_hash)
-            if disk_cache != None:
-                try:
-
-                    # remove and old install
-                    if self.infoDict['removeidpackage'] != -1:
-                        taint = False
-                        key = self.entropyTools.dep_getkey(
-                            self.infoDict['removeatom'])
-                        slot = self.infoDict['slot']
-                        matches = self.Entropy.atom_match(key,
-                            matchSlot = slot, multiRepo = True,
-                            multiMatch = True)
-                        for mymatch in matches[0]:
-                            if mymatch not in disk_cache:
-                                disk_cache.append(mymatch)
-                                taint = True
-                        if taint:
-                            mydata = {}
-                            mylist = []
-                            for myidpackage,myrepo in disk_cache:
-                                mydbc = self.Entropy.open_repository(myrepo)
-                                mydata[mydbc.retrieveAtom(myidpackage)] = (myidpackage,myrepo)
-                            for mykey in sorted(mydata):
-                                mylist.append(mydata[mykey])
-                            disk_cache = mylist
-
-                    # install, doing here because matches[0]
-                    # could contain self.matched_atoms
-                    if self.matched_atom in disk_cache:
-                        disk_cache.remove(self.matched_atom)
-
-                    self.Cacher.push("%s%s" % (etpCache['world_available'],
-                        c_hash), disk_cache)
-
-                except KeyError:
-                    self.Cacher.push("%s%s" % (etpCache['world_available'],
-                        c_hash), {})
-
-        elif not self.Entropy.xcache:
-
-            self.Entropy.clear_dump_cache(etpCache['world_available'])
-
 
     def __install_package(self):
 
