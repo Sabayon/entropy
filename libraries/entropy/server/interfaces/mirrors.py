@@ -2599,10 +2599,7 @@ class Server:
             qa_count += 1
 
             self.Entropy.updateProgress(
-                "[repo:%s|%s|branch:%s] %s: %s" % (
-                    brown(repo),
-                    red("sync"),
-                    self.SystemSettings['repositories']['branch'],
+                "%s: %s" % (
                     purple(_("QA checking package file")),
                     darkgreen(os.path.basename(upload_package)),
                 ),
@@ -2622,9 +2619,8 @@ class Server:
 
             for qa_faulty_pkg in qa_some_faulty:
                 self.Entropy.updateProgress(
-                    "[repo:%s|%s|branch:%s] %s: %s" % (
+                    "[repo:%s|branch:%s] %s: %s" % (
                         brown(repo),
-                        red("sync"),
                         self.SystemSettings['repositories']['branch'],
                         red(_("faulty package file, please fix")),
                         blue(os.path.basename(qa_faulty_pkg)),
