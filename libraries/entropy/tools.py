@@ -27,7 +27,6 @@ import stat
 import errno
 import re
 import os
-import threading
 import time
 import shutil
 import tarfile
@@ -35,7 +34,7 @@ import subprocess
 import grp
 import pwd
 import hashlib
-from entropy.output import *
+from entropy.output import * # there is also TextInterface
 from entropy.const import *
 from entropy.exceptions import *
 
@@ -816,7 +815,6 @@ def suck_xpak(tbz2file, outputpath):
 def append_xpak(tbz2file, atom):
     import entropy.xpak as xpak
     from entropy.spm import Spm
-    from entropy.output import TextInterface
     text = TextInterface()
     spm_intf = Spm.get_spm_interface()
     spm = spm_intf(text)
@@ -944,7 +942,7 @@ def create_sha512_file(filepath):
     hashfile = filepath+etpConst['packagessha512fileext']
     f = open(hashfile,"w")
     tbz2name = os.path.basename(filepath)
-    f.write(sha512hash+"  "+filepath+"\n")
+    f.write(sha512hash+"  "+tbz2name+"\n")
     f.flush()
     f.close()
     return hashfile
@@ -954,7 +952,7 @@ def create_sha256_file(filepath):
     hashfile = filepath+etpConst['packagessha256fileext']
     f = open(hashfile,"w")
     tbz2name = os.path.basename(filepath)
-    f.write(sha256hash+"  "+filepath+"\n")
+    f.write(sha256hash+"  "+tbz2name+"\n")
     f.flush()
     f.close()
     return hashfile
@@ -964,7 +962,7 @@ def create_sha1_file(filepath):
     hashfile = filepath+etpConst['packagessha1fileext']
     f = open(hashfile,"w")
     tbz2name = os.path.basename(filepath)
-    f.write(sha1hash+"  "+filepath+"\n")
+    f.write(sha1hash+"  "+tbz2name+"\n")
     f.flush()
     f.close()
     return hashfile
