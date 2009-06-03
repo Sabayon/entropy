@@ -738,7 +738,8 @@ def unpack_xpak(xpakfile, tmpdir = None):
 
 def suck_xpak(tbz2file, outputpath):
 
-    xpakpath = outputpath+"/"+os.path.basename(tbz2file)[:-5]+".xpak"
+    dest_filename = os.path.basename(tbz2file)[:-5]+".xpak"
+    xpakpath = os.path.join(outputpath, dest_filename)
     old = open(tbz2file,"rb")
 
     # position old to the end
@@ -781,6 +782,9 @@ def suck_xpak(tbz2file, outputpath):
     if data_end_position is None:
         return None
 
+    # now write to found metadata to file
+    # starting from data_start_position
+    # ending to data_end_position
     db = open(xpakpath,"wb")
     old.seek(data_start_position)
     to_read = data_end_position - data_start_position
