@@ -848,20 +848,18 @@ def extract_edb(tbz2file, dbpath = None):
     # read backward until we find
     bytes = old.tell()
     counter = bytes - 1
-    db_tmp_path = dbpath+".edb_tmp"
-    db_tmp = open(db_tmp_path, "wb")
 
     db_tag = etpConst['databasestarttag']
     db_tag_len = len(db_tag)
     give_up_threshold = 1024000 * 30 # 30Mb
     entry_point = db_tag[::-1][0]
-    written = False
     max_read_len = 8
+    start_position = None
 
     while counter >= 0:
         cur_threshold = abs((counter-bytes))
         if cur_threshold >= give_up_threshold:
-            written = False
+            start_position = None
             break
         old.seek(counter-bytes, os.SEEK_END)
         read_bytes = old.read(max_read_len)
@@ -872,19 +870,11 @@ def extract_edb(tbz2file, dbpath = None):
             old.seek(rollback, os.SEEK_CUR)
             chunk = old.read(db_tag_len)
             if chunk == db_tag:
-                # let it write the whole tag
-                # we will drop it later on
-                to_write = read_bytes[entry_idx:][::-1]
-                db_tmp.write(to_write)
-                written = True
+                start_position = old.tell()
                 break
-        db_tmp.write(read_bytes[::-1])
-        written = True
         counter -= read_len
 
-    if not written:
-        db_tmp.flush()
-        db_tmp.close()
+    if not start_position:
         old.close()
         try:
             os.remove(dbpath)
@@ -892,42 +882,14 @@ def extract_edb(tbz2file, dbpath = None):
             return None
         return None
 
-    old.close()
-    db_tmp.flush()
-    db_tmp.close()
-
     db = open(dbpath, "wb")
-    db_tmp = open(db_tmp_path, "rb")
-
-    db_tmp.seek(0, os.SEEK_END)
-    counter = db_tmp.tell()
-
-    # reverse content
-    chunk_len = max_read_len
-    times = 0
-    skip_tag_len = db_tag_len
-    while counter > 0:
-        times += 1
-        if chunk_len > counter:
-            chunk_len = counter
-        read_at = chunk_len * times * -1
-        db_tmp.seek(read_at, os.SEEK_END)
-        read_data = db_tmp.read(chunk_len)
-        read_len = len(read_data)
-        # skip tag
-        if skip_tag_len > 0:
-            skip_tag_len -= read_len
-            if skip_tag_len < 0:
-                db.write(read_data[::-1][skip_tag_len:])
-            counter -= read_len
-            continue
-        db.write(read_data[::-1])
-        counter -= read_len
-
-    db_tmp.close()
+    data = old.read(1024)
+    while data:
+        db.write(data)
+        data = old.read(1024)
     db.flush()
     db.close()
-    os.remove(db_tmp_path)
+
     return dbpath
 
 def remove_edb(tbz2file, savedir):
