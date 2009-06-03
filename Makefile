@@ -113,4 +113,4 @@ pycompile-all:
 
 	$(PYTHON) -c "import compileall; compileall.compile_dir('$(DESTDIR)/$(LIBDIR)/entropy', force = True, quiet = True)"
 
-install: entropy-install entropy-server-install equo-install notification-applet-install sulfur-install pycompile-all updates-daemon-install
+install: entropy-install entropy-server-install equo-install notification-applet-install sulfur-install updates-daemon-install
