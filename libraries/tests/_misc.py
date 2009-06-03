@@ -27,6 +27,14 @@ def get_test_entropy_package():
     test_pkg = "sys-libs:zlib-1.2.3-r1~1.tbz2"
     return get_test_generic_package(test_pkg)
 
+def get_test_entropy_package2():
+    test_pkg = "xfce-extra:xfce4-verve-0.3.6~4.tbz2"
+    return get_test_generic_package(test_pkg)
+
+def get_test_entropy_package3():
+    test_pkg = "virtual:poppler-qt3-0.10.6~1.tbz2"
+    return get_test_generic_package(test_pkg)
+
 def get_test_package_name():
     return "zlib"
 
