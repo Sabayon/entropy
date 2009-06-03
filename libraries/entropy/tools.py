@@ -740,9 +740,6 @@ def suck_xpak(tbz2file, outputpath):
 
     xpakpath = outputpath+"/"+os.path.basename(tbz2file)[:-5]+".xpak"
     old = open(tbz2file,"rb")
-    db_tmp_path = xpakpath+".reverse"
-    db_tmp = open(db_tmp_path,"wb")
-    allow_write = False
 
     # position old to the end
     old.seek(0, os.SEEK_END)
@@ -754,6 +751,8 @@ def suck_xpak(tbz2file, outputpath):
     xpak_entry_point = "X"
     xpak_tag_len = len(xpak_start)
     chunk_len = 3
+    data_start_position = None
+    data_end_position = None
 
     while counter >= 0:
 
@@ -768,48 +767,31 @@ def suck_xpak(tbz2file, outputpath):
             offset = xpak_tag_len - len(cut_gotten)
             chunk = cut_gotten + old.read(offset)
 
-            if (not allow_write) and (chunk == xpak_end):
-                allow_write = True
-                to_write = read_bytes[:entry_idx][::-1]
-                db_tmp.write(to_write)
-                counter -= read_len
-                continue
+            if (chunk == xpak_end) and (data_start_position is None):
+                data_end_position = old.tell()
 
-            elif allow_write and (chunk == xpak_start):
-                to_write = cut_gotten[::-1]
-                db_tmp.write(to_write)
+            elif (chunk == xpak_start) and (data_end_position is not None):
+                data_start_position = old.tell() - xpak_tag_len
                 break
-
-        if allow_write:
-            db_tmp.write(read_bytes[::-1])
 
         counter -= read_len
 
-    db_tmp.flush()
-    db_tmp.close()
-    db_tmp = open(db_tmp_path,"rb")
+    if data_start_position is None:
+        return None
+    if data_end_position is None:
+        return None
+
     db = open(xpakpath,"wb")
-
-    # now reverse from db_tmp to db
-    db_tmp.seek(0, os.SEEK_END)
-    bytes = db_tmp.tell()
-    counter = bytes - 1
-    while counter >= 0:
-        db_tmp.seek(counter)
-        read_data = db_tmp.read(1)
-        db.write(read_data)
-        counter -= 1
-    db.write(xpak_end)
-
+    old.seek(data_start_position)
+    to_read = data_end_position - data_start_position
+    while to_read > 0:
+        data = old.read(to_read)
+        db.write(data)
+        to_read -= len(data)
 
     db.flush()
     db.close()
-    db_tmp.close()
     old.close()
-    try:
-        os.remove(db_tmp_path)
-    except OSError:
-        pass
     return xpakpath
 
 def append_xpak(tbz2file, atom):
