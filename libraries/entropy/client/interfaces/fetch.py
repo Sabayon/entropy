@@ -332,8 +332,6 @@ class FetchersMixin:
             data_transfer = fetchConn.get_transfer_rate()
             resumed = fetchConn.is_resumed()
         except KeyboardInterrupt:
-            if not existed_before:
-                do_stfu_rm(filepath)
             return -100, data_transfer, resumed
         except NameError:
             raise

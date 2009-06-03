@@ -185,7 +185,7 @@ class UrlFetcher:
             try:
                 self.__remotefile = urllib2.urlopen(req)
             except KeyboardInterrupt:
-                self.__close(True)
+                self.__close(False)
                 raise
             except urllib2.HTTPError, e:
                 if (e.code == 405) and not u_agent_error:
@@ -207,7 +207,7 @@ class UrlFetcher:
                 "content-length"))
             self.__remotefile.close()
         except KeyboardInterrupt:
-            self.__close(True)
+            self.__close(False)
             raise
         except:
             pass
@@ -228,7 +228,7 @@ class UrlFetcher:
                         }
                     )
                 except KeyboardInterrupt:
-                    self.__close(True)
+                    self.__close(False)
                     raise
                 except:
                     pass
@@ -240,7 +240,7 @@ class UrlFetcher:
                 self.localfile = open(self.__path_to_save,"wb")
             self.__remotefile = urllib2.urlopen(request)
         except KeyboardInterrupt:
-            self.__close(True)
+            self.__close(False)
             raise
         except:
             self.__close(True)
@@ -266,7 +266,7 @@ class UrlFetcher:
                 if self.__thread_stop_func != None:
                     self.__thread_stop_func()
             except KeyboardInterrupt:
-                self.__close(True)
+                self.__close(False)
                 raise
             except self.socket.timeout:
                 self.__close(True)
