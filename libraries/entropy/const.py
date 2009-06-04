@@ -282,7 +282,7 @@ def const_default_settings(rootdir):
         'etpdatabasefilebzip2': default_etp_dbfile+".bz2",
 
         # Entropy sqlite database file (gzipped)
-        'etpdatabasefilegziplight': default_etp_dbfile+"light.gz",
+        'etpdatabasefilegziplight': default_etp_dbfile+".light.gz",
         'etpdatabasefilehashgziplight': default_etp_dbfile+".light.gz.md5",
         # Entropy sqlite database file (bzipped2)
         'etpdatabasefilebzip2light': default_etp_dbfile+".light.bz2",
