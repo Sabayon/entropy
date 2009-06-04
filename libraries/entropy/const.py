@@ -318,11 +318,11 @@ def const_default_settings(rootdir):
             "bz2": (bz2.BZ2File, "unpack_bzip2", "etpdatabasefilebzip2",
                 "etpdatabasedumpbzip2", "etpdatabasedumphashfilebz2",
                 "etpdatabasedumplightbzip2", "etpdatabasedumplighthashfilebz2",
-                "etpdatabasefilegziplight","etpdatabasefilehashgziplight",),
+                "etpdatabasefilebzip2light","etpdatabasefilehashbzip2light",),
             "gz": (gzip.GzipFile, "unpack_gzip", "etpdatabasefilegzip",
                 "etpdatabasedumpgzip", "etpdatabasedumphashfilegzip",
                 "etpdatabasedumplightgzip", "etpdatabasedumplighthashfilegzip",
-                "etpdatabasefilebzip2light","etpdatabasefilehashbzip2light",)
+                "etpdatabasefilegziplight","etpdatabasefilehashgziplight",)
         },
         # enable/disable packages RSS feed feature
         'rss-feed': True,
