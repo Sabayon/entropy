@@ -1177,24 +1177,30 @@ class MiscMixin:
         if self.xcache:
             self.Cacher.start()
 
-    def get_meant_packages(self, search_term, from_installed = False, valid_repos = []):
+    def get_meant_packages(self, search_term, from_installed = False,
+        valid_repos = []):
 
         pkg_data = []
         atom_srch = False
-        if "/" in search_term: atom_srch = True
+        if "/" in search_term:
+            atom_srch = True
 
-        if not valid_repos: valid_repos = self.validRepositories
-        if from_installed: valid_repos = [1]
+        if not valid_repos:
+            valid_repos = self.validRepositories
+        if from_installed:
+            valid_repos = []
+            if hasattr(self,'clientDbconn'):
+                valid_repos.append(self.clientDbconn)
+
         for repo in valid_repos:
-            if isinstance(repo,basestring):
+            if isinstance(repo, basestring):
                 dbconn = self.open_repository(repo)
-            elif isinstance(repo,LocalRepository):
+            elif isinstance(repo, LocalRepository):
                 dbconn = repo
-            elif hasattr(self,'clientDbconn'):
-                dbconn = self.clientDbconn
             else:
                 continue
-            pkg_data.extend([(x,repo,) for x in dbconn.searchSimilarPackages(search_term, atom = atom_srch)])
+            pkg_data.extend([(x,repo,) for x in \
+                dbconn.searchSimilarPackages(search_term, atom = atom_srch)])
 
         return pkg_data
 
