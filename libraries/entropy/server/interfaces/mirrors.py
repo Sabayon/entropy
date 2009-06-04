@@ -1053,11 +1053,13 @@ class Server:
         # EAPI 2,3
         if not download: # we don't need to get the dump
             if 3 not in disabled_eapis:
+
                 data['metafiles_path'] = \
                     self.Entropy.get_local_database_compressed_metafiles_file(
                         repo)
                 critical.append(data['metafiles_path'])
             if 2 not in disabled_eapis:
+
                 data['dump_path'] = os.path.join(
                     self.Entropy.get_local_database_dir(repo),
                     etpConst[cmethod[3]])
@@ -1084,9 +1086,12 @@ class Server:
 
         # EAPI 1
         if 1 not in disabled_eapis:
+
             data['compressed_database_path'] = os.path.join(
                 self.Entropy.get_local_database_dir(repo), etpConst[cmethod[2]])
             critical.append(data['compressed_database_path'])
+            data['compressed_database_path_light'] = os.path.join(
+                self.Entropy.get_local_database_dir(repo), etpConst[cmethod[7]])
 
             data['database_path_digest'] = os.path.join(
                 self.Entropy.get_local_database_dir(repo),
@@ -1099,6 +1104,13 @@ class Server:
                 etpConst[cmethod[2]] + etpConst['packagesmd5fileext']
             )
             critical.append(data['compressed_database_path_digest'])
+
+            data['compressed_database_path_digest_light'] = os.path.join(
+                self.Entropy.get_local_database_dir(repo),
+                etpConst[cmethod[8]]
+            )
+            critical.append(data['compressed_database_path_digest_light'])
+
 
         # SSL cert file, just for reference
         ssl_ca_cert = self.Entropy.get_local_database_ca_cert_file()
@@ -1606,7 +1618,7 @@ class Server:
                     upload_data, cmethod, repo)
 
                 # compress the database and create uncompressed
-                # database checksum
+                # database checksum -- DEPRECATED
                 self.compress_file(database_path,
                     upload_data['compressed_database_path'], cmethod[0])
                 self.create_file_checksum(database_path,
@@ -1616,6 +1628,29 @@ class Server:
                 self.create_file_checksum(
                     upload_data['compressed_database_path'],
                     upload_data['compressed_database_path_digest'])
+
+                # create light version of the compressed db
+                eapi1_dbfile = self.Entropy.get_local_database_file(repo)
+                temp_eapi1_dbfile = eapi1_dbfile+".light"
+                shutil.copy2(eapi1_dbfile, temp_eapi1_dbfile)
+                # open and remove content table
+                eapi1_tmp_dbconn = \
+                    self.Entropy.ClientService.open_generic_database(
+                        temp_eapi1_dbfile, indexing_override = False,
+                        xcache = False)
+                eapi1_tmp_dbconn.dropContent()
+                eapi1_tmp_dbconn.commitChanges()
+                eapi1_tmp_dbconn.closeDB()
+
+                # compress
+                self.compress_file(temp_eapi1_dbfile,
+                    upload_data['compressed_database_path_light'], cmethod[0])
+                # go away, we don't need you anymore
+                os.remove(temp_eapi1_dbfile)
+                # create compressed light database checksum
+                self.create_file_checksum(
+                    upload_data['compressed_database_path_light'],
+                    upload_data['compressed_database_path_digest_light'])
 
             if not pretend:
                 # upload

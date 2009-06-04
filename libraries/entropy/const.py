@@ -259,8 +259,8 @@ def const_default_settings(rootdir):
         # files not available in the repository
         'etpdatabasemetafilesnotfound': default_etp_dbfile+".meta_notfound",
         'etpdatabasehashfile': default_etp_dbfile+".md5", # its checksum
-        'etpdatabasedumphashfilebz2': default_etp_dbfile+".dump.bz2.md5",
-        'etpdatabasedumphashfilegzip': default_etp_dbfile+".dump.gz.md5",
+
+
         # the remote database lock file
         'etpdatabaselockfile': default_etp_dbfile+".lock",
         # the remote database lock file
@@ -272,6 +272,7 @@ def const_default_settings(rootdir):
         # when this file exists, the database is not synced
         # anymore with the online one
         'etpdatabasetaintfile': default_etp_dbfile+".tainted",
+
         # Entropy sqlite database file default_etp_dir + \
         #    default_etp_dbdir+"/packages.db"
         'etpdatabasefile': default_etp_dbfile,
@@ -279,10 +280,21 @@ def const_default_settings(rootdir):
         'etpdatabasefilegzip': default_etp_dbfile+".gz",
         # Entropy sqlite database file (bzipped2)
         'etpdatabasefilebzip2': default_etp_dbfile+".bz2",
+
+        # Entropy sqlite database file (gzipped)
+        'etpdatabasefilegziplight': default_etp_dbfile+"light.gz",
+        'etpdatabasefilehashgziplight': default_etp_dbfile+".light.gz.md5",
+        # Entropy sqlite database file (bzipped2)
+        'etpdatabasefilebzip2light': default_etp_dbfile+".light.bz2",
+        'etpdatabasefilehashbzip2light': default_etp_dbfile+".light.bz2.md5",
+
         # Entropy sqlite database dump file (bzipped2)
         'etpdatabasedumpbzip2': default_etp_dbfile+".dump.bz2",
+        'etpdatabasedumphashfilebz2': default_etp_dbfile+".dump.bz2.md5",
         # Entropy sqlite database dump file (gzipped)
         'etpdatabasedumpgzip': default_etp_dbfile+".dump.gz",
+        'etpdatabasedumphashfilegzip': default_etp_dbfile+".dump.gz.md5",
+
         # Entropy sqlite database dump file
         'etpdatabasedump': default_etp_dbfile+".dump",
 
@@ -305,10 +317,12 @@ def const_default_settings(rootdir):
         'etpdatabasecompressclasses': {
             "bz2": (bz2.BZ2File, "unpack_bzip2", "etpdatabasefilebzip2",
                 "etpdatabasedumpbzip2", "etpdatabasedumphashfilebz2",
-                "etpdatabasedumplightbzip2", "etpdatabasedumplighthashfilebz2"),
+                "etpdatabasedumplightbzip2", "etpdatabasedumplighthashfilebz2",
+                "etpdatabasefilegziplight","etpdatabasefilehashgziplight",),
             "gz": (gzip.GzipFile, "unpack_gzip", "etpdatabasefilegzip",
                 "etpdatabasedumpgzip", "etpdatabasedumphashfilegzip",
-                "etpdatabasedumplightgzip", "etpdatabasedumplighthashfilegzip")
+                "etpdatabasedumplightgzip", "etpdatabasedumplighthashfilegzip",
+                "etpdatabasefilebzip2light","etpdatabasefilehashbzip2light",)
         },
         # enable/disable packages RSS feed feature
         'rss-feed': True,
