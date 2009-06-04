@@ -1577,11 +1577,10 @@ class Server(Singleton, TextInterface):
             for package_path, idpackage in down_queue:
 
                 self.updateProgress(
-                    "[%s=>%s|%s|%s] %s: %s" % (
+                    "[%s=>%s|%s] %s: %s" % (
                         darkgreen(from_branch),
                         darkred(branch),
                         brown(repo),
-                        dbconn.retrieveAtom(idpackage),
                         blue(_("updating package")),
                         darkgreen(os.path.basename(package_path)),
                     ),
@@ -1594,7 +1593,13 @@ class Server(Singleton, TextInterface):
                 # move files to upload
                 package_name = os.path.basename(package_path)
                 new_package_path = os.path.join(local_basedir, package_name)
-                shutil.move(package_path, new_package_path)
+                try:
+                    os.rename(package_path, new_package_path)
+                except OSError:
+                    shutil.move(package_path, new_package_path)
+
+                # create md5 checksum
+                self.entropyTools.create_md5_file(new_package_path)
 
                 # update database
                 download_url = dbconn.retrieveDownloadURL(idpackage)
@@ -1606,11 +1611,10 @@ class Server(Singleton, TextInterface):
                 dbconn.commitChanges()
 
                 self.updateProgress(
-                    "[%s=>%s|%s|%s] %s: %s" % (
+                    "[%s=>%s|%s] %s: %s" % (
                         darkgreen(from_branch),
                         darkred(branch),
                         brown(repo),
-                        dbconn.retrieveAtom(idpackage),
                         blue(_("package flushed")),
                         darkgreen(os.path.basename(package_path)),
                     ),
