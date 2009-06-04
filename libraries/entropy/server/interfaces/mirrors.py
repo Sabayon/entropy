@@ -948,7 +948,7 @@ class Server:
 
         f_out = opener(destination_path, "wb")
         dbconn = self.Entropy.open_server_repository(db_path,
-            just_reading = True, repo = repo)
+            just_reading = True, repo = repo, do_treeupdates = False)
         dbconn.doDatabaseExport(f_out, exclude_tables = exclude_tables)
         self.Entropy.close_server_database(dbconn)
         f_out.close()
@@ -1402,7 +1402,8 @@ class Server:
 
     def shrink_database_and_close(self, repo = None):
         dbconn = self.Entropy.open_server_repository(read_only = False,
-            no_upload = True, repo = repo, indexing = False)
+            no_upload = True, repo = repo, indexing = False,
+            do_treeupdates = False)
         dbconn.dropAllIndexes()
         dbconn.vacuum()
         dbconn.vacuum()
@@ -1424,7 +1425,7 @@ class Server:
         if repo == None:
             repo = self.Entropy.default_repository
         dbconn = self.Entropy.open_server_repository(read_only = False,
-            no_upload = True, repo = repo)
+            no_upload = True, repo = repo, do_treeupdates = False)
         # grab treeupdates from other databases and inject
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         server_repos = srv_set['repositories'].keys()
