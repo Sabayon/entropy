@@ -823,41 +823,12 @@ def aggregate_edb(tbz2file,dbfile):
     f.close()
 
 def extract_edb(tbz2file, dbpath = None):
+
     old = open(tbz2file, "rb")
     if not dbpath:
         dbpath = tbz2file[:-5] + ".db"
 
-    # position old to the end
-    old.seek(0, os.SEEK_END)
-    # read backward until we find
-    bytes = old.tell()
-    counter = bytes - 1
-
-    db_tag = etpConst['databasestarttag']
-    db_tag_len = len(db_tag)
-    give_up_threshold = 1024000 * 30 # 30Mb
-    entry_point = db_tag[::-1][0]
-    max_read_len = 8
-    start_position = None
-
-    while counter >= 0:
-        cur_threshold = abs((counter-bytes))
-        if cur_threshold >= give_up_threshold:
-            start_position = None
-            break
-        old.seek(counter-bytes, os.SEEK_END)
-        read_bytes = old.read(max_read_len)
-        read_len = len(read_bytes)
-        entry_idx = read_bytes.rfind(entry_point)
-        if entry_idx != -1:
-            rollback = (read_len - entry_idx) * -1
-            old.seek(rollback, os.SEEK_CUR)
-            chunk = old.read(db_tag_len)
-            if chunk == db_tag:
-                start_position = old.tell()
-                break
-        counter -= read_len
-
+    start_position = locate_edb(old)
     if not start_position:
         old.close()
         try:
@@ -876,36 +847,67 @@ def extract_edb(tbz2file, dbpath = None):
 
     return dbpath
 
-def remove_edb(tbz2file, savedir):
-    old = open(tbz2file, "rb")
-    new = open(savedir+"/"+os.path.basename(tbz2file), "wb")
+def locate_edb(fileobj):
 
     # position old to the end
-    old.seek(0, os.SEEK_END)
+    fileobj.seek(0, os.SEEK_END)
     # read backward until we find
-    bytes = old.tell()
-    counter = bytes
+    bytes = fileobj.tell()
+    counter = bytes - 1
+
     db_tag = etpConst['databasestarttag']
     db_tag_len = len(db_tag)
+    give_up_threshold = 1024000 * 30 # 30Mb
     entry_point = db_tag[::-1][0]
+    max_read_len = 8
+    start_position = None
 
     while counter >= 0:
-        old.seek(counter-bytes, os.SEEK_END)
-        byte = old.read(1)
-        if byte == entry_point:
-            old.seek(counter-bytes-(db_tag_len-1), os.SEEK_END)
-            chunk = old.read((db_tag_len-1)) + byte
+        cur_threshold = abs((counter-bytes))
+        if cur_threshold >= give_up_threshold:
+            start_position = None
+            break
+        fileobj.seek(counter-bytes, os.SEEK_END)
+        read_bytes = fileobj.read(max_read_len)
+        read_len = len(read_bytes)
+        entry_idx = read_bytes.rfind(entry_point)
+        if entry_idx != -1:
+            rollback = (read_len - entry_idx) * -1
+            fileobj.seek(rollback, os.SEEK_CUR)
+            chunk = fileobj.read(db_tag_len)
             if chunk == db_tag:
-                old.seek(counter-bytes-(db_tag_len), os.SEEK_END)
+                start_position = fileobj.tell()
                 break
-        counter -= 1
+        counter -= read_len
 
-    endingbyte = old.tell()
+    return start_position
+
+def remove_edb(tbz2file, savedir):
+    old = open(tbz2file, "rb")
+
+    start_position = locate_edb(old)
+    if not start_position:
+        old.close()
+        return None
+
+    new_path = os.path.join(savedir, os.path.basename(tbz2file))
+    new = open(new_path, "wb")
+
     old.seek(0)
-    while old.tell() <= endingbyte:
-        byte = old.read(1)
-        new.write(byte)
-        counter += 1
+    counter = 0
+    max_read_len = 1024
+    db_tag = etpConst['databasestarttag']
+    db_tag_len = len(db_tag)
+    start_position -= db_tag_len
+
+    while counter < start_position:
+        delta = start_position - counter
+        if delta < max_read_len:
+            max_read_len = delta
+        bytes = old.read(max_read_len)
+        read_bytes = len(bytes)
+        new.write(bytes)
+        counter += read_bytes
 
     new.flush()
     new.close()
@@ -2400,7 +2402,16 @@ def write_new_branch(branch):
 def is_entropy_package_file(tbz2file):
     if not os.path.exists(tbz2file):
         return False
-    return tarfile.is_tarfile(tbz2file)
+    try:
+        obj = open(tbz2file, "r")
+        entry_point = locate_edb(obj)
+        if entry_point is None:
+            obj.close()
+            return False
+        obj.close()
+        return True
+    except (IOError, OSError,):
+        return False
 
 def is_valid_string(string):
     invalid = [ord(x) for x in string if ord(x) not in xrange(32,127)]
