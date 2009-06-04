@@ -2907,7 +2907,8 @@ class LocalRepository:
             data = dict(((x, y,) for x, y in data))
         return data
 
-    def retrieveContent(self, idpackage, extended = False, contentType = None, formatted = False, insert_formatted = False, order_by = ''):
+    def retrieveContent(self, idpackage, extended = False, contentType = None,
+        formatted = False, insert_formatted = False, order_by = ''):
 
         extstring = ''
         if extended:
@@ -4220,7 +4221,7 @@ class LocalRepository:
 
     def dropContent(self):
         with self.__write_mutex:
-            self.cursur.execute('DELETE FROM content')
+            self.cursor.execute('DELETE FROM content')
 
     def dropAllIndexes(self):
         self.cursor.execute('SELECT name FROM SQLITE_MASTER WHERE type = "index"')
