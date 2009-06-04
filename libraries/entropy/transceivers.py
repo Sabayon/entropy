@@ -860,8 +860,8 @@ class FtpInterface:
                     self.__filesize = round(float(self.entropyTools.get_file_size(file))/1024,1)
                     self.__filekbcount = 0
 
-                    if self.is_file_available(filename+".tmp"):
-                        self.delete_file(filename+".tmp")
+                    # delete old one, if exists
+                    self.delete_file(filename+".tmp")
 
                     if ascii:
                         rc = self.__ftpconn.storlines("STOR "+filename+".tmp",f)
@@ -891,10 +891,8 @@ class FtpInterface:
                     header = "  "
                     )
                 self.reconnect_host() # reconnect
-                if self.is_file_available(filename):
-                    self.delete_file(filename)
-                if self.is_file_available(filename+".tmp"):
-                    self.delete_file(filename+".tmp")
+                self.delete_file(filename)
+                self.delete_file(filename+".tmp")
 
             finally:
                 self.__stop_speed_counter()
@@ -928,28 +926,28 @@ class FtpInterface:
             self.__start_speed_counter()
             try:
 
-                # look if the file exist
-                if self.is_file_available(filename):
-                    self.__filekbcount = 0
-                    # get the file size
-                    self.__filesize = self.get_file_size_compat(filename)
-                    if (self.__filesize):
-                        self.__filesize = round(float(int(self.__filesize))/1024,1)
-                        if (self.__filesize == 0):
-                            self.__filesize = 1
-                    else:
-                        self.__filesize = 0
-                    if not ascii:
-                        f = open(downloaddir+"/"+filename,"wb")
-                        rc = self.__ftpconn.retrbinary('RETR '+filename, df_up, 1024)
-                    else:
-                        f = open(downloaddir+"/"+filename,"w")
-                        rc = self.__ftpconn.retrlines('RETR '+filename, f.write)
-                    f.flush()
-                    f.close()
-                    if rc.find("226") != -1: # upload complete
-                        return True
+                self.__filekbcount = 0
+                # get the file size
+                self.__filesize = self.get_file_size_compat(filename)
+                if (self.__filesize):
+                    self.__filesize = round(float(int(self.__filesize))/1024,1)
+                    if (self.__filesize == 0):
+                        self.__filesize = 1
+                elif not self.is_file_available(filename):
                     return False
+                else:
+                    self.__filesize = 0
+                if not ascii:
+                    f = open(downloaddir+"/"+filename,"wb")
+                    rc = self.__ftpconn.retrbinary('RETR '+filename, df_up, 1024)
+                else:
+                    f = open(downloaddir+"/"+filename,"w")
+                    rc = self.__ftpconn.retrlines('RETR '+filename, f.write)
+                f.flush()
+                f.close()
+                if rc.find("226") != -1: # upload complete
+                    return True
+                return False
 
             except Exception, e: # connection reset by peer
 
