@@ -861,7 +861,8 @@ class Server(Singleton, TextInterface):
             do_cache = True,
             use_branch = None,
             lock_remote = True,
-            is_new = False
+            is_new = False,
+            do_treeupdates = True
         ):
 
         if repo == None:
@@ -926,7 +927,8 @@ class Server(Singleton, TextInterface):
             # sometimes, when filling a new server db
             # we need to avoid tree updates
             if valid:
-                conn.serverUpdatePackagesData()
+                if do_treeupdates:
+                    conn.serverUpdatePackagesData()
             elif warnings and not is_new:
                 mytxt = _("Entropy database is corrupted!")
                 self.updateProgress(
@@ -3669,7 +3671,8 @@ class Server(Singleton, TextInterface):
         package_sets = self.get_configured_package_sets(repo)
         if dbconn == None:
             dbconn = self.open_server_repository(
-                read_only = False, no_upload = True, repo = repo)
+                read_only = False, no_upload = True, repo = repo,
+                do_treeupdates = False)
         dbconn.clearPackageSets()
         if package_sets:
             dbconn.insertPackageSets(package_sets)
