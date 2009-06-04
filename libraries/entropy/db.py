@@ -4218,6 +4218,10 @@ class LocalRepository:
         except:
             return ""
 
+    def dropContent(self):
+        with self.__write_mutex:
+            self.cursur.execute('DELETE FROM content')
+
     def dropAllIndexes(self):
         self.cursor.execute('SELECT name FROM SQLITE_MASTER WHERE type = "index"')
         indexes = self.fetchall2set(self.cursor.fetchall())
