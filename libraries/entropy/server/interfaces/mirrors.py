@@ -1087,9 +1087,16 @@ class Server:
             data['compressed_database_path'] = os.path.join(
                 self.Entropy.get_local_database_dir(repo), etpConst[cmethod[2]])
             critical.append(data['compressed_database_path'])
-            data['compressed_database_path_digest'] = os.path.join(
+
+            data['database_path_digest'] = os.path.join(
                 self.Entropy.get_local_database_dir(repo),
                 etpConst['etpdatabasehashfile']
+            )
+            critical.append(data['database_path_digest'])
+
+            data['compressed_database_path_digest'] = os.path.join(
+                self.Entropy.get_local_database_dir(repo),
+                etpConst[cmethod[2]] + etpConst['packagesmd5fileext']
             )
             critical.append(data['compressed_database_path_digest'])
 
@@ -1278,6 +1285,15 @@ class Server:
             "%s: %s" % (
                 _("compressed database path"),
                 blue(upload_data['compressed_database_path']),
+            ),
+            importance = 0,
+            type = "info",
+            header = brown("    # ")
+        )
+        self.Entropy.updateProgress(
+            "%s: %s" % (
+                _("database checksum"),
+                blue(upload_data['database_path_digest']),
             ),
             importance = 0,
             type = "info",
@@ -1588,10 +1604,17 @@ class Server:
             if 1 not in disabled_eapis:
                 self._show_eapi1_upload_messages(crippled_uri, database_path,
                     upload_data, cmethod, repo)
-                # compress the database
+
+                # compress the database and create uncompressed
+                # database checksum
                 self.compress_file(database_path,
                     upload_data['compressed_database_path'], cmethod[0])
                 self.create_file_checksum(database_path,
+                    upload_data['database_path_digest'])
+
+                # create compressed database checksum
+                self.create_file_checksum(
+                    upload_data['compressed_database_path'],
                     upload_data['compressed_database_path_digest'])
 
             if not pretend:
