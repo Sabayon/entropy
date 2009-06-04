@@ -54,5 +54,16 @@ class MiscTest(unittest.TestCase):
 
         shutil.rmtree(tmp_path, True)
 
+    def test_remove_edb(self):
+
+        tmp_path = tempfile.mkdtemp()
+
+        for test_pkg in self.test_pkgs:
+            self.assert_(et.is_entropy_package_file(test_pkg))
+            out_path = et.remove_edb(test_pkg, tmp_path)
+            self.assertNotEqual(out_path, None)
+            self.assert_(os.path.isfile(out_path))
+            self.assert_(not et.is_entropy_package_file(out_path))
+
 if __name__ == '__main__':
     unittest.main()
