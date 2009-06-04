@@ -1640,6 +1640,7 @@ class Server:
                         xcache = False)
                 eapi1_tmp_dbconn.dropContent()
                 eapi1_tmp_dbconn.commitChanges()
+                eapi1_tmp_dbconn.vacuum()
                 eapi1_tmp_dbconn.closeDB()
 
                 # compress
