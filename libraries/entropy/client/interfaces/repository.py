@@ -47,7 +47,7 @@ class Repository:
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         self.supported_download_items = (
-            "db","rev","ck",
+            "db","rev","ck", "compck",
             "lock","mask", "system_mask", "dbdump", "conflicting_tagged",
             "dbdumplight", "dbdumplightck", "dbdumpck", "lic_whitelist",
             "make.conf", "package.mask", "package.unmask", "package.keywords",
@@ -195,6 +195,7 @@ class Repository:
         server_cert_file = etpConst['etpdatabaseservercertfile']
         notice_board_filename = os.path.basename(self.Entropy.SystemSettings['repositories']['available'][repo]['notice_board'])
         meta_file = etpConst['etpdatabasemetafilesfile']
+        md5_ext = etpConst['packagesmd5fileext']
         ec_cm2 = None
         ec_cm3 = None
         ec_cm4 = None
@@ -213,6 +214,7 @@ class Repository:
             'dbdumplight': ("%s/%s" % (repo_db,ec_cm5,),"%s/%s" % (repo_dbpath,ec_cm5,),),
             'rev': ("%s/%s" % (repo_db,ec_rev,),"%s/%s" % (repo_dbpath,ec_rev,),),
             'ck': ("%s/%s" % (repo_db,ec_hash,),"%s/%s" % (repo_dbpath,ec_hash,),),
+            'compck': ("%s/%s%s" % (repo_db, ec_cm2, md5_ext,),"%s/%s%s" % (repo_dbpath, ec_cm2, md5_ext,),),
             'dbdumpck': ("%s/%s" % (repo_db,ec_cm4,),"%s/%s" % (repo_dbpath,ec_cm4,),),
             'dbdumplightck': ("%s/%s" % (repo_db,ec_cm6,),"%s/%s" % (repo_dbpath,ec_cm6,),),
             'mask': ("%s/%s" % (repo_db,ec_maskfile,),"%s/%s" % (repo_dbpath,ec_maskfile,),),
@@ -247,6 +249,10 @@ class Repository:
                 os.remove(repo_dbpath+"/"+etpConst[dbfilenameid])
             if os.path.isfile(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile']):
                 os.remove(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile'])
+            if os.path.isfile(repo_dbpath + "/" + etpConst[dbfilenameid] + \
+                    etpConst['packagesmd5fileext']):
+                os.remove(repo_dbpath + "/" + etpConst[dbfilenameid] + \
+                    etpConst['packagesmd5fileext'])
 
         if self.dbformat_eapi == 1:
             remove_eapi1(repo_dbpath, dbfilenameid)
@@ -280,7 +286,7 @@ class Repository:
         elif self.dbformat_eapi == 2:
             myfile = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+etpConst[cmethod[5]]
             try:
-                mycall = getattr(self.entropyTools,cmethod[1])
+                mycall = getattr(self.entropyTools, cmethod[1])
                 path = mycall(myfile)
             except EOFError:
                 rc = 1
@@ -295,34 +301,35 @@ class Repository:
 
         return rc
 
+    def _verify_file_checksum(self, file_path, md5_checksum_path):
+        ck_f = open(md5_checksum_path, "r")
+        md5hash = ck_f.readline().strip()
+        md5hash = md5hash.split()[0]
+        ck_f.close()
+        return self.entropyTools.compare_md5(file_path, md5hash)
+
     def __verify_database_checksum(self, repo, cmethod = None):
 
         self.__validate_repository_id(repo)
+        sys_settings_repos = self.Entropy.SystemSettings['repositories']
+        avail_config = sys_settings_repos['available'][repo]
 
         if self.dbformat_eapi == 1:
-            dbfile = etpConst['etpdatabasefile']
-            try:
-                f = open(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+etpConst['etpdatabasehashfile'],"r")
-                md5hash = f.readline().strip()
-                md5hash = md5hash.split()[0]
-                f.close()
-            except:
-                return -1
+            dbfile = avail_config['dbpath'] + "/" + etpConst['etpdatabasefile']
+            md5file = avail_config['dbpath']+"/"+etpConst['etpdatabasehashfile']
+
         elif self.dbformat_eapi == 2:
-            dbfile = etpConst[cmethod[5]]
-            try:
-                f = open(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+etpConst[cmethod[6]],"r")
-                md5hash = f.readline().strip()
-                md5hash = md5hash.split()[0]
-                f.close()
-            except:
-                return -1
+            dbfile = avail_config['dbpath'] + "/" + etpConst[cmethod[5]]
+            md5file = avail_config['dbpath']+"/"+etpConst[cmethod[6]]
+
         else:
             mytxt = _("self.dbformat_eapi must be in (1,2)")
             raise InvalidData('InvalidData: %s' % (mytxt,))
 
-        rc = self.entropyTools.compare_md5(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']+"/"+dbfile,md5hash)
-        return rc
+        if not os.access(md5file, os.F_OK | os.R_OK):
+            return -1
+
+        return self._verify_file_checksum(dbfile, md5file)
 
     # @returns -1 if the file is not available
     # @returns int>0 if the revision has been retrieved
@@ -912,7 +919,8 @@ class Repository:
                         do_skip = True
                         skip_this_repo = True
                         continue
-                    db_down_status = self.handle_database_checksum_download(repo, cmethod)
+                    db_down_status = self.handle_database_checksum_download(
+                        repo, cmethod)
                     break
 
                 elif self.dbformat_eapi == 3 and not (os.path.isfile(dbfile) and os.access(dbfile,os.W_OK)):
@@ -977,15 +985,35 @@ class Repository:
                         continue
 
                 if isinstance(do_db_update_transfer,bool) and not do_db_update_transfer:
-                    if os.path.isfile(dbfile):
+                    if os.access(dbfile, os.R_OK | os.R_OK | os.F_OK):
                         try:
-                            shutil.move(dbfile,dbfile_old)
+                            os.rename(dbfile, dbfile_old)
                             do_db_update_transfer = True
-                        except:
-                            pass
+                        except OSError:
+                            do_db_update_transfer = False
 
-                # unpack database
-                unpack_status = self.handle_downloaded_database_unpack(repo, cmethod)
+                comp_file_hash_good = False
+                if self.dbformat_eapi == 1:
+
+                    func_rc = self.verify_compressed_database_checksum(
+                        repo, cmethod)
+                    if func_rc is None:
+                        # compressed db checksum not available,
+                        # just pass over
+                        comp_file_hash_good = False
+                    elif not func_rc:
+                        # delete all
+                        self.__remove_repository_files(repo, cmethod)
+                        self.syncErrors = True
+                        self.Entropy.cycleDone()
+                        if os.path.isfile(dbfile_old):
+                            os.remove(dbfile_old)
+                        continue
+                    comp_file_hash_good = True
+
+                unpack_status = self.handle_downloaded_database_unpack(repo,
+                    cmethod)
+
                 if not unpack_status:
                     # delete all
                     self.__remove_repository_files(repo, cmethod)
@@ -993,7 +1021,9 @@ class Repository:
                     self.Entropy.cycleDone()
                     continue
 
-                if self.dbformat_eapi == 1 and db_down_status:
+                if (self.dbformat_eapi == 1) and db_down_status and not \
+                    comp_file_hash_good:
+
                     rc = self.check_downloaded_database(repo, cmethod)
                     if rc != 0:
                         # delete all
@@ -1096,6 +1126,71 @@ class Repository:
             self.check_entropy_updates()
 
         return 0
+
+    def verify_compressed_database_checksum(self, repo, cmethod):
+
+        # unpack database
+        # XXX: verify its integrity if available, this will be
+        # mandatory in future
+        xxx, db_comp_filepath = self._construct_paths('db',
+            repo, cmethod)
+        xxx, comp_filepath_ck = self._construct_paths('compck',
+            repo, cmethod)
+
+        mytxt = "%s %s %s" % (
+            red(_("Verifying compressed database checksum")),
+            darkgreen(os.path.basename(comp_filepath_ck)),
+            red("..."),
+        )
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 0,
+            type = "info",
+            header = "\t",
+            back = True
+        )
+
+        if os.access(comp_filepath_ck, os.F_OK | os.R_OK) and \
+            os.access(db_comp_filepath, os.F_OK | os.R_OK):
+
+            comp_file_hash_good = self._verify_file_checksum(
+                db_comp_filepath, comp_filepath_ck)
+            if not comp_file_hash_good:
+                # ouch!
+                mytxt = "%s. %s !" % (
+                    red(_("Compressed database checksum does not match")),
+                    bold(_("Skipping repository")),
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = "\t"
+                )
+                return False
+            mytxt = "%s. %s." % (
+                darkgreen(_("Compressed database checksum matches")),
+                purple(_("Validation successful")),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 0,
+                type = "info",
+                header = "\t"
+            )
+            return True
+
+        mytxt = "%s. %s !" % (
+            red(_("Compressed database checksum not found")),
+            bold(_("Skipping this check")),
+        )
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 0,
+            type = "warning",
+            header = "\t"
+        )
+        return None
 
     def run_config_files_updates(self, repo):
 
@@ -1286,7 +1381,8 @@ class Repository:
         file_to_unpack = etpConst['etpdatabasedump']
         if self.dbformat_eapi == 1:
             file_to_unpack = etpConst['etpdatabasefile']
-        mytxt = "%s %s %s" % (red(_("Unpacking database to")),darkgreen(file_to_unpack),red("..."),)
+        mytxt = "%s %s %s" % (red(_("Unpacking database to")),
+            darkgreen(file_to_unpack), red("..."),)
         self.Entropy.updateProgress(
             mytxt,
             importance = 0,
@@ -1296,7 +1392,8 @@ class Repository:
 
         myrc = self.__unpack_downloaded_database(repo, cmethod)
         if myrc != 0:
-            mytxt = "%s %s !" % (red(_("Cannot unpack compressed package")),red(_("Skipping repository")),)
+            mytxt = "%s %s !" % (red(_("Cannot unpack compressed package")),
+                red(_("Skipping repository")),)
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 1,
@@ -1310,7 +1407,7 @@ class Repository:
     def handle_database_checksum_download(self, repo, cmethod):
 
         hashfile = etpConst['etpdatabasehashfile']
-        downitem = 'ck'
+        downitem = 'compck'
         if self.dbformat_eapi == 2: # EAPI = 2
             hashfile = etpConst[cmethod[6]]
             downitem = 'dbdumplightck'
@@ -1324,9 +1421,16 @@ class Repository:
             header = "\t"
         )
 
-        db_down_status = self.download_item(downitem, repo, cmethod, disallow_redirect = True)
+        db_down_status = self.download_item(downitem, repo, cmethod,
+            disallow_redirect = True)
         if not db_down_status:
-            mytxt = "%s %s !" % (red(_("Cannot fetch checksum")),red(_("Cannot verify database integrity")),)
+            # fallback to old method, deprecated
+            db_down_status = self.download_item('ck', repo, cmethod,
+                disallow_redirect = True)
+
+        if not db_down_status:
+            mytxt = "%s %s !" % (red(_("Cannot fetch checksum")),
+                red(_("Cannot verify database integrity")),)
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 1,
