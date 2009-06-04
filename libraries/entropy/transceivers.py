@@ -823,15 +823,16 @@ class FtpInterface:
     def upload_file(self, file, ascii = False):
 
         # this function also supports callback, because storbinary doesn't
-        def advanced_stor(cmd, fp, callback=None):
+        def advanced_stor(cmd, fp):
             ''' Store a file in binary mode. Our version supports a callback function'''
             self.__ftpconn.voidcmd('TYPE I')
             conn = self.__ftpconn.transfercmd(cmd)
             while 1:
                 buf = fp.readline()
-                if not buf: break
+                if not buf:
+                    break
                 conn.sendall(buf)
-                if callback: callback(buf)
+                self.updateProgress(len(buf))
             conn.close()
 
             # that's another workaround
@@ -842,9 +843,6 @@ class FtpInterface:
                 self.reconnect_host()
                 return "226"
             return rc
-
-        def up_file_up_progress(buf):
-            self.updateProgress(len(buf))
 
         tries = 0
         while tries < 10:
@@ -866,7 +864,7 @@ class FtpInterface:
                     if ascii:
                         rc = self.__ftpconn.storlines("STOR "+filename+".tmp",f)
                     else:
-                        rc = advanced_stor("STOR "+filename+".tmp", f, callback = up_file_up_progress)
+                        rc = advanced_stor("STOR "+filename+".tmp", f)
 
                     # now we can rename the file with its original name
                     self.rename_file(filename+".tmp",filename)
@@ -902,21 +900,7 @@ class FtpInterface:
         def df_up(buf):
             # writing file buffer
             f.write(buf)
-            # update progress
-            self.__filekbcount += float(len(buf))/1024
-            # create text
-            cnt = round(self.__filekbcount,1)
-            mytxt = _("Download status")
-            currentText = brown("    <-> %s: " % (mytxt,)) + darkgreen(str(cnt)) + "/" + \
-                red(str(self.__filesize)) + " kB"
-            self.Entropy.updateProgress(
-                currentText,
-                importance = 0,
-                type = "info",
-                back = True,
-                count = (cnt, self.__filesize),
-                percent = True
-            )
+            self.updateProgress(len(buf))
 
         tries = 10
         while tries:
