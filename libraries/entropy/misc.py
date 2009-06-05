@@ -426,8 +426,10 @@ class RSS:
                 title_obj = item.getElementsByTagName("title")[0]
                 self.__items[mycounter]['title'] = \
                     title_obj.firstChild.data.strip()
-                desc_obj = item.getElementsByTagName("description")[0]
-                description = desc_obj.firstChild
+                desc_obj = item.getElementsByTagName("description")
+                description = None
+                if desc_obj:
+                    description = desc_obj[0].firstChild
                 if description:
                     self.__items[mycounter]['description'] = \
                         description.data.strip()
