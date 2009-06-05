@@ -618,7 +618,7 @@ class PortagePlugin:
             f.write(line+"\n")
         f.flush()
         f.close()
-        shutil.move(use_file+".tmp",use_file)
+        os.rename(use_file+".tmp", use_file)
         return True
 
     def unset_package_useflags(self, atom, useflags):
@@ -673,7 +673,7 @@ class PortagePlugin:
             f.write(line+"\n")
         f.flush()
         f.close()
-        shutil.move(use_file+".tmp",use_file)
+        os.rename(use_file+".tmp", use_file)
         return True
 
     def get_package_useflags(self, atom):
@@ -952,7 +952,7 @@ class PortagePlugin:
                 else:
                     deps = self.paren_choose(deps)
                 if k.endswith("DEPEND"):
-                    deps = self.usedeps_reduce(deps)
+                    deps = self.usedeps_reduce(deps, use)
                 deps = ' '.join(deps)
             except Exception, e:
                 self.entropyTools.print_traceback()
@@ -972,16 +972,68 @@ class PortagePlugin:
             metadata[k] = deps
         return metadata
 
-    def usedeps_reduce(self, dependencies):
+    def usedeps_reduce(self, dependencies, enabled_useflags):
         newlist = []
+
+        def strip_use(xuse):
+            myuse = xuse[:]
+            if myuse[0] == "!":
+                myuse = myuse[1:]
+            if myuse[-1] in ("=","?",):
+                myuse = myuse[:-1]
+            return myuse
+
         for dependency in dependencies:
             use_deps = self.entropyTools.dep_getusedeps(dependency)
             if use_deps:
-                use_deps = [x for x in use_deps if (x[0] not in ("!",)) and (x[-1] not in ("=","?",))]
-                if use_deps:
-                    dependency = "%s[%s]" % (self.entropyTools.remove_usedeps(dependency),','.join(use_deps),)
+                new_use_deps = []
+                for use in use_deps:
+                    """
+                    explicitly support only specific types
+                    """
+                    if (use[0] == "!") and (use[-1] not in ("=","?",)):
+                        # this does not exist atm
+                        continue
+                    elif use[-1] == "=":
+                        if use[0] == "!":
+                            # foo[!bar=] means bar? ( foo[-bar] ) !bar? ( foo[bar] )
+                            s_use = strip_use(use)
+                            if s_use in enabled_useflags:
+                                new_use_deps.append("-%s" % (s_use,))
+                            else:
+                                new_use_deps.append(s_use)
+                            continue
+                        else:
+                            # foo[bar=] means bar? ( foo[bar] ) !bar? ( foo[-bar] )
+                            s_use = strip_use(use)
+                            if s_use in enabled_useflags:
+                                new_use_deps.append(s_use)
+                            else:
+                                new_use_deps.append("-%s" % (s_use,))
+                            continue
+                    elif use[-1] == "?":
+                        if use[0] == "!":
+                            # foo[!bar?] means bar? ( foo ) !bar? ( foo[-bar] )
+                            s_use = strip_use(use)
+                            if s_use not in enabled_useflags:
+                                new_use_deps.append("-%s" % (s_use,))
+                            continue
+                        else:
+                            # foo[bar?] means bar? ( foo[bar] ) !bar? ( foo )
+                            s_use = strip_use(use)
+                            if s_use in enabled_useflags:
+                                new_use_deps.append(s_use)
+                            continue
+                    new_use_deps.append(use)
+
+                if new_use_deps:
+                    dependency = "%s[%s]" % (
+                        self.entropyTools.remove_usedeps(dependency),
+                        ','.join(new_use_deps),
+                    )
                 else:
                     dependency = self.entropyTools.remove_usedeps(dependency)
+
             newlist.append(dependency)
         return newlist
 
