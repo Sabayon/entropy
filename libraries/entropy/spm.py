@@ -2058,7 +2058,7 @@ class PortagePlugin:
             if x.startswith("!") or (x in ("(","||",")","")):
                 continue
             data['dependencies'][x] = etpConst['spm']['pdepend_id']
-        data['conflicts'] = [x[1:] for x in \
+        data['conflicts'] = [x.replace("!","") for x in \
             portage_metadata['RDEPEND'].split() + \
             portage_metadata['PDEPEND'].split() if \
             x.startswith("!") and not x in ("(","||",")","")]
