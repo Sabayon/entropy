@@ -484,11 +484,6 @@ class LocalRepository:
             return
 
         if self.clientDatabase:
-            if self.dbname == etpConst['clientdbid']:
-                try:
-                    self.doCleanups()
-                except self.dbapi2.Error:
-                    pass
             self.commitChanges()
             self.cursor.close()
             self.connection.close()
@@ -5041,21 +5036,24 @@ class LocalRepository:
 
         return set(filter(myfilter, foundIDs))
 
-    '''
-       @description: matches the user chosen package name+ver, if possibile, in a single repository
-       @input atom: string, atom to match
-       @input caseSensitive: bool, should the atom be parsed case sensitive?
-       @input matchSlot: string, match atoms with the provided slot
-       @input multiMatch: bool, return all the available atoms
-       @input matchBranches: tuple or list, match packages only in the specified branches
-       @input matchTag: match packages only for the specified tag
-       @input matchUse: match packages only if it owns the specified use flags
-       @input packagesFilter: enable/disable package.mask/.keywords/.unmask filter
-       @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = error
-    '''
     def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False,
             matchBranches = (), matchTag = None, matchUse = (), packagesFilter = True,
             matchRevision = None, extendedResults = False, useCache = True ):
+
+        """
+
+        @description: matches the user chosen package name+ver, if possibile, in a single repository
+        @input atom: string, atom to match
+        @input caseSensitive: bool, should the atom be parsed case sensitive?
+        @input matchSlot: string, match atoms with the provided slot
+        @input multiMatch: bool, return all the available atoms
+        @input matchBranches: tuple or list, match packages only in the specified branches
+        @input matchTag: match packages only for the specified tag
+        @input matchUse: match packages only if it owns the specified use flags
+        @input packagesFilter: enable/disable package.mask/.keywords/.unmask filter
+        @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = error
+
+        """
 
         if not atom:
             return -1, 1
