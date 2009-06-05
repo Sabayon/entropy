@@ -126,11 +126,11 @@ class EntropyCacher(Singleton):
         @return: None
         """
 
-        self.__alive = False
-        watch_dog = 20
+        watch_dog = 80
         while self.__cache_buffer.is_filled() and (watch_dog > 0):
             watch_dog -= 1
-            time.sleep(0.5)
+            time.sleep(0.125)
+        self.__alive = False
 
         with self.__cache_lock:
             self.__cache_buffer.clear()
@@ -156,13 +156,13 @@ class EntropyCacher(Singleton):
             self.__cache_buffer.clear()
             return
 
-        watch_dog = 10
+        watch_dog = 40
         while self.__cache_buffer.is_filled() and ((watch_dog > 0) or wait) \
             and self.__alive:
 
             if not wait:
                 watch_dog -= 1
-            time.sleep(0.5)
+            time.sleep(0.125)
 
         self.__cache_buffer.clear()
 
