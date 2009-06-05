@@ -492,6 +492,14 @@ class QAInterface:
         except SystemDatabaseError:
             valid = False
 
+        if valid:
+            try:
+                for idpackage in dbc.listAllIdpackages():
+                    dbc.retrieveContent(idpackage, extended = True,
+                        formatted = True, insert_formatted = True)
+            except dbapi2.Error:
+                valid = False
+
         dbc.closeDB()
         os.remove(tmp_path)
         os.close(fd)
