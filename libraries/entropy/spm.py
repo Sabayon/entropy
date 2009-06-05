@@ -944,7 +944,10 @@ class PortagePlugin:
         metadata['USE'] = " ".join(use)
         for k in "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", "PROVIDE", "SRC_URI":
             try:
-                deps = self.paren_reduce(metadata[k])
+                if k == "SRC_URI":
+                    deps = self.src_uri_paren_reduce(metadata[k])
+                else:
+                    deps = self.paren_reduce(metadata[k])
                 deps = self.use_reduce(deps, uselist=raw_use)
                 deps = self.paren_normalize(deps)
                 if k == "LICENSE":
@@ -971,6 +974,20 @@ class PortagePlugin:
                 continue
             metadata[k] = deps
         return metadata
+
+    def src_uri_paren_reduce(self, src_uris):
+        src_uris = self.paren_reduce(src_uris)
+        newlist = []
+        skip_next = False
+        for src_uri in src_uris:
+            if skip_next:
+                skip_next = False
+                continue
+            if src_uri == "->":
+                skip_next = True
+                continue
+            newlist.append(src_uri)
+        return newlist
 
     def usedeps_reduce(self, dependencies, enabled_useflags):
         newlist = []
