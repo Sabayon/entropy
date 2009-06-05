@@ -196,7 +196,8 @@ class CalculatorsMixin:
 
     def __atom_match_open_db(self, repoid, server_inst):
         if server_inst != None:
-            dbconn = server_inst.open_server_repository(just_reading = True, repo = repoid)
+            dbconn = server_inst.open_server_repository(just_reading = True,
+                repo = repoid, do_treeupdates = False)
         else:
             dbconn = self.open_repository(repoid)
         return dbconn

@@ -981,7 +981,7 @@ class Server(Singleton, TextInterface):
 
         for repo in server_repos:
             dbconn = self.open_server_repository(read_only = True,
-                no_upload = True, repo = repo)
+                no_upload = True, repo = repo, do_treeupdates = False)
             installed_packages |= set([(x, repo) for x in \
                 dbconn.listAllIdpackages()])
 
@@ -994,7 +994,7 @@ class Server(Singleton, TextInterface):
         for idpackage, repo in installed_packages:
             count += 1
             dbconn = self.open_server_repository(read_only = True,
-                no_upload = True, repo = repo)
+                no_upload = True, repo = repo, do_treeupdates = False)
 
             if (count%150 == 0) or (count == length) or (count == 1):
                 atom = dbconn.retrieveAtom(idpackage)
@@ -1035,7 +1035,7 @@ class Server(Singleton, TextInterface):
             for atom in deps_not_matched:
                 for repo in server_repos:
                     dbconn = self.open_server_repository(just_reading = True,
-                        repo = repo)
+                        repo = repo, do_treeupdates = False)
                     riddep = dbconn.searchDependency(atom)
                     if riddep == -1:
                         continue
