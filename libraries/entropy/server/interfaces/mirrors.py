@@ -1168,7 +1168,7 @@ class Server:
             type = "info",
             header = darkgreen(" * ")
         )
-        sets_data = self.Entropy.package_set_list(matchRepo = repo)
+        sets_data = self.Entropy.package_set_list(matchRepo = [repo])
         if not sets_data:
             self.Entropy.updateProgress(
                 "%s" % (_("None configured"),),
