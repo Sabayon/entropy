@@ -1663,7 +1663,7 @@ class Package:
                 type = "error",
                 header = darkred("   ## ")
             )
-            for repo,branch,fname,cksum in err_list:
+            for repo, branch, fname, cksum, signatures in err_list:
                 self.Entropy.updateProgress(
                     "[%s:%s|%s] %s" % (blue(repo),brown(branch),
                         darkgreen(cksum),darkred(fname),),
