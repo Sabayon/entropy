@@ -884,15 +884,24 @@ class Repository:
         mydbconn.clearCache()
         # now verify if both checksums match
         result = False
-        mychecksum = mydbconn.database_checksum(do_order = True, strict = False, strings = True)
+        mychecksum = mydbconn.database_checksum(do_order = True,
+            strict = False, strings = True)
         if checksum == mychecksum:
             result = True
         else:
-            mytxt = "%s: %s: %s | %s: %s" % (
+            mytxt = "%s: %s: %s" % (
                 blue(_("Database checksum doesn't match remote.")),
-                darkgreen(_("local")), mychecksum,
-                darkred(_("remote")), checksum,
             )
+            self.Entropy.updateProgress(
+                mytxt, importance = 0,
+                type = "info", header = "\t",
+            )
+            mytxt = "%s: %s" % (_('local'), mychecksum,)
+            self.Entropy.updateProgress(
+                mytxt, importance = 0,
+                type = "info", header = "\t",
+            )
+            mytxt = "%s: %s" % (_('remote'), checksum,)
             self.Entropy.updateProgress(
                 mytxt, importance = 0,
                 type = "info", header = "\t",
