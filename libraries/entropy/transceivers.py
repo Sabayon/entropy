@@ -269,7 +269,7 @@ class UrlFetcher:
                 self.__close(False)
                 raise
             except self.socket.timeout:
-                self.__close(True)
+                self.__close(False)
                 self.__status = "-4"
                 return self.__status
             except:
