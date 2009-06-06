@@ -55,21 +55,38 @@
 </table>
 <!-- ==================== MODULE DESCRIPTION ==================== -->
 <h1 class="epydoc">Module const</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.const-pysrc.html">source&nbsp;code</a></span></p>
-<p># DESCRIPTION: # Variables container</p>
-  <p>Copyright (C) 2007-2009 Fabio Erculiani</p>
-  <p>This program is free software; you can redistribute it and/or modify 
-  it under the terms of the GNU General Public License as published by the 
-  Free Software Foundation; either version 2 of the License, or (at your 
-  option) any later version.</p>
-  <p>This program is distributed in the hope that it will be useful, but 
-  WITHOUT ANY WARRANTY; without even the implied warranty of 
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
-  Public License for more details.</p>
-  <p>You should have received a copy of the GNU General Public License 
-  along with this program; if not, write to the Free Software Foundation, 
-  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</p>
-
-<!-- ==================== FUNCTIONS ==================== -->
+<hr />
+<div class="fields">      <p><strong>Author:</strong>
+        Fabio Erculiani &lt;lxnay@sabayonlinux.org&gt;
+      </p>
+      <p><strong>Contact:</strong>
+        lxnay@sabayonlinux.org
+      </p>
+      <p><strong>Copyright:</strong>
+        Fabio Erculiani
+      </p>
+      <p><strong>License:</strong>
+        GPL-2
+        <p><b>Entropy Framework constants module</b>. This module contains 
+        all the Entropy constants used all around the &quot;entropy&quot; 
+        package.</p>
+        <p>Some of the constants in this module are used as 
+        &quot;default&quot; for the SystemSettings interface. So, make sure
+        to read the documentation of SystemSettings in the 
+        &quot;entropy.core&quot; module.</p>
+        <p>Even if possible, etpConst, etpUi, etpCache and etpSys objects 
+        *SHOULD* be <i>never ever modified manually</i>. This freedom could
+        change in future, so, if you want to produce a stable code, DON'T 
+        do that at all!</p>
+        <p>Basic Entropy constants handling functions are available in this
+        module and are all prefixed with &quot;<i>const_*</i>&quot; or 
+        &quot;<i>initconfig_*</i>&quot;. If you are writing a third party 
+        application, you should always try to avoid to deal directly with 
+        functions here unless specified otherwise. In fact, usually these 
+        here are wrapper in upper-level modules (entropy.client, 
+        entropy.server, entropy.services).</p>
+      </p>
+</div><!-- ==================== FUNCTIONS ==================== -->
 <a name="section-Functions"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
@@ -79,7 +96,7 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -97,24 +114,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="initConfig_entropyConstants"></a><span class="summary-sig-name">initConfig_entropyConstants</span>(<span class="summary-sig-arg">rootdir</span>)</span><br />
-      @deprecated Please use initconfig_entropy_constants</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.const-pysrc.html#initConfig_entropyConstants">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -131,7 +131,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -148,15 +148,15 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">tuple (string, dict)</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.const-module.html#const_extract_cli_repo_params" class="summary-sig-name">const_extract_cli_repo_params</a>(<span class="summary-sig-arg">repostring</span>,
         <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">product</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Extract repository information from the provided repository string,
-usually contained in the repository settings file, repositories.conf.</td>
+      Extract repository information from the provided repository string, 
+      usually contained in the repository settings file, repositories.conf.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.const-pysrc.html#const_extract_cli_repo_params">source&nbsp;code</a></span>
             
@@ -168,7 +168,7 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -185,7 +185,7 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -202,7 +202,7 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -236,7 +236,7 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -253,7 +253,7 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -270,7 +270,7 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -289,7 +289,7 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -307,7 +307,7 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -326,7 +326,7 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">integer(8) (octal)</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -343,7 +343,7 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -361,7 +361,7 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -379,7 +379,7 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -396,7 +396,7 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -414,7 +414,7 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -422,25 +422,6 @@ usually contained in the repository settings file, repositories.conf.</td>
       Entropy threads killer.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.const-pysrc.html#const_kill_threads">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.const-module.html#const_handle_exception" class="summary-sig-name">const_handle_exception</a>(<span class="summary-sig-arg">etype</span>,
-        <span class="summary-sig-arg">value</span>,
-        <span class="summary-sig-arg">t_back</span>)</span><br />
-      Our default Python exception handler.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.const-pysrc.html#const_handle_exception">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -584,9 +565,17 @@ usually contained in the repository settings file, repositories.conf.</td>
   <p>Main constants configurators, this is the only function that you 
   should call from the outside, everytime you want. it will reset all the 
   variables excluding those backed up previously.</p>
-  <p>@param rootdir current root directory, if any, or &quot;&quot; @type 
-  rootdir str @return None</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>rootdir</code></strong> (string) - current root directory, if any, or &quot;&quot;</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>AttributeError</strong></code> - when specified rootdir is not a directory</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -605,9 +594,13 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr></table>
   
   <p>Initialization of all the Entropy base settings.</p>
-  <p>@param rootdir current root directory, if any, or &quot;&quot; @type 
-  rootdir str @return None</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>rootdir</code></strong> (string) - current root directory, if any, or &quot;&quot;</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -626,9 +619,13 @@ usually contained in the repository settings file, repositories.conf.</td>
   </tr></table>
   
   <p>Change current process scheduler &quot;nice&quot; level.</p>
-  <p>@param nice_level new valid nice level @type nice_level int @return 
-  current_nice new nice level</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>nice_level</code></strong> (int) - new valid nice level</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>current_nice new nice level</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -648,19 +645,16 @@ usually contained in the repository settings file, repositories.conf.</td>
     </td>
   </tr></table>
   
-  <pre class="literalblock">
-
-Extract repository information from the provided repository string,
-usually contained in the repository settings file, repositories.conf.
-
-@param repostring basestring
-@type repostring valid repository string
-@return tuple composed by
-    reponame =&gt; repository identifier (string),
-    mydata =&gt; extracted repository information (dict)
-
-</pre>
+  <p>Extract repository information from the provided repository string, 
+  usually contained in the repository settings file, repositories.conf.</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>repostring</code></strong> (string) - valid repository identifier</li>
+    </ul></dd>
+    <dt>Returns: tuple (string, dict)</dt>
+        <dd>tuple composed by (repository identifier, extracted repository 
+          metadata)</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -680,8 +674,9 @@ usually contained in the repository settings file, repositories.conf.
   
   <p>Read Entropy release file content and fill 
   etpConst['entropyversion']</p>
-  <p>@return None</p>
   <dl class="fields">
+    <dt>Returns: None</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -705,10 +700,13 @@ usually contained in the repository settings file, repositories.conf.
   read the current pid string in the Entropy pid file 
   (etpConst['pidfile']). If any other entropy istance is currently owning 
   the contained pid, etpConst['applicationlock'] becomes True.</p>
-  <p>@param just_read only read the current pid file, if any and if 
-  possible @type just_read bool</p>
-  <p>@return None</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>just_read</code></strong> (bool) - only read the current pid file, if any and if possible</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -727,9 +725,13 @@ usually contained in the repository settings file, repositories.conf.
   </tr></table>
   
   <p>Setup entropy file needing strict permissions, no world readable.</p>
-  <p>@param config_file valid config file path @type config_file basestring
-  @return None</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>config_file</code></strong> (string) - valid config file path</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -748,8 +750,9 @@ usually contained in the repository settings file, repositories.conf.
   </tr></table>
   
   <p>Setup entropy pid file permissions, if possible.</p>
-  <p>@return None</p>
   <dl class="fields">
+    <dt>Returns:</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -769,8 +772,9 @@ usually contained in the repository settings file, repositories.conf.
   
   <p>Setup Entropy directory structure, as much automagically as 
   possible.</p>
-  <p>@return None</p>
   <dl class="fields">
+    <dt>Returns: None</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -789,8 +793,9 @@ usually contained in the repository settings file, repositories.conf.
   </tr></table>
   
   <p>Setup Entropy lock file paths.</p>
-  <p>@return None</p>
   <dl class="fields">
+    <dt>Returns: None</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -811,9 +816,14 @@ usually contained in the repository settings file, repositories.conf.
   
   <p>Analyze a server repository string (usually contained in server.conf),
   extracting all the parameters.</p>
-  <p>@param repostring repository string @type repostring basestring 
-  @return None</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>repostring</code></strong> (string) - repository string</li>
+        <li><strong class="pname"><code>product</code></strong> - system product which repository belongs to</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -833,9 +843,14 @@ usually contained in the repository settings file, repositories.conf.
   </tr></table>
   
   <p>Setup permissions and group id (GID) to a directory, recursively.</p>
-  <p>@param mydir valid file path @type mydir basestring @param gid valid 
-  group id (GID) @type gid int @return None</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>mydir</code></strong> (string) - valid file path</li>
+        <li><strong class="pname"><code>gid</code></strong> (int) - valid group id (GID)</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -856,10 +871,15 @@ usually contained in the repository settings file, repositories.conf.
   </tr></table>
   
   <p>Setup file permissions and group id (GID).</p>
-  <p>@param myfile valid file path @type myfile basestring @param gid valid
-  group id (GID) @type gid int @param chmod permissions @type chmod integer
-  representing an octal @return None</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>myfile</code></strong> (string) - valid file path</li>
+        <li><strong class="pname"><code>gid</code></strong> (int) - valid group id (GID)</li>
+        <li><strong class="pname"><code>chmod</code></strong> (integer representing an octal) - permissions</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -880,9 +900,13 @@ usually contained in the repository settings file, repositories.conf.
   <p>This function get the current permissions of the specified file. If 
   you want to use the returning value with const_set_chmod you need to 
   convert it back to int.</p>
-  <p>@param myfile valid file path @type myfile basestring @return octal 
-  representing permissions</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>myfile</code></strong> (string) - valid file path</li>
+    </ul></dd>
+    <dt>Returns: integer(8) (octal)</dt>
+        <dd>octal representing permissions</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -903,9 +927,14 @@ usually contained in the repository settings file, repositories.conf.
   
   <p>This function sets specified permissions to a file. If they differ 
   from the current ones.</p>
-  <p>@param myfile valid file path @type myfile basestring @param chmod 
-  permissions @type chmod integer representing an octal @return None</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>myfile</code></strong> (string) - valid file path</li>
+        <li><strong class="pname"><code>chmod</code></strong> (integer representing an octal) - permissions</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -925,8 +954,13 @@ usually contained in the repository settings file, repositories.conf.
   
   <p>This function tries to retrieve the &quot;entropy&quot; user group 
   GID.</p>
-  <p>@return None or KeyError exception</p>
   <dl class="fields">
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>KeyError</strong></code> - when &quot;entropy&quot; system GID is not available</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -946,8 +980,13 @@ usually contained in the repository settings file, repositories.conf.
   
   <p>This function looks for an &quot;entropy&quot; user group. If not 
   available, it tries to create one.</p>
-  <p>@return None</p>
   <dl class="fields">
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>KeyError</strong></code> - if ${ROOT}/etc/group is not found</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -967,8 +1006,14 @@ usually contained in the repository settings file, repositories.conf.
   
   <p>Live environments (Operating System running off a CD/DVD) must feature
   the &quot;cdroot&quot; parameter in kernel /proc/cmdline</p>
-  <p>@return bool stating if we are running Live or not</p>
+  <p>Sample code:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> entropy.const <span class="py-keyword">import</span> const_islive
+<span class="py-prompt">&gt;&gt;&gt; </span>const_islive()
+<span class="py-output">False</span></pre>
   <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>determine wether this is a Live system or not</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -988,33 +1033,13 @@ usually contained in the repository settings file, repositories.conf.
   
   <p>Entropy threads killer. Even if Python threads cannot be stopped or 
   killed, TimeScheduled ones can, exporting the kill() method.</p>
-  <p>@return None</p>
+  <p>Sample code:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> entropy.const <span class="py-keyword">import</span> const_kill_threads
+<span class="py-prompt">&gt;&gt;&gt; </span>const_kill_threads()</pre>
   <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="const_handle_exception"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">const_handle_exception</span>(<span class="sig-arg">etype</span>,
-        <span class="sig-arg">value</span>,
-        <span class="sig-arg">t_back</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.const-pysrc.html#const_handle_exception">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Our default Python exception handler. It kills all the threads 
-  generated by Entropy before raising exceptions. Overloads 
-  sys.excepthook</p>
-  <p>@param etype exception type @param value exception value @param t_back
-  traceback object? @return sys.__excepthook__</p>
-  <dl class="fields">
+    <dt>Returns: None</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1162,7 +1187,7 @@ usually contained in the repository settings file, repositories.conf.
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sat Jun  6 09:09:45 2009
+    Generated by Epydoc 3.0.1 on Sat Jun  6 13:05:32 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

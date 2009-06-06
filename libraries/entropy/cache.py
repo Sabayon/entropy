@@ -169,10 +169,9 @@ class EntropyCacher(Singleton):
         a watchdog prevents this call to get stuck in case of write
         buffer overloads.
 
-        @param wait: indicates if waiting until done (synchronous mode)
-            or not
+        @keyword wait: indicates if waiting until done (synchronous mode) or not
         @type wait: bool
-
+        @rtype: None
         @return: None
         """
         if not self.__alive:
@@ -206,13 +205,13 @@ class EntropyCacher(Singleton):
         only and only if start() method has been called.
 
         @param key: cache data identifier
-        @type key: basestring
+        @type key: string
         @param data: picklable object
         @type data: any picklable object
-        @param async: store cache asynchronously or not
+        @keyword async: store cache asynchronously or not
         @type async: bool
         @rtype: None
-        @return: nothing
+        @return: None
         """
         if not self.__alive:
             return
@@ -229,7 +228,7 @@ class EntropyCacher(Singleton):
         was called.
 
         @param key: cache data identifier
-        @type key: basestring
+        @type key: string
         @rtype: Python object
         @return: object stored into the stack or None (if stack is empty)
         """

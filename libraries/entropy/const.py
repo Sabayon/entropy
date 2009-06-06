@@ -1,24 +1,32 @@
-'''
-    # DESCRIPTION:
-    # Variables container
+"""
 
-    Copyright (C) 2007-2009 Fabio Erculiani
+    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
+    @contact: lxnay@sabayonlinux.org
+    @copyright: Fabio Erculiani
+    @license: GPL-2
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    B{Entropy Framework constants module}.
+    This module contains all the Entropy constants used all around
+    the "entropy" package.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    Some of the constants in this module are used as "default" for
+    the SystemSettings interface. So, make sure to read the documentation
+    of SystemSettings in the "entropy.core" module.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-'''
-# pylint ok
+    Even if possible, etpConst, etpUi, etpCache and etpSys objects
+    *SHOULD* be I{never ever modified manually}. This freedom could change
+    in future, so, if you want to produce a stable code, DON'T do that at all!
+
+    Basic Entropy constants handling functions are available in this module
+    and are all prefixed with "I{const_*}" or "I{initconfig_*}".
+    If you are writing a third party application, you should always try
+    to avoid to deal directly with functions here unless specified otherwise.
+    In fact, usually these here are wrapper in upper-level modules
+    (entropy.client, entropy.server, entropy.services).
+
+
+"""
+
 
 from __future__ import with_statement
 import sys, os, stat
@@ -100,13 +108,15 @@ def initconfig_entropy_constants(rootdir):
     call from the outside, everytime you want. it will reset all the variables
     excluding those backed up previously.
 
-    @param rootdir current root directory, if any, or ""
-    @type rootdir str
-    @return None
+    @param rootdir: current root directory, if any, or ""
+    @type rootdir: string
+    @rtype: None
+    @return: None
+    @raise AttributeError: when specified rootdir is not a directory
     """
 
     if rootdir and not os.path.isdir(rootdir):
-        raise AttributeError("FileNotFound: not a valid chroot.")
+        raise AttributeError("not a valid chroot.")
 
     # save backed up settings
     if etpConst.has_key('backed_up'):
@@ -125,25 +135,17 @@ def initconfig_entropy_constants(rootdir):
     etpConst['backed_up'] = backed_up_settings.copy()
 
     if sys.excepthook == sys.__excepthook__:
-        sys.excepthook = const_handle_exception
-
-def initConfig_entropyConstants(rootdir):
-    """
-    @deprecated
-    Please use initconfig_entropy_constants
-    """
-    import warnings
-    warnings.warn("deprecated please use initconfig_entropy_constants")
-    return initconfig_entropy_constants(rootdir)
+        sys.excepthook = __const_handle_exception
 
 def const_default_settings(rootdir):
 
     """
     Initialization of all the Entropy base settings.
 
-    @param rootdir current root directory, if any, or ""
-    @type rootdir str
-    @return None
+    @param rootdir: current root directory, if any, or ""
+    @type rootdir: string
+    @rtype: None
+    @return: None
     """
 
     default_etp_dir = rootdir+"/var/lib/entropy"
@@ -655,9 +657,10 @@ def const_set_nice_level(nice_level = 0):
     """
     Change current process scheduler "nice" level.
 
-    @param nice_level new valid nice level
-    @type nice_level int
-    @return current_nice new nice level
+    @param nice_level: new valid nice level
+    @type nice_level: int
+    @rtype: int
+    @return: current_nice new nice level
     """
     default_nice = etpConst['default_nice']
     current_nice = etpConst['current_nice']
@@ -674,11 +677,11 @@ def const_extract_cli_repo_params(repostring, branch = None, product = None):
     Extract repository information from the provided repository string,
     usually contained in the repository settings file, repositories.conf.
 
-    @param repostring basestring
-    @type repostring valid repository string
-    @return tuple composed by
-        reponame => repository identifier (string),
-        mydata => extracted repository information (dict)
+    @param repostring: valid repository identifier
+    @type repostring: string
+    @rtype: tuple (string, dict)
+    @return: tuple composed by (repository identifier, extracted repository
+        metadata)
     """
 
     if branch == None:
@@ -771,7 +774,8 @@ def const_read_entropy_release():
     """
     Read Entropy release file content and fill etpConst['entropyversion']
 
-    @return None
+    @rtype: None
+    @return: None
     """
     # handle Entropy Version
     revision_file = "../libraries/revision"
@@ -797,10 +801,10 @@ def const_setup_entropy_pid(just_read = False):
     istance is currently owning the contained pid, etpConst['applicationlock']
     becomes True.
 
-    @param just_read only read the current pid file, if any and if possible
-    @type just_read bool
-
-    @return None
+    @param just_read: only read the current pid file, if any and if possible
+    @type just_read: bool
+    @rtype: None
+    @return: None
     """
 
     if ("--no-pid-handling" in sys.argv) and (not just_read):
@@ -865,9 +869,10 @@ def const_secure_config_file(config_file):
     """
     Setup entropy file needing strict permissions, no world readable.
 
-    @param config_file valid config file path
-    @type config_file basestring
-    @return None
+    @param config_file: valid config file path
+    @type config_file: string
+    @rtype: None
+    @return: None
     """
     try:
         mygid = const_get_entropy_gid()
@@ -882,7 +887,7 @@ def const_chmod_entropy_pid():
     """
     Setup entropy pid file permissions, if possible.
 
-    @return None
+    @return: None
     """
     try:
         mygid = const_get_entropy_gid()
@@ -895,7 +900,8 @@ def const_create_working_dirs():
     """
     Setup Entropy directory structure, as much automagically as possible.
 
-    @return None
+    @rtype: None
+    @return: None
     """
 
     # handle pid file
@@ -923,7 +929,7 @@ def const_create_working_dirs():
                 pass
 
     # Create paths
-    keys = [x for x in etpConst if isinstance(etpConst[x],basestring)]
+    keys = [x for x in etpConst if isinstance(etpConst[x], basestring)]
     for key in keys:
 
         if not etpConst[key] or \
@@ -984,7 +990,8 @@ def const_configure_lock_paths():
     """
     Setup Entropy lock file paths.
 
-    @return None
+    @rtype: None
+    @return: None
     """
     etpConst['locks'] = {
         'using_resources': os.path.join(etpConst['etpdatabaseclientdir'],
@@ -997,9 +1004,11 @@ def const_extract_srv_repo_params(repostring, product = None):
     Analyze a server repository string (usually contained in server.conf),
     extracting all the parameters.
 
-    @param repostring repository string
-    @type repostring basestring
-    @return None
+    @param repostring: repository string
+    @type repostring: string
+    @keyword product: system product which repository belongs to
+    @rtype: None
+    @return: None
     """
 
     if product == None:
@@ -1050,11 +1059,12 @@ def const_setup_perms(mydir, gid):
     """
     Setup permissions and group id (GID) to a directory, recursively.
 
-    @param mydir valid file path
-    @type mydir basestring
-    @param gid valid group id (GID)
-    @type gid int
-    @return None
+    @param mydir: valid file path
+    @type mydir: string
+    @param gid: valid group id (GID)
+    @type gid: int
+    @rtype: None
+    @return: None
     """
     if gid == None:
         return
@@ -1079,13 +1089,14 @@ def const_setup_file(myfile, gid, chmod):
     """
     Setup file permissions and group id (GID).
 
-    @param myfile valid file path
-    @type myfile basestring
-    @param gid valid group id (GID)
-    @type gid int
-    @param chmod permissions
-    @type chmod integer representing an octal
-    @return None
+    @param myfile: valid file path
+    @type myfile: string
+    @param gid: valid group id (GID)
+    @type gid: int
+    @param chmod: permissions
+    @type chmod: integer representing an octal
+    @rtype: None
+    @return: None
     """
     cur_gid = os.stat(myfile)[stat.ST_GID]
     if cur_gid != gid:
@@ -1099,9 +1110,10 @@ def const_get_chmod(myfile):
     file. If you want to use the returning value with const_set_chmod
     you need to convert it back to int.
 
-    @param myfile valid file path
-    @type myfile basestring
-    @return octal representing permissions
+    @param myfile: valid file path
+    @type myfile: string
+    @rtype: integer(8) (octal)
+    @return: octal representing permissions
     """
     myst = os.stat(myfile)[stat.ST_MODE]
     return oct(myst & 0777)
@@ -1111,11 +1123,12 @@ def const_set_chmod(myfile, chmod):
     This function sets specified permissions to a file.
     If they differ from the current ones.
 
-    @param myfile valid file path
-    @type myfile basestring
-    @param chmod permissions
-    @type chmod integer representing an octal
-    @return None
+    @param myfile: valid file path
+    @type myfile: string
+    @param chmod: permissions
+    @type chmod: integer representing an octal
+    @rtype: None
+    @return: None
     """
     cur_mod = const_get_chmod(myfile)
     if cur_mod != oct(chmod):
@@ -1126,7 +1139,9 @@ def const_get_entropy_gid():
     This function tries to retrieve the "entropy" user group
     GID.
 
-    @return None or KeyError exception
+    @rtype: None
+    @return: None
+    @raise KeyError: when "entropy" system GID is not available
     """
     group_file = etpConst['systemroot']+'/etc/group'
     if not os.path.isfile(group_file):
@@ -1147,7 +1162,9 @@ def const_add_entropy_group():
     This function looks for an "entropy" user group.
     If not available, it tries to create one.
 
-    @return None
+    @rtype: None
+    @return: None
+    @raise KeyError: if ${ROOT}/etc/group is not found
     """
     group_file = etpConst['systemroot']+'/etc/group'
     if not os.path.isfile(group_file):
@@ -1183,7 +1200,13 @@ def const_islive():
     Live environments (Operating System running off a CD/DVD)
     must feature the "cdroot" parameter in kernel /proc/cmdline
 
-    @return bool stating if we are running Live or not
+    Sample code:
+        >>> from entropy.const import const_islive
+        >>> const_islive()
+        False
+
+    @rtype: bool
+    @return: determine wether this is a Live system or not
     """
     if "cdroot" in etpConst['cmdline']:
         return True
@@ -1195,7 +1218,12 @@ def const_kill_threads():
     be stopped or killed, TimeScheduled ones can, exporting
     the kill() method.
 
-    @return None
+    Sample code:
+        >>> from entropy.const import const_kill_threads
+        >>> const_kill_threads()
+
+    @rtype: None
+    @return: None
     """
     import threading
     threads = threading.enumerate()
@@ -1205,16 +1233,21 @@ def const_kill_threads():
         running_t.kill()
         running_t.join()
 
-def const_handle_exception(etype, value, t_back):
+def __const_handle_exception(etype, value, t_back):
     """
     Our default Python exception handler. It kills
     all the threads generated by Entropy before
-    raising exceptions. Overloads sys.excepthook
+    raising exceptions. Overloads sys.excepthook,
+    internal function !!
 
-    @param etype exception type
-    @param value exception value
-    @param t_back traceback object?
-    @return sys.__excepthook__
+    @param etype: exception type
+    @type etype: exception type
+    @param value: exception data
+    @type value: string
+    @param t_back: traceback object?
+    @type t_back: Python traceback object
+    @rtype: default Python exceptions hook
+    @return: sys.__excepthook__
     """
     try:
         const_kill_threads()

@@ -11,7 +11,6 @@ entropy.client.interfaces.cache.const_create_working_dirs	entropy.const-module.h
 entropy.client.interfaces.cache.const_add_entropy_group	entropy.const-module.html#const_add_entropy_group
 entropy.client.interfaces.cache.const_kill_threads	entropy.const-module.html#const_kill_threads
 entropy.client.interfaces.cache.const_setup_file	entropy.const-module.html#const_setup_file
-entropy.client.interfaces.cache.initConfig_entropyConstants	entropy.const-module.html#initConfig_entropyConstants
 entropy.client.interfaces.cache.const_set_chmod	entropy.const-module.html#const_set_chmod
 entropy.client.interfaces.cache.const_chmod_entropy_pid	entropy.const-module.html#const_chmod_entropy_pid
 entropy.client.interfaces.cache.initconfig_entropy_constants	entropy.const-module.html#initconfig_entropy_constants
@@ -27,7 +26,6 @@ entropy.client.interfaces.cache.const_secure_config_file	entropy.const-module.ht
 entropy.client.interfaces.cache._	entropy.i18n-module.html#_
 entropy.client.interfaces.cache.darkgreen	entropy.output-module.html#darkgreen
 entropy.client.interfaces.cache.const_get_chmod	entropy.const-module.html#const_get_chmod
-entropy.client.interfaces.cache.const_handle_exception	entropy.const-module.html#const_handle_exception
 entropy.client.interfaces.client	entropy.client.interfaces.client-module.html
 entropy.client.interfaces.dep	entropy.client.interfaces.dep-module.html
 entropy.client.interfaces.dep.const_default_settings	entropy.const-module.html#const_default_settings
@@ -38,7 +36,6 @@ entropy.client.interfaces.dep.const_create_working_dirs	entropy.const-module.htm
 entropy.client.interfaces.dep.blue	entropy.output-module.html#blue
 entropy.client.interfaces.dep.const_kill_threads	entropy.const-module.html#const_kill_threads
 entropy.client.interfaces.dep.const_setup_file	entropy.const-module.html#const_setup_file
-entropy.client.interfaces.dep.initConfig_entropyConstants	entropy.const-module.html#initConfig_entropyConstants
 entropy.client.interfaces.dep.const_set_chmod	entropy.const-module.html#const_set_chmod
 entropy.client.interfaces.dep.const_chmod_entropy_pid	entropy.const-module.html#const_chmod_entropy_pid
 entropy.client.interfaces.dep.initconfig_entropy_constants	entropy.const-module.html#initconfig_entropy_constants
@@ -56,7 +53,6 @@ entropy.client.interfaces.dep.const_secure_config_file	entropy.const-module.html
 entropy.client.interfaces.dep._	entropy.i18n-module.html#_
 entropy.client.interfaces.dep.darkgreen	entropy.output-module.html#darkgreen
 entropy.client.interfaces.dep.const_get_chmod	entropy.const-module.html#const_get_chmod
-entropy.client.interfaces.dep.const_handle_exception	entropy.const-module.html#const_handle_exception
 entropy.client.interfaces.fetch	entropy.client.interfaces.fetch-module.html
 entropy.client.interfaces.fetch.const_default_settings	entropy.const-module.html#const_default_settings
 entropy.client.interfaces.fetch.const_setup_perms	entropy.const-module.html#const_setup_perms
@@ -68,7 +64,6 @@ entropy.client.interfaces.fetch.blue	entropy.output-module.html#blue
 entropy.client.interfaces.fetch.const_kill_threads	entropy.const-module.html#const_kill_threads
 entropy.client.interfaces.fetch.const_setup_file	entropy.const-module.html#const_setup_file
 entropy.client.interfaces.fetch.darkblue	entropy.output-module.html#darkblue
-entropy.client.interfaces.fetch.initConfig_entropyConstants	entropy.const-module.html#initConfig_entropyConstants
 entropy.client.interfaces.fetch.const_set_chmod	entropy.const-module.html#const_set_chmod
 entropy.client.interfaces.fetch.const_chmod_entropy_pid	entropy.const-module.html#const_chmod_entropy_pid
 entropy.client.interfaces.fetch.initconfig_entropy_constants	entropy.const-module.html#initconfig_entropy_constants
@@ -87,7 +82,6 @@ entropy.client.interfaces.fetch._	entropy.i18n-module.html#_
 entropy.client.interfaces.fetch.darkgreen	entropy.output-module.html#darkgreen
 entropy.client.interfaces.fetch.purple	entropy.output-module.html#purple
 entropy.client.interfaces.fetch.const_get_chmod	entropy.const-module.html#const_get_chmod
-entropy.client.interfaces.fetch.const_handle_exception	entropy.const-module.html#const_handle_exception
 entropy.client.interfaces.loaders	entropy.client.interfaces.loaders-module.html
 entropy.client.interfaces.loaders.const_default_settings	entropy.const-module.html#const_default_settings
 entropy.client.interfaces.loaders.const_get_entropy_gid	entropy.const-module.html#const_get_entropy_gid
@@ -97,7 +91,6 @@ entropy.client.interfaces.loaders.const_create_working_dirs	entropy.const-module
 entropy.client.interfaces.loaders.const_add_entropy_group	entropy.const-module.html#const_add_entropy_group
 entropy.client.interfaces.loaders.const_kill_threads	entropy.const-module.html#const_kill_threads
 entropy.client.interfaces.loaders.const_setup_file	entropy.const-module.html#const_setup_file
-entropy.client.interfaces.loaders.initConfig_entropyConstants	entropy.const-module.html#initConfig_entropyConstants
 entropy.client.interfaces.loaders.const_set_chmod	entropy.const-module.html#const_set_chmod
 entropy.client.interfaces.loaders.const_chmod_entropy_pid	entropy.const-module.html#const_chmod_entropy_pid
 entropy.client.interfaces.loaders.initconfig_entropy_constants	entropy.const-module.html#initconfig_entropy_constants
@@ -109,7 +102,6 @@ entropy.client.interfaces.loaders.const_islive	entropy.const-module.html#const_i
 entropy.client.interfaces.loaders.const_secure_config_file	entropy.const-module.html#const_secure_config_file
 entropy.client.interfaces.loaders.const_setup_perms	entropy.const-module.html#const_setup_perms
 entropy.client.interfaces.loaders.const_get_chmod	entropy.const-module.html#const_get_chmod
-entropy.client.interfaces.loaders.const_handle_exception	entropy.const-module.html#const_handle_exception
 entropy.client.interfaces.methods	entropy.client.interfaces.methods-module.html
 entropy.client.interfaces.methods.const_chmod_entropy_pid	entropy.const-module.html#const_chmod_entropy_pid
 entropy.client.interfaces.methods.brown	entropy.output-module.html#brown
@@ -120,7 +112,6 @@ entropy.client.interfaces.methods.darkgreen	entropy.output-module.html#darkgreen
 entropy.client.interfaces.methods.const_create_working_dirs	entropy.const-module.html#const_create_working_dirs
 entropy.client.interfaces.methods.const_get_chmod	entropy.const-module.html#const_get_chmod
 entropy.client.interfaces.methods.const_kill_threads	entropy.const-module.html#const_kill_threads
-entropy.client.interfaces.methods.const_handle_exception	entropy.const-module.html#const_handle_exception
 entropy.client.interfaces.methods.const_get_entropy_gid	entropy.const-module.html#const_get_entropy_gid
 entropy.client.interfaces.methods.const_set_chmod	entropy.const-module.html#const_set_chmod
 entropy.client.interfaces.methods.blue	entropy.output-module.html#blue
@@ -134,7 +125,6 @@ entropy.client.interfaces.methods._	entropy.i18n-module.html#_
 entropy.client.interfaces.methods.const_read_entropy_release	entropy.const-module.html#const_read_entropy_release
 entropy.client.interfaces.methods.const_secure_config_file	entropy.const-module.html#const_secure_config_file
 entropy.client.interfaces.methods.const_default_settings	entropy.const-module.html#const_default_settings
-entropy.client.interfaces.methods.initConfig_entropyConstants	entropy.const-module.html#initConfig_entropyConstants
 entropy.client.interfaces.methods.const_setup_file	entropy.const-module.html#const_setup_file
 entropy.client.interfaces.methods.const_set_nice_level	entropy.const-module.html#const_set_nice_level
 entropy.client.interfaces.methods.const_configure_lock_paths	entropy.const-module.html#const_configure_lock_paths
@@ -150,7 +140,6 @@ entropy.client.interfaces.package.darkgreen	entropy.output-module.html#darkgreen
 entropy.client.interfaces.package.const_create_working_dirs	entropy.const-module.html#const_create_working_dirs
 entropy.client.interfaces.package.const_get_chmod	entropy.const-module.html#const_get_chmod
 entropy.client.interfaces.package.const_kill_threads	entropy.const-module.html#const_kill_threads
-entropy.client.interfaces.package.const_handle_exception	entropy.const-module.html#const_handle_exception
 entropy.client.interfaces.package.const_get_entropy_gid	entropy.const-module.html#const_get_entropy_gid
 entropy.client.interfaces.package.const_set_chmod	entropy.const-module.html#const_set_chmod
 entropy.client.interfaces.package.blue	entropy.output-module.html#blue
@@ -166,7 +155,6 @@ entropy.client.interfaces.package.const_read_entropy_release	entropy.const-modul
 entropy.client.interfaces.package.const_secure_config_file	entropy.const-module.html#const_secure_config_file
 entropy.client.interfaces.package.const_default_settings	entropy.const-module.html#const_default_settings
 entropy.client.interfaces.package.print_error	entropy.output-module.html#print_error
-entropy.client.interfaces.package.initConfig_entropyConstants	entropy.const-module.html#initConfig_entropyConstants
 entropy.client.interfaces.package.const_setup_file	entropy.const-module.html#const_setup_file
 entropy.client.interfaces.package.const_set_nice_level	entropy.const-module.html#const_set_nice_level
 entropy.client.interfaces.package.print_warning	entropy.output-module.html#print_warning
@@ -198,7 +186,6 @@ entropy.client.interfaces.repository.const_kill_threads	entropy.const-module.htm
 entropy.client.interfaces.repository.flush_stdouterr	entropy.output-module.html#flush_stdouterr
 entropy.client.interfaces.repository.my_raw_input	entropy.output-module.html#my_raw_input
 entropy.client.interfaces.repository.const_get_entropy_gid	entropy.const-module.html#const_get_entropy_gid
-entropy.client.interfaces.repository.const_handle_exception	entropy.const-module.html#const_handle_exception
 entropy.client.interfaces.repository.const_set_chmod	entropy.const-module.html#const_set_chmod
 entropy.client.interfaces.repository.blue	entropy.output-module.html#blue
 entropy.client.interfaces.repository.darkblue	entropy.output-module.html#darkblue
@@ -220,7 +207,6 @@ entropy.client.interfaces.repository.notitles	entropy.output-module.html#notitle
 entropy.client.interfaces.repository.colorize	entropy.output-module.html#colorize
 entropy.client.interfaces.repository.darkyellow	entropy.output-module.html#darkyellow
 entropy.client.interfaces.repository.fuchsia	entropy.output-module.html#fuchsia
-entropy.client.interfaces.repository.initConfig_entropyConstants	entropy.const-module.html#initConfig_entropyConstants
 entropy.client.interfaces.repository.const_setup_file	entropy.const-module.html#const_setup_file
 entropy.client.interfaces.repository.white	entropy.output-module.html#white
 entropy.client.interfaces.repository.const_set_nice_level	entropy.const-module.html#const_set_nice_level
@@ -258,7 +244,6 @@ entropy.client.interfaces.trigger.const_kill_threads	entropy.const-module.html#c
 entropy.client.interfaces.trigger.flush_stdouterr	entropy.output-module.html#flush_stdouterr
 entropy.client.interfaces.trigger.my_raw_input	entropy.output-module.html#my_raw_input
 entropy.client.interfaces.trigger.const_get_entropy_gid	entropy.const-module.html#const_get_entropy_gid
-entropy.client.interfaces.trigger.const_handle_exception	entropy.const-module.html#const_handle_exception
 entropy.client.interfaces.trigger.const_set_chmod	entropy.const-module.html#const_set_chmod
 entropy.client.interfaces.trigger.blue	entropy.output-module.html#blue
 entropy.client.interfaces.trigger.darkblue	entropy.output-module.html#darkblue
@@ -280,7 +265,6 @@ entropy.client.interfaces.trigger.notitles	entropy.output-module.html#notitles
 entropy.client.interfaces.trigger.colorize	entropy.output-module.html#colorize
 entropy.client.interfaces.trigger.darkyellow	entropy.output-module.html#darkyellow
 entropy.client.interfaces.trigger.fuchsia	entropy.output-module.html#fuchsia
-entropy.client.interfaces.trigger.initConfig_entropyConstants	entropy.const-module.html#initConfig_entropyConstants
 entropy.client.interfaces.trigger.const_setup_file	entropy.const-module.html#const_setup_file
 entropy.client.interfaces.trigger.white	entropy.output-module.html#white
 entropy.client.interfaces.trigger.const_set_nice_level	entropy.const-module.html#const_set_nice_level
@@ -334,8 +318,8 @@ entropy.const.const_set_chmod	entropy.const-module.html#const_set_chmod
 entropy.const.ETP_LOGPRI_ERROR	entropy.const-module.html#ETP_LOGPRI_ERROR
 entropy.const.const_add_entropy_group	entropy.const-module.html#const_add_entropy_group
 entropy.const.const_default_settings	entropy.const-module.html#const_default_settings
-entropy.const.initConfig_entropyConstants	entropy.const-module.html#initConfig_entropyConstants
 entropy.const.const_chmod_entropy_pid	entropy.const-module.html#const_chmod_entropy_pid
+entropy.const.__const_handle_exception	entropy.const-module.html#__const_handle_exception
 entropy.const.const_setup_file	entropy.const-module.html#const_setup_file
 entropy.const.const_setup_perms	entropy.const-module.html#const_setup_perms
 entropy.const.const_set_nice_level	entropy.const-module.html#const_set_nice_level
@@ -357,7 +341,6 @@ entropy.const.ETP_LOGPRI_INFO	entropy.const-module.html#ETP_LOGPRI_INFO
 entropy.const.const_get_chmod	entropy.const-module.html#const_get_chmod
 entropy.const.etpCache	entropy.const-module.html#etpCache
 entropy.const.const_secure_config_file	entropy.const-module.html#const_secure_config_file
-entropy.const.const_handle_exception	entropy.const-module.html#const_handle_exception
 entropy.core	entropy.core-module.html
 entropy.core.const_set_nice_level	entropy.const-module.html#const_set_nice_level
 entropy.core.const_setup_perms	entropy.const-module.html#const_setup_perms
@@ -560,7 +543,6 @@ entropy.tools.get_random_temp_file	entropy.tools-module.html#get_random_temp_fil
 entropy.tools.setcols	entropy.output-module.html#setcols
 entropy.tools.xtermTitleReset	entropy.output-module.html#xtermTitleReset
 entropy.tools.writechar	entropy.output-module.html#writechar
-entropy.tools.flush_stdouterr	entropy.output-module.html#flush_stdouterr
 entropy.tools.const_setup_perms	entropy.const-module.html#const_setup_perms
 entropy.tools.application_lock_check	entropy.tools-module.html#application_lock_check
 entropy.tools.create_package_filename	entropy.tools-module.html#create_package_filename
@@ -578,7 +560,7 @@ entropy.tools.red	entropy.output-module.html#red
 entropy.tools.get_gid_from_group	entropy.tools-module.html#get_gid_from_group
 entropy.tools.compress_file	entropy.tools-module.html#compress_file
 entropy.tools.const_kill_threads	entropy.const-module.html#const_kill_threads
-entropy.tools.const_handle_exception	entropy.const-module.html#const_handle_exception
+entropy.tools.flush_stdouterr	entropy.output-module.html#flush_stdouterr
 entropy.tools.remove_slot	entropy.tools-module.html#remove_slot
 entropy.tools.md5sum	entropy.tools-module.html#md5sum
 entropy.tools.compare_sha512	entropy.tools-module.html#compare_sha512
@@ -610,7 +592,6 @@ entropy.tools.read_repositories_conf	entropy.tools-module.html#read_repositories
 entropy.tools.list_to_utf8	entropy.tools-module.html#list_to_utf8
 entropy.tools.read_elf_linker_paths	entropy.tools-module.html#read_elf_linker_paths
 entropy.tools.seek_till_newline	entropy.tools-module.html#seek_till_newline
-entropy.tools.initConfig_entropyConstants	entropy.const-module.html#initConfig_entropyConstants
 entropy.tools.const_setup_entropy_pid	entropy.const-module.html#const_setup_entropy_pid
 entropy.tools.bold	entropy.output-module.html#bold
 entropy.tools.unpack_bzip2	entropy.tools-module.html#unpack_bzip2
