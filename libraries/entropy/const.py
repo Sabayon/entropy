@@ -105,7 +105,7 @@ def initconfig_entropy_constants(rootdir):
 
     """
     Main constants configurators, this is the only function that you should
-    call from the outside, everytime you want. it will reset all the variables
+    call from the outside, anytime you want. it will reset all the variables
     excluding those backed up previously.
 
     @param rootdir: current root directory, if any, or ""
