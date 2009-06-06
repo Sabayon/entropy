@@ -468,7 +468,9 @@ class Package:
 
         # remove files from system
         directories = set()
-        for item in self.infoDict['removecontent']:
+        not_removed_due_to_collisions = set()
+        remove_content = sorted(self.infoDict['removecontent'], reverse = True)
+        for item in remove_content:
             sys_root_item = sys_root+item
             # collision check
             if col_protect > 0:
@@ -488,6 +490,7 @@ class Package:
                         ETP_LOGLEVEL_NORMAL,
                         "Collision found during remove of "+sys_root_item+" - cannot overwrite"
                     )
+                    not_removed_due_to_collisions.add(item)
                     continue
 
             protected = False
@@ -577,6 +580,14 @@ class Package:
                             directories.add((dirfile,"dir"))
                     except OSError:
                         pass
+
+        # removing files not removed from removecontent.
+        # it happened that boot services not removed due to
+        # collisions got removed from their belonging runlevels
+        # by postremove step.
+        # since this is a set, it is a mapped type, so every
+        # other instance around will feature this update
+        self.infoDict['removecontent'] -= not_removed_due_to_collisions
 
         # now handle directories
         directories = sorted(directories, reverse = True)
