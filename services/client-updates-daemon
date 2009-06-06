@@ -271,7 +271,7 @@ class UpdatesDaemon(dbus.service.Object):
             entropy = Entropy()
             entropy.SystemSettings.clear()
             # entropy resources locked?
-            locked = entropy._resources_run_check_lock()
+            locked = entropy.resources_check_lock()
             if locked:
                 if DAEMON_DEBUG:
                     write_output("__run_fetcher: resources locked, skipping")
