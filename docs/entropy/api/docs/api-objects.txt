@@ -474,13 +474,14 @@ entropy.server.interfaces.main.const_setup_perms	entropy.const-module.html#const
 entropy.server.interfaces.main.const_create_working_dirs	entropy.const-module.html#const_create_working_dirs
 entropy.server.interfaces.mirrors	entropy.server.interfaces.mirrors-module.html
 entropy.server.interfaces.mirrors.blue	entropy.output-module.html#blue
-entropy.server.interfaces.mirrors.brown	entropy.output-module.html#brown
 entropy.server.interfaces.mirrors.darkblue	entropy.output-module.html#darkblue
-entropy.server.interfaces.mirrors.darkred	entropy.output-module.html#darkred
-entropy.server.interfaces.mirrors.bold	entropy.output-module.html#bold
 entropy.server.interfaces.mirrors.red	entropy.output-module.html#red
+entropy.server.interfaces.mirrors.brown	entropy.output-module.html#brown
+entropy.server.interfaces.mirrors.bold	entropy.output-module.html#bold
+entropy.server.interfaces.mirrors.darkred	entropy.output-module.html#darkred
 entropy.server.interfaces.mirrors._	entropy.i18n-module.html#_
 entropy.server.interfaces.mirrors.darkgreen	entropy.output-module.html#darkgreen
+entropy.server.interfaces.mirrors.purple	entropy.output-module.html#purple
 entropy.services	entropy.services-module.html
 entropy.services.auth_interfaces	entropy.services.auth_interfaces-module.html
 entropy.services.auth_interfaces._	entropy.i18n-module.html#_
@@ -534,7 +535,7 @@ entropy.tools.remove_package_operators	entropy.tools-module.html#remove_package_
 entropy.tools.create_sha1_file	entropy.tools-module.html#create_sha1_file
 entropy.tools.endversion_keys	entropy.tools-module.html#endversion_keys
 entropy.tools.print_warning	entropy.output-module.html#print_warning
-entropy.tools.sort_update_files	entropy.tools-module.html#sort_update_files
+entropy.tools.locate_edb	entropy.tools-module.html#locate_edb
 entropy.tools.get_operator	entropy.tools-module.html#get_operator
 entropy.tools.print_traceback	entropy.tools-module.html#print_traceback
 entropy.tools.check_required_space	entropy.tools-module.html#check_required_space
@@ -550,6 +551,7 @@ entropy.tools.extract_xpak	entropy.tools-module.html#extract_xpak
 entropy.tools.resetColor	entropy.output-module.html#resetColor
 entropy.tools.brown	entropy.output-module.html#brown
 entropy.tools.is_valid_string	entropy.tools-module.html#is_valid_string
+entropy.tools.sort_update_files	entropy.tools-module.html#sort_update_files
 entropy.tools.uncompress_tar_bz2	entropy.tools-module.html#uncompress_tar_bz2
 entropy.tools.enlightenatom	entropy.output-module.html#enlightenatom
 entropy.tools.const_islive	entropy.const-module.html#const_islive
@@ -1111,7 +1113,6 @@ entropy.client.interfaces.package.Package.error_on_prepared	entropy.client.inter
 entropy.client.interfaces.package.Package.multi_fetch_step	entropy.client.interfaces.package.Package-class.html#multi_fetch_step
 entropy.client.interfaces.package.Package.sources_fetch_step	entropy.client.interfaces.package.Package-class.html#sources_fetch_step
 entropy.client.interfaces.package.Package.__generate_fetch_metadata	entropy.client.interfaces.package.Package-class.html#__generate_fetch_metadata
-entropy.client.interfaces.package.Package.__update_available_cache	entropy.client.interfaces.package.Package-class.html#__update_available_cache
 entropy.client.interfaces.package.Package.__init__	entropy.client.interfaces.package.Package-class.html#__init__
 entropy.client.interfaces.package.Package.__update_world_cache	entropy.client.interfaces.package.Package-class.html#__update_world_cache
 entropy.client.interfaces.package.Package.__unpack_package	entropy.client.interfaces.package.Package-class.html#__unpack_package
@@ -1202,6 +1203,7 @@ entropy.client.interfaces.repository.Repository.is_repository_unlocked	entropy.c
 entropy.client.interfaces.repository.Repository.check_entropy_updates	entropy.client.interfaces.repository.Repository-class.html#check_entropy_updates
 entropy.client.interfaces.repository.Repository._config_updates_make_conf	entropy.client.interfaces.repository.Repository-class.html#_config_updates_make_conf
 entropy.client.interfaces.repository.Repository.get_eapi3_connection	entropy.client.interfaces.repository.Repository-class.html#get_eapi3_connection
+entropy.client.interfaces.repository.Repository._verify_file_checksum	entropy.client.interfaces.repository.Repository-class.html#_verify_file_checksum
 entropy.client.interfaces.repository.Repository.handle_eapi3_database_sync	entropy.client.interfaces.repository.Repository-class.html#handle_eapi3_database_sync
 entropy.client.interfaces.repository.Repository.__ensure_repository_path	entropy.client.interfaces.repository.Repository-class.html#__ensure_repository_path
 entropy.client.interfaces.repository.Repository.check_downloaded_database	entropy.client.interfaces.repository.Repository-class.html#check_downloaded_database
@@ -1960,6 +1962,7 @@ entropy.db.LocalRepository.fetchall2set	entropy.db.LocalRepository-class.html#fe
 entropy.db.LocalRepository.isUseflagAvailable	entropy.db.LocalRepository-class.html#isUseflagAvailable
 entropy.db.LocalRepository.removeContent	entropy.db.LocalRepository-class.html#removeContent
 entropy.db.LocalRepository.removeAutomergefiles	entropy.db.LocalRepository-class.html#removeAutomergefiles
+entropy.db.LocalRepository.dropContent	entropy.db.LocalRepository-class.html#dropContent
 entropy.db.LocalRepository.retrieveSources	entropy.db.LocalRepository-class.html#retrieveSources
 entropy.db.LocalRepository.__filterSlotTagUse	entropy.db.LocalRepository-class.html#__filterSlotTagUse
 entropy.db.LocalRepository.__generate_found_ids_match	entropy.db.LocalRepository-class.html#__generate_found_ids_match
@@ -2197,7 +2200,9 @@ entropy.qa.QAInterface.Lifo	entropy.misc.Lifo-class.html
 entropy.qa.QAInterface.resolve_dynamic_library	entropy.qa.QAInterface-class.html#resolve_dynamic_library
 entropy.qa.QAInterface.scan_missing_dependencies	entropy.qa.QAInterface-class.html#scan_missing_dependencies
 entropy.qa.QAInterface.content_test	entropy.qa.QAInterface-class.html#content_test
+entropy.qa.QAInterface.__analyze_package_edb	entropy.qa.QAInterface-class.html#__analyze_package_edb
 entropy.qa.QAInterface.get_deep_dependency_list	entropy.qa.QAInterface-class.html#get_deep_dependency_list
+entropy.qa.QAInterface.entropy_package_checks	entropy.qa.QAInterface-class.html#entropy_package_checks
 entropy.qa.QAInterface.__init__	entropy.qa.QAInterface-class.html#__init__
 entropy.security.SecurityInterface	entropy.security.SecurityInterface-class.html
 entropy.security.SecurityInterface.fetch_advisories	entropy.security.SecurityInterface-class.html#fetch_advisories
@@ -2391,6 +2396,7 @@ entropy.server.interfaces.mirrors.Server._sync_run_removal_queue	entropy.server.
 entropy.server.interfaces.mirrors.Server.get_files_to_sync	entropy.server.interfaces.mirrors.Server-class.html#get_files_to_sync
 entropy.server.interfaces.mirrors.Server.upload_notice_board	entropy.server.interfaces.mirrors.Server-class.html#upload_notice_board
 entropy.server.interfaces.mirrors.Server.get_mirrors_lock	entropy.server.interfaces.mirrors.Server-class.html#get_mirrors_lock
+entropy.server.interfaces.mirrors.Server.run_package_files_qa_checks	entropy.server.interfaces.mirrors.Server-class.html#run_package_files_qa_checks
 entropy.server.interfaces.mirrors.Server._show_eapi3_upload_messages	entropy.server.interfaces.mirrors.Server-class.html#_show_eapi3_upload_messages
 entropy.server.interfaces.mirrors.Server.remove_expiration_files	entropy.server.interfaces.mirrors.Server-class.html#remove_expiration_files
 entropy.server.interfaces.mirrors.Server.create_expiration_file	entropy.server.interfaces.mirrors.Server-class.html#create_expiration_file
@@ -3191,6 +3197,7 @@ entropy.spm.PortagePlugin.get_world_file	entropy.spm.PortagePlugin-class.html#ge
 entropy.spm.PortagePlugin.get_useflags	entropy.spm.PortagePlugin-class.html#get_useflags
 entropy.spm.PortagePlugin.__init__	entropy.spm.PortagePlugin-class.html#__init__
 entropy.spm.PortagePlugin.get_package_setting	entropy.spm.PortagePlugin-class.html#get_package_setting
+entropy.spm.PortagePlugin.src_uri_paren_reduce	entropy.spm.PortagePlugin-class.html#src_uri_paren_reduce
 entropy.spm.PortagePlugin.get_glsa_id_information	entropy.spm.PortagePlugin-class.html#get_glsa_id_information
 entropy.spm.PortagePlugin.extract_pkg_metadata	entropy.spm.PortagePlugin-class.html#extract_pkg_metadata
 entropy.spm.PortagePlugin.get_sets_expanded	entropy.spm.PortagePlugin-class.html#get_sets_expanded

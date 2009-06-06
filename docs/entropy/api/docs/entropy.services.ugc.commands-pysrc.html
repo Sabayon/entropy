@@ -1035,19 +1035,21 @@ entropy.services.ugc" class="py-name" href="#" onclick="return doclink('link-160
 entropy.transceivers.FtpInterface.close" class="py-name" href="#" onclick="return doclink('link-170', 'close', 'link-170');">close</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
 <a name="L830"></a><tt class="py-lineno">830</tt>  <tt class="py-line">            <tt class="py-keyword">except</tt> <tt class="py-name">IOError</tt><tt class="py-op">:</tt> </tt>
 <a name="L831"></a><tt class="py-lineno">831</tt>  <tt class="py-line">                <tt class="py-keyword">continue</tt> </tt>
-<a name="L832"></a><tt class="py-lineno">832</tt>  <tt class="py-line">            <tt class="py-name">files</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
-<a name="L833"></a><tt class="py-lineno">833</tt>  <tt class="py-line">            <tt class="py-name">rm_paths</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
-<a name="L834"></a><tt class="py-lineno">834</tt>  <tt class="py-line"> </tt>
-<a name="L835"></a><tt class="py-lineno">835</tt>  <tt class="py-line">        <tt class="py-name">sender</tt> <tt class="py-op">=</tt> <tt id="link-171" class="py-name"><a title="entropy.misc.EmailSender" class="py-name" href="#" onclick="return doclink('link-171', 'EmailSender', 'link-14');">EmailSender</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
-<a name="L836"></a><tt class="py-lineno">836</tt>  <tt class="py-line">        <tt class="py-name">sender</tt><tt class="py-op">.</tt><tt id="link-172" class="py-name" targets="Method entropy.misc.EmailSender.send_mime_email()=entropy.misc.EmailSender-class.html#send_mime_email"><a title="entropy.misc.EmailSender.send_mime_email" class="py-name" href="#" onclick="return doclink('link-172', 'send_mime_email', 'link-172');">send_mime_email</a></tt><tt class="py-op">(</tt><tt class="py-name">sender_email</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-name">destination_email</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">subject</tt><tt class="py-op">,</tt> </tt>
-<a name="L837"></a><tt class="py-lineno">837</tt>  <tt class="py-line">            <tt class="py-name">mail_txt</tt><tt class="py-op">,</tt> <tt class="py-name">files</tt><tt class="py-op">)</tt> </tt>
-<a name="L838"></a><tt class="py-lineno">838</tt>  <tt class="py-line">        <tt class="py-keyword">del</tt> <tt class="py-name">sender</tt> </tt>
-<a name="L839"></a><tt class="py-lineno">839</tt>  <tt class="py-line"> </tt>
-<a name="L840"></a><tt class="py-lineno">840</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">rm_path</tt> <tt class="py-keyword">in</tt> <tt class="py-name">rm_paths</tt><tt class="py-op">:</tt> </tt>
-<a name="L841"></a><tt class="py-lineno">841</tt>  <tt class="py-line">            <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">remove</tt><tt class="py-op">(</tt><tt class="py-name">rm_path</tt><tt class="py-op">)</tt> </tt>
-<a name="L842"></a><tt class="py-lineno">842</tt>  <tt class="py-line"> </tt>
-<a name="L843"></a><tt class="py-lineno">843</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">True</tt><tt class="py-op">,</tt><tt class="py-string">'ok'</tt> </tt>
-</div></div><a name="L844"></a><tt class="py-lineno">844</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<a name="L832"></a><tt class="py-lineno">832</tt>  <tt class="py-line">            <tt class="py-name">os</tt><tt class="py-op">.</tt><tt id="link-171" class="py-name"><a title="entropy.misc.LogFile.close
+entropy.transceivers.FtpInterface.close" class="py-name" href="#" onclick="return doclink('link-171', 'close', 'link-170');">close</a></tt><tt class="py-op">(</tt><tt class="py-name">fd</tt><tt class="py-op">)</tt> </tt>
+<a name="L833"></a><tt class="py-lineno">833</tt>  <tt class="py-line">            <tt class="py-name">files</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L834"></a><tt class="py-lineno">834</tt>  <tt class="py-line">            <tt class="py-name">rm_paths</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">path</tt><tt class="py-op">)</tt> </tt>
+<a name="L835"></a><tt class="py-lineno">835</tt>  <tt class="py-line"> </tt>
+<a name="L836"></a><tt class="py-lineno">836</tt>  <tt class="py-line">        <tt class="py-name">sender</tt> <tt class="py-op">=</tt> <tt id="link-172" class="py-name"><a title="entropy.misc.EmailSender" class="py-name" href="#" onclick="return doclink('link-172', 'EmailSender', 'link-14');">EmailSender</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L837"></a><tt class="py-lineno">837</tt>  <tt class="py-line">        <tt class="py-name">sender</tt><tt class="py-op">.</tt><tt id="link-173" class="py-name" targets="Method entropy.misc.EmailSender.send_mime_email()=entropy.misc.EmailSender-class.html#send_mime_email"><a title="entropy.misc.EmailSender.send_mime_email" class="py-name" href="#" onclick="return doclink('link-173', 'send_mime_email', 'link-173');">send_mime_email</a></tt><tt class="py-op">(</tt><tt class="py-name">sender_email</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-name">destination_email</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">subject</tt><tt class="py-op">,</tt> </tt>
+<a name="L838"></a><tt class="py-lineno">838</tt>  <tt class="py-line">            <tt class="py-name">mail_txt</tt><tt class="py-op">,</tt> <tt class="py-name">files</tt><tt class="py-op">)</tt> </tt>
+<a name="L839"></a><tt class="py-lineno">839</tt>  <tt class="py-line">        <tt class="py-keyword">del</tt> <tt class="py-name">sender</tt> </tt>
+<a name="L840"></a><tt class="py-lineno">840</tt>  <tt class="py-line"> </tt>
+<a name="L841"></a><tt class="py-lineno">841</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">rm_path</tt> <tt class="py-keyword">in</tt> <tt class="py-name">rm_paths</tt><tt class="py-op">:</tt> </tt>
+<a name="L842"></a><tt class="py-lineno">842</tt>  <tt class="py-line">            <tt class="py-name">os</tt><tt class="py-op">.</tt><tt class="py-name">remove</tt><tt class="py-op">(</tt><tt class="py-name">rm_path</tt><tt class="py-op">)</tt> </tt>
+<a name="L843"></a><tt class="py-lineno">843</tt>  <tt class="py-line"> </tt>
+<a name="L844"></a><tt class="py-lineno">844</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">True</tt><tt class="py-op">,</tt><tt class="py-string">'ok'</tt> </tt>
+</div></div><a name="L845"></a><tt class="py-lineno">845</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -1085,7 +1087,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Mon Jun  1 10:07:58 2009
+    Generated by Epydoc 3.0.1 on Sat Jun  6 09:09:58 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
