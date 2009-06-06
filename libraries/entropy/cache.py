@@ -1,25 +1,19 @@
 # -*- coding: utf-8 -*-
-'''
-    # DESCRIPTION:
-    # Entropy Object Oriented Interface
+"""
 
-    Copyright (C) 2007-2009 Fabio Erculiani
+    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
+    @contact: lxnay@sabayonlinux.org
+    @copyright: Fabio Erculiani
+    @license: GPL-2
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    B{Entropy Framework cache module}.
+    This module contains the Entropy, asynchronous caching logic.
+    It is not meant to handle cache pollution management, because
+    this is either handled implicitly when cached items are pulled
+    in or by using entropy.dump or cache cleaners (see
+    entropy.client.interfaces.cache mixin methods)
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-'''
-# pylint ~ ok
+"""
 
 from __future__ import with_statement
 from entropy.core import Singleton
@@ -33,6 +27,35 @@ class EntropyCacher(Singleton):
         a thread doing the cache writes asynchronously, thus
         it must be stopped before your application is terminated
         calling the stop() method.
+
+        Sample code:
+
+            >>> # import module
+            >>> from entropy.cache import EntropyCacher
+            ...
+            >>> # first EntropyCacher load, start it
+            >>> cacher = EntropyCacher()
+            >>> cacher.start()
+            ...
+            >>> # now store something into its cache
+            >>> cacher.push('my_identifier1', [1, 2, 3])
+            >>> # now store something synchronously
+            >>> cacher.push('my_identifier2', [1, 2, 3], async = False)
+            ...
+            >>> # now flush all the caches to disk, and make sure all
+            >>> # is written
+            >>> cacher.sync(wait = True)
+            ...
+            >>> # now fetch something from the cache
+            >>> data = cacher.pop('my_identifier1')
+            [1, 2, 3]
+            ...
+            >>> # now discard all the cached (async) writes
+            >>> cacher.discard()
+            ...
+            >>> # and stop EntropyCacher
+            >>> cacher.stop()
+
     """
 
     import entropy.dump as dumpTools
