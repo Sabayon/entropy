@@ -850,11 +850,20 @@ class Repository:
                 mytxt, importance = 0, type = "info",
                 header = "\t", back = True, count = (count,maxcount,)
             )
-            mydbconn.addPackage(
-                mydata, revision = mydata['revision'],
-                idpackage = idpackage, do_remove = False,
-                do_commit = False, formatted_content = True
-            )
+            try:
+                mydbconn.addPackage(
+                    mydata, revision = mydata['revision'],
+                    idpackage = idpackage, do_remove = False,
+                    do_commit = False, formatted_content = True
+                )
+            except (self.dbapi2.Error,):
+                self.Entropy.updateProgress(
+                    blue(_("repository error while adding packages")),
+                    importance = 1, type = "warning",
+                    header = "\t", count = (count, maxcount,)
+                )
+                mydbconn.closeDB()
+                return False
 
         self.Entropy.updateProgress(
             blue(_("Packages injection complete")), importance = 0,
@@ -872,7 +881,17 @@ class Repository:
                 mytxt, importance = 0, type = "info",
                 header = "\t", back = True, count = (count,maxcount,)
             )
-            mydbconn.removePackage(idpackage, do_cleanup = False, do_commit = False)
+            try:
+                mydbconn.removePackage(idpackage, do_cleanup = False,
+                    do_commit = False)
+            except (self.dbapi2.Error,):
+                self.Entropy.updateProgress(
+                    blue(_("repository error while removing packages")),
+                    importance = 1, type = "warning",
+                    header = "\t", count = (count, maxcount,)
+                )
+                mydbconn.closeDB()
+                return False
 
         self.Entropy.updateProgress(
             blue(_("Packages removal complete")),
