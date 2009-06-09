@@ -657,9 +657,12 @@ class RepositoryManagerMenu(MenuSkel):
     def set_notebook_page(self, page):
         self.sm_ui.repoManagerNotebook.set_current_page(page)
 
+    def stdout_writer(self, txt):
+        print txt
+        self.console.feed_child(txt + '\n\r')
+
     def setup_console(self):
 
-        self.clipboard = gtk.Clipboard()
         self.pty = pty.openpty()
         self.std_output = fakeoutfile(self.pty[1])
         self.std_input = fakeinfile(self.pty[1])
@@ -673,6 +676,11 @@ class RepositoryManagerMenu(MenuSkel):
         self.console = SulfurConsole()
         self.console.set_scrollback_lines(1024)
         self.console.set_scroll_on_output(True)
+        # this is a workaround for buggy vte.Terminal when using
+        # file descriptors. This will make fakeoutfile to use
+        # our external writer instead of using os.write
+        self.std_output.external_writer = self.stdout_writer
+
         self.console.set_pty(self.pty[0])
         self.console.connect("button-press-event", self.on_console_click)
         self.console.connect("commit",self.on_console_commit)
@@ -685,7 +693,6 @@ class RepositoryManagerMenu(MenuSkel):
         if self.do_debug: print "repoman debug:",f,msg
 
     def clear_console(self):
-        self.std_output.text_written = []
         self.std_input.text_read = ''
         self.console.reset()
 
@@ -727,8 +734,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.clear_console()
 
     def on_terminal_copy_activate(self, widget):
-        self.clipboard.clear()
-        self.clipboard.set_text(''.join(self.std_output.text_written))
+        self.console.copy_clipboard()
 
     def setup_data_view_buttons(self):
 
@@ -1372,6 +1378,7 @@ class RepositoryManagerMenu(MenuSkel):
             with self.BufferLock:
                 try:
                     status, stdout = self.Service.Methods.get_queue_id_stdout(queue_id, n_bytes)
+                    print repr(stdout)  
                 except Exception, e:
                     self.service_status_message(e)
                     return
@@ -1382,15 +1389,9 @@ class RepositoryManagerMenu(MenuSkel):
             self.Output = stdout
 
             self.clear_console()
-
-            mytxt = []
-            slice_count = self.console.get_column_count()
-            while stdout:
-                my = stdout[:slice_count]
-                stdout = stdout[slice_count:]
-                mytxt.append(my)
-
-            for txt in mytxt: self.std_output.write(txt)
+            print stdout + "\n\r" 
+            stdout = stdout.replace("\n", "\n\r")
+            self.console.feed_child(stdout)
 
         return False
 
@@ -6007,9 +6008,17 @@ class InputDialog:
 
                 self.entry_text_table[input_id] = text
                 self.identifiers_table[input_id] = input_widget
-                if input_type in ["list"]:
-                    def my_input_cb(s): return s
-                self.cb_table[input_widget] = my_input_cb
+
+                if input_type in ["list", "text", "combo"]:
+                    def my_input_cb(s):
+                        return s
+                    self.cb_table[input_widget] = my_input_cb
+                elif input_type == "checkbox":
+                    def my_input_cb(s):
+                        return True
+                    self.cb_table[input_widget] = my_input_cb
+
+
                 if input_type not in ["text","list"]:
                     mytable.attach(input_widget, 1, 2, row_count, row_count+1)
 
