@@ -39,8 +39,9 @@ from sulfur.misc import busy_cursor, normal_cursor
 class SulfurApplicationEventsMixin:
 
     def on_console_click(self, widget, event):
-        self.console_menu.popup( None, None, None, event.button, event.time )
-        return True
+        if event.button == 3:
+            self.console_menu.popup( None, None, None, event.button, event.time )
+            return True
 
     def on_dbBackupButton_clicked(self, widget):
         self.wait_window.show()
@@ -267,12 +268,10 @@ class SulfurApplicationEventsMixin:
             my.load()
 
     def on_terminal_clear_activate(self, widget):
-        self.output.text_written = []
         self.console.reset()
 
     def on_terminal_copy_activate(self, widget):
-        self.clipboard.clear()
-        self.clipboard.set_text(''.join(self.output.text_written))
+        self.console.copy_clipboard()
 
     def on_Preferences_toggled(self, widget, toggle = True):
         self.ui.preferencesSaveButton.set_sensitive(toggle)

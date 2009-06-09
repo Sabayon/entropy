@@ -137,6 +137,8 @@ class SulfurConsole(vte.Terminal):
     def __init__(self):
         vte.Terminal.__init__(self)
         self.reset()
+        self.chars_count = 0
+        self.max_chars = 3000
 
     def _dosettings(self):
         imgpath = os.path.join(const.PIXMAPS_PATH,
@@ -148,10 +150,16 @@ class SulfurConsole(vte.Terminal):
         myfc = gtk.gdk.color_parse(SulfurConf.color_console_font)
         self.set_color_foreground(myfc)
 
-    def reset (self):
+    def reset(self):
+        self.chars_count = 0
         vte.Terminal.reset(self, True, True)
         self._dosettings()
 
+    def feed_child(self, txt):
+        self.chars_count += len(txt)
+        if self.chars_count > self.max_chars:
+            self.reset()
+        return vte.Terminal.feed(self, txt, len(txt))
 
 
 

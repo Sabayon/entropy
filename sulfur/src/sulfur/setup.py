@@ -330,7 +330,6 @@ class fakeoutfile:
 
     def __init__(self, fn):
         self.fn = fn
-        self.text_written = []
         self.external_writer = None
 
     def close(self):
@@ -359,10 +358,6 @@ class fakeoutfile:
             os.write(self.fn, s)
         else:
             self.external_writer(s)
-        self.text_written.append(s)
-        # cut at 1024 entries
-        if len(self.text_written) > 1024:
-            self.text_written = self.text_written[-1024:]
 
     def write_line(self, s):
         self.write(s)

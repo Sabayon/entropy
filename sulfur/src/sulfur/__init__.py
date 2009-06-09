@@ -125,7 +125,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def setup_gui(self):
 
-        self.clipboard = gtk.Clipboard()
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
@@ -1225,21 +1224,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         for txt in mytxt:
             if extra:
-                self.console.feed_child("%s: %s\n" % (extra, txt,))
+                self.console.feed_child("%s: %s\n\r" % (extra, txt,))
                 continue
-            self.console.feed_child("%s\n" % (txt,))
+            self.console.feed_child("%s\n\r" % (txt,))
 
     def progress_log_write(self, msg):
-
-        mytxt = []
-        slice_count = self.console.get_column_count()
-        while msg:
-            my = msg[:slice_count]
-            msg = msg[slice_count:]
-            mytxt.append(my)
-
-        for txt in mytxt:
-            self.console.feed_child("%s\n" % (txt,))
+        self.console.feed_child(msg + "\n\r")
 
     def enable_skip_mirror(self):
         self.ui.skipMirror.show()
