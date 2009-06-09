@@ -61,6 +61,12 @@ class QueueExecutor:
 
         return 0,licenses
 
+    def ok_dialog(self, msg):
+        def do_dialog():
+            okDialog(self.Sulfur.ui.main, msg)
+            return False
+        gobject.timeout_add(0, do_dialog)
+
     def run(self, install_queue, removal_queue, do_purge_cache = [],
         fetch_only = False, download_sources = False, selected_by_user = None):
 
@@ -73,8 +79,8 @@ class QueueExecutor:
             if not result or self.Entropy.is_match_masked(match):
                 dbconn = self.Entropy.open_repository(match[1])
                 atom = dbconn.retrieveAtom(match[0])
-                okDialog( self.Sulfur.ui.main, "%s: %s" % (
-                    _("Error enabling masked package"), atom) )
+                self.ok_dialog("%s: %s" % (
+                    _("Error enabling masked package"), atom))
                 return -2,1
 
         removalQueue = []
@@ -104,11 +110,20 @@ class QueueExecutor:
             myrange.append(step)
             progress_step += step
         myrange.append(step)
-        self.Entropy.progress.total.setup( myrange )
 
-        self.Sulfur.skipMirrorNow = False
-        self.Sulfur.ui.skipMirror.show()
-        self.Sulfur.ui.abortQueue.show()
+        def do_total_setup():
+            self.Entropy.progress.total.setup( myrange )
+            return False
+        gobject.timeout_add(0, do_total_setup)
+
+
+        def do_skip_show():
+            self.Sulfur.skipMirrorNow = False
+            self.Sulfur.ui.skipMirror.show()
+            self.Sulfur.ui.abortQueue.show()
+            return False
+        gobject.timeout_add(0, do_skip_show)
+
         # first fetch all
         fetchqueue = 0
         mykeys = {}
@@ -159,7 +174,10 @@ class QueueExecutor:
                     pass
             spawn_ugc()
 
-        self.Sulfur.ui.skipMirror.hide()
+        def do_skip_hide():
+            self.Sulfur.ui.skipMirror.hide()
+            return False
+        gobject.timeout_add(0, do_skip_hide)
 
         if fetch_only or download_sources:
             return 0,0
@@ -199,8 +217,13 @@ class QueueExecutor:
             del metaopts
             del Package
 
-        self.Sulfur.skipMirrorNow = False
-        self.Sulfur.ui.skipMirror.show()
+        def do_skip_one_show():
+            self.Sulfur.skipMirrorNow = False
+            self.Sulfur.ui.skipMirror.show()
+            return False
+
+        gobject.timeout_add(0, do_skip_one_show)
+
         totalqueue = len(runQueue)
         currentqueue = 0
         for packageInfo in runQueue:
@@ -236,8 +259,11 @@ class QueueExecutor:
             del metaopts
             del Package
 
-        self.Sulfur.ui.skipMirror.hide()
-        self.Sulfur.ui.abortQueue.hide()
+        def do_skip_hide_again():
+            self.Sulfur.ui.skipMirror.hide()
+            self.Sulfur.ui.abortQueue.hide()
+            return False
+        gobject.timeout_add(0, do_skip_hide_again)
 
         return 0,0
 

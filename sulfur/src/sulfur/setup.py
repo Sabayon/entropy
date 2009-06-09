@@ -17,6 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+from __future__ import with_statement
 import os, sys
 import entropy.tools as entropyTools
 from entropy.const import *
@@ -330,6 +331,7 @@ class fakeoutfile:
     def __init__(self, fn):
         self.fn = fn
         self.text_written = []
+        self.external_writer = None
 
     def close(self):
         pass
@@ -353,7 +355,10 @@ class fakeoutfile:
         return []
 
     def write(self, s):
-        os.write(self.fn,s)
+        if self.external_writer is None:
+            os.write(self.fn, s)
+        else:
+            self.external_writer(s)
         self.text_written.append(s)
         # cut at 1024 entries
         if len(self.text_written) > 1024:

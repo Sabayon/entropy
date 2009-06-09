@@ -225,6 +225,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # put self.console in place
         self.console = SulfurConsole()
+        # this is a workaround for buggy vte.Terminal when using
+        # file descriptors. This will make fakeoutfile to use
+        # our external writer instead of using os.write
+        self.output.external_writer = self.progress_log_write
+
         self.console.set_scrollback_lines(1024)
         self.console.set_scroll_on_output(True)
         self.console.connect("button-press-event", self.on_console_click)
@@ -1220,9 +1225,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         for txt in mytxt:
             if extra:
-                self.output.write_line("%s: %s\n" % (extra,txt,))
+                self.console.feed_child("%s: %s\n" % (extra, txt,))
                 continue
-            self.output.write_line("%s\n" % (txt,))
+            self.console.feed_child("%s\n" % (txt,))
 
     def progress_log_write(self, msg):
 
@@ -1233,7 +1238,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             msg = msg[slice_count:]
             mytxt.append(my)
 
-        for txt in mytxt: self.output.write_line("%s\n" % (txt,))
+        for txt in mytxt:
+            self.console.feed_child("%s\n" % (txt,))
 
     def enable_skip_mirror(self):
         self.ui.skipMirror.show()
@@ -1479,6 +1485,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     if self.do_debug:
                         print "process_queue: QueueExecutor thread still alive"
                     self.gtk_loop()
+                    if self.do_debug:
+                        print "process_queue: after QueueExecutor loop"
 
                 e,i = self.my_inst_errors
                 if self.do_debug:
