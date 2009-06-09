@@ -620,10 +620,10 @@ class EntropyPackages:
 
     def get_all_groups(self):
         pkgs = []
-        pkgs.extend(self.get_groups('installed'))
-        pkgs.extend(self.get_groups('available'))
-        pkgs.extend(self.get_groups('reinstallable'))
-        pkgs.extend(self.get_groups('updates'))
+        pkgs.extend(self.get_groups('installed')[:])
+        pkgs.extend(self.get_groups('available')[:])
+        pkgs.extend(self.get_groups('reinstallable')[:])
+        pkgs.extend(self.get_groups('updates')[:])
         #pkgs.extend(self.get_groups('downgrade'))
         #pkgs.extend(self.get_groups('masked'))
         #pkgs.extend(self.get_groups('user_masked'))
@@ -713,12 +713,12 @@ class EntropyPackages:
 
     def _pkg_get_downgrade(self):
 
-        already_in = self.get_raw_groups("updates")
-        already_in += self.get_raw_groups("available")
-        already_in += self.get_raw_groups("reinstallable")
-        already_in += self.get_raw_groups("masked")
-        already_in += self.get_raw_groups("user_masked")
-        already_in += self.get_raw_groups("user_unmasked")
+        already_in = self.get_raw_groups("updates")[:]
+        already_in += self.get_raw_groups("available")[:]
+        already_in += self.get_raw_groups("reinstallable")[:]
+        already_in += self.get_raw_groups("masked")[:]
+        already_in += self.get_raw_groups("user_masked")[:]
+        already_in += self.get_raw_groups("user_unmasked")[:]
         already_in = [x.matched_atom for x in already_in]
 
         matches = []
