@@ -35,6 +35,10 @@ def get_test_entropy_package3():
     test_pkg = "virtual:poppler-qt3-0.10.6~1.tbz2"
     return get_test_generic_package(test_pkg)
 
+def get_test_xpak_empty_package():
+    test_pkg = "aspell-es-0.50.2.tbz2"
+    return get_test_generic_package(test_pkg)
+
 def get_test_package_name():
     return "zlib"
 

@@ -54,6 +54,17 @@ class MiscTest(unittest.TestCase):
 
         shutil.rmtree(tmp_path, True)
 
+    def test_extract_xpak_only(self):
+
+        pkg_path = _misc.get_test_xpak_empty_package()
+        tmp_path = tempfile.mkdtemp()
+        out_path = et.extract_xpak(pkg_path, tmp_path)
+
+        self.assertNotEqual(out_path, None)
+        self.assert_(os.listdir(out_path))
+
+        shutil.rmtree(tmp_path, True)
+
     def test_remove_edb(self):
 
         tmp_path = tempfile.mkdtemp()
