@@ -615,7 +615,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.setup_console()
 
         self.QueueUpdater = TimeScheduled(5, self.update_queue_view)
-        self.OutputUpdater = TimeScheduled(0.5, self.update_output_view)
+        self.OutputUpdater = TimeScheduled(3, self.update_output_view)
         self.PinboardUpdater = TimeScheduled(60, self.update_pinboard_view)
         self.notebook_pages = {
             'queue': 0,
@@ -658,7 +658,6 @@ class RepositoryManagerMenu(MenuSkel):
         self.sm_ui.repoManagerNotebook.set_current_page(page)
 
     def stdout_writer(self, txt):
-        print txt
         self.console.feed_child(txt + '\n\r')
 
     def setup_console(self):
@@ -734,7 +733,9 @@ class RepositoryManagerMenu(MenuSkel):
         self.clear_console()
 
     def on_terminal_copy_activate(self, widget):
+        self.console.select_all()
         self.console.copy_clipboard()
+        self.console.select_none()
 
     def setup_data_view_buttons(self):
 
@@ -1378,7 +1379,6 @@ class RepositoryManagerMenu(MenuSkel):
             with self.BufferLock:
                 try:
                     status, stdout = self.Service.Methods.get_queue_id_stdout(queue_id, n_bytes)
-                    print repr(stdout)  
                 except Exception, e:
                     self.service_status_message(e)
                     return
@@ -1389,7 +1389,6 @@ class RepositoryManagerMenu(MenuSkel):
             self.Output = stdout
 
             self.clear_console()
-            print stdout + "\n\r" 
             stdout = stdout.replace("\n", "\n\r")
             self.console.feed_child(stdout)
 
