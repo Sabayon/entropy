@@ -755,9 +755,11 @@ def suck_xpak(tbz2file, outputpath):
     data_start_position = None
     data_end_position = None
 
-    while counter >= 0:
+    while counter >= (0 - chunk_len):
 
         old.seek(counter - bytes, os.SEEK_END)
+        if (bytes - (abs(counter - bytes))) < chunk_len:
+            chunk_len = 1
         read_bytes = old.read(chunk_len)
         read_len = len(read_bytes)
 
