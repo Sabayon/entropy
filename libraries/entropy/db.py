@@ -748,10 +748,18 @@ class LocalRepository:
 
             if update_actions:
 
-                mytxt = "%s: %s. %s %s" % (
+                mytxt = "%s: %s." % (
                     bold(_("ATTENTION")),
                     red(_("forcing packages metadata update")),
-                    red(_("Updating system database using repository id")),
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "info",
+                    header = darkred(" * ")
+                )
+                mytxt = "%s %s." % (
+                    red(_("Updating system database using repository")),
                     blue(repository),
                 )
                 self.updateProgress(
@@ -759,7 +767,7 @@ class LocalRepository:
                     importance = 1,
                     type = "info",
                     header = darkred(" * ")
-                    )
+                )
                 # run stuff
                 clientDbconn.runTreeUpdatesActions(update_actions)
 
