@@ -568,7 +568,7 @@ def database(options):
                 print_info(mytxt)
                 if not os.path.isdir(etpConst['entropyunpackdir']):
                     os.makedirs(etpConst['entropyunpackdir'])
-                temptbz2 = etpConst['entropyunpackdir']+"/"+atom.split("/")[1]+".tbz2"
+                temptbz2 = etpConst['entropyunpackdir']+"/"+atom.split("/")[1]+etpConst['packagesext']
                 if os.path.isfile(temptbz2):
                     os.remove(temptbz2)
                 elif os.path.isdir(temptbz2):
@@ -576,7 +576,7 @@ def database(options):
                 f = open(temptbz2,"wb")
                 f.flush()
                 f.close()
-                Equo.entropyTools.append_xpak(temptbz2,atom)
+                Equo.entropyTools.append_xpak(temptbz2, atom)
                 # now extract info
                 try:
                     mydata = Spm.extract_pkg_metadata(temptbz2, silent = True)
