@@ -359,7 +359,9 @@ class Server(Singleton, TextInterface):
 
         if self.default_repository in srv_set['repositories']:
             self.ensure_paths(self.default_repository)
-        self.migrate_repository_databases_to_new_branched_path()
+
+        # NOW DISABLED, deprecated!
+        # self.migrate_repository_databases_to_new_branched_path()
 
         if self.default_repository not in srv_set['repositories']:
             raise PermissionDenied("PermissionDenied: %s %s" % (
