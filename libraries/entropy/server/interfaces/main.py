@@ -27,7 +27,7 @@ from entropy.core import Singleton
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError
 from entropy.const import etpConst, etpSys, const_setup_perms, \
-    const_create_working_dirs, const_extract_srv_repo_params
+    const_create_working_dirs, const_extract_srv_repo_params, etpUi
 from entropy.output import TextInterface, purple, red, darkgreen, \
     bold, brown, blue, darkred
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
@@ -548,7 +548,7 @@ class Server(Singleton, TextInterface):
 
         self.setup_community_repositories_settings()
         self.show_interface_status()
-        if handle_uninitialized:
+        if handle_uninitialized and etpUi['warn']:
             self.handle_uninitialized_repository(repoid)
 
     def setup_community_repositories_settings(self):

@@ -47,7 +47,7 @@ etpSys = {
     'maxthreads': 100,
     'dirstoclean': set(),
     'serverside': False,
-    'killpids': set()
+    'killpids': set(),
 }
 
 etpUi = {
@@ -59,6 +59,7 @@ etpUi = {
     'mute': False,
     'nolog': False,
     'clean': False,
+    'warn': True,
 }
 if "--debug" in sys.argv:
     etpUi['debug'] = True

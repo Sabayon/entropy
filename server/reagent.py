@@ -173,6 +173,8 @@ elif (options[0] == "inject"):
 
 # database tool
 elif (options[0] == "database"):
+    if "switchbranch" in options:
+        etpUi['warn'] = False
     import server_reagent
     server_reagent.database(options[1:])
     server_reagent.Entropy.close_server_databases()
