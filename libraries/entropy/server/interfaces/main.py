@@ -3511,7 +3511,7 @@ class Server(Singleton, TextInterface):
             )
             return None
 
-        mytxt = red("%s ...") % (_("Moving database (if not exists)"),)
+        mytxt = red("%s ...") % (_("Copying database (if not exists)"),)
         self.updateProgress(
             mytxt,
             importance = 1,
