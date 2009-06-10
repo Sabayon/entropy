@@ -2014,6 +2014,10 @@ class Server:
         upload_dir = os.path.join(self.Entropy.get_local_upload_directory(repo),
             branch)
 
+        # check if it exists
+        if not os.path.isdir(upload_dir):
+            return upload_files, upload_packages
+
         pkg_ext = etpConst['packagesext']
         pkg_md5_ext = etpConst['packagesmd5fileext']
         for package in os.listdir(upload_dir):
