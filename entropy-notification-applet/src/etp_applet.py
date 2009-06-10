@@ -26,8 +26,6 @@ import os
 import sys
 import time
 import subprocess
-import gnome
-import gnome.ui
 import gtk
 import gobject
 import pynotify
@@ -37,8 +35,8 @@ import dbus.mainloop.glib
 
 # applet imports
 import etp_applet_config
-from etp_applet_components import AppletNoticeWindow, AppletAboutWindow, \
-    AppletErrorDialog, AppletExceptionDialog, AppletIconPixbuf
+from etp_applet_components import AppletNoticeWindow, \
+    AppletErrorDialog, AppletIconPixbuf
 
 # Entropy imports
 from entropy.i18n import _
@@ -108,18 +106,11 @@ class EntropyApplet:
         self.notice_window = None
         self.error_dialog = None
         self.error_threshold = 0
-        self.about_window = None
         self.last_error = None
         self.package_updates = []
         self.last_alert = None
         self.tooltip_text = ""
         self.last_trigger_check_t = 0.0
-        gnome.program_init("entropy-notifier", etpConst['entropyversion'])
-
-        self.session = gnome.ui.master_client()
-        if self.session:
-            gtk.Object.connect(self.session, "save-yourself", self.save_yourself)
-            gtk.Object.connect(self.session, "die", self.exit_applet)
 
         self.never_viewed_notices = 1
         self.current_image = None
@@ -134,7 +125,8 @@ class EntropyApplet:
         self.icons.add_file("critical", "applet-critical.png")
         self.icons.add_file("disable", "applet-disable.png")
         self.icons.add_file("sulfur","sulfur.png")
-        self.icons.add_file("about","applet-about.png")
+        # remove this in future
+        # self.icons.add_file("about","applet-about.png")
         self.icons.add_file("web","applet-web.png")
         self.icons.add_file("configuration","applet-configuration.png")
         self.applet_size = 22
@@ -153,7 +145,6 @@ class EntropyApplet:
             ("web_site", _("_Sabayon Linux Website"),
                 _("Launch Sabayon Linux Website"), self.load_website),
             None,
-            ("about", _("_About"), _("About..."), self.about),
             ("exit", _("_Exit"), _("Exit"), self.exit_applet),
             )
 
@@ -370,8 +361,9 @@ class EntropyApplet:
         img = gtk.Image()
         if name == "update_now":
             pix = self.icons.best_match("sulfur",22)
-        elif name == "about":
-            pix = self.icons.best_match("about",22)
+        # remove this in future
+        #elif name == "about":
+        #    pix = self.icons.best_match("about",22)
         elif name in ["web_panel","web_site"]:
             pix = self.icons.best_match("web",22)
         elif name == "configure_applet":
@@ -403,16 +395,10 @@ class EntropyApplet:
         self.status_icon.set_visible(True)
 
     def load_packages_url(self, *data):
-        try:
-            gnome.url_show("http://www.sabayon.org/packages")
-        except gobject.GError:
-            self.load_url("http://www.sabayon.org/packages")
+        self.load_url("http://www.sabayon.org/packages")
 
     def load_website(self, *data):
-        try:
-            gnome.url_show("http://www.sabayon.org/")
-        except gobject.GError:
-            self.load_url("http://www.sabayon.org/")
+        self.load_url("http://www.sabayon.org/")
 
     def load_url(self, url):
         subprocess.call(['xdg-open',url])
@@ -468,20 +454,6 @@ class EntropyApplet:
         self.close_service()
         gtk.main_quit()
         raise SystemExit(0)
-
-    def save_yourself(self, *args):
-        if self.session:
-            self.session.set_clone_command(1, ["/usr/bin/entropy-update-applet"])
-            self.session.set_restart_command(1, ["/usr/bin/entropy-update-applet"])
-        return True
-
-    def about(self, *data):
-        if self.about_window:
-            return
-        self.about_window = AppletAboutWindow(self)
-
-    def about_dialog_closed(self):
-        self.about_window = None
 
     def notice_window_closed(self):
         self.notice_window = None
