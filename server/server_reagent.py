@@ -492,9 +492,10 @@ def database(options):
                 blue(_("Collecting packages that would be marked")),
                 bold(to_branch),blue(_("on")),purple(repoid),) )
 
-            dbconn = Entropy.open_server_repository(read_only = True,
-                no_upload = True, repo = repoid)
-            pkglist = dbconn.listAllIdpackages(branch = from_branch)
+            dbconn_old = Entropy.open_server_repository(read_only = True,
+                no_upload = True, repo = repoid, use_branch = from_branch,
+                do_treeupdates = False)
+            pkglist = dbconn_old.listAllIdpackages()
 
             print_info(darkgreen(" * ")+"%s %s: %s %s" % (
                 blue(_("These are the packages that would be marked")),
@@ -503,12 +504,6 @@ def database(options):
             rc = Entropy.askQuestion(_("Would you like to continue ?"))
             if rc == "No":
                 return 4
-
-            # XXX remove this in future
-            dbconn = Entropy.open_server_repository(read_only = False,
-                no_upload = True, repo = repoid, lock_remote = False)
-            dbconn.moveCountersToBranch(to_branch)
-            # XXX remove this in future, not needed
 
             status = Entropy.switch_packages_branch(pkglist, from_branch, to_branch)
             if status == None:
