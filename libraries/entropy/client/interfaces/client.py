@@ -22,6 +22,7 @@
 
 from __future__ import with_statement
 import os
+import sys
 from entropy.core import Singleton
 from entropy.output import TextInterface
 from entropy.db import dbapi2
@@ -31,7 +32,7 @@ from entropy.client.interfaces.dep import CalculatorsMixin
 from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
     MatchMixin
 from entropy.client.interfaces.fetch import FetchersMixin
-from entropy.const import etpConst, etpCache
+from entropy.const import etpConst, etpCache, etpUi, const_debug_write
 from entropy.core import SystemSettings, SystemSettingsPlugin
 from entropy.misc import LogFile
 from entropy.exceptions import SystemDatabaseError, RepositoryError
@@ -166,6 +167,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             load_ugc = True, url_fetcher = None,
             multiple_url_fetcher = None):
 
+        const_debug_write(__name__, "debug enabled")
         self.__instance_destroyed = False
         self.atomMatchCacheKey = etpCache['atomMatch']
         self.dbapi2 = dbapi2 # export for third parties
@@ -184,6 +186,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
 
         # setup package settings (masking and other stuff)
         self.SystemSettings = SystemSettings()
+        const_debug_write(__name__, "SystemSettings loaded")
 
         # modules import
         import entropy.dump as dumpTools
@@ -272,6 +275,8 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         else:
             self.validRepositories.extend(
                 self.SystemSettings['repositories']['order'])
+
+        const_debug_write(__name__, "singleton loaded")
 
     def destroy(self):
         self.__instance_destroyed = True
