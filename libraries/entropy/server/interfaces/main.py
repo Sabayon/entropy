@@ -3524,6 +3524,13 @@ class Server(Singleton, TextInterface):
         # close all our databases
         self.close_server_databases()
 
+        # if database file did not exist got created as an empty file
+        # we can just rm -rf it
+        branch_dbfile = self.get_local_database_file(repo)
+        if os.path.isfile(branch_dbfile):
+            if self.entropyTools.get_file_size(branch_dbfile) == 0:
+                shutil.rmtree(branch_dbdir, True)
+
         if os.path.isdir(branch_dbdir):
 
             while 1:
