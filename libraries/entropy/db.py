@@ -4707,9 +4707,12 @@ class LocalRepository:
                 importance = 0, type = "info"
             )
 
-    def moveCountersToBranch(self, to_branch):
+    def moveCountersToBranch(self, to_branch, from_branch = None):
         with self.__write_mutex:
-            self.cursor.execute('UPDATE counters SET branch = (?)', to_branch)
+            if from_branch is not None:
+                self.cursor.execute('UPDATE counters SET branch = (?) WHERE branch = (?)', (to_branch, from_branch,))
+            else:
+                self.cursor.execute('UPDATE counters SET branch = (?)', (to_branch,))
             self.commitChanges()
             self.clearCache()
 
