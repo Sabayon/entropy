@@ -27,6 +27,7 @@ entropy.client.interfaces.cache._	entropy.i18n-module.html#_
 entropy.client.interfaces.cache.darkgreen	entropy.output-module.html#darkgreen
 entropy.client.interfaces.cache.const_get_chmod	entropy.const-module.html#const_get_chmod
 entropy.client.interfaces.client	entropy.client.interfaces.client-module.html
+entropy.client.interfaces.client.const_debug_write	entropy.const-module.html#const_debug_write
 entropy.client.interfaces.dep	entropy.client.interfaces.dep-module.html
 entropy.client.interfaces.dep.const_default_settings	entropy.const-module.html#const_default_settings
 entropy.client.interfaces.dep.const_get_entropy_gid	entropy.const-module.html#const_get_entropy_gid
@@ -333,6 +334,7 @@ entropy.const.etpUi	entropy.const-module.html#etpUi
 entropy.const.const_extract_cli_repo_params	entropy.const-module.html#const_extract_cli_repo_params
 entropy.const._	entropy.i18n-module.html#_
 entropy.const.ETP_LOGLEVEL_VERBOSE	entropy.const-module.html#ETP_LOGLEVEL_VERBOSE
+entropy.const.const_debug_write	entropy.const-module.html#const_debug_write
 entropy.const.ETP_LOGPRI_WARNING	entropy.const-module.html#ETP_LOGPRI_WARNING
 entropy.const.const_create_working_dirs	entropy.const-module.html#const_create_working_dirs
 entropy.const.ETP_ARCH_CONST	entropy.const-module.html#ETP_ARCH_CONST

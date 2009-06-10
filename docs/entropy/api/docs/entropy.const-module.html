@@ -102,7 +102,7 @@
         <tr>
           <td><span class="summary-sig"><a href="entropy.const-module.html#initconfig_entropy_constants" class="summary-sig-name">initconfig_entropy_constants</a>(<span class="summary-sig-arg">rootdir</span>)</span><br />
       Main constants configurators, this is the only function that you 
-      should call from the outside, everytime you want.</td>
+      should call from the outside, anytime you want.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.const-pysrc.html#initconfig_entropy_constants">source&nbsp;code</a></span>
             
@@ -429,6 +429,24 @@
       
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.const-module.html#const_debug_write" class="summary-sig-name">const_debug_write</a>(<span class="summary-sig-arg">identifier</span>,
+        <span class="summary-sig-arg">msg</span>)</span><br />
+      Entropy debugging output write functions.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.const-pysrc.html#const_debug_write">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 </table>
 <!-- ==================== VARIABLES ==================== -->
 <a name="section-Variables"></a>
@@ -470,7 +488,8 @@
  'nolog': False,
  'pretend': False,
  'quiet': False,
- 'verbose': False}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ask</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">clean</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">debug</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">mute</code><code class="variable-quote">'</code><code class="variable-op">:</code><code class="variable-ellipsis">...</code></code>
+ 'verbose': False,
+..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ask</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">clean</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">debug</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">mute</code><code class="variable-quote">'</code><code class="variable-op">:</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
@@ -563,7 +582,7 @@
   </tr></table>
   
   <p>Main constants configurators, this is the only function that you 
-  should call from the outside, everytime you want. it will reset all the 
+  should call from the outside, anytime you want. it will reset all the 
   variables excluding those backed up previously.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
@@ -1043,6 +1062,33 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="const_debug_write"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">const_debug_write</span>(<span class="sig-arg">identifier</span>,
+        <span class="sig-arg">msg</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.const-pysrc.html#const_debug_write">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Entropy debugging output write functions.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>identifier</code></strong> (string) - debug identifier</li>
+        <li><strong class="pname"><code>msg</code></strong> (string) - debugging message</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+  </dl>
+</td></tr></table>
+</div>
 <br />
 <!-- ==================== VARIABLES DETAILS ==================== -->
 <a name="section-VariablesDetails"></a>
@@ -1097,7 +1143,8 @@
  <code class="variable-quote">'</code><code class="variable-string">nolog</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">pretend</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">quiet</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">verbose</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-group">}</code>
+ <code class="variable-quote">'</code><code class="variable-string">verbose</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">,</code>
+<code class="variable-ellipsis">...</code>
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -1187,7 +1234,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sat Jun  6 13:05:32 2009
+    Generated by Epydoc 3.0.1 on Wed Jun 10 13:32:53 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
