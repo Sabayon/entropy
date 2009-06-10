@@ -699,66 +699,126 @@ class CalculatorsMixin:
 
         while mydep:
 
+            const_debug_write(__name__,
+                "generate_dependency_tree analyzing => %s" % (
+                    mydep,))
+
             dep_level, dep_atom = mydep
 
             # already analyzed in this call
             if dep_atom in treecache:
+                const_debug_write(__name__,
+                    "generate_dependency_tree already in treecache => %s" % (
+                        dep_atom,))
                 mydep = mybuffer.pop()
+                const_debug_write(__name__, "---")
                 continue
             treecache.add(dep_atom)
 
-            if dep_atom == None: # corrupted entry
+            if dep_atom is None: # corrupted entry
+                const_debug_write(__name__,
+                    "generate_dependency_tree broken entry in DB => %s" % (
+                        mydep,))
                 mydep = mybuffer.pop()
+                const_debug_write(__name__, "---")
                 continue
 
             # conflicts
             if dep_atom[0] == "!":
                 c_idpackage, xst = cdb_atom_match(dep_atom[1:])
                 if c_idpackage != -1:
-                    myreplacement = lookup_conflict_replacement(dep_atom[1:], c_idpackage, deep_deps = deep_deps)
+                    myreplacement = lookup_conflict_replacement(dep_atom[1:],
+                        c_idpackage, deep_deps = deep_deps)
+
+                    const_debug_write(__name__,
+                        "generate_dependency_tree conflict replacement => %s" % (
+                            myreplacement,))
+
                     if (myreplacement != None) and (myreplacement not in treecache):
                         mybuffer.push((dep_level+1,myreplacement))
                     else:
                         conflicts.add(c_idpackage)
                 mydep = mybuffer.pop()
+                const_debug_write(__name__, "---")
                 continue
 
             # atom found?
             if virgin:
+
                 virgin = False
                 m_idpackage, m_repo = matched_atom
                 dbconn = open_repo(m_repo)
                 myidpackage, idreason = dbconn.idpackageValidator(m_idpackage)
-                if myidpackage == -1: m_idpackage = -1
+
+                const_debug_write(__name__,
+                    "generate_dependency_tree virgin match masked? => %s - %s" % (
+                        myidpackage, idreason,))
+
+                if myidpackage == -1:
+                    m_idpackage = -1
+
             else:
                 m_idpackage, m_repo = atom_match(dep_atom)
+                const_debug_write(__name__,
+                    "generate_dependency_tree matching %s => (%s, %s)" % (
+                        dep_atom, m_idpackage, m_repo,))
+
             if m_idpackage == -1:
+
+                const_debug_write(__name__,
+                    "generate_dependency_tree dep not found => %s" % (
+                        dep_atom,))
+
                 deps_not_found.add(dep_atom)
                 mydep = mybuffer.pop()
+                const_debug_write(__name__, "---")
                 continue
 
             # check if atom has been already pulled in
             matchdb = open_repo(m_repo)
             matchatom = matchdb.retrieveAtom(m_idpackage)
             matchkey, matchslot = matchdb.retrieveKeySlot(m_idpackage)
+
+            const_debug_write(__name__,
+                "generate_dependency_tree idpackage %s => %s - %s:%s" % (
+                    m_idpackage, matchatom, matchkey, matchslot))
+
             if (dep_atom != matchatom) and (matchatom in treecache):
                 mydep = mybuffer.pop()
+                const_debug_write(__name__,
+                    "generate_dependency_tree matchatom %s already in cache" % (
+                        matchatom,))
+                const_debug_write(__name__, "---")
                 continue
 
             treecache.add(matchatom)
 
+            const_debug_write(__name__,
+                "generate_dependency_tree check if key + slot cache => %s" % (
+                    (matchslot, matchkey),))
+
             # check if key + slot has been already pulled in
-            if (matchslot,matchkey) in keyslotcache:
+            if (matchslot, matchkey) in keyslotcache:
                 mydep = mybuffer.pop()
+                const_debug_write(__name__, "---")
                 continue
             else:
-                keyslotcache.add((matchslot,matchkey))
+                keyslotcache.add((matchslot, matchkey))
+
+            const_debug_write(__name__,
+                "generate_dependency_tree not in key + slot cache => %s" % (
+                    (matchslot, matchkey),))
 
             match = (m_idpackage, m_repo,)
             # result already analyzed?
             if match in matchfilter:
                 mydep = mybuffer.pop()
+                const_debug_write(__name__, "---")
                 continue
+
+            const_debug_write(__name__,
+                "generate_dependency_tree match NOT already analyzed => %s" % (
+                    match,))
 
             # all checks passed, well done
             matchfilter.add(match)
@@ -766,10 +826,22 @@ class CalculatorsMixin:
             deptree.add((dep_level,match)) # add match
 
             # extra hooks
-            cm_idpackage, cm_result = cdb_atom_match(matchkey, matchSlot = matchslot)
+            cm_idpackage, cm_result = cdb_atom_match(matchkey,
+                matchSlot = matchslot)
             if cm_idpackage != -1:
-                broken_atoms = lookup_library_breakages(match, (cm_idpackage, cm_result,), deep_deps = deep_deps)
-                inverse_deps = lookup_inverse_dependencies(match, (cm_idpackage, cm_result,))
+
+                broken_atoms = lookup_library_breakages(match,
+                    (cm_idpackage, cm_result,), deep_deps = deep_deps)
+                const_debug_write(__name__,
+                    "generate_dependency_tree lib broken atoms for %s => %s" % (
+                        matchkey+":"+matchslot, broken_atoms,))
+
+                inverse_deps = lookup_inverse_dependencies(match,
+                    (cm_idpackage, cm_result,))
+                const_debug_write(__name__,
+                    "generate_dependency_tree inverse deps for %s => %s" % (
+                        matchkey+":"+matchslot, inverse_deps,))
+
                 if inverse_deps:
                     deptree.remove((dep_level,match))
                     for ikey,islot in inverse_deps:
@@ -779,24 +851,67 @@ class CalculatorsMixin:
                             keyslotcache.add((ikey,islot))
                     deptree.add((treedepth,match))
                     treedepth += 1
+
                 for x in broken_atoms:
                     if (tuple(x.split(":")) not in keyslotcache) and (x not in treecache):
                         mybuffer.push((treedepth,x))
 
-            myundeps = filter(my_dep_filter,matchdb.retrieveDependenciesList(m_idpackage))
+            m_deplist = matchdb.retrieveDependenciesList(m_idpackage)
+
+            const_debug_write(__name__,
+                "generate_dependency_tree dependency list for %s => %s" % (
+                    m_idpackage, m_deplist,))
+
+            myundeps = filter(my_dep_filter, m_deplist)
+
+            const_debug_write(__name__,
+                "generate_dependency_tree filtered dependency list => %s" % (
+                    myundeps,))
+
             if not empty_deps:
-                myundeps = filter(my_dep_filter,get_unsatisfied_deps(myundeps, deep_deps, depcache = filter_unsat_cache))
+
+                m_unsat_deplist = get_unsatisfied_deps(myundeps, deep_deps,
+                    depcache = filter_unsat_cache)
+
+                const_debug_write(__name__,
+                    "generate_dependency_tree unsatisfied dependencies (deep: %s) => %s" % (
+                        deep_deps, m_unsat_deplist,))
+
+                myundeps = filter(my_dep_filter, m_unsat_deplist)
+
+                const_debug_write(__name__,
+                    "generate_dependency_tree filtered UNSATISFIED dependencies => %s" % (
+                        myundeps,))
 
             # PDEPENDs support
             if myundeps:
-                post_deps = [x for x in matchdb.retrievePostDependencies(m_idpackage) if x in myundeps]
-                if post_deps:
-                    # only filter if post_deps contains something
-                    myundeps = [x for x in myundeps if x not in post_deps]
-                for x in post_deps: mybuffer.push((-1,x)) # always after the package itself
 
-            for x in myundeps: mybuffer.push((treedepth,x))
+                post_deps = [x for x in \
+                    matchdb.retrievePostDependencies(m_idpackage) if x \
+                    in myundeps]
+
+                const_debug_write(__name__,
+                    "generate_dependency_tree POST dependencies => %s" % (
+                        post_deps,))
+
+                if post_deps:
+
+                    # do some filtering
+                    # it is correct to not use my_dep_filter here
+                    myundeps = [x for x in myundeps if x not in post_deps]
+
+                    const_debug_write(__name__,
+                        "generate_dependency_tree POST dependencies ADDED => %s" % (
+                            myundeps,))
+
+                for x in post_deps:
+                    mybuffer.push((-1, x)) # always after the package itself
+
+            for x in myundeps:
+                mybuffer.push((treedepth, x))
+
             mydep = mybuffer.pop()
+            const_debug_write(__name__, "---")
 
         if deps_not_found:
             return list(deps_not_found),-2
@@ -1025,6 +1140,8 @@ class CalculatorsMixin:
         keyslotcache = set()
         matchfilter = set()
         for matched_atom in matched_atoms:
+            const_debug_write(__name__,
+                "get_required_packages matched_atom => %s" % (matched_atom,))
 
             if not quiet:
                 count += 1
@@ -1039,6 +1156,10 @@ class CalculatorsMixin:
                 matchfilter = matchfilter, filter_unsat_cache = filter_unsat_cache, treecache = treecache,
                 keyslotcache = keyslotcache
             )
+
+            const_debug_write(__name__,
+                "get_required_packages deptree => %s -- %s" % (
+                    newtree, result,))
 
             if result == -2: # deps not found
                 error_generated = -2
