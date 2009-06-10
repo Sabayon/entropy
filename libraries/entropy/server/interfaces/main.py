@@ -3592,13 +3592,11 @@ class Server(Singleton, TextInterface):
                 ignored.add(idpackage)
                 continue
 
-            mytxt = blue("%s ...") % (_("configuring package information"),)
             self.updateProgress(
-                "[%s=>%s] %s, %s" % (
+                "[%s=>%s] %s" % (
                     brown(cur_branch),
                     bold(to_branch),
                     darkgreen(atom),
-                    mytxt,
                 ),
                 importance = 0,
                 type = "info",
