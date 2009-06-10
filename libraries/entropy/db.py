@@ -3801,23 +3801,13 @@ class LocalRepository:
             dirs |= set(map(unicode, mystr.split()))
         return sorted(list(dirs))
 
-    def switchBranch(self, idpackage, tobranch):
-
-        key, slot = self.retrieveKeySlot(idpackage)
-
-        # if there are entries already, remove idpackage directly
-        my_idpackage, result = self.atomMatch(key, matchSlot = slot,
-            matchBranches = (tobranch,))
-        if my_idpackage != -1: return False
-
-        # otherwise, update the old one (set the new branch)
+    def switchBranch(self, idpackage, tobranch): 
         with self.__write_mutex:
             self.cursor.execute("""
             UPDATE baseinfo SET branch = (?) 
             WHERE idpackage = (?)""", (tobranch, idpackage,))
             self.commitChanges()
             self.clearCache()
-        return True
 
     def databaseStructureUpdates(self):
 
