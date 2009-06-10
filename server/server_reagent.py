@@ -505,7 +505,7 @@ def database(options):
             if rc == "No":
                 return 4
 
-            status = Entropy.switch_packages_branch(pkglist, from_branch, to_branch)
+            status = Entropy.switch_packages_branch(from_branch, to_branch)
             if status == None:
                 return 1
 

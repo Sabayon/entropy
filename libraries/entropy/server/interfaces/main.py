@@ -3492,8 +3492,7 @@ class Server(Singleton, TextInterface):
         return fine, failed, downloaded_fine, downloaded_errors
 
 
-    def switch_packages_branch(self, idpackages, from_branch, to_branch,
-        repo = None):
+    def switch_packages_branch(self, from_branch, to_branch, repo = None):
 
         if repo == None:
             repo = self.default_repository
@@ -3521,9 +3520,21 @@ class Server(Singleton, TextInterface):
         )
         branch_dbdir = self.get_local_database_dir(repo)
         old_branch_dbdir = self.get_local_database_dir(repo, from_branch)
-        if (not os.path.isdir(branch_dbdir)) and \
-            os.path.isdir(old_branch_dbdir):
-            shutil.copytree(old_branch_dbdir, branch_dbdir)
+
+        # close all our databases
+        self.close_server_databases()
+
+        if os.path.isdir(branch_dbdir):
+
+            while 1:
+                rnd_num = self.entropyTools.get_random_number()
+                backup_dbdir = branch_dbdir + str(rnd_num)
+                if not os.path.isdir(backup_dbdir):
+                    break
+            os.rename(branch_dbdir, backup_dbdir)
+
+        if os.path.isdir(old_branch_dbdir):
+            os.rename(old_branch_dbdir, branch_dbdir)
 
         mytxt = red("%s ...") % (_("Switching packages"),)
         self.updateProgress(
@@ -3532,9 +3543,17 @@ class Server(Singleton, TextInterface):
             type = "info",
             header = darkgreen(" @@ ")
         )
+
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo, lock_remote = False)
+        try:
+            dbconn.validateDatabase()
+        except SystemDatabaseError:
+            self.handle_uninitialized_repository(repo)
+            dbconn = self.open_server_repository(read_only = False,
+                no_upload = True, repo = repo, lock_remote = False)
 
+        idpackages = dbconn.listAllIdpackages()
         already_switched = set()
         not_found = set()
         switched = set()
