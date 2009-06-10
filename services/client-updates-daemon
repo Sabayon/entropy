@@ -321,6 +321,13 @@ class UpdatesDaemon(dbus.service.Object):
                 self.__updates = update[:]
                 del self.__updates_atoms[:]
                 gobject.timeout_add(0, self.signal_updates)
+            else:
+                self.do_alert(
+                    _("No updates"),
+                    "%s" % (update,),
+                    urgency = 'critical'
+                )
+                gobject.timeout_add(0, self.signal_updates)
 
             return 0
 
