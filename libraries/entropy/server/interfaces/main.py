@@ -3534,7 +3534,7 @@ class Server(Singleton, TextInterface):
             os.rename(branch_dbdir, backup_dbdir)
 
         if os.path.isdir(old_branch_dbdir):
-            os.rename(old_branch_dbdir, branch_dbdir)
+            shutil.copytree(old_branch_dbdir, branch_dbdir)
 
         mytxt = red("%s ...") % (_("Switching packages"),)
         self.updateProgress(
@@ -3599,7 +3599,7 @@ class Server(Singleton, TextInterface):
                 back = True,
                 count = (count, maxcount,)
             )
-            switch_status = dbconn.switchBranch(idpackage, to_branch)
+            switch_status = dbconn.switchBranch(idpackage, to_branch) 
             if not switch_status:
                 # remove idpackage
                 dbconn.removePackage(idpackage)
