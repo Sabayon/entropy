@@ -493,7 +493,7 @@ def database(options):
                 bold(to_branch),blue(_("on")),purple(repoid),) )
 
             dbconn = Entropy.open_server_repository(read_only = True,
-                no_upload = True, repo = repo)
+                no_upload = True, repo = repoid)
             pkglist = dbconn.listAllIdpackages(branch = from_branch)
 
             print_info(darkgreen(" * ")+"%s %s: %s %s" % (
