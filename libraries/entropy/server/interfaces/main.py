@@ -3606,10 +3606,7 @@ class Server(Singleton, TextInterface):
                 back = True,
                 count = (count, maxcount,)
             )
-            switch_status = dbconn.switchBranch(idpackage, to_branch)
-            if not switch_status:
-                # remove idpackage
-                dbconn.removePackage(idpackage)
+            dbconn.switchBranch(idpackage, to_branch)
             dbconn.commitChanges()
             switched.add(idpackage)
 
