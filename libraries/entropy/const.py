@@ -1256,5 +1256,19 @@ def __const_handle_exception(etype, value, t_back):
         pass
     return sys.__excepthook__(etype, value, t_back)
 
+def const_debug_write(identifier, msg):
+    """
+    Entropy debugging output write functions.
+
+    @param identifier: debug identifier
+    @type identifier: string
+    @param msg: debugging message
+    @type msg: string
+    @rtype: None
+    @return: None
+    """
+    if etpUi['debug']:
+        sys.stdout.write("%s: %s" % (identifier, msg + "\n"))
+
 # load config
 initconfig_entropy_constants(etpSys['rootdir'])
