@@ -2972,6 +2972,11 @@ class Server:
 
         branch_dir = os.path.join(
             self.Entropy.get_local_upload_directory(repo), branch)
+
+        # check if it exists
+        if not os.path.isdir(branch_dir):
+            return None
+
         branchcontent = os.listdir(branch_dir)
         for xfile in branchcontent:
             source = os.path.join(self.Entropy.get_local_upload_directory(repo),
