@@ -3606,7 +3606,7 @@ class Server(Singleton, TextInterface):
                 back = True,
                 count = (count, maxcount,)
             )
-            switch_status = dbconn.switchBranch(idpackage, to_branch) 
+            switch_status = dbconn.switchBranch(idpackage, to_branch)
             if not switch_status:
                 # remove idpackage
                 dbconn.removePackage(idpackage)
@@ -3616,7 +3616,7 @@ class Server(Singleton, TextInterface):
         dbconn.commitChanges()
 
         # now migrate counters
-        dbconn.moveCountersToBranch(to_branch)
+        dbconn.moveCountersToBranch(to_branch, from_branch = from_branch)
 
         self.close_server_database(dbconn)
         mytxt = blue("%s.") % (_("migration loop completed"),)
