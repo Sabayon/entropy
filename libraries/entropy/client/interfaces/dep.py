@@ -489,6 +489,10 @@ class CalculatorsMixin:
             cached = self.Cacher.pop(c_hash)
             if cached != None: return cached
 
+        const_debug_write(__name__,
+            "get_unsatisfied_dependencies (not cached, deep: %s) for => %s" % (
+                deep_deps, dependencies,))
+
         if not isinstance(depcache,dict):
             depcache = {}
 
@@ -499,58 +503,69 @@ class CalculatorsMixin:
         cdb_getversioning = self.clientDbconn.getVersioningData
         etp_cmp = self.entropyTools.entropy_compare_versions
         etp_get_rev = self.entropyTools.dep_get_entropy_revision
-        #do_needed_check = False
 
         def fm_dep(dependency):
 
             cached = depcache.get(dependency)
-            if cached != None: return cached
+            if cached != None:
+                const_debug_write(__name__,
+                    "get_unsatisfied_dependencies control cached for => %s" % (
+                        dependency,))
+                const_debug_write(__name__, "...")
+                return cached
 
             ### conflict
             if dependency.startswith("!"):
                 idpackage,rc = cdb_am(dependency[1:])
                 if idpackage != -1:
                     depcache[dependency] = dependency
+                    const_debug_write(__name__,
+                        "get_unsatisfied_dependencies conflict not found on system for => %s" % (
+                            dependency,))
+                    const_debug_write(__name__, "...")
                     return dependency
                 depcache[dependency] = 0
+                const_debug_write(__name__, "...")
                 return 0
 
-            c_id,c_rc = cdb_am(dependency)
-            if c_id == -1:
+            c_ids, c_rc = cdb_am(dependency, multiMatch = True)
+            if c_rc != 0:
                 depcache[dependency] = dependency
+                const_debug_write(__name__,
+                    "get_unsatisfied_dependencies not satisfied on system for => %s" % (
+                        dependency,))
+                const_debug_write(__name__, "...")
                 return dependency
-
-            #if not deep_deps and not do_needed_check:
-            #    depcache[dependency] = 0
-            #    return 0
 
             r_id,r_repo = am(dependency)
             if r_id == -1:
                 depcache[dependency] = dependency
+                const_debug_write(__name__,
+                    "get_unsatisfied_dependencies repository match not found for => %s" % (
+                        dependency,))
+                const_debug_write(__name__, "...")
                 return dependency
-
-            #if do_needed_check:
-            #    dbconn = open_repo(r_repo)
-            #    installed_needed = cdb_retrieveneededraw(c_id)
-            #    repo_needed = dbconn.retrieveNeededRaw(r_id)
-            #    if installed_needed != repo_needed:
-            #        return dependency
-            #    #elif not deep_deps:
-            #    #    return 0
 
             dbconn = open_repo(r_repo)
             try:
                 repo_pkgver, repo_pkgtag, repo_pkgrev = dbconn.getVersioningData(r_id)
             except (intf_error,TypeError,):
                 # package entry is broken
+                const_debug_write(__name__,
+                    "get_unsatisfied_dependencies repository entry broken for match => %s" % (
+                        (r_id, r_repo),))
+                const_debug_write(__name__, "...")
                 return dependency
 
-            try:
-                installedVer, installedTag, installedRev = cdb_getversioning(c_id)
-            except TypeError: # corrupted entry?
-                installedVer = "0"
-                installedTag = ''
-                installedRev = 0
+            client_data = set()
+            for c_id in c_ids:
+                try:
+                    installedVer, installedTag, installedRev = cdb_getversioning(c_id)
+                except TypeError: # corrupted entry?
+                    installedVer = "0"
+                    installedTag = ''
+                    installedRev = 0
+                client_data.add((installedVer, installedTag, installedRev,))
 
             # support for app-foo/foo-123~-1
             # -1 revision means, always pull the latest
@@ -560,15 +575,39 @@ class CalculatorsMixin:
                 if string_rev == -1:
                     do_deep = True
 
-            vcmp = etp_cmp((repo_pkgver,repo_pkgtag,repo_pkgrev,), (installedVer,installedTag,installedRev,))
-            if vcmp != 0:
-                if not do_deep and ((repo_pkgver,repo_pkgtag,) == (installedVer,installedTag,)) and (repo_pkgrev != installedRev):
+            # this is required for multi-slotted packages (like python)
+            # and when people mix Entropy and Portage
+            for installedVer, installedTag, installedRev in client_data:
+                vcmp = etp_cmp((repo_pkgver,repo_pkgtag,repo_pkgrev,),
+                    (installedVer,installedTag,installedRev,))
+                if vcmp == 0:
+                    const_debug_write(__name__,
+                        "get_unsatisfied_dependencies SATISFIED equals (not cached, deep: %s) => %s" % (
+                            deep_deps, dependency,))
                     depcache[dependency] = 0
+                    const_debug_write(__name__, "...")
                     return 0
-                depcache[dependency] = dependency
-                return dependency
-            depcache[dependency] = 0
-            return 0
+                ver_tag_repo = (repo_pkgver, repo_pkgtag,)
+                ver_tag_inst = (installedVer, installedTag,)
+                rev_match = repo_pkgrev != installedRev
+
+                if not do_deep and (ver_tag_repo == ver_tag_inst) and rev_match:
+
+                    depcache[dependency] = 0
+                    const_debug_write(__name__,
+                        "get_unsatisfied_dependencies SATISFIED w/o rev (not cached, deep: %s) => %s" % (
+                            deep_deps, dependency,))
+                    const_debug_write(__name__, "...")
+                    return 0
+
+            # if we get here it means that there are no matching packages
+            const_debug_write(__name__,
+                "get_unsatisfied_dependencies NOT SATISFIED (not cached, deep: %s) => %s" % (
+                    deep_deps, dependency,))
+
+            depcache[dependency] = dependency
+            const_debug_write(__name__, "...")
+            return dependency
 
         unsatisfied = map(fm_dep,dependencies)
         unsatisfied = set([x for x in unsatisfied if x != 0])
