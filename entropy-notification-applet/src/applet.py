@@ -32,7 +32,10 @@ if __name__ == "__main__":
         gtk.main()
         gtk.gdk.threads_leave()
     except KeyboardInterrupt:
-        applet.close_service()
+        try:
+            applet.close_service()
+        except:
+            pass
         gobject.timeout_add(0, applet.exit_applet)
         gtk.gdk.threads_leave()
         raise
