@@ -4,6 +4,9 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
+    - Sulfur => installation date sorter
+    - Sulfur => logview as above (grouping?)
+    - branch migration scriptus (pre, after?)
     - expiration thingus? (server-side) => .pkglist file that could be parsed
     - when a new entropy version is available, don't allow any other update?
     - Documentation + code style cleanup (NLnet Milestone 7)
