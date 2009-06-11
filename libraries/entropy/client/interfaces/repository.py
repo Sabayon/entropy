@@ -908,12 +908,9 @@ class Repository:
         if checksum == mychecksum:
             result = True
         else:
-            mytxt = "%s: %s: %s" % (
-                blue(_("Database checksum doesn't match remote.")),
-            )
             self.Entropy.updateProgress(
-                mytxt, importance = 0,
-                type = "info", header = "\t",
+                blue(_("Database checksum doesn't match remote.")),
+                importance = 0, type = "info", header = "\t",
             )
             mytxt = "%s: %s" % (_('local'), mychecksum,)
             self.Entropy.updateProgress(
