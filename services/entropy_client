@@ -1,0 +1,20 @@
+#!/sbin/runscript
+# Copyright 2009 Fabio Erculiani
+# Distributed under the terms of the GNU General Public License v2
+
+CLIENT_LOCK="/var/lib/entropy/entropy.lock"
+
+depend() {
+    need localmount netmount
+    # not yet
+    # use net
+}
+
+start() {
+
+    ebegin "Cleaning Entropy lock files"
+    # remove client lock
+    rm -f ${CLIENT_LOCK}
+    eend 0
+
+}
