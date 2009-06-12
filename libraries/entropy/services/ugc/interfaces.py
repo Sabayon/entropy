@@ -596,9 +596,10 @@ class Server(RemoteDatabase):
         self.check_connection()
         down_data = {}
         self.execute_query("""
-        SELECT SQL_CACHE entropy_base.`key` as `vkey`,sum(entropy_downloads.`count`) as `tot_downloads` FROM 
-        entropy_downloads,entropy_base WHERE 
-        entropy_downloads.`idkey` = entropy_base.`idkey` GROUP BY entropy_base.`idkey`""")
+        SELECT SQL_CACHE entropy_base.key as vkey, tot_downloads from entropy_base,
+        (SELECT  idkey as idp1, sum(entropy_downloads.`count`) AS `tot_downloads` FROM
+        entropy_downloads GROUP BY entropy_downloads.`idkey`) as tmp where idkey = tmp.idp1;
+        """)
         data = self.fetchall()
         for d_dict in data:
             down_data[d_dict['vkey']] = d_dict['tot_downloads']
