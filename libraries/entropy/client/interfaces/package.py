@@ -1058,6 +1058,10 @@ class Package:
             data['content'] = content
             pkg_dbconn.closeDB()
 
+        # this is needed to make postinstall trigger to work properly
+        trigger_content = set((x[1] for x in data['content']))
+        self.infoDict['triggers']['install']['content'] = trigger_content
+
         # open client db
         # always set data['injected'] to False
         # installed packages database SHOULD never have more

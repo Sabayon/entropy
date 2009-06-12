@@ -176,12 +176,6 @@ class Trigger:
                 functions.append('ebuild_preinstall')
                 break
 
-        # FIXME: deprecated
-        for x in self.pkgdata['content']:
-            if "mountboot" not in functions:
-                if x.startswith("/boot"):
-                    functions.append('mountboot')
-
         if self.pkgdata['trigger']:
             functions.append('call_ext_preinstall')
 
@@ -272,12 +266,6 @@ class Trigger:
                     # do not revert back to xorg if more than one
                     # package is installed
                     functions.append("openglsetup_xorg")
-
-        # FIXME: deprecated
-        for x in self.pkgdata['removecontent']:
-            if x.startswith("/boot"):
-                functions.append('mountboot')
-                break
 
         if self.pkgdata['trigger']:
             functions.append('call_ext_preremove')
@@ -758,47 +746,6 @@ class Trigger:
                 header = red("   ## ")
             )
             self.trigger_remove_boot_grub(kernel,initramfs)
-
-    # FIXME: deprecated
-    def trigger_mountboot(self):
-        # is in fstab?
-        if etpConst['systemroot']:
-            return
-        if os.path.isfile("/etc/fstab"):
-            f = open("/etc/fstab","r")
-            fstab = f.readlines()
-            fstab = self.Entropy.entropyTools.list_to_utf8(fstab)
-            f.close()
-            for line in fstab:
-                fsline = line.split()
-                if len(fsline) > 1:
-                    if fsline[1] == "/boot":
-                        if not os.path.ismount("/boot"):
-                            # trigger mount /boot
-                            rc = subprocess.call("mount /boot &> /dev/null", shell = True)
-                            if rc == 0:
-                                self.Entropy.clientLog.log(
-                                    ETP_LOGPRI_INFO,
-                                    ETP_LOGLEVEL_NORMAL,
-                                    "[PRE] Mounted /boot successfully"
-                                )
-                                self.Entropy.updateProgress(
-                                    brown(_("Mounted /boot successfully")),
-                                    importance = 0,
-                                    header = red("   ## ")
-                                )
-                            elif rc != 8192: # already mounted
-                                self.Entropy.clientLog.log(
-                                    ETP_LOGPRI_INFO,
-                                    ETP_LOGLEVEL_NORMAL,
-                                    "[PRE] Cannot mount /boot automatically !!"
-                                )
-                                self.Entropy.updateProgress(
-                                    brown(_("Cannot mount /boot automatically !!")),
-                                    importance = 0,
-                                    header = red("   ## ")
-                                )
-                            break
 
     def trigger_run_ldconfig(self):
         if not etpConst['systemroot']:
