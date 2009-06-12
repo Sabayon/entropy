@@ -907,7 +907,7 @@ class Server:
             added_items = db_actions.get("added")
 
             if added_items:
-                for atom in added_items:
+                for atom in sorted(added_items):
                     mylink = link + "?search=" + atom.split("~")[0] + \
                         "&arch=" + etpConst['currentarch'] + "&product="+product
                     description = atom + ": " + added_items[atom]['description']
@@ -916,7 +916,7 @@ class Server:
             removed_items = db_actions.get("removed")
 
             if removed_items:
-                for atom in removed_items:
+                for atom in sorted(removed_items):
                     description = atom + ": " + \
                         removed_items[atom]['description']
                     rss_main.add_item(title = "Removed" + title, link = link,
@@ -926,7 +926,7 @@ class Server:
             if light_items:
                 rss_light = RSS(rss_light_path, rss_title, rss_description,
                     maxentries = srv_set['rss']['light_max_entries'])
-                for atom in light_items:
+                for atom in sorted(light_items):
                     mylink = link + "?search=" + atom.split("~")[0] + \
                         "&arch=" + etpConst['currentarch'] + "&product=" + \
                         product

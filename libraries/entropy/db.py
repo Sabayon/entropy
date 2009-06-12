@@ -1491,7 +1491,8 @@ class LocalRepository:
 
         rssAtom = pkgatom+"~"+str(revision)
         rssObj = self.dumpTools.loadobj(etpConst['rss-dump-name'])
-        if rssObj: self.ServiceInterface.rssMessages = rssObj.copy()
+        if rssObj:
+            self.ServiceInterface.rssMessages = rssObj.copy()
         if not isinstance(self.ServiceInterface.rssMessages, dict):
             self.ServiceInterface.rssMessages = {}
         if not self.ServiceInterface.rssMessages.has_key('added'):
@@ -1515,7 +1516,8 @@ class LocalRepository:
     def _write_rss_for_removed_package(self, idpackage):
 
         rssObj = self.dumpTools.loadobj(etpConst['rss-dump-name'])
-        if rssObj: self.ServiceInterface.rssMessages = rssObj.copy()
+        if rssObj:
+            self.ServiceInterface.rssMessages = rssObj.copy()
         rssAtom = self.retrieveAtom(idpackage)
         rssRevision = self.retrieveRevision(idpackage)
         rssAtom += "~"+str(rssRevision)
@@ -1527,6 +1529,8 @@ class LocalRepository:
             self.ServiceInterface.rssMessages['removed'] = {}
         if rssAtom in self.ServiceInterface.rssMessages['added']:
             del self.ServiceInterface.rssMessages['added'][rssAtom]
+        if rssAtom in self.ServiceInterface.rssMessages.get('light', []):
+            del self.ServiceInterface.rssMessages['light'][rssAtom]
 
         mydict = {}
         try:
