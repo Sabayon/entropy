@@ -429,7 +429,7 @@ def const_default_settings(rootdir):
         'conntestlink': "http://www.sabayonlinux.org",
         # tag to append to .tbz2 file before entropy database (must be 32bytes)
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|",
-        'pidfile': default_etp_dir+"/entropy.pid",
+        'pidfile': default_etp_dir+"/entropy.lock",
         'applicationlock': False,
         # option to keep a backup of config files after
         # being overwritten by equo conf update
