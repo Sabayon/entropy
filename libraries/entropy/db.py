@@ -2311,12 +2311,16 @@ class LocalRepository:
         self.cursor.execute(sql, (idpackage,))
         return self.cursor.fetchone()
 
-    def getTriggerInfo(self, idpackage):
+    def getTriggerInfo(self, idpackage, content = True):
 
         atom, category, name, \
         version, slot, versiontag, \
         revision, branch, etpapi = self.getScopeData(idpackage)
         chost, cflags, cxxflags = self.retrieveCompileFlags(idpackage)
+
+        pkg_content = set()
+        if content:
+            pkg_content = self.retrieveContent(idpackage)
 
         data = {
             'atom': atom,
@@ -2332,7 +2336,7 @@ class LocalRepository:
             'etpapi': etpapi,
             'trigger': self.retrieveTrigger(idpackage),
             'eclasses': self.retrieveEclasses(idpackage),
-            'content': self.retrieveContent(idpackage),
+            'content': pkg_content,
             'spm_phases': self.retrieveSpmPhases(idpackage),
         }
         return data
