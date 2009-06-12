@@ -35,7 +35,7 @@ class const:
         GLADE_FILE = MAIN_PATH+'/sulfur/sulfur.glade'
 
     if not os.path.isfile(GLADE_FILE):
-        MAIN_PATH = '/usr/lib/entropy/sulfur/'
+        MAIN_PATH = '/usr/lib/entropy/sulfur'
         GLADE_FILE = MAIN_PATH+'/sulfur/sulfur.glade'
 
     if MAIN_PATH == '/usr/lib/entropy/sulfur':
