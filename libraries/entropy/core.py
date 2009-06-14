@@ -650,7 +650,7 @@ class SystemSettings(Singleton):
         """
         # some parsers must be run BEFORE everything:
         for item in self.__setting_files_pre_run:
-            myattr = '%s_parser' % (item,)
+            myattr = '_%s_parser' % (item,)
             if not hasattr(self, myattr):
                 continue
             func = getattr(self, myattr)
@@ -662,7 +662,7 @@ class SystemSettings(Singleton):
 
         data = {}
         for item in self.__setting_files_order:
-            myattr = '%s_parser' % (item,)
+            myattr = '_%s_parser' % (item,)
             if not hasattr(self, myattr):
                 continue
             func = getattr(self, myattr)
@@ -688,7 +688,7 @@ class SystemSettings(Singleton):
         with self.__mutex:
             return self.__mtime_files.copy()
 
-    def keywords_parser(self):
+    def _keywords_parser(self):
         """
         Parser returning package keyword masking metadata
         read from package.keywords file.
@@ -761,7 +761,7 @@ class SystemSettings(Singleton):
         return data
 
 
-    def unmask_parser(self):
+    def _unmask_parser(self):
         """
         Parser returning package unmasking metadata read from
         package.unmask file.
@@ -774,7 +774,7 @@ class SystemSettings(Singleton):
             self.__mtime_files['unmask_mtime'])
         return self.__generic_parser(self.__setting_files['unmask'])
 
-    def mask_parser(self):
+    def _mask_parser(self):
         """
         Parser returning package masking metadata read from
         package.mask file.
@@ -787,7 +787,7 @@ class SystemSettings(Singleton):
             self.__mtime_files['mask_mtime'])
         return self.__generic_parser(self.__setting_files['mask'])
 
-    def system_mask_parser(self):
+    def _system_mask_parser(self):
         """
         Parser returning system packages mask metadata read from
         package.system_mask file.
@@ -801,7 +801,7 @@ class SystemSettings(Singleton):
             self.__mtime_files['system_mask_mtime'])
         return self.__generic_parser(self.__setting_files['system_mask'])
 
-    def license_mask_parser(self):
+    def _license_mask_parser(self):
         """
         Parser returning packages masked by license metadata read from
         license.mask file.
@@ -813,7 +813,7 @@ class SystemSettings(Singleton):
             self.__mtime_files['license_mask_mtime'])
         return self.__generic_parser(self.__setting_files['license_mask'])
 
-    def repos_license_whitelist_parser(self):
+    def _repos_license_whitelist_parser(self):
         """
         Parser returning licenses considered accepted by default
         (= GPL compatibles) read from package.lic_whitelist.
@@ -830,7 +830,7 @@ class SystemSettings(Singleton):
                 self.__setting_files['repos_license_whitelist'][repoid])
         return data
 
-    def repos_mask_parser(self):
+    def _repos_mask_parser(self):
         """
         Parser returning packages masked at repository level read from
         packages.db.mask inside the repository database directory.
@@ -847,7 +847,7 @@ class SystemSettings(Singleton):
             # why ? line = line.split()[0] in the previous one?
         return data
 
-    def repos_system_mask_parser(self):
+    def _repos_system_mask_parser(self):
         """
         Parser returning system packages mask metadata read from
         packages.db.system_mask file inside the repository directory.
@@ -869,7 +869,7 @@ class SystemSettings(Singleton):
             # why ? line = line.split()[0] in the previous one?
         return data
 
-    def system_package_sets_parser(self):
+    def _system_package_sets_parser(self):
         """
         Parser returning system defined package sets read from
         /etc/entropy/packages/sets.
@@ -885,7 +885,7 @@ class SystemSettings(Singleton):
                 data[set_name] = set_elements.copy()
         return data
 
-    def system_dirs_parser(self):
+    def _system_dirs_parser(self):
         """
         Parser returning directories considered part of the base system.
 
@@ -893,7 +893,7 @@ class SystemSettings(Singleton):
         """
         return self.__generic_parser(self.__setting_files['system_dirs'])
 
-    def system_dirs_mask_parser(self):
+    def _system_dirs_mask_parser(self):
         """
         Parser returning directories NOT considered part of the base system.
         Settings here overlay system_dirs_parser.
@@ -902,7 +902,7 @@ class SystemSettings(Singleton):
         """
         return self.__generic_parser(self.__setting_files['system_dirs_mask'])
 
-    def hw_hash_parser(self):
+    def _hw_hash_parser(self):
         """
         Hardware hash metadata parser and generator. It returns a theorically
         unique SHA256 hash bound to the computer running this Framework.
@@ -931,7 +931,7 @@ class SystemSettings(Singleton):
             hash_f.close()
             return hash_data
 
-    def system_rev_symlinks_parser(self):
+    def _system_rev_symlinks_parser(self):
         """
         Parser returning important system symlinks mapping. For example:
             {'/usr/lib': ['/usr/lib64']}
@@ -949,7 +949,7 @@ class SystemSettings(Singleton):
             data[line[0]] = frozenset(line[1:])
         return data
 
-    def conflicting_tagged_packages_parser(self):
+    def _conflicting_tagged_packages_parser(self):
         """
         Parser returning packages that could have been installed because
         they aren't in the same scope, but ending up creating critical
@@ -976,7 +976,7 @@ class SystemSettings(Singleton):
                     data[mydata[0]] = mydata[1:]
         return data
 
-    def socket_service_parser(self):
+    def _socket_service_parser(self):
         """
         Parses socket service configuration file.
         This file contains information about Entropy remote service ports
@@ -1084,7 +1084,7 @@ class SystemSettings(Singleton):
 
         return data
 
-    def system_parser(self):
+    def _system_parser(self):
 
         """
         Parses Entropy system configuration file.
@@ -1170,7 +1170,7 @@ class SystemSettings(Singleton):
 
         return data
 
-    def repositories_parser(self):
+    def _repositories_parser(self):
 
         """
         Setup Entropy Client repository settings reading them from
