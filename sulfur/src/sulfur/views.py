@@ -27,6 +27,7 @@ from entropy.const import etpConst, etpSys, initconfig_entropy_constants
 from entropy.misc import ParallelTask
 from entropy.i18n import _, _LOCALE
 from entropy.db import dbapi2
+from entropy.tools import convert_unix_time_to_datetime
 
 from sulfur.setup import const, cleanMarkupString, SulfurConf
 from sulfur.core import UI
@@ -55,6 +56,7 @@ class EntropyPackageViewModelInjector:
         if pkgsets:
             self.pkgset_inject(packages)
         else:
+            self.dummy_cats.clear()
             self.packages_inject(packages)
 
 
@@ -270,6 +272,71 @@ class RepoSortPackageViewModelInjector(EntropyPackageViewModelInjector):
         for po in packages:
             self.model.append( None, (po,) )
 
+class DateSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+
+    def __init__(self, *args, **kwargs):
+        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+
+    def packages_inject(self, packages):
+
+        def mycmp(obj_a, obj_b):
+            eq = 0
+            try:
+                d1 = obj_a.epoch
+                d2 = obj_b.epoch
+            except dbapi2.Error:
+                return 0
+            if d1 == d2:
+                return 0
+            if d1 < d2:
+                return 1
+            return -1
+
+        packages.sort(mycmp)
+        for po in packages:
+            self.model.append( None, (po,) )
+
+class DateGroupedSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+
+    def __init__(self, *args, **kwargs):
+        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+
+    def packages_inject(self, packages):
+
+        dates = {}
+        for po in packages:
+            try:
+                date = float(po.epoch)
+            except (TypeError, AttributeError, ValueError,):
+                date = None
+            if date is not None:
+                dateobj = convert_unix_time_to_datetime(date)
+                date = (dateobj.year, dateobj.month, dateobj.day,)
+            dates_obj = dates.setdefault(date, [])
+            dates_obj.append(po)
+
+        date_refs = sorted(dates, reverse = True)
+
+        not_avail_txt = _("Not available")
+        for date in date_refs:
+
+            date_desc = not_avail_txt
+            if date is not None:
+                date_desc = "%s-%s-%s" % date
+
+            date_text = "<b><big>%s</big></b>\n<small>%s</small>" % (
+                cleanMarkupString(date_desc),
+                _("entered the repository"),
+            )
+            mydummy = DummyEntropyPackage(namedesc = date_text,
+                dummy_type = SulfurConf.dummy_category, onlyname = date)
+            mydummy.color = SulfurConf.color_package_category
+            self.dummy_cats[date] = mydummy
+            parent = self.model.append( None, (mydummy,) )
+            for po in dates[date]:
+                self.model.append( parent, (po,) )
+
+
 class EntropyPackageView:
 
     def __init__( self, treeview, qview, ui, etpbase, main_window,
@@ -435,7 +502,8 @@ class EntropyPackageView:
             'package': [NameSortPackageViewModelInjector,
                 NameRevSortPackageViewModelInjector,
                 DownloadSortPackageViewModelInjector,
-                DefaultPackageViewModelInjector],
+                DefaultPackageViewModelInjector,
+                DateGroupedSortPackageViewModelInjector],
             'vote': [VoteSortPackageViewModelInjector,
                 VoteRevSortPackageViewModelInjector],
             'repository': [RepoSortPackageViewModelInjector],

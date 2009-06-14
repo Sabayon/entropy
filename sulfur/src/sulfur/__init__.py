@@ -332,6 +332,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             'downloads': DownloadSortPackageViewModelInjector,
             'votes': VoteSortPackageViewModelInjector,
             'repository': RepoSortPackageViewModelInjector,
+            'date': DateSortPackageViewModelInjector,
+            'date_grouped': DateGroupedSortPackageViewModelInjector,
         }
         self.pkg_sorters_desc = {
             'default': _("Default packages sorting"),
@@ -340,6 +342,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             'downloads': _("Sort by downloads"),
             'votes': _("Sort by votes"),
             'repository': _("Sort by repository"),
+            'date': _("Sort by date (simple)"),
+            'date_grouped': _("Sort by date (grouped)"),
         }
         self.pkg_sorters_id = {
             0: 'default',
@@ -348,6 +352,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             3: 'downloads',
             4: 'votes',
             5: 'repository',
+            6: 'date',
+            7: 'date_grouped',
         }
         self.pkg_sorters_id_inverse = {
             'default': 0,
@@ -356,6 +362,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             'downloads': 3,
             'votes': 4,
             'repository': 5,
+            'date': 6,
+            'date_grouped': 7,
         }
         self.pkg_sorters_img_ids = {
             0: gtk.STOCK_PRINT_PREVIEW,
@@ -364,6 +372,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             3: gtk.STOCK_GOTO_BOTTOM,
             4: gtk.STOCK_INFO,
             5: gtk.STOCK_CONNECT,
+            6: gtk.STOCK_MEDIA_PLAY,
+            7: gtk.STOCK_MEDIA_PLAY,
         }
 
         # setup package sorter
@@ -372,11 +382,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         sorter.set_model(sorter_model)
 
         sorter_img_cell = gtk.CellRendererPixbuf()
-        sorter.pack_start(sorter_img_cell, True)
+        sorter.pack_start(sorter_img_cell, False)
         sorter.add_attribute(sorter_img_cell, 'stock-id', 0)
 
         sorter_cell = gtk.CellRendererText()
-        sorter.pack_start(sorter_cell, True)
+        sorter.pack_start(sorter_cell, False)
         sorter.add_attribute(sorter_cell, 'text', 1)
 
         first = True
@@ -455,7 +465,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.queue.clear()
                 self.queueView.refresh()
 
-        else:
+        elif "--nonoticeboard" not in sys.argv:
             self.show_notice_board()
 
     def setup_advisories_filter(self):
