@@ -175,7 +175,7 @@ class SocketHost:
         def terminate_instance(self):
             pass
 
-    class HostServer(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+    class HostServerMixin(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
 
         class ConnWrapper:
             '''
@@ -1835,7 +1835,7 @@ class SocketHost:
         self.socket.setdefaulttimeout(self.timeout)
         while 1:
             try:
-                self.Server = self.HostServer(
+                self.Server = self.HostServerMixin(
                                                 (self.hostname, self.port),
                                                 self.RequestHandler,
                                                 self.CommandProcessor(self),
