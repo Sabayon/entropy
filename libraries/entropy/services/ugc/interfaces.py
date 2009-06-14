@@ -456,23 +456,15 @@ class Server(RemoteDatabase):
             'downloads': 0,
         }
         self.execute_query('SELECT * FROM entropy_docs,entropy_base WHERE entropy_base.`idkey` = entropy_docs.`idkey` AND entropy_base.`key` = %s', (pkgkey,))
-        metadata['docs'] = self.fetchall()
-        for mydict in metadata['docs']:
-            mydict = self._get_ugc_extra_metadata(mydict)
+        metadata['docs'] = [self._get_ugc_extra_metadata(x) for x \
+            in self.fetchall()]
         metadata['vote'] = self.get_ugc_vote(pkgkey)
         metadata['downloads'] = self.get_ugc_downloads(pkgkey)
         return metadata
 
     def get_ugc_keywords(self, iddoc):
         self.execute_query('SELECT `keyword` FROM entropy_docs_keywords WHERE `iddoc` = %s order by `keyword`', (iddoc,))
-        data = self.fetchall()
-        if not data: return []
-        mykeys = []
-        for mydict in data:
-            if not mydict.has_key('keyword'):
-                continue
-            mykeys.append(mydict['keyword'])
-        return mykeys
+        return [x.get('keyword') for x in self.fetchall() if x.get('keyword')]
 
     def get_ugc_metadata_doctypes(self, pkgkey, typeslist):
         self.check_connection()
@@ -482,11 +474,8 @@ class Server(RemoteDatabase):
             entropy_docs.`idkey` = entropy_base.`idkey` AND 
             entropy_base.`key` = %s AND 
             entropy_docs.`iddoctype` IN %s 
-            ORDER BY entropy_docs.`ts` ASC""", (pkgkey,typeslist,))
-        metadata = self.fetchall()
-        for mydict in metadata:
-            mydict = self._get_ugc_extra_metadata(mydict)
-        return metadata
+            ORDER BY entropy_docs.`ts` ASC""", (pkgkey, typeslist,))
+        return [self._get_ugc_extra_metadata(x) for x in self.fetchall()]
 
     def get_ugc_metadata_doctypes_by_identifiers(self, identifiers, typeslist):
         self.check_connection()
@@ -497,10 +486,7 @@ class Server(RemoteDatabase):
         if len(typeslist) < 2:
             typeslist += [0]
         self.execute_query('SELECT * FROM entropy_docs WHERE `iddoc` IN %s AND `iddoctype` IN %s', (identifiers,typeslist,))
-        metadata = self.fetchall()
-        for mydict in metadata:
-            mydict = self._get_ugc_extra_metadata(mydict)
-        return metadata
+        return [self._get_ugc_extra_metadata(x) for x in self.fetchall()]
 
     def get_ugc_metadata_by_identifiers(self, identifiers):
         self.check_connection()
@@ -508,29 +494,28 @@ class Server(RemoteDatabase):
         if len(identifiers) < 2:
             identifiers += [0]
         self.execute_query('SELECT * FROM entropy_docs WHERE `iddoc` IN %s', (identifiers,))
-        metadata = self.fetchall()
-        for mydict in metadata:
-            mydict = self._get_ugc_extra_metadata(mydict)
-        return metadata
+        return [self._get_ugc_extra_metadata(x) for x in self.fetchall()]
 
     def _get_ugc_extra_metadata(self, mydict):
         mydict['store_url'] = None
         mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
-        if mydict.has_key("key"): mydict['pkgkey'] = mydict['key']
-        else: mydict['pkgkey'] = self.get_pkgkey(mydict['idkey'])
+        if mydict.has_key("key"):
+            mydict['pkgkey'] = mydict['key']
+        else:
+            mydict['pkgkey'] = self.get_pkgkey(mydict['idkey'])
         # for binary files, get size too
         mydict['size'] = 0
         if mydict['iddoctype'] in self.UPLOADED_DOC_TYPES:
             myfilename = mydict['ddata']
-            if not isinstance(myfilename,basestring):
+            if not isinstance(myfilename, basestring):
                 myfilename = myfilename.tostring()
-            mypath = os.path.join(self.STORE_PATH,myfilename)
+            mypath = os.path.join(self.STORE_PATH, myfilename)
             if os.path.isfile(mypath) and os.access(mypath,os.R_OK):
                 try:
                     mydict['size'] = self.entropyTools.get_file_size(mypath)
                 except OSError:
                     pass
-            mydict['store_url'] = os.path.join(self.store_url,myfilename)
+            mydict['store_url'] = os.path.join(self.store_url, myfilename)
         else:
             mydata = mydict['ddata']
             if not isinstance(mydata,basestring):
@@ -548,28 +533,23 @@ class Server(RemoteDatabase):
         SELECT avg(entropy_votes.`vote`) as avg_vote FROM entropy_votes,entropy_base WHERE 
         entropy_base.`key` = %s AND 
         entropy_base.idkey = entropy_votes.idkey""", (pkgkey,))
-        data = self.fetchone()
-        if isinstance(data,dict):
-            if data.get('avg_vote'):
-                return data['avg_vote']
-        return vote
+        data = self.fetchone() or {}
+        return data.get('avg_vote', vote)
 
     def get_ugc_allvotes(self):
 
         # cached?
         cache_item = 'get_ugc_allvotes'
         cached = self.get_cached_result(cache_item)
-        if cached != None: return cached
+        if cached != None:
+            return cached
 
         self.check_connection()
-        vote_data = {}
         self.execute_query("""
         SELECT entropy_base.`key` as `vkey`,avg(entropy_votes.vote) as `avg_vote` FROM 
         entropy_votes,entropy_base WHERE 
         entropy_votes.`idkey` = entropy_base.`idkey` GROUP BY entropy_base.`key`""")
-        data = self.fetchall()
-        for d_dict in data:
-            vote_data[d_dict['vkey']] = d_dict['avg_vote']
+        vote_data = dict( ((x['vkey'], x['avg_vote'],) for x in self.fetchall()) )
 
         # do cache
         self.cache_result(cache_item, vote_data)
@@ -578,14 +558,14 @@ class Server(RemoteDatabase):
     def get_ugc_downloads(self, pkgkey):
         self.check_connection()
         downloads = 0
+
         self.execute_query("""
         SELECT SQL_CACHE sum(entropy_downloads.`count`) as `tot_downloads` FROM 
         entropy_downloads,entropy_base WHERE entropy_base.key = %s AND 
         entropy_base.idkey = entropy_downloads.idkey""", (pkgkey,))
-        data = self.fetchone()
-        if data['tot_downloads'] != None:
-            downloads = data['tot_downloads']
-        return downloads
+
+        data = self.fetchone() or {}
+        return data.get('tot_downloads', downloads)
 
     def get_ugc_alldownloads(self):
         # cached?
@@ -594,15 +574,12 @@ class Server(RemoteDatabase):
         if cached != None: return cached
 
         self.check_connection()
-        down_data = {}
         self.execute_query("""
         SELECT SQL_CACHE entropy_base.key as vkey, tot_downloads from entropy_base,
         (SELECT  idkey as idp1, sum(entropy_downloads.`count`) AS `tot_downloads` FROM
         entropy_downloads GROUP BY entropy_downloads.`idkey`) as tmp where idkey = tmp.idp1;
         """)
-        data = self.fetchall()
-        for d_dict in data:
-            down_data[d_dict['vkey']] = d_dict['tot_downloads']
+        down_data = dict( ((x['vkey'], x['tot_downloads'],) for x in self.fetchall()) )
 
         # do cache
         self.cache_result(cache_item, down_data)
@@ -611,36 +588,26 @@ class Server(RemoteDatabase):
     def get_iddoc_userid(self, iddoc):
         self.check_connection()
         self.execute_query('SELECT `userid` FROM entropy_docs WHERE `iddoc` = %s', (iddoc,))
-        data = self.fetchone()
-        if not data:
-            return None
-        elif not data.has_key('userid'):
-            return None
-        return data['userid']
+        data = self.fetchone() or {}
+        return data.get('userid', None)
 
     def get_total_comments_count(self):
         self.check_connection()
         self.execute_query('SELECT count(`iddoc`) as comments FROM entropy_docs WHERE `iddoctype` = %s', (self.DOC_TYPES['comments'],))
-        data = self.fetchone()
-        if isinstance(data,dict):
-            if data['comments']: return data['comments']
-        return 0
+        data = self.fetchone() or {}
+        return data.get('comments', 0)
 
     def get_total_documents_count(self):
         self.check_connection()
         self.execute_query('SELECT count(`iddoc`) as comments FROM entropy_docs WHERE `iddoctype` != %s', (self.DOC_TYPES['comments'],))
-        data = self.fetchone()
-        if isinstance(data,dict):
-            if data['comments']: return data['comments']
-        return 0
+        data = self.fetchone() or {}
+        return data.get('comments', 0)
 
     def get_total_votes_count(self):
         self.check_connection()
         self.execute_query('SELECT count(`idvote`) as votes FROM entropy_votes')
-        data = self.fetchone()
-        if isinstance(data,dict):
-            if data['votes']: return data['votes']
-        return 0
+        data = self.fetchone() or {}
+        return data.get('votes', 0)
 
     def get_total_downloads_count(self):
 
@@ -651,14 +618,12 @@ class Server(RemoteDatabase):
 
         self.check_connection()
         self.execute_query('SELECT SQL_CACHE sum(entropy_downloads.`count`) as downloads FROM entropy_downloads')
-        data = self.fetchone()
-        r = 0
-        if isinstance(data,dict):
-            if data['downloads']: r = int(data['downloads'])
+        data = self.fetchone() or {}
+        result = int(data.get('downloads', 0))
 
         # do cache
-        self.cache_result(cache_item, r)
-        return r
+        self.cache_result(cache_item, result)
+        return result
 
     def get_user_score_ranking(self, userid):
         self.check_connection()
@@ -666,28 +631,25 @@ class Server(RemoteDatabase):
         self.execute_query("""
         SELECT Row, col_a FROM (SELECT @row := @row + 1 AS Row, userid AS col_a FROM 
         entropy_user_scores ORDER BY score DESC) As derived1 WHERE col_a = %s""", (userid,))
-        data = self.fetchone()
-        if isinstance(data,dict):
-            if data.get('Row'): return data['Row']
-        return 0
+        data = self.fetchone() or {}
+        return data.get('Row', 0)
 
     def get_users_scored_count(self):
 
         # cached?
         cache_item = 'get_users_scored_count'
         cached = self.get_cached_result(cache_item)
-        if cached != None: return cached
+        if cached != None:
+            return cached
 
         self.check_connection()
         self.execute_query('SELECT SQL_CACHE count(`userid`) as mycount FROM entropy_user_scores')
-        data = self.fetchone()
-        r = 0
-        if isinstance(data,dict):
-            if data.get('mycount'): r = data['mycount']
+        data = self.fetchone() or {}
+        result = data.get('mycount', 0)
 
         # do cache
-        self.cache_result(cache_item, r)
-        return r
+        self.cache_result(cache_item, result)
+        return result
 
     def is_user_score_available(self, userid):
         self.check_connection()
@@ -700,7 +662,9 @@ class Server(RemoteDatabase):
         comments = self.get_user_comments_count(userid)
         docs = self.get_user_docs_count(userid)
         votes = self.get_user_votes_count(userid)
-        return (comments*self.COMMENTS_SCORE_WEIGHT)+(docs*self.DOCS_SCORE_WEIGHT)+(votes*self.VOTES_SCORE_WEIGHT)
+        return (comments*self.COMMENTS_SCORE_WEIGHT) + \
+            (docs*self.DOCS_SCORE_WEIGHT) + \
+            (votes*self.VOTES_SCORE_WEIGHT)
 
     def update_user_score(self, userid):
         self.check_connection()
@@ -714,38 +678,35 @@ class Server(RemoteDatabase):
 
     def get_user_score(self, userid):
         self.check_connection()
-        myscore = None
         self.execute_query('SELECT score FROM entropy_user_scores WHERE userid = %s',(userid,))
-        data = self.fetchone()
-        if isinstance(data,dict):
-            if data.has_key('score'): myscore = data.get('score')
-        if myscore == None: myscore = self.update_user_score(userid)
+        data = self.fetchone() or {}
+        myscore = data.get('score')
+        if myscore == None:
+            myscore = self.update_user_score(userid)
         return myscore
 
     def get_users_score_ranking(self, offset = 0, count = 0):
         self.check_connection()
         limit_string = ''
         if count:
-            limit_string = ' LIMIT %s,%s' % (offset,count,)
-        self.execute_query('SELECT SQL_CALC_FOUND_ROWS *,userid,score FROM entropy_user_scores ORDER BY score DESC'+limit_string)
+            limit_string += ' LIMIT %s,%s' % (offset,count,)
+        self.execute_query('SELECT SQL_CALC_FOUND_ROWS *, userid, score FROM entropy_user_scores ORDER BY score DESC' + limit_string)
         data = self.fetchall()
 
         self.execute_query('SELECT FOUND_ROWS() as count')
-        rdata = self.fetchone()
-        found_rows = 0
-        if isinstance(rdata,dict):
-            if rdata.has_key('count'):
-                found_rows = rdata.get('count')
+        rdata = self.fetchone() or {}
+        found_rows = rdata.get('count', 0)
 
         return found_rows, data
 
     def get_user_votes_average(self, userid):
         self.check_connection()
         self.execute_query('SELECT avg(`vote`) as vote_avg FROM entropy_votes WHERE `userid` = %s', (userid,))
-        data = self.fetchone()
-        if isinstance(data,dict):
-            if data['vote_avg']: return round(float(data['vote_avg']),2)
-        return 0.0
+        data = self.fetchone() or {}
+        vote_avg = data.get('vote_avg', 0.0)
+        if vote_avg == 0.0:
+            return vote_avg
+        return round(float(vote_avg), 2)
 
     def get_user_alldocs(self, userid):
         self.check_connection()
@@ -774,10 +735,8 @@ class Server(RemoteDatabase):
     def get_user_generic_doctype_count(self, userid, doctype, doctype_sql_cmp = "="):
         self.check_connection()
         self.execute_query('SELECT count(`iddoc`) as docs FROM entropy_docs WHERE `userid` = %s AND `iddoctype` '+doctype_sql_cmp+' %s', (userid,doctype,))
-        data = self.fetchone()
-        if isinstance(data,dict):
-            if data['docs']: return data['docs']
-        return 0
+        data = self.fetchone() or {}
+        return data.get('docs', 0)
 
     def get_user_comments_count(self, userid):
         return self.get_user_generic_doctype_count(userid, self.DOC_TYPES['comments'])
@@ -797,10 +756,8 @@ class Server(RemoteDatabase):
     def get_user_votes_count(self, userid):
         self.check_connection()
         self.execute_query('SELECT count(`idvote`) as votes FROM entropy_votes WHERE `userid` = %s', (userid,))
-        data = self.fetchone()
-        if isinstance(data,dict):
-            if data['votes']: return data['votes']
-        return 0
+        data = self.fetchone() or {}
+        return data.get('votes', 0)
 
     def get_user_stats(self, userid):
         mydict = {}
@@ -860,12 +817,8 @@ class Server(RemoteDatabase):
 
         results = self.fetchall()
         self.execute_query('SELECT FOUND_ROWS() as count')
-        data = self.fetchone()
-        found_rows = 0
-        if isinstance(data,dict):
-            if data.has_key('count'):
-                found_rows = data.get('count')
-        return results, found_rows
+        data = self.fetchone() or {}
+        return results, data.get('count', 0)
 
     def search_username_items(self, pkgkey_string, iddoctypes = None, results_offset = 0, results_limit = 30, order_by = None):
         self.check_connection()
@@ -901,12 +854,8 @@ class Server(RemoteDatabase):
 
         results = self.fetchall()
         self.execute_query('SELECT FOUND_ROWS() as count')
-        data = self.fetchone()
-        found_rows = 0
-        if isinstance(data,dict):
-            if data.has_key('count'):
-                found_rows = data.get('count')
-        return results, found_rows
+        data = self.fetchone() or {}
+        return results, data.get('count', 0)
 
     def search_content_items(self, pkgkey_string, iddoctypes = None, results_offset = 0, results_limit = 30, order_by = None):
         self.check_connection()
@@ -942,12 +891,8 @@ class Server(RemoteDatabase):
 
         results = self.fetchall()
         self.execute_query('SELECT FOUND_ROWS() as count')
-        data = self.fetchone()
-        found_rows = 0
-        if isinstance(data,dict):
-            if data.has_key('count'):
-                found_rows = data.get('count')
-        return results, found_rows
+        data = self.fetchone() or {}
+        return results, data.get('count', 0)
 
     def search_keyword_items(self, keyword_string, iddoctypes = None, results_offset = 0, results_limit = 30, order_by = None):
         self.check_connection()
@@ -985,12 +930,8 @@ class Server(RemoteDatabase):
 
         results = self.fetchall()
         self.execute_query('SELECT FOUND_ROWS() as count')
-        data = self.fetchone()
-        found_rows = 0
-        if isinstance(data,dict):
-            if data.has_key('count'):
-                found_rows = data.get('count')
-        return results, found_rows
+        data = self.fetchone() or {}
+        return results, data.get('count', 0)
 
     def search_iddoc_item(self, iddoc_string, iddoctypes = None, results_offset = 0, results_limit = 30, order_by = None):
         self.check_connection()
@@ -1001,7 +942,7 @@ class Server(RemoteDatabase):
         try:
             myterm = int(iddoc_string)
         except ValueError:
-            return [],0
+            return [], 0
 
         search_params = [myterm,results_offset,results_limit]
 
@@ -1030,16 +971,13 @@ class Server(RemoteDatabase):
 
         results = self.fetchall()
         self.execute_query('SELECT FOUND_ROWS() as count')
-        data = self.fetchone()
-        found_rows = 0
-        if isinstance(data,dict):
-            if data.has_key('count'):
-                found_rows = data.get('count')
-        return results, found_rows
+        data = self.fetchone() or {}
+        return results, data.get('count', 0)
 
     def handle_pkgkey(self, key):
         idkey = self.get_idkey(key)
-        if idkey == -1: return self.insert_pkgkey(key)
+        if idkey == -1:
+            return self.insert_pkgkey(key)
         return idkey
 
     def insert_flood_control_check(self, userid):
@@ -1065,7 +1003,8 @@ class Server(RemoteDatabase):
 
         # flood control
         flood_risk = self.insert_flood_control_check(userid)
-        if flood_risk: return 'flooding detected'
+        if flood_risk:
+            return 'flooding detected'
 
         self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)',(
                 None,
@@ -1079,7 +1018,8 @@ class Server(RemoteDatabase):
                 None,
             )
         )
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
         iddoc = self.lastrowid()
         self.insert_keywords(iddoc, keywords)
         self.update_user_score(userid)
@@ -1114,10 +1054,12 @@ class Server(RemoteDatabase):
     def insert_comment(self, pkgkey, userid, username, comment, title, keywords, do_commit = False):
         self.check_connection()
         idkey = self.handle_pkgkey(pkgkey)
-        iddoc = self.insert_generic_doc(idkey, userid, username, self.DOC_TYPES['comments'], comment, title, '', keywords)
-        if isinstance(iddoc,basestring):
+        iddoc = self.insert_generic_doc(idkey, userid, username,
+            self.DOC_TYPES['comments'], comment, title, '', keywords)
+        if isinstance(iddoc, basestring):
             return False, iddoc
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
         return True, iddoc
 
     def edit_comment(self, iddoc, new_comment, new_title, new_keywords, do_commit = False):
@@ -1134,7 +1076,8 @@ class Server(RemoteDatabase):
         )
         self.remove_keywords(iddoc)
         self.insert_keywords(iddoc, new_keywords)
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
         return True, iddoc
 
     def remove_comment(self, iddoc):
@@ -1146,7 +1089,8 @@ class Server(RemoteDatabase):
                 self.DOC_TYPES['comments'],
             )
         )
-        if userid: self.update_user_score(userid)
+        if userid:
+            self.update_user_score(userid)
         return True, iddoc
 
     # give a vote to an app
@@ -1168,7 +1112,8 @@ class Server(RemoteDatabase):
                 None,
             )
         )
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
         self.update_user_score(userid)
         return True
 
@@ -1195,8 +1140,10 @@ class Server(RemoteDatabase):
             if (iddownload > 0) and isinstance(ip_addr,basestring):
                 iddownloads.add(iddownload)
 
-        if iddownloads: self.store_download_data(iddownloads, ip_addr)
-        if do_commit: self.commit()
+        if iddownloads:
+            self.store_download_data(iddownloads, ip_addr)
+        if do_commit:
+            self.commit()
         return True
 
     def do_download_stats(self, branch, release_string, hw_hash, pkgkeys,
@@ -1276,19 +1223,20 @@ class Server(RemoteDatabase):
     def is_user_ip_available_in_entropy_distribution_usage(self, ip_address):
         self.check_connection()
         self.execute_query('SELECT entropy_distribution_usage_id FROM entropy_distribution_usage WHERE `ip_address` = %s',(ip_address,))
-        data = self.fetchone()
-        if data:
-            return data['entropy_distribution_usage_id']
-        return -1
+        data = self.fetchone() or {}
+        return data.get('entropy_distribution_usage_id', -1)
 
-    def insert_document(self, pkgkey, userid, username, text, title, description, keywords, doc_type = None, do_commit = False):
+    def insert_document(self, pkgkey, userid, username, text, title,
+            description, keywords, doc_type = None, do_commit = False):
         self.check_connection()
         idkey = self.handle_pkgkey(pkgkey)
         if doc_type == None: doc_type = self.DOC_TYPES['bbcode_doc']
-        iddoc = self.insert_generic_doc(idkey, userid, username, doc_type, text, title, description, keywords)
-        if isinstance(iddoc,basestring):
+        iddoc = self.insert_generic_doc(idkey, userid, username, doc_type,
+            text, title, description, keywords)
+        if isinstance(iddoc, basestring):
             return False, iddoc
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
         return True, iddoc
 
     def edit_document(self, iddoc, new_document, new_title, new_keywords, do_commit = False):
@@ -1307,7 +1255,8 @@ class Server(RemoteDatabase):
         )
         self.remove_keywords(iddoc)
         self.insert_keywords(iddoc, new_keywords)
-        if do_commit: self.commit()
+        if do_commit:
+            self.commit()
         return True, iddoc
 
     def remove_document(self, iddoc):
@@ -1319,7 +1268,8 @@ class Server(RemoteDatabase):
                 self.DOC_TYPES['bbcode_doc'],
             )
         )
-        if userid: self.update_user_score(userid)
+        if userid:
+            self.update_user_score(userid)
         return True, iddoc
 
     def scan_for_viruses(self, filepath):
@@ -1335,10 +1285,11 @@ class Server(RemoteDatabase):
         rc = p.wait()
         f.close()
         if rc == 1:
-            return True,None
-        return False,None
+            return True, None
+        return False, None
 
-    def insert_generic_file(self, pkgkey, userid, username, file_path, file_name, doc_type, title, description, keywords):
+    def insert_generic_file(self, pkgkey, userid, username, file_path,
+            file_name, doc_type, title, description, keywords):
         self.check_connection()
         file_path = os.path.realpath(file_path)
 
@@ -1380,15 +1331,21 @@ class Server(RemoteDatabase):
             dest_path = os.path.join(os.path.dirname(orig_dest_path),dest_path_name)
 
         if os.path.dirname(file_path) != dest_dir:
-            shutil.move(file_path,dest_path)
+            try:
+                os.rename(file_path, dest_path)
+            except OSError:
+                # fallback to non atomic
+                shutil.move(file_path, dest_path)
         if etpConst['entropygid'] != None:
             try:
                 const_setup_file(dest_path, etpConst['entropygid'], 0664)
             except OSError:
                 pass
             # at least set chmod
-            try: const_set_chmod(dest_path,0664)
-            except OSError: pass
+            try:
+                const_set_chmod(dest_path,0664)
+            except OSError:
+                pass
 
         title = title[:self.entropy_docs_title_len]
         description = description[:self.entropy_docs_description_len]
@@ -1415,11 +1372,16 @@ class Server(RemoteDatabase):
         self.update_user_score(userid)
         return True, (iddoc, store_url)
 
-    def insert_image(self, pkgkey, userid, username, image_path, file_name, title, description, keywords):
-        return self.insert_generic_file(pkgkey, userid, username, image_path, file_name, self.DOC_TYPES['image'], title, description, keywords)
+    def insert_image(self, pkgkey, userid, username, image_path, file_name,
+            title, description, keywords):
+        return self.insert_generic_file(pkgkey, userid, username, image_path,
+            file_name, self.DOC_TYPES['image'], title, description, keywords)
 
-    def insert_file(self, pkgkey, userid, username, file_path, file_name, title, description, keywords):
-        return self.insert_generic_file(pkgkey, userid, username, file_path, file_name, self.DOC_TYPES['generic_file'], title, description, keywords)
+    def insert_file(self, pkgkey, userid, username, file_path, file_name, title,
+            description, keywords):
+        return self.insert_generic_file(pkgkey, userid, username, file_path,
+            file_name, self.DOC_TYPES['generic_file'], title, description,
+            keywords)
 
     def delete_image(self, iddoc):
         return self.delete_generic_file(iddoc, self.DOC_TYPES['image'])
@@ -1452,7 +1414,8 @@ class Server(RemoteDatabase):
                 doc_type,
             )
         )
-        if userid: self.update_user_score(userid)
+        if userid:
+            self.update_user_score(userid)
         return True, (iddoc, None)
 
     def insert_youtube_video(self, pkgkey, userid, username, video_path, file_name, title, description, keywords):
@@ -1484,7 +1447,9 @@ class Server(RemoteDatabase):
         if yt_service == None:
             return False, None
 
-        mykeywords = ', '.join([x.strip().strip(',') for x in keywords.split()+["sabayon"] if (x.strip() and x.strip(",") and (len(x.strip()) > 4))])
+        mykeywords = ', '.join([x.strip().strip(',') for x in \
+            keywords.split() + ["sabayon"] if (x.strip() and x.strip(",") and \
+                (len(x.strip()) > 4))])
         gd_keywords = self.gdata.media.Keywords(text = mykeywords)
 
         mydescription = "%s: %s" % (pkgkey,description,)
@@ -1505,12 +1470,14 @@ class Server(RemoteDatabase):
         )
         video_entry = self.gdata.youtube.YouTubeVideoEntry(media = my_media_group)
         new_entry = yt_service.InsertVideoEntry(video_entry, new_video_path)
-        if not isinstance(new_entry,self.gdata.youtube.YouTubeVideoEntry):
+        if not isinstance(new_entry, self.gdata.youtube.YouTubeVideoEntry):
             return False, None
         video_url = new_entry.GetSwfUrl()
         video_id = os.path.basename(video_url)
 
-        iddoc = self.insert_generic_doc(idkey, userid, username, self.DOC_TYPES['youtube_video'], video_id, title, description, keywords)
+        iddoc = self.insert_generic_doc(idkey, userid, username,
+            self.DOC_TYPES['youtube_video'], video_id, title, description,
+            keywords)
         if isinstance(iddoc,basestring):
             return False, (iddoc, None,)
         return True, (iddoc, video_id,)
