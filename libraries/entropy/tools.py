@@ -2184,6 +2184,10 @@ def convert_unix_time_to_human_time(unixtime):
     humantime = str(datetime.fromtimestamp(unixtime))
     return humantime
 
+def convert_unix_time_to_datetime(unixtime):
+    from datetime import datetime
+    return datetime.fromtimestamp(unixtime)
+
 def get_current_unix_time():
     return time.time()
 
