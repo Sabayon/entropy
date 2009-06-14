@@ -763,6 +763,9 @@ class MiscMixin:
                         type = "info",
                         header = darkred(" @@ ")
                     )
+                    # wait for other process to exit
+                    # 5 seconds should be enough
+                    time.sleep(5)
                 break
             if lock_count >= max_lock_count:
                 mycalc = max_lock_count*sleep_seconds/60
