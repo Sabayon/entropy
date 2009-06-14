@@ -27,6 +27,7 @@ from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, \
     const_extract_cli_repo_params, etpCache
 from entropy.i18n import _
+from threading import RLock
 
 class Singleton(object):
 
@@ -156,6 +157,7 @@ class SystemSettings(Singleton):
     settings.
     Also, this class mimics a dictionary (even if not inheriting it
     due to issues with the Singleton class).
+    This class is thread-safe, use with fun.
     """
 
     import entropy.tools as entropyTools
@@ -171,6 +173,7 @@ class SystemSettings(Singleton):
         self.__cacher = EntropyCacher()
         self.__data = {}
         self.__is_destroyed = False
+        self.__mutex = RLock() # reentrant lock on purpose
 
         self.__plugins = {}
         self.__setting_files_order = []
@@ -225,7 +228,8 @@ class SystemSettings(Singleton):
 
         @return None
         """
-        self.__is_destroyed = True
+        with self.__mutex:
+            self.__is_destroyed = True
 
     def add_plugin(self, system_settings_plugin_instance):
         """
@@ -246,8 +250,9 @@ class SystemSettings(Singleton):
         if not isinstance(inst,SystemSettingsPlugin):
             raise AttributeError("SystemSettings: expected valid " + \
                     "SystemSettingsPlugin instance")
-        self.__plugins[inst.get_id()] = inst
-        self.clear()
+        with self.__mutex:
+            self.__plugins[inst.get_id()] = inst
+            self.clear()
 
     def remove_plugin(self, plugin_id):
         """
@@ -260,8 +265,9 @@ class SystemSettings(Singleton):
         @param plugin_id -- plugin identifier
         @type plugin_id basestring
         """
-        del self.__plugins[plugin_id]
-        self.clear()
+        with self.__mutex:
+            del self.__plugins[plugin_id]
+            self.clear()
 
     def __setup_const(self):
 
@@ -359,129 +365,151 @@ class SystemSettings(Singleton):
         """
         dict method. See Python dict API reference.
         """
-        if self.__persistent_settings.has_key(mykey): # backup here too
-            self.__persistent_settings[mykey] = myvalue
-        self.__data[mykey] = myvalue
+        with self.__mutex:
+            # backup here too
+            if self.__persistent_settings.has_key(mykey):
+                self.__persistent_settings[mykey] = myvalue
+            self.__data[mykey] = myvalue
 
     def __getitem__(self, mykey):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data[mykey]
+        with self.__mutex:
+            return self.__data[mykey]
 
     def __delitem__(self, mykey):
         """
         dict method. See Python dict API reference.
         """
-        del self.__data[mykey]
+        with self.__mutex:
+            del self.__data[mykey]
 
     def __iter__(self):
         """
         dict method. See Python dict API reference.
         """
-        return iter(self.__data)
+        with self.__mutex:
+            return iter(self.__data)
 
     def __contains__(self, item):
         """
         dict method. See Python dict API reference.
         """
-        return item in self.__data
+        with self.__mutex:
+            return item in self.__data
 
     def __cmp__(self, other):
         """
         dict method. See Python dict API reference.
         """
-        return cmp(self.__data, other)
+        with self.__mutex:
+            return cmp(self.__data, other)
 
     def __hash__(self):
         """
         dict method. See Python dict API reference.
         """
-        return hash(self.__data)
+        with self.__mutex:
+            return hash(self.__data)
 
     def __len__(self):
         """
         dict method. See Python dict API reference.
         """
-        return len(self.__data)
+        with self.__mutex:
+            return len(self.__data)
 
     def get(self, mykey):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.get(mykey)
+        with self.__mutex:
+            return self.__data.get(mykey)
 
     def has_key(self, mykey):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.has_key(mykey)
+        with self.__mutex:
+            return self.__data.has_key(mykey)
 
     def copy(self):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.copy()
+        with self.__mutex:
+            return self.__data.copy()
 
     def fromkeys(self, seq, val = None):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.fromkeys(seq, val)
+        with self.__mutex:
+            return self.__data.fromkeys(seq, val)
 
     def items(self):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.items()
+        with self.__mutex:
+            return self.__data.items()
 
     def iteritems(self):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.iteritems()
+        with self.__mutex:
+            return self.__data.iteritems()
 
     def iterkeys(self):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.iterkeys()
+        with self.__mutex:
+            return self.__data.iterkeys()
 
     def keys(self):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.keys()
+        with self.__mutex:
+            return self.__data.keys()
 
     def pop(self, mykey, default = None):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.pop(mykey, default)
+        with self.__mutex:
+            return self.__data.pop(mykey, default)
 
     def popitem(self):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.popitem()
+        with self.__mutex:
+            return self.__data.popitem()
 
     def setdefault(self, mykey, default = None):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.setdefault(mykey, default)
+        with self.__mutex:
+            return self.__data.setdefault(mykey, default)
 
     def update(self, kwargs):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.update(kwargs)
+        with self.__mutex:
+            return self.__data.update(kwargs)
 
     def values(self):
         """
         dict method. See Python dict API reference.
         """
-        return self.__data.values()
+        with self.__mutex:
+            return self.__data.values()
 
     def clear(self):
         """
@@ -490,9 +518,10 @@ class SystemSettings(Singleton):
 
         @return None
         """
-        self.__data.clear()
-        self.__setup_const()
-        self.__scan()
+        with self.__mutex:
+            self.__data.clear()
+            self.__setup_const()
+            self.__scan()
 
     def set_persistent_setting(self, persistent_dict):
         """
@@ -504,7 +533,8 @@ class SystemSettings(Singleton):
 
         @return None
         """
-        self.__persistent_settings.update(persistent_dict)
+        with self.__mutex:
+            self.__persistent_settings.update(persistent_dict)
 
     def unset_persistent_setting(self, persistent_key):
         """
@@ -515,8 +545,9 @@ class SystemSettings(Singleton):
 
         @return None
         """
-        del self.__persistent_settings[persistent_key]
-        del self.__data[persistent_key]
+        with self.__mutex:
+            del self.__persistent_settings[persistent_key]
+            del self.__data[persistent_key]
 
     def __setup_setting_vars(self):
 
@@ -644,7 +675,8 @@ class SystemSettings(Singleton):
 
         @return dict __setting_files
         """
-        return self.__setting_files.copy()
+        with self.__mutex:
+            return self.__setting_files.copy()
 
     def get_mtime_files_data(self):
         """
@@ -653,7 +685,8 @@ class SystemSettings(Singleton):
 
         @return dict __mtime_files
         """
-        return self.__mtime_files.copy()
+        with self.__mutex:
+            return self.__mtime_files.copy()
 
     def keywords_parser(self):
         """
