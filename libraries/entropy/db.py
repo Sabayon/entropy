@@ -3759,20 +3759,24 @@ class LocalRepository:
         dependenciesreference.iddependency = dependencies.iddependency""", (idpackage,))
         return set(self.cursor.fetchall())
 
-    def listBranchPackagesTbz2(self, branch, do_sort = True, full_path = False):
+    def listAllDownloads(self, do_sort = True, full_path = False):
+
         order_string = ''
-        if do_sort: order_string = 'ORDER BY extrainfo.download'
+        if do_sort:
+            order_string = 'ORDER BY extrainfo.download'
         self.cursor.execute("""
         SELECT extrainfo.download FROM baseinfo,extrainfo 
-        WHERE baseinfo.branch = (?) AND 
-        baseinfo.idpackage = extrainfo.idpackage %s""" % (order_string,), (branch,))
+        WHERE baseinfo.idpackage = extrainfo.idpackage %s""" % (order_string,))
 
-        if do_sort: results = self.fetchall2list(self.cursor.fetchall())
-        else: results = self.fetchall2set(self.cursor.fetchall())
+        if do_sort:
+            results = self.fetchall2list(self.cursor.fetchall())
+        else:
+            results = self.fetchall2set(self.cursor.fetchall())
 
-        if not full_path: results = [os.path.basename(x) for x in results]
-        if do_sort: return results
-        return set(results)
+        if not full_path:
+            results = [os.path.basename(x) for x in results]
+
+        return results
 
     def listAllFiles(self, clean = False, count = False):
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
