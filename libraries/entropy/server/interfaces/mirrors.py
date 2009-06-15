@@ -1050,6 +1050,11 @@ class Server:
             if not download:
                 critical.append(data['database_rss_light_file'])
 
+        pkglist_file = self.Entropy.get_local_pkglist_file(repo)
+        data['pkglist_file'] = pkglist_file
+        if not download:
+            critical.append(data['pkglist_file'])
+
         # EAPI 2,3
         if not download: # we don't need to get the dump
             if 3 not in disabled_eapis:
@@ -1540,6 +1545,8 @@ class Server:
 
             # create/update timestamp file
             self.update_repository_timestamp(repo)
+            # create pkglist service file
+            self.Entropy.create_repository_pkglist(repo)
 
             upload_data, critical, text_files = self.get_files_to_sync(cmethod,
                 repo = repo, disabled_eapis = disabled_eapis)
@@ -1567,7 +1574,6 @@ class Server:
 
             # Package Sets info
             self._show_package_sets_messages(repo)
-
             self.sync_database_treeupdates(repo)
             self.Entropy.update_database_package_sets(repo)
             self.Entropy.close_server_databases()
@@ -1943,6 +1949,8 @@ class Server:
 
         if upload_queue and not no_upload:
 
+            # XXX QA checks,
+            # please group them into entropy.qa
             deps_not_found = self.Entropy.dependencies_test(repo = repo)
             if deps_not_found and not self.Entropy.community_repo:
                 self.Entropy.updateProgress(
@@ -2366,7 +2374,7 @@ class Server:
         # so we can filter them out from the download queue
         dbconn = self.Entropy.open_server_repository(just_reading = True,
             repo = repo)
-        db_files = dbconn.listBranchPackagesTbz2(branch, do_sort = False,
+        db_files = dbconn.listAllDownloads(do_sort = False,
             full_path = True)
         db_files = set([os.path.basename(x) for x in db_files if \
             (self.Entropy.get_branch_from_download_relative_uri(x) == branch)])
@@ -3031,7 +3039,7 @@ class Server:
 
         dbconn = self.Entropy.open_server_repository(just_reading = True,
             repo = repo)
-        database_bins = dbconn.listBranchPackagesTbz2(branch, do_sort = False,
+        database_bins = dbconn.listAllDownloads(do_sort = False,
             full_path = True)
         bins_dir = os.path.join(
             self.Entropy.get_local_packages_directory(repo), branch)

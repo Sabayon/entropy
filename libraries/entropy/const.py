@@ -241,7 +241,10 @@ def const_default_settings(rootdir):
         # Gentoo xpak metadata file name
         'entropyxpakfilename': "metadata.xpak",
 
+        # entropy repository database upload timestamp
         'etpdatabasetimestampfile': default_etp_dbfile+".timestamp",
+        # entropy repository database owned (in repo) package files
+        'etpdatabasepkglist': default_etp_dbfile+".pkglist",
         'etpdatabaseconflictingtaggedfile': default_etp_dbfile + \
             ".conflicting_tagged",
         # file containing a list of packages that are strictly

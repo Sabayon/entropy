@@ -2407,6 +2407,12 @@ class Server(Singleton, TextInterface):
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabaseexpbasedpkgsrm'])
 
+    def get_local_pkglist_file(self, repo = None, branch = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabasepkglist'])
+
     def get_local_database_sets_dir(self, repo = None, branch = None):
         if repo == None:
             repo = self.default_repository
@@ -2513,6 +2519,21 @@ class Server(Singleton, TextInterface):
         from datetime import datetime
         import time
         return "%s" % (datetime.fromtimestamp(time.time()),)
+
+    def create_repository_pkglist(self, repo = None, branch = None):
+        pkglist_file = self.get_local_pkglist_file(repo = repo, branch = branch)
+
+        tmp_pkglist_file = pkglist_file + ".tmp"
+        dbconn = self.open_server_repository(repo = repo, just_reading = True,
+            do_treeupdates = False)
+        pkglist = dbconn.listAllDownloads(do_sort = True)
+
+        with open(tmp_pkglist_file, "w") as pkg_f:
+            for pkg in pkglist:
+                pkg_f.write(pkg + "\n")
+            pkg_f.flush()
+
+        os.rename(tmp_pkglist_file, pkglist_file)
 
     def package_set_list(self, *args, **kwargs):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
