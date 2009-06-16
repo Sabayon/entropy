@@ -376,9 +376,12 @@ class RSS:
             self.__language = self.__feed_language
             self.__cright = self.__feed_copyright
             self.__editor = self.__feed_editor
-            sys_set = self.__system_settings[self.__srv_settings_plugin_id]
-            srv_set = sys_set['server']
-            self.__link = srv_set['rss']['website_url']
+            sys_set = self.__system_settings.get(self.__srv_settings_plugin_id)
+            if sys_set is None:
+                self.__link = etpConst['rss-website-url']
+            else:
+                srv_set = sys_set['server']
+                self.__link = srv_set['rss']['website_url']
             rss_f = open(self.__file, "w")
             rss_f.write('')
             rss_f.flush()
