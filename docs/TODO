@@ -4,6 +4,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
+    - Sulfur: double click on package cats will show contained packages
     - when a new entropy version is available, don't allow any other update?
         # config file in /etc
         # priority update files
