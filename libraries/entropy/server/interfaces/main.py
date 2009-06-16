@@ -2526,7 +2526,7 @@ class Server(Singleton, TextInterface):
         tmp_pkglist_file = pkglist_file + ".tmp"
         dbconn = self.open_server_repository(repo = repo, just_reading = True,
             do_treeupdates = False)
-        pkglist = dbconn.listAllDownloads(do_sort = True)
+        pkglist = dbconn.listAllDownloads(do_sort = True, full_path = True)
 
         with open(tmp_pkglist_file, "w") as pkg_f:
             for pkg in pkglist:
