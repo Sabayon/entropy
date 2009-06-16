@@ -625,9 +625,12 @@ class SulfurApplicationEventsMixin:
             if data:
                 self.load_advisory_info_menu(data)
 
-    def on_pkg_doubleclick( self, widget, iterator, path ):
+    def on_pkg_doubleclick( self, widget, iterator, path):
         objs = self.pkgView.collect_selected_items()
         for obj in objs:
+            if obj.dummy_type == SulfurConf.dummy_category:
+                self.pkgView.set_filtering_string(obj.onlyname + "/")
+                break
             self.load_package_info_menu(obj)
 
     def on_license_double_clicked( self, widget, iterator, path ):

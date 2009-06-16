@@ -1441,6 +1441,13 @@ class EntropyPackageView:
     def clear(self):
         self.store.clear()
 
+    def set_filtering_string(self, filter_string):
+        if not hasattr(self.ui, "pkgFilter"):
+            return False
+        self.ui.pkgFilter.set_text(filter_string)
+        self.ui.pkgSearch.clicked()
+        return True
+
     def populate(self, pkgs, widget = None, empty = False, pkgsets = False):
         self.dummyCats.clear()
         self.clear()
