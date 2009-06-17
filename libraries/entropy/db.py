@@ -108,13 +108,12 @@ class ServerRepositoryStatus(Singleton):
 
 
 class EntropyRepository:
-    """
 
+    """
     Entropy repository interface base class.
     This class contains database implementation independent logic, and
     is inherited by all the Entropy repository interfaces implementations
     (actually only LocalRepository).
-
     """
 
     class Schema:
@@ -123,7 +122,19 @@ class EntropyRepository:
             raise NotImplementedError
 
     def __init__(self):
-        pass
+        """
+        EntropyRepository base repository interface class constructor.
+
+        @return: None
+        @rtype: None
+        """
+        self.SystemSettings = SystemSettings()
+        self.srv_sys_settings_plugin = \
+            etpConst['system_settings_plugins_ids']['server_plugin']
+        self.dbMatchCacheKey = etpCache['dbMatch']
+        self.client_settings_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        self.db_branch = self.SystemSettings['repositories']['branch']
+        self.Cacher = EntropyCacher()
 
 
 class LocalRepository(EntropyRepository):
@@ -407,17 +418,12 @@ class LocalRepository(EntropyRepository):
 
         EntropyRepository.__init__(self)
 
-        self.SystemSettings = SystemSettings()
-        self.srv_sys_settings_plugin = \
-            etpConst['system_settings_plugins_ids']['server_plugin']
-        self.dbMatchCacheKey = etpCache['dbMatch']
         self.dbname = dbname
         self.lockRemote = lockRemote
-        self.client_settings_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
-        self.db_branch = self.SystemSettings['repositories']['branch']
         if self.dbname == etpConst['clientdbid']:
             self.db_branch = None
-        if useBranch != None: self.db_branch = useBranch
+        if useBranch != None:
+            self.db_branch = useBranch
 
         if OutputInterface == None:
             OutputInterface = TextInterface()
@@ -426,7 +432,6 @@ class LocalRepository(EntropyRepository):
             raise IncorrectParameter("IncorrectParameter: %s" % (
                 _("valid database path needed"),) )
 
-        self.Cacher = EntropyCacher()
         self.__write_mutex = self.threading.Lock()
         self.dbapi2 = dbapi2
         # setup output interface
