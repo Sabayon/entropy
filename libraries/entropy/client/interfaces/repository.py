@@ -27,7 +27,7 @@ import shutil
 import subprocess
 import random
 from entropy.i18n import _
-from entropy.db import dbapi2, LocalRepository
+from entropy.db import dbapi2, EntropyRepository
 from entropy.misc import TimeScheduled
 from entropy.const import *
 from entropy.exceptions import *
@@ -1153,7 +1153,7 @@ class Repository:
             if self.fetchSecurity:
                 self.do_update_security_advisories()
             # do treeupdates
-            if isinstance(self.Entropy.clientDbconn, LocalRepository) and \
+            if isinstance(self.Entropy.clientDbconn, EntropyRepository) and \
                 self.entropyTools.is_root(): # only as root due to Portage
                 for repo in self.reponames:
                     dbc = self.Entropy.open_repository(repo)

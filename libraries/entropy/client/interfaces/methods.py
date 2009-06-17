@@ -28,7 +28,7 @@ import subprocess
 from entropy.i18n import _
 from entropy.const import *
 from entropy.exceptions import *
-from entropy.db import dbapi2, LocalRepository
+from entropy.db import dbapi2, LocalRepository, EntropyRepository
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown
 
 
@@ -310,7 +310,7 @@ class RepositoryMixin:
 
         repo_mem_key = self.__get_repository_cache_key(repoid)
         mem_inst = self._memory_db_instances.pop(repo_mem_key, None)
-        if isinstance(mem_inst, LocalRepository):
+        if isinstance(mem_inst, EntropyRepository):
             mem_inst.closeDB()
 
         # reset db cache
@@ -1198,7 +1198,7 @@ class MiscMixin:
         for repo in valid_repos:
             if isinstance(repo, basestring):
                 dbconn = self.open_repository(repo)
-            elif isinstance(repo, LocalRepository):
+            elif isinstance(repo, EntropyRepository):
                 dbconn = repo
             else:
                 continue

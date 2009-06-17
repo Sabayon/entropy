@@ -1,29 +1,40 @@
 # -*- coding: utf-8 -*-
 """
-    # DESCRIPTION:
-    # Entropy Object Oriented Interface
 
-    Copyright (C) 2007-2009 Fabio Erculiani
+    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
+    @contact: lxnay@sabayonlinux.org
+    @copyright: Fabio Erculiani
+    @license: GPL-2
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    B{Entropy Framework repository database module}.
+    Entropy repositories (server and client) are implemented as relational
+    databases. Currently, LocalRepository class is the object that wraps
+    sqlite3 database queries and repository logic: there are no more
+    abstractions between the two because there is only one implementation
+    available at this time. In future, entropy.db will feature more backends
+    such as MySQL embedded, SparQL, remote repositories support via TCP socket,
+    etc. This will require a new layer between the repository interface now
+    offered by LocalRepository and the underlying data retrieval logic.
+    Every repository interface available inherits from EntropyRepository
+    class and has to reimplement its own Schema subclass and its get_init
+    method (see LocalRepository documentation for more information).
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    I{LocalRepository} is the sqlite3 implementation of the repository
+    interface, as written above.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    I{ServerRepositoryStatus} is a singleton containing the status of
+    server-side repositories. It is used to determine if repository has
+    been modified (tainted) or has been revision bumped already.
+    Revision bumps are automatic and happen on the very first data "commit".
+    Every repository features a revision number which is stored into the
+    "packages.db.revision" file. Only server-side (or community) repositories
+    are subject to this automation (revision file update on commit).
+
 """
 
 from __future__ import with_statement
 import os
 import shutil
-import subprocess
 from entropy.const import etpConst, etpCache
 from entropy.exceptions import IncorrectParameter, InvalidAtom, \
     SystemDatabaseError, OperationNotPermitted
@@ -33,7 +44,7 @@ from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen, \
 from entropy.cache import EntropyCacher
 from entropy.core import Singleton, SystemSettings
 
-try: # try with sqlite3 from python 2.5 - default one
+try: # try with sqlite3 from >=python 2.5
     from sqlite3 import dbapi2
 except ImportError: # fallback to pysqlite
     try:
@@ -47,7 +58,7 @@ except ImportError: # fallback to pysqlite
             )
         )
 
-class Status(Singleton):
+class ServerRepositoryStatus(Singleton):
 
     def init_singleton(self):
         self.__data = {}
@@ -96,276 +107,295 @@ class Status(Singleton):
         return self.__data[db]['unlock_msg']
 
 
-class Schema:
+class EntropyRepository:
+    """
 
-    def get_init(self):
-        return """
-            CREATE TABLE baseinfo (
-                idpackage INTEGER PRIMARY KEY AUTOINCREMENT,
-                atom VARCHAR,
-                idcategory INTEGER,
-                name VARCHAR,
-                version VARCHAR,
-                versiontag VARCHAR,
-                revision INTEGER,
-                branch VARCHAR,
-                slot VARCHAR,
-                idlicense INTEGER,
-                etpapi INTEGER,
-                trigger INTEGER
-            );
+    Entropy repository interface base class.
+    This class contains database implementation independent logic, and
+    is inherited by all the Entropy repository interfaces implementations
+    (actually only LocalRepository).
 
-            CREATE TABLE extrainfo (
-                idpackage INTEGER PRIMARY KEY,
-                description VARCHAR,
-                homepage VARCHAR,
-                download VARCHAR,
-                size VARCHAR,
-                idflags INTEGER,
-                digest VARCHAR,
-                datecreation VARCHAR
-            );
+    """
 
-            CREATE TABLE content (
-                idpackage INTEGER,
-                file VARCHAR,
-                type VARCHAR
-            );
+    class Schema:
 
-            CREATE TABLE provide (
-                idpackage INTEGER,
-                atom VARCHAR
-            );
+        def get_init(self):
+            raise NotImplementedError
 
-            CREATE TABLE dependencies (
-                idpackage INTEGER,
-                iddependency INTEGER,
-                type INTEGER
-            );
+    def __init__(self):
+        pass
 
-            CREATE TABLE dependenciesreference (
-                iddependency INTEGER PRIMARY KEY AUTOINCREMENT,
-                dependency VARCHAR
-            );
 
-            CREATE TABLE dependstable (
-                iddependency INTEGER PRIMARY KEY,
-                idpackage INTEGER
-            );
+class LocalRepository(EntropyRepository):
 
-            CREATE TABLE conflicts (
-                idpackage INTEGER,
-                conflict VARCHAR
-            );
+    class Schema:
 
-            CREATE TABLE mirrorlinks (
-                mirrorname VARCHAR,
-                mirrorlink VARCHAR
-            );
+        def get_init(self):
+            return """
+                CREATE TABLE baseinfo (
+                    idpackage INTEGER PRIMARY KEY AUTOINCREMENT,
+                    atom VARCHAR,
+                    idcategory INTEGER,
+                    name VARCHAR,
+                    version VARCHAR,
+                    versiontag VARCHAR,
+                    revision INTEGER,
+                    branch VARCHAR,
+                    slot VARCHAR,
+                    idlicense INTEGER,
+                    etpapi INTEGER,
+                    trigger INTEGER
+                );
 
-            CREATE TABLE sources (
-                idpackage INTEGER,
-                idsource INTEGER
-            );
+                CREATE TABLE extrainfo (
+                    idpackage INTEGER PRIMARY KEY,
+                    description VARCHAR,
+                    homepage VARCHAR,
+                    download VARCHAR,
+                    size VARCHAR,
+                    idflags INTEGER,
+                    digest VARCHAR,
+                    datecreation VARCHAR
+                );
 
-            CREATE TABLE sourcesreference (
-                idsource INTEGER PRIMARY KEY AUTOINCREMENT,
-                source VARCHAR
-            );
+                CREATE TABLE content (
+                    idpackage INTEGER,
+                    file VARCHAR,
+                    type VARCHAR
+                );
 
-            CREATE TABLE useflags (
-                idpackage INTEGER,
-                idflag INTEGER
-            );
+                CREATE TABLE provide (
+                    idpackage INTEGER,
+                    atom VARCHAR
+                );
 
-            CREATE TABLE useflagsreference (
-                idflag INTEGER PRIMARY KEY AUTOINCREMENT,
-                flagname VARCHAR
-            );
+                CREATE TABLE dependencies (
+                    idpackage INTEGER,
+                    iddependency INTEGER,
+                    type INTEGER
+                );
 
-            CREATE TABLE keywords (
-                idpackage INTEGER,
-                idkeyword INTEGER
-            );
+                CREATE TABLE dependenciesreference (
+                    iddependency INTEGER PRIMARY KEY AUTOINCREMENT,
+                    dependency VARCHAR
+                );
 
-            CREATE TABLE keywordsreference (
-                idkeyword INTEGER PRIMARY KEY AUTOINCREMENT,
-                keywordname VARCHAR
-            );
+                CREATE TABLE dependstable (
+                    iddependency INTEGER PRIMARY KEY,
+                    idpackage INTEGER
+                );
 
-            CREATE TABLE categories (
-                idcategory INTEGER PRIMARY KEY AUTOINCREMENT,
-                category VARCHAR
-            );
+                CREATE TABLE conflicts (
+                    idpackage INTEGER,
+                    conflict VARCHAR
+                );
 
-            CREATE TABLE licenses (
-                idlicense INTEGER PRIMARY KEY AUTOINCREMENT,
-                license VARCHAR
-            );
+                CREATE TABLE mirrorlinks (
+                    mirrorname VARCHAR,
+                    mirrorlink VARCHAR
+                );
 
-            CREATE TABLE flags (
-                idflags INTEGER PRIMARY KEY AUTOINCREMENT,
-                chost VARCHAR,
-                cflags VARCHAR,
-                cxxflags VARCHAR
-            );
+                CREATE TABLE sources (
+                    idpackage INTEGER,
+                    idsource INTEGER
+                );
 
-            CREATE TABLE configprotect (
-                idpackage INTEGER PRIMARY KEY,
-                idprotect INTEGER
-            );
+                CREATE TABLE sourcesreference (
+                    idsource INTEGER PRIMARY KEY AUTOINCREMENT,
+                    source VARCHAR
+                );
 
-            CREATE TABLE configprotectmask (
-                idpackage INTEGER PRIMARY KEY,
-                idprotect INTEGER
-            );
+                CREATE TABLE useflags (
+                    idpackage INTEGER,
+                    idflag INTEGER
+                );
 
-            CREATE TABLE configprotectreference (
-                idprotect INTEGER PRIMARY KEY AUTOINCREMENT,
-                protect VARCHAR
-            );
+                CREATE TABLE useflagsreference (
+                    idflag INTEGER PRIMARY KEY AUTOINCREMENT,
+                    flagname VARCHAR
+                );
 
-            CREATE TABLE systempackages (
-                idpackage INTEGER PRIMARY KEY
-            );
+                CREATE TABLE keywords (
+                    idpackage INTEGER,
+                    idkeyword INTEGER
+                );
 
-            CREATE TABLE injected (
-                idpackage INTEGER PRIMARY KEY
-            );
+                CREATE TABLE keywordsreference (
+                    idkeyword INTEGER PRIMARY KEY AUTOINCREMENT,
+                    keywordname VARCHAR
+                );
 
-            CREATE TABLE installedtable (
-                idpackage INTEGER PRIMARY KEY,
-                repositoryname VARCHAR,
-                source INTEGER
-            );
+                CREATE TABLE categories (
+                    idcategory INTEGER PRIMARY KEY AUTOINCREMENT,
+                    category VARCHAR
+                );
 
-            CREATE TABLE sizes (
-                idpackage INTEGER PRIMARY KEY,
-                size INTEGER
-            );
+                CREATE TABLE licenses (
+                    idlicense INTEGER PRIMARY KEY AUTOINCREMENT,
+                    license VARCHAR
+                );
 
-            CREATE TABLE messages (
-                idpackage INTEGER,
-                message VARCHAR
-            );
+                CREATE TABLE flags (
+                    idflags INTEGER PRIMARY KEY AUTOINCREMENT,
+                    chost VARCHAR,
+                    cflags VARCHAR,
+                    cxxflags VARCHAR
+                );
 
-            CREATE TABLE counters (
-                counter INTEGER,
-                idpackage INTEGER,
-                branch VARCHAR,
-                PRIMARY KEY(idpackage,branch)
-            );
+                CREATE TABLE configprotect (
+                    idpackage INTEGER PRIMARY KEY,
+                    idprotect INTEGER
+                );
 
-            CREATE TABLE trashedcounters (
-                counter INTEGER
-            );
+                CREATE TABLE configprotectmask (
+                    idpackage INTEGER PRIMARY KEY,
+                    idprotect INTEGER
+                );
 
-            CREATE TABLE eclasses (
-                idpackage INTEGER,
-                idclass INTEGER
-            );
+                CREATE TABLE configprotectreference (
+                    idprotect INTEGER PRIMARY KEY AUTOINCREMENT,
+                    protect VARCHAR
+                );
 
-            CREATE TABLE eclassesreference (
-                idclass INTEGER PRIMARY KEY AUTOINCREMENT,
-                classname VARCHAR
-            );
+                CREATE TABLE systempackages (
+                    idpackage INTEGER PRIMARY KEY
+                );
 
-            CREATE TABLE needed (
-                idpackage INTEGER,
-                idneeded INTEGER,
-                elfclass INTEGER
-            );
+                CREATE TABLE injected (
+                    idpackage INTEGER PRIMARY KEY
+                );
 
-            CREATE TABLE neededreference (
-                idneeded INTEGER PRIMARY KEY AUTOINCREMENT,
-                library VARCHAR
-            );
+                CREATE TABLE installedtable (
+                    idpackage INTEGER PRIMARY KEY,
+                    repositoryname VARCHAR,
+                    source INTEGER
+                );
 
-            CREATE TABLE neededlibrarypaths (
-                library VARCHAR,
-                path VARCHAR,
-                elfclass INTEGER,
-                PRIMARY KEY(library, path, elfclass)
-            );
+                CREATE TABLE sizes (
+                    idpackage INTEGER PRIMARY KEY,
+                    size INTEGER
+                );
 
-            CREATE TABLE neededlibraryidpackages (
-                idpackage INTEGER,
-                library VARCHAR,
-                elfclass INTEGER
-            );
+                CREATE TABLE messages (
+                    idpackage INTEGER,
+                    message VARCHAR
+                );
 
-            CREATE TABLE treeupdates (
-                repository VARCHAR PRIMARY KEY,
-                digest VARCHAR
-            );
+                CREATE TABLE counters (
+                    counter INTEGER,
+                    idpackage INTEGER,
+                    branch VARCHAR,
+                    PRIMARY KEY(idpackage,branch)
+                );
 
-            CREATE TABLE treeupdatesactions (
-                idupdate INTEGER PRIMARY KEY AUTOINCREMENT,
-                repository VARCHAR,
-                command VARCHAR,
-                branch VARCHAR,
-                date VARCHAR
-            );
+                CREATE TABLE trashedcounters (
+                    counter INTEGER
+                );
 
-            CREATE TABLE licensedata (
-                licensename VARCHAR UNIQUE,
-                text BLOB,
-                compressed INTEGER
-            );
+                CREATE TABLE eclasses (
+                    idpackage INTEGER,
+                    idclass INTEGER
+                );
 
-            CREATE TABLE licenses_accepted (
-                licensename VARCHAR UNIQUE
-            );
+                CREATE TABLE eclassesreference (
+                    idclass INTEGER PRIMARY KEY AUTOINCREMENT,
+                    classname VARCHAR
+                );
 
-            CREATE TABLE triggers (
-                idpackage INTEGER PRIMARY KEY,
-                data BLOB
-            );
+                CREATE TABLE needed (
+                    idpackage INTEGER,
+                    idneeded INTEGER,
+                    elfclass INTEGER
+                );
 
-            CREATE TABLE entropy_misc_counters (
-                idtype INTEGER PRIMARY KEY,
-                counter INTEGER
-            );
+                CREATE TABLE neededreference (
+                    idneeded INTEGER PRIMARY KEY AUTOINCREMENT,
+                    library VARCHAR
+                );
 
-            CREATE TABLE categoriesdescription (
-                category VARCHAR,
-                locale VARCHAR,
-                description VARCHAR
-            );
+                CREATE TABLE neededlibrarypaths (
+                    library VARCHAR,
+                    path VARCHAR,
+                    elfclass INTEGER,
+                    PRIMARY KEY(library, path, elfclass)
+                );
 
-            CREATE TABLE packagesets (
-                setname VARCHAR,
-                dependency VARCHAR
-            );
+                CREATE TABLE neededlibraryidpackages (
+                    idpackage INTEGER,
+                    library VARCHAR,
+                    elfclass INTEGER
+                );
 
-            CREATE TABLE packagechangelogs (
-                category VARCHAR,
-                name VARCHAR,
-                changelog BLOB,
-                PRIMARY KEY (category, name)
-            );
+                CREATE TABLE treeupdates (
+                    repository VARCHAR PRIMARY KEY,
+                    digest VARCHAR
+                );
 
-            CREATE TABLE automergefiles (
-                idpackage INTEGER,
-                configfile VARCHAR,
-                md5 VARCHAR
-            );
+                CREATE TABLE treeupdatesactions (
+                    idupdate INTEGER PRIMARY KEY AUTOINCREMENT,
+                    repository VARCHAR,
+                    command VARCHAR,
+                    branch VARCHAR,
+                    date VARCHAR
+                );
 
-            CREATE TABLE packagesignatures (
-                idpackage INTEGER PRIMARY KEY,
-                sha1 VARCHAR,
-                sha256 VARCHAR,
-                sha512 VARCHAR
-            );
+                CREATE TABLE licensedata (
+                    licensename VARCHAR UNIQUE,
+                    text BLOB,
+                    compressed INTEGER
+                );
 
-            CREATE TABLE packagespmphases (
-                idpackage INTEGER PRIMARY KEY,
-                phases VARCHAR
-            );
+                CREATE TABLE licenses_accepted (
+                    licensename VARCHAR UNIQUE
+                );
 
-        """
+                CREATE TABLE triggers (
+                    idpackage INTEGER PRIMARY KEY,
+                    data BLOB
+                );
 
-class LocalRepository:
+                CREATE TABLE entropy_misc_counters (
+                    idtype INTEGER PRIMARY KEY,
+                    counter INTEGER
+                );
+
+                CREATE TABLE categoriesdescription (
+                    category VARCHAR,
+                    locale VARCHAR,
+                    description VARCHAR
+                );
+
+                CREATE TABLE packagesets (
+                    setname VARCHAR,
+                    dependency VARCHAR
+                );
+
+                CREATE TABLE packagechangelogs (
+                    category VARCHAR,
+                    name VARCHAR,
+                    changelog BLOB,
+                    PRIMARY KEY (category, name)
+                );
+
+                CREATE TABLE automergefiles (
+                    idpackage INTEGER,
+                    configfile VARCHAR,
+                    md5 VARCHAR
+                );
+
+                CREATE TABLE packagesignatures (
+                    idpackage INTEGER PRIMARY KEY,
+                    sha1 VARCHAR,
+                    sha256 VARCHAR,
+                    sha512 VARCHAR
+                );
+
+                CREATE TABLE packagespmphases (
+                    idpackage INTEGER PRIMARY KEY,
+                    phases VARCHAR
+                );
+
+            """
 
     import entropy.tools as entropyTools
     import entropy.dump as dumpTools
@@ -374,6 +404,8 @@ class LocalRepository:
         clientDatabase = False, xcache = False, dbname = etpConst['serverdbid'],
         indexing = True, OutputInterface = None, ServiceInterface = None,
         skipChecks = False, useBranch = None, lockRemote = True):
+
+        EntropyRepository.__init__(self)
 
         self.SystemSettings = SystemSettings()
         self.srv_sys_settings_plugin = \
@@ -469,7 +501,7 @@ class LocalRepository:
         taint_file = self.ServiceInterface.get_local_database_taint_file(
             self.server_repo)
         if os.path.isfile(taint_file):
-            dbs = Status()
+            dbs = ServerRepositoryStatus()
             dbs.set_tainted(self.dbFile)
             dbs.set_bumped(self.dbFile)
 
@@ -489,7 +521,7 @@ class LocalRepository:
             self.connection.close()
             return
 
-        sts = Status()
+        sts = ServerRepositoryStatus()
         if not sts.is_tainted(self.dbFile):
             # we can unlock it, no changes were made
             self.ServiceInterface.MirrorsService.lock_mirrors(False,
@@ -523,7 +555,7 @@ class LocalRepository:
 
         if not self.clientDatabase:
             self.taintDatabase()
-            dbs = Status()
+            dbs = ServerRepositoryStatus()
             if (dbs.is_tainted(self.dbFile)) and \
                 (not dbs.is_bumped(self.dbFile)):
                 # bump revision, setting DatabaseBump causes
@@ -542,13 +574,13 @@ class LocalRepository:
         f.write(etpConst['currentarch']+" database tainted\n")
         f.flush()
         f.close()
-        Status().set_tainted(self.dbFile)
+        ServerRepositoryStatus().set_tainted(self.dbFile)
 
     def untaintDatabase(self):
         # if it's equo to open it, this should be avoided
         if self.clientDatabase:
             return
-        Status().unset_tainted(self.dbFile)
+        ServerRepositoryStatus().unset_tainted(self.dbFile)
         # untaint the database status
         taint_file = self.ServiceInterface.get_local_database_taint_file(
             repo = self.server_repo)
@@ -580,7 +612,7 @@ class LocalRepository:
     # never use this unless you know what you're doing
     def initializeDatabase(self):
         self.checkReadOnly()
-        my = Schema()
+        my = self.Schema()
         for table in self.listAllTables():
             try:
                 self.cursor.execute("DROP TABLE %s" % (table,))
@@ -3980,6 +4012,7 @@ class LocalRepository:
             )
 
     def doDatabaseImport(self, dumpfile, dbfile):
+        import subprocess
         sqlite3_exec = "/usr/bin/sqlite3 %s < %s" % (dbfile, dumpfile,)
         retcode = subprocess.call(sqlite3_exec, shell = True)
         return retcode

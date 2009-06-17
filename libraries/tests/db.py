@@ -7,7 +7,7 @@ import os
 from entropy.client.interfaces import Client
 from entropy.const import etpConst, etpUi
 from entropy.core import SystemSettings
-from entropy.db import LocalRepository
+from entropy.db import EntropyRepository
 import _misc
 
 class LocalRepositoryTest(unittest.TestCase):
@@ -35,7 +35,7 @@ class LocalRepositoryTest(unittest.TestCase):
         return self.Client.open_memory_database(dbname = self.test_db_name)
 
     def test_db_creation(self):
-        self.assert_(isinstance(self.test_db,LocalRepository))
+        self.assert_(isinstance(self.test_db, EntropyRepository))
         self.assertEqual(self.test_db_name,self.test_db.dbname)
         self.assert_(self.test_db.doesTableExist('baseinfo'))
         self.assert_(self.test_db.doesTableExist('extrainfo'))
