@@ -56,6 +56,49 @@
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class LocalRepository</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.db-pysrc.html#LocalRepository">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__24" name="uml_class_diagram_for_entropy__24">
+<area shape="rect" href="entropy.db.LocalRepository.Schema-class.html" title="entropy.db.LocalRepository.Schema" alt="" coords="17,89,1399,108"/>
+<area shape="rect" href="entropy.tools-module.html" title="# DESCRIPTION: # generic tools for all the handlers applications" alt="" coords="17,108,1399,127"/>
+<area shape="rect" href="entropy.dump-module.html" title="# DESCRIPTION: # load/save a data to file by dumping its structure" alt="" coords="17,127,1399,145"/>
+<area shape="rect" href="javascript:void(0);" title="entropy.db.LocalRepository.threading" alt="" coords="17,145,1399,164"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html#__init__" title="EntropyRepository base repository interface class constructor." alt="" coords="17,167,1399,185"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html#setCacheSize" title="entropy.db.LocalRepository.setCacheSize" alt="" coords="17,185,1399,204"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html#setDefaultCacheSize" title="entropy.db.LocalRepository.setDefaultCacheSize" alt="" coords="17,204,1399,223"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html#__del__" title="entropy.db.LocalRepository.__del__" alt="" coords="17,223,1399,241"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html#create_dbstatus_data" title="entropy.db.LocalRepository.create_dbstatus_data" alt="" coords="17,241,1399,260"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html#closeDB" title="entropy.db.LocalRepository.closeDB" alt="" coords="17,260,1399,279"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html#vacuum" title="entropy.db.LocalRepository.vacuum" alt="" coords="17,279,1399,297"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html#commitChanges" title="entropy.db.LocalRepository.commitChanges" alt="" coords="17,297,1399,316"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html#taintDatabase" title="entropy.db.LocalRepository.taintDatabase" alt="" coords="17,316,1399,335"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html#untaintDatabase" title="entropy.db.LocalRepository.untaintDatabase" alt="" coords="17,335,1399,353"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html#revisionBump" title="entropy.db.LocalRepository.revisionBump" alt="" coords="17,353,1399,372"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html#isDatabaseTainted" title="entropy.db.LocalRepository.isDatabaseTainted" alt="" coords="17,372,1399,391"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html#initializeDatabase" title="entropy.db.LocalRepository.initializeDatabase" alt="" coords="17,391,1399,409"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html#atomMatch" title="entropy.db.LocalRepository.atomMatch" alt="" coords="17,428,1399,447"/>
+<area shape="rect" href="entropy.db.LocalRepository-class.html" title="entropy.db.LocalRepository" alt="" coords="16,72,1400,448"/>
+<area shape="rect" href="entropy.db.EntropyRepository-class.html" title="Entropy repository interface base class." alt="" coords="653,11,763,43"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__24.gif" alt='' usemap="#uml_class_diagram_for_entropy__24" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== NESTED CLASSES ==================== -->
+<a name="section-NestedClasses"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Nested Classes</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="entropy.db.LocalRepository.Schema-class.html" class="summary-name">Schema</a>
+    </td>
+  </tr>
+</table>
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -66,11 +109,11 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.db.LocalRepository-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">readOnly</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">noUpload</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">dbFile</span>=<span class="summary-sig-default">None</span>,
@@ -82,7 +125,8 @@
         <span class="summary-sig-arg">ServiceInterface</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">skipChecks</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">useBranch</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">lockRemote</span>=<span class="summary-sig-default">True</span>)</span></td>
+        <span class="summary-sig-arg">lockRemote</span>=<span class="summary-sig-default">True</span>)</span><br />
+      EntropyRepository base repository interface class constructor.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#LocalRepository.__init__">source&nbsp;code</a></span>
             
@@ -1893,7 +1937,8 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a name="getTriggerInfo"></a><span class="summary-sig-name">getTriggerInfo</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">idpackage</span>)</span></td>
+        <span class="summary-sig-arg">idpackage</span>,
+        <span class="summary-sig-arg">content</span>=<span class="summary-sig-default">True</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#LocalRepository.getTriggerInfo">source&nbsp;code</a></span>
             
@@ -4125,12 +4170,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="listBranchPackagesTbz2"></a><span class="summary-sig-name">listBranchPackagesTbz2</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">branch</span>,
+          <td><span class="summary-sig"><a name="listAllDownloads"></a><span class="summary-sig-name">listAllDownloads</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">do_sort</span>=<span class="summary-sig-default">True</span>,
         <span class="summary-sig-arg">full_path</span>=<span class="summary-sig-default">False</span>)</span></td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#LocalRepository.listBranchPackagesTbz2">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.db-pysrc.html#LocalRepository.listAllDownloads">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -5515,6 +5559,54 @@
     </td>
   </tr>
 </table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">readOnly</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">noUpload</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">dbFile</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">clientDatabase</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">xcache</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">dbname</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">etpdb:</code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">indexing</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">OutputInterface</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">ServiceInterface</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">skipChecks</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">useBranch</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">lockRemote</span>=<span class="sig-default">True</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#LocalRepository.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>EntropyRepository base repository interface class constructor.</p>
+  <dl class="fields">
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+    <dt>Overrides:
+        <a href="entropy.db.EntropyRepository-class.html#__init__">EntropyRepository.__init__</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -5546,7 +5638,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Jun 10 13:32:55 2009
+    Generated by Epydoc 3.0.1 on Wed Jun 17 07:58:03 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

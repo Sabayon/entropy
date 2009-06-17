@@ -64,8 +64,6 @@
     </li>
     </ul>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.services.system.executors.Base-class.html">entropy.services.system.executors.Base</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.client.services.ugc.commands.Base-class.html">entropy.client.services.ugc.commands.Base</a></strong>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.client.services.ugc.commands.Client-class.html">entropy.client.services.ugc.commands.Client</a></strong>
@@ -77,6 +75,8 @@
     </ul>
     </li>
     </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.services.system.executors.Base-class.html">entropy.services.system.executors.Base</a></strong>
     </li>
     <li> <strong class="uidlink">urllib2.BaseHandler</strong>
     <ul>
@@ -103,7 +103,7 @@
     <li> <strong class="uidlink">SocketServer.TCPServer</strong>:
       <em class="summary">Base class for various socket-based server classes.</em>
     <ul>
-    <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.HostServer-class.html">entropy.services.interfaces.SocketHost.HostServer</a></strong>
+    <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html">entropy.services.interfaces.SocketHost.HostServerMixin</a></strong>
     </li>
     </ul>
     </li>
@@ -127,15 +127,19 @@
     </li>
     <li> <strong class="uidlink"><a href="entropy.misc.Callable-class.html">entropy.misc.Callable</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.client.services.ugc.interfaces.Client-class.html">entropy.client.services.ugc.interfaces.Client</a></strong>
+    <li> <strong class="uidlink"><a href="entropy.services.ugc.interfaces.Client-class.html">entropy.services.ugc.interfaces.Client</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.services.system.interfaces.Client-class.html">entropy.client.services.system.interfaces.Client</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.services.ugc.interfaces.Client-class.html">entropy.services.ugc.interfaces.Client</a></strong>
+    <li> <strong class="uidlink"><a href="entropy.client.services.ugc.interfaces.Client-class.html">entropy.client.services.ugc.interfaces.Client</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.CommandProcessor-class.html">entropy.services.interfaces.SocketHost.CommandProcessor</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.HostServer.ConnWrapper-class.html">entropy.services.interfaces.SocketHost.HostServer.ConnWrapper</a></strong>:
+      <em class="summary">Base class for implementing the rest of the wrappers in this 
+        module.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.HostServerMixin.ConnWrapper-class.html">entropy.services.interfaces.SocketHost.HostServerMixin.ConnWrapper</a></strong>:
       <em class="summary">Base class for implementing the rest of the wrappers in this 
         module.</em>
     </li>
@@ -147,6 +151,13 @@
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.interfaces.trigger.Trigger.EntropyPySandbox-class.html">entropy.client.interfaces.trigger.Trigger.EntropyPySandbox</a></strong>
     </li>
+    <li> <strong class="uidlink"><a href="entropy.db.EntropyRepository-class.html">entropy.db.EntropyRepository</a></strong>:
+      <em class="summary">Entropy repository interface base class.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.db.LocalRepository-class.html">entropy.db.LocalRepository</a></strong>
+    </li>
+    </ul>
+    </li>
     <li> <strong class="uidlink"><a href="entropy.client.interfaces.trigger.Trigger.EntropyShSandbox-class.html">entropy.client.interfaces.trigger.Trigger.EntropyShSandbox</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.qa.ErrorReportInterface-class.html">entropy.qa.ErrorReportInterface</a></strong>
@@ -156,6 +167,8 @@
 Content (UGC) infrastructure.</em>
     </li>
     </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.client.interfaces.metadata.ExtractorsMixin-class.html">entropy.client.interfaces.metadata.ExtractorsMixin</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.system.interfaces.Server.FakeServiceInterface-class.html">entropy.services.system.interfaces.Server.FakeServiceInterface</a></strong>
     </li>
@@ -178,8 +191,6 @@ Content (UGC) infrastructure.</em>
     <li> <strong class="uidlink"><a href="entropy.client.interfaces.client.Client-class.html">entropy.client.interfaces.client.Client</a></strong>
     </li>
     </ul>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.db.LocalRepository-class.html">entropy.db.LocalRepository</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.misc.LogFile-class.html">entropy.misc.LogFile</a></strong>
     </li>
@@ -225,7 +236,9 @@ Content (UGC) infrastructure.</em>
     </li>
     </ul>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.db.Schema-class.html">entropy.db.Schema</a></strong>
+    <li> <strong class="uidlink"><a href="entropy.db.EntropyRepository.Schema-class.html">entropy.db.EntropyRepository.Schema</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.db.LocalRepository.Schema-class.html">entropy.db.LocalRepository.Schema</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.security.SecurityInterface-class.html">entropy.security.SecurityInterface</a></strong>:
       <em class="summary">~~ GIVES YOU WINGS ~~</em>
@@ -246,9 +259,9 @@ Content (UGC) infrastructure.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.BuiltInCommands-class.html">entropy.services.interfaces.SocketHost.BuiltInCommands</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.services.repository.commands.Repository-class.html">entropy.services.repository.commands.Repository</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.services.system.commands.Repository-class.html">entropy.services.system.commands.Repository</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.services.repository.commands.Repository-class.html">entropy.services.repository.commands.Repository</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.ugc.commands.UGC-class.html">entropy.services.ugc.commands.UGC</a></strong>
     </li>
@@ -292,7 +305,7 @@ Content (UGC) infrastructure.</em>
     <li> <strong class="uidlink">SocketServer.ThreadingMixIn</strong>:
       <em class="summary">Mix-in class to handle each request in a new thread.</em>
     <ul>
-    <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.HostServer-class.html">entropy.services.interfaces.SocketHost.HostServer</a></strong>
+    <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html">entropy.services.interfaces.SocketHost.HostServerMixin</a></strong>
     </li>
     </ul>
     </li>
@@ -424,7 +437,7 @@ Content (UGC) infrastructure.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.server.interfaces.main.Server-class.html">entropy.server.interfaces.main.Server</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.db.Status-class.html">entropy.db.Status</a></strong>
+    <li> <strong class="uidlink"><a href="entropy.db.ServerRepositoryStatus-class.html">entropy.db.ServerRepositoryStatus</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.core.SystemSettings-class.html">entropy.core.SystemSettings</a></strong>:
       <em class="summary">This is the place where all the Entropy settings are stored if they
@@ -498,7 +511,7 @@ Content (UGC) infrastructure.</em>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Jun 10 13:32:53 2009
+    Generated by Epydoc 3.0.1 on Wed Jun 17 07:58:00 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

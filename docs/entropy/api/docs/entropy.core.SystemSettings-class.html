@@ -72,7 +72,7 @@
 <area shape="rect" href="entropy.core.SystemSettings-class.html#__hash__" title="dict method." alt="" coords="17,348,313,367"/>
 <area shape="rect" href="entropy.core.SystemSettings-class.html#__len__" title="dict method." alt="" coords="17,367,313,385"/>
 <area shape="rect" href="entropy.core.SystemSettings-class.html#get" title="dict method." alt="" coords="17,385,313,404"/>
-<area shape="rect" href="entropy.core.SystemSettings-class.html#repositories_parser" title="Setup Entropy Client repository settings reading them from the relative &#160;config file specified in etpConst[&#39;repositoriesconf&#39;]" alt="" coords="17,423,313,441"/>
+<area shape="rect" href="entropy.core.SystemSettings-class.html#get_mtime_files_data" title="Return a copy of the internal *mtime* dictionary." alt="" coords="17,423,313,441"/>
 <area shape="rect" href="entropy.core.SystemSettings-class.html" title="This is the place where all the Entropy settings are stored if they are not considered instance constants (etpConst)." alt="" coords="16,123,315,443"/>
 <area shape="rect" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="81,36,249,55"/>
 <area shape="rect" href="entropy.core.Singleton-class.html#is_destroyed" title="In our world, Singleton instances may be destroyed, this is done by setting a private bool var __is_destroyed" alt="" coords="81,55,249,73"/>
@@ -85,9 +85,15 @@
 <hr />
 <p>This is the place where all the Entropy settings are stored if they 
   are not considered instance constants (etpConst). For example, here we 
-  store package masking cache information and settings. Also, this class 
-  mimics a dictionary (even if not inheriting it due to issues with the 
-  Singleton class).</p>
+  store package masking cache information and settings, client-side, 
+  server-side and services settings. Also, this class mimics a dictionary 
+  (even if not inheriting it due to development choices).</p>
+  <p>Sample code:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> entropy.core <span class="py-keyword">import</span> SystemSettings
+<span class="py-prompt">&gt;&gt;&gt; </span>system_settings = SystemSettings()
+<span class="py-prompt">&gt;&gt;&gt; </span>system_settings.clear()
+<span class="py-prompt">&gt;&gt;&gt; </span>system_settings.destroy()</pre>
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -116,7 +122,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -133,7 +139,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -151,7 +157,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -628,306 +634,6 @@
       
     </td>
   </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#keywords_parser" class="summary-sig-name">keywords_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parser returning package keyword masking metadata read from 
-      package.keywords file.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.keywords_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#unmask_parser" class="summary-sig-name">unmask_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parser returning package unmasking metadata read from package.unmask 
-      file.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.unmask_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#mask_parser" class="summary-sig-name">mask_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parser returning package masking metadata read from package.mask 
-      file.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.mask_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#system_mask_parser" class="summary-sig-name">system_mask_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parser returning system packages mask metadata read from 
-      package.system_mask file.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_mask_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#license_mask_parser" class="summary-sig-name">license_mask_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parser returning packages masked by license metadata read from 
-      license.mask file.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.license_mask_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#repos_license_whitelist_parser" class="summary-sig-name">repos_license_whitelist_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parser returning licenses considered accepted by default (= GPL 
-      compatibles) read from package.lic_whitelist.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repos_license_whitelist_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#repos_mask_parser" class="summary-sig-name">repos_mask_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parser returning packages masked at repository level read from 
-      packages.db.mask inside the repository database directory.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repos_mask_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#repos_system_mask_parser" class="summary-sig-name">repos_system_mask_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parser returning system packages mask metadata read from 
-      packages.db.system_mask file inside the repository directory.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repos_system_mask_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#system_package_sets_parser" class="summary-sig-name">system_package_sets_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parser returning system defined package sets read from 
-      /etc/entropy/packages/sets.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_package_sets_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#system_dirs_parser" class="summary-sig-name">system_dirs_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parser returning directories considered part of the base system.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_dirs_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#system_dirs_mask_parser" class="summary-sig-name">system_dirs_mask_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parser returning directories NOT considered part of the base system.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_dirs_mask_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#hw_hash_parser" class="summary-sig-name">hw_hash_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Hardware hash metadata parser and generator.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.hw_hash_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#system_rev_symlinks_parser" class="summary-sig-name">system_rev_symlinks_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parser returning important system symlinks mapping.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_rev_symlinks_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#conflicting_tagged_packages_parser" class="summary-sig-name">conflicting_tagged_packages_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parser returning packages that could have been installed because they
-      aren't in the same scope, but ending up creating critical issues.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.conflicting_tagged_packages_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#socket_service_parser" class="summary-sig-name">socket_service_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parses socket service configuration file.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.socket_service_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#system_parser" class="summary-sig-name">system_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Parses Entropy system configuration file.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.SystemSettings-class.html#repositories_parser" class="summary-sig-name">repositories_parser</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Setup Entropy Client repository settings reading them from the 
-      relative config file specified in etpConst['repositoriesconf']</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repositories_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">Singleton</a></code></b>:
@@ -1024,8 +730,9 @@
   
   <p>Overloaded method from Singleton. &quot;Destroys&quot; the 
   instance.</p>
-  <p>@return None</p>
   <dl class="fields">
+    <dt>Returns: None</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1044,23 +751,20 @@
     </td>
   </tr></table>
   
-  <pre class="literalblock">
-
-This method lets you add custom parsers to SystemSettings.
-Mind that you are responsible of handling your plugin instance
-and remove it before it is destroyed. You can remove the plugin
-instance at any time by issuing remove_plugin.
-Every add_plugin or remove_plugin method will also issue clear()
-for you. This could be bad and it might be removed in future.
-
-@param plugin_id -- plugin identifier
-@type plugin_id basestring
-@param system_settings_plugin_instance -- valid SystemSettingsPlugin
-    instance
-@type system_settings_plugin_instance SystemSettingsPlugin instance
-
-</pre>
+  <p>This method lets you add custom parsers to SystemSettings. Mind that 
+  you are responsible of handling your plugin instance and remove it before
+  it is destroyed. You can remove the plugin instance at any time by 
+  issuing remove_plugin. Every add_plugin or remove_plugin method will also
+  issue clear() for you. This could be bad and it might be removed in 
+  future.</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>plugin_id</code></strong> (string) - plugin identifier</li>
+        <li><strong class="pname"><code>system_settings_plugin_instance</code></strong> (SystemSettingsPlugin instance) - valid SystemSettingsPlugin instance</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1084,8 +788,13 @@ for you. This could be bad and it might be removed in future.
   available, KeyError exception will be raised. Every add_plugin or 
   remove_plugin method will also issue clear() for you. This could be bad 
   and it might be removed in future.</p>
-  <p>@param plugin_id -- plugin identifier @type plugin_id basestring</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>plugin_id</code></strong> (basestring) - plugin identifier</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1622,376 +1331,6 @@ for you. This could be bad and it might be removed in future.
   </dl>
 </td></tr></table>
 </div>
-<a name="keywords_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">keywords_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.keywords_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Parser returning package keyword masking metadata read from 
-  package.keywords file. This file contains package mask or unmask 
-  directives based on package keywords.</p>
-  <p>@return dict data</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="unmask_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">unmask_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.unmask_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Parser returning package unmasking metadata read from package.unmask 
-  file. This file contains package unmask directives, allowing to enable 
-  experimental or *secret* packages.</p>
-  <p>@return list parsed data</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="mask_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">mask_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.mask_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Parser returning package masking metadata read from package.mask file.
-  This file contains package mask directives, allowing to disable 
-  experimental or *secret* packages.</p>
-  <p>@return list parsed data</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="system_mask_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">system_mask_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_mask_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Parser returning system packages mask metadata read from 
-  package.system_mask file. This file contains packages that should be 
-  always kept installed, extending the already defined (in repository 
-  database) set of atoms.</p>
-  <p>@return list parsed data</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="license_mask_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">license_mask_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.license_mask_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Parser returning packages masked by license metadata read from 
-  license.mask file. Packages shipped with licenses listed there will be 
-  masked.</p>
-  <p>@return list parsed data</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="repos_license_whitelist_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">repos_license_whitelist_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repos_license_whitelist_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Parser returning licenses considered accepted by default (= GPL 
-  compatibles) read from package.lic_whitelist.</p>
-  <p>@return dict parsed data</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="repos_mask_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">repos_mask_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repos_mask_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Parser returning packages masked at repository level read from 
-  packages.db.mask inside the repository database directory.</p>
-  <p>@return dict parsed data</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="repos_system_mask_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">repos_system_mask_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repos_system_mask_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Parser returning system packages mask metadata read from 
-  packages.db.system_mask file inside the repository directory. This file 
-  contains packages that should be always kept installed, extending the 
-  already defined (in repository database) set of atoms.</p>
-  <p>@return dict parsed data</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="system_package_sets_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">system_package_sets_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_package_sets_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Parser returning system defined package sets read from 
-  /etc/entropy/packages/sets.</p>
-  <p>@return dict parsed data</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="system_dirs_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">system_dirs_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_dirs_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Parser returning directories considered part of the base system.</p>
-  <p>@return list parsed data</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="system_dirs_mask_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">system_dirs_mask_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_dirs_mask_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Parser returning directories NOT considered part of the base system. 
-  Settings here overlay system_dirs_parser.</p>
-  <p>@return list parsed data</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="hw_hash_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">hw_hash_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.hw_hash_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Hardware hash metadata parser and generator. It returns a theorically 
-  unique SHA256 hash bound to the computer running this Framework.</p>
-  <p>@return basestring containing SHA256 hexdigest</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="system_rev_symlinks_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">system_rev_symlinks_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_rev_symlinks_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <pre class="literalblock">
-
-Parser returning important system symlinks mapping. For example:
-    {'/usr/lib': ['/usr/lib64']}
-Useful for reverse matching files belonging to packages.
-
-@return dict containing the mapping
-
-</pre>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="conflicting_tagged_packages_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">conflicting_tagged_packages_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.conflicting_tagged_packages_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Parser returning packages that could have been installed because they 
-  aren't in the same scope, but ending up creating critical issues. You can
-  see it as a configurable conflict map.</p>
-  <p>@return dict parsed data</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="socket_service_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">socket_service_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.socket_service_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Parses socket service configuration file. This file contains 
-  information about Entropy remote service ports and SSL.</p>
-  <p>@return dict data</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="system_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">system_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.system_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Parses Entropy system configuration file.</p>
-  <p>@return dict data</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="repositories_parser"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">repositories_parser</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettings.repositories_parser">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Setup Entropy Client repository settings reading them from the 
-  relative config file specified in etpConst['repositoriesconf']</p>
-  <p>@return None</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
@@ -2024,7 +1363,7 @@ Useful for reverse matching files belonging to packages.
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Jun 10 13:32:55 2009
+    Generated by Epydoc 3.0.1 on Wed Jun 17 07:58:03 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
