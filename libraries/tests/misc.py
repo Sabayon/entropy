@@ -3,7 +3,7 @@ import sys
 sys.path.insert(0,'.')
 sys.path.insert(0,'../')
 import unittest
-from entropy.misc import Lifo
+from entropy.misc import Lifo, TimeScheduled, ParallelTask, EmailSender
 
 class MiscTest(unittest.TestCase):
 
@@ -63,6 +63,47 @@ class MiscTest(unittest.TestCase):
 
         # is filled?
         self.assertEqual(self.__lifo.is_filled(), False)
+
+
+    def test_timesched(self):
+
+        self.t_sched_run = False
+        def do_t():
+            self.t_sched_run = True
+
+        t = TimeScheduled(0.1, do_t)
+        t.set_delay_before(True)
+        t.start()
+        t.kill()
+        t.join()
+        self.assert_(self.t_sched_run)
+
+    def test_parallel_task(self):
+
+        self.t_sched_run = False
+        def do_t():
+            self.t_sched_run = True
+
+        t = ParallelTask(do_t)
+        t.start()
+        t.join()
+        self.assert_(self.t_sched_run)
+
+    def test_email_sender(self):
+
+        mail_sender = 'test@test.com'
+        mail_recipients = ['test@test123.com']
+        mail_sub = 'hello'
+        mail_msg = 'stfu\nstfu\n'
+
+        def def_send(sender, dest, message):
+            self.assertEqual(mail_sender, sender)
+            self.assertEqual(mail_recipients, dest)
+            self.assert_(message.endswith(mail_msg))
+
+        sender = EmailSender()
+        sender.default_sender = def_send
+        sender.send_text_email(mail_sender, mail_recipients, mail_sub, mail_msg)
 
 if __name__ == '__main__':
     unittest.main()
