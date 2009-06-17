@@ -1,25 +1,30 @@
 # -*- coding: utf-8 -*-
-'''
-    # DESCRIPTION:
-    # Entropy Object Oriented Interface
+"""
 
-    Copyright (C) 2007-2009 Fabio Erculiani
+    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
+    @contact: lxnay@sabayonlinux.org
+    @copyright: Fabio Erculiani
+    @license: GPL-2
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    B{Entropy Framework core module}.
+    This module contains base classes used by entropy.client,
+    entropy.server and entropy.services.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    "Singleton" is a class that is inherited from singleton objects.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-'''
-# pylint ~ ok
+    SystemSettings is a singleton, pluggable interface which contains
+    all the runtime settings (mostly parsed from configuration files
+    and inherited from entropy.const -- which contains almost all the
+    default values).
+    SystemSettings works as a I{dict} object. Due to limitations of
+    multiple inherittance when using the Singleton class, SystemSettings
+    ONLY mimics a I{dict} AND it's not a subclass of it.
+
+    SystemSettingsPlugin is the base class for building valid SystemSettings
+    plugin modules (see entropy.client.interfaces.client or
+    entropy.server.interfaces for working examples).
+
+"""
 from __future__ import with_statement
 import os
 from entropy.exceptions import IncorrectParameter, SystemDatabaseError
@@ -69,23 +74,46 @@ class Singleton(object):
 class SystemSettingsPlugin:
 
     """
+
     This is a plugin base class for all SystemSettings plugins.
     It allows to add extra parsers (though metadata) to
     SystemSettings.
     Just inherit from this class and call add_parser to add
     your custom parsers.
     SystemSettings will call the parse method, as explained below.
+
+    Sample code:
+
+        >>> # load SystemSettings
+        >>> from entropy.core import SystemSettings, SystemSettingsPlugin
+        >>> system_settings = SystemSettings()
+        >>> class MyPlugin(SystemSettingsPlugin):
+        >>>      pass
+        >>> my_plugin = MyPlugin('mystuff', None)
+        >>> def myparsing_function():
+        >>>     return {'abc': 1 }
+        >>> my_plugin.add_parser('parser_no_1', myparsing_function)
+        >>> system_settings.add_plugin(my_plugin)
+        >>> print(system_settings['mystuff']['parser_no_1'])
+        {'abc': 1 }
+        >>> # let's remove it
+        >>> system_settings.remove_plugin('mystuff') # through its plugin_id
+        >>> print(system_settings.get('mystuff'))
+        None
+
     """
 
     def __init__(self, plugin_id, helper_interface):
         """
         SystemSettingsPlugin constructor.
 
-        @param plugin_id -- plugin identifier, must be unique
-        @type plugin_id basestring
-        @param helper_interface -- any Python instance that could
+        @param plugin_id: plugin identifier, must be unique
+        @type plugin_id: string
+        @param helper_interface: any Python object that could
             be of help to your parsers
-        @type handler_instance instance
+        @type handler_instance: Python object
+        @rtype: None
+        @return: None
         """
         self.__parsers = []
         self.__plugin_id = plugin_id
@@ -102,7 +130,8 @@ class SystemSettingsPlugin:
         """
         Returns the unique plugin id passed at construction time.
 
-        @return plugin identifier
+        @return: plugin identifier
+        @rtype: string
         """
         return self.__plugin_id
 
@@ -118,12 +147,14 @@ class SystemSettingsPlugin:
         method: another_fabulous_parser
             parser_id => another_fabulous
 
-        @param parser_id -- parser identifier, must be unique
-        @type parser_id basestring
-        @param parser_callable -- any callable function which has
+        @param parser_id: parser identifier, must be unique
+        @type parser_id: string
+        @param parser_callable: any callable function which has
             the following signature: callable(system_settings_instance)
             can return True to stop further parsers calls
-        @type parser_callable callable
+        @type parser_callable: callable
+        @return: None
+        @rtype: None
         """
         self.__parsers.append((parser_id, parser_callable,))
 
@@ -136,8 +167,10 @@ class SystemSettingsPlugin:
         dict using plugin_id and parser_id keys.
         If returned data is None, SystemSettings dict won't be changed.
 
-        @param system_settings_instance -- SystemSettings instance
-        @type system_settings_instance SystemSettings instance
+        @param system_settings_instance: SystemSettings instance
+        @type system_settings_instance: SystemSettings instance
+        @return: None
+        @rtype: None
         """
         plugin_id = self.get_id()
         for parser_id, parser in self.__parsers:
@@ -154,10 +187,17 @@ class SystemSettings(Singleton):
     This is the place where all the Entropy settings are stored if
     they are not considered instance constants (etpConst).
     For example, here we store package masking cache information and
-    settings.
+    settings, client-side, server-side and services settings.
     Also, this class mimics a dictionary (even if not inheriting it
-    due to issues with the Singleton class).
-    This class is thread-safe, use with fun.
+    due to development choices).
+
+    Sample code:
+
+        >>> from entropy.core import SystemSettings
+        >>> system_settings = SystemSettings()
+        >>> system_settings.clear()
+        >>> system_settings.destroy()
+
     """
 
     import entropy.tools as entropyTools
@@ -226,7 +266,8 @@ class SystemSettings(Singleton):
         Overloaded method from Singleton.
         "Destroys" the instance.
 
-        @return None
+        @return: None
+        @rtype: None
         """
         with self.__mutex:
             self.__is_destroyed = True
@@ -240,11 +281,13 @@ class SystemSettings(Singleton):
         Every add_plugin or remove_plugin method will also issue clear()
         for you. This could be bad and it might be removed in future.
 
-        @param plugin_id -- plugin identifier
-        @type plugin_id basestring
-        @param system_settings_plugin_instance -- valid SystemSettingsPlugin
+        @param plugin_id: plugin identifier
+        @type plugin_id: string
+        @param system_settings_plugin_instance: valid SystemSettingsPlugin
             instance
-        @type system_settings_plugin_instance SystemSettingsPlugin instance
+        @type system_settings_plugin_instance: SystemSettingsPlugin instance
+        @return: None
+        @rtype: None
         """
         inst = system_settings_plugin_instance
         if not isinstance(inst,SystemSettingsPlugin):
@@ -262,8 +305,10 @@ class SystemSettings(Singleton):
         Every add_plugin or remove_plugin method will also issue clear()
         for you. This could be bad and it might be removed in future.
 
-        @param plugin_id -- plugin identifier
-        @type plugin_id basestring
+        @param plugin_id: plugin identifier
+        @type plugin_id: basestring
+        @return: None
+        @rtype: None
         """
         with self.__mutex:
             del self.__plugins[plugin_id]
@@ -272,9 +317,10 @@ class SystemSettings(Singleton):
     def __setup_const(self):
 
         """
-        Internal method. Does the constants initialization.
+        Internal method. Does constants initialization.
 
-        @return None
+        @return: None
+        @rtype: None
         """
 
         del self.__setting_files_order[:]
