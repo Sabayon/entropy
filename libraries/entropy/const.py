@@ -41,6 +41,7 @@ if os.uname()[4] == "x86_64":
 
 etpSys = {
     'archs': ["x86", "amd64"],
+    'keywords': set([ETP_ARCH_CONST,"~"+ETP_ARCH_CONST]),
     'api': '3',
     'arch': ETP_ARCH_CONST,
     'rootdir': "",
@@ -417,7 +418,7 @@ def const_default_settings(rootdir):
         # default choosen branch (overridden by setting in repositories.conf)
         'branch': "4",
          # default allowed package keywords
-        'keywords': set([etpSys['arch'],"~"+etpSys['arch']]),
+        'keywords': etpSys['keywords'].copy(),
         # allow multiple packages in single scope server-side?
         # this makes possible to have multiple versions of packages
         # and handle the removal through expiration (using creation date)

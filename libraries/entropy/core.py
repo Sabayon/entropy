@@ -395,9 +395,6 @@ class SystemSettings(Singleton):
         """
 
         self.__parse()
-        # merge universal keywords
-        for keyword in self.__data['keywords']['universal']:
-            etpConst['keywords'].add(keyword)
 
         # plugins support
         for plugin_id in sorted(self.__plugins):
@@ -750,6 +747,7 @@ class SystemSettings(Singleton):
         @return: parsed metadata
         @rtype: dict
         """
+        # merge universal keywords
         data = {
                 'universal': set(),
                 'packages': {},
@@ -811,6 +809,13 @@ class SystemSettings(Singleton):
                     if keywordinfo[0] not in data['packages']:
                         data['packages'][keywordinfo[0]] = set()
                     data['packages'][keywordinfo[0]].add(items[0])
+
+        # merge universal keywords
+        etpConst['keywords'].clear()
+        etpConst['keywords'].update(etpSys['keywords'])
+        for keyword in data['universal']:
+            etpConst['keywords'].add(keyword)
+
         return data
 
 
