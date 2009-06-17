@@ -727,16 +727,6 @@ class SystemSettings(Singleton):
         with self.__mutex:
             return self.__setting_files.copy()
 
-    def get_mtime_files_data(self):
-        """
-        Return a copy of the internal *mtime* dictionary.
-        This dict contains config file paths and their current mtime.
-
-        @return dict __mtime_files
-        """
-        with self.__mutex:
-            return self.__mtime_files.copy()
-
     def _keywords_parser(self):
         """
         Parser returning package keyword masking metadata
