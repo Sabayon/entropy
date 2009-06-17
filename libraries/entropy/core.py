@@ -1423,7 +1423,7 @@ class SystemSettings(Singleton):
         """
         Internal method. Remove repository cache, because not valid anymore.
 
-        @param repoid: repository identifier or None
+        @keyword repoid: repository identifier or None
         @type repoid: string or None
         @return: None
         @rtype: None
@@ -1497,7 +1497,7 @@ class SystemSettings(Singleton):
         @type maskfile: string
         @param mtimefile: path where to save retrieved mtime information
         @type mtimefile: string
-        @param repoid: repository identifier or None
+        @keyword repoid: repository identifier or None
         @type repoid: string or None
         @return: None
         @rtype: None
