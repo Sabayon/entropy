@@ -390,7 +390,8 @@ class SystemSettings(Singleton):
         """
         Internal method. Scan settings and fill variables.
 
-        @return None
+        @return: None
+        @rtype: None
         """
 
         self.__parse()
@@ -574,10 +575,11 @@ class SystemSettings(Singleton):
         Make metadata persistent, the input dict will be merged
         with the base one at every reset call (clear()).
 
-        @param persistent_dict -- dictionary to merge
-        @type persistent_dict dict
+        @param persistent_dict: dictionary to merge
+        @type persistent_dict: dict
 
-        @return None
+        @return: None
+        @rtype: None
         """
         with self.__mutex:
             self.__persistent_settings.update(persistent_dict)
@@ -586,10 +588,11 @@ class SystemSettings(Singleton):
         """
         Remove dict key from persistent dictionary
 
-        @param persistent_key -- key to remove
-        @type persistent_dict dict
+        @param persistent_key: key to remove
+        @type persistent_dict: dict
 
-        @return None
+        @return: None
+        @rtype: None
         """
         with self.__mutex:
             del self.__persistent_settings[persistent_key]
@@ -602,7 +605,8 @@ class SystemSettings(Singleton):
         that will be read and parsed afterwards by respective
         internal parsers.
 
-        @return None
+        @return: None
+        @rtype: None
         """
 
         dmp_dir = etpConst['dumpstoragedir']
@@ -668,7 +672,8 @@ class SystemSettings(Singleton):
         that will be read and parsed afterwards by the respective
         internal parser.
 
-        @return None
+        @return: None
+        @rtype: None
         """
 
         # user defined package sets
@@ -692,7 +697,8 @@ class SystemSettings(Singleton):
         *files* and *mtimes* dictionaries are prepared and
         parsed just a few lines later.
 
-        @return dict settings metadata
+        @return: None
+        @rtype: None
         """
         # some parsers must be run BEFORE everything:
         for item in self.__setting_files_pre_run:
@@ -741,7 +747,8 @@ class SystemSettings(Singleton):
         This file contains package mask or unmask directives
         based on package keywords.
 
-        @return dict data
+        @return: parsed metadata
+        @rtype: dict
         """
         data = {
                 'universal': set(),
@@ -814,7 +821,8 @@ class SystemSettings(Singleton):
         This file contains package unmask directives, allowing
         to enable experimental or *secret* packages.
 
-        @return list parsed data
+        @return: parsed metadata
+        @rtype: dict
         """
         self.__validate_entropy_cache(self.__setting_files['unmask'],
             self.__mtime_files['unmask_mtime'])
@@ -827,7 +835,8 @@ class SystemSettings(Singleton):
         This file contains package mask directives, allowing
         to disable experimental or *secret* packages.
 
-        @return list parsed data
+        @return: parsed metadata
+        @rtype: dict
         """
         self.__validate_entropy_cache(self.__setting_files['mask'],
             self.__mtime_files['mask_mtime'])
@@ -841,7 +850,8 @@ class SystemSettings(Singleton):
         installed, extending the already defined (in repository database)
         set of atoms.
 
-        @return list parsed data
+        @return: parsed metadata
+        @rtype: dict
         """
         self.__validate_entropy_cache(self.__setting_files['system_mask'],
             self.__mtime_files['system_mask_mtime'])
@@ -853,7 +863,8 @@ class SystemSettings(Singleton):
         license.mask file.
         Packages shipped with licenses listed there will be masked.
 
-        @return list parsed data
+        @return: parsed metadata
+        @rtype: dict
         """
         self.__validate_entropy_cache(self.__setting_files['license_mask'],
             self.__mtime_files['license_mask_mtime'])
@@ -864,7 +875,8 @@ class SystemSettings(Singleton):
         Parser returning licenses considered accepted by default
         (= GPL compatibles) read from package.lic_whitelist.
 
-        @return dict parsed data
+        @return: parsed metadata
+        @rtype: dict
         """
         data = {}
         for repoid in self.__setting_files['repos_license_whitelist']:
@@ -881,7 +893,8 @@ class SystemSettings(Singleton):
         Parser returning packages masked at repository level read from
         packages.db.mask inside the repository database directory.
 
-        @return dict parsed data
+        @return: parsed metadata
+        @rtype: dict
         """
         data = {}
         for repoid in self.__setting_files['repos_mask']:
@@ -901,7 +914,8 @@ class SystemSettings(Singleton):
         installed, extending the already defined (in repository database)
         set of atoms.
 
-        @return dict parsed data
+        @return: parsed metadata
+        @rtype: dict
         """
         data = []
         for repoid in self.__setting_files['repos_system_mask']:
@@ -920,7 +934,8 @@ class SystemSettings(Singleton):
         Parser returning system defined package sets read from
         /etc/entropy/packages/sets.
 
-        @return dict parsed data
+        @return: parsed metadata
+        @rtype: dict
         """
         data = {}
         for set_name in self.__setting_files['system_package_sets']:
@@ -935,7 +950,8 @@ class SystemSettings(Singleton):
         """
         Parser returning directories considered part of the base system.
 
-        @return list parsed data
+        @return: parsed metadata
+        @rtype: dict
         """
         return self.__generic_parser(self.__setting_files['system_dirs'])
 
@@ -944,7 +960,8 @@ class SystemSettings(Singleton):
         Parser returning directories NOT considered part of the base system.
         Settings here overlay system_dirs_parser.
 
-        @return list parsed data
+        @return: parsed metadata
+        @rtype: dict
         """
         return self.__generic_parser(self.__setting_files['system_dirs_mask'])
 
@@ -953,7 +970,8 @@ class SystemSettings(Singleton):
         Hardware hash metadata parser and generator. It returns a theorically
         unique SHA256 hash bound to the computer running this Framework.
 
-        @return basestring containing SHA256 hexdigest
+        @return: string containing SHA256 hexdigest
+        @rtype: string
         """
         hw_hash_file = self.__setting_files['hw_hash']
         if os.access(hw_hash_file, os.R_OK | os.F_OK):
@@ -983,7 +1001,8 @@ class SystemSettings(Singleton):
             {'/usr/lib': ['/usr/lib64']}
         Useful for reverse matching files belonging to packages.
 
-        @return dict containing the mapping
+        @return: dict containing the mapping
+        @rtype: dict
         """
         setting_file = self.__setting_files['system_rev_symlinks']
         raw_data = self.__generic_parser(setting_file)
@@ -1001,7 +1020,8 @@ class SystemSettings(Singleton):
         they aren't in the same scope, but ending up creating critical
         issues. You can see it as a configurable conflict map.
 
-        @return dict parsed data
+        @return: parsed metadata
+        @rtype: dict
         """
         data = {}
         # keep priority order
@@ -1028,7 +1048,8 @@ class SystemSettings(Singleton):
         This file contains information about Entropy remote service ports
         and SSL.
 
-        @return dict data
+        @return: parsed metadata
+        @rtype: dict
         """
 
         data = etpConst['socket_service'].copy()
@@ -1135,7 +1156,8 @@ class SystemSettings(Singleton):
         """
         Parses Entropy system configuration file.
 
-        @return dict data
+        @return: parsed metadata
+        @rtype: dict
         """
 
         data = {}
@@ -1222,7 +1244,8 @@ class SystemSettings(Singleton):
         Setup Entropy Client repository settings reading them from
         the relative config file specified in etpConst['repositoriesconf']
 
-        @return None
+        @return: parsed metadata
+        @rtype: dict
         """
 
         data = {
@@ -1389,9 +1412,10 @@ class SystemSettings(Singleton):
         """
         Internal method. This is the generic file parser here.
 
-        @param filepath valid path
-        @type filepath basestring
-        @return list parsed data
+        @param filepath: valid path
+        @type filepath: string
+        @return: raw text extracted from file
+        @rtype: list
         """
         return self.entropyTools.generic_file_content_parser(filepath)
 
@@ -1399,9 +1423,10 @@ class SystemSettings(Singleton):
         """
         Internal method. Remove repository cache, because not valid anymore.
 
-        @param repoid repository identifier or None
-        @type repoid basestring or None
-        @return None
+        @param repoid: repository identifier or None
+        @type repoid: string or None
+        @return: None
+        @rtype: None
         """
         if os.path.isdir(etpConst['dumpstoragedir']):
             if repoid:
@@ -1423,11 +1448,12 @@ class SystemSettings(Singleton):
         """
         Internal method. Save mtime of a file to another file.
 
-        @param toread file path to read
-        @type toread basestring
-        @param tosaveinto path where to save retrieved mtime information
-        @type tosaveinto basestring
-        @return None
+        @param toread: file path to read
+        @type toread: string
+        @param tosaveinto: path where to save retrieved mtime information
+        @type tosaveinto: string
+        @return: None
+        @rtype: None
         """
         if not os.path.isfile(toread):
             currmtime = 0.0
@@ -1467,13 +1493,14 @@ class SystemSettings(Singleton):
         """
         Internal method. Validates Entropy Cache
 
-        @param maskfile path of the setting file
-        @type maskfile basestring
-        @param mtimefile path where to save retrieved mtime information
-        @type mtimefile basestring
-        @param repoid repository identifier or None
-        @type repoid basestring or None
-        @return None
+        @param maskfile: path of the setting file
+        @type maskfile: string
+        @param mtimefile: path where to save retrieved mtime information
+        @type mtimefile: string
+        @param repoid: repository identifier or None
+        @type repoid: string or None
+        @return: None
+        @rtype: None
         """
 
         # can't validate if running as user, moreover
