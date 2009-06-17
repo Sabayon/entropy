@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.services.interfaces.SocketHost.HostServerMixin</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.services-module.html">Package&nbsp;services</a> ::
+        <a href="entropy.services.interfaces-module.html">Module&nbsp;interfaces</a> ::
+        <a href="entropy.services.interfaces.SocketHost-class.html">Class&nbsp;SocketHost</a> ::
+        Class&nbsp;HostServerMixin
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class HostServerMixin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__72" name="uml_class_diagram_for_entropy__72">
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin.ConnWrapper-class.html" title="Base class for implementing the rest of the wrappers in this module." alt="" coords="17,321,657,340"/>
+<area shape="rect" href="entropy.tools-module.html" title="# DESCRIPTION: # generic tools for all the handlers applications" alt="" coords="17,340,657,359"/>
+<area shape="rect" href="javascript:void(0);" title="entropy.services.interfaces.SocketHost.HostServerMixin.socket_mod" alt="" coords="17,359,657,377"/>
+<area shape="rect" href="javascript:void(0);" title="entropy.services.interfaces.SocketHost.HostServerMixin.select" alt="" coords="17,377,657,396"/>
+<area shape="rect" href="javascript:void(0);" title="entropy.services.interfaces.SocketHost.HostServerMixin.SocketServer" alt="" coords="17,396,657,415"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#daemon_threads" title="entropy.services.interfaces.SocketHost.HostServerMixin.daemon_threads" alt="" coords="17,415,657,433"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#allow_reuse_address" title="entropy.services.interfaces.SocketHost.HostServerMixin.allow_reuse_address" alt="" coords="17,433,657,452"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#__init__" title="Constructor." alt="" coords="17,455,657,473"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#load_ssl_context" title="entropy.services.interfaces.SocketHost.HostServerMixin.load_ssl_context" alt="" coords="17,473,657,492"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#make_ssl_connection_alive" title="entropy.services.interfaces.SocketHost.HostServerMixin.make_ssl_connection_alive" alt="" coords="17,492,657,511"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#verify_ssl_cb" title="entropy.services.interfaces.SocketHost.HostServerMixin.verify_ssl_cb" alt="" coords="17,511,657,529"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#verify_request" title="Verify the request." alt="" coords="17,529,657,548"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#ip_blacklist_check" title="entropy.services.interfaces.SocketHost.HostServerMixin.ip_blacklist_check" alt="" coords="17,548,657,567"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#ip_max_connections_check" title="entropy.services.interfaces.SocketHost.HostServerMixin.ip_max_connections_check" alt="" coords="17,567,657,585"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#max_connections_check" title="entropy.services.interfaces.SocketHost.HostServerMixin.max_connections_check" alt="" coords="17,585,657,604"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#serve_forever" title="Handle one request at a time until doomsday." alt="" coords="17,604,657,623"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#finish_request" title="Finish one request by instantiating RequestHandlerClass." alt="" coords="17,623,657,641"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#close_request" title="Called to clean up an individual request." alt="" coords="17,641,657,660"/>
+<area shape="rect" href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html" title="entropy.services.interfaces.SocketHost.HostServerMixin" alt="" coords="16,304,659,661"/>
+<area shape="rect" href="javascript:void(0);" title="Same as in BaseServer but as a thread." alt="" coords="37,183,355,201"/>
+<area shape="rect" href="javascript:void(0);" title="Start a new thread to process the request." alt="" coords="37,201,355,220"/>
+<area shape="rect" href="javascript:void(0);" title="Mix&#45;in class to handle each request in a new thread." alt="" coords="36,157,356,221"/>
+<area shape="rect" href="javascript:void(0);" title="SocketServer.TCPServer.address_family" alt="" coords="408,121,552,140"/>
+<area shape="rect" href="javascript:void(0);" title="SocketServer.TCPServer.socket_type" alt="" coords="408,140,552,159"/>
+<area shape="rect" href="javascript:void(0);" title="SocketServer.TCPServer.request_queue_size" alt="" coords="408,159,552,177"/>
+<area shape="rect" href="javascript:void(0);" title="Called by constructor to bind the socket." alt="" coords="408,180,552,199"/>
+<area shape="rect" href="javascript:void(0);" title="Called by constructor to activate the server." alt="" coords="408,199,552,217"/>
+<area shape="rect" href="javascript:void(0);" title="Called to clean&#45;up the server." alt="" coords="408,217,552,236"/>
+<area shape="rect" href="javascript:void(0);" title="Return socket file number." alt="" coords="408,236,552,255"/>
+<area shape="rect" href="javascript:void(0);" title="Get the request and client address from the socket." alt="" coords="408,255,552,273"/>
+<area shape="rect" href="javascript:void(0);" title="Base class for various socket&#45;based server classes." alt="" coords="407,104,553,275"/>
+<area shape="rect" href="javascript:void(0);" title="Handle one request, possibly blocking." alt="" coords="356,36,604,55"/>
+<area shape="rect" href="javascript:void(0);" title="Handle an error gracefully." alt="" coords="356,55,604,73"/>
+<area shape="rect" href="javascript:void(0);" title="Base class for server classes." alt="" coords="355,11,605,75"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__72.gif" alt='' usemap="#uml_class_diagram_for_entropy__72" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== NESTED CLASSES ==================== -->
+<a name="section-NestedClasses"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Nested Classes</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="entropy.services.interfaces.SocketHost.HostServerMixin.ConnWrapper-class.html" class="summary-name">ConnWrapper</a><br />
+      Base class for implementing the rest of the wrappers in this 
+        module.
+    </td>
+  </tr>
+</table>
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">server_address</span>,
+        <span class="summary-sig-arg">RequestHandlerClass</span>,
+        <span class="summary-sig-arg">processor</span>,
+        <span class="summary-sig-arg">HostInterface</span>,
+        <span class="summary-sig-arg">authorized_clients_only</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Constructor.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="load_ssl_context"></a><span class="summary-sig-name">load_ssl_context</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.load_ssl_context">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="make_ssl_connection_alive"></a><span class="summary-sig-name">make_ssl_connection_alive</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.make_ssl_connection_alive">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="verify_ssl_cb"></a><span class="summary-sig-name">verify_ssl_cb</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">conn</span>,
+        <span class="summary-sig-arg">cert</span>,
+        <span class="summary-sig-arg">errnum</span>,
+        <span class="summary-sig-arg">depth</span>,
+        <span class="summary-sig-arg">ok</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.verify_ssl_cb">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#verify_request" class="summary-sig-name">verify_request</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">request</span>,
+        <span class="summary-sig-arg">client_address</span>)</span><br />
+      Verify the request.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.verify_request">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="ip_blacklist_check"></a><span class="summary-sig-name">ip_blacklist_check</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">client_addr</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.ip_blacklist_check">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="ip_max_connections_check"></a><span class="summary-sig-name">ip_max_connections_check</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">ip_address</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.ip_max_connections_check">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="max_connections_check"></a><span class="summary-sig-name">max_connections_check</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">request</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.max_connections_check">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#serve_forever" class="summary-sig-name">serve_forever</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Handle one request at a time until doomsday.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.serve_forever">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#finish_request" class="summary-sig-name">finish_request</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">request</span>,
+        <span class="summary-sig-arg">client_address</span>)</span><br />
+      Finish one request by instantiating RequestHandlerClass.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.finish_request">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html#close_request" class="summary-sig-name">close_request</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">request</span>)</span><br />
+      Called to clean up an individual request.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.close_request">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>SocketServer.ThreadingMixIn</code></b>:
+      <code>process_request</code>,
+      <code>process_request_thread</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>SocketServer.TCPServer</code></b>:
+      <code>fileno</code>,
+      <code>get_request</code>,
+      <code>server_activate</code>,
+      <code>server_bind</code>,
+      <code>server_close</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>SocketServer.BaseServer</code></b>:
+      <code>handle_error</code>,
+      <code>handle_request</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="daemon_threads"></a><span class="summary-name">daemon_threads</span> = <code title="True">True</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="allow_reuse_address"></a><span class="summary-name">allow_reuse_address</span> = <code title="True">True</code>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>SocketServer.TCPServer</code></b>:
+      <code>address_family</code>,
+      <code>request_queue_size</code>,
+      <code>socket_type</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">server_address</span>,
+        <span class="sig-arg">RequestHandlerClass</span>,
+        <span class="sig-arg">processor</span>,
+        <span class="sig-arg">HostInterface</span>,
+        <span class="sig-arg">authorized_clients_only</span>=<span class="sig-default">False</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Constructor.  May be extended, do not override.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        SocketServer.BaseServer.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="verify_request"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">verify_request</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">request</span>,
+        <span class="sig-arg">client_address</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.verify_request">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Verify the request.  May be overridden.</p>
+  <p>Return True if we should proceed with this request.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        SocketServer.BaseServer.verify_request
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="serve_forever"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">serve_forever</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.serve_forever">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Handle one request at a time until doomsday.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        SocketServer.BaseServer.serve_forever
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="finish_request"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">finish_request</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">request</span>,
+        <span class="sig-arg">client_address</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.finish_request">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Finish one request by instantiating RequestHandlerClass.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        SocketServer.BaseServer.finish_request
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="close_request"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">close_request</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">request</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.HostServerMixin.close_request">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called to clean up an individual request.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        SocketServer.BaseServer.close_request
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Wed Jun 17 07:58:07 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>
