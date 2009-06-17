@@ -6,6 +6,7 @@
     @license: GPL-2
 
     B{Entropy Framework constants module}.
+
     This module contains all the Entropy constants used all around
     the "entropy" package.
 

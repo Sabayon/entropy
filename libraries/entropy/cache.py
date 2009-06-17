@@ -7,6 +7,7 @@
     @license: GPL-2
 
     B{Entropy Framework cache module}.
+
     This module contains the Entropy, asynchronous caching logic.
     It is not meant to handle cache pollution management, because
     this is either handled implicitly when cached items are pulled

@@ -7,6 +7,7 @@
     @license: GPL-2
 
     B{Entropy Framework core module}.
+
     This module contains base classes used by entropy.client,
     entropy.server and entropy.services.
 
@@ -722,7 +723,8 @@ class SystemSettings(Singleton):
         Return a copy of the internal *files* dictionary.
         This dict contains config file paths and their identifiers.
 
-        @return dict __setting_files
+        @return: dict __setting_files
+        @rtype: dict
         """
         with self.__mutex:
             return self.__setting_files.copy()
