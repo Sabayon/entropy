@@ -25,6 +25,7 @@
 import sys, os
 import curses
 from entropy.const import etpUi
+from entropy.exceptions import IncorrectParameter
 from entropy.i18n import _
 stuff = {}
 stuff['cols'] = 30
@@ -533,10 +534,6 @@ class TextInterface:
         colours = [green, red, blue, darkgreen, darkred, darkblue, brown, purple]
         colours += colours[:]
         if len(responses) > len(colours):
-            try:
-                from entropy.exceptions import IncorrectParameter
-            except ImportError:
-                from exceptionTools import IncorrectParameter
             raise IncorrectParameter("IncorrectParameter: %s = %s" % (_("maximum responses length"),len(colours),))
         try:
             print darkgreen(question),
