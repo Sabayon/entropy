@@ -4,11 +4,11 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
-    - equo query list available [repository]
     - /etc/entropy/package.satisfied_lock
     - when a new entropy version is available, don't allow any other update?
         # config file in /etc
         # priority update files
+    - other 10 unit tests
     - Documentation + code style cleanup (NLnet Milestone 7)
         http://epydoc.sourceforge.net/epydoc.html
 
