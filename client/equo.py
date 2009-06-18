@@ -401,17 +401,16 @@ options = _options
 # 'equo help' support
 if options:
     if options[0] == "help":
-        options.insert(0,"--help")
+        options[0] = "--help"
 
 # print help
 if (not options) or ("--help" in options):
-    print_menu(myopts)
-    if etpUi['verbose']:
-        print_menu(myopts_extended)
-    else:
-        print_menu(myopts_ext_info)
     if not options:
         print_error("not enough parameters")
+    if etpUi['verbose'] or len(options) > 1:
+        print_menu(myopts + myopts_extended, options)
+    else:
+        print_menu(myopts + myopts_ext_info)
     raise SystemExit(1)
 # sure we don't need this after
 del myopts

@@ -289,25 +289,54 @@ def enlightenatom(atom):
     out = atom.split("/")
     return blue(out[0])+"/"+red(out[1])
 
-def print_menu(data):
+def print_menu(data, args = None):
+    if args == None:
+        args = []
 
     def orig_myfunc(x):
         return x
     def orig_myfunc_desc(x):
         return x
+    
+    try:
+        i = args.index("--help")
+        del args[i]
+        command = args.pop(0)
+    except ValueError:
+        command = None
+    except IndexError:
+        command = None
+    section_found = False
+    search_depth = 1
+
 
     for item in data:
-
         myfunc = orig_myfunc
         myfunc_desc = orig_myfunc_desc
 
         if not item:
-            writechar("\n")
+            if command == None or section_found:
+                writechar("\n")
         else:
             n_ident = item[0]
             name = item[1]
             n_d_ident = item[2]
             desc = item[3]
+            if command != None: 
+                #print "searching ",name, command, n_ident, search_depth
+                if name == command and n_ident == search_depth:
+                    try:
+                        command = args.pop(0)
+                        search_depth = n_ident + 1
+                    except IndexError:
+                        command = "##unused_from_now_on"
+                        section_found = True
+                        indent_level = n_ident
+                elif section_found:
+                    if n_ident <= indent_level:
+                        return
+                else:
+                    continue
 
             if n_ident == 0:
                 writechar("  ")
@@ -738,3 +767,4 @@ class TextInterface:
 
     def notitles(self):
         notitles()
+
