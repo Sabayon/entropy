@@ -96,6 +96,16 @@ def query(options):
         if len(mylistopts) > 0:
             if mylistopts[0] == "installed":
                 rc_status = list_installed_packages()
+            elif mylistopts[0] == "available" and len(mylistopts) > 1:
+                repoid = mylistopts[1]
+                equo = EquoInterface()
+                if repoid in equo.validRepositories:
+                    repo_dbconn = equo.open_repository(repoid)
+                    rc_status = list_installed_packages(dbconn = repo_dbconn)
+                else:
+                    rc_status = -10
+            else:
+                rc_status = -10
     elif myopts[0] == "description":
         rc_status = search_description(myopts[1:])
     else:

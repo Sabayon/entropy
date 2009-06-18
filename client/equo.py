@@ -182,7 +182,8 @@ myopts = [
         (2,'installed',1,_('search a package into the local database')),
         (2,'license',2,_('show packages owning the provided licenses')),
         (2,'list',2,_('list packages based on the chosen parameter below')),
-            (3,'installed',1,_('list installed packages')),
+            (3,'installed',2,_('list installed packages')),
+            (3,'available [repos]',1,_('list available packages')),
         (2,'needed',2,_('show runtime libraries needed by the provided atoms')),
         (2,'orphans',2,_('search files that do not belong to any package')),
         (2,'removal',2,_('show the removal tree for the specified atoms')),
@@ -401,16 +402,17 @@ options = _options
 # 'equo help' support
 if options:
     if options[0] == "help":
-        options[0] = "--help"
+        options.insert(0,"--help")
 
 # print help
 if (not options) or ("--help" in options):
+    print_menu(myopts)
+    if etpUi['verbose']:
+        print_menu(myopts_extended)
+    else:
+        print_menu(myopts_ext_info)
     if not options:
         print_error("not enough parameters")
-    if etpUi['verbose'] or len(options) > 1:
-        print_menu(myopts + myopts_extended, options)
-    else:
-        print_menu(myopts + myopts_ext_info)
     raise SystemExit(1)
 # sure we don't need this after
 del myopts
