@@ -691,7 +691,7 @@ class PortagePlugin:
         data['global_use'] = global_useflags.split()
 
         iuse = self.get_package_setting(atom, "IUSE")
-        if not isinstance(iuse,basestring):
+        if not isinstance(iuse, basestring):
             iuse = ''
         data['iuse'] = iuse.split()[:]
         iuse = set()
@@ -918,44 +918,55 @@ class PortagePlugin:
                             matches[(package,myslot)].add(filename)
         return matches
 
+    def _resolve_enabled_useflags(self, iuse_list, use_list):
+        use = set()
+        use_mask = self.get_useflags_mask()
+        use_force = self.get_useflags_force()
+        for myiuse in iuse_list:
+            if myiuse[0] in ("+", "-",):
+                myiuse = myiuse[1:]
+            if ((myiuse in use_list) or (myiuse in use_force)) and \
+                (myiuse not in use_mask):
+                use.add(myiuse)
+        return use
+
     def calculate_dependencies(self, my_iuse, my_use, my_license, my_depend, my_rdepend, my_pdepend, my_provide, my_src_uri):
-        metadata = {}
-        metadata['USE'] = my_use
-        metadata['IUSE'] = my_iuse
-        metadata['LICENSE'] = my_license
-        metadata['DEPEND'] = my_depend
-        metadata['PDEPEND'] = my_pdepend
-        metadata['RDEPEND'] = my_rdepend
-        metadata['PROVIDE'] = my_provide
-        metadata['SRC_URI'] = my_src_uri
-        use = metadata['USE'].split()
-        raw_use = use
-        metadata['USE_MASK'] = self.get_useflags_mask()
-        iuse = set()
-        for myiuse in metadata['IUSE'].split():
-            if myiuse.startswith("+"):
-                myiuse = myiuse[1:]
-                if (myiuse not in use) and ("-"+myiuse not in use):
-                    use.append(myiuse)
-            elif myiuse.startswith("-"):
-                myiuse = myiuse[1:]
-            iuse.add(myiuse)
-        use = sorted([f for f in use if f in iuse])
-        metadata['USE'] = " ".join(use)
+
+        metadata = {
+            'LICENSE': my_license,
+            'DEPEND': my_depend,
+            'PDEPEND': my_pdepend,
+            'RDEPEND': my_rdepend,
+            'PROVIDE': my_provide,
+            'SRC_URI': my_src_uri,
+            'USE_MASK': sorted(self.get_useflags_mask()),
+            'USE_FORCE': sorted(self.get_useflags_force()),
+        }
+
+        # generate USE flags metadata
+        raw_use = my_use.split()
+        enabled_use = sorted(self._resolve_enabled_useflags(
+            my_iuse.split(), raw_use))
+
+        metadata['ENABLED_USE'] = enabled_use
+        use = raw_use + metadata['USE_FORCE']
+        metadata['USE'] = sorted([x for x in use if x not in \
+            metadata['USE_MASK']])
+
         for k in "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", "PROVIDE", "SRC_URI":
             try:
                 if k == "SRC_URI":
                     deps = self.src_uri_paren_reduce(metadata[k])
                 else:
                     deps = self.paren_reduce(metadata[k])
-                deps = self.use_reduce(deps, uselist=raw_use)
+                deps = self.use_reduce(deps, uselist = raw_use)
                 deps = self.paren_normalize(deps)
                 if k == "LICENSE":
                     deps = self.paren_license_choose(deps)
                 else:
                     deps = self.paren_choose(deps)
                 if k.endswith("DEPEND"):
-                    deps = self.usedeps_reduce(deps, use)
+                    deps = self.usedeps_reduce(deps, enabled_use)
                 deps = ' '.join(deps)
             except Exception, e:
                 self.entropyTools.print_traceback()
@@ -2103,13 +2114,8 @@ class PortagePlugin:
         data['provide'] = set(portage_metadata['PROVIDE'].split())
         data['license'] = portage_metadata['LICENSE']
         data['useflags'] = []
-
-        for my_use in data['iuse'].split():
-            if my_use[0] in ("-","+",):
-                my_use = my_use[1:]
-
-            if (my_use in portage_metadata['USE']) or \
-                (my_use in portage_metadata['USE_MASK']):
+        for my_use in portage_metadata['USE']:
+            if my_use in portage_metadata['ENABLED_USE']:
                 data['useflags'].append(my_use)
             else:
                 data['useflags'].append("-"+my_use)
