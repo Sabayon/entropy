@@ -949,8 +949,8 @@ class PortagePlugin:
             my_iuse.split(), raw_use))
 
         metadata['ENABLED_USE'] = enabled_use
-        use = raw_use + metadata['USE_FORCE']
-        metadata['USE'] = sorted([x for x in use if x not in \
+        use = raw_use + [x for x in metadata['USE_FORCE'] if x not in raw_use]
+        metadata['USE'] = sorted([unicode(x) for x in use if x not in \
             metadata['USE_MASK']])
 
         for k in "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", "PROVIDE", "SRC_URI":
@@ -2115,6 +2115,11 @@ class PortagePlugin:
         data['license'] = portage_metadata['LICENSE']
         data['useflags'] = []
         for my_use in portage_metadata['USE']:
+            if my_use in portage_metadata['USE_MASK']:
+                continue
+            if my_use in portage_metadata['USE_FORCE']:
+                data['useflags'].append(my_use)
+                continue
             if my_use in portage_metadata['ENABLED_USE']:
                 data['useflags'].append(my_use)
             else:
