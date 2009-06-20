@@ -1439,6 +1439,35 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             return True
         return False
 
+    def critical_updates_warning(self):
+        sys_set_client_plg_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
+        misc_set = self.Equo.SystemSettings[sys_set_client_plg_id]['misc']
+        if misc_set.get('forcedupdates'):
+            crit_atoms, crit_mtchs = self.Equo.calculate_critical_updates()
+            if crit_atoms:
+                crit_objs = []
+                for crit_match in crit_mtchs:
+                    crit_obj, c_new = self.etpbase.get_package_item(
+                        crit_match)
+                    if crit_obj:
+                        crit_objs.append(crit_obj)
+
+                crit_dialog = ConfirmationDialog(
+                    self.ui.main,
+                    crit_objs,
+                    top_text = _("Please update the following critical packages"),
+                    bottom_text = _("You should install them as soon as possible"),
+                    simpleList = True
+                )
+                crit_dialog.okbutton.set_label(_("Abort action"))
+                crit_dialog.cancelbutton.set_label(_("Ignore"))
+                result = crit_dialog.run()
+                crit_dialog.destroy()
+                if result == -5: # ok
+                    return True
+        return False
+
     def process_queue(self, pkgs, remove_repos = [], fetch_only = False,
             download_sources = False):
 
@@ -1479,9 +1508,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if \
                 x.do_purge])
 
+            # look for critical updates
+            crit_block = False
+            if install_queue and ((not fetch_only) and (not download_sources)):
+                crit_block = self.critical_updates_warning()
+            # check if we also need to restart this application
             restart_needed = self.check_restart_needed(install_queue)
 
-            if install_queue or removal_queue:
+            if (install_queue or removal_queue) and not crit_block:
 
                 # activate UI lock
                 self.ui_lock(True)

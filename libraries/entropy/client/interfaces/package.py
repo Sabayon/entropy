@@ -726,58 +726,7 @@ class Package:
         # clear caches, the bad way
         self.Entropy.clear_dump_cache(etpCache['world_available'])
         self.Entropy.clear_dump_cache(etpCache['world_update'])
-
-    # FIXME: deprecated
-    def __update_world_cache(self):
-        if self.Entropy.xcache and (self.action in ("install","remove",)):
-            wc_dir = os.path.dirname(os.path.join(etpConst['dumpstoragedir'],etpCache['world_update']))
-            wc_filename = os.path.basename(etpCache['world_update'])
-            wc_cache_files = [os.path.join(wc_dir,x) for x in os.listdir(wc_dir) if x.startswith(wc_filename)]
-            for cache_file in wc_cache_files:
-
-                try:
-                    data = self.Entropy.dumpTools.loadobj(cache_file, complete_path = True)
-                    (update, remove, fine) = data['r']
-                    empty_deps = data['empty_deps']
-                except:
-                    self.Entropy.clear_dump_cache(etpCache['world_update'])
-                    return
-
-                if empty_deps:
-                    continue
-
-                if self.action == "install":
-                    if self.matched_atom in update:
-                        update.remove(self.matched_atom)
-                        self.Entropy.dumpTools.dumpobj(
-                            cache_file,
-                            {'r':(update, remove, fine),'empty_deps': empty_deps},
-                            complete_path = True
-                        )
-                else:
-                    key, slot = self.Entropy.clientDbconn.retrieveKeySlot(self.infoDict['removeidpackage'])
-                    matches = self.Entropy.atom_match(key, matchSlot = slot, multiMatch = True, multiRepo = True)
-                    if matches[1] != 0:
-                        # hell why! better to rip all off
-                        self.Entropy.clear_dump_cache(etpCache['world_update'])
-                        return
-                    taint = False
-                    for match in matches[0]:
-                        if match in update:
-                            taint = True
-                            update.remove(match)
-                        if match in remove:
-                            taint = True
-                            remove.remove(match)
-                    if taint:
-                        self.Entropy.dumpTools.dumpobj(
-                            cache_file,
-                            {'r':(update, remove, fine),'empty_deps': empty_deps},
-                            complete_path = True
-                        )
-
-        elif (not self.Entropy.xcache) or (self.action in ("install",)):
-            self.Entropy.clear_dump_cache(etpCache['world_update'])
+        self.Entropy.clear_dump_cache(etpCache['critical_update'])
 
     def __install_package(self):
 

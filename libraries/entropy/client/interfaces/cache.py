@@ -189,6 +189,7 @@ class CacheMixin:
             disk_cache = self.Cacher.pop(c_hash)
             if disk_cache != None:
                 try:
+                    # workaround for old cache
                     if len(disk_cache['r']) == 4:
                         return disk_cache['r']
                 except (KeyError, TypeError):
@@ -202,3 +203,24 @@ class CacheMixin:
             self.SystemSettings['repositories']['order'],
             ignore_spm_downgrades,
         )))
+
+    def get_critical_updates_cache(self, db_digest = None):
+
+        if self.xcache:
+
+            if db_digest == None:
+                db_digest = self.all_repositories_checksum()
+
+            c_hash = "%s%s" % (etpCache['critical_update'],
+                self.get_critical_update_cache_hash(db_digest),)
+
+            return self.Cacher.pop(c_hash)
+
+    def get_critical_update_cache_hash(self, db_digest):
+
+        return str(hash("%s|%s|%s" % (
+            db_digest, self.validRepositories,
+            self.SystemSettings['repositories']['order'],
+        )))
+
+

@@ -133,10 +133,11 @@ def package(options):
             status, rc = installPackages(myopts, deps = equoRequestDeps,
                 emptydeps = equoRequestEmptyDeps,
                 onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep,
-                configFiles = equoRequestConfigFiles, tbz2 = mytbz2paths,
+                config_files = equoRequestConfigFiles, tbz2 = mytbz2paths,
                 resume = equoRequestResume, skipfirst = equoRequestSkipfirst,
                 dochecksum = equoRequestChecksum,
-                multifetch = equoRequestMultifetch)
+                multifetch = equoRequestMultifetch,
+                check_critical_updates = True)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
@@ -658,8 +659,9 @@ def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = [],
     return 0,0
 
 def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = False,
-    onlyfetch = False, deepdeps = False, configFiles = False, tbz2 = [],
-    resume = False, skipfirst = False, dochecksum = True, multifetch = 1):
+    onlyfetch = False, deepdeps = False, config_files = False, tbz2 = [],
+    resume = False, skipfirst = False, dochecksum = True, multifetch = 1,
+    check_critical_updates = False):
 
     # check if I am root
     if (not Equo.entropyTools.is_root()):
@@ -677,6 +679,26 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         etpSys['dirstoclean'].clear()
 
     explicit_user_packages = set()
+
+    sys_set_client_plg_id = \
+        etpConst['system_settings_plugins_ids']['client_plugin']
+    equo_client_settings = Equo.SystemSettings[sys_set_client_plg_id]['misc']
+
+    if check_critical_updates and equo_client_settings.get('forcedupdates'):
+        crit_atoms, crit_matches = Equo.calculate_critical_updates()
+        print_info("")
+        print_info("")
+        mytxt = "%s: %s" % (
+            purple(_("Please update the following critical packages")),
+            '\n'+'\n'.join(
+                [darkred('>>\t# ') + brown(x) for x in sorted(crit_atoms)]
+            ),
+        )
+        print_warning(red(" !!! ")+mytxt)
+        mytxt = _("You should install them as soon as possible")
+        print_warning(red(" !!! ")+darkgreen(mytxt))
+        print_info("")
+        print_info("")
 
     if not resume:
 
@@ -1247,7 +1269,9 @@ def configurePackages(packages = []):
 
     return 0,0
 
-def removePackages(packages = [], atomsdata = [], deps = True, deep = False, systemPackagesCheck = True, configFiles = False, resume = False, human = False):
+def removePackages(packages = [], atomsdata = [], deps = True, deep = False,
+    systemPackagesCheck = True, configFiles = False, resume = False,
+    human = False):
 
     # check if I am root
     if (not Equo.entropyTools.is_root()):
@@ -1281,7 +1305,10 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                     print_warning(mytxt)
                     if len(package) < 4:
                         continue
-                    items = Equo.get_meant_packages(package, from_installed = True)
+
+                    items = Equo.get_meant_packages(package,
+                        from_installed = True)
+
                     if items:
                         items_cache = set()
                         mytxt = "%s %s %s %s %s" % (
@@ -1295,7 +1322,8 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                         for match in items:
                             key, slot = Equo.clientDbconn.retrieveKeySlot(match[0])
                             if (key,slot) not in items_cache:
-                                print_info(red("    # ")+blue(key)+":"+brown(str(slot))+red(" ?"))
+                                print_info(red("    # ") + blue(key) + ":" + \
+                                    brown(str(slot)) + red(" ?"))
                             items_cache.add((key, slot))
                         del items_cache
                     continue
@@ -1327,7 +1355,8 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
                         bold("!!!"),
                         brown(str(atomscounter)),
                         blue(str(totalatoms)),
-                        enlightenatom(pkgatom), # every package matching app-foo is masked
+                        # every package matching app-foo is masked
+                        enlightenatom(pkgatom),
                         red(_("vital package")),
                         red(_("Removal forbidden")),
                     )
@@ -1336,15 +1365,21 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False, sys
 
             plainRemovalQueue.append(idpackage)
 
-            installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
+            installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(
+                idpackage)
             disksize = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
             disksize = Equo.entropyTools.bytes_into_human(disksize)
-            disksizeinfo = " | %s: %s" % (blue(_("Disk size")),bold(str(disksize)),)
+            disksizeinfo = " | %s: %s" % (blue(_("Disk size")),
+                bold(str(disksize)),)
             mytxt = " | %s: " % (_("Installed from"),)
-            print_info("   # "+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+mytxt+red(installedfrom)+disksizeinfo)
+            print_info("   # " + red("(") + brown(str(atomscounter)) + "/" + \
+                blue(str(totalatoms)) + red(")") + " " + \
+                enlightenatom(pkgatom) + mytxt + red(installedfrom) + \
+                disksizeinfo)
 
         if (etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']):
-            print_info(red(" @@ ")+blue("%s: " % (_("Packages involved"),) )+str(totalatoms))
+            print_info(red(" @@ ") + \
+                blue("%s: " % (_("Packages involved"),) ) + str(totalatoms))
 
         if (not plainRemovalQueue):
             print_error(red("%s." % (_("Nothing to do"),) ))

@@ -1418,7 +1418,53 @@ class CalculatorsMixin:
                 etpCache['world_available'], c_hash), available)
         return available
 
+    def calculate_critical_updates(self, use_cache = True):
+
+        db_digest = self.all_repositories_checksum()
+        if use_cache and self.xcache:
+            cached = self.get_critical_updates_cache(db_digest = db_digest)
+            if cached != None:
+                return cached
+
+        critical_data = self.SystemSettings['repos_critical_updates']
+        atoms = set()
+        atom_matches = {}
+        for repoid in critical_data:
+            for atom in critical_data[repoid]:
+                match_id, match_repo = self.atom_match(atom)
+                if match_repo == 1:
+                    continue
+                atom_matches[atom] = (match_id, match_repo,)
+                atoms.add(atom)
+
+        atoms = self.get_unsatisfied_dependencies(atoms)
+        matches = [atom_matches.get(atom) for atom in atoms]
+        data = (atoms, matches)
+
+        if self.xcache:
+            c_hash = self.get_critical_update_cache_hash(db_digest)
+            self.Cacher.push("%s%s" % (etpCache['critical_update'], c_hash,),
+                data, async = False)
+
+        return data
+
+
     def calculate_world_updates(self, empty_deps = False, use_cache = True):
+
+        cl_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
+        misc_settings = cl_settings['misc']
+        update = []
+        remove = []
+        fine = []
+        spm_fine = []
+
+        # critical updates hook, if enabled
+        # this will force callers to receive only critical updates
+        if misc_settings.get('forcedupdates'):
+            upd_atoms, upd_matches = self.calculate_critical_updates(
+                use_cache = use_cache)
+            if upd_atoms:
+                return upd_matches, remove, fine, spm_fine
 
         db_digest = self.all_repositories_checksum()
         if use_cache and self.xcache:
@@ -1427,12 +1473,8 @@ class CalculatorsMixin:
             if cached != None:
                 return cached
 
-        misc_settings = self.SystemSettings[self.sys_settings_client_plugin_id]['misc']
+
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
-        update = []
-        remove = []
-        fine = []
-        spm_fine = []
 
         # get all the installed packages
         idpackages = self.clientDbconn.listAllIdpackages(order_by = 'atom')

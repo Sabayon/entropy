@@ -340,12 +340,7 @@ class SystemSettings(Singleton):
             'satisfied': etpConst['confpackagesdir']+"/package.satisfied",
              # masking configuration files
             'license_mask': etpConst['confpackagesdir']+"/license.mask",
-            'repos_system_mask': {},
             'system_mask': etpConst['confpackagesdir']+"/system.mask",
-            'repos_mask': {},
-            'repos_license_whitelist': {},
-            'system_package_sets': {},
-            'conflicting_tagged_packages': {},
             'system_dirs': etpConst['confdir']+"/fsdirs.conf",
             'system_dirs_mask': etpConst['confdir']+"/fsdirsmask.conf",
             'system_rev_symlinks': etpConst['confdir']+"/fssymlinks.conf",
@@ -353,13 +348,19 @@ class SystemSettings(Singleton):
             'socket_service': etpConst['socketconf'],
             'system': etpConst['entropyconf'],
             'repositories': etpConst['repositoriesconf'],
+            'repos_system_mask': {},
+            'repos_mask': {},
+            'repos_license_whitelist': {},
+            'repos_critical_updates': {},
+            'system_package_sets': {},
+            'conflicting_tagged_packages': {},
         })
         self.__setting_files_order.extend([
             'keywords', 'unmask', 'mask', 'satisfied', 'license_mask',
             'repos_system_mask', 'system_mask', 'repos_mask',
-            'repos_license_whitelist', 'system_package_sets',
-            'conflicting_tagged_packages', 'system_dirs',
-            'system_dirs_mask', 'socket_service', 'system',
+            'repos_critical_updates', 'repos_license_whitelist',
+            'system_package_sets', 'conflicting_tagged_packages',
+            'system_dirs', 'system_dirs_mask', 'socket_service', 'system',
             'system_rev_symlinks', 'hw_hash'
         ])
         self.__setting_files_pre_run.extend(['repositories'])
@@ -386,6 +387,7 @@ class SystemSettings(Singleton):
             'repos_system_mask': {},
             'repos_mask': {},
             'repos_license_whitelist': {},
+            'repos_critical_updates': {},
         })
 
 
@@ -621,6 +623,8 @@ class SystemSettings(Singleton):
             repos_sm_mask_setting = {}
             repos_sm_mask_mtime = {}
             confl_tagged = {}
+            repos_critical_updates_setting = {}
+            repos_critical_updates_mtime = {}
 
             maskpath = os.path.join(repo_data['dbpath'],
                 etpConst['etpdatabasemaskfile'])
@@ -630,25 +634,33 @@ class SystemSettings(Singleton):
                 etpConst['etpdatabasesytemmaskfile'])
             ct_path = os.path.join(repo_data['dbpath'],
                 etpConst['etpdatabaseconflictingtaggedfile'])
+            critical_path = os.path.join(repo_data['dbpath'],
+                etpConst['etpdatabasecriticalfile'])
 
-            if os.path.isfile(maskpath) and os.access(maskpath, os.R_OK):
+            if os.access(maskpath, os.R_OK | os.F_OK):
                 repos_mask_setting[repoid] = maskpath
                 repos_mask_mtime[repoid] = dmp_dir + "/repo_" + \
                     repoid + "_" + etpConst['etpdatabasemaskfile'] + ".mtime"
 
-            if os.path.isfile(wlpath) and os.access(wlpath, os.R_OK):
+            if os.access(wlpath, os.R_OK | os.F_OK):
                 repos_lic_wl_setting[repoid] = wlpath
                 repos_lic_wl_mtime[repoid] = dmp_dir + "/repo_" + \
                     repoid + "_" + etpConst['etpdatabaselicwhitelistfile'] + \
                     ".mtime"
 
-            if os.path.isfile(sm_path) and os.access(sm_path, os.R_OK):
+            if os.access(sm_path, os.R_OK | os.F_OK):
                 repos_sm_mask_setting[repoid] = sm_path
                 repos_sm_mask_mtime[repoid] = dmp_dir + "/repo_" + \
                     repoid + "_" + etpConst['etpdatabasesytemmaskfile'] + \
                     ".mtime"
-            if os.path.isfile(ct_path) and os.access(ct_path, os.R_OK):
+            if os.access(ct_path, os.R_OK | os.F_OK):
                 confl_tagged[repoid] = ct_path
+
+            if os.access(critical_path, os.R_OK | os.F_OK):
+                repos_critical_updates_setting[repoid] = critical_path
+                repos_critical_updates_mtime[repoid] = dmp_dir + "/repo_" + \
+                    repoid + "_" + etpConst['etpdatabasecriticalfile'] + \
+                    ".mtime"
 
             self.__setting_files['repos_mask'].update(repos_mask_setting)
             self.__mtime_files['repos_mask'].update(repos_mask_mtime)
@@ -665,6 +677,11 @@ class SystemSettings(Singleton):
 
             self.__setting_files['conflicting_tagged_packages'].update(
                 confl_tagged)
+
+            self.__setting_files['repos_critical_updates'].update(
+                repos_critical_updates_setting)
+            self.__mtime_files['repos_critical_updates'].update(
+                repos_critical_updates_mtime)
 
     def __setup_package_sets_vars(self):
 
@@ -917,7 +934,6 @@ class SystemSettings(Singleton):
                 self.__mtime_files['repos_mask'][repoid], repoid = repoid)
             data[repoid] = self.__generic_parser(
                 self.__setting_files['repos_mask'][repoid])
-            # why ? line = line.split()[0] in the previous one?
         return data
 
     def _repos_system_mask_parser(self):
@@ -940,7 +956,26 @@ class SystemSettings(Singleton):
             data += [x for x in self.__generic_parser(
                 self.__setting_files['repos_system_mask'][repoid]) if x \
                     not in data]
-            # why ? line = line.split()[0] in the previous one?
+        return data
+
+    def _repos_critical_updates_parser(self):
+        """
+        Parser returning critical packages list metadata read from
+        packages.db.critical file inside the repository directory.
+        This file contains packages that should be always updated
+        before anything else.
+
+        @return: parsed metadata
+        @rtype: dict
+        """
+        data = {}
+        for repoid in self.__setting_files['repos_critical_updates']:
+            self.__validate_entropy_cache(
+                self.__setting_files['repos_critical_updates'][repoid],
+                self.__mtime_files['repos_critical_updates'][repoid],
+                repoid = repoid)
+            data[repoid] = self.__generic_parser(
+                self.__setting_files['repos_critical_updates'][repoid])
         return data
 
     def _system_package_sets_parser(self):
@@ -1383,6 +1418,7 @@ class SystemSettings(Singleton):
         self.__cacher.discard()
         self._clear_dump_cache(etpCache['world_available'])
         self._clear_dump_cache(etpCache['world_update'])
+        self._clear_dump_cache(etpCache['critical_update'])
         self._clear_dump_cache(etpCache['check_package_update'])
         self._clear_dump_cache(etpCache['filter_satisfied_deps'])
         self._clear_dump_cache(etpCache['atomMatch'])

@@ -1,0 +1,10 @@
+# Server side packages.db.critical file, to enforce critical updates to be pulled
+# in before any other package
+
+# LINE CONSTRUCTION:
+# <atom>
+# See examples below
+
+# EXAMPLES:
+# sys-apps/entropy
+# app-misc/foo:2

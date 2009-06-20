@@ -86,6 +86,7 @@ etpCache = {
     'remove': 'resume/resume_remove', # resume cache (remove)
     'world': 'resume/resume_world', # resume cache (world)
     'world_update': 'world_update/world_cache_',
+    'critical_update': 'critical_update/critical_cache_',
     'world_available': 'world_available/available_cache_',
     'check_package_update': 'check_update/package_update_',
     'advisories': 'security/advisories_cache_',
@@ -255,6 +256,7 @@ def const_default_settings(rootdir):
         'etpdatabasemaskfile': default_etp_dbfile+".mask",
         'etpdatabaseupdatefile': default_etp_dbfile+".repo_updates",
         'etpdatabaselicwhitelistfile': default_etp_dbfile+".lic_whitelist",
+        'etpdatabasecriticalfile': default_etp_dbfile+".critical",
         # the local/remote database revision file
         'etpdatabaserevisionfile': default_etp_dbfile+".revision",
         # missing dependencies black list file
@@ -439,6 +441,8 @@ def const_default_settings(rootdir):
         # option to keep a backup of config files after
         # being overwritten by equo conf update
         'filesbackup': True,
+        # option to enable forced installation of critical updates
+        'forcedupdates': False,
         # collision protection option, see client.conf for more info
         'collisionprotect': 1,
         # list of user specified CONFIG_PROTECT directories

@@ -93,6 +93,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
         data = {
             'filesbackup': etpConst['filesbackup'],
+            'forcedupdates': etpConst['forcedupdates'],
             'ignore_spm_downgrades': etpConst['spm']['ignore-spm-downgrades'],
             'collisionprotect': etpConst['collisionprotect'],
             'configprotect': etpConst['configprotect'][:],
@@ -118,6 +119,14 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 compatopt = split_line[1].strip().lower()
                 if compatopt in ("disable", "disabled","false", "0", "no",):
                     data['filesbackup'] = False
+
+            if line.startswith("forcedupdates|") and (split_line_len == 2):
+
+                compatopt = split_line[1].strip().lower()
+                if compatopt in ("disable", "disabled","false", "0", "no",):
+                    data['forcedupdates'] = False
+                else:
+                    data['forcedupdates'] = True
 
             elif line.startswith("ignore-spm-downgrades|") and \
                 (split_line_len == 2):

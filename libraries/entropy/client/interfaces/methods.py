@@ -185,6 +185,7 @@ class RepositoryMixin:
                     pass
                 if updated:
                     self.clear_dump_cache(etpCache['world_update'])
+                    self.clear_dump_cache(etpCache['critical_update'])
                     self.clear_dump_cache(etpCache['world'])
                     self.clear_dump_cache(etpCache['install'])
                     self.clear_dump_cache(etpCache['remove'])
@@ -1538,6 +1539,7 @@ class MatchMixin:
         if clean_all_cache and not dry_run:
             self.clear_dump_cache(etpCache['world_available'])
             self.clear_dump_cache(etpCache['world_update'])
+            self.clear_dump_cache(etpCache['critical_update'])
 
         self.clear_dump_cache(etpCache['check_package_update'])
         self.clear_dump_cache(etpCache['filter_satisfied_deps'])
