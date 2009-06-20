@@ -453,6 +453,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             try:
                 rc = self.process_queue(self.queue.packages,
                     fetch_only = do_fetch)
+            except SystemExit:
+                raise
             except:
                 if self.do_debug:
                     entropy.tools.print_traceback()
@@ -1415,6 +1417,28 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.packagesVbox.show()
         self.switch_application_mode(SulfurConf.simple_mode)
 
+    def check_restart_needed(self, to_be_installed_matches):
+
+        entropy_pkg = "sys-apps/entropy"
+
+        etp_matches, etp_rc = self.Equo.atom_match(entropy_pkg,
+            multiMatch = True, multiRepo = True)
+        if etp_rc != 0:
+            return False
+
+        found_match = None
+        for etp_match in etp_matches:
+            if etp_match in to_be_installed_matches:
+                found_match = etp_match
+                break
+
+        if not found_match:
+            return False
+        rc, pkg_match = self.Equo.check_package_update(entropy_pkg, deep = True)
+        if rc:
+            return True
+        return False
+
     def process_queue(self, pkgs, remove_repos = [], fetch_only = False,
             download_sources = False):
 
@@ -1454,6 +1478,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             removal_queue = [x.matched_atom[0] for x in pkgs['r']]
             do_purge_cache = set([x.matched_atom[0] for x in pkgs['r'] if \
                 x.do_purge])
+
+            restart_needed = self.check_restart_needed(install_queue)
 
             if install_queue or removal_queue:
 
@@ -1512,6 +1538,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                         _("Attention. An error occured when processing the queue."
                         "\nPlease have a look in the processing terminal.")
                     )
+                elif (e == 0) and restart_needed and \
+                    ((not fetch_only) and (not download_sources)):
+                    okDialog(self.ui.main,
+                        _("Attention. You have updated Entropy."
+                        "\nSulfur will be reloaded.")
+                    )
+                    self.quit(sysexit = False)
+                    self.exit_now()
+                    raise SystemExit(99)
 
             if self.do_debug:
                 print "process_queue: end_working?"

@@ -443,6 +443,8 @@ class SulfurApplicationEventsMixin:
         try:
             rc = self.process_queue(self.queue.packages,
                 remove_repos = [newrepo])
+        except SystemExit:
+            raise
         except:
             if self.do_debug:
                 entropy.tools.print_traceback()
@@ -564,11 +566,14 @@ class SulfurApplicationEventsMixin:
         try:
             rc = self.process_queue(self.queue.packages,
                 fetch_only = fetch_only, download_sources = download_sources)
+        except SystemExit:
+            raise
         except:
             if self.do_debug:
                 entropy.tools.print_traceback()
                 import pdb; pdb.set_trace()
-            else: raise
+            else:
+                raise
         self.reset_queue_progress_bars()
         if rc and not fetch_only:
             self.queue.clear()       # Clear package queue

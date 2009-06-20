@@ -42,8 +42,11 @@ setup_env()
 tbz2s = [x for x in sys.argv[1:] if x.endswith(".tbz2")]
 if tbz2s:
     os.environ['SULFUR_PACKAGES'] = ';'.join(tbz2s)
-if os.getuid() == 0:
-    rc = os.system(sulfur_path)
-else:
-    rc = os.system(su_cmd)
+rc = 99
+while (rc == 99):
+    if os.getuid() == 0:
+        rc = os.system(sulfur_path)
+    else:
+        rc = os.system(su_cmd)
+
 raise SystemExit(rc)
