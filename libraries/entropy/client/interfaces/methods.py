@@ -25,6 +25,7 @@ import sys
 import shutil
 import time
 import subprocess
+import tempfile
 from entropy.i18n import _
 from entropy.const import *
 from entropy.exceptions import *
@@ -379,19 +380,16 @@ class RepositoryMixin:
         atoms_contained = []
         basefile = os.path.basename(tbz2file)
         cut_idx = -1*(len(etpConst['packagesext']))
-        db_dir = etpConst['entropyunpackdir']+"/"+basefile[:cut_idx]
-        if os.path.isdir(db_dir):
-            shutil.rmtree(db_dir)
-        os.makedirs(db_dir)
+        db_dir = tempfile.mkdtemp()
         dbfile = self.entropyTools.extract_edb(tbz2file,
             dbpath = db_dir+"/packages.db")
         if dbfile == None:
-            return -1,atoms_contained
+            return -1, atoms_contained
         etpSys['dirstoclean'].add(os.path.dirname(dbfile))
         # add dbfile
         repodata = {}
         repodata['repoid'] = basefile
-        repodata['description'] = "Dynamic database from "+basefile
+        repodata['description'] = "Dynamic database from " + basefile
         repodata['packages'] = []
         repodata['dbpath'] = os.path.dirname(dbfile)
         repodata['pkgpath'] = os.path.realpath(tbz2file) # extra info added
@@ -403,23 +401,23 @@ class RepositoryMixin:
             myidpackages = mydbconn.listAllIdpackages() # all branches admitted from external files
         except (AttributeError, self.dbapi2.DatabaseError, \
             self.dbapi2.IntegrityError, self.dbapi2.OperationalError,):
-                return -2,atoms_contained
+                return -2, atoms_contained
         if len(myidpackages) > 1:
             repodata[basefile]['smartpackage'] = True
         for myidpackage in myidpackages:
             compiled_arch = mydbconn.retrieveDownloadURL(myidpackage)
             if compiled_arch.find("/"+etpSys['arch']+"/") == -1:
-                return -3,atoms_contained
-            atoms_contained.append((int(myidpackage),basefile))
+                return -3, atoms_contained
+            atoms_contained.append((int(myidpackage), basefile))
 
         self.add_repository(repodata)
         self.validate_repositories()
         if basefile not in self.validRepositories:
             self.remove_repository(basefile)
-            return -4,atoms_contained
+            return -4, atoms_contained
         mydbconn.closeDB()
         del mydbconn
-        return 0,atoms_contained
+        return 0, atoms_contained
 
     def reopen_client_repository(self):
         self.clientDbconn.closeDB()
