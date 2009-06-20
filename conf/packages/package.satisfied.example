@@ -1,0 +1,20 @@
+# package.satisfied example file
+#
+# In this file you can specify atoms, one per line, which, as dependency,
+# you want always to be considered satisfied (though not updated).
+# WARNING WARNING WARNING:
+# USE WITH CARE, IT COULD CAUSE SYSTEM INCONSISTENCIES
+
+# LINE CONSTRUCTION:
+# <atom>
+# See examples below
+
+# EXAMPLES:
+# >=media-libs/foo-1.2.3
+# media-libs/foo
+# <media-libs/foo-1.2.3
+# media-libs/foo:1
+# >=media-libs/foo-1.2.3#2.6.23-sabayon-r1
+# 
+# :1 means package with SLOT="1"
+# #2.6.23-sabayon-r1 means package with kernel tag = 2.6.23-sabayon-r1

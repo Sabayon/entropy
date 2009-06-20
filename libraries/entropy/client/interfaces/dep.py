@@ -496,6 +496,21 @@ class CalculatorsMixin:
         if not isinstance(depcache,dict):
             depcache = {}
 
+        # satisfied dependencies filter support
+        # package.satisfied file support
+        satisfied_kw = '__%s__satisfied_ids' % (__name__,)
+        satisfied_data = self.SystemSettings.get(satisfied_kw)
+        if satisfied_data is None:
+            satisfied_list = self.SystemSettings['satisfied']
+            tmp_satisfied_data = set()
+            for atom in satisfied_list:
+                matches, m_res = self.atom_match(atom, multiMatch = True,
+                    packagesFilter = False, multiRepo = True)
+                if m_res == 0:
+                    tmp_satisfied_data |= matches
+            satisfied_data = tmp_satisfied_data
+            self.SystemSettings[satisfied_kw] = satisfied_data
+
         cdb_am = self.clientDbconn.atomMatch
         am = self.atom_match
         open_repo = self.open_repository
@@ -537,7 +552,7 @@ class CalculatorsMixin:
                 const_debug_write(__name__, "...")
                 return dependency
 
-            r_id,r_repo = am(dependency)
+            r_id, r_repo = am(dependency)
             if r_id == -1:
                 depcache[dependency] = dependency
                 const_debug_write(__name__,
@@ -545,6 +560,11 @@ class CalculatorsMixin:
                         dependency,))
                 const_debug_write(__name__, "...")
                 return dependency
+
+            # satisfied dependencies filter support
+            # package.satisfied file support
+            if (r_id, r_repo,) in satisfied_data:
+                return 0 # satisfied
 
             dbconn = open_repo(r_repo)
             try:

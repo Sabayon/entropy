@@ -336,6 +336,8 @@ class SystemSettings(Singleton):
             'unmask': etpConst['confpackagesdir']+"/package.unmask",
              # masking configuration files
             'mask': etpConst['confpackagesdir']+"/package.mask",
+            # satisfied packages configuration file
+            'satisfied': etpConst['confpackagesdir']+"/package.satisfied",
              # masking configuration files
             'license_mask': etpConst['confpackagesdir']+"/license.mask",
             'repos_system_mask': {},
@@ -353,7 +355,7 @@ class SystemSettings(Singleton):
             'repositories': etpConst['repositoriesconf'],
         })
         self.__setting_files_order.extend([
-            'keywords', 'unmask', 'mask', 'license_mask',
+            'keywords', 'unmask', 'mask', 'satisfied', 'license_mask',
             'repos_system_mask', 'system_mask', 'repos_mask',
             'repos_license_whitelist', 'system_package_sets',
             'conflicting_tagged_packages', 'system_dirs',
@@ -378,6 +380,7 @@ class SystemSettings(Singleton):
             'keywords_mtime': dmp_dir+"/keywords.mtime",
             'unmask_mtime': dmp_dir+"/unmask.mtime",
             'mask_mtime': dmp_dir+"/mask.mtime",
+            'satisfied_mtime': dmp_dir+"/satisfied.mtime",
             'license_mask_mtime': dmp_dir+"/license_mask.mtime",
             'system_mask_mtime': dmp_dir+"/system_mask.mtime",
             'repos_system_mask': {},
@@ -838,6 +841,20 @@ class SystemSettings(Singleton):
         self.__validate_entropy_cache(self.__setting_files['mask'],
             self.__mtime_files['mask_mtime'])
         return self.__generic_parser(self.__setting_files['mask'])
+
+    def _satisfied_parser(self):
+        """
+        Parser returning package forced satisfaction metadata
+        read from package.satisfied file.
+        This file contains packages which updates as dependency are
+        filtered out.
+
+        @return: parsed metadata
+        @rtype: dict
+        """
+        self.__validate_entropy_cache(self.__setting_files['satisfied'],
+            self.__mtime_files['satisfied_mtime'])
+        return self.__generic_parser(self.__setting_files['satisfied'])
 
     def _system_mask_parser(self):
         """
