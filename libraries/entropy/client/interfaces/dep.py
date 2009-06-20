@@ -1429,7 +1429,8 @@ class CalculatorsMixin:
         if use_cache and self.xcache:
             cached = self.get_world_update_cache(empty_deps = empty_deps,
                 branch = branch, db_digest = db_digest)
-            if cached != None: return cached
+            if cached != None:
+                return cached
 
         misc_settings = self.SystemSettings[self.sys_settings_client_plugin_id]['misc']
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
@@ -1587,30 +1588,6 @@ class CalculatorsMixin:
         if self.xcache:
             self.Cacher.push(c_hash,(found, matched))
         return found, matched
-
-    # This is the function that should be used by third party applications
-    # to retrieve a list of available updates, along with conflicts (removalQueue) and obsoletes
-    # (removed)
-    def get_world_queue(self, empty_deps = False, branch = None):
-        if branch == None:
-            branch = self.SystemSettings['repositories']['branch']
-        update, remove, fine, spm_fine = self.calculate_world_updates(
-            empty_deps = empty_deps, branch = branch)
-        del fine
-        data = {}
-        data['removed'] = list(remove)
-        data['runQueue'] = []
-        data['removalQueue'] = []
-        status = -1
-        if update:
-            # calculate install+removal queues
-            install, removal, status = self.get_install_queue(
-                update, empty_deps, deep_deps = False)
-            # update data['removed']
-            data['removed'] = [x for x in data['removed'] if x not in removal]
-            data['runQueue'] += install
-            data['removalQueue'] += removal
-        return data,status
 
     def validate_package_removal(self, idpackage):
 
