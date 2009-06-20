@@ -1656,19 +1656,25 @@ class CalculatorsMixin:
 
         # format
         removal = treepackages.pop(0, set())
-        for x in sorted(treepackages.keys()): install.extend(treepackages[x])
+        for dep_level in sorted(treepackages.keys()):
+            install.extend(treepackages[dep_level])
 
         # filter out packages that are in actionQueue comparing key + slot
         if install and removal:
             myremmatch = {}
-            for x in removal:
-                atom = self.clientDbconn.retrieveAtom(x)
-                # XXX check if users removed idpackage while this whole instance is running
-                if atom == None: continue
-                myremmatch[(self.entropyTools.dep_getkey(atom),self.clientDbconn.retrieveSlot(x),)] = x
+            for rm_idpackage in removal:
+                atom = self.clientDbconn.retrieveAtom(rm_idpackage)
+                # check if users removed idpackage while this
+                # whole instance is running
+                if atom == None:
+                    continue
+                atom_key = self.entropyTools.dep_getkey(atom)
+                id_slot = self.clientDbconn.retrieveSlot(rm_idpackage)
+                myremmatch[(atom_key, id_slot,)] = rm_idpackage
+
             for pkg_id, pkg_repo in install:
                 dbconn = self.open_repository(pkg_repo)
-                testtuple = (self.entropyTools.dep_getkey(dbconn.retrieveAtom(pkg_id)),dbconn.retrieveSlot(pkg_id))
+                testtuple = dbconn.retrieveKeySlot(pkg_id)
                 removal.discard(myremmatch.get(testtuple))
 
         return install, sorted(removal), 0
