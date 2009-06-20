@@ -148,11 +148,11 @@ class CacheMixin:
     def repository_move_clear_cache(self, repoid = None):
         return self.SystemSettings._clear_repository_cache(repoid = repoid)
 
-    def get_available_packages_chash(self, branch):
+    def get_available_packages_chash(self):
         # client digest not needed, cache is kept updated
-        return str(hash("%s%s%s" % (
+        return str(hash("%s%s" % (
             self.all_repositories_checksum(),
-            branch,self.validRepositories,)))
+            self.validRepositories,)))
 
     def all_repositories_checksum(self):
         sum_hashes = ''
@@ -167,25 +167,25 @@ class CacheMixin:
                 pass
         return sum_hashes
 
-    def get_available_packages_cache(self, branch = None, myhash = None):
-        if branch == None:
-            branch = self.SystemSettings['repositories']['branch']
-        if myhash == None: myhash = self.get_available_packages_chash(branch)
-        return self.Cacher.pop("%s%s" % (etpCache['world_available'],myhash))
+    def get_available_packages_cache(self, myhash = None):
+        if myhash == None:
+            myhash = self.get_available_packages_chash()
+        return self.Cacher.pop("%s%s" % (etpCache['world_available'], myhash))
 
-    def get_world_update_cache(self, empty_deps, branch = None,
-        db_digest = None):
-
-        if branch == None:
-            branch = self.SystemSettings['repositories']['branch']
+    def get_world_update_cache(self, empty_deps, db_digest = None):
 
         misc_settings = self.SystemSettings[self.sys_settings_client_plugin_id]['misc']
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
+
         if self.xcache:
-            if db_digest == None: db_digest = self.all_repositories_checksum()
+
+            if db_digest == None:
+                db_digest = self.all_repositories_checksum()
+
             c_hash = "%s%s" % (etpCache['world_update'],
-                self.get_world_update_cache_hash(db_digest, empty_deps, branch,
+                self.get_world_update_cache_hash(db_digest, empty_deps,
                     ignore_spm_downgrades),)
+
             disk_cache = self.Cacher.pop(c_hash)
             if disk_cache != None:
                 try:
@@ -194,9 +194,11 @@ class CacheMixin:
                 except (KeyError, TypeError):
                     return None
 
-    def get_world_update_cache_hash(self, db_digest, empty_deps, branch, ignore_spm_downgrades):
-        return str(hash("%s|%s|%s|%s|%s|%s" % (
-            db_digest,empty_deps,self.validRepositories,
-            self.SystemSettings['repositories']['order'], branch,
+    def get_world_update_cache_hash(self, db_digest, empty_deps,
+        ignore_spm_downgrades):
+
+        return str(hash("%s|%s|%s|%s|%s" % (
+            db_digest, empty_deps, self.validRepositories,
+            self.SystemSettings['repositories']['order'],
             ignore_spm_downgrades,
         )))

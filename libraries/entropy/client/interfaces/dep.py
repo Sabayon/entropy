@@ -1364,9 +1364,7 @@ class CalculatorsMixin:
 
     def calculate_available_packages(self, use_cache = True):
 
-        branch = self.SystemSettings['repositories']['branch']
-        c_hash = self.get_available_packages_chash(branch)
-
+        c_hash = self.get_available_packages_chash()
         if use_cache and self.xcache:
             cached = self.get_available_packages_cache(myhash = c_hash)
             if cached != None:
@@ -1416,19 +1414,16 @@ class CalculatorsMixin:
             self.cycleDone()
 
         if self.xcache:
-            self.Cacher.push("%s%s" % (etpCache['world_available'],c_hash),available)
+            self.Cacher.push("%s%s" % (
+                etpCache['world_available'], c_hash), available)
         return available
 
-    def calculate_world_updates(self, empty_deps = False, branch = None,
-            use_cache = True):
-
-        if branch == None:
-            branch = self.SystemSettings['repositories']['branch']
+    def calculate_world_updates(self, empty_deps = False, use_cache = True):
 
         db_digest = self.all_repositories_checksum()
         if use_cache and self.xcache:
             cached = self.get_world_update_cache(empty_deps = empty_deps,
-                branch = branch, db_digest = db_digest)
+                db_digest = db_digest)
             if cached != None:
                 return cached
 
@@ -1473,7 +1468,6 @@ class CalculatorsMixin:
                     match = self.atom_match(
                         cl_pkgkey,
                         matchSlot = cl_slot,
-                        matchBranches = (branch,),
                         extendedResults = True,
                         useCache = use_match_cache
                     )
@@ -1531,13 +1525,12 @@ class CalculatorsMixin:
 
             # don't take action if it's just masked
             maskedresults = self.atom_match(cl_pkgkey, matchSlot = cl_slot,
-                matchBranches = (branch,), packagesFilter = False)
+                packagesFilter = False)
             if maskedresults[0] == -1:
                 remove.append(idpackage)
                 # look for packages that would match key
                 # with any slot (for eg: gcc, kernel updates)
-                matchresults = self.atom_match(cl_pkgkey,
-                    matchBranches = (branch,))
+                matchresults = self.atom_match(cl_pkgkey)
                 if matchresults[0] != -1:
                     m_action = self.get_package_action(matchresults)
                     if m_action > 0 and (matchresults not in update):
@@ -1545,7 +1538,7 @@ class CalculatorsMixin:
 
         if self.xcache:
             c_hash = self.get_world_update_cache_hash(db_digest, empty_deps,
-                branch, ignore_spm_downgrades)
+                ignore_spm_downgrades)
             data = {
                 'r': (update, remove, fine, spm_fine,),
                 'empty_deps': empty_deps,
