@@ -4,18 +4,16 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
+    - critical updates
+
+    - entropy.client.interfaces.package more Spm agnostic
     - try to remove nvidia/ati drivers triggers
-    - /etc/entropy/package.satisfied_lock
-    - when a new entropy version is available, don't allow any other update?
-        # config file in /etc
-        # priority update files
-
-    - Documentation + code style cleanup (NLnet Milestone 7)
-        http://epydoc.sourceforge.net/epydoc.html
-
     - expiration thingus? (server-side) => .pkglist file that could be parsed
         # need to wait branch 5 now
     - branch migration script (pre, after?)
+
+    - Documentation + code style cleanup (NLnet Milestone 7)
+        http://epydoc.sourceforge.net/epydoc.html
 
   1.0_beta2:
 
