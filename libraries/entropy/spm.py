@@ -22,6 +22,7 @@
 import os
 import sys
 import shutil
+import tempfile
 from entropy.const import etpConst, etpUi
 from entropy.exceptions import *
 from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, bold
@@ -1677,6 +1678,10 @@ class PortagePlugin:
 
     def _extract_pkg_metadata_generate_extraction_dict(self):
         data = {
+            'pf': {
+                'path': etpConst['spm']['xpak_entries']['pf'],
+                'critical': True,
+            },
             'chost': {
                 'path': etpConst['spm']['xpak_entries']['chost'],
                 'critical': True,
@@ -1968,37 +1973,18 @@ class PortagePlugin:
                 back = True
             )
 
-        filepath = package
-        tbz2File = package
-        package = package.split(etpConst['packagesext'])[0]
-        package = self.entropyTools.remove_entropy_revision(package)
-        package = self.entropyTools.remove_tag(package)
-        # remove entropy category
-        if package.find(":") != -1:
-            package = ':'.join(package.split(":")[1:])
-
-        # pkgcat is always == "null" here
-        pkgcat, pkgname, pkgver, pkgrev = self.entropyTools.catpkgsplit(os.path.basename(package))
-        if pkgrev != "r0": pkgver += "-%s" % (pkgrev,)
-
-        # Fill Package name and version
-        data['name'] = pkgname
-        data['version'] = pkgver
-        data['digest'] = self.entropyTools.md5sum(tbz2File)
+        # fill package name and version
+        data['digest'] = self.entropyTools.md5sum(package)
         data['signatures'] = {
-            'sha1': self.entropyTools.sha1(tbz2File),
-            'sha256': self.entropyTools.sha256(tbz2File),
-            'sha512': self.entropyTools.sha512(tbz2File),
+            'sha1': self.entropyTools.sha1(package),
+            'sha256': self.entropyTools.sha256(package),
+            'sha512': self.entropyTools.sha512(package),
         }
-        data['datecreation'] = str(self.entropyTools.get_file_unix_mtime(tbz2File))
-        data['size'] = str(self.entropyTools.get_file_size(tbz2File))
+        data['datecreation'] = str(self.entropyTools.get_file_unix_mtime(package))
+        data['size'] = str(self.entropyTools.get_file_size(package))
 
-        tbz2TmpDir = etpConst['packagestmpdir']+"/"+data['name']+"-"+data['version']+"/"
-        if not os.path.isdir(tbz2TmpDir):
-            if os.path.lexists(tbz2TmpDir):
-                os.remove(tbz2TmpDir)
-            os.makedirs(tbz2TmpDir)
-        self.entropyTools.extract_xpak(tbz2File,tbz2TmpDir)
+        tmp_dir = tempfile.mkdtemp()
+        self.entropyTools.extract_xpak(package, tmp_dir)
 
         data['injected'] = False
         if inject: data['injected'] = True
@@ -2008,7 +1994,7 @@ class PortagePlugin:
         for item in portage_entries:
             value = ''
             try:
-                f = open(os.path.join(tbz2TmpDir,portage_entries[item]['path']),"r")
+                f = open(os.path.join(tmp_dir, portage_entries[item]['path']),"r")
                 value = f.readline().strip().decode('raw_unicode_escape')
                 f.close()
             except IOError:
@@ -2016,8 +2002,19 @@ class PortagePlugin:
                     raise
             data[item] = value
 
+        # workout pf
+        pf_atom = os.path.join(data['category'], data['pf'])
+        pkgcat, pkgname, pkgver, pkgrev = self.entropyTools.catpkgsplit(
+            pf_atom)
+        if pkgrev != "r0":
+            pkgver += "-%s" % (pkgrev,)
+        data['name'] = pkgname
+        data['version'] = pkgver
+        # bye bye pf
+        del data['pf']
+
         # setup spm_phases properly
-        spm_defined_phases_path = os.path.join(tbz2TmpDir,
+        spm_defined_phases_path = os.path.join(tmp_dir,
             portage_entries['spm_phases']['path'])
         if not os.path.isfile(spm_defined_phases_path):
             # force to None, because metadatum can be '', which is valid
@@ -2035,11 +2032,11 @@ class PortagePlugin:
         # keywords must be a set, as returned by
         # entropy.db.getPackageData
         data['keywords'] = set(data['keywords'])
-        needed_file = os.path.join(tbz2TmpDir,etpConst['spm']['xpak_entries']['needed'])
+        needed_file = os.path.join(tmp_dir, etpConst['spm']['xpak_entries']['needed'])
         data['needed'] = self._extract_pkg_metadata_needed(needed_file)
         data['needed_paths'] = self._extract_pkg_metadata_needed_paths(data['needed'])
-        content_file = os.path.join(tbz2TmpDir,etpConst['spm']['xpak_entries']['contents'])
-        data['content'] = self._extract_pkg_metadata_content(content_file, filepath)
+        content_file = os.path.join(tmp_dir, etpConst['spm']['xpak_entries']['contents'])
+        data['content'] = self._extract_pkg_metadata_content(content_file, package)
         data['disksize'] = self.entropyTools.sum_file_sizes(data['content'])
 
         # [][][] Kernel dependent packages hook [][][]
@@ -2074,10 +2071,10 @@ class PortagePlugin:
                                        # and "equo database gentoosync" consequentially
 
         file_ext = etpConst['spm']['ebuild_file_extension']
-        ebuilds_in_path = [x for x in os.listdir(tbz2TmpDir) if x.endswith(".%s" % (file_ext,))]
+        ebuilds_in_path = [x for x in os.listdir(tmp_dir) if x.endswith(".%s" % (file_ext,))]
         if not data['versiontag'] and ebuilds_in_path:
             # has the user specified a custom package tag inside the ebuild
-            ebuild_path = os.path.join(tbz2TmpDir,ebuilds_in_path[0])
+            ebuild_path = os.path.join(tmp_dir, ebuilds_in_path[0])
             data['versiontag'] = self._extract_pkg_metadata_ebuild_entropy_tag(ebuild_path)
 
 
@@ -2180,10 +2177,12 @@ class PortagePlugin:
         data['etpapi'] = int(etpConst['etpapi'])
 
         # removing temporary directory
-        shutil.rmtree(tbz2TmpDir,True)
-        if os.path.isdir(tbz2TmpDir):
-            try: os.remove(tbz2TmpDir)
-            except OSError: pass
+        shutil.rmtree(tmp_dir, True)
+        if os.path.isdir(tmp_dir):
+            try:
+                os.remove(tmp_dir)
+            except OSError:
+                pass
 
         if not silent:
             self.updateProgress(

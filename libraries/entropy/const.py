@@ -535,6 +535,7 @@ def const_default_settings(rootdir):
                 'contents': "CONTENTS",
                 'counter': "COUNTER",
                 'defined_phases': "DEFINED_PHASES",
+                'pf': "PF",
             },
             'system_packages': [],
             'ignore-spm-downgrades': False,
