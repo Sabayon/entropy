@@ -686,19 +686,20 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
 
     if check_critical_updates and equo_client_settings.get('forcedupdates'):
         crit_atoms, crit_matches = Equo.calculate_critical_updates()
-        print_info("")
-        print_info("")
-        mytxt = "%s: %s" % (
-            purple(_("Please update the following critical packages")),
-            '\n'+'\n'.join(
-                [darkred('>>\t# ') + brown(x) for x in sorted(crit_atoms)]
-            ),
-        )
-        print_warning(red(" !!! ")+mytxt)
-        mytxt = _("You should install them as soon as possible")
-        print_warning(red(" !!! ")+darkgreen(mytxt))
-        print_info("")
-        print_info("")
+        if crit_atoms:
+            print_info("")
+            print_info("")
+            mytxt = "%s: %s" % (
+                purple(_("Please update the following critical packages")),
+                '\n'+'\n'.join(
+                    [darkred('>>\t# ') + brown(x) for x in sorted(crit_atoms)]
+                ),
+            )
+            print_warning(red(" !!! ")+mytxt)
+            mytxt = _("You should install them as soon as possible")
+            print_warning(red(" !!! ")+darkgreen(mytxt))
+            print_info("")
+            print_info("")
 
     if not resume:
 
