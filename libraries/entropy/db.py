@@ -4802,7 +4802,7 @@ class LocalRepository(EntropyRepository):
 
         mykw = "%smask_ids" % (reponame,)
         user_package_mask_ids = self.SystemSettings.get(mykw)
-        if not isinstance(user_package_mask_ids, set):
+        if not isinstance(user_package_mask_ids, (list, set,)):
             user_package_mask_ids = set()
             for atom in self.SystemSettings['mask']:
                 matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
@@ -4824,7 +4824,7 @@ class LocalRepository(EntropyRepository):
         # see if we can unmask by just lookin into user package.unmask stuff -> self.SystemSettings['unmask']
         mykw = "%sunmask_ids" % (reponame,)
         user_package_unmask_ids = self.SystemSettings.get(mykw)
-        if not isinstance(user_package_unmask_ids, set):
+        if not isinstance(user_package_unmask_ids, (list, set,)):
             user_package_unmask_ids = set()
             for atom in self.SystemSettings['unmask']:
                 matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
@@ -4845,7 +4845,7 @@ class LocalRepository(EntropyRepository):
         # check if repository packages.db.mask needs it masked
         repos_mask = self.SystemSettings['repos_mask']
         repomask = repos_mask.get(reponame)
-        if isinstance(repomask, set):
+        if isinstance(repomask, (list, set,)):
             # first, seek into generic masking, all branches
             mask_repo_id = "%s_ids@@:of:%s" % (reponame, reponame,) # avoid issues with repository names
             repomask_ids = repos_mask.get(mask_repo_id)
@@ -4942,7 +4942,7 @@ class LocalRepository(EntropyRepository):
             if not keyword_data: continue
             kwd_key = "%s_ids" % (keyword,)
             keyword_data_ids = self.SystemSettings['keywords']['packages'].get(reponame+kwd_key)
-            if not isinstance(keyword_data_ids, set):
+            if not isinstance(keyword_data_ids, (list, set,)):
                 keyword_data_ids = set()
                 for atom in keyword_data:
                     # match atom
