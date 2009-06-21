@@ -1141,7 +1141,7 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
         currentqueue += 1
 
         metaopts = {}
-        metaopts['removeconfig'] = configFiles
+        metaopts['removeconfig'] = config_files
 
         if match in explicit_user_packages:
             metaopts['install_source'] = etpConst['install_sources']['user']
