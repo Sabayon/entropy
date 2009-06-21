@@ -442,7 +442,7 @@ def const_default_settings(rootdir):
         # being overwritten by equo conf update
         'filesbackup': True,
         # option to enable forced installation of critical updates
-        'forcedupdates': False,
+        'forcedupdates': True,
         # collision protection option, see client.conf for more info
         'collisionprotect': 1,
         # list of user specified CONFIG_PROTECT directories
