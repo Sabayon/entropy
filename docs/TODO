@@ -4,7 +4,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
-    - try to remove nvidia/ati drivers triggers
     - expiration thingus? (server-side) => .pkglist file that could be parsed
         # need to wait branch 5 now
     - branch migration script (pre, after?)
