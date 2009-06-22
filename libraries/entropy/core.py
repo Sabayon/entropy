@@ -365,17 +365,6 @@ class SystemSettings(Singleton):
         ])
         self.__setting_files_pre_run.extend(['repositories'])
 
-        ## XXX trunk support, for a while - exp. date 10/10/2009
-        trunk_fsdirs_conf = "../conf/fsdirs.conf"
-        trunk_fsdirsmask_conf = "../conf/fsdirsmask.conf"
-        trunk_fssymlinks_conf = "../conf/fssymlinks.conf"
-        if os.path.isfile(trunk_fsdirs_conf):
-            self.__setting_files['system_dirs'] = trunk_fsdirs_conf
-        if os.path.isfile(trunk_fsdirsmask_conf):
-            self.__setting_files['system_dirs_mask'] = trunk_fsdirsmask_conf
-        if os.path.isfile(trunk_fssymlinks_conf):
-            self.__setting_files['system_rev_symlinks'] = trunk_fssymlinks_conf
-
         dmp_dir = etpConst['dumpstoragedir']
         self.__mtime_files.update({
             'keywords_mtime': dmp_dir+"/keywords.mtime",
