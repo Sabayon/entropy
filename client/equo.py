@@ -863,7 +863,9 @@ def main():
             error = UGCErrorReportInterface( )
         except (IncorrectParameter, OnlineMirrorError,):
             from entropy.qa import ErrorReportInterface
-            error = ErrorReportInterface()
+            post_url = "http://svn.sabayonlinux.org/entropy/standard" + \
+                "/sabayonlinux.org/handlers/http_error_report.php"
+            error = ErrorReportInterface(post_url)
 
         error.prepare(errorText, name, email, '\n'.join([unicode(x) for x in exception_data]), description)
         result = error.submit()

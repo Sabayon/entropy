@@ -6366,10 +6366,12 @@ class ExceptionDialog:
 
             from entropy.client.interfaces.qa import UGCErrorReportInterface
             try:
-                error = UGCErrorReportInterface( )
+                error = UGCErrorReportInterface()
             except (IncorrectParameter, OnlineMirrorError,):
+                post_url = "http://svn.sabayonlinux.org/entropy/standard" + \
+                    "/sabayonlinux.org/handlers/http_error_report.php"
                 from entropy.qa import ErrorReportInterface
-                error = ErrorReportInterface()
+                error = ErrorReportInterface(post_url)
 
             error.prepare(errmsg, name, mail, description = description)
             result = error.submit()

@@ -649,9 +649,6 @@ def const_default_settings(rootdir):
         'handlers': {
             # md5sum handler,
             'md5sum': "md5sum.php?arch="+etpSys['arch']+"&package=",
-            # XXX: hardcoded?
-            'errorsend': "http://svn.sabayonlinux.org/entropy/standard"
-                "/sabayonlinux.org/handlers/http_error_report.php",
         },
 
     }

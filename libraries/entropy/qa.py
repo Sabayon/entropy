@@ -518,7 +518,7 @@ class QAInterface:
 class ErrorReportInterface:
 
     import entropy.tools as entropyTools
-    def __init__(self, post_url = etpConst['handlers']['errorsend']):
+    def __init__(self, post_url):
         from entropy.misc import MultipartPostHandler
         import urllib2
         self.url = post_url
