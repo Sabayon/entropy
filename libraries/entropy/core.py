@@ -348,19 +348,12 @@ class SystemSettings(Singleton):
             'socket_service': etpConst['socketconf'],
             'system': etpConst['entropyconf'],
             'repositories': etpConst['repositoriesconf'],
-            'repos_system_mask': {},
-            'repos_mask': {},
-            'repos_license_whitelist': {},
-            'repos_critical_updates': {},
             'system_package_sets': {},
-            'conflicting_tagged_packages': {},
         })
         self.__setting_files_order.extend([
             'keywords', 'unmask', 'mask', 'satisfied', 'license_mask',
-            'repos_system_mask', 'system_mask', 'repos_mask',
-            'repos_critical_updates', 'repos_license_whitelist',
-            'system_package_sets', 'conflicting_tagged_packages',
-            'system_dirs', 'system_dirs_mask', 'socket_service', 'system',
+            'system_mask', 'system_package_sets', 'system_dirs',
+            'system_dirs_mask', 'socket_service', 'system',
             'system_rev_symlinks', 'hw_hash'
         ])
         self.__setting_files_pre_run.extend(['repositories'])
@@ -373,10 +366,6 @@ class SystemSettings(Singleton):
             'satisfied_mtime': dmp_dir+"/satisfied.mtime",
             'license_mask_mtime': dmp_dir+"/license_mask.mtime",
             'system_mask_mtime': dmp_dir+"/system_mask.mtime",
-            'repos_system_mask': {},
-            'repos_mask': {},
-            'repos_license_whitelist': {},
-            'repos_critical_updates': {},
         })
 
 
@@ -459,12 +448,12 @@ class SystemSettings(Singleton):
         with self.__mutex:
             return len(self.__data)
 
-    def get(self, mykey):
+    def get(self, mykey, alt_obj = None):
         """
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return self.__data.get(mykey)
+            return self.__data.get(mykey, alt_obj)
 
     def has_key(self, mykey):
         """
@@ -590,88 +579,6 @@ class SystemSettings(Singleton):
             del self.__persistent_settings[persistent_key]
             del self.__data[persistent_key]
 
-    def __setup_setting_vars(self):
-
-        """
-        This function setups the *mtimes* and *files* dictionaries
-        that will be read and parsed afterwards by respective
-        internal parsers.
-
-        @return: None
-        @rtype: None
-        """
-
-        dmp_dir = etpConst['dumpstoragedir']
-        for repoid in self['repositories']['order']:
-
-            repos_mask_setting = {}
-            repos_mask_mtime = {}
-            repos_lic_wl_setting = {}
-            repos_lic_wl_mtime = {}
-            repo_data = self['repositories']['available'][repoid]
-            repos_sm_mask_setting = {}
-            repos_sm_mask_mtime = {}
-            confl_tagged = {}
-            repos_critical_updates_setting = {}
-            repos_critical_updates_mtime = {}
-
-            maskpath = os.path.join(repo_data['dbpath'],
-                etpConst['etpdatabasemaskfile'])
-            wlpath = os.path.join(repo_data['dbpath'],
-                etpConst['etpdatabaselicwhitelistfile'])
-            sm_path = os.path.join(repo_data['dbpath'],
-                etpConst['etpdatabasesytemmaskfile'])
-            ct_path = os.path.join(repo_data['dbpath'],
-                etpConst['etpdatabaseconflictingtaggedfile'])
-            critical_path = os.path.join(repo_data['dbpath'],
-                etpConst['etpdatabasecriticalfile'])
-
-            if os.access(maskpath, os.R_OK | os.F_OK):
-                repos_mask_setting[repoid] = maskpath
-                repos_mask_mtime[repoid] = dmp_dir + "/repo_" + \
-                    repoid + "_" + etpConst['etpdatabasemaskfile'] + ".mtime"
-
-            if os.access(wlpath, os.R_OK | os.F_OK):
-                repos_lic_wl_setting[repoid] = wlpath
-                repos_lic_wl_mtime[repoid] = dmp_dir + "/repo_" + \
-                    repoid + "_" + etpConst['etpdatabaselicwhitelistfile'] + \
-                    ".mtime"
-
-            if os.access(sm_path, os.R_OK | os.F_OK):
-                repos_sm_mask_setting[repoid] = sm_path
-                repos_sm_mask_mtime[repoid] = dmp_dir + "/repo_" + \
-                    repoid + "_" + etpConst['etpdatabasesytemmaskfile'] + \
-                    ".mtime"
-            if os.access(ct_path, os.R_OK | os.F_OK):
-                confl_tagged[repoid] = ct_path
-
-            if os.access(critical_path, os.R_OK | os.F_OK):
-                repos_critical_updates_setting[repoid] = critical_path
-                repos_critical_updates_mtime[repoid] = dmp_dir + "/repo_" + \
-                    repoid + "_" + etpConst['etpdatabasecriticalfile'] + \
-                    ".mtime"
-
-            self.__setting_files['repos_mask'].update(repos_mask_setting)
-            self.__mtime_files['repos_mask'].update(repos_mask_mtime)
-
-            self.__setting_files['repos_license_whitelist'].update(
-                repos_lic_wl_setting)
-            self.__mtime_files['repos_license_whitelist'].update(
-                repos_lic_wl_mtime)
-
-            self.__setting_files['repos_system_mask'].update(
-                repos_sm_mask_setting)
-            self.__mtime_files['repos_system_mask'].update(
-                repos_sm_mask_mtime)
-
-            self.__setting_files['conflicting_tagged_packages'].update(
-                confl_tagged)
-
-            self.__setting_files['repos_critical_updates'].update(
-                repos_critical_updates_setting)
-            self.__mtime_files['repos_critical_updates'].update(
-                repos_critical_updates_mtime)
-
     def __setup_package_sets_vars(self):
 
         """
@@ -716,7 +623,6 @@ class SystemSettings(Singleton):
             self.__data[item] = func()
 
         # parse main settings
-        self.__setup_setting_vars()
         self.__setup_package_sets_vars()
 
         data = {}
@@ -890,83 +796,6 @@ class SystemSettings(Singleton):
             self.__mtime_files['license_mask_mtime'])
         return self.__generic_parser(self.__setting_files['license_mask'])
 
-    def _repos_license_whitelist_parser(self):
-        """
-        Parser returning licenses considered accepted by default
-        (= GPL compatibles) read from package.lic_whitelist.
-
-        @return: parsed metadata
-        @rtype: dict
-        """
-        data = {}
-        for repoid in self.__setting_files['repos_license_whitelist']:
-            self.validate_entropy_cache(
-                self.__setting_files['repos_license_whitelist'][repoid],
-                self.__mtime_files['repos_license_whitelist'][repoid],
-                repoid = repoid)
-            data[repoid] = self.__generic_parser(
-                self.__setting_files['repos_license_whitelist'][repoid])
-        return data
-
-    def _repos_mask_parser(self):
-        """
-        Parser returning packages masked at repository level read from
-        packages.db.mask inside the repository database directory.
-
-        @return: parsed metadata
-        @rtype: dict
-        """
-        data = {}
-        for repoid in self.__setting_files['repos_mask']:
-            self.validate_entropy_cache(
-                self.__setting_files['repos_mask'][repoid],
-                self.__mtime_files['repos_mask'][repoid], repoid = repoid)
-            data[repoid] = self.__generic_parser(
-                self.__setting_files['repos_mask'][repoid])
-        return data
-
-    def _repos_system_mask_parser(self):
-        """
-        Parser returning system packages mask metadata read from
-        packages.db.system_mask file inside the repository directory.
-        This file contains packages that should be always kept
-        installed, extending the already defined (in repository database)
-        set of atoms.
-
-        @return: parsed metadata
-        @rtype: dict
-        """
-        data = []
-        for repoid in self.__setting_files['repos_system_mask']:
-            self.validate_entropy_cache(
-                self.__setting_files['repos_system_mask'][repoid],
-                self.__mtime_files['repos_system_mask'][repoid],
-                repoid = repoid)
-            data += [x for x in self.__generic_parser(
-                self.__setting_files['repos_system_mask'][repoid]) if x \
-                    not in data]
-        return data
-
-    def _repos_critical_updates_parser(self):
-        """
-        Parser returning critical packages list metadata read from
-        packages.db.critical file inside the repository directory.
-        This file contains packages that should be always updated
-        before anything else.
-
-        @return: parsed metadata
-        @rtype: dict
-        """
-        data = {}
-        for repoid in self.__setting_files['repos_critical_updates']:
-            self.validate_entropy_cache(
-                self.__setting_files['repos_critical_updates'][repoid],
-                self.__mtime_files['repos_critical_updates'][repoid],
-                repoid = repoid)
-            data[repoid] = self.__generic_parser(
-                self.__setting_files['repos_critical_updates'][repoid])
-        return data
-
     def _system_package_sets_parser(self):
         """
         Parser returning system defined package sets read from
@@ -1050,34 +879,6 @@ class SystemSettings(Singleton):
             if len(line) < 2:
                 continue
             data[line[0]] = frozenset(line[1:])
-        return data
-
-    def _conflicting_tagged_packages_parser(self):
-        """
-        Parser returning packages that could have been installed because
-        they aren't in the same scope, but ending up creating critical
-        issues. You can see it as a configurable conflict map.
-
-        @return: parsed metadata
-        @rtype: dict
-        """
-        data = {}
-        # keep priority order
-        repoids = [x for x in self['repositories']['order'] if x in \
-            self.__setting_files['conflicting_tagged_packages']]
-        for repoid in repoids:
-            filepath = self.__setting_files['conflicting_tagged_packages'].get(
-                repoid)
-            if os.path.isfile(filepath) and os.access(filepath, os.R_OK):
-                confl_f = open(filepath,"r")
-                content = confl_f.readlines()
-                confl_f.close()
-                content = [x.strip().rsplit("#", 1)[0].strip().split() for x \
-                    in content if not x.startswith("#") and x.strip()]
-                for mydata in content:
-                    if len(mydata) < 2:
-                        continue
-                    data[mydata[0]] = mydata[1:]
         return data
 
     def _socket_service_parser(self):

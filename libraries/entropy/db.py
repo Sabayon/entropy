@@ -4843,7 +4843,11 @@ class LocalRepository(EntropyRepository):
 
     def _idpackageValidator_packages_db_mask(self, idpackage, reponame, live):
         # check if repository packages.db.mask needs it masked
-        repos_mask = self.SystemSettings['repos_mask']
+        repos_mask = {}
+        client_plg_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        client_settings = self.SystemSettings.get(client_plg_id, {})
+        if client_settings:
+            repos_mask = client_settings['repositories']['mask']
         repomask = repos_mask.get(reponame)
         if isinstance(repomask, (list, set,)):
             # first, seek into generic masking, all branches

@@ -41,6 +41,107 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
     import entropy.tools as entropyTools
 
+    def __init__(self, plugin_id, helper_interface):
+        SystemSettingsPlugin.__init__(self, plugin_id, helper_interface)
+        self.__repos_files = {}
+        self.__repos_mtime = {}
+
+    def __setup_repos_files(self, system_settings):
+        """
+        This function collects available repositories configuration files
+        by filling internal dict() __repos_files and __repos_mtime.
+
+        @param system_settings: SystemSettings instance
+        @type system_settings: instance of SystemSettings
+        @return: None
+        @rtype: None
+        """
+
+        self.__repos_mtime = {
+            'repos_license_whitelist': {},
+            'repos_mask': {},
+            'repos_system_mask': {},
+            'repos_critical_updates': {},
+        }
+        self.__repos_files = {
+            'repos_license_whitelist': {},
+            'repos_mask': {},
+            'repos_system_mask': {},
+            'conflicting_tagged_packages': {},
+            'repos_critical_updates': {},
+        }
+
+        dmp_dir = etpConst['dumpstoragedir']
+        for repoid in system_settings['repositories']['order']:
+
+            repos_mask_setting = {}
+            repos_mask_mtime = {}
+            repos_lic_wl_setting = {}
+            repos_lic_wl_mtime = {}
+            repo_data = system_settings['repositories']['available'][repoid]
+            repos_sm_mask_setting = {}
+            repos_sm_mask_mtime = {}
+            confl_tagged = {}
+            repos_critical_updates_setting = {}
+            repos_critical_updates_mtime = {}
+
+            maskpath = os.path.join(repo_data['dbpath'],
+                etpConst['etpdatabasemaskfile'])
+            wlpath = os.path.join(repo_data['dbpath'],
+                etpConst['etpdatabaselicwhitelistfile'])
+            sm_path = os.path.join(repo_data['dbpath'],
+                etpConst['etpdatabasesytemmaskfile'])
+            ct_path = os.path.join(repo_data['dbpath'],
+                etpConst['etpdatabaseconflictingtaggedfile'])
+            critical_path = os.path.join(repo_data['dbpath'],
+                etpConst['etpdatabasecriticalfile'])
+
+            if os.access(maskpath, os.R_OK | os.F_OK):
+                repos_mask_setting[repoid] = maskpath
+                repos_mask_mtime[repoid] = dmp_dir + "/repo_" + \
+                    repoid + "_" + etpConst['etpdatabasemaskfile'] + ".mtime"
+
+            if os.access(wlpath, os.R_OK | os.F_OK):
+                repos_lic_wl_setting[repoid] = wlpath
+                repos_lic_wl_mtime[repoid] = dmp_dir + "/repo_" + \
+                    repoid + "_" + etpConst['etpdatabaselicwhitelistfile'] + \
+                    ".mtime"
+
+            if os.access(sm_path, os.R_OK | os.F_OK):
+                repos_sm_mask_setting[repoid] = sm_path
+                repos_sm_mask_mtime[repoid] = dmp_dir + "/repo_" + \
+                    repoid + "_" + etpConst['etpdatabasesytemmaskfile'] + \
+                    ".mtime"
+            if os.access(ct_path, os.R_OK | os.F_OK):
+                confl_tagged[repoid] = ct_path
+
+            if os.access(critical_path, os.R_OK | os.F_OK):
+                repos_critical_updates_setting[repoid] = critical_path
+                repos_critical_updates_mtime[repoid] = dmp_dir + "/repo_" + \
+                    repoid + "_" + etpConst['etpdatabasecriticalfile'] + \
+                    ".mtime"
+
+            self.__repos_files['repos_mask'].update(repos_mask_setting)
+            self.__repos_mtime['repos_mask'].update(repos_mask_mtime)
+
+            self.__repos_files['repos_license_whitelist'].update(
+                repos_lic_wl_setting)
+            self.__repos_mtime['repos_license_whitelist'].update(
+                repos_lic_wl_mtime)
+
+            self.__repos_files['repos_system_mask'].update(
+                repos_sm_mask_setting)
+            self.__repos_mtime['repos_system_mask'].update(
+                repos_sm_mask_mtime)
+
+            self.__repos_files['conflicting_tagged_packages'].update(
+                confl_tagged)
+
+            self.__repos_files['repos_critical_updates'].update(
+                repos_critical_updates_setting)
+            self.__repos_mtime['repos_critical_updates'].update(
+                repos_critical_updates_mtime)
+
     def system_mask_parser(self, system_settings_instance):
 
         parser_data = {}
@@ -53,8 +154,9 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             except SystemDatabaseError:
                 break
             mc_cache = set()
-            m_list = system_settings_instance['repos_system_mask'] + \
-                system_settings_instance['system_mask']
+            repos_mask_list = self.__repositories_system_mask(
+                system_settings_instance)
+            m_list = repos_mask_list + system_settings_instance['system_mask']
             for atom in m_list:
                 m_ids, m_r = self._helper.clientDbconn.atomMatch(atom,
                     multiMatch = True)
@@ -82,6 +184,122 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'cache': {}, # package masking validation cache
         }
         return data
+
+    def __repositories_system_mask(self, sys_settings_instance):
+        """
+        Parser returning system packages mask metadata read from
+        packages.db.system_mask file inside the repository directory.
+        This file contains packages that should be always kept
+        installed, extending the already defined (in repository database)
+        set of atoms.
+        """
+        system_mask = []
+        for repoid in self.__repos_files['repos_system_mask']:
+            sys_settings_instance.validate_entropy_cache(
+                self.__repos_files['repos_system_mask'][repoid],
+                self.__repos_mtime['repos_system_mask'][repoid],
+                repoid = repoid)
+            system_mask += [x for x in \
+                self.entropyTools.generic_file_content_parser(
+                    self.__repos_files['repos_system_mask'][repoid]) if x \
+                        not in system_mask]
+        return system_mask
+
+    def repositories_parser(self, sys_settings_instance):
+        """
+        Parser that generates repository settings metadata.
+
+        @param sys_settings_instance: SystemSettings instance
+        @type sys_settings_instance: instance of SystemSettings
+        @return: parsed metadata
+        @rtype: dict
+        """
+        # fill repositories metadata dictionaries
+        self.__setup_repos_files(sys_settings_instance)
+
+        data = {
+            'license_whitelist': {},
+            'mask': {},
+            'system_mask': [],
+            'critical_updates': {},
+            'conflicting_tagged_packages': {},
+        }
+
+        # parse license whitelist
+        """
+        Parser returning licenses considered accepted by default
+        (= GPL compatibles) read from package.lic_whitelist.
+        """
+        for repoid in self.__repos_files['repos_license_whitelist']:
+            sys_settings_instance.validate_entropy_cache(
+                self.__repos_files['repos_license_whitelist'][repoid],
+                self.__repos_mtime['repos_license_whitelist'][repoid],
+                repoid = repoid)
+
+            data['license_whitelist'][repoid] = \
+                self.entropyTools.generic_file_content_parser(
+                    self.__repos_files['repos_license_whitelist'][repoid])
+
+        # package masking
+        """
+        Parser returning packages masked at repository level read from
+        packages.db.mask inside the repository database directory.
+        """
+        for repoid in self.__repos_files['repos_mask']:
+            sys_settings_instance.validate_entropy_cache(
+                self.__repos_files['repos_mask'][repoid],
+                self.__repos_mtime['repos_mask'][repoid], repoid = repoid)
+
+            data['mask'][repoid] = \
+                self.entropyTools.generic_file_content_parser(
+                    self.__repos_files['repos_mask'][repoid])
+
+        # system masking
+        data['system_mask'] = self.__repositories_system_mask(
+            sys_settings_instance)
+
+        # critical updates
+        """
+        Parser returning critical packages list metadata read from
+        packages.db.critical file inside the repository directory.
+        This file contains packages that should be always updated
+        before anything else.
+        """
+        for repoid in self.__repos_files['repos_critical_updates']:
+            sys_settings_instance.validate_entropy_cache(
+                self.__repos_files['repos_critical_updates'][repoid],
+                self.__repos_mtime['repos_critical_updates'][repoid],
+                repoid = repoid)
+            data['critical_updates'][repoid] = \
+                self.entropyTools.generic_file_content_parser(
+                    self.__repos_files['repos_critical_updates'][repoid])
+
+
+        # conflicts map
+        """
+        Parser returning packages that could have been installed because
+        they aren't in the same scope, but ending up creating critical
+        issues. You can see it as a configurable conflict map.
+        """
+        # keep priority order
+        repoids = [x for x in sys_settings_instance['repositories']['order'] \
+            if x in self.__repos_files['conflicting_tagged_packages']]
+        for repoid in repoids:
+            filepath = self.__repos_files['conflicting_tagged_packages'].get(
+                repoid)
+            if os.access(filepath, os.R_OK | os.F_OK):
+                confl_f = open(filepath,"r")
+                content = confl_f.readlines()
+                confl_f.close()
+                content = [x.strip().rsplit("#", 1)[0].strip().split() for x \
+                    in content if not x.startswith("#") and x.strip()]
+                for mydata in content:
+                    if len(mydata) < 2:
+                        continue
+                    data['conflicting_tagged_packages'][mydata[0]] = mydata[1:]
+
+        return data
+
 
     def misc_parser(self, sys_settings_instance):
 

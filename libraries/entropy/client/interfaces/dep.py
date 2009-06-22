@@ -992,8 +992,11 @@ class CalculatorsMixin:
 
     def _lookup_system_mask_repository_deps(self):
 
-        data = self.SystemSettings['repos_system_mask']
-        if not data: return []
+        client_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
+        data = client_settings['repositories']['system_mask']
+
+        if not data:
+            return []
         mydata = []
         cached_items = set()
         for atom in data:
@@ -1426,7 +1429,9 @@ class CalculatorsMixin:
             if cached != None:
                 return cached
 
-        critical_data = self.SystemSettings['repos_critical_updates']
+        client_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
+        critical_data = client_settings['repositories']['critical_updates']
+
         atoms = set()
         atom_matches = {}
         for repoid in critical_data:
@@ -1628,8 +1633,8 @@ class CalculatorsMixin:
 
         pkgatom = self.clientDbconn.retrieveAtom(idpackage)
         pkgkey = self.entropyTools.dep_getkey(pkgatom)
-        client_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
-        mask_installed_keys = self.SystemSettings[client_plugin_id]['system_mask']['repos_installed_keys']
+        client_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
+        mask_installed_keys = client_settings['system_mask']['repos_installed_keys']
 
         if self.is_installed_idpackage_in_system_mask(idpackage):
             idpackages = mask_installed_keys.get(pkgkey)

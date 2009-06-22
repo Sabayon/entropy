@@ -946,10 +946,13 @@ class MiscMixin:
         if not install_queue:
             return {}
         licenses = {}
+        cl_id = self.sys_settings_client_plugin_id
+        repo_sys_data = self.SystemSettings[cl_id]['repositories']
+
         for match in install_queue:
             repoid = match[1]
             dbconn = self.open_repository(repoid)
-            wl = self.SystemSettings['repos_license_whitelist'].get(repoid)
+            wl = repo_sys_data['license_whitelist'].get(repoid)
             if not wl:
                 continue
             keys = dbconn.retrieveLicensedataKeys(match[0])
