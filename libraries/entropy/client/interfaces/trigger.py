@@ -115,11 +115,11 @@ class Trigger:
         ldpaths = self.Entropy.entropyTools.collect_linker_paths()
         for x in self.pkgdata['content']:
 
-            if x.startswith("/etc/conf.d") or x.startswith("/etc/init.d"):
-                c_items = self._trigger_data.setdefault('conftouch', set())
-                c_items.add(x)
-                if "conftouch" not in functions:
-                    functions.append('conftouch')
+            if "conftouch" not in functions:
+                if x.startswith("/etc/conf.d") or x.startswith("/etc/init.d"):
+                    c_items = self._trigger_data.setdefault('conftouch', set())
+                    c_items.add(x)
+                        functions.append('conftouch')
 
             if "kernelmod" not in functions:
                 if x.startswith('/lib/modules/'):
@@ -174,10 +174,14 @@ class Trigger:
 
         for x in self.pkgdata['removecontent']:
 
-            if x.startswith('/etc/init.d/'):
-                c_item = self._trigger_data.setdefault('initdisable', set())
-                c_item.add(x)
-                if "initdisable" not in functions:
+            # initdisable, env_update; run_ldconfig
+            if len(functions) == 3:
+                break # no need to go further
+
+            if "initdisable" not in functions:
+                if x.startswith('/etc/init.d/'):
+                    c_item = self._trigger_data.setdefault('initdisable', set())
+                    c_item.add(x)
                     functions.append('initdisable')
 
             if "env_update" not in functions:
