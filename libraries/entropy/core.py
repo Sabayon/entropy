@@ -755,7 +755,7 @@ class SystemSettings(Singleton):
                 'repositories': {},
         }
 
-        self.__validate_entropy_cache(self.__setting_files['keywords'],
+        self.validate_entropy_cache(self.__setting_files['keywords'],
             self.__mtime_files['keywords_mtime'])
         content = [x.split() for x in \
             self.__generic_parser(self.__setting_files['keywords']) \
@@ -830,7 +830,7 @@ class SystemSettings(Singleton):
         @return: parsed metadata
         @rtype: dict
         """
-        self.__validate_entropy_cache(self.__setting_files['unmask'],
+        self.validate_entropy_cache(self.__setting_files['unmask'],
             self.__mtime_files['unmask_mtime'])
         return self.__generic_parser(self.__setting_files['unmask'])
 
@@ -844,7 +844,7 @@ class SystemSettings(Singleton):
         @return: parsed metadata
         @rtype: dict
         """
-        self.__validate_entropy_cache(self.__setting_files['mask'],
+        self.validate_entropy_cache(self.__setting_files['mask'],
             self.__mtime_files['mask_mtime'])
         return self.__generic_parser(self.__setting_files['mask'])
 
@@ -858,7 +858,7 @@ class SystemSettings(Singleton):
         @return: parsed metadata
         @rtype: dict
         """
-        self.__validate_entropy_cache(self.__setting_files['satisfied'],
+        self.validate_entropy_cache(self.__setting_files['satisfied'],
             self.__mtime_files['satisfied_mtime'])
         return self.__generic_parser(self.__setting_files['satisfied'])
 
@@ -873,7 +873,7 @@ class SystemSettings(Singleton):
         @return: parsed metadata
         @rtype: dict
         """
-        self.__validate_entropy_cache(self.__setting_files['system_mask'],
+        self.validate_entropy_cache(self.__setting_files['system_mask'],
             self.__mtime_files['system_mask_mtime'])
         return self.__generic_parser(self.__setting_files['system_mask'])
 
@@ -886,7 +886,7 @@ class SystemSettings(Singleton):
         @return: parsed metadata
         @rtype: dict
         """
-        self.__validate_entropy_cache(self.__setting_files['license_mask'],
+        self.validate_entropy_cache(self.__setting_files['license_mask'],
             self.__mtime_files['license_mask_mtime'])
         return self.__generic_parser(self.__setting_files['license_mask'])
 
@@ -900,7 +900,7 @@ class SystemSettings(Singleton):
         """
         data = {}
         for repoid in self.__setting_files['repos_license_whitelist']:
-            self.__validate_entropy_cache(
+            self.validate_entropy_cache(
                 self.__setting_files['repos_license_whitelist'][repoid],
                 self.__mtime_files['repos_license_whitelist'][repoid],
                 repoid = repoid)
@@ -918,7 +918,7 @@ class SystemSettings(Singleton):
         """
         data = {}
         for repoid in self.__setting_files['repos_mask']:
-            self.__validate_entropy_cache(
+            self.validate_entropy_cache(
                 self.__setting_files['repos_mask'][repoid],
                 self.__mtime_files['repos_mask'][repoid], repoid = repoid)
             data[repoid] = self.__generic_parser(
@@ -938,7 +938,7 @@ class SystemSettings(Singleton):
         """
         data = []
         for repoid in self.__setting_files['repos_system_mask']:
-            self.__validate_entropy_cache(
+            self.validate_entropy_cache(
                 self.__setting_files['repos_system_mask'][repoid],
                 self.__mtime_files['repos_system_mask'][repoid],
                 repoid = repoid)
@@ -959,7 +959,7 @@ class SystemSettings(Singleton):
         """
         data = {}
         for repoid in self.__setting_files['repos_critical_updates']:
-            self.__validate_entropy_cache(
+            self.validate_entropy_cache(
                 self.__setting_files['repos_critical_updates'][repoid],
                 self.__mtime_files['repos_critical_updates'][repoid],
                 repoid = repoid)
@@ -1528,12 +1528,13 @@ class SystemSettings(Singleton):
                 os.chown(tosaveinto, 0, etpConst['entropygid'])
 
 
-    def __validate_entropy_cache(self, maskfile, mtimefile, repoid = None):
+    def validate_entropy_cache(self, settingfile, mtimefile, repoid = None):
         """
-        Internal method. Validates Entropy Cache
+        Internal method. Validates Entropy Cache based on a setting file
+        and its stored (cache bound) mtime.
 
-        @param maskfile: path of the setting file
-        @type maskfile: string
+        @param settingfile: path of the setting file
+        @type settingfile: string
         @param mtimefile: path where to save retrieved mtime information
         @type mtimefile: string
         @keyword repoid: repository identifier or None
@@ -1554,7 +1555,7 @@ class SystemSettings(Singleton):
             # we can't know if it has been updated
             # remove repositories caches
             self.__remove_repo_cache(repoid = repoid)
-            self.__save_file_mtime(maskfile, mtimefile)
+            self.__save_file_mtime(settingfile, mtimefile)
         else:
             # check mtime
             try:
@@ -1563,12 +1564,12 @@ class SystemSettings(Singleton):
                 mtime_f.close()
                 # compare with current mtime
                 try:
-                    currmtime = str(os.path.getmtime(maskfile))
+                    currmtime = str(os.path.getmtime(settingfile))
                 except OSError:
                     currmtime = "0.0"
                 if mtime != currmtime:
                     self.__remove_repo_cache(repoid = repoid)
-                    self.__save_file_mtime(maskfile, mtimefile)
+                    self.__save_file_mtime(settingfile, mtimefile)
             except (OSError, IOError,):
                 self.__remove_repo_cache(repoid = repoid)
-                self.__save_file_mtime(maskfile, mtimefile)
+                self.__save_file_mtime(settingfile, mtimefile)
