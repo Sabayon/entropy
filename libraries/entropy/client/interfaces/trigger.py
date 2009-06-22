@@ -111,15 +111,6 @@ class Trigger:
                 functions.append('ebuild_postinstall')
                 break
 
-        # opengl configuration
-        if (self.pkgdata['category'] == "x11-drivers") and \
-            (self.pkgdata['name'].startswith("nvidia-") or \
-            self.pkgdata['name'].startswith("ati-")):
-                if "ebuild_postinstall" in functions:
-                    # disabling ebuild postinstall since we reimplemented it
-                    functions.remove("ebuild_postinstall")
-                functions.append("openglsetup")
-
         # load linker paths
         ldpaths = self.Entropy.entropyTools.collect_linker_paths()
         for x in self.pkgdata['content']:
@@ -229,29 +220,6 @@ class Trigger:
                         break
                 functions.append('ebuild_postremove')
                 break
-
-        # opengl configuration
-        if (self.pkgdata['category'] == "x11-drivers") and \
-            (self.pkgdata['name'].startswith("nvidia-") or \
-                self.pkgdata['name'].startswith("ati-")):
-
-            if "ebuild_preremove" in functions:
-                functions.remove("ebuild_preremove")
-
-            if "ebuild_postremove" in functions:
-                # disabling gentoo postinstall since we reimplemented it
-                functions.remove("ebuild_postremove")
-
-            if self.package_action in ("remove",):
-                # look if this package is the last one
-                key = "%s/%s" % (self.pkgdata['category'],
-                    self.pkgdata['name'],)
-                matches, rc = self.Entropy.clientDbconn.atomMatch(key,
-                    multiMatch = True)
-                if len(matches) < 2:
-                    # do not revert back to xorg if more than one
-                    # package is installed
-                    functions.append("openglsetup_xorg")
 
         if self.pkgdata['trigger']:
             functions.append('call_ext_preremove')
@@ -595,78 +563,6 @@ class Trigger:
                 cmd = 'ROOT="%s" rc-update del %s %s' % (myroot,
                     os.path.basename(item), runlevel)
                 subprocess.call(cmd, shell = True)
-
-    def trigger_openglsetup(self):
-        opengl = "xorg-x11"
-        if self.pkgdata['name'] == "nvidia-drivers":
-            opengl = "nvidia"
-        elif self.pkgdata['name'] == "ati-drivers":
-            opengl = "ati"
-        # is there eselect ?
-        eselect = subprocess.call("eselect opengl &> /dev/null", shell = True)
-        if eselect == 0:
-            self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
-                "[POST] Reconfiguring OpenGL to %s ..." % (opengl,)
-            )
-            mytxt = "%s ..." % (brown(_("Reconfiguring OpenGL")),)
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                header = red("   ## ")
-            )
-            quietstring = ''
-            if etpUi['quiet']: quietstring = " &> /dev/null"
-            if etpConst['systemroot']:
-                subprocess.call('echo "eselect opengl set --use-old %s" | chroot %s %s' % (opengl,etpConst['systemroot'],quietstring,), shell = True)
-            else:
-                subprocess.call('eselect opengl set --use-old %s %s' % (opengl,quietstring,), shell = True)
-        else:
-            self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
-                "[POST] Eselect NOT found, cannot run OpenGL trigger"
-            )
-            mytxt = "%s !" % (brown(_("Eselect NOT found, cannot run OpenGL trigger")),)
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                header = red("   ##")
-            )
-
-    def trigger_openglsetup_xorg(self):
-        eselect = subprocess.call("eselect opengl &> /dev/null", shell = True)
-        if eselect == 0:
-            self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
-                "[POST] Reconfiguring OpenGL to fallback xorg-x11 ..."
-            )
-            mytxt = "%s ..." % (brown(_("Reconfiguring OpenGL")),)
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                header = red("   ## ")
-            )
-            quietstring = ''
-            if etpUi['quiet']: quietstring = "&> /dev/null"
-            if etpConst['systemroot']:
-                subprocess.call('echo "eselect opengl set xorg-x11" | chroot %s %s' % (etpConst['systemroot'],quietstring,), shell = True)
-            else:
-                subprocess.call('eselect opengl set xorg-x11 %s' % (quietstring,), shell = True)
-        else:
-            self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
-                "[POST] Eselect NOT found, cannot run OpenGL trigger"
-            )
-            mytxt = "%s !" % (brown(_("Eselect NOT found, cannot run OpenGL trigger")),)
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                header = red("   ##")
-            )
 
     def trigger_run_ldconfig(self):
         if not etpConst['systemroot']:
