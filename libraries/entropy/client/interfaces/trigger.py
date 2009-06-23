@@ -968,30 +968,3 @@ class Trigger:
                 os.rmdir(mydir)
                 mydir = os.path.dirname(mydir)
                 content = os.listdir(mydir)
-
-
-    def trigger_update_moduledb(self, item):
-        if os.access(etpConst['systemroot']+'/usr/sbin/module-rebuild',os.X_OK):
-            if os.path.isfile(etpConst['systemroot']+self.MODULEDB_DIR+'moduledb'):
-                f = open(etpConst['systemroot']+self.MODULEDB_DIR+'moduledb',"r")
-                moduledb = f.readlines()
-                moduledb = self.Entropy.entropyTools.list_to_utf8(moduledb)
-                f.close()
-                avail = [x for x in moduledb if x.strip() == item]
-                if (not avail):
-                    f = open(etpConst['systemroot']+self.MODULEDB_DIR+'moduledb',"aw")
-                    f.write(item+"\n")
-                    f.flush()
-                    f.close()
-        return 0
-
-    def trigger_run_depmod(self, name):
-        if os.access('/sbin/depmod',os.X_OK):
-            if not etpConst['systemroot']:
-                myroot = "/"
-            else:
-                myroot = etpConst['systemroot']+"/"
-            subprocess.call('/sbin/depmod -a -b %s -r %s &> /dev/null' % (
-                myroot, name,), shell = True)
-        return 0
-
