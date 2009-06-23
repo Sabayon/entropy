@@ -119,7 +119,7 @@ class Trigger:
                 if x.startswith("/etc/conf.d") or x.startswith("/etc/init.d"):
                     c_items = self._trigger_data.setdefault('conftouch', set())
                     c_items.add(x)
-                        functions.append('conftouch')
+                    functions.append('conftouch')
 
             if "kernelmod" not in functions:
                 if x.startswith('/lib/modules/'):
