@@ -115,10 +115,10 @@ class Trigger:
         ldpaths = self.Entropy.entropyTools.collect_linker_paths()
         for x in self.pkgdata['content']:
 
-            if "conftouch" not in functions:
-                if x.startswith("/etc/conf.d") or x.startswith("/etc/init.d"):
-                    c_items = self._trigger_data.setdefault('conftouch', set())
-                    c_items.add(x)
+            if x.startswith("/etc/conf.d") or x.startswith("/etc/init.d"):
+                c_items = self._trigger_data.setdefault('conftouch', set())
+                c_items.add(x)
+                if "conftouch" not in functions:
                     functions.append('conftouch')
 
             if "kernelmod" not in functions:
