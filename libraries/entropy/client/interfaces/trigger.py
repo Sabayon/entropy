@@ -121,16 +121,6 @@ class Trigger:
                 if "conftouch" not in functions:
                     functions.append('conftouch')
 
-            if "kernelmod" not in functions:
-                if x.startswith('/lib/modules/'):
-                    if x.split("/")[3]:
-                        self._trigger_data['kernelmod'] = x
-                        if "ebuild_postinstall" in functions:
-                            # disabling ebuild postinstall since
-                            # it's reimplemented
-                            functions.remove("ebuild_postinstall")
-                        functions.append('kernelmod')
-
             if "env_update" not in functions:
                 if x.startswith('/etc/env.d/'):
                     functions.append('env_update')
@@ -495,36 +485,6 @@ class Trigger:
                 continue
             f_item.flush()
             f_item.close()
-
-
-    def trigger_kernelmod(self):
-
-        if self.pkgdata['category'] != "sys-kernel":
-            self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
-                "[POST] Updating moduledb..."
-            )
-            mytxt = "%s ..." % (_("Updating moduledb"),)
-            self.Entropy.updateProgress(
-                brown(mytxt),
-                importance = 0,
-                header = red("   ## ")
-            )
-            item = 'a:1:'+self.pkgdata['category'] + "/" + \
-                self.pkgdata['name'] + "-" + self.pkgdata['version']
-            self.trigger_update_moduledb(item)
-
-        mytxt = "%s ..." % (_("Running depmod"),)
-        self.Entropy.updateProgress(
-            brown(mytxt),
-            importance = 0,
-            header = red("   ## ")
-        )
-        # get kernel modules dir name
-        name = self._trigger_data['kernelmod']
-        name = name.split("/")[3]
-        self.trigger_run_depmod(name)
 
     def trigger_initdisable(self):
 
