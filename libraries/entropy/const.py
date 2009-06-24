@@ -375,7 +375,12 @@ def const_default_settings(rootdir):
         'trigger_sh_interpreter': "/usr/sbin/entropy.sh",
         # entropy hardware hash generator executable
         'etp_hw_hash_gen': rootdir+"/usr/bin/entropy_hwgen.sh",
+        # entropy client post valid branch migration (equo hop) script name
+        'etp_post_branch_hop_script': default_etp_dbfile+".post_branch.sh",
+        # entropy client post branch upgrade script
+        'etp_post_branch_upgrade_script': default_etp_dbfile+".post_upgrade.sh",
         # proxy configuration constants, used system wide
+        'etp_post_branch_hop_status_file': ".branch_hop",
         'proxy': {
             'ftp': None,
             'http': None,
@@ -759,6 +764,14 @@ def const_extract_cli_repo_params(repostring, branch = None, product = None):
     if os.path.isfile(dbrevision_file) and os.access(dbrevision_file, os.R_OK):
         with open(dbrevision_file, "r") as dbrev_f:
             mydata['dbrevision'] = dbrev_f.readline().strip()
+
+    # setup script paths
+    mydata['post_branch_hop_status_file'] = mydata['dbpath'] + "/" + \
+        etpConst['etp_post_branch_hop_status_file']
+    mydata['post_branch_hop_script'] = mydata['dbpath'] + "/" + \
+        etpConst['etp_post_branch_hop_script']
+    mydata['post_branch_upgrade_script'] = mydata['dbpath'] + "/" + \
+        etpConst['etp_post_branch_upgrade_script']
 
     # initialize CONFIG_PROTECT
     # will be filled the first time the db will be opened
