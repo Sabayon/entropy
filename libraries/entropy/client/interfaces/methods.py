@@ -21,6 +21,7 @@
 '''
 from __future__ import with_statement
 import os
+import stat
 import sys
 import shutil
 import time
@@ -1384,6 +1385,7 @@ class MiscMixin:
                 tarinfo = tar.gettarinfo(path, arcname)
 
                 if stat.S_ISREG(exist.st_mode):
+                    tarinfo.mode = stat.S_IMODE(exist.st_mode)
                     tarinfo.type = tarfile.REGTYPE
                     f = open(path)
                     try:
