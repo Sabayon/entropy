@@ -276,8 +276,7 @@ class Package:
                         "EOFError on " + self.infoDict['pkgpath']
                     )
                     rc = 1
-                except (UnicodeEncodeError, UnicodeDecodeError,
-                    self.dumpTools.pickle.PicklingError,):
+                except:
                     # this will make devs to actually catch the
                     # right exception and prepare a fix
                     self.Entropy.clientLog.log(
