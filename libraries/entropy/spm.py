@@ -20,6 +20,7 @@
     Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 '''
 import os
+import stat
 import sys
 import shutil
 import tempfile
@@ -516,6 +517,7 @@ class PortagePlugin:
             tarinfo = tar.gettarinfo(lpath, arcname)
 
             if stat.S_ISREG(exist.st_mode):
+                tarinfo.mode = stat.S_IMODE(exist.st_mode)
                 tarinfo.type = tarfile.REGTYPE
                 f = open(path)
                 try:
