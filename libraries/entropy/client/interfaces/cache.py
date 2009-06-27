@@ -53,10 +53,8 @@ class CacheMixin:
     def generate_cache(self, depcache = True, configcache = True,
         client_purge = True, install_queue = True):
 
-        self.Cacher.stop()
         # clean first of all
         self.purge_cache(client_purge = client_purge)
-        self.Cacher.start()
         if depcache:
             self.do_depcache(do_install_queue = install_queue)
         if configcache:
@@ -106,26 +104,30 @@ class CacheMixin:
 
     def purge_cache(self, showProgress = True, client_purge = True):
         if self.entropyTools.is_user_in_entropy_group():
-            skip = set()
-            if not client_purge:
-                skip.add("/"+etpCache['dbMatch']+"/"+etpConst['clientdbid']) # it's ok this way
-                skip.add("/"+etpCache['dbSearch']+"/"+etpConst['clientdbid']) # it's ok this way
-            for key in etpCache:
+            self.Cacher.stop()
+            try:
+                skip = set()
+                if not client_purge:
+                    skip.add("/"+etpCache['dbMatch']+"/"+etpConst['clientdbid']) # it's ok this way
+                    skip.add("/"+etpCache['dbSearch']+"/"+etpConst['clientdbid']) # it's ok this way
+                for key in etpCache:
+                    if showProgress:
+                        self.updateProgress(
+                            darkred(_("Cleaning %s => dumps...")) % (etpCache[key],),
+                            importance = 1,
+                            type = "warning",
+                            back = True
+                        )
+                    self.clear_dump_cache(etpCache[key], skip = skip)
+
                 if showProgress:
                     self.updateProgress(
-                        darkred(_("Cleaning %s => dumps...")) % (etpCache[key],),
-                        importance = 1,
-                        type = "warning",
-                        back = True
+                        darkgreen(_("Cache is now empty.")),
+                        importance = 2,
+                        type = "info"
                     )
-                self.clear_dump_cache(etpCache[key], skip = skip)
-
-            if showProgress:
-                self.updateProgress(
-                    darkgreen(_("Cache is now empty.")),
-                    importance = 2,
-                    type = "info"
-                )
+            finally:
+                self.Cacher.start()
 
     def clear_dump_cache(self, dump_name, skip = []):
         self.Cacher.discard()
