@@ -142,6 +142,38 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             self.__repos_mtime['repos_critical_updates'].update(
                 repos_critical_updates_mtime)
 
+    def __run_post_branch_migration_hooks(self, sys_settings_instance):
+
+        # only root can do this
+        if os.getuid() != 0:
+            return
+
+        old_branch_path = etpConst['etp_previous_branch_file']
+        current_branch = sys_settings_instance['repositories']['branch']
+
+        def write_current_branch(branch):
+            old_brf = open(old_branch_path, "w")
+            old_brf.write(current_branch+"\n")
+            old_brf.flush()
+            old_brf.close()
+
+        if not os.access(old_branch_path, os.F_OK | os.R_OK):
+            write_current_branch(current_branch)
+            return
+
+        old_f = open(old_branch_path, "r")
+        old_branch = old_f.readline().strip()
+        old_f.close()
+
+        if old_branch == current_branch: # all fine, no need to run
+            return
+
+        repos, err = self._helper.run_repositories_post_branch_switch_hooks(
+            old_branch, current_branch)
+        if not err:
+            write_current_branch(current_branch)
+
+
     def system_mask_parser(self, system_settings_instance):
 
         parser_data = {}
@@ -214,8 +246,12 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         @return: parsed metadata
         @rtype: dict
         """
+
         # fill repositories metadata dictionaries
         self.__setup_repos_files(sys_settings_instance)
+
+        # run post-branch migration scripts if branch setting got changed
+        self.__run_post_branch_migration_hooks(sys_settings_instance)
 
         data = {
             'license_whitelist': {},
