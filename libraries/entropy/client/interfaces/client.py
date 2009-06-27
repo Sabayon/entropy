@@ -182,8 +182,12 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         # look for updates
         # critical_updates = False is needed to avoid
         # issues with metadata not being available
-        update, remove, fine, spm_fine = self._helper.calculate_world_updates(
-            critical_updates = False)
+        try:
+            update, remove, fine, spm_fine = \
+                self._helper.calculate_world_updates(critical_updates = False)
+        except RepositoryError:
+            return # ignore completely
+
         # actually execute this only if
         # there are no updates left
         if not update:
