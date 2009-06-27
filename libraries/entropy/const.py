@@ -382,6 +382,8 @@ def const_default_settings(rootdir):
         # proxy configuration constants, used system wide
         'etp_post_branch_hop_status_file': ".branch_hop",
         'etp_post_branch_upgrade_status_file': ".branch_upgraded",
+        'etp_previous_branch_file': default_etp_confdir+"/.previous_branch",
+
         'proxy': {
             'ftp': None,
             'http': None,
