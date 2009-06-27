@@ -195,9 +195,21 @@ def worldUpdate(onlyfetch = False, replay = False, resume = False,
             empty_deps = replay)
 
         if (etpUi['verbose'] or etpUi['pretend']):
-            print_info(red(" @@ ")+darkgreen("%s:\t\t" % (_("Packages matching update"),) )+bold(str(len(update))))
-            print_info(red(" @@ ")+darkred("%s:\t\t" % (_("Packages matching not available"),) )+bold(str(len(remove))))
-            print_info(red(" @@ ")+blue("%s:\t" % (_("Packages matching already up to date"),) )+bold(str(len(fine))))
+            print_info(red(" @@ ") + "%s => %s" % (
+                    bold(str(len(update))),
+                    darkgreen(_("Packages matching update")),
+                )
+            )
+            print_info(red(" @@ ") + "%s => %s" % (
+                    bold(str(len(remove))),
+                    darkred(_("Packages matching not available")),
+                )
+            )
+            print_info(red(" @@ ") + "%s => %s" % (
+                    bold(str(len(fine))),
+                    blue(_("Packages matching already up to date")),
+                )
+            )
 
         del fine
 
