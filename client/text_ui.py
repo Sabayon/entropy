@@ -345,33 +345,6 @@ def branchHop(branch):
 
     if status:
 
-        # create branch migration file and run post-branch migration script,
-        # if found
-        import subprocess
-        repo_data = Equo.SystemSettings['repositories']['available']
-        for repoid in Equo.validRepositories:
-
-            mydata = repo_data.get(repoid)
-            if mydata is None:
-                continue
-            # post_branch_hop_status_file
-            status_file = mydata['post_branch_hop_status_file']
-            if os.access(status_file, os.F_OK):
-                continue # skipping, already ran
-            branch_mig_script = mydata['post_branch_hop_script']
-            if os.access(branch_mig_script, os.F_OK):
-                mig_rc = subprocess.call(["/bin/sh", branch_mig_script])
-                if mig_rc != 0:
-                    # sorry, cannot consider this done
-                    continue
-            # create status file
-            if not os.path.isdir(os.path.dirname(status_file)):
-                continue # argh, repo dir does not exist
-
-            status_f = open(status_file, "w")
-            status_f.flush()
-            status_f.close()
-
         Equo.clientDbconn.moveCountersToBranch(branch)
         mytxt = "%s %s: %s" % (red(" @@ "),
             darkgreen(_("Succesfully switched to branch")), purple(branch),)
