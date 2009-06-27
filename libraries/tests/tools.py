@@ -8,7 +8,9 @@ import entropy.tools as et
 from entropy.client.interfaces import Client
 import _misc
 import tempfile
+import subprocess
 import shutil
+import stat
 
 class MiscTest(unittest.TestCase):
 
@@ -75,6 +77,55 @@ class MiscTest(unittest.TestCase):
             self.assertNotEqual(out_path, None)
             self.assert_(os.path.isfile(out_path))
             self.assert_(not et.is_entropy_package_file(out_path))
+
+    def test_uncompress_tar_bz2(self):
+
+        pkg_path = _misc.get_test_entropy_package4()
+        tmp_dir = tempfile.mkdtemp()
+        fd, tmp_file = tempfile.mkstemp()
+
+        path_perms = {}
+
+        # try with tar first
+        args = ["tar", "xjfp", pkg_path, "-C", tmp_dir]
+        proc = subprocess.Popen(args, stdout = fd, stderr = fd)
+        rc = proc.wait()
+        self.assert_(not rc)
+        os.close(fd)
+
+        for currentdir, subdirs, files in os.walk(tmp_dir):
+            for file in files:
+                path = os.path.join(currentdir, file)
+                fstat = os.lstat(path)
+                mode = stat.S_IMODE(fstat.st_mode)
+                uid, gid = fstat.st_uid, fstat.st_gid
+                path_perms[path] = (mode, uid, gid,)
+
+        self.assert_(path_perms)
+        shutil.rmtree(tmp_dir)
+        os.makedirs(tmp_dir)
+
+        # now try with our function
+        rc = et.uncompress_tar_bz2(pkg_path, tmp_dir)
+        self.assert_(not rc)
+
+        for currentdir, subdirs, files in os.walk(tmp_dir):
+            for file in files:
+                path = os.path.join(currentdir, file)
+                fstat = os.lstat(path)
+                mode = stat.S_IMODE(fstat.st_mode)
+                uid, gid = fstat.st_uid, fstat.st_gid
+                mystat = (mode, uid, gid,)
+                try:
+                    self.assertEqual(mystat, path_perms.get(path))
+                except AssertionError:
+                    print "ouch", path, "my:", mystat
+                    raise
+
+
+        shutil.rmtree(tmp_dir)
+
+
 
 if __name__ == '__main__':
     unittest.main()
