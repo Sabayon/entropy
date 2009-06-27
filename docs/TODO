@@ -6,9 +6,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
     - expiration thingus? (server-side) => .pkglist file that could be parsed
         # need to wait branch 5 now
-    - branch migration script (pre, after?)
-        - remove deprecated database dump files
-        - add upload for these scripts too
 
     - Documentation + code style cleanup (NLnet Milestone 7)
         http://epydoc.sourceforge.net/epydoc.html
