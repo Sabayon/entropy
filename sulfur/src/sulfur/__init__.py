@@ -1564,6 +1564,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 if self.do_debug:
                     print "process_queue: gui unlocked"
 
+                if (e == 0) and ((not fetch_only) and (not download_sources)):
+                    # this triggers post-branch upgrade function inside
+                    # Entropy Client SystemSettings plugin
+                    self.Equo.SystemSettings.clear()
+
                 if self.my_inst_abort:
                     okDialog(self.ui.main,
                         _("Attention. You chose to abort the processing."))
