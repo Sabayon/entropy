@@ -56,11 +56,11 @@ class CacheMixin:
         self.Cacher.stop()
         # clean first of all
         self.purge_cache(client_purge = client_purge)
+        self.Cacher.start()
         if depcache:
             self.do_depcache(do_install_queue = install_queue)
         if configcache:
             self.do_configcache()
-        self.Cacher.start()
 
     def do_configcache(self):
         self.updateProgress(
