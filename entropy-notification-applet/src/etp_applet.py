@@ -425,12 +425,7 @@ class EntropyApplet:
             self.send_check_updates_signal()
 
     def launch_package_manager(self, *data):
-        def spawn_sulfur():
-            os.execv('/usr/bin/sulfur', ['sulfur'])
-        pid = os.fork()
-        if pid == 0:
-            spawn_sulfur()
-            os._exit(0)
+        subprocess.call('sulfur &', shell = True)
 
     def show_alert(self, title, text, urgency = None):
 
