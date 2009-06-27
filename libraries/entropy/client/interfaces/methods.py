@@ -43,8 +43,13 @@ class RepositoryMixin:
     def validate_repositories(self):
         self.MirrorStatus.clear()
         self.__repo_error_messages_cache.clear()
+
+        # clear live masking validation cache, if exists
         cl_id = self.sys_settings_client_plugin_id
-        self.SystemSettings[cl_id]['masking_validation']['cache'].clear()
+        client_metadata = self.SystemSettings.get(cl_id, {})
+        if "masking_validation" in client_metadata:
+            client_metadata['masking_validation']['cache'].clear()
+
         # valid repositories
         del self.validRepositories[:]
         for repoid in self.SystemSettings['repositories']['order']:
@@ -55,7 +60,8 @@ class RepositoryMixin:
                 dbc.validateDatabase()
                 self.validRepositories.append(repoid)
             except RepositoryError:
-                t = _("Repository") + " " + repoid + " " + _("is not available") + ". " + _("Cannot validate")
+                t = _("Repository") + " " + repoid + " " + \
+                    _("is not available") + ". " + _("Cannot validate")
                 t2 = _("Please update your repositories now in order to remove this message!")
                 self.updateProgress(
                     darkred(t),
@@ -70,7 +76,8 @@ class RepositoryMixin:
                 )
                 continue # repo not available
             except (self.dbapi2.OperationalError,self.dbapi2.DatabaseError,SystemDatabaseError,):
-                t = _("Repository") + " " + repoid + " " + _("is corrupted") + ". " + _("Cannot validate")
+                t = _("Repository") + " " + repoid + " " + \
+                    _("is corrupted") + ". " + _("Cannot validate")
                 self.updateProgress(
                                     darkred(t),
                                     importance = 1,
