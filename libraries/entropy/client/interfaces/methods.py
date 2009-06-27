@@ -678,6 +678,182 @@ class RepositoryMixin:
                     os.access(os.path.join(client_dbdir,x),os.R_OK)
         ]
 
+    def run_repositories_post_branch_switch_hooks(self, old_branch, new_branch):
+        """
+        This method is called whenever branch is successfully switched by user.
+        Branch is switched when user wants to upgrade the OS to a new
+        major release.
+        Any repository can be shipped with a sh script which if available,
+        handles system configuration to ease the migration.
+
+        @param old_branch: previously set branch
+        @type old_branch: string
+        @param new_branch: newly set branch
+        @type new_branch: string
+        @return: list of repositories whose script has been run
+        @rtype: set
+        """
+        from datetime import datetime
+
+        place_status_file = set()
+        hooks_ran = set()
+        repo_data = self.SystemSettings['repositories']['available']
+        for repoid in self.validRepositories:
+
+            mydata = repo_data.get(repoid)
+            if mydata is None:
+                continue
+
+            # post_branch_hop_status_file
+            status_file = mydata['post_branch_hop_status_file']
+            if os.access(status_file, os.F_OK):
+                continue # skipping, already ran
+            place_status_file.add(repoid)
+
+            branch_mig_script = mydata['post_branch_hop_script']
+            if os.access(branch_mig_script, os.F_OK):
+                args = ["/bin/sh", branch_mig_script, repoid, old_branch,
+                    new_branch]
+                proc = subprocess.Popen(args, stdin = sys.stdin,
+                    stdout = sys.stdout, stderr = sys.stderr)
+                mig_rc = proc.wait()
+                if mig_rc != 0:
+                    # sorry, cannot consider this done
+                    continue
+
+            # create status file
+            if not os.path.isdir(os.path.dirname(status_file)):
+                continue # argh, repo dir does not exist
+
+            hooks_ran.add(repoid)
+            status_f = open(status_file, "w")
+            status_f.flush()
+            status_f.close()
+
+        for repoid in place_status_file:
+            status_file = self.get_post_branch_migration_status_file(repoid)
+            if status_file is None: # it can't be!
+                continue
+
+            avail = os.path.lexists(status_file)
+            if not avail:
+                ts = datetime.fromtimestamp(time.time())
+                status_f = open(status_file, "w")
+                status_f.write("%s => %s => %s\n" % (
+                    ts, old_branch, new_branch,))
+                status_f.flush()
+                status_f.close()
+
+        return hooks_ran
+
+    def run_repository_post_branch_upgrade_hooks(self):
+        """
+        This method is called whenever branch is successfully switched by user
+        and all the updates have been installed (also look at:
+        run_repositories_post_branch_switch_hooks()).
+        Any repository can be shipped with a sh script which if available,
+        handles system configuration to ease the migration.
+
+        @return: list of repositories whose script has been run
+        @rtype: set
+        """
+        hooks_ran = set()
+
+        repo_data = self.SystemSettings['repositories']['available']
+        for repoid in self.validRepositories:
+
+            mydata = repo_data.get(repoid)
+            if mydata is None: # wtf!
+                continue
+
+            # check if branch upgrade script exists
+            branch_upg_script = mydata['post_branch_upgrade_script']
+            if not os.access(branch_upg_script, os.F_OK):
+                # there's no script to run
+                # you're a lucky boy!
+                continue
+
+            status_file = self.get_post_branch_migration_status_file(repoid)
+            if status_file is None: # wtf
+                continue
+            avail = os.path.lexists(status_file)
+            if not avail:
+                continue
+
+            # check if this hook, in this repo has been already run
+            upgrade_status_file = self.get_post_branch_upgrade_status_file(
+                repoid)
+            if upgrade_status_file is None: # wtf
+                continue
+            avail = os.path.lexists(upgrade_status_file)
+            if avail:
+                # already run this script, skipping
+                continue
+
+            status_f = open(status_file, "r")
+            # hardcoded ==> "<mtime> => <from branch> => <to branch>\n"
+            status_meta = status_f.readline().strip().split("=>")
+            status_f.close()
+
+            if len(status_meta) != 3:
+                # status file is not valid!! Ignoring *
+                continue
+
+            # running post-upgrade script !
+            mtime, old_branch, new_branch = status_meta
+            args = ["/bin/sh", branch_upg_script, repoid, old_branch,
+                new_branch]
+            proc = subprocess.Popen(args, stdin = sys.stdin,
+                stdout = sys.stdout, stderr = sys.stderr)
+            mig_rc = proc.wait()
+            if mig_rc != 0:
+                # sorry, cannot consider this done
+                continue
+
+            # writing status file
+            # done and DONE!
+            status_f = open(upgrade_status_file, "w")
+            status_f.flush()
+            status_f.close()
+            hooks_ran.add(repoid)
+
+        return hooks_ran
+
+    def get_post_branch_migration_status_file(self, repoid):
+        """
+        Returns path of the branch migration status file.
+        This file is placed inside the Entropy client directory to determine
+        if post-branch migration script has been run.
+        The content of this status file is usually something like this:
+            "<mtime> => <from branch> => <to branch>\n"
+
+        @param repoid: repository identifier
+        @type repoid: string
+        @return: branch migration status file path or None
+        @rtype: string or None
+        """
+        repo_data = self.SystemSettings['repositories']['available']
+        mydata = repo_data.get(repoid, {})
+        return mydata.get('post_branch_hop_status_file')
+
+    def get_post_branch_upgrade_status_file(self, repoid):
+        """
+        Returns path of the branch upgrade status file.
+        This file is placed inside the Entropy client directory to determine
+        whether running post-upgrade ("equo upgrade") repository branch update
+        scripts.
+        This file contains no data.
+
+        @param repoid: repository identifier
+        @type repoid: string
+        @return: branch upgrade status file path or None
+        @rtype: string or None
+        """
+        repo_data = self.SystemSettings['repositories']['available']
+        mydata = repo_data.get(repoid, {})
+        return mydata.get('post_branch_upgrade_status_file')
+
+
 class MiscMixin:
 
     def reload_constants(self):
