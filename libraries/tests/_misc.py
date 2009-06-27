@@ -3,8 +3,8 @@ import os
 from entropy.exceptions import FileNotFound
 
 def get_test_generic_package(test_pkg):
-    path1 = os.path.join(os.getcwd(), test_pkg)
-    path2 = os.path.join(os.getcwd(), "..", test_pkg)
+    path1 = os.path.join(os.getcwd(), "packages", test_pkg)
+    path2 = os.path.join(os.getcwd(), "..", "packages", test_pkg)
     if os.path.isfile(path1):
         return path1
     elif os.path.isfile(path2):
