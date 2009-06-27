@@ -22,10 +22,11 @@
 
 from __future__ import with_statement
 import os
+import tempfile
 import shutil
 import time
 from entropy.exceptions import OnlineMirrorError, IncorrectParameter, \
-    ConnectionError, InvalidDataType, EntropyPackageException
+    ConnectionError, InvalidDataType, EntropyPackageException, FtpError
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
     darkblue, purple
 from entropy.const import etpConst, etpSys
@@ -72,6 +73,158 @@ class Server:
                 header = brown("   # ")
             )
 
+    def get_remote_branches(self, repo = None):
+        """
+        Returns a list of remotely available branches for the provided
+        repository identifier.
+
+        @keyword repo: repository identifier
+        @type repo: string
+        @return: list of valid, available remote branches
+        @rtype: set
+        """
+
+        if repo == None:
+            repo = self.Entropy.default_repository
+
+        remote_branches = set()
+        # this is used to validate Entropy repository path
+        ts_file = etpConst['etpdatabasetimestampfile']
+        mirrors = self.Entropy.get_remote_mirrors(repo)
+        for uri in mirrors:
+
+            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+
+            self.Entropy.updateProgress(
+                "[repo:%s] %s: %s" % (
+                    brown(repo),
+                    blue(_("listing branches in mirror")),
+                    darkgreen(crippled_uri),
+                ),
+                importance = 1,
+                type = "info",
+                header = brown(" @@ ")
+            )
+
+            ftp = FtpInterface(uri, self.Entropy, verbose = False)
+            try:
+
+                branches_path = self.Entropy.get_remote_database_relative_path(
+                    repo)
+                try:
+                    ftp.set_cwd(branches_path)
+                except FtpError:
+                    continue # no branches in this mirror
+
+                branches = ftp.list_dir()
+                for branch in branches:
+                    mypath = os.path.join("/", branches_path, branch)
+                    try:
+                        ftp.set_cwd(mypath)
+                    except FtpError:
+                        # not a dir
+                        continue
+                    if ftp.is_file_available(ts_file):
+                        remote_branches.add(branch)
+
+            finally:
+                ftp.close()
+
+        return remote_branches
+
+    def read_remote_file_in_branches(self, filename, repo = None,
+            excluded_branches = None):
+        """
+        Reads a file remotely located in all the available branches.
+
+        @param filename: name of the file that should be located inside
+            repository database directory
+        @type filename: string
+        @keyword repo: repository identifier
+        @type repo: string
+        @keyword excluded_branches: list of branch identifiers excluded or None
+        @type excluded_branches: list or None
+        @return: dictionary with branches as key and raw file content as value:
+            {'4': 'abcd\n', '5': 'defg\n'}
+        @rtype: dict
+        """
+        if repo == None:
+            repo = self.Entropy.default_repository
+        if excluded_branches == None:
+            excluded_branches = []
+
+        branch_data = {}
+        mirrors = self.Entropy.get_remote_mirrors(repo)
+        for uri in mirrors:
+
+            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+
+            self.Entropy.updateProgress(
+                "[repo:%s] %s: %s => %s" % (
+                    brown(repo),
+                    blue(_("looking for file in mirror")),
+                    darkgreen(crippled_uri),
+                    filename,
+                ),
+                importance = 1,
+                type = "info",
+                header = brown(" @@ ")
+            )
+
+            ftp = FtpInterface(uri, self.Entropy, verbose = False)
+            try:
+
+                branches_path = self.Entropy.get_remote_database_relative_path(
+                    repo)
+                try:
+                    ftp.set_cwd(branches_path)
+                except FtpError:
+                    continue # no branches in this mirror
+
+                branches = ftp.list_dir()
+                for branch in branches:
+
+                    # is branch excluded ?
+                    if branch in excluded_branches:
+                        continue
+
+                    if branch_data.get(branch) != None:
+                        # already read
+                        continue
+
+                    mypath = os.path.join("/", branches_path, branch)
+                    try:
+                        ftp.set_cwd(mypath)
+                    except FtpError:
+                        # not a dir
+                        continue
+
+                    if not ftp.is_file_available(filename):
+                        # nothing to do, no file here
+                        continue
+
+                    tmp_dir = tempfile.mkdtemp()
+                    tries = 4
+                    success = False
+                    while tries:
+                        downloaded = ftp.download_file(filename, tmp_dir)
+                        if not downloaded:
+                            tries -= 1
+                            continue # argh!
+                        success = True
+                        break
+
+                    down_path = os.path.join(tmp_dir, filename)
+                    if success and os.access(down_path, os.F_OK):
+                        down_f = open(down_path)
+                        branch_data[branch] = down_f.read()
+                        down_f.close()
+                    shutil.rmtree(tmp_dir)
+
+            finally:
+                ftp.close()
+
+        return branch_data
 
     def lock_mirrors(self, lock = True, mirrors = None, repo = None):
 
@@ -3074,25 +3227,10 @@ class Server:
 
         branch_data = {}
         errors = False
-
         branch_data['errors'] = False
-
         branch = self.SystemSettings['repositories']['branch']
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        last_branch = srv_set['branches'][-1]
-        if branch != last_branch:
-            mytxt = _("not the latest branch, skipping tidy for consistence.")
-            self.Entropy.updateProgress(
-                "[branch:%s] %s" % (
-                    brown(branch),
-                    blue(mytxt),
-                ),
-                importance = 1,
-                type = "info",
-                header = blue(" @@ ")
-            )
-            branch_data['errors'] = True
-            return True, branch_data
+
+        #last_branch = srv_set['branches'][-1]
 
         self.Entropy.updateProgress(
             "[branch:%s] %s" % (
@@ -3106,6 +3244,37 @@ class Server:
 
         # collect removed packages
         expiring_packages = self.collect_expiring_packages(branch, repo)
+        if expiring_packages:
+
+            # filter expired packages used by other branches
+            # this is done for the sake of consistency
+            # --- read packages.db.pkglist, make sure your repository
+            # has been ported to latest Entropy
+
+            branch_pkglist_data = self.read_remote_file_in_branches(
+                etpConst['etpdatabasepkglist'], repo = repo,
+                excluded_branches = [branch])
+            # format data
+            for key, val in branch_pkglist_data.items():
+                branch_pkglist_data[key] = val.split("\n")
+
+
+            remote_relpath = self.Entropy.get_remote_packages_relative_path(
+                repo = repo)
+            remote_relpath = os.path.join(remote_relpath, branch)
+            my_expiring_pkgs = set([os.path.join(remote_relpath, x) for x in \
+                expiring_packages])
+
+            blocked_packages = set()
+
+            for other_branch in branch_pkglist_data:
+                branch_pkglist = set(branch_pkglist_data[other_branch])
+                my_expiring_pkgs -= branch_pkglist
+
+            # fallback to normality, and match
+            my_expiring_pkgs = [os.path.basename(x) for x in my_expiring_pkgs]
+            expiring_packages = [x for x in expiring_packages if x not in \
+                my_expiring_pkgs]
 
         removal = []
         for package in expiring_packages:
