@@ -698,9 +698,14 @@ class RepositoryMixin:
         place_status_file = set()
         hooks_ran = set()
         repo_data = self.SystemSettings['repositories']['available']
-        for repoid in self.validRepositories:
+        repo_data_excl = self.SystemSettings['repositories']['available']
+        all_repos = sorted(set(repo_data.keys() + repo_data_excl.keys()))
+        for repoid in all_repos:
 
             mydata = repo_data.get(repoid)
+            if mydata is None:
+                mydata = repo_data_excl.get(repoid)
+
             if mydata is None:
                 continue
 
