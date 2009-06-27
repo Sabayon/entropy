@@ -33,8 +33,10 @@ class CacheMixin:
         cached = self.Cacher.pop(etpCache['repolist'])
         if cached == None:
             # invalidate matching cache
-            try: self.repository_move_clear_cache()
-            except IOError: pass
+            try:
+                self.repository_move_clear_cache()
+            except IOError:
+                pass
         elif isinstance(cached,tuple):
             difflist = [x for x in cached if x not in \
                 self.SystemSettings['repositories']['order']]
@@ -48,7 +50,9 @@ class CacheMixin:
             tuple(self.SystemSettings['repositories']['order']),
             async = False)
 
-    def generate_cache(self, depcache = True, configcache = True, client_purge = True, install_queue = True):
+    def generate_cache(self, depcache = True, configcache = True,
+        client_purge = True, install_queue = True):
+
         self.Cacher.stop()
         # clean first of all
         self.purge_cache(client_purge = client_purge)
@@ -150,9 +154,14 @@ class CacheMixin:
 
     def get_available_packages_chash(self):
         # client digest not needed, cache is kept updated
-        return str(hash("%s%s" % (
+        return str(hash("%s|%s|%s" % (
             self.all_repositories_checksum(),
-            self.validRepositories,)))
+            self.validRepositories,
+            # needed when users do bogus things like editing config files
+            # manually (branch setting)
+            self.SystemSettings['repositories']['branch'],
+            )
+        ))
 
     def all_repositories_checksum(self):
         sum_hashes = ''
@@ -198,10 +207,13 @@ class CacheMixin:
     def get_world_update_cache_hash(self, db_digest, empty_deps,
         ignore_spm_downgrades):
 
-        return str(hash("%s|%s|%s|%s|%s" % (
+        return str(hash("%s|%s|%s|%s|%s|%s" % (
             db_digest, empty_deps, self.validRepositories,
             self.SystemSettings['repositories']['order'],
             ignore_spm_downgrades,
+            # needed when users do bogus things like editing config files
+            # manually (branch setting)
+            self.SystemSettings['repositories']['branch'],
         )))
 
     def get_critical_updates_cache(self, db_digest = None):
@@ -218,9 +230,12 @@ class CacheMixin:
 
     def get_critical_update_cache_hash(self, db_digest):
 
-        return str(hash("%s|%s|%s" % (
+        return str(hash("%s|%s|%s|%s" % (
             db_digest, self.validRepositories,
             self.SystemSettings['repositories']['order'],
+            # needed when users do bogus things like editing config files
+            # manually (branch setting)
+            self.SystemSettings['repositories']['branch'],
         )))
 
 
