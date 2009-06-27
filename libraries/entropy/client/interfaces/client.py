@@ -173,6 +173,21 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         if not err:
             write_current_branch(current_branch)
 
+    def __run_post_branch_upgrade_hooks(self, sys_settings_instance):
+
+        # only root can do this
+        if os.getuid() != 0:
+            return
+
+        # look for updates
+        # critical_updates = False is needed to avoid
+        # issues with metadata not being available
+        update, remove, fine, spm_fine = self._helper.calculate_world_updates(
+            critical_updates = False)
+        # actually execute this only if
+        # there are no updates left
+        if not update:
+            self._helper.run_repository_post_branch_upgrade_hooks()
 
     def system_mask_parser(self, system_settings_instance):
 
@@ -249,9 +264,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
         # fill repositories metadata dictionaries
         self.__setup_repos_files(sys_settings_instance)
-
-        # run post-branch migration scripts if branch setting got changed
-        self.__run_post_branch_migration_hooks(sys_settings_instance)
 
         data = {
             'license_whitelist': {},
@@ -421,6 +433,16 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
         return data
 
+    def post_setup(self, system_settings_instance):
+        """
+        Reimplemented from SystemSettingsPlugin.
+        """
+        # run post-branch migration scripts if branch setting got changed
+        self.__run_post_branch_migration_hooks(system_settings_instance)
+        # run post-branch upgrade migration scripts if the function
+        # above created migration files to handle
+        self.__run_post_branch_upgrade_hooks(system_settings_instance)
+
 
 class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixin, \
         RepositoryMixin, MiscMixin, MatchMixin, FetchersMixin):
@@ -431,6 +453,8 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             multiple_url_fetcher = None):
 
         const_debug_write(__name__, "debug enabled")
+        self.sys_settings_client_plugin_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
         self.__instance_destroyed = False
         self.atomMatchCacheKey = etpCache['atomMatch']
         self.dbapi2 = dbapi2 # export for third parties
@@ -519,12 +543,8 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             self.open_client_repository()
 
         # create our SystemSettings plugin
-        self.sys_settings_client_plugin_id = \
-            etpConst['system_settings_plugins_ids']['client_plugin']
         self.sys_settings_client_plugin = ClientSystemSettingsPlugin(
             self.sys_settings_client_plugin_id, self)
-        # Make sure we connect Entropy Client plugin AFTER client db init
-        self.SystemSettings.add_plugin(self.sys_settings_client_plugin)
 
         # needs to be started here otherwise repository cache will be
         # always dropped
@@ -533,11 +553,16 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
 
         if do_validate_repo_cache:
             self.validate_repositories_cache()
+
         if self.repo_validation:
             self.validate_repositories()
         else:
             self.validRepositories.extend(
                 self.SystemSettings['repositories']['order'])
+
+        # add our SystemSettings plugin
+        # Make sure we connect Entropy Client plugin AFTER client db init
+        self.SystemSettings.add_plugin(self.sys_settings_client_plugin)
 
         const_debug_write(__name__, "singleton loaded")
 
