@@ -3259,22 +3259,17 @@ class Server:
                 branch_pkglist_data[key] = val.split("\n")
 
 
-            remote_relpath = self.Entropy.get_remote_packages_relative_path(
-                repo = repo)
-            remote_relpath = os.path.join(remote_relpath, branch)
+            remote_relpath = os.path.join(etpConst['packagesrelativepath'],
+                branch)
             my_expiring_pkgs = set([os.path.join(remote_relpath, x) for x in \
                 expiring_packages])
-
-            blocked_packages = set()
 
             for other_branch in branch_pkglist_data:
                 branch_pkglist = set(branch_pkglist_data[other_branch])
                 my_expiring_pkgs -= branch_pkglist
 
-            # fallback to normality, and match
-            my_expiring_pkgs = [os.path.basename(x) for x in my_expiring_pkgs]
-            expiring_packages = [x for x in expiring_packages if x not in \
-                my_expiring_pkgs]
+            # fallback to normality, set new expiring packages var
+            expiring_packages = [os.path.basename(x) for x in my_expiring_pkgs]
 
         removal = []
         for package in expiring_packages:
