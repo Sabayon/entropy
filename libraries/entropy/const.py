@@ -372,7 +372,7 @@ def const_default_settings(rootdir):
         # name of the trigger file that would be executed
         # by equo inside triggerTools
         'triggername': "trigger",
-        'trigger_sh_interpreter': "/usr/sbin/entropy.sh",
+        'trigger_sh_interpreter': rootdir+"/usr/sbin/entropy.sh",
         # entropy hardware hash generator executable
         'etp_hw_hash_gen': rootdir+"/usr/bin/entropy_hwgen.sh",
         # entropy client post valid branch migration (equo hop) script name
@@ -394,7 +394,7 @@ def const_default_settings(rootdir):
         'socketloglevel': 2,
         'spmloglevel': 1,
         # Log dir where ebuilds store their stuff
-        'logdir': default_etp_logdir ,
+        'logdir': default_etp_logdir,
 
         'syslogdir': default_etp_syslogdir, # Entropy system tools log directory
         'entropylogfile': default_etp_syslogdir+"entropy.log",
