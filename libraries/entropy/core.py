@@ -182,6 +182,20 @@ class SystemSettingsPlugin:
                 system_settings_instance[plugin_id] = {}
             system_settings_instance[plugin_id][parser_id] = data
 
+    def post_setup(self, system_settings_instance):
+        """
+        This method is called by SystemSettings instance
+        after having built all the SystemSettings metadata.
+        You can reimplement this and hook your refinement code
+        into this method.
+
+        @param system_settings_instance: SystemSettings instance
+        @type system_settings_instance: SystemSettings instance
+        @return: None
+        @rtype: None
+        """
+        pass
+
 class SystemSettings(Singleton):
 
     """
@@ -378,16 +392,24 @@ class SystemSettings(Singleton):
         @rtype: None
         """
 
+        def enforce_persistent():
+            # merge persistent settings back
+            self.__data.update(self.__persistent_settings)
+            # restore backed-up settings
+            self.__data.update(self.__persistent_settings['backed_up'].copy())
+
         self.__parse()
+        enforce_persistent()
 
         # plugins support
         for plugin_id in sorted(self.__plugins):
             self.__plugins[plugin_id].parse(self)
 
-        # merge persistent settings back
-        self.__data.update(self.__persistent_settings)
-        # restore backed-up settings
-        self.__data.update(self.__persistent_settings['backed_up'].copy())
+        enforce_persistent()
+
+        # run post-SystemSettings setup, plugins hook
+        for plugin_id in sorted(self.__plugins):
+            self.__plugins[plugin_id].post_setup(self)
 
     def __setitem__(self, mykey, myvalue):
         """
