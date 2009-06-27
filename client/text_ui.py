@@ -292,26 +292,34 @@ def worldUpdate(onlyfetch = False, replay = False, resume = False,
         )
         print_info(red(" @@ ")+blue(_("Even if they are usually harmless, it is suggested to remove them.")))
 
-        if (not etpUi['pretend']):
+        if not etpUi['pretend']:
+            do_run = False
             if human:
+                do_run = True
                 rc = Equo.askQuestion("     %s" % (_("Would you like to scan them ?"),) )
                 if rc == "No":
-                    return 0,0
+                    do_run = False
 
-            # run removePackages with --nodeps
-            removePackages(
-                atomsdata = remove,
-                deps = False,
-                systemPackagesCheck = False,
-                configFiles = True,
-                resume = resume,
-                human = human
-            )
+            if do_run:
+                removePackages(
+                    atomsdata = remove,
+                    deps = False,
+                    systemPackagesCheck = False,
+                    configFiles = True,
+                    resume = resume,
+                    human = human
+                )
         else:
             print_info(red(" @@ ")+blue("%s." % (_("Calculation complete"),) ))
 
     else:
         print_info(red(" @@ ")+blue("%s." % (_("Nothing to remove"),) ))
+
+    # run post-branch upgrade hooks, if needed
+    if not etpUi['pretend']:
+        # this triggers post-branch upgrade function inside
+        # Entropy Client SystemSettings plugin
+        Equo.SystemSettings.clear()
 
     return 0,0
 
