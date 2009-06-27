@@ -1079,10 +1079,15 @@ class CalculatorsMixin:
 
     def _lookup_library_breakages(self, match, clientmatch, deep_deps = False):
 
-        # there is no need to update this cache when "match" will be installed, because at that point
+        # there is no need to update this cache when "match"
+        # will be installed, because at that point
         # clientmatch[0] will differ.
-        c_hash = "%s|%s|%s" % (hash(tuple(match)),hash(deep_deps),hash(tuple(clientmatch)),)
-        c_hash = "%s%s" % (etpCache['library_breakage'],hash(c_hash),)
+        c_hash = "%s|%s|%s" % (
+            tuple(match),
+            deep_deps,
+            tuple(clientmatch),
+        )
+        c_hash = "%s%s" % (etpCache['library_breakage'], hash(c_hash),)
         if self.xcache:
             cached = self.Cacher.pop(c_hash)
             if cached != None: return cached
@@ -1173,9 +1178,16 @@ class CalculatorsMixin:
 
     def get_required_packages(self, matched_atoms, empty_deps = False, deep_deps = False, quiet = False):
 
-        c_hash = "%s%s" % (etpCache['dep_tree'],hash("%s|%s|%s|%s" % (
-            hash(frozenset(sorted(matched_atoms))),hash(empty_deps),
-            hash(deep_deps),self.clientDbconn.database_checksum(),
+        c_hash = "%s%s" % (
+            etpCache['dep_tree'],
+            hash("%s|%s|%s|%s|%s" % (
+                hash(frozenset(sorted(matched_atoms))),
+                empty_deps,
+                deep_deps,
+                self.clientDbconn.database_checksum(),
+                # needed when users do bogus things like editing config files
+                # manually (branch setting)
+                self.SystemSettings['repositories']['branch'],
         )),)
         if self.xcache:
             cached = self.Cacher.pop(c_hash)
@@ -1264,8 +1276,14 @@ class CalculatorsMixin:
 
     def generate_depends_tree(self, idpackages, deep = False):
 
-        c_hash = "%s%s" % (etpCache['depends_tree'],hash("%s|%s" % (
-            hash(tuple(sorted(idpackages))),hash(deep),),),)
+        c_hash = "%s%s" % (
+            etpCache['depends_tree'],
+            hash("%s|%s" % (
+                    tuple(sorted(idpackages)),
+                    deep,
+                ),
+            ),
+        )
         if self.xcache:
             cached = self.Cacher.pop(c_hash)
             if cached != None: return cached
@@ -1597,7 +1615,10 @@ class CalculatorsMixin:
 
     def check_package_update(self, atom, deep = False):
 
-        c_hash = "%s%s" % (etpCache['check_package_update'],hash("%s%s" % (atom,hash(deep),)),)
+        c_hash = "%s%s" % (etpCache['check_package_update'],
+                hash("%s%s" % (atom, deep,)
+            ),
+        )
         if self.xcache:
             cached = self.Cacher.pop(c_hash)
             if cached != None:
