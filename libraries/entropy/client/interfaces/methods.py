@@ -690,13 +690,15 @@ class RepositoryMixin:
         @type old_branch: string
         @param new_branch: newly set branch
         @type new_branch: string
-        @return: list of repositories whose script has been run
-        @rtype: set
+        @return: tuple composed by (1) list of repositories whose script has
+        been run and (2) bool describing if scripts exited with error
+        @rtype: tuple(set, bool)
         """
         from datetime import datetime
 
         place_status_file = set()
         hooks_ran = set()
+        errors = False
         repo_data = self.SystemSettings['repositories']['available']
         repo_data_excl = self.SystemSettings['repositories']['available']
         all_repos = sorted(set(repo_data.keys() + repo_data_excl.keys()))
@@ -724,6 +726,7 @@ class RepositoryMixin:
                 mig_rc = proc.wait()
                 if mig_rc != 0:
                     # sorry, cannot consider this done
+                    errors = True
                     continue
 
             # create status file
@@ -749,7 +752,7 @@ class RepositoryMixin:
                 status_f.flush()
                 status_f.close()
 
-        return hooks_ran
+        return hooks_ran, errors
 
     def run_repository_post_branch_upgrade_hooks(self):
         """
