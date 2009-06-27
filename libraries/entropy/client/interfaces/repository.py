@@ -1144,12 +1144,7 @@ class Repository:
 
         # clean caches, fetch security
         if self.dbupdated:
-            self.Entropy.generate_cache(
-                depcache = self.Entropy.xcache,
-                configcache = False,
-                client_purge = False,
-                install_queue = False
-            )
+            self.Entropy.purge_cache(client_purge = False)
             if self.fetchSecurity:
                 self.do_update_security_advisories()
             # do treeupdates
