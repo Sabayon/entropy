@@ -423,9 +423,6 @@ def const_default_settings(rootdir):
         # Entropy supported Archs
         'supportedarchs': etpSys['archs'],
 
-         # available branches, this only exists for the server part,
-         # these settings will be overridden by server.conf ones
-        'branches': [],
         # default choosen branch (overridden by setting in repositories.conf)
         'branch': "4",
          # default allowed package keywords

@@ -1230,15 +1230,13 @@ class RepositoryManagerMenu(MenuSkel):
                     item = self.EntropyRepositoryStore.append( (repoid,) )
                     if repoid == self.EntropyRepositories['current']:
                         self.EntropyRepositoryCombo.set_active_iter(item)
-                mytxt = "<small><b>%s</b>: %s [<b>%s</b>: %s | <b>%s</b>: %s | <b>%s</b>: %s | <b>%s</b>: %s]</small>" % (
+                mytxt = "<small><b>%s</b>: %s [<b>%s</b>: %s | <b>%s</b>: %s | <b>%s</b>: %s]</small>" % (
                     _("Current"),
                     self.EntropyRepositories['current'],
                     _("c.mode"),
                     self.EntropyRepositories['community_mode'],
                     _("branch"),
                     self.EntropyRepositories['branch'],
-                    _("supported branches"),
-                    ','.join(self.EntropyRepositories['branches']),
                     _("repositories"),
                     len(self.EntropyRepositories['available']),
                 )

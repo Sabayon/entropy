@@ -3230,8 +3230,6 @@ class Server:
         branch_data['errors'] = False
         branch = self.SystemSettings['repositories']['branch']
 
-        #last_branch = srv_set['branches'][-1]
-
         self.Entropy.updateProgress(
             "[branch:%s] %s" % (
                 brown(branch),

@@ -48,7 +48,6 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         data = {
             'repositories': etpConst['server_repositories'].copy(),
-            'branches': etpConst['branches'][:],
             'default_repository_id': etpConst['officialserverrepositoryid'],
             'packages_expiration_days': etpConst['packagesexpirationdays'],
             'database_file_format': etpConst['etpdatabasefileformat'],
@@ -78,17 +77,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             split_line = line.split("|")
             split_line_len = len(split_line)
 
-            if line.startswith("branches|") and (split_line_len == 2):
-
-                branches = split_line[1]
-                data['branches'] = []
-                for branch in branches.split():
-                    data['branches'].append(branch)
-                if sys_set['repositories']['branch'] not in data['branches']:
-                    data['branches'].append(sys_set['repositories']['branch'])
-                data['branches'] = sorted(data['branches'])
-
-            elif (line.find("officialserverrepositoryid|") != -1) and \
+            if (line.find("officialserverrepositoryid|") != -1) and \
                 (not line.startswith("#")) and (split_line_len == 2):
 
                 if not fake_instance:
