@@ -782,7 +782,7 @@ class FtpInterface:
         return self.__ftpconn.sendcmd(cmd)
 
     def list_dir(self):
-        return [x.split("/")[-1] for x in self.__ftpconn.nlst()]
+        return [os.path.basename(x) for x in self.__ftpconn.nlst()]
 
     def is_file_available(self, filename):
         xx = []
