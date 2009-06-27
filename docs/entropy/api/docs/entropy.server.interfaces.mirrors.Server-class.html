@@ -86,6 +86,45 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">set</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.server.interfaces.mirrors.Server-class.html#get_remote_branches" class="summary-sig-name">get_remote_branches</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Returns a list of remotely available branches for the provided 
+      repository identifier.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.mirrors-pysrc.html#Server.get_remote_branches">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.server.interfaces.mirrors.Server-class.html#read_remote_file_in_branches" class="summary-sig-name">read_remote_file_in_branches</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">filename</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">excluded_branches</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Reads a file remotely located in all the available branches.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.mirrors-pysrc.html#Server.read_remote_file_in_branches">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -935,6 +974,83 @@
     </td>
   </tr>
 </table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="get_remote_branches"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_remote_branches</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">repo</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.server.interfaces.mirrors-pysrc.html#Server.get_remote_branches">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns a list of remotely available branches for the provided 
+  repository identifier.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>repo</code></strong> (string) - repository identifier</li>
+    </ul></dd>
+    <dt>Returns: set</dt>
+        <dd>list of valid, available remote branches</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="read_remote_file_in_branches"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">read_remote_file_in_branches</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">filename</span>,
+        <span class="sig-arg">repo</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">excluded_branches</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.server.interfaces.mirrors-pysrc.html#Server.read_remote_file_in_branches">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+        Reads a file remotely located in all the available branches.
+
+        @param filename: name of the file that should be located inside
+            repository database directory
+        @type filename: string
+        @keyword repo: repository identifier
+        @type repo: string
+        @keyword excluded_branches: list of branch identifiers excluded or None
+        @type excluded_branches: list or None
+        @return: dictionary with branches as key and raw file content as value:
+            {'4': 'abcd
+', '5': 'defg
+'}
+        @rtype: dict
+        
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -966,7 +1082,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Jun 17 10:35:22 2009
+    Generated by Epydoc 3.0.1 on Sun Jun 28 00:23:26 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -60,16 +60,18 @@
 <h1 class="epydoc">Class ClientSystemSettingsPlugin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.client.interfaces.client-pysrc.html#ClientSystemSettingsPlugin">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_entropy__4" name="uml_class_diagram_for_entropy__4">
-<area shape="rect" href="entropy.tools-module.html" title="# DESCRIPTION: # generic tools for all the handlers applications" alt="" coords="17,159,364,177"/>
+<area shape="rect" href="entropy.tools-module.html" title="# DESCRIPTION: # generic tools for all the handlers applications" alt="" coords="17,140,364,159"/>
+<area shape="rect" href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html#__init__" title="SystemSettingsPlugin constructor." alt="" coords="17,161,364,180"/>
 <area shape="rect" href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html#system_mask_parser" title="entropy.client.interfaces.client.ClientSystemSettingsPlugin.system_mask_parser" alt="" coords="17,180,364,199"/>
 <area shape="rect" href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html#masking_validation_parser" title="entropy.client.interfaces.client.ClientSystemSettingsPlugin.masking_validation_parser" alt="" coords="17,199,364,217"/>
-<area shape="rect" href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html#misc_parser" title="Parses Entropy client system configuration file." alt="" coords="17,217,364,236"/>
-<area shape="rect" href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html" title="entropy.client.interfaces.client.ClientSystemSettingsPlugin" alt="" coords="16,141,365,237"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#__init__" title="SystemSettingsPlugin constructor." alt="" coords="64,36,317,55"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#get_id" title="Returns the unique plugin id passed at construction time." alt="" coords="64,55,317,73"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#add_parser" title="You must call this method in order to add your custom parsers to the plugin." alt="" coords="64,73,317,92"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#parse" title="This method is called by SystemSettings instance when building its settings metadata." alt="" coords="64,92,317,111"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html" title="This is a plugin base class for all SystemSettings plugins." alt="" coords="63,11,319,112"/>
+<area shape="rect" href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html#repositories_parser" title="Parser that generates repository settings metadata." alt="" coords="17,217,364,236"/>
+<area shape="rect" href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html#misc_parser" title="Parses Entropy client system configuration file." alt="" coords="17,236,364,255"/>
+<area shape="rect" href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html#post_setup" title="Reimplemented from SystemSettingsPlugin." alt="" coords="17,255,364,273"/>
+<area shape="rect" href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html" title="entropy.client.interfaces.client.ClientSystemSettingsPlugin" alt="" coords="16,123,365,275"/>
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#get_id" title="Returns the unique plugin id passed at construction time." alt="" coords="64,36,317,55"/>
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#add_parser" title="You must call this method in order to add your custom parsers to the plugin." alt="" coords="64,55,317,73"/>
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#parse" title="This method is called by SystemSettings instance when building its settings metadata." alt="" coords="64,73,317,92"/>
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html" title="This is a plugin base class for all SystemSettings plugins." alt="" coords="63,11,319,93"/>
 </map>
   <img src="uml_class_diagram_for_entropy__4.gif" alt='' usemap="#uml_class_diagram_for_entropy__4" ismap="ismap" class="graph-without-title" />
 </center>
@@ -83,6 +85,25 @@
   <td align="left" colspan="2" class="table-header">
     <span class="table-header">Instance Methods</span></td>
 </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">plugin_id</span>,
+        <span class="summary-sig-arg">helper_interface</span>)</span><br />
+      SystemSettingsPlugin constructor.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.client-pysrc.html#ClientSystemSettingsPlugin.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
@@ -119,6 +140,24 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">dict</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html#repositories_parser" class="summary-sig-name">repositories_parser</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">sys_settings_instance</span>)</span><br />
+      Parser that generates repository settings metadata.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.client-pysrc.html#ClientSystemSettingsPlugin.repositories_parser">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -135,10 +174,27 @@
       
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html#post_setup" class="summary-sig-name">post_setup</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">system_settings_instance</span>)</span><br />
+      Reimplemented from SystemSettingsPlugin.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.client-pysrc.html#ClientSystemSettingsPlugin.post_setup">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.SystemSettingsPlugin-class.html">core.SystemSettingsPlugin</a></code></b>:
-      <code><a href="entropy.core.SystemSettingsPlugin-class.html#__init__">__init__</a></code>,
       <code><a href="entropy.core.SystemSettingsPlugin-class.html#add_parser">add_parser</a></code>,
       <code><a href="entropy.core.SystemSettingsPlugin-class.html#get_id">get_id</a></code>,
       <code><a href="entropy.core.SystemSettingsPlugin-class.html#parse">parse</a></code>
@@ -155,6 +211,65 @@
     <span class="table-header">Method Details</span></td>
 </tr>
 </table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">plugin_id</span>,
+        <span class="sig-arg">helper_interface</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.client-pysrc.html#ClientSystemSettingsPlugin.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>SystemSettingsPlugin constructor.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>plugin_id</code></strong> - plugin identifier, must be unique</li>
+        <li><strong class="pname"><code>helper_interface</code></strong> - any Python object that could be of help to your parsers</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+    <dt>Overrides:
+        <a href="entropy.core.SystemSettingsPlugin-class.html#__init__">core.SystemSettingsPlugin.__init__</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="repositories_parser"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">repositories_parser</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">sys_settings_instance</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.client-pysrc.html#ClientSystemSettingsPlugin.repositories_parser">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Parser that generates repository settings metadata.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>sys_settings_instance</code></strong> (instance of SystemSettings) - SystemSettings instance</li>
+    </ul></dd>
+    <dt>Returns: dict</dt>
+        <dd>parsed metadata</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="misc_parser"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -173,6 +288,35 @@
   <p>Parses Entropy client system configuration file.</p>
   <p>@return dict data</p>
   <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="post_setup"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">post_setup</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">system_settings_instance</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.client-pysrc.html#ClientSystemSettingsPlugin.post_setup">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Reimplemented from SystemSettingsPlugin.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>system_settings_instance</code></strong> - SystemSettings instance</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+    <dt>Overrides:
+        <a href="entropy.core.SystemSettingsPlugin-class.html#post_setup">core.SystemSettingsPlugin.post_setup</a>
+    </dt>
   </dl>
 </td></tr></table>
 </div>
@@ -208,7 +352,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Jun 17 10:35:17 2009
+    Generated by Epydoc 3.0.1 on Sun Jun 28 00:23:23 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

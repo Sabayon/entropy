@@ -73,7 +73,7 @@
 <area shape="rect" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#remove_repository" title="entropy.client.interfaces.methods.RepositoryMixin.remove_repository" alt="" coords="17,223,471,241"/>
 <area shape="rect" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#shift_repository" title="entropy.client.interfaces.methods.RepositoryMixin.shift_repository" alt="" coords="17,241,471,260"/>
 <area shape="rect" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#enable_repository" title="entropy.client.interfaces.methods.RepositoryMixin.enable_repository" alt="" coords="17,260,471,279"/>
-<area shape="rect" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#list_backedup_client_databases" title="entropy.client.interfaces.methods.RepositoryMixin.list_backedup_client_databases" alt="" coords="17,297,471,316"/>
+<area shape="rect" href="entropy.client.interfaces.methods.RepositoryMixin-class.html#run_repository_post_branch_upgrade_hooks" title="This method is called whenever branch is successfully switched by user and &#160;all the updates have been installed (also look at: &#160;run_repositories_post_branch_switch_hooks())." alt="" coords="17,297,471,316"/>
 <area shape="rect" href="entropy.client.interfaces.methods.RepositoryMixin-class.html" title="entropy.client.interfaces.methods.RepositoryMixin" alt="" coords="16,11,472,317"/>
 <area shape="rect" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="203,347,285,373"/>
 </map>
@@ -509,7 +509,213 @@
       
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#get_post_branch_migration_status_file" class="summary-sig-name">get_post_branch_migration_status_file</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>)</span><br />
+      Returns path of the branch migration status file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#RepositoryMixin.get_post_branch_migration_status_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string or None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#get_post_branch_upgrade_status_file" class="summary-sig-name">get_post_branch_upgrade_status_file</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>)</span><br />
+      Returns path of the branch upgrade status file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#RepositoryMixin.get_post_branch_upgrade_status_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">tuple(set, bool)</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#run_repositories_post_branch_switch_hooks" class="summary-sig-name">run_repositories_post_branch_switch_hooks</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">old_branch</span>,
+        <span class="summary-sig-arg">new_branch</span>)</span><br />
+      This method is called whenever branch is successfully switched by 
+      user.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#RepositoryMixin.run_repositories_post_branch_switch_hooks">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">set</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#run_repository_post_branch_upgrade_hooks" class="summary-sig-name">run_repository_post_branch_upgrade_hooks</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      This method is called whenever branch is successfully switched by 
+      user and all the updates have been installed (also look at: 
+      run_repositories_post_branch_switch_hooks()).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#RepositoryMixin.run_repository_post_branch_upgrade_hooks">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 </table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="get_post_branch_migration_status_file"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_post_branch_migration_status_file</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">repoid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#RepositoryMixin.get_post_branch_migration_status_file">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <pre class="literalblock">
+
+        Returns path of the branch migration status file.
+        This file is placed inside the Entropy client directory to determine
+        if post-branch migration script has been run.
+        The content of this status file is usually something like this:
+            &quot;&lt;mtime&gt; =&gt; &lt;from branch&gt; =&gt; &lt;to branch&gt;
+&quot;
+
+        @param repoid: repository identifier
+        @type repoid: string
+        @return: branch migration status file path or None
+        @rtype: string or None
+        
+
+</pre>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_post_branch_upgrade_status_file"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_post_branch_upgrade_status_file</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">repoid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#RepositoryMixin.get_post_branch_upgrade_status_file">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns path of the branch upgrade status file. This file is placed 
+  inside the Entropy client directory to determine whether running 
+  post-upgrade (&quot;equo upgrade&quot;) repository branch update scripts.
+  This file contains no data.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>repoid</code></strong> (string) - repository identifier</li>
+    </ul></dd>
+    <dt>Returns: string or None</dt>
+        <dd>branch upgrade status file path or None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="run_repositories_post_branch_switch_hooks"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">run_repositories_post_branch_switch_hooks</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">old_branch</span>,
+        <span class="sig-arg">new_branch</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#RepositoryMixin.run_repositories_post_branch_switch_hooks">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This method is called whenever branch is successfully switched by 
+  user. Branch is switched when user wants to upgrade the OS to a new major
+  release. Any repository can be shipped with a sh script which if 
+  available, handles system configuration to ease the migration.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>old_branch</code></strong> (string) - previously set branch</li>
+        <li><strong class="pname"><code>new_branch</code></strong> (string) - newly set branch</li>
+    </ul></dd>
+    <dt>Returns: tuple(set, bool)</dt>
+        <dd>tuple composed by (1) list of repositories whose script has been 
+          run and (2) bool describing if scripts exited with error</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="run_repository_post_branch_upgrade_hooks"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">run_repository_post_branch_upgrade_hooks</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#RepositoryMixin.run_repository_post_branch_upgrade_hooks">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This method is called whenever branch is successfully switched by user
+  and all the updates have been installed (also look at: 
+  run_repositories_post_branch_switch_hooks()). Any repository can be 
+  shipped with a sh script which if available, handles system configuration
+  to ease the migration.</p>
+  <dl class="fields">
+    <dt>Returns: set</dt>
+        <dd>list of repositories whose script has been run</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -541,7 +747,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Jun 17 10:35:18 2009
+    Generated by Epydoc 3.0.1 on Sun Jun 28 00:23:23 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

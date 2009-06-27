@@ -58,14 +58,15 @@
 <h1 class="epydoc">Class SystemSettingsPlugin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettingsPlugin">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_entropy__22" name="uml_class_diagram_for_entropy__22">
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#__init__" title="SystemSettingsPlugin constructor." alt="" coords="456,36,709,55"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#get_id" title="Returns the unique plugin id passed at construction time." alt="" coords="456,55,709,73"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#add_parser" title="You must call this method in order to add your custom parsers to the plugin." alt="" coords="456,73,709,92"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#parse" title="This method is called by SystemSettings instance when building its settings metadata." alt="" coords="456,92,709,111"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html" title="This is a plugin base class for all SystemSettings plugins." alt="" coords="455,11,711,112"/>
-<area shape="rect" href="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin-class.html" title="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin" alt="" coords="16,141,379,168"/>
-<area shape="rect" href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html" title="entropy.client.interfaces.client.ClientSystemSettingsPlugin" alt="" coords="429,141,736,168"/>
-<area shape="rect" href="entropy.server.interfaces.main.ServerSystemSettingsPlugin-class.html" title="entropy.server.interfaces.main.ServerSystemSettingsPlugin" alt="" coords="787,141,1096,168"/>
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#__init__" title="SystemSettingsPlugin constructor." alt="" coords="453,36,712,55"/>
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#get_id" title="Returns the unique plugin id passed at construction time." alt="" coords="453,55,712,73"/>
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#add_parser" title="You must call this method in order to add your custom parsers to the plugin." alt="" coords="453,73,712,92"/>
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#parse" title="This method is called by SystemSettings instance when building its settings metadata." alt="" coords="453,92,712,111"/>
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#post_setup" title="This method is called by SystemSettings instance after having built all the SystemSettings metadata." alt="" coords="453,111,712,129"/>
+<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html" title="This is a plugin base class for all SystemSettings plugins." alt="" coords="452,11,713,131"/>
+<area shape="rect" href="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin-class.html" title="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin" alt="" coords="16,160,379,187"/>
+<area shape="rect" href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html" title="entropy.client.interfaces.client.ClientSystemSettingsPlugin" alt="" coords="429,160,736,187"/>
+<area shape="rect" href="entropy.server.interfaces.main.ServerSystemSettingsPlugin-class.html" title="entropy.server.interfaces.main.ServerSystemSettingsPlugin" alt="" coords="787,160,1096,187"/>
 </map>
   <img src="uml_class_diagram_for_entropy__22.gif" alt='' usemap="#uml_class_diagram_for_entropy__22" ismap="ismap" class="graph-without-title" />
 </center>
@@ -170,6 +171,25 @@ parsers to the plugin.</td>
       settings metadata.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettingsPlugin.parse">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.SystemSettingsPlugin-class.html#post_setup" class="summary-sig-name">post_setup</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">system_settings_instance</span>)</span><br />
+      This method is called by SystemSettings instance after having built 
+      all the SystemSettings metadata.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#SystemSettingsPlugin.post_setup">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -310,6 +330,34 @@ method: another_fabulous_parser
   </dl>
 </td></tr></table>
 </div>
+<a name="post_setup"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">post_setup</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">system_settings_instance</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#SystemSettingsPlugin.post_setup">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This method is called by SystemSettings instance after having built 
+  all the SystemSettings metadata. You can reimplement this and hook your 
+  refinement code into this method.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>system_settings_instance</code></strong> (SystemSettings instance) - SystemSettings instance</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+  </dl>
+</td></tr></table>
+</div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
@@ -342,7 +390,7 @@ method: another_fabulous_parser
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Jun 17 10:35:19 2009
+    Generated by Epydoc 3.0.1 on Sun Jun 28 00:23:24 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

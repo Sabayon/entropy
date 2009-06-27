@@ -73,9 +73,9 @@
 <area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#all_repositories_checksum" title="entropy.client.interfaces.cache.CacheMixin.all_repositories_checksum" alt="" coords="17,223,577,241"/>
 <area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_available_packages_cache" title="entropy.client.interfaces.cache.CacheMixin.get_available_packages_cache" alt="" coords="17,241,577,260"/>
 <area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_world_update_cache" title="entropy.client.interfaces.cache.CacheMixin.get_world_update_cache" alt="" coords="17,260,577,279"/>
-<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_world_update_cache_hash" title="entropy.client.interfaces.cache.CacheMixin.get_world_update_cache_hash" alt="" coords="17,279,577,297"/>
-<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html" title="entropy.client.interfaces.cache.CacheMixin" alt="" coords="16,11,579,299"/>
-<area shape="rect" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="256,328,339,355"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html#get_critical_update_cache_hash" title="entropy.client.interfaces.cache.CacheMixin.get_critical_update_cache_hash" alt="" coords="17,297,577,316"/>
+<area shape="rect" href="entropy.client.interfaces.cache.CacheMixin-class.html" title="entropy.client.interfaces.cache.CacheMixin" alt="" coords="16,11,579,317"/>
+<area shape="rect" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="256,347,339,373"/>
 </map>
   <img src="uml_class_diagram_for_entropy__2.gif" alt='' usemap="#uml_class_diagram_for_entropy__2" ismap="ismap" class="graph-without-title" />
 </center>
@@ -250,8 +250,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_available_packages_chash"></a><span class="summary-sig-name">get_available_packages_chash</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">branch</span>)</span></td>
+          <td><span class="summary-sig"><a name="get_available_packages_chash"></a><span class="summary-sig-name">get_available_packages_chash</span>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.get_available_packages_chash">source&nbsp;code</a></span>
             
@@ -284,7 +283,6 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a name="get_available_packages_cache"></a><span class="summary-sig-name">get_available_packages_cache</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">myhash</span>=<span class="summary-sig-default">None</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.get_available_packages_cache">source&nbsp;code</a></span>
@@ -303,7 +301,6 @@
         <tr>
           <td><span class="summary-sig"><a name="get_world_update_cache"></a><span class="summary-sig-name">get_world_update_cache</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">empty_deps</span>,
-        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">db_digest</span>=<span class="summary-sig-default">None</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.get_world_update_cache">source&nbsp;code</a></span>
@@ -323,10 +320,43 @@
           <td><span class="summary-sig"><a name="get_world_update_cache_hash"></a><span class="summary-sig-name">get_world_update_cache_hash</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">db_digest</span>,
         <span class="summary-sig-arg">empty_deps</span>,
-        <span class="summary-sig-arg">branch</span>,
         <span class="summary-sig-arg">ignore_spm_downgrades</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.get_world_update_cache_hash">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_critical_updates_cache"></a><span class="summary-sig-name">get_critical_updates_cache</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">db_digest</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.get_critical_updates_cache">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_critical_update_cache_hash"></a><span class="summary-sig-name">get_critical_update_cache_hash</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">db_digest</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.cache-pysrc.html#CacheMixin.get_critical_update_cache_hash">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -366,7 +396,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Jun 17 10:35:17 2009
+    Generated by Epydoc 3.0.1 on Sun Jun 28 00:23:23 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

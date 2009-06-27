@@ -67,9 +67,9 @@
       </p>
       <p><strong>License:</strong>
         GPL-2
-        <p><b>Entropy Framework constants module</b>. This module contains 
-        all the Entropy constants used all around the &quot;entropy&quot; 
-        package.</p>
+        <p><b>Entropy Framework constants module</b>.</p>
+        <p>This module contains all the Entropy constants used all around 
+        the &quot;entropy&quot; package.</p>
         <p>Some of the constants in this module are used as 
         &quot;default&quot; for the SystemSettings interface. So, make sure
         to read the documentation of SystemSettings in the 
@@ -471,10 +471,11 @@
  'arch': 'amd64',
  'archs': ['x86', 'amd64'],
  'dirstoclean': set([]),
+ 'keywords': set(['amd64', '~amd64']),
  'killpids': set([]),
  'maxthreads': 100,
  'rootdir': '',
- 'serverside': False}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">api</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">3</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">arch</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">amd64</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">archs</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">x86</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">amd64</code><code class="variable-ellipsis">...</code></code>
+..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">api</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">3</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">arch</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">amd64</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">archs</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">x86</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">amd64</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 <tr>
@@ -535,10 +536,10 @@
  'atomMatch': 'atom_match/atom_match_',
  'check_package_update': 'check_update/package_update_',
  'configfiles': 'conf/scanfs',
+ 'critical_update': 'critical_update/critical_cache_',
  'dbMatch': 'match/db',
  'dbSearch': 'search/db',
  'dep_tree': 'deptree/dep_tree_',
- 'depends_tree': 'depends/depends_tree_',
 ..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">advisories</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">security/advisories_cache_</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">atomM</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
@@ -549,11 +550,11 @@
         <a href="entropy.const-module.html#etpConst" class="summary-name">etpConst</a> = <code title="{'applicationlock': False,
  'backed_up': {},
  'branch': '4',
- 'branches': [],
  'cachedumpext': '.dmp',
  'client_treeupdatescalled': set([]),
  'clientconf': '/etc/entropy/client.conf',
  'clientdbid': 'client',
+ 'clientserverrepoid': '__system__',
 ..."><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">applicationlock</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">backed_up</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-group">}</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">branch</code><code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
@@ -1115,10 +1116,11 @@
  <code class="variable-quote">'</code><code class="variable-string">arch</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">amd64</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">archs</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">x86</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">amd64</code><code class="variable-quote">'</code><code class="variable-group">]</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">dirstoclean</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">set([</code><code class="variable-group">])</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">keywords</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">set([</code><code class="variable-quote">'</code><code class="variable-string">amd64</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">~amd64</code><code class="variable-quote">'</code><code class="variable-group">])</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">killpids</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">set([</code><code class="variable-group">])</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">maxthreads</code><code class="variable-quote">'</code><code class="variable-op">: </code>100<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">rootdir</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">serverside</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-group">}</code>
+<code class="variable-ellipsis">...</code>
 </pre></td></tr></table>
 </dd>
   </dl>
@@ -1166,10 +1168,10 @@
  <code class="variable-quote">'</code><code class="variable-string">atomMatch</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">atom_match/atom_match_</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">check_package_update</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">check_update/package_update_</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">configfiles</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">conf/scanfs</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">critical_update</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">critical_update/critical_cache_</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">dbMatch</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">match/db</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">dbSearch</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">search/db</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">dep_tree</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">deptree/dep_tree_</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">depends_tree</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">depends/depends_tree_</code><code class="variable-quote">'</code><code class="variable-op">,</code>
 <code class="variable-ellipsis">...</code>
 </pre></td></tr></table>
 </dd>
@@ -1191,11 +1193,11 @@
 <code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">applicationlock</code><code class="variable-quote">'</code><code class="variable-op">: </code>False<code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">backed_up</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-group">}</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">branch</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">4</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-quote">'</code><code class="variable-string">branches</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">[</code><code class="variable-group">]</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">cachedumpext</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">.dmp</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">client_treeupdatescalled</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">set([</code><code class="variable-group">])</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">clientconf</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">/etc/entropy/client.conf</code><code class="variable-quote">'</code><code class="variable-op">,</code>
  <code class="variable-quote">'</code><code class="variable-string">clientdbid</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">client</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">clientserverrepoid</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">__system__</code><code class="variable-quote">'</code><code class="variable-op">,</code>
 <code class="variable-ellipsis">...</code>
 </pre></td></tr></table>
 </dd>
@@ -1234,7 +1236,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Jun 17 10:35:16 2009
+    Generated by Epydoc 3.0.1 on Sun Jun 28 00:23:22 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
