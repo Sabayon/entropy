@@ -1472,7 +1472,8 @@ class CalculatorsMixin:
         return data
 
 
-    def calculate_world_updates(self, empty_deps = False, use_cache = True):
+    def calculate_world_updates(self, empty_deps = False, use_cache = True,
+        critical_updates = True):
 
         cl_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
         misc_settings = cl_settings['misc']
@@ -1483,7 +1484,7 @@ class CalculatorsMixin:
 
         # critical updates hook, if enabled
         # this will force callers to receive only critical updates
-        if misc_settings.get('forcedupdates'):
+        if misc_settings.get('forcedupdates') and critical_updates:
             upd_atoms, upd_matches = self.calculate_critical_updates(
                 use_cache = use_cache)
             if upd_atoms:
