@@ -1230,10 +1230,6 @@ class Server:
                     etpConst[cmethod[6]])
                 critical.append(data['dump_path_digest_light'])
 
-                data['database_path'] = \
-                    self.Entropy.get_local_database_file(repo)
-                critical.append(data['database_path'])
-
         # EAPI 1
         if 1 not in disabled_eapis:
 
