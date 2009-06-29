@@ -156,8 +156,9 @@ class Server(SocketHost):
                 compressed_dbpath = os.path.join(dbpath, compressed_dbfile)
 
                 if not os.access(compressed_dbpath, os.R_OK | os.F_OK | os.W_OK):
-                    mytxt = darkred("%s !!") % (
+                    mytxt = darkred("%s: %s !!") % (
                         _("cannot unlock database, compressed file not found"),
+                        compressed_dbpath,
                     )
                     self.updateProgress(
                         "[%s] %s" % (
