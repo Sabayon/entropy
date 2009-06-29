@@ -13,7 +13,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   1.0 - deprecations:
 
     - databaseStructureUpdates (missing tables creation)
-    - complete DB upload (remove, fix server-side EAPI3 server)
 
   2.0:
 
