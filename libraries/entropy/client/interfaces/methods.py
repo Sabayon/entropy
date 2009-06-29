@@ -701,63 +701,105 @@ class RepositoryMixin:
         been run and (2) bool describing if scripts exited with error
         @rtype: tuple(set, bool)
         """
-        from datetime import datetime
 
-        place_status_file = set()
+        const_debug_write(__name__,
+            "run_repositories_post_branch_switch_hooks: called")
+
+        client_dbconn = self.clientDbconn
         hooks_ran = set()
+        if client_dbconn is None:
+            const_debug_write(__name__,
+                "run_repositories_post_branch_switch_hooks: clientdb not avail")
+            return hooks_ran, True
+
+        from datetime import datetime
+        place_status_file = set()
         errors = False
         repo_data = self.SystemSettings['repositories']['available']
         repo_data_excl = self.SystemSettings['repositories']['available']
         all_repos = sorted(set(repo_data.keys() + repo_data_excl.keys()))
+
         for repoid in all_repos:
+
+            const_debug_write(__name__,
+                "run_repositories_post_branch_switch_hooks: %s" % (
+                    repoid,)
+            )
 
             mydata = repo_data.get(repoid)
             if mydata is None:
                 mydata = repo_data_excl.get(repoid)
 
             if mydata is None:
+                const_debug_write(__name__,
+                    "run_repositories_post_branch_switch_hooks: skipping %s" % (
+                        repoid,)
+                )
                 continue
-
-            # post_branch_hop_status_file
-            status_file = mydata['post_branch_hop_status_file']
-            if os.access(status_file, os.F_OK):
-                continue # skipping, already ran
-            place_status_file.add(repoid)
 
             branch_mig_script = mydata['post_branch_hop_script']
-            if os.access(branch_mig_script, os.F_OK):
+            branch_mig_md5sum = '0'
+            if os.access(branch_mig_script, os.R_OK | os.F_OK):
+                branch_mig_md5sum = self.entropyTools.md5sum(branch_mig_script)
+
+            const_debug_write(__name__,
+                "run_repositories_post_branch_switch_hooks: script md5: %s" % (
+                    branch_mig_md5sum,)
+            )
+
+            # check if it is needed to run post branch migration script
+            status_md5sums = client_dbconn.isBranchMigrationAvailable(
+                repoid, old_branch, new_branch)
+            if status_md5sums:
+                if branch_mig_md5sum == status_md5sums[0]: # its stored md5
+                    const_debug_write(__name__,
+                        "run_repositories_post_branch_switch_hooks: skip %s" % (
+                            branch_mig_script,)
+                    )
+                    continue # skipping, already ran the same script
+
+            const_debug_write(__name__,
+                "run_repositories_post_branch_switch_hooks: preparing run: %s" % (
+                    branch_mig_script,)
+                )
+
+            if branch_mig_md5sum != '0':
                 args = ["/bin/sh", branch_mig_script, repoid, old_branch,
                     new_branch]
+                const_debug_write(__name__,
+                    "run_repositories_post_branch_switch_hooks: run: %s" % (
+                        args,)
+                )
                 proc = subprocess.Popen(args, stdin = sys.stdin,
                     stdout = sys.stdout, stderr = sys.stderr)
-                mig_rc = proc.wait()
-                if mig_rc != 0:
-                    # sorry, cannot consider this done
+                # it is possible to ignore errors because
+                # if it's a critical thing, upstream dev just have to fix
+                # the script and will be automagically re-run
+                br_rc = proc.wait()
+                const_debug_write(__name__,
+                    "run_repositories_post_branch_switch_hooks: rc: %s" % (
+                        br_rc,)
+                )
+                if br_rc != 0:
                     errors = True
-                    continue
 
-            # create status file
-            if not os.path.isdir(os.path.dirname(status_file)):
-                continue # argh, repo dir does not exist
+            const_debug_write(__name__,
+                "run_repositories_post_branch_switch_hooks: done")
+
+            # update metadata inside database
+            # overriding post branch upgrade md5sum is INTENDED
+            # here but NOT on the other function
+            # this will cause the post-branch upgrade migration
+            # script to be re-run also.
+            client_dbconn.insertBranchMigration(repoid, old_branch, new_branch,
+                branch_mig_md5sum, '0')
+
+            const_debug_write(__name__,
+                "run_repositories_post_branch_switch_hooks: db data: %s" % (
+                    (repoid, old_branch, new_branch, branch_mig_md5sum, '0',),)
+            )
 
             hooks_ran.add(repoid)
-            status_f = open(status_file, "w")
-            status_f.flush()
-            status_f.close()
-
-        for repoid in place_status_file:
-            status_file = self.get_post_branch_migration_status_file(repoid)
-            if status_file is None: # it can't be!
-                continue
-
-            avail = os.path.lexists(status_file)
-            if not avail:
-                ts = datetime.fromtimestamp(time.time())
-                status_f = open(status_file, "w")
-                status_f.write("%s => %s => %s\n" % (
-                    ts, old_branch, new_branch,))
-                status_f.flush()
-                status_f.close()
 
         return hooks_ran, errors
 
@@ -772,101 +814,112 @@ class RepositoryMixin:
         @return: list of repositories whose script has been run
         @rtype: set
         """
+
+        const_debug_write(__name__,
+            "run_repository_post_branch_upgrade_hooks: called"
+        )
+
+        client_dbconn = self.clientDbconn
         hooks_ran = set()
+        if client_dbconn is None:
+            return hooks_ran, True
 
         repo_data = self.SystemSettings['repositories']['available']
+        branch = self.SystemSettings['repositories']['branch']
+        errors = False
+
         for repoid in self.validRepositories:
 
+            const_debug_write(__name__,
+                "run_repository_post_branch_upgrade_hooks: repoid: %s" % (
+                    (repoid,),
+                )
+            )
+
             mydata = repo_data.get(repoid)
-            if mydata is None: # wtf!
+            if mydata is None:
+                const_debug_write(__name__,
+                    "run_repository_post_branch_upgrade_hooks: repo data N/A" % (
+                        repoid,)
+                )
                 continue
 
             # check if branch upgrade script exists
             branch_upg_script = mydata['post_branch_upgrade_script']
-            if not os.access(branch_upg_script, os.F_OK):
-                # there's no script to run
-                # you're a lucky boy!
+            branch_upg_md5sum = '0'
+            if os.access(branch_upg_script, os.R_OK | os.F_OK):
+                branch_upg_md5sum = self.entropyTools.md5sum(branch_upg_script)
+
+            const_debug_write(__name__,
+                "run_repository_post_branch_upgrade_hooks: script md5: %s" % (
+                    branch_upg_md5sum,)
+            )
+
+            upgrade_data = client_dbconn.retrieveBranchMigration(branch)
+            if upgrade_data.get(repoid) is None:
+                # no data stored for this repository, skipping
+                const_debug_write(__name__,
+                    "run_repository_post_branch_upgrade_hooks: %s: %s" % (
+                        repoid, "branch upgrade data not avail",)
+                )
                 continue
+            repo_upgrade_data = upgrade_data[repoid]
 
-            status_file = self.get_post_branch_migration_status_file(repoid)
-            if status_file is None: # wtf
-                continue
-            avail = os.path.lexists(status_file)
-            if not avail:
-                continue
+            const_debug_write(__name__,
+                "run_repository_post_branch_upgrade_hooks: upgrade data: %s" % (
+                    repo_upgrade_data,)
+            )
 
-            # check if this hook, in this repo has been already run
-            upgrade_status_file = self.get_post_branch_upgrade_status_file(
-                repoid)
-            if upgrade_status_file is None: # wtf
-                continue
-            avail = os.path.lexists(upgrade_status_file)
-            if avail:
-                # already run this script, skipping
-                continue
+            for from_branch in sorted(repo_upgrade_data):
 
-            status_f = open(status_file, "r")
-            # hardcoded ==> "<mtime> => <from branch> => <to branch>\n"
-            status_meta = status_f.readline().strip().split("=>")
-            status_f.close()
+                const_debug_write(__name__,
+                    "run_repository_post_branch_upgrade_hooks: upgrade: %s" % (
+                        from_branch,)
+                )
 
-            if len(status_meta) != 3:
-                # status file is not valid!! Ignoring *
-                continue
+                # yeah, this is run for every branch even if script
+                # which md5 is checked against is the same
+                # this makes the code very flexible
+                post_mig_md5, post_upg_md5 = repo_upgrade_data[from_branch]
+                if branch_upg_md5sum == post_upg_md5:
+                    # md5 is equal, this means that it's been already run
+                    const_debug_write(__name__,
+                        "run_repository_post_branch_upgrade_hooks: %s: %s" % (
+                            "already run for from_branch", from_branch,)
+                    )
+                    continue
 
-            # running post-upgrade script !
-            mtime, old_branch, new_branch = status_meta
-            args = ["/bin/sh", branch_upg_script, repoid, old_branch,
-                new_branch]
-            proc = subprocess.Popen(args, stdin = sys.stdin,
-                stdout = sys.stdout, stderr = sys.stderr)
-            mig_rc = proc.wait()
-            if mig_rc != 0:
-                # sorry, cannot consider this done
-                continue
+                const_debug_write(__name__,
+                    "run_repository_post_branch_upgrade_hooks: %s: %s" % (
+                        "running upgrade script from_branch:", from_branch,)
+                )
 
-            # writing status file
-            # done and DONE!
-            status_f = open(upgrade_status_file, "w")
-            status_f.flush()
-            status_f.close()
-            hooks_ran.add(repoid)
+                args = ["/bin/sh", branch_upg_script, repoid, from_branch,
+                    branch]
+                proc = subprocess.Popen(args, stdin = sys.stdin,
+                    stdout = sys.stdout, stderr = sys.stderr)
+                mig_rc = proc.wait()
 
-        return hooks_ran
+                const_debug_write(__name__,
+                    "run_repository_post_branch_upgrade_hooks: %s: %s" % (
+                        "upgrade script exit status", mig_rc,)
+                )
 
-    def get_post_branch_migration_status_file(self, repoid):
-        """
-        Returns path of the branch migration status file.
-        This file is placed inside the Entropy client directory to determine
-        if post-branch migration script has been run.
-        The content of this status file is usually something like this:
-            "<mtime> => <from branch> => <to branch>\n"
+                if mig_rc != 0:
+                    errors = True
 
-        @param repoid: repository identifier
-        @type repoid: string
-        @return: branch migration status file path or None
-        @rtype: string or None
-        """
-        repo_data = self.SystemSettings['repositories']['available']
-        mydata = repo_data.get(repoid, {})
-        return mydata.get('post_branch_hop_status_file')
+                # save branch_upg_md5sum in db
+                client_dbconn.setBranchMigrationPostUpgradeMd5sum(repoid,
+                    from_branch, branch, branch_upg_md5sum)
 
-    def get_post_branch_upgrade_status_file(self, repoid):
-        """
-        Returns path of the branch upgrade status file.
-        This file is placed inside the Entropy client directory to determine
-        whether running post-upgrade ("equo upgrade") repository branch update
-        scripts.
-        This file contains no data.
+                const_debug_write(__name__,
+                    "run_repository_post_branch_upgrade_hooks: %s: %s" % (
+                        "saved upgrade data",
+                        (repoid, from_branch, branch, branch_upg_md5sum,),
+                    )
+                )
 
-        @param repoid: repository identifier
-        @type repoid: string
-        @return: branch upgrade status file path or None
-        @rtype: string or None
-        """
-        repo_data = self.SystemSettings['repositories']['available']
-        mydata = repo_data.get(repoid, {})
-        return mydata.get('post_branch_upgrade_status_file')
+        return hooks_ran, errors
 
 
 class MiscMixin:
