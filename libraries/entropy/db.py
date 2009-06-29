@@ -406,6 +406,15 @@ class LocalRepository(EntropyRepository):
                     phases VARCHAR
                 );
 
+                CREATE TABLE entropy_branch_migration (
+                    repository VARCHAR,
+                    from_branch VARCHAR,
+                    to_branch VARCHAR,
+                    post_migration_md5sum VARCHAR,
+                    post_upgrade_md5sum VARCHAR,
+                    PRIMARY KEY (repository, from_branch, to_branch)
+                );
+
             """
 
     import entropy.tools as entropyTools
@@ -2036,6 +2045,27 @@ class LocalRepository(EntropyRepository):
         with self.__write_mutex:
             self.cursor.execute('INSERT into triggers VALUES (?,?)', (idpackage, buffer(trigger),))
 
+    def insertBranchMigration(self, repository, from_branch, to_branch,
+        post_migration_md5sum, post_upgrade_md5sum):
+        with self.__write_mutex:
+            self.cursor.execute("""
+            INSERT OR REPLACE INTO entropy_branch_migration VALUES (?,?,?,?,?)
+            """, (
+                    repository, from_branch,
+                    to_branch, post_migration_md5sum,
+                    post_upgrade_md5sum,
+                )
+            )
+
+    def setBranchMigrationPostUpgradeMd5sum(self, repository, from_branch,
+        to_branch, post_upgrade_md5sum):
+        with self.__write_mutex:
+            self.cursor.execute("""
+            UPDATE entropy_branch_migration SET post_upgrade_md5sum = (?) WHERE
+            repository = (?) AND from_branch = (?) AND to_branch = (?)
+            """, (post_upgrade_md5sum, repository, from_branch, to_branch,))
+
+
     def insertPortageCounter(self, idpackage, counter, branch, injected):
 
         if (counter != -1) and not injected:
@@ -2100,7 +2130,6 @@ class LocalRepository(EntropyRepository):
             self.cursor.execute('DELETE FROM trashedcounters WHERE counter = (?)', (counter,))
             self.cursor.execute('INSERT INTO trashedcounters VALUES (?)', (counter,))
             self.commitChanges()
-
 
     def setCounter(self, idpackage, counter, branch = None):
 
@@ -3696,6 +3725,28 @@ class LocalRepository(EntropyRepository):
             idpackage, idreason = self.idpackageValidator(rslt[0])
         return idpackage, idreason
 
+    def isBranchMigrationAvailable(self, repository, from_branch, to_branch):
+        """
+        Returns whether branch migration metadata given by the provided key
+        (repository, from_branch, to_branch,) is available.
+
+        @param repository: repository identifier
+        @type repository: string
+        @param from_branch: original branch
+        @type from_branch: string
+        @param to_branch: destination branch
+        @type to_branch: string
+        @return: tuple composed by (1)post migration script md5sum and
+            (2)post upgrade script md5sum
+        @rtype: tuple
+        """
+        self.cursor.execute("""
+        SELECT post_migration_md5sum, post_upgrade_md5sum
+        FROM entropy_branch_migration
+        WHERE repository = (?) AND from_branch = (?) AND to_branch = (?)
+        """, (repository, from_branch, to_branch,))
+        return self.cursor.fetchone()
+
     def listAllPackages(self, get_scope = False, order_by = None, branch = None, branch_operator = "="):
 
         branchstring = ''
@@ -3886,6 +3937,9 @@ class LocalRepository(EntropyRepository):
 
         if not self.doesTableExist('packagespmphases'):
             self.createPackagespmphases()
+
+        if not self.doesTableExist('entropy_branch_migration'):
+            self.createEntropyBranchMigrationTable()
 
         if not self.doesTableExist('neededlibrarypaths'):
             self.createNeededlibrarypathsTable()
@@ -4261,6 +4315,32 @@ class LocalRepository(EntropyRepository):
             return mydata[0]
         except:
             return ""
+
+    def retrieveBranchMigration(self, to_branch):
+        """
+        This method returns branch migration metadata stored in Entropy
+        Client database (installed packages database). It is used to
+        determine whether to run per-repository branch migration scripts.
+
+        @param to_branch: usually the current branch string
+        @type to_branch: string
+        @return: branch migration metadata contained in database
+        @rtype: dict
+        """
+        if not self.doesTableExist('entropy_branch_migration'):
+            return None
+
+        self.cursor.execute("""
+        SELECT repository, from_branch, post_migration_md5sum,
+        post_upgrade_md5sum FROM entropy_branch_migration WHERE to_branch = (?)
+        """, (to_branch,))
+
+        data = self.cursor.fetchall()
+        meta = {}
+        for repo, from_branch, post_migration_md5, post_upgrade_md5 in data:
+            obj = meta.setdefault(repo, {})
+            obj[from_branch] = (post_migration_md5, post_upgrade_md5,)
+        return meta
 
     def dropContent(self):
         with self.__write_mutex:
@@ -4638,6 +4718,19 @@ class LocalRepository(EntropyRepository):
                 CREATE TABLE packagespmphases (
                     idpackage INTEGER PRIMARY KEY,
                     phases VARCHAR
+                );
+            """)
+
+    def createEntropyBranchMigrationTable(self):
+        with self.__write_mutex:
+            self.cursor.execute("""
+                CREATE TABLE entropy_branch_migration (
+                    repository VARCHAR,
+                    from_branch VARCHAR,
+                    to_branch VARCHAR,
+                    post_migration_md5sum VARCHAR,
+                    post_upgrade_md5sum VARCHAR,
+                    PRIMARY KEY (repository, from_branch, to_branch)
                 );
             """)
 
