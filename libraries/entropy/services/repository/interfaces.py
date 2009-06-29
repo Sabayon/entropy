@@ -152,12 +152,12 @@ class Server(SocketHost):
                 cmethod = self.repositories[x]['cmethod']
                 cmethod_data = etpConst['etpdatabasecompressclasses'].get(cmethod)
                 unpack_method = cmethod_data[1]
-                compressed_dbfile = cmethod_data[2]
+                compressed_dbfile = etpConst[cmethod_data[2]]
                 compressed_dbpath = os.path.join(dbpath, compressed_dbfile)
 
                 if not os.access(compressed_dbpath, os.R_OK | os.F_OK | os.W_OK):
                     mytxt = darkred("%s: %s !!") % (
-                        _("cannot unlock database, compressed file not found"),
+                        _("cannot unlock database, compressed file not found"), # fix spamming
                         compressed_dbpath,
                     )
                     self.updateProgress(
