@@ -169,7 +169,7 @@ class Server(SocketHost):
                         type = "warning"
                     )
                     self.syscache['dbs_not_available'].add(x)
-                do_clear.add(repository)
+                    do_clear.add(repository)
                     continue
 
                 # make sure this db is closed
