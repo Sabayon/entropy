@@ -13,7 +13,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   1.0 - deprecations:
 
     - databaseStructureUpdates (missing tables creation)
-    - EAPI3 get_package_info methods that return package content metadata
     - EAPI2 old database dump upload
     - EAPI1 compressed database upload w/content table
     - drop all the deprecated repository uploads
