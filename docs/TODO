@@ -14,7 +14,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
     - databaseStructureUpdates (missing tables creation)
     - complete DB upload (remove, fix server-side EAPI3 server)
-    - drop all the deprecated repository uploads
 
   2.0:
 
