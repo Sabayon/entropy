@@ -1605,10 +1605,7 @@ class CalculatorsMixin:
         if self.xcache:
             c_hash = self.get_world_update_cache_hash(db_digest, empty_deps,
                 ignore_spm_downgrades)
-            data = {
-                'r': (update, remove, fine, spm_fine,),
-                'empty_deps': empty_deps,
-            }
+            data = (update, remove, fine, spm_fine,)
             self.Cacher.push("%s%s" % (etpCache['world_update'],c_hash,),
                 data, async = False)
 

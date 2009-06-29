@@ -198,13 +198,8 @@ class CacheMixin:
                     ignore_spm_downgrades),)
 
             disk_cache = self.Cacher.pop(c_hash)
-            if disk_cache != None:
-                try:
-                    # workaround for old cache
-                    if len(disk_cache['r']) == 4:
-                        return disk_cache['r']
-                except (KeyError, TypeError):
-                    return None
+            if isinstance(disk_cache, tuple):
+                return disk_cache
 
     def get_world_update_cache_hash(self, db_digest, empty_deps,
         ignore_spm_downgrades):
