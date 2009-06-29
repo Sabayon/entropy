@@ -157,7 +157,7 @@ class Server(SocketHost):
 
                 if not os.access(compressed_dbpath, os.R_OK | os.F_OK | os.W_OK):
                     mytxt = darkred("%s: %s !!") % (
-                        _("cannot unlock database, compressed file not found"), # fix spamming
+                        _("cannot unlock database, compressed file not found"),
                         compressed_dbpath,
                     )
                     self.updateProgress(
@@ -168,6 +168,8 @@ class Server(SocketHost):
                         importance = 1,
                         type = "warning"
                     )
+                    self.syscache['dbs_not_available'].add(x)
+                do_clear.add(repository)
                     continue
 
                 # make sure this db is closed
