@@ -1210,23 +1210,15 @@ class Server:
 
         # EAPI 2,3
         if not download: # we don't need to get the dump
+
             if 3 not in disabled_eapis:
 
                 data['metafiles_path'] = \
                     self.Entropy.get_local_database_compressed_metafiles_file(
                         repo)
                 critical.append(data['metafiles_path'])
+
             if 2 not in disabled_eapis:
-
-                data['dump_path'] = os.path.join(
-                    self.Entropy.get_local_database_dir(repo),
-                    etpConst[cmethod[3]])
-                critical.append(data['dump_path'])
-
-                data['dump_path_digest'] = os.path.join(
-                    self.Entropy.get_local_database_dir(repo),
-                    etpConst[cmethod[4]])
-                critical.append(data['dump_path_digest'])
 
                 data['dump_path_light'] = os.path.join(
                     self.Entropy.get_local_database_dir(repo),
@@ -1384,21 +1376,6 @@ class Server:
         )
         self.Entropy.updateProgress(
             "%s: %s" % (_("database path"), blue(database_path),),
-            importance = 0,
-            type = "info",
-            header = brown("    # ")
-        )
-        self.Entropy.updateProgress(
-            "%s: %s" % (_("dump"), blue(upload_data['dump_path']),),
-            importance = 0,
-            type = "info",
-            header = brown("    # ")
-        )
-        self.Entropy.updateProgress(
-            "%s: %s" % (
-                _("dump checksum"),
-                blue(upload_data['dump_path_digest']),
-            ),
             importance = 0,
             type = "info",
             header = brown("    # ")
@@ -1759,11 +1736,6 @@ class Server:
                     upload_data, cmethod, repo)
 
                 # create compressed dump + checksum
-                self.dump_database_to_file(database_path,
-                    upload_data['dump_path'], cmethod[0], repo = repo)
-                self.create_file_checksum(upload_data['dump_path'],
-                    upload_data['dump_path_digest'])
-
                 self.dump_database_to_file(database_path,
                     upload_data['dump_path_light'], cmethod[0],
                     exclude_tables = ["content"], repo = repo)
