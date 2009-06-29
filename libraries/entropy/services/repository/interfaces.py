@@ -22,8 +22,9 @@
 
 from __future__ import with_statement
 import os
+import shutil
 from entropy.services.interfaces import SocketHost
-from entropy.output import TextInterface, blue, brown
+from entropy.output import TextInterface, blue, brown, darkred
 from entropy.const import etpConst, etpCache
 from entropy.misc import TimeScheduled
 from entropy.i18n import _
@@ -73,7 +74,7 @@ class Server(SocketHost):
             **kwargs
         )
         self.stdout_logging = stdout_logging
-        self.repositories = repositories
+        self.repositories = repositories.copy()
         self.expand_repositories()
         # start timed lock file scanning
         self.start_repository_lock_scanner()
@@ -109,7 +110,7 @@ class Server(SocketHost):
 
     def lock_scan(self):
         do_clear = set()
-        for repository,arch,product,branch in self.repositories:
+        for repository, arch, product, branch in self.repositories:
             x = (repository,arch,product,branch,)
             self.set_repository_db_availability(x)
             if not self.repositories[x]['enabled']:
@@ -145,8 +146,55 @@ class Server(SocketHost):
                     )
             elif not os.path.isfile(self.repositories[x]['download_lock']) and \
                 self.repositories[x]['locked']:
-                mydbpath = os.path.join(self.repositories[x]['dbpath'],etpConst['etpdatabasefile'])
+
+                # setup variables
+                dbpath = self.repositories[x]['dbpath']
+                cmethod = self.repositories[x]['cmethod']
+                cmethod_data = etpConst['etpdatabasecompressclasses'].get(cmethod)
+                unpack_method = cmethod_data[1]
+                compressed_dbfile = cmethod_data[2]
+                compressed_dbpath = os.path.join(dbpath, compressed_dbfile)
+
+                if not os.access(compressed_dbpath, os.R_OK | os.F_OK | os.W_OK):
+                    mytxt = darkred("%s !!") % (
+                        _("cannot unlock database, compressed file not found"),
+                    )
+                    self.updateProgress(
+                        "[%s] %s" % (
+                                brown(str(x)),
+                                mytxt,
+                        ),
+                        importance = 1,
+                        type = "warning"
+                    )
+                    continue
+
+                # make sure this db is closed
+                mydbpath = os.path.join(dbpath, etpConst['etpdatabasefile'])
                 self.close_db(mydbpath)
+
+                mytxt = blue("%s: %s") % (
+                    _("unpacking compressed database"),
+                    compressed_dbpath,
+                )
+                self.updateProgress(
+                    "[%s] %s" % (
+                            brown(str(x)),
+                            mytxt,
+                    ),
+                    importance = 1,
+                    type = "info"
+                )
+
+                # now unpack compressed db in place
+                unpack_func = getattr(self.entropyTools, unpack_method)
+                generated_outpath = unpack_func(compressed_dbpath)
+                if mydbpath != generated_outpath:
+                    try:
+                        os.rename(generated_outpath, mydbpath)
+                    except OSError:
+                        shutil.move(generated_outpath, mydbpath)
+
                 mytxt = blue("%s. %s:") % (
                     _("unlocking and indexing database"),
                     _("hash"),
@@ -221,7 +269,7 @@ class Server(SocketHost):
 
     def expand_repositories(self):
 
-        for repository,arch,product, branch in self.repositories:
+        for repository, arch, product, branch in self.repositories:
             x = (repository,arch,product,branch,)
             self.repositories[x]['locked'] = True # loading locked
             self.set_repository_db_availability(x)
@@ -242,3 +290,7 @@ class Server(SocketHost):
                 mydbpath,
                 etpConst['etpdatabasedownloadlockfile']
             )
+            if not self.repositories[x].has_key('cmethod'):
+                raise AttributeError("cmethod not specified for: %s" % (x,))
+            if self.repositories[x]['cmethod'] not in etpConst['etpdatabasesupportedcformats']:
+                raise AttributeError("wrong cmethod for: %s" % (x,))
