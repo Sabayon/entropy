@@ -24,7 +24,7 @@ from __future__ import with_statement
 import os
 import shutil
 from entropy.services.interfaces import SocketHost
-from entropy.output import TextInterface, blue, brown, darkred
+from entropy.output import TextInterface, blue, brown, darkred, darkgreen
 from entropy.const import etpConst, etpCache
 from entropy.misc import TimeScheduled
 from entropy.i18n import _
@@ -214,7 +214,7 @@ class Server(SocketHost):
                 mydb = self.open_db(mydbpath, docache = False)
                 mydb.createAllIndexes()
                 self.updateProgress(
-                    str(mydb.database_checksum(do_order = True, strict = False, strings = True)),
+                    darkgreen(str(mydb.database_checksum(do_order = True, strict = False, strings = True))),
                     importance = 1,
                     type = "info"
                 )
