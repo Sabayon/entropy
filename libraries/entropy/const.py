@@ -380,8 +380,6 @@ def const_default_settings(rootdir):
         # entropy client post branch upgrade script
         'etp_post_branch_upgrade_script': default_etp_dbfile+".post_upgrade.sh",
         # proxy configuration constants, used system wide
-        'etp_post_branch_hop_status_file': ".branch_hop",
-        'etp_post_branch_upgrade_status_file': ".branch_upgraded",
         'etp_previous_branch_file': default_etp_confdir+"/.previous_branch",
 
         'proxy': {
@@ -765,13 +763,6 @@ def const_extract_cli_repo_params(repostring, branch = None, product = None):
         with open(dbrevision_file, "r") as dbrev_f:
             mydata['dbrevision'] = dbrev_f.readline().strip()
 
-
-    # setup branch migration status file path
-    mydata['post_branch_hop_status_file'] = mydata['dbpath'] + "/" + \
-        etpConst['etp_post_branch_hop_status_file']
-    # setup branch upgrade status file path
-    mydata['post_branch_upgrade_status_file'] = mydata['dbpath'] + "/" + \
-        etpConst['etp_post_branch_upgrade_status_file']
 
     # setup script paths
     mydata['post_branch_hop_script'] = mydata['dbpath'] + "/" + \
