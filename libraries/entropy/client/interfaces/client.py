@@ -45,6 +45,9 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         SystemSettingsPlugin.__init__(self, plugin_id, helper_interface)
         self.__repos_files = {}
         self.__repos_mtime = {}
+        # this is a workaround to avoid running
+        # some post_setup hooks at class init
+        self.__hooks_on_init = True
 
     def __setup_repos_files(self, system_settings):
         """
@@ -183,10 +186,10 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         # critical_updates = False is needed to avoid
         # issues with metadata not being available
         try:
-            update, remove, fine, spm_fine = \
-                self._helper.calculate_world_updates(critical_updates = False)
-        except RepositoryError:
-            return # ignore completely
+            update, remove, fine, spm_fine = self._helper.calculate_world_updates(
+                critical_updates = False)
+        except (ValueError,):
+            update = 1 # foo!
 
         # actually execute this only if
         # there are no updates left
@@ -441,11 +444,13 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         """
         Reimplemented from SystemSettingsPlugin.
         """
-        # run post-branch migration scripts if branch setting got changed
-        self.__run_post_branch_migration_hooks(system_settings_instance)
-        # run post-branch upgrade migration scripts if the function
-        # above created migration files to handle
-        self.__run_post_branch_upgrade_hooks(system_settings_instance)
+        if not self.__hooks_on_init:
+            # run post-branch migration scripts if branch setting got changed
+            self.__run_post_branch_migration_hooks(system_settings_instance)
+            # run post-branch upgrade migration scripts if the function
+            # above created migration files to handle
+            self.__run_post_branch_upgrade_hooks(system_settings_instance)
+        self.__hooks_on_init = False
 
 
 class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixin, \
