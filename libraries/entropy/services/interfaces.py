@@ -1770,20 +1770,21 @@ class SocketHost:
         mysock = self.socket.socket ( self.socket.AF_INET, self.socket.SOCK_STREAM )
         return self.socket.inet_ntoa(fcntl.ioctl(mysock.fileno(), 0x8915, struct.pack('256s', ifname[:15]))[20:24])
 
-    def get_md5_hash(self):
+    def get_md5_hash(self, salt):
         import hashlib
         m = hashlib.md5()
         m.update(os.urandom(2))
+        m.update(salt)
         return m.hexdigest()
 
-    def get_new_session(self, ip_address = None):
+    def get_new_session(self, ip_address):
         with self.SessionsLock:
             if len(self.sessions) > self.threads:
                 # fuck!
                 return "0"
-            rng = self.get_md5_hash()
+            rng = self.get_md5_hash(str(ip_address))
             while rng in self.sessions:
-                rng = self.get_md5_hash()
+                rng = self.get_md5_hash(str(ip_address))
             self.sessions[rng] = {}
             self.sessions[rng]['running'] = False
             self.sessions[rng]['auth_uid'] = None
