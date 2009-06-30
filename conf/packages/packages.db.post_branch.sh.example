@@ -1,0 +1,56 @@
+#!/bin/sh
+# Entropy Framework 1.0
+# Entropy Client post-branch migration/switch (not upgrade!) script
+#
+# This is a sample file shipped with client repositories which contains
+# per-new-branch setup scripts. More precisely, this script is triggered
+# when entropy branch is switched. It MUST return 0, any different value
+# will be considered as critical error.
+#
+# This script must be called with specific arguments explained here below:
+#
+#     # sh packages.db.post_branch.sh [REPO_ID] [ROOT] [OLD_BRANCH] [NEW_BRANCH]
+#
+# example:
+#
+#     # sh packages.db.post_branch.sh "sabayonlinux.org" "/" "4" "5"
+#
+# PLEASE NOTE: this script is called automatically by entropy and, unless
+# requested otherwise, it should be NEVER EVER called by user.
+
+[[ -z "$4" ]] && echo "not enough parameters" && exit 1
+
+REPO_ID=$1
+ROOT=$2
+OLD_BRANCH=$3
+NEW_BRANCH=$4
+
+echo -e "
+>> Entropy post-branch migration script
+>> Repository: "${REPO_ID}"
+>> Root: "${ROOT}"
+>> Old branch: "${OLD_BRANCH}"
+>> New branch: "${NEW_BRANCH}"
+"
+
+### CUT HERE ###
+
+# example #
+
+function four_to_five() {
+    echo "running from 4 to 5"
+    exit 0
+}
+
+function four_to_six() {
+    echo "running from 5 to 6"
+    exit 0
+}
+
+# migration script from branch 4 to 5
+[[ "${OLD_BRANCH}" = "4" ]] && [[ "${NEW_BRANCH}" = "5" ]] && four_to_five
+# migration script from branch 5 to 6
+[[ "${OLD_BRANCH}" = "5" ]] && [[ "${NEW_BRANCH}" = "6" ]] && four_to_six
+
+echo "migration switch not found"
+exit 1
