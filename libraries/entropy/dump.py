@@ -1,25 +1,27 @@
-#!/usr/bin/python
+# -*- coding: utf-8 -*-
 """
-    # DESCRIPTION:
-    # load/save a data to file by dumping its structure
 
-    Copyright (C) 2007-2009 Fabio Erculiani
+    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
+    @contact: lxnay@sabayonlinux.org
+    @copyright: Fabio Erculiani
+    @license: GPL-2
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    B{Entropy Framework object disk serializer module}.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    This module contains Entropy Python object serialization functions and
+    disk dumpers.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+    Serialized objects are stored to disk with proper permissions by default
+    into path given by entropy.const's etpConst['dumpstoragedir'].
+
+    Permissions are set using entropy.const's const_setup_perms and
+    const_setup_file functions.
+
+    Objects are serialized using Python's cPickle/pickle modules, thus
+    they must be "pickable". Please read Python Library reference for
+    more information.
+
 """
-# pylint ok
 
 from __future__ import with_statement
 import os
@@ -38,14 +40,27 @@ if E_GID == None:
 
 def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True):
     """
-    Dump object to file
+    Dump pickable object to file
 
-    @param name -- name of the object
-    @param my_object -- object to dump
-    @param complete_path -- name is a complete path
-    @param ignore_exceptions -- ignore exceptions
-
-    @return None
+    @param name: name of the object
+    @type name: string
+    @param my_object: object to dump
+    @type my_object: any Python "pickable" object
+    @keyword complete_path: consider "name" argument as
+        a complete path (this overrides the default dump
+        path given by etpConst['dumpstoragedir'])
+    @type complete_path: bool
+    @keyword ignore_exceptions: ignore any possible exception
+        (EOFError, IOError, OSError,)
+    @type ignore_exceptions: bool
+    @return: None
+    @rtype: None
+    @raise EOFError: could be caused by pickle.dump, ignored if
+        ignore_exceptions is True
+    @raise IOError: could be caused by pickle.dump, ignored if
+        ignore_exceptions is True
+    @raise OSError: could be caused by pickle.dump, ignored if
+        ignore_exceptions is True
     """
     while 1: # trap ctrl+C
         try:
@@ -85,13 +100,22 @@ def serialize(myobj, ser_f, do_seek = True):
     """
     Serialize object to ser_f (file)
 
-    @param myobj -- object to serialize
-    @type myobj -- any picklable object
-    @param ser_f -- file handle to write to
-    @type ser_f -- file object
-    @param do_seek -- move the file cursor to the beginning
-    @type do_seek -- bool
-    @return file object where data is stored to
+    @param myobj: Python object to serialize
+    @type myobj: any Python picklable object
+    @param ser_f: file object to write to
+    @type ser_f: file object
+    @keyword do_seek: move file cursor back to the beginning
+        of ser_f
+    @type do_seek: bool
+    @return: file object where data has been written
+    @rtype: file object
+    @raise RuntimeError: caused by pickle.dump in case of
+        system errors
+    @raise EOFError: caused by pickle.dump in case of
+        race conditions on multi-processing or multi-threading
+    @raise IOError: caused by pickle.dump in case of
+        race conditions on multi-processing or multi-threading
+    @raise pickle.PicklingError: when object cannot be recreated
     """
     pickle.dump(myobj, ser_f)
     ser_f.flush()
@@ -103,9 +127,11 @@ def unserialize(serial_f):
     """
     Unserialize file to object (file)
 
-    @param serial_f -- file object to read the stream to
-    @type serial_f -- file object
-    @return object reconstructed
+    @param serial_f: file object which data will be read from
+    @type serial_f: file object
+    @return: rebuilt object
+    @rtype: any Python pickable object
+    @raise pickle.UnpicklingError: when object cannot be recreated
     """
     return pickle.load(serial_f)
 
@@ -113,9 +139,11 @@ def unserialize_string(mystring):
     """
     Unserialize pickle string to object
 
-    @param mystring -- data stream in string form to reconstruct
-    @type mystring -- basestring
-    @return reconstructed object
+    @param mystring: data stream in string form to reconstruct
+    @type mystring: string
+    @return: reconstructed object
+    @rtype: any Python pickable object
+    @raise pickle.UnpicklingError: when object cannot be recreated
     """
     return pickle.loads(mystring)
 
@@ -123,21 +151,24 @@ def serialize_string(myobj):
     """
     Serialize object to string
 
-    @param myobj -- object to serialize
-    @type myobj -- any picklable object
-    @return serialized string
+    @param myobj: object to serialize
+    @type myobj: any Python picklable object
+    @return: serialized string
+    @rtype: string
+    @raise pickle.PicklingError: when object cannot be recreated
     """
     return pickle.dumps(myobj)
 
 def loadobj(name, complete_path = False):
     """
     Load object from a file
-    @param name -- name of the object to load
-    @type name -- basestring
-    @param complete_path -- name is a complete serialized
-        object file path to load
-    @type complete_path -- basestring
-    @return object or None
+    @param name: name of the object to load
+    @type name: string
+    @keyword complete_path: determine whether name argument
+        is a complete disk path to serialized object
+    @type complete_path: bool
+    @return: object or None
+    @rtype: any Python pickable object or None
     """
     while 1:
         if complete_path:
@@ -165,9 +196,11 @@ def getobjmtime(name):
     """
     Get dumped object mtime
 
-    @param name -- object name
-    @type name -- basestring
-    @return mtime -- integer
+    @param name: object name
+    @type name: string
+    @return: mtime of the file containing the serialized object or 0
+        if not found
+    @rtype: int
     """
     mtime = 0
     dump_path = os.path.join(D_DIR, name+D_EXT)
@@ -177,11 +210,14 @@ def getobjmtime(name):
 
 def removeobj(name):
     """
-    Remove cached object through its object name
+    Remove cached object referenced by its object name
 
-    @param name -- object name
-    @type name -- basestring
-    @return bool -- removed or not
+    @param name: object name
+    @type name: string
+    @return: bool representing whether object has been
+        removed or not
+    @rtype: bool
+    @raise OSError: in case of troubles with os.remove()
     """
     filepath = D_DIR+"/"+name+D_EXT
     if os.path.isfile(filepath) and os.access(filepath, os.W_OK):
