@@ -1,25 +1,17 @@
 # -*- coding: utf-8 -*-
-'''
-    # DESCRIPTION:
-    # Entropy Object Oriented Interface
+"""
 
-    Copyright (C) 2007-2009 Fabio Erculiani
+    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
+    @contact: lxnay@sabayonlinux.org
+    @copyright: Fabio Erculiani
+    @license: GPL-2
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    B{Entropy Framework internationalization module}
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    This module contains Entropy Framework i18n functions and
+    variables.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-'''
-# pylint ~ ok
+"""
 
 import os
 _LOCALE = None
@@ -39,13 +31,18 @@ try:
     gettext.bindtextdomain('entropy', '/usr/share/locale')
     gettext.textdomain('entropy')
     gettext.install('entropy', unicode=True)
+    # thanks weirdness!
     _ = _
 except (ImportError,OSError,):
     def _(raw_string):
         """
-        Fallback in case gettext is not available.
+        Fallback in case gettext is not available, same syntax
+        for the gettext provided function.
 
-        @param raw_string raw untranslated string
-        @return raw_string untranslated string
+        @param raw_string: raw untranslated string
+        @type raw_string: string
+        @return: translated string using environment locale
+            setting (LC_ALL, LANG or LANGUAGE)
+        @rtype: string
         """
         return raw_string
