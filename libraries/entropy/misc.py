@@ -8,10 +8,10 @@
 
     B{Entropy Framework miscellaneous module}.
 
-    
+    This module contains miscellaneous classes, not directly
+    related with the "Entropy metaphor".
 
 """
-# pylink ok - doc
 from __future__ import with_statement
 import os
 import sys
@@ -23,10 +23,58 @@ from entropy.core import SystemSettings
 
 class Lifo:
 
+    """
+
+    This class can be used to build LIFO buffers, also commonly
+    known as "stacks". I{Lifo} allows you to store and retrieve
+    Python objects from its stack, in a very smart way.
+    This implementation is much faster than the one provided
+    by Python (queue module) and more sofisticated.
+
+    Sample code:
+
+        >>> # load Lifo
+        >>> from entropy.misc import Lifo
+        >>> stack = Lifo()
+        >>> item1 = set([1,2,3])
+        >>> item2 = ["a","b", "c"]
+        >>> item3 = None
+        >>> item4 = 1
+        >>> stack.push(item4)
+        >>> stack.push(item3)
+        >>> stack.push(item2)
+        >>> stack.push(item1)
+        >>> stack.is_filled()
+        True
+        # discarding all the item matching int(1) in the stack
+        >>> stack.discard(1)
+        >>> item3 is stack.pop()
+        True
+        >>> item2 is stack.pop()
+        True
+        >>> item1 is stack.pop()
+        True
+        >>> stack.pop()
+        ValueError exception (stack is empty)
+        >>> stack.is_filled()
+        False
+        >>> del stack
+
+    """
+
     def __init__(self):
+        """ Lifo class constructor """
         self.__buf = {}
 
     def push(self, item):
+        """
+        Push an object into the stack.
+
+        @param item: any Python object
+        @type item: Python object
+        @return: None
+        @rtype: None
+        """
         try:
             idx = max(self.__buf)+1
         except ValueError:
@@ -34,14 +82,35 @@ class Lifo:
         self.__buf[idx] = item
 
     def clear(self):
+        """
+        Clear the stack.
+
+        @return: None
+        @rtype: None
+        """
         self.__buf.clear()
 
     def is_filled(self):
+        """
+        Tell whether Lifo contains data that can be popped out.
+
+        @return: fill status
+        @rtype: bool
+        """
         if self.__buf:
             return True
         return False
 
     def discard(self, entry):
+        """
+        Remove given object from stack. Any matching object,
+        through identity and == comparison will be removed.
+
+        @param entry: object in stack
+        @type entry: any Python object
+        @return: None
+        @rtype: None
+        """
         for key, buf_entry in self.__buf.items():
             # identity is generally faster, so try
             # this first
@@ -53,15 +122,54 @@ class Lifo:
                 continue
 
     def pop(self):
+        """
+        Pop the uppermost item of the stack out of it.
+
+        @return: object stored in the stack
+        @rtype: any Python object
+        @raise ValueError: if stack is empty
+        """
         try:
             idx = max(self.__buf)
         except (ValueError, TypeError,):
-            return None
+            raise ValueError("Lifo is empty")
         return self.__buf.pop(idx)
 
 class TimeScheduled(threading.Thread):
 
+    """
+    Multithreading class that wraps Python threading.Thread.
+    Specifically, this class implements the timed function execution
+    concept. It means that you can run timed functions (say every N
+    seconds) and control its execution through another (main?) thread.
+
+    It is possible to set arbitrary, variable, delays and decide if to delay
+    before or after the execution of the function provided at construction
+    time.
+    Timed function can be stopped by calling TimeScheduled.kill() method.
+    You may find the example below more exhaustive:
+
+        >>> from entropy.misc import TimeScheduled
+        >>> time_sched = TimeSheduled(5, print, "hello world", 123)
+        >>> time_sched.start()
+        hello world 123 # every 5 seconds
+        hello world 123 # every 5 seconds
+        hello world 123 # every 5 seconds
+        >>> time_sched.kill()
+
+    """
+
     def __init__(self, delay, *args, **kwargs):
+        """
+        TimeScheduled constructor.
+
+        @param delay: delay in seconds between a function call and another.
+        @type delay: float
+        @param *args: function as first magic arg and its arguments
+        @keyword *kwargs: keyword arguments of the function passed
+        @return: None
+        @rtype: None
+        """
         threading.Thread.__init__(self)
         self.__f = args[0]
         self.__delay = delay
@@ -76,15 +184,43 @@ class TimeScheduled(threading.Thread):
         self.__alive = 0
 
     def set_delay(self, delay):
+        """
+        Change current delay in seconds.
+
+        @param delay: new delay
+        @type delay: float
+        @return: None
+        @rtype: None
+        """
         self.__delay = delay
 
-    def set_delay_before(self, bool_do):
-        self.__delay_before = bool(bool_do)
+    def set_delay_before(self, delay_before):
+        """
+        Set whether delay before the execution of the function or not.
 
-    def set_accuracy(self, bool_do):
-        self.__accurate = bool(bool_do)
+        @param delay_before: delay before boolean
+        @type delay_before: bool
+        @return: None
+        @rtype: None
+        """
+        self.__delay_before = bool(delay_before)
+
+    def set_accuracy(self, accuracy):
+        """
+        Set whether delay function must be accurate or not.
+
+        @param accuracy: accuracy boolean
+        @type accuracy: bool
+        @return: None
+        @rtype: None
+        """
+        self.__accurate = bool(accuracy)
 
     def run(self):
+        """
+        This method is called automatically when start() is called.
+        Don't call this directly!!!
+        """
         self.__alive = 1
         while self.__alive:
 
@@ -128,6 +264,7 @@ class TimeScheduled(threading.Thread):
         return False
 
     def kill(self):
+        """ Stop the execution of the timed function """
         self.__alive = 0
 
 class ParallelTask(threading.Thread):
