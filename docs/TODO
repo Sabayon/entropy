@@ -6,6 +6,10 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
     - undefined symbols check tool => (examples: stat64, strlcpy)
     - Documentation + code style cleanup (NLnet Milestone 7)
+    - Transform Sulfur into Entropy Store:
+        - UGC for more coolness
+        - title change
+        - more sexy UI
 
   1.0_beta2:
 
