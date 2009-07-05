@@ -99,9 +99,10 @@ class EntropyCacher(Singleton):
             if not self.__alive:
                 break
             with self.__cache_lock:
-                data = self.__cache_buffer.pop()
-            if data == None:
-                break
+                try:
+                    data = self.__cache_buffer.pop()
+                except ValueError:
+                    break # stack empty
             key, data = data
             d_o = self.dumpTools.dumpobj
             if not d_o:

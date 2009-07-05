@@ -435,12 +435,18 @@ class QAInterface:
         mydeps = dbconn.retrieveDependencies(idpackage)
         for mydep in mydeps:
             mybuffer.push(mydep)
-        mydep = mybuffer.pop()
+        try:
+            mydep = mybuffer.pop()
+        except ValueError:
+            mydep = None # stack empty
 
         while mydep:
 
             if mydep in depcache:
-                mydep = mybuffer.pop()
+                try:
+                    mydep = mybuffer.pop()
+                except ValueError:
+                    break # stack empty
                 continue
 
             my_idpackage, my_rc = dbconn.atomMatch(mydep)
@@ -455,7 +461,10 @@ class QAInterface:
                     mybuffer.push(owndep)
 
             depcache.add(mydep)
-            mydep = mybuffer.pop()
+            try:
+                mydep = mybuffer.pop()
+            except ValueError:
+                break # stack empty
 
         # always discard -1 in set
         matchcache.discard(-1)

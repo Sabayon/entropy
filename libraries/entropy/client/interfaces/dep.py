@@ -665,20 +665,29 @@ class CalculatorsMixin:
 
         mydeps = mydbconn.retrieveDependencies(match_id)
         for mydep in mydeps: mybuffer.push(mydep)
-        mydep = mybuffer.pop()
+        try:
+            mydep = mybuffer.pop()
+        except ValueError:
+            mydep = None # stack empty
 
         open_db = self.open_repository
         am = self.atom_match
         while mydep:
 
             if mydep in depcache:
-                mydep = mybuffer.pop()
+                try:
+                    mydep = mybuffer.pop()
+                except ValueError:
+                    break # stack empty
                 continue
             depcache.add(mydep)
 
             idpackage, repoid = am(mydep)
             if (idpackage, repoid) in matchfilter:
-                mydep = mybuffer.pop()
+                try:
+                    mydep = mybuffer.pop()
+                except ValueError:
+                    break # stack empty
                 continue
 
             if idpackage != -1:
@@ -710,7 +719,10 @@ class CalculatorsMixin:
                 for owndep in owndeps:
                     mybuffer.push(owndep)
 
-            mydep = mybuffer.pop()
+            try:
+                mydep = mybuffer.pop()
+            except ValueError:
+                break # stack empty
 
         return maskedtree
 
@@ -769,7 +781,11 @@ class CalculatorsMixin:
                 const_debug_write(__name__,
                     "generate_dependency_tree already in treecache => %s" % (
                         dep_atom,))
-                mydep = mybuffer.pop()
+                try:
+                    mydep = mybuffer.pop()
+                except ValueError:
+                    const_debug_write(__name__, "---empty--")
+                    break # stack empty
                 const_debug_write(__name__, "---")
                 continue
             treecache.add(dep_atom)
@@ -778,7 +794,11 @@ class CalculatorsMixin:
                 const_debug_write(__name__,
                     "generate_dependency_tree broken entry in DB => %s" % (
                         mydep,))
-                mydep = mybuffer.pop()
+                try:
+                    mydep = mybuffer.pop()
+                except ValueError:
+                    const_debug_write(__name__, "---empty2--")
+                    break # stack empty
                 const_debug_write(__name__, "---")
                 continue
 
@@ -797,7 +817,11 @@ class CalculatorsMixin:
                         mybuffer.push((dep_level+1,myreplacement))
                     else:
                         conflicts.add(c_idpackage)
-                mydep = mybuffer.pop()
+                try:
+                    mydep = mybuffer.pop()
+                except ValueError:
+                    const_debug_write(__name__, "---empty3---")
+                    break # stack empty
                 const_debug_write(__name__, "---")
                 continue
 
@@ -829,7 +853,11 @@ class CalculatorsMixin:
                         dep_atom,))
 
                 deps_not_found.add(dep_atom)
-                mydep = mybuffer.pop()
+                try:
+                    mydep = mybuffer.pop()
+                except ValueError:
+                    const_debug_write(__name__, "---empty3---")
+                    break # stack empty
                 const_debug_write(__name__, "---")
                 continue
 
@@ -843,7 +871,11 @@ class CalculatorsMixin:
                     m_idpackage, matchatom, matchkey, matchslot))
 
             if (dep_atom != matchatom) and (matchatom in treecache):
-                mydep = mybuffer.pop()
+                try:
+                    mydep = mybuffer.pop()
+                except ValueError:
+                    const_debug_write(__name__, "---empty4---")
+                    break # stack empty
                 const_debug_write(__name__,
                     "generate_dependency_tree matchatom %s already in cache" % (
                         matchatom,))
@@ -858,7 +890,11 @@ class CalculatorsMixin:
 
             # check if key + slot has been already pulled in
             if (matchslot, matchkey) in keyslotcache:
-                mydep = mybuffer.pop()
+                try:
+                    mydep = mybuffer.pop()
+                except ValueError:
+                    const_debug_write(__name__, "---empty5---")
+                    break # stack empty
                 const_debug_write(__name__, "---")
                 continue
             else:
@@ -871,7 +907,11 @@ class CalculatorsMixin:
             match = (m_idpackage, m_repo,)
             # result already analyzed?
             if match in matchfilter:
-                mydep = mybuffer.pop()
+                try:
+                    mydep = mybuffer.pop()
+                except ValueError:
+                    const_debug_write(__name__, "---empty6---")
+                    break # stack empty
                 const_debug_write(__name__, "---")
                 continue
 
@@ -969,13 +1009,18 @@ class CalculatorsMixin:
             for x in myundeps:
                 mybuffer.push((treedepth, x))
 
-            mydep = mybuffer.pop()
+            try:
+                mydep = mybuffer.pop()
+            except ValueError:
+                const_debug_write(__name__, "---empty7---")
+                break # stack empty
             const_debug_write(__name__, "---")
 
         if deps_not_found:
-            return list(deps_not_found),-2
+            return list(deps_not_found), -2
 
-        if flat: return [x[1] for x in deptree],0
+        if flat:
+            return [x[1] for x in deptree], 0
 
         newdeptree = {}
         for key, item in deptree:
