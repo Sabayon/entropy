@@ -55,21 +55,31 @@
 </table>
 <!-- ==================== MODULE DESCRIPTION ==================== -->
 <h1 class="epydoc">Module dump</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.dump-pysrc.html">source&nbsp;code</a></span></p>
-<p># DESCRIPTION: # load/save a data to file by dumping its structure</p>
-  <p>Copyright (C) 2007-2009 Fabio Erculiani</p>
-  <p>This program is free software; you can redistribute it and/or modify 
-  it under the terms of the GNU General Public License as published by the 
-  Free Software Foundation; either version 2 of the License, or (at your 
-  option) any later version.</p>
-  <p>This program is distributed in the hope that it will be useful, but 
-  WITHOUT ANY WARRANTY; without even the implied warranty of 
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General
-  Public License for more details.</p>
-  <p>You should have received a copy of the GNU General Public License 
-  along with this program; if not, write to the Free Software Foundation, 
-  Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA</p>
-
-<!-- ==================== FUNCTIONS ==================== -->
+<hr />
+<div class="fields">      <p><strong>Author:</strong>
+        Fabio Erculiani &lt;lxnay@sabayonlinux.org&gt;
+      </p>
+      <p><strong>Contact:</strong>
+        lxnay@sabayonlinux.org
+      </p>
+      <p><strong>Copyright:</strong>
+        Fabio Erculiani
+      </p>
+      <p><strong>License:</strong>
+        GPL-2
+        <p><b>Entropy Framework object disk serializer module</b>.</p>
+        <p>This module contains Entropy Python object serialization 
+        functions and disk dumpers.</p>
+        <p>Serialized objects are stored to disk with proper permissions by
+        default into path given by entropy.const's 
+        etpConst['dumpstoragedir'].</p>
+        <p>Permissions are set using entropy.const's const_setup_perms and 
+        const_setup_file functions.</p>
+        <p>Objects are serialized using Python's cPickle/pickle modules, 
+        thus they must be &quot;pickable&quot;. Please read Python Library 
+        reference for more information.</p>
+      </p>
+</div><!-- ==================== FUNCTIONS ==================== -->
 <a name="section-Functions"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
@@ -79,7 +89,7 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -87,7 +97,7 @@
         <span class="summary-sig-arg">my_object</span>,
         <span class="summary-sig-arg">complete_path</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">ignore_exceptions</span>=<span class="summary-sig-default">True</span>)</span><br />
-      Dump object to file</td>
+      Dump pickable object to file</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.dump-pysrc.html#dumpobj">source&nbsp;code</a></span>
             
@@ -99,7 +109,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">file object</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -118,7 +128,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">any Python pickable object</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -135,7 +145,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">any Python pickable object</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -152,7 +162,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">string</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -169,13 +179,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">any Python pickable object or None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.dump-module.html#loadobj" class="summary-sig-name">loadobj</a>(<span class="summary-sig-arg">name</span>,
         <span class="summary-sig-arg">complete_path</span>=<span class="summary-sig-default">False</span>)</span><br />
-      Load object from a file...</td>
+      Load object from a file</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.dump-pysrc.html#loadobj">source&nbsp;code</a></span>
             
@@ -187,7 +197,7 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -204,12 +214,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.dump-module.html#removeobj" class="summary-sig-name">removeobj</a>(<span class="summary-sig-arg">name</span>)</span><br />
-      Remove cached object through its object name</td>
+      Remove cached object referenced by its object name</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.dump-pysrc.html#removeobj">source&nbsp;code</a></span>
             
@@ -276,12 +286,28 @@
     </td>
   </tr></table>
   
-  <p>Dump object to file</p>
-  <p>@param name -- name of the object @param my_object -- object to dump 
-  @param complete_path -- name is a complete path @param ignore_exceptions 
-  -- ignore exceptions</p>
-  <p>@return None</p>
+  <p>Dump pickable object to file</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (string) - name of the object</li>
+        <li><strong class="pname"><code>my_object</code></strong> (any Python &quot;pickable&quot; object) - object to dump</li>
+        <li><strong class="pname"><code>complete_path</code></strong> (bool) - consider &quot;name&quot; argument as a complete path (this 
+          overrides the default dump path given by 
+          etpConst['dumpstoragedir'])</li>
+        <li><strong class="pname"><code>ignore_exceptions</code></strong> (bool) - ignore any possible exception (EOFError, IOError, OSError,)</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>EOFError</strong></code> - could be caused by pickle.dump, ignored if ignore_exceptions is 
+        True</li>
+        <li><code><strong class='fraise'>IOError</strong></code> - could be caused by pickle.dump, ignored if ignore_exceptions is 
+        True</li>
+        <li><code><strong class='fraise'>OSError</strong></code> - could be caused by pickle.dump, ignored if ignore_exceptions is 
+        True</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -302,11 +328,24 @@
   </tr></table>
   
   <p>Serialize object to ser_f (file)</p>
-  <p>@param myobj -- object to serialize @type myobj -- any picklable 
-  object @param ser_f -- file handle to write to @type ser_f -- file object
-  @param do_seek -- move the file cursor to the beginning @type do_seek -- 
-  bool @return file object where data is stored to</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>myobj</code></strong> (any Python picklable object) - Python object to serialize</li>
+        <li><strong class="pname"><code>ser_f</code></strong> (file object) - file object to write to</li>
+        <li><strong class="pname"><code>do_seek</code></strong> (bool) - move file cursor back to the beginning of ser_f</li>
+    </ul></dd>
+    <dt>Returns: file object</dt>
+        <dd>file object where data has been written</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>RuntimeError</strong></code> - caused by pickle.dump in case of system errors</li>
+        <li><code><strong class='fraise'>EOFError</strong></code> - caused by pickle.dump in case of race conditions on 
+        multi-processing or multi-threading</li>
+        <li><code><strong class='fraise'>IOError</strong></code> - caused by pickle.dump in case of race conditions on 
+        multi-processing or multi-threading</li>
+        <li><code><strong class='fraise'>pickle.PicklingError</strong></code> - when object cannot be recreated</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -325,9 +364,17 @@
   </tr></table>
   
   <p>Unserialize file to object (file)</p>
-  <p>@param serial_f -- file object to read the stream to @type serial_f --
-  file object @return object reconstructed</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>serial_f</code></strong> (file object) - file object which data will be read from</li>
+    </ul></dd>
+    <dt>Returns: any Python pickable object</dt>
+        <dd>rebuilt object</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>pickle.UnpicklingError</strong></code> - when object cannot be recreated</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -346,9 +393,17 @@
   </tr></table>
   
   <p>Unserialize pickle string to object</p>
-  <p>@param mystring -- data stream in string form to reconstruct @type 
-  mystring -- basestring @return reconstructed object</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>mystring</code></strong> (string) - data stream in string form to reconstruct</li>
+    </ul></dd>
+    <dt>Returns: any Python pickable object</dt>
+        <dd>reconstructed object</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>pickle.UnpicklingError</strong></code> - when object cannot be recreated</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -367,9 +422,17 @@
   </tr></table>
   
   <p>Serialize object to string</p>
-  <p>@param myobj -- object to serialize @type myobj -- any picklable 
-  object @return serialized string</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>myobj</code></strong> (any Python picklable object) - object to serialize</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>serialized string</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>pickle.PicklingError</strong></code> - when object cannot be recreated</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -388,18 +451,16 @@
     </td>
   </tr></table>
   
-  <pre class="literalblock">
-
-Load object from a file
-@param name -- name of the object to load
-@type name -- basestring
-@param complete_path -- name is a complete serialized
-    object file path to load
-@type complete_path -- basestring
-@return object or None
-
-</pre>
+  <p>Load object from a file</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (string) - name of the object to load</li>
+        <li><strong class="pname"><code>complete_path</code></strong> (bool) - determine whether name argument is a complete disk path to 
+          serialized object</li>
+    </ul></dd>
+    <dt>Returns: any Python pickable object or None</dt>
+        <dd>object or None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -418,9 +479,14 @@ Load object from a file
   </tr></table>
   
   <p>Get dumped object mtime</p>
-  <p>@param name -- object name @type name -- basestring @return mtime -- 
-  integer</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (string) - object name</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>mtime of the file containing the serialized object or 0 if not 
+          found</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -438,10 +504,18 @@ Load object from a file
     </td>
   </tr></table>
   
-  <p>Remove cached object through its object name</p>
-  <p>@param name -- object name @type name -- basestring @return bool -- 
-  removed or not</p>
+  <p>Remove cached object referenced by its object name</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>name</code></strong> (string) - object name</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>bool representing whether object has been removed or not</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>OSError</strong></code> - in case of troubles with os.remove()</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -477,7 +551,7 @@ Load object from a file
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sun Jun 28 00:23:22 2009
+    Generated by Epydoc 3.0.1 on Sat Jul  4 05:31:31 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

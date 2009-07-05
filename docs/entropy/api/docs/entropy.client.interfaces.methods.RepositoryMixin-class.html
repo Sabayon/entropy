@@ -511,42 +511,6 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#get_post_branch_migration_status_file" class="summary-sig-name">get_post_branch_migration_status_file</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">repoid</span>)</span><br />
-      Returns path of the branch migration status file.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#RepositoryMixin.get_post_branch_migration_status_file">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">string or None</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.client.interfaces.methods.RepositoryMixin-class.html#get_post_branch_upgrade_status_file" class="summary-sig-name">get_post_branch_upgrade_status_file</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">repoid</span>)</span><br />
-      Returns path of the branch upgrade status file.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#RepositoryMixin.get_post_branch_upgrade_status_file">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">tuple(set, bool)</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -594,70 +558,6 @@
     <span class="table-header">Method Details</span></td>
 </tr>
 </table>
-<a name="get_post_branch_migration_status_file"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_post_branch_migration_status_file</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">repoid</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#RepositoryMixin.get_post_branch_migration_status_file">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <pre class="literalblock">
-
-        Returns path of the branch migration status file.
-        This file is placed inside the Entropy client directory to determine
-        if post-branch migration script has been run.
-        The content of this status file is usually something like this:
-            &quot;&lt;mtime&gt; =&gt; &lt;from branch&gt; =&gt; &lt;to branch&gt;
-&quot;
-
-        @param repoid: repository identifier
-        @type repoid: string
-        @return: branch migration status file path or None
-        @rtype: string or None
-        
-
-</pre>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_post_branch_upgrade_status_file"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_post_branch_upgrade_status_file</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">repoid</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#RepositoryMixin.get_post_branch_upgrade_status_file">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Returns path of the branch upgrade status file. This file is placed 
-  inside the Entropy client directory to determine whether running 
-  post-upgrade (&quot;equo upgrade&quot;) repository branch update scripts.
-  This file contains no data.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>repoid</code></strong> (string) - repository identifier</li>
-    </ul></dd>
-    <dt>Returns: string or None</dt>
-        <dd>branch upgrade status file path or None</dd>
-  </dl>
-</td></tr></table>
-</div>
 <a name="run_repositories_post_branch_switch_hooks"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -747,7 +647,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sun Jun 28 00:23:23 2009
+    Generated by Epydoc 3.0.1 on Sat Jul  4 05:31:33 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

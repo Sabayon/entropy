@@ -56,6 +56,40 @@
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class Lifo</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.misc-pysrc.html#Lifo">source&nbsp;code</a></span></p>
+<p>This class can be used to build LIFO buffers, also commonly known as 
+  &quot;stacks&quot;. <i>Lifo</i> allows you to store and retrieve Python 
+  objects from its stack, in a very smart way. This implementation is much 
+  faster than the one provided by Python (queue module) and more 
+  sofisticated.</p>
+  <p>Sample code:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-comment"># load Lifo</span>
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> entropy.misc <span class="py-keyword">import</span> Lifo
+<span class="py-prompt">&gt;&gt;&gt; </span>stack = Lifo()
+<span class="py-prompt">&gt;&gt;&gt; </span>item1 = set([1,2,3])
+<span class="py-prompt">&gt;&gt;&gt; </span>item2 = [<span class="py-string">&quot;a&quot;</span>,<span class="py-string">&quot;b&quot;</span>, <span class="py-string">&quot;c&quot;</span>]
+<span class="py-prompt">&gt;&gt;&gt; </span>item3 = None
+<span class="py-prompt">&gt;&gt;&gt; </span>item4 = 1
+<span class="py-prompt">&gt;&gt;&gt; </span>stack.push(item4)
+<span class="py-prompt">&gt;&gt;&gt; </span>stack.push(item3)
+<span class="py-prompt">&gt;&gt;&gt; </span>stack.push(item2)
+<span class="py-prompt">&gt;&gt;&gt; </span>stack.push(item1)
+<span class="py-prompt">&gt;&gt;&gt; </span>stack.is_filled()
+<span class="py-output">True</span>
+<span class="py-output"># discarding all the item matching int(1) in the stack</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>stack.discard(1)
+<span class="py-prompt">&gt;&gt;&gt; </span>item3 <span class="py-keyword">is</span> stack.pop()
+<span class="py-output">True</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>item2 <span class="py-keyword">is</span> stack.pop()
+<span class="py-output">True</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>item1 <span class="py-keyword">is</span> stack.pop()
+<span class="py-output">True</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>stack.pop()
+<span class="py-output">ValueError exception (stack is empty)</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>stack.is_filled()
+<span class="py-output">False</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">del</span> stack</pre>
+
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -70,7 +104,8 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Lifo class constructor</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#Lifo.__init__">source&nbsp;code</a></span>
             
@@ -82,12 +117,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="push"></a><span class="summary-sig-name">push</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">item</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.Lifo-class.html#push" class="summary-sig-name">push</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">item</span>)</span><br />
+      Push an object into the stack.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#Lifo.push">source&nbsp;code</a></span>
             
@@ -99,11 +135,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="clear"></a><span class="summary-sig-name">clear</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.Lifo-class.html#clear" class="summary-sig-name">clear</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Clear the stack.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#Lifo.clear">source&nbsp;code</a></span>
             
@@ -115,11 +152,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="is_filled"></a><span class="summary-sig-name">is_filled</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.Lifo-class.html#is_filled" class="summary-sig-name">is_filled</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Tell whether Lifo contains data that can be popped out.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#Lifo.is_filled">source&nbsp;code</a></span>
             
@@ -131,12 +169,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="discard"></a><span class="summary-sig-name">discard</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">entry</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.Lifo-class.html#discard" class="summary-sig-name">discard</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entry</span>)</span><br />
+      Remove given object from stack.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#Lifo.discard">source&nbsp;code</a></span>
             
@@ -148,11 +187,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">any Python object</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="pop"></a><span class="summary-sig-name">pop</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.Lifo-class.html#pop" class="summary-sig-name">pop</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Pop the uppermost item of the stack out of it.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#Lifo.pop">source&nbsp;code</a></span>
             
@@ -163,6 +203,136 @@
     </td>
   </tr>
 </table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="push"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">push</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">item</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#Lifo.push">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Push an object into the stack.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>item</code></strong> (Python object) - any Python object</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="clear"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">clear</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#Lifo.clear">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Clear the stack.</p>
+  <dl class="fields">
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="is_filled"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_filled</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#Lifo.is_filled">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Tell whether Lifo contains data that can be popped out.</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>fill status</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="discard"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">discard</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entry</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#Lifo.discard">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove given object from stack. Any matching object, through identity 
+  and == comparison will be removed.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entry</code></strong> (any Python object) - object in stack</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="pop"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">pop</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#Lifo.pop">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Pop the uppermost item of the stack out of it.</p>
+  <dl class="fields">
+    <dt>Returns: any Python object</dt>
+        <dd>object stored in the stack</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>ValueError</strong></code> - if stack is empty</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -194,7 +364,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sun Jun 28 00:23:26 2009
+    Generated by Epydoc 3.0.1 on Sat Jul  4 05:31:37 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
