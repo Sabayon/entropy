@@ -117,7 +117,8 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
             del x
         except (UnicodeDecodeError,UnicodeEncodeError,):
             return False,'Invalid username'
-        if ("&quot;" in username) or ("'" in username) or ('"' in username):
+        if ("&quot;" in username) or ("'" in username) or ('"' in username) or \
+            (" " in username):
             return False,'Invalid username'
 
         try:
