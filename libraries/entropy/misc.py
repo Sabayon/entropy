@@ -133,7 +133,10 @@ class Lifo:
             idx = max(self.__buf)
         except (ValueError, TypeError,):
             raise ValueError("Lifo is empty")
-        return self.__buf.pop(idx)
+        try:
+            return self.__buf.pop(idx)
+        except (KeyError,):
+            raise ValueError("Lifo is empty")
 
 class TimeScheduled(threading.Thread):
 
