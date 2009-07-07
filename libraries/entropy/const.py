@@ -430,8 +430,6 @@ def const_default_settings(rootdir):
         # and handle the removal through expiration (using creation date)
         'expiration_based_scope': False,
         'edbcounter': edb_counter,
-        'libtest_blacklist': [],
-        'libtest_files_blacklist': [],
         # our official repository name
         'officialserverrepositoryid': "sabayonlinux.org",
         # our official repository name
