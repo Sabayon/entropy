@@ -294,6 +294,13 @@ class QAInterface:
 
         reverse_symlink_map = self.SystemSettings['system_rev_symlinks']
         broken_syms_list = self.SystemSettings['broken_syms']
+
+        import re
+        broken_syms_list_regexp = []
+        for broken_sym in broken_syms_list:
+            reg_sym = re.compile(broken_sym)
+            broken_syms_list_regexp.append(reg_sym)
+
         ldpaths = set(self.entropyTools.collect_linker_paths())
         ldpaths |= self.entropyTools.collect_paths()
 
@@ -410,8 +417,12 @@ class QAInterface:
 
                 read_broken_syms = self.entropyTools.read_elf_broken_symbols(
                         etpConst['systemroot'] + executable)
-                my_broken_syms = [x for x in read_broken_syms if x in \
-                    broken_syms_list]
+                my_broken_syms = set()
+                for read_broken_sym in read_broken_syms:
+                    for reg_sym in broken_syms_list_regexp:
+                        if reg_sym.match(read_broken_sym):
+                            my_broken_syms.add(read_broken_sym)
+                            break
                 broken_sym_found.update(my_broken_syms)
 
             if not (mylibs or broken_sym_found):
