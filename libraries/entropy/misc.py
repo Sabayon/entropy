@@ -244,6 +244,8 @@ class TimeScheduled(threading.Thread):
 
     def __do_delay(self):
 
+        """ Executes the delay """
+
         if not self.__accurate:
 
             if float == None:
@@ -272,7 +274,28 @@ class TimeScheduled(threading.Thread):
 
 class ParallelTask(threading.Thread):
 
+    """
+    Multithreading class that wraps Python threading.Thread.
+    Specifically, this class makes possible to easily execute a function
+    on a separate thread.
+
+    Python threads can't be stopped, paused or more generically arbitrarily
+    controlled.
+
+        >>> from entropy.misc import ParallelTask
+        >>> parallel = ParallelTask(print, "hello world", 123)
+        >>> parallel.start()
+        hello world 123
+        >>> parallel.kill()
+
+    """
+
     def __init__(self, *args, **kwargs):
+        """
+        ParallelTask constructor
+
+        Provide a function and its arguments as arguments of this constructor.
+        """
         threading.Thread.__init__(self)
         self.__function = args[0]
         self.__args = args[1:][:]
@@ -280,17 +303,56 @@ class ParallelTask(threading.Thread):
         self.__rc = None
 
     def run(self):
+        """
+        This method is called automatically when start() is called.
+        Don't call this directly!!!
+        """
         self.__rc = self.__function(*self.__args, **self.__kwargs)
 
     def get_function(self):
+        """
+        Return the function passed to constructor that is going to be executed.
+
+        @return: parallel function
+        @rtype: Python callable object
+        """
         return self.__function
 
     def get_rc(self):
+        """
+        Return result of the last parallel function call passed to constructor.
+
+        @return: parallel function result
+        @rtype: Python object
+        """
         return self.__rc
 
 class EmailSender:
 
+    """
+    This class implements a very simple e-mail (through SMTP) sender.
+    It is used by the User Generated Content interface and something more.
+
+    You can swap the sender function at runtime, by redefining
+    EmailSender.default_sender. By default, default_sender is set to
+    EmailSender.smtp_send.
+
+    Sample code:
+
+        >>> sender = EmailSender()
+        >>> sender.send_text_email("me@test.com", ["him@test.com"], "hello!",
+            "this is the content")
+        ...
+        >>> sender = EmailSender()
+        >>> sender.send_mime_email("me@test.com", ["him@test.com"], "hello!",
+            "this is the content", ["/path/to/file1", "/path/to/file2"])
+
+    """
+
     def __init__(self):
+
+        """ EmailSender constructor """
+
         import smtplib
         self.smtplib = smtplib
         from email.mime.audio import MIMEAudio
@@ -316,6 +378,21 @@ class EmailSender:
         self.message = Message
 
     def smtp_send(self, sender, destinations, message):
+        """
+        This is the default method for sending emails.
+        It uses Python's smtplib module.
+        You should not use this function directly.
+
+        @param sender: sender email address
+        @type sender: string
+        @param destinations: list of recipients
+        @type destinations: list of string
+        @param message: message to send
+        @type message: string
+
+        @return: None
+        @rtype: None
+        """
         s_srv = self.smtplib.SMTP(self.smtphost, self.smtpport)
         if self.smtpuser and self.smtppassword:
             s_srv.login(self.smtpuser, self.smtppassword)
@@ -324,7 +401,21 @@ class EmailSender:
 
     def send_text_email(self, sender_email, destination_emails, subject,
         content):
+        """
+        This method exposes an easy way to send textual emails.
 
+        @param sender_email: sender email address
+        @type sender_email: string
+        @param destination_emails: list of recipients
+        @type destination_emails: list
+        @param subject: email subject
+        @type subject: string
+        @param content: email content
+        @type content: string
+
+        @return: None
+        @rtype: None
+        """
         # Create a text/plain message
         if isinstance(content, unicode):
             content = content.encode('utf-8')
@@ -340,7 +431,24 @@ class EmailSender:
 
     def send_mime_email(self, sender_email, destination_emails, subject,
             content, files):
+        """
+        This method exposes an easy way to send complex emails (with
+        attachments).
 
+        @param sender_email: sender email address
+        @type sender_email: string
+        @param destination_emails: list of recipients
+        @type destination_emails: list of string
+        @param subject: email subject
+        @type subject: string
+        @param content: email content
+        @type content: string
+        @param files: list of valid file paths
+        @type files: list
+
+        @return: None
+        @rtype: None
+        """
         outer = self.multipart()
         outer['Subject'] = subject
         outer['From'] = sender_email
@@ -385,17 +493,28 @@ class EmailSender:
 class EntropyGeoIP:
 
     """
-        Entropy geo-tagging interface containing useful
-        methods to ease metadata management and transfor-
-        mation.
-        It's a wrapper over GeoIP at the moment
-        dev-python/geoip-python required
+    Entropy geo-tagging interface containing useful methods to ease
+    metadata management and transformation.
+    It's a wrapper over GeoIP at the moment dev-python/geoip-python
+    required.
+
+    Sample code:
+
+        >>> geo = EntropyGeoIp("mygeoipdb.dat")
+        >>> geo.get_geoip_record_from_ip("123.123.123.123")
+        { dict() metadata }
+
     """
 
     def __init__(self, geoip_dbfile):
 
         """
-        @param1: valid GeoIP (Maxmind) database file (.dat)
+        EntropyGeoIP constructor.
+
+        @param geoip_dbfile: valid GeoIP (Maxmind) database file (.dat) path
+            (download from:
+            http://www.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz)
+        @type geoip_dbfile: string
         """
 
         import GeoIP
@@ -411,53 +530,58 @@ class EntropyGeoIP:
         self.__geoip_dbfile = geoip_dbfile
 
     def __get_geo_ip_generic(self):
+        """ Private method """
         return self.__geoip.new(self.__geoip.GEOIP_MEMORY_CACHE)
 
     def __get_geo_ip_open(self):
+        """ Private method """
         return self.__geoip.open(self.__geoip_dbfile,
             self.__geoip.GEOIP_STANDARD)
 
     def get_geoip_country_name_from_ip(self, ip_address):
         """
-        @return: string or None
-        @param1: ip address string
+        Get country name from IP address.
+
+        @param ip_address: ip address string
+        @type ip_address: string
+        @return: country name or None
+        @rtype: string or None
         """
         gi_a = self.__get_geo_ip_generic()
         return gi_a.country_name_by_addr(ip_address)
 
     def get_geoip_country_code_from_ip(self, ip_address):
         """
-        @return: string or None
-        @param1: ip address string
+        Get country code from IP address.
+
+        @param ip_address: ip address string
+        @type ip_address: string
+        @return: country code or None
+        @rtype: string or None
         """
         gi_a = self.__get_geo_ip_generic()
         return gi_a.country_code_by_addr(ip_address)
 
     def get_geoip_record_from_ip(self, ip_address):
         """
-        @return: dict() or None
-        @param1: ip address string
-        dict data:
-            {
-                'city': 'Treviso',
-                'region': '20',
-                'area_code': 0,
-                'longitude': 12.244999885559082,
-                'country_code3': 'ITA',
-                'latitude': 45.666698455810547,
-                'postal_code': None,
-                'dma_code': 0,
-                'country_code': 'IT',
-                'country_name': 'Italy'
-            }
+        Get GeoIP record from IP address.
+
+        @param ip_address: ip address string
+        @type ip_address: string
+        @return: GeoIP record data
+        @rtype: dict
         """
         go_a = self.__get_geo_ip_open()
         return go_a.record_by_addr(ip_address)
 
     def get_geoip_record_from_hostname(self, hostname):
         """
-        @return: dict() or None
-        @param1: hostname
+        Get GeoIP record from hostname.
+
+        @param hostname: ip address string
+        @type hostname: string
+        @return: GeoIP record data
+        @rtype: dict
         """
         go_a = self.__get_geo_ip_open()
         return go_a.record_by_name(hostname)
