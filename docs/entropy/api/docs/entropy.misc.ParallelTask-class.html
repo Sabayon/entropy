@@ -58,11 +58,11 @@
 <h1 class="epydoc">Class ParallelTask</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.misc-pysrc.html#ParallelTask">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_entropy__58" name="uml_class_diagram_for_entropy__58">
-<area shape="rect" href="entropy.misc.ParallelTask-class.html#__init__" title="x.__init__(...) initializes x; see x.__class__.__doc__ for signature" alt="" coords="17,303,193,321"/>
-<area shape="rect" href="entropy.misc.ParallelTask-class.html#run" title="entropy.misc.ParallelTask.run" alt="" coords="17,321,193,340"/>
-<area shape="rect" href="entropy.misc.ParallelTask-class.html#get_function" title="entropy.misc.ParallelTask.get_function" alt="" coords="17,340,193,359"/>
-<area shape="rect" href="entropy.misc.ParallelTask-class.html#get_rc" title="entropy.misc.ParallelTask.get_rc" alt="" coords="17,359,193,377"/>
-<area shape="rect" href="entropy.misc.ParallelTask-class.html" title="entropy.misc.ParallelTask" alt="" coords="16,277,195,379"/>
+<area shape="rect" href="entropy.misc.ParallelTask-class.html#__init__" title="ParallelTask constructor" alt="" coords="17,303,193,321"/>
+<area shape="rect" href="entropy.misc.ParallelTask-class.html#run" title="This method is called automatically when start() is called." alt="" coords="17,321,193,340"/>
+<area shape="rect" href="entropy.misc.ParallelTask-class.html#get_function" title="Return the function passed to constructor that is going to be executed." alt="" coords="17,340,193,359"/>
+<area shape="rect" href="entropy.misc.ParallelTask-class.html#get_rc" title="Return result of the last parallel function call passed to constructor." alt="" coords="17,359,193,377"/>
+<area shape="rect" href="entropy.misc.ParallelTask-class.html" title="Multithreading class that wraps Python threading.Thread." alt="" coords="16,277,195,379"/>
 <area shape="rect" href="javascript:void(0);" title="repr(x)" alt="" coords="23,97,188,116"/>
 <area shape="rect" href="javascript:void(0);" title="threading.Thread.start" alt="" coords="23,116,188,135"/>
 <area shape="rect" href="javascript:void(0);" title="threading.Thread.join" alt="" coords="23,135,188,153"/>
@@ -78,6 +78,18 @@
 </center>
 </center>
 <hr />
+<p>Multithreading class that wraps Python threading.Thread. Specifically,
+  this class makes possible to easily execute a function on a separate 
+  thread.</p>
+  <p>Python threads can't be stopped, paused or more generically 
+  arbitrarily controlled.</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> entropy.misc <span class="py-keyword">import</span> ParallelTask
+<span class="py-prompt">&gt;&gt;&gt; </span>parallel = ParallelTask(<span class="py-keyword">print</span>, <span class="py-string">&quot;hello world&quot;</span>, 123)
+<span class="py-prompt">&gt;&gt;&gt; </span>parallel.start()
+<span class="py-output">hello world 123</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>parallel.kill()</pre>
+
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -95,7 +107,7 @@
           <td><span class="summary-sig"><a href="entropy.misc.ParallelTask-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">*args</span>,
         <span class="summary-sig-arg">**kwargs</span>)</span><br />
-      x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
+      ParallelTask constructor</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#ParallelTask.__init__">source&nbsp;code</a></span>
             
@@ -111,7 +123,8 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.misc.ParallelTask-class.html#run" class="summary-sig-name">run</a>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.ParallelTask-class.html#run" class="summary-sig-name">run</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      This method is called automatically when start() is called.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#ParallelTask.run">source&nbsp;code</a></span>
             
@@ -123,11 +136,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">Python callable object</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_function"></a><span class="summary-sig-name">get_function</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.ParallelTask-class.html#get_function" class="summary-sig-name">get_function</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return the function passed to constructor that is going to be 
+      executed.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#ParallelTask.get_function">source&nbsp;code</a></span>
             
@@ -139,11 +154,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">Python object</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_rc"></a><span class="summary-sig-name">get_rc</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.ParallelTask-class.html#get_rc" class="summary-sig-name">get_rc</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return result of the last parallel function call passed to 
+      constructor.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#ParallelTask.get_rc">source&nbsp;code</a></span>
             
@@ -220,12 +237,12 @@
     </td>
   </tr></table>
   
-  <p>x.__init__(...) initializes x; see x.__class__.__doc__ for 
-  signature</p>
+  <p>ParallelTask constructor</p>
+  <p>Provide a function and its arguments as arguments of this 
+  constructor.</p>
   <dl class="fields">
     <dt>Overrides:
         object.__init__
-        <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
 </td></tr></table>
@@ -244,11 +261,56 @@
     </td>
   </tr></table>
   
-  
+  <p>This method is called automatically when start() is called. Don't call
+  this directly!!!</p>
   <dl class="fields">
     <dt>Overrides:
         threading.Thread.run
     </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_function"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_function</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#ParallelTask.get_function">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return the function passed to constructor that is going to be 
+  executed.</p>
+  <dl class="fields">
+    <dt>Returns: Python callable object</dt>
+        <dd>parallel function</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_rc"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_rc</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#ParallelTask.get_rc">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return result of the last parallel function call passed to 
+  constructor.</p>
+  <dl class="fields">
+    <dt>Returns: Python object</dt>
+        <dd>parallel function result</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -284,7 +346,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sat Jul  4 05:31:37 2009
+    Generated by Epydoc 3.0.1 on Tue Jul  7 19:15:06 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

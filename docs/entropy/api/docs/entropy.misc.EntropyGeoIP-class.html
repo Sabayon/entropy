@@ -57,8 +57,13 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class EntropyGeoIP</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.misc-pysrc.html#EntropyGeoIP">source&nbsp;code</a></span></p>
 <p>Entropy geo-tagging interface containing useful methods to ease 
-  metadata management and transfor- mation. It's a wrapper over GeoIP at 
-  the moment dev-python/geoip-python required</p>
+  metadata management and transformation. It's a wrapper over GeoIP at the 
+  moment dev-python/geoip-python required.</p>
+  <p>Sample code:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span>geo = EntropyGeoIp(<span class="py-string">&quot;mygeoipdb.dat&quot;</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>geo.get_geoip_record_from_ip(<span class="py-string">&quot;123.123.123.123&quot;</span>)
+<span class="py-output">{ dict() metadata }</span></pre>
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -74,8 +79,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">geoip_dbfile</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.EntropyGeoIP-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">geoip_dbfile</span>)</span><br />
+      EntropyGeoIP constructor.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#EntropyGeoIP.__init__">source&nbsp;code</a></span>
             
@@ -87,14 +93,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">string or None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.misc.EntropyGeoIP-class.html#get_geoip_country_name_from_ip" class="summary-sig-name">get_geoip_country_name_from_ip</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">ip_address</span>)</span><br />
-      Returns:
-      string or None</td>
+      Get country name from IP address.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#EntropyGeoIP.get_geoip_country_name_from_ip">source&nbsp;code</a></span>
             
@@ -106,14 +111,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">string or None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.misc.EntropyGeoIP-class.html#get_geoip_country_code_from_ip" class="summary-sig-name">get_geoip_country_code_from_ip</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">ip_address</span>)</span><br />
-      Returns:
-      string or None</td>
+      Get country code from IP address.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#EntropyGeoIP.get_geoip_country_code_from_ip">source&nbsp;code</a></span>
             
@@ -125,13 +129,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">dict</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.misc.EntropyGeoIP-class.html#get_geoip_record_from_ip" class="summary-sig-name">get_geoip_record_from_ip</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">ip_address</span>)</span><br />
-      @return: dict() or None...</td>
+      Get GeoIP record from IP address.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#EntropyGeoIP.get_geoip_record_from_ip">source&nbsp;code</a></span>
             
@@ -143,14 +147,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">dict</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.misc.EntropyGeoIP-class.html#get_geoip_record_from_hostname" class="summary-sig-name">get_geoip_record_from_hostname</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">hostname</span>)</span><br />
-      Returns:
-      dict() or None</td>
+      Get GeoIP record from hostname.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#EntropyGeoIP.get_geoip_record_from_hostname">source&nbsp;code</a></span>
             
@@ -170,6 +173,32 @@
     <span class="table-header">Method Details</span></td>
 </tr>
 </table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">geoip_dbfile</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#EntropyGeoIP.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>EntropyGeoIP constructor.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>geoip_dbfile</code></strong> (string) - valid GeoIP (Maxmind) database file (.dat) path (download from: 
+          http://www.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz)</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="get_geoip_country_name_from_ip"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -185,10 +214,14 @@
     </td>
   </tr></table>
   
-  
+  <p>Get country name from IP address.</p>
   <dl class="fields">
-    <dt>Returns:</dt>
-        <dd>string or None</dd>
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>ip_address</code></strong> (string) - ip address string</li>
+    </ul></dd>
+    <dt>Returns: string or None</dt>
+        <dd>country name or None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -207,10 +240,14 @@
     </td>
   </tr></table>
   
-  
+  <p>Get country code from IP address.</p>
   <dl class="fields">
-    <dt>Returns:</dt>
-        <dd>string or None</dd>
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>ip_address</code></strong> (string) - ip address string</li>
+    </ul></dd>
+    <dt>Returns: string or None</dt>
+        <dd>country code or None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -229,26 +266,14 @@
     </td>
   </tr></table>
   
-  <pre class="literalblock">
-
-@return: dict() or None
-@param1: ip address string
-dict data:
-    {
-        'city': 'Treviso',
-        'region': '20',
-        'area_code': 0,
-        'longitude': 12.244999885559082,
-        'country_code3': 'ITA',
-        'latitude': 45.666698455810547,
-        'postal_code': None,
-        'dma_code': 0,
-        'country_code': 'IT',
-        'country_name': 'Italy'
-    }
-
-</pre>
+  <p>Get GeoIP record from IP address.</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>ip_address</code></strong> (string) - ip address string</li>
+    </ul></dd>
+    <dt>Returns: dict</dt>
+        <dd>GeoIP record data</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -267,10 +292,14 @@ dict data:
     </td>
   </tr></table>
   
-  
+  <p>Get GeoIP record from hostname.</p>
   <dl class="fields">
-    <dt>Returns:</dt>
-        <dd>dict() or None</dd>
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>hostname</code></strong> (string) - ip address string</li>
+    </ul></dd>
+    <dt>Returns: dict</dt>
+        <dd>GeoIP record data</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -306,7 +335,7 @@ dict data:
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sat Jul  4 05:31:37 2009
+    Generated by Epydoc 3.0.1 on Tue Jul  7 19:15:06 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
