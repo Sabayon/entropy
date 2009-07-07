@@ -589,9 +589,32 @@ class EntropyGeoIP:
 
 class RSS:
 
+    """
+
+    This is a base class for handling RSS (XML) files through Python's
+    xml.dom.minidom module. It produces 100% W3C-complaint code.
+
+    This class is meant to be used inside the Entropy world, it's not meant
+    for other tasks outside this codebase.
+
+    """
+
     # this is a relative import to avoid circular deps
-    import tools as entropyTools
+    import entropy.tools as entropyTools
     def __init__(self, filename, title, description, maxentries = 100):
+
+        """
+        RSS constructor
+
+        @param filename: RSS file path (a new file will be created if not found)
+        @type filename: string
+        @param title: RSS feed title (used for new RSS files)
+        @type title: string
+        @param description: RSS feed description (used for new RSS files)
+        @type description: string
+        @keyword maxentries: max RSS feed entries
+        @type maxentries: int
+        """
 
         self.__system_settings = SystemSettings()
         self.__feed_title = title
@@ -714,6 +737,18 @@ class RSS:
 
 
     def add_item(self, title, link = '', description = '', pubDate = ''):
+        """
+        Add new entry to RSS feed.
+
+        @param title: entry title
+        @type title: string
+        @keyword link: entry link
+        @type link: string
+        @keyword description: entry description
+        @type description: string
+        @keyword pubDate: entry publication date
+        @type pubDate: string
+        """
 
         self.__itemscounter += 1
         self.__items[self.__itemscounter] = {}
@@ -735,15 +770,37 @@ class RSS:
         return self.__itemscounter
 
     def remove_entry(self, key):
+        """
+        Remove entry from RSS feed through its index number.
+
+        @param key: entry index number.
+        @type key: int
+        @return: new entry count
+        @rtype: int
+        """
         if key in self.__items:
             del self.__items[key]
             self.__itemscounter -= 1
         return self.__itemscounter
 
     def get_entries(self):
+        """
+        Get entries and their total number.
+
+        @return: tuple composed by items (list of dict) and total items count
+        @rtype: tuple
+        """
         return self.__items, self.__itemscounter
 
     def write_changes(self, reverse = True):
+        """
+        Writes changes to file.
+
+        @keyword reverse: write entries in reverse order.
+        @type reverse: bool
+        @return: None
+        @rtype: None
+        """
 
         # filter entries to fit in maxentries
         if self.__itemscounter > self.__maxentries:
