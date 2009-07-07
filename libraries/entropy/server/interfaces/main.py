@@ -1087,9 +1087,9 @@ class Server(Singleton, TextInterface):
         # load db
         dbconn = self.open_server_repository(read_only = True,
             no_upload = True, repo = repo)
+        QA = self.QA()
         packages_matched, brokenexecs, status = \
-            self.ClientService.libraries_test(dbconn = dbconn,
-                broken_symbols = False)
+            QA.libraries_test(dbconn, broken_symbols = False)
         if status != 0:
             return 1, None
 

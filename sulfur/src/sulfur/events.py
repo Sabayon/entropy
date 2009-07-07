@@ -934,11 +934,13 @@ class SulfurApplicationEventsMixin:
 
         do_start()
 
-        packages_matched, broken_execs = {},set()
+        packages_matched, broken_execs = {}, set()
         self.libtest_abort = False
+        QA = self.Equo.QA()
+
         def exec_task():
             try:
-                x, y, z = self.Equo.libraries_test(
+                x, y, z = QA.libraries_test(self.Equo.clientDbconn,
                     task_bombing_func = task_bombing)
                 packages_matched.update(x)
                 broken_execs.update(y)

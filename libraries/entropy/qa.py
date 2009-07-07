@@ -21,8 +21,11 @@
 '''
 # pylint ~ok
 import os
+import sys
+import subprocess
 import tempfile
-from entropy.const import etpConst
+
+from entropy.const import etpConst, etpSys
 from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown
 from entropy.exceptions import IncorrectParameter, PermissionDenied, \
     SystemDatabaseError
@@ -261,6 +264,224 @@ class QAInterface:
                 )
 
         return taint
+
+    def libraries_test(self, dbconn, broken_symbols = False,
+        task_bombing_func = None):
+
+        self.Output.updateProgress(
+            blue(_("Libraries test")),
+            importance = 2,
+            type = "info",
+            header = red(" @@ ")
+        )
+
+        myroot = etpConst['systemroot'] + "/"
+        if not etpConst['systemroot']:
+            myroot = "/"
+
+        # run ldconfig first
+        subprocess.call("ldconfig -r %s &> /dev/null" % (myroot,), shell = True)
+        # open /etc/ld.so.conf
+        ld_conf = etpConst['systemroot'] + "/etc/ld.so.conf"
+
+        if not os.path.isfile(ld_conf):
+            self.Output.updateProgress(
+                blue(_("Cannot find "))+red(ld_conf),
+                importance = 1,
+                type = "error",
+                header = red(" @@ ")
+            )
+            return {}, set(), -1
+
+        reverse_symlink_map = self.SystemSettings['system_rev_symlinks']
+        ldpaths = set(self.entropyTools.collect_linker_paths())
+        ldpaths |= self.entropyTools.collect_paths()
+
+        # remove duplicated dirs (due to symlinks) to speed up scanning
+        for real_dir in reverse_symlink_map.keys():
+            syms = reverse_symlink_map[real_dir]
+            for sym in syms:
+                if sym in ldpaths:
+                    ldpaths.discard(real_dir)
+                    self.Output.updateProgress(
+                        "%s: %s, %s: %s" % (
+                            brown(_("discarding directory")),
+                            purple(real_dir),
+                            brown(_("because it's symlinked on")),
+                            purple(sym),
+                        ),
+                        importance = 0,
+                        type = "info",
+                        header = darkgreen(" @@ ")
+                    )
+                    break
+
+        # some crappy packages put shit here too
+        ldpaths.add("/usr/share")
+        # always force /usr/libexec too
+        ldpaths.add("/usr/libexec")
+
+        executables = set()
+        total = len(ldpaths)
+        count = 0
+        sys_root_len = len(etpConst['systemroot'])
+        for ldpath in ldpaths:
+
+            if callable(task_bombing_func):
+                task_bombing_func()
+            count += 1
+            self.Output.updateProgress(
+                blue("Tree: ")+red(etpConst['systemroot'] + ldpath),
+                importance = 0,
+                type = "info",
+                count = (count,total),
+                back = True,
+                percent = True,
+                header = "  "
+            )
+            ldpath = ldpath.encode(sys.getfilesystemencoding())
+            mywalk_iter = os.walk(etpConst['systemroot'] + ldpath)
+
+            def mywimf(dt):
+
+                currentdir, subdirs, files = dt
+
+                def mymf(item):
+                    filepath = os.path.join(currentdir,item)
+                    if not os.access(filepath, os.R_OK):
+                        return 0
+                    if not os.path.isfile(filepath):
+                        return 0
+                    if not self.entropyTools.is_elf_file(filepath):
+                        return 0
+                    return filepath[sys_root_len:]
+
+                return set([x for x in map(mymf, files) if type(x) != int])
+
+            for x in map(mywimf,mywalk_iter):
+                executables |= x
+
+        self.Output.updateProgress(
+            blue(_("Collecting broken executables")),
+            importance = 2,
+            type = "info",
+            header = red(" @@ ")
+        )
+        t = red(_("Attention")) + ": " + \
+            blue(_("don't worry about libraries that are shown here but not later."))
+        self.Output.updateProgress(
+            t,
+            importance = 1,
+            type = "info",
+            header = red(" @@ ")
+        )
+
+        plain_brokenexecs = set()
+        total = len(executables)
+        count = 0
+        scan_txt = blue("%s ..." % (_("Scanning libraries"),))
+        for executable in executables:
+
+            if callable(task_bombing_func):
+                task_bombing_func()
+            count += 1
+            if (count % 10 == 0) or (count == total) or (count == 1):
+                self.Output.updateProgress(
+                    scan_txt,
+                    importance = 0,
+                    type = "info",
+                    count = (count,total),
+                    back = True,
+                    percent = True,
+                    header = "  "
+                )
+
+            myelfs = self.entropyTools.read_elf_dynamic_libraries(
+                etpConst['systemroot'] + executable)
+
+            def mymf2(mylib):
+                return not self.resolve_dynamic_library(mylib, executable)
+
+            mylibs = set(filter(mymf2,myelfs))
+            broken_sym_found = set()
+            if broken_symbols and not mylibs: broken_sym_found |= \
+                self.entropyTools.read_elf_broken_symbols(
+                    etpConst['systemroot'] + executable)
+
+            if not (mylibs or broken_sym_found):
+                continue
+
+            if mylibs:
+                alllibs = blue(' :: ').join(list(mylibs))
+                self.Output.updateProgress(
+                    red(etpConst['systemroot']+executable)+" [ "+alllibs+" ]",
+                    importance = 1,
+                    type = "info",
+                    percent = True,
+                    count = (count,total),
+                    header = "  "
+                )
+            elif broken_sym_found:
+
+                allsyms = darkred(' :: ').join(
+                    [brown(x) for x in list(broken_sym_found)])
+                if len(allsyms) > 50:
+                    allsyms = brown(_('various broken symbols'))
+
+                self.Output.updateProgress(
+                    red(etpConst['systemroot']+executable)+" { "+allsyms+" }",
+                    importance = 1,
+                    type = "info",
+                    percent = True,
+                    count = (count,total),
+                    header = "  "
+                )
+
+            plain_brokenexecs.add(executable)
+
+        del executables
+        packagesMatched = {}
+
+        if not etpSys['serverside']:
+
+            # we are client side
+            # this is hackish and must be fixed sooner or later
+            # but for now, it works
+            # Client class is singleton and is surely already
+            # loaded when we get here
+            from entropy.client.interfaces import Client
+            client = Client()
+
+            self.Output.updateProgress(
+                blue(_("Matching broken libraries/executables")),
+                importance = 1,
+                type = "info",
+                header = red(" @@ ")
+            )
+            matched = set()
+            for brokenlib in plain_brokenexecs:
+                idpackages = dbconn.searchBelongs(brokenlib)
+
+                for idpackage in idpackages:
+
+                    key, slot = dbconn.retrieveKeySlot(idpackage)
+                    mymatch = client.atom_match(key, matchSlot = slot)
+                    if mymatch[0] == -1:
+                        matched.add(brokenlib)
+                        continue
+
+                    cmpstat = client.get_package_action(mymatch)
+                    if cmpstat == 0:
+                        continue
+                    if not packagesMatched.has_key(brokenlib):
+                        packagesMatched[brokenlib] = set()
+
+                    packagesMatched[brokenlib].add(mymatch)
+                    matched.add(brokenlib)
+
+            plain_brokenexecs -= matched
+
+        return packagesMatched, plain_brokenexecs, 0
 
     def content_test(self, mycontent):
 

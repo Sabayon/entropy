@@ -1672,7 +1672,8 @@ def librariesTest(listfiles = False):
         etpUi['mute'] = True
         etpUi['quiet'] = True
 
-    packagesMatched, brokenlibs, status = Equo.libraries_test()
+    QA = Equo.QA()
+    packagesMatched, brokenlibs, status = QA.libraries_test(Equo.clientDbconn)
     if status != 0:
         restore_qstats()
         return -1,1
