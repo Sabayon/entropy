@@ -64,7 +64,7 @@ class MiscTest(unittest.TestCase):
         # is filled?
         self.assertEqual(self.__lifo.is_filled(), False)
         # test if it raises ValueError exception
-        self.assertRaises(self.__lifo.pop(), ValueError)
+        self.assertRaises(ValueError, self.__lifo.pop)
 
 
     def test_timesched(self):
