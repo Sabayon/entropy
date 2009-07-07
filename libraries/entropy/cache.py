@@ -101,7 +101,8 @@ class EntropyCacher(Singleton):
             with self.__cache_lock:
                 try:
                     data = self.__cache_buffer.pop()
-                except ValueError:
+                except (ValueError, TypeError,):
+                    # TypeError is when objects are being destroyed
                     break # stack empty
             key, data = data
             d_o = self.dumpTools.dumpobj
