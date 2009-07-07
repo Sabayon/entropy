@@ -1124,16 +1124,20 @@ class Server(Singleton, TextInterface):
                 type = "info",
                 header = red(" @@ ")
             )
-            for package_slot in packages:
+            for my_atom, my_elf_id in packages:
+                package_slot = my_atom, my_elf_id
                 self.updateProgress(
-                    blue(unicode(package_slot)),
+                    "%s [elf:%s]" % (
+                        purple(my_atom),
+                        darkgreen(str(my_elf_id)),
+                    ),
                     importance = 0,
                     type = "info",
                     header = red("     # ")
                 )
                 for filename in sorted(list(packages[package_slot])):
                     self.updateProgress(
-                        blue(filename),
+                        darkgreen(filename),
                         importance = 0,
                         type = "info",
                         header = brown("       => ")
