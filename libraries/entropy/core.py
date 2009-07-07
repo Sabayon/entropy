@@ -358,6 +358,7 @@ class SystemSettings(Singleton):
             'system_dirs': etpConst['confdir']+"/fsdirs.conf",
             'system_dirs_mask': etpConst['confdir']+"/fsdirsmask.conf",
             'system_rev_symlinks': etpConst['confdir']+"/fssymlinks.conf",
+            'broken_syms': etpConst['confdir']+"/brokensyms.conf",
             'hw_hash': etpConst['confdir']+"/.hw.hash",
             'socket_service': etpConst['socketconf'],
             'system': etpConst['entropyconf'],
@@ -368,7 +369,7 @@ class SystemSettings(Singleton):
             'keywords', 'unmask', 'mask', 'satisfied', 'license_mask',
             'system_mask', 'system_package_sets', 'system_dirs',
             'system_dirs_mask', 'socket_service', 'system',
-            'system_rev_symlinks', 'hw_hash'
+            'system_rev_symlinks', 'hw_hash', 'broken_syms'
         ])
         self.__setting_files_pre_run.extend(['repositories'])
 
@@ -853,6 +854,16 @@ class SystemSettings(Singleton):
         @rtype: dict
         """
         return self.__generic_parser(self.__setting_files['system_dirs_mask'])
+
+    def _broken_syms_parser(self):
+        """
+        Parser returning a list of shared objects symbols that can be used by
+        QA tools to scan the filesystem or a subset of it.
+
+        @return: parsed metadata
+        @rtype: dict
+        """
+        return self.__generic_parser(self.__setting_files['broken_syms'])
 
     def _hw_hash_parser(self):
         """

@@ -140,7 +140,6 @@ class QAInterface:
                         )
         return broken
 
-
     def scan_missing_dependencies(self, idpackages, dbconn, ask = True,
             self_check = False, repo = None, black_list = None,
             black_list_adder = None):
@@ -294,6 +293,7 @@ class QAInterface:
             return {}, set(), -1
 
         reverse_symlink_map = self.SystemSettings['system_rev_symlinks']
+        broken_syms_list = self.SystemSettings['broken_syms']
         ldpaths = set(self.entropyTools.collect_linker_paths())
         ldpaths |= self.entropyTools.collect_paths()
 
@@ -382,8 +382,10 @@ class QAInterface:
         scan_txt = blue("%s ..." % (_("Scanning libraries"),))
         for executable in executables:
 
+            # task bombing hook
             if callable(task_bombing_func):
                 task_bombing_func()
+
             count += 1
             if (count % 10 == 0) or (count == total) or (count == 1):
                 self.Output.updateProgress(
@@ -404,9 +406,13 @@ class QAInterface:
 
             mylibs = set(filter(mymf2,myelfs))
             broken_sym_found = set()
-            if broken_symbols and not mylibs: broken_sym_found |= \
-                self.entropyTools.read_elf_broken_symbols(
-                    etpConst['systemroot'] + executable)
+            if broken_symbols and not mylibs:
+
+                read_broken_syms = self.entropyTools.read_elf_broken_symbols(
+                        etpConst['systemroot'] + executable)
+                my_broken_syms = [x for x in read_broken_syms if x in \
+                    broken_syms_list]
+                broken_sym_found.update(my_broken_syms)
 
             if not (mylibs or broken_sym_found):
                 continue
