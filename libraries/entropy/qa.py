@@ -294,12 +294,19 @@ class QAInterface:
 
         reverse_symlink_map = self.SystemSettings['system_rev_symlinks']
         broken_syms_list = self.SystemSettings['broken_syms']
+        broken_libs_mask = self.SystemSettings['broken_libs_mask']
 
         import re
+
         broken_syms_list_regexp = []
         for broken_sym in broken_syms_list:
             reg_sym = re.compile(broken_sym)
             broken_syms_list_regexp.append(reg_sym)
+
+        broken_libs_mask_regexp = []
+        for broken_lib in broken_libs_mask:
+            reg_lib = re.compile(broken_lib)
+            broken_libs_mask_regexp.append(reg_lib)
 
         ldpaths = set(self.entropyTools.collect_linker_paths())
         ldpaths |= self.entropyTools.collect_paths()
@@ -411,7 +418,23 @@ class QAInterface:
             def mymf2(mylib):
                 return not self.resolve_dynamic_library(mylib, executable)
 
-            mylibs = set(filter(mymf2,myelfs))
+            mylibs = set(filter(mymf2, myelfs))
+
+            # filter broken libraries
+            if mylibs:
+
+                mylib_filter = set()
+                for mylib in mylibs:
+                    mylib_matched = False
+                    for reg_lib in broken_libs_mask_regexp:
+                        if reg_lib.match(mylib):
+                            mylib_matched = True
+                            break
+                    if mylib_matched: # filter out
+                        mylib_filter.add(mylib)
+                mylibs -= mylib_filter
+
+
             broken_sym_found = set()
             if broken_symbols and not mylibs:
 
@@ -429,7 +452,7 @@ class QAInterface:
                 continue
 
             if mylibs:
-                alllibs = blue(' :: ').join(list(mylibs))
+                alllibs = blue(' :: ').join(sorted(mylibs))
                 self.Output.updateProgress(
                     red(etpConst['systemroot']+executable)+" [ "+alllibs+" ]",
                     importance = 1,

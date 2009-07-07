@@ -37,6 +37,8 @@ entropy-install:
 	install -m 644 conf/fsdirsmask.conf $(DESTDIR)/etc/entropy/
 	install -m 644 conf/brokensyms.conf $(DESTDIR)/etc/entropy/
 	install -m 644 conf/fssymlinks.conf $(DESTDIR)/etc/entropy/
+	install -m 644 conf/brokenlibsmask.conf $(DESTDIR)/etc/entropy/
+
 	install -m 644 conf/repositories.conf.example $(DESTDIR)/etc/entropy/
 	install -m 644 conf/socket* $(DESTDIR)/etc/entropy/
 	install -m 644 conf/entropy.conf $(DESTDIR)/etc/entropy/
