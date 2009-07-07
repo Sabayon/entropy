@@ -297,6 +297,11 @@ class QAInterface:
         ldpaths = set(self.entropyTools.collect_linker_paths())
         ldpaths |= self.entropyTools.collect_paths()
 
+        # some crappy packages put shit here too
+        ldpaths.add("/usr/share")
+        # always force /usr/libexec too
+        ldpaths.add("/usr/libexec")
+
         # remove duplicated dirs (due to symlinks) to speed up scanning
         for real_dir in reverse_symlink_map.keys():
             syms = reverse_symlink_map[real_dir]
@@ -315,11 +320,6 @@ class QAInterface:
                         header = darkgreen(" @@ ")
                     )
                     break
-
-        # some crappy packages put shit here too
-        ldpaths.add("/usr/share")
-        # always force /usr/libexec too
-        ldpaths.add("/usr/libexec")
 
         executables = set()
         total = len(ldpaths)
