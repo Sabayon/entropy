@@ -56,6 +56,8 @@
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class LogFile</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile">source&nbsp;code</a></span></p>
+<p>Entropy simple logging interface, works as file object</p>
+
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -70,10 +72,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.misc.LogFile-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">level</span>=<span class="summary-sig-default">0</span>,
         <span class="summary-sig-arg">filename</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">header</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">[LOG]</code><code class="variable-quote">'</code></span>)</span></td>
+        <span class="summary-sig-arg">header</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">[LOG]</code><code class="variable-quote">'</code></span>)</span><br />
+      LogFile constructor.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.__init__">source&nbsp;code</a></span>
             
@@ -105,7 +108,8 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="close"></a><span class="summary-sig-name">close</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a name="close"></a><span class="summary-sig-name">close</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Close log file</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.close">source&nbsp;code</a></span>
             
@@ -121,7 +125,8 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_fpath"></a><span class="summary-sig-name">get_fpath</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a name="get_fpath"></a><span class="summary-sig-name">get_fpath</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get log file path</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.get_fpath">source&nbsp;code</a></span>
             
@@ -137,7 +142,8 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="flush"></a><span class="summary-sig-name">flush</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a name="flush"></a><span class="summary-sig-name">flush</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Flush log file buffer to disk</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.flush">source&nbsp;code</a></span>
             
@@ -149,11 +155,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="fileno"></a><span class="summary-sig-name">fileno</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.LogFile-class.html#fileno" class="summary-sig-name">fileno</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get log file descriptor number</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.fileno">source&nbsp;code</a></span>
             
@@ -165,11 +172,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="isatty"></a><span class="summary-sig-name">isatty</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.LogFile-class.html#isatty" class="summary-sig-name">isatty</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return whether LogFile works like a tty</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.isatty">source&nbsp;code</a></span>
             
@@ -181,12 +189,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">string</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="read"></a><span class="summary-sig-name">read</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">*args</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.LogFile-class.html#read" class="summary-sig-name">read</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>)</span><br />
+      Fake method (exposed for file object compatibility)</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.read">source&nbsp;code</a></span>
             
@@ -198,11 +207,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">string</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="readline"></a><span class="summary-sig-name">readline</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.LogFile-class.html#readline" class="summary-sig-name">readline</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Fake method (exposed for file object compatibility)</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.readline">source&nbsp;code</a></span>
             
@@ -214,11 +224,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="readlines"></a><span class="summary-sig-name">readlines</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.LogFile-class.html#readlines" class="summary-sig-name">readlines</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Fake method (exposed for file object compatibility)</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.readlines">source&nbsp;code</a></span>
             
@@ -230,12 +241,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="seek"></a><span class="summary-sig-name">seek</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">offset</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.LogFile-class.html#seek" class="summary-sig-name">seek</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">offset</span>)</span><br />
+      File object method, move file object cursor at offset</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.seek">source&nbsp;code</a></span>
             
@@ -247,11 +259,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="tell"></a><span class="summary-sig-name">tell</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.LogFile-class.html#tell" class="summary-sig-name">tell</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      File object method, tell file object position</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.tell">source&nbsp;code</a></span>
             
@@ -267,7 +280,8 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="truncate"></a><span class="summary-sig-name">truncate</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a name="truncate"></a><span class="summary-sig-name">truncate</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      File object method, truncate file buffer.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.truncate">source&nbsp;code</a></span>
             
@@ -283,8 +297,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="open"></a><span class="summary-sig-name">open</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">file_path</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.LogFile-class.html#open" class="summary-sig-name">open</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">file_path</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Open log file, if possible, otherwise redirect to /dev/null or 
+      stderr.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.open">source&nbsp;code</a></span>
             
@@ -318,8 +334,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="default_handler"></a><span class="summary-sig-name">default_handler</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">mystr</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.LogFile-class.html#default_handler" class="summary-sig-name">default_handler</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mystr</span>)</span><br />
+      Default log file writer.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.default_handler">source&nbsp;code</a></span>
             
@@ -335,8 +352,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="set_loglevel"></a><span class="summary-sig-name">set_loglevel</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">level</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.LogFile-class.html#set_loglevel" class="summary-sig-name">set_loglevel</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">level</span>)</span><br />
+      Change logging threshold.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.set_loglevel">source&nbsp;code</a></span>
             
@@ -352,10 +370,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="log"></a><span class="summary-sig-name">log</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.misc.LogFile-class.html#log" class="summary-sig-name">log</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">messagetype</span>,
         <span class="summary-sig-arg">level</span>,
-        <span class="summary-sig-arg">message</span>)</span></td>
+        <span class="summary-sig-arg">message</span>)</span><br />
+      This is the effective function that LogFile consumers should use.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.log">source&nbsp;code</a></span>
             
@@ -371,8 +390,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="write"></a><span class="summary-sig-name">write</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">line</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.LogFile-class.html#write" class="summary-sig-name">write</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mystr</span>)</span><br />
+      File object method, write log message to file using the default 
+      handler set (LogFile.default_handler is the default).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.write">source&nbsp;code</a></span>
             
@@ -388,8 +409,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="writelines"></a><span class="summary-sig-name">writelines</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">lst</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.misc.LogFile-class.html#writelines" class="summary-sig-name">writelines</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">lst</span>)</span><br />
+      File object method, write log message strings to file using the 
+      default handler set (LogFile.default_handler is the default).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.writelines">source&nbsp;code</a></span>
             
@@ -400,6 +423,347 @@
     </td>
   </tr>
 </table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">level</span>=<span class="sig-default">0</span>,
+        <span class="sig-arg">filename</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">header</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">[LOG]</code><code class="variable-quote">'</code></span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>LogFile constructor.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>level</code></strong> (int) - log level threshold which will trigger effective write on log 
+          file</li>
+        <li><strong class="pname"><code>filename</code></strong> (string) - log file path</li>
+        <li><strong class="pname"><code>header</code></strong> (string) - log line header</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="fileno"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">fileno</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.fileno">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get log file descriptor number</p>
+  <dl class="fields">
+    <dt>Returns: int</dt>
+        <dd>file descriptor number</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isatty"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isatty</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.isatty">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return whether LogFile works like a tty</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>is a tty?</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="read"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">read</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.read">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Fake method (exposed for file object compatibility)</p>
+  <dl class="fields">
+    <dt>Returns: string</dt>
+        <dd>empty string</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="readline"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">readline</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.readline">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Fake method (exposed for file object compatibility)</p>
+  <dl class="fields">
+    <dt>Returns: string</dt>
+        <dd>empty string</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="readlines"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">readlines</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.readlines">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Fake method (exposed for file object compatibility)</p>
+  <dl class="fields">
+    <dt>Returns: list</dt>
+        <dd>empty list</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="seek"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">seek</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">offset</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.seek">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>File object method, move file object cursor at offset</p>
+  <dl class="fields">
+    <dt>Returns: int</dt>
+        <dd>new file object position</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="tell"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">tell</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.tell">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>File object method, tell file object position</p>
+  <dl class="fields">
+    <dt>Returns: int</dt>
+        <dd>file object position</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="open"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">open</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">file_path</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.open">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Open log file, if possible, otherwise redirect to /dev/null or 
+  stderr.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>file_path</code></strong> (string) - path to file</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="default_handler"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">default_handler</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">mystr</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.default_handler">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Default log file writer. This can be reimplemented.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>mystr</code></strong> (string) - log string to write</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="set_loglevel"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_loglevel</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">level</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.set_loglevel">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Change logging threshold.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>level</code></strong> (int) - new logging threshold</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="log"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">log</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">messagetype</span>,
+        <span class="sig-arg">level</span>,
+        <span class="sig-arg">message</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.log">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This is the effective function that LogFile consumers should use.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>messagetype</code></strong> (string) - message type (or tag)</li>
+        <li><strong class="pname"><code>level</code></strong> (int) - minimum logging threshold which should trigger the effective 
+          write</li>
+        <li><strong class="pname"><code>message</code></strong> (string) - log message</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="write"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">write</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">mystr</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.write">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>File object method, write log message to file using the default 
+  handler set (LogFile.default_handler is the default).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>mystr</code></strong> (string) - log string to write</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="writelines"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">writelines</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">lst</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#LogFile.writelines">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>File object method, write log message strings to file using the 
+  default handler set (LogFile.default_handler is the default).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>lst</code></strong> (list) - list of strings to write</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -431,7 +795,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Jul  7 19:46:29 2009
+    Generated by Epydoc 3.0.1 on Wed Jul  8 09:49:30 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
