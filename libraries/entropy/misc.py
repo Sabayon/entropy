@@ -915,11 +915,24 @@ class RSS:
 
 class LogFile:
 
+    """ Entropy simple logging interface, works as file object """
+
     def __init__(self, level = 0, filename = None, header = "[LOG]"):
+        """
+        LogFile constructor.
+
+        @keyword level: log level threshold which will trigger effective write
+            on log file
+        @type level: int
+        @keyword filename: log file path
+        @type filename: string
+        @keyword header: log line header
+        @type header: string
+        """
         self.handler = self.default_handler
         self.level = level
         self.header = header
-        self.__logfile = None
+        self._logfile = None
         self.open(filename)
         self.__filename = filename
 
@@ -927,82 +940,172 @@ class LogFile:
         self.close()
 
     def close(self):
+        """ Close log file """
         try:
-            self.__logfile.close()
+            self._logfile.close()
         except (IOError, OSError,):
             pass
 
     def get_fpath(self):
+        """ Get log file path """
         return self.__filename
 
     def flush(self):
-        self.__logfile.flush()
+        """ Flush log file buffer to disk """
+        self._logfile.flush()
 
     def fileno(self):
+        """
+        Get log file descriptor number
+
+        @return: file descriptor number
+        @rtype: int
+        """
         return self.__get_file()
 
     def isatty(self):
+        """
+        Return whether LogFile works like a tty
+
+        @return: is a tty?
+        @rtype: bool
+        """
         return False
 
     def read(self, *args):
+        """
+        Fake method (exposed for file object compatibility)
+
+        @return: empty string
+        @rtype: string
+        """
         return ''
 
     def readline(self):
+        """
+        Fake method (exposed for file object compatibility)
+
+        @return: empty string
+        @rtype: string
+        """
         return ''
 
     def readlines(self):
+        """
+        Fake method (exposed for file object compatibility)
+
+        @return: empty list
+        @rtype: list
+        """
         return []
 
     def seek(self, offset):
-        return self.__logfile.seek(offset)
+        """
+        File object method, move file object cursor at offset
+
+        @return: new file object position
+        @rtype: int
+        """
+        return self._logfile.seek(offset)
 
     def tell(self):
-        return self.__logfile.tell()
+        """
+        File object method, tell file object position
+
+        @return: file object position
+        @rtype: int
+        """
+        return self._logfile.tell()
 
     def truncate(self):
-        return self.__logfile.truncate()
+        """
+        File object method, truncate file buffer.
+        """
+        return self._logfile.truncate()
 
     def open(self, file_path = None):
+        """
+        Open log file, if possible, otherwise redirect to /dev/null or stderr.
 
+        @keyword file_path: path to file
+        @type file_path: string
+        """
         if isinstance(file_path, basestring):
             if not os.access(file_path, os.F_OK) and os.access(
                 os.path.dirname(file_path), os.W_OK):
-                self.__logfile = open(file_path, "aw")
+                self._logfile = open(file_path, "aw")
             else:
                 if os.access(file_path, os.W_OK | os.F_OK):
-                    self.__logfile = open(file_path, "aw")
+                    self._logfile = open(file_path, "aw")
                 else:
-                    self.__logfile = open("/dev/null", "aw")
+                    self._logfile = open("/dev/null", "aw")
         elif hasattr(file_path, 'write'):
-            self.__logfile = file_path
+            self._logfile = file_path
         else:
-            self.__logfile = sys.stderr
+            self._logfile = sys.stderr
 
     def __get_file(self):
-        return self.__logfile.fileno()
+        return self._logfile.fileno()
 
     def __call__(self, format, *args):
         self.handler (format % args)
 
     def default_handler(self, mystr):
+        """
+        Default log file writer. This can be reimplemented.
+
+        @param mystr: log string to write
+        @type mystr: string
+        """
         try:
-            self.__logfile.write ("* %s\n" % (mystr))
+            self._logfile.write ("* %s\n" % (mystr))
         except UnicodeEncodeError:
-            self.__logfile.write ("* %s\n" % (mystr.encode('utf-8'),))
-        self.__logfile.flush()
+            self._logfile.write ("* %s\n" % (mystr.encode('utf-8'),))
+        self._logfile.flush()
 
     def set_loglevel(self, level):
+        """
+        Change logging threshold.
+
+        @param level: new logging threshold
+        @type level: int
+        """
         self.level = level
 
     def log(self, messagetype, level, message):
+        """
+        This is the effective function that LogFile consumers should use.
+
+        @param messagetype: message type (or tag)
+        @type messagetype: string
+        @param level: minimum logging threshold which should trigger the
+            effective write
+        @type level: int
+        @param message: log message
+        @type message: string
+        """
         if self.level >= level and not etpUi['nolog']:
             self.handler("%s %s %s %s" % (self.__get_header(),
                 messagetype, self.header, message,))
 
-    def write(self, line):
-        self.handler(line)
+    def write(self, mystr):
+        """
+        File object method, write log message to file using the default
+        handler set (LogFile.default_handler is the default).
+
+        @param mystr: log string to write
+        @type mystr: string
+        """
+        self.handler(mystr)
 
     def writelines(self, lst):
+        """
+        File object method, write log message strings to file using the default
+        handler set (LogFile.default_handler is the default).
+
+        @param lst: list of strings to write
+        @type lst: list
+        """
         for line in lst:
             self.write(line)
 
@@ -1010,17 +1113,39 @@ class LogFile:
         return time.strftime('[%H:%M:%S %d/%m/%Y %Z]')
 
 class Callable:
+    """
+    Fake class wrapping any callable object into a callable class.
+    """
     def __init__(self, anycallable):
+        """
+        Callable constructor.
+
+        @param anycallable: any callable object
+        @type callable: callable
+        """
         self.__call__ = anycallable
 
 class MultipartPostHandler(urllib2.BaseHandler):
 
+    """
+    Custom urllib2 opener used in the Entropy codebase.
+    """
+
     handler_order = urllib2.HTTPHandler.handler_order - 10 # needs to run first
 
     def __init__(self):
+        """
+        MultipartPostHandler constructor.
+        """
         pass
 
     def http_request(self, request):
+
+        """
+        Entropy codebase internal method. Not for re-use.
+
+        @param request: urllib2 HTTP request object
+        """
 
         import urllib
         doseq = 1
@@ -1050,6 +1175,11 @@ class MultipartPostHandler(urllib2.BaseHandler):
         return request
 
     def multipart_encode(self, myvars, files, boundary = None, buf = None):
+
+        """
+        Does the effective multipart mime encoding. Entropy codebase internal
+        method. Not for re-use.
+        """
 
         from cStringIO import StringIO
         import mimetools, mimetypes
