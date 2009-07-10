@@ -280,6 +280,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.switch_application_mode(simple_mode)
         self.in_mode_loading = False
 
+        # hide progress Tab by default
+        self.ui.progressVBox.hide()
+
         self.setup_preferences()
 
     def switch_application_mode(self, do_simple):
@@ -1410,6 +1413,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.queueVbox.hide()
         self.ui.systemVbox.hide()
         self.ui.packagesVbox.hide()
+        self.ui.progressVBox.show()
 
     def show_notebook_tabs_after_install(self):
         self.ui.queueVbox.show()
@@ -1475,7 +1479,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # preventive check against other instances
         locked = self.Equo.application_lock_check()
-        if locked:
+        if locked or not entropy.tools.is_root():
             okDialog(self.ui.main,
                 _("Another Entropy instance is running. Cannot process queue."))
             self.progress.reset_progress()

@@ -4998,7 +4998,7 @@ Install+Removal</property>
                     <child>
                       <widget class="GtkLabel" id="label5">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Queue</property>
+                        <property name="label" translatable="yes">Installation</property>
                       </widget>
                       <packing>
                         <property name="position">1</property>
@@ -5338,7 +5338,7 @@ Install+Removal</property>
                     <child>
                       <widget class="GtkLabel" id="label17">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Installation</property>
+                        <property name="label" translatable="yes">Progress</property>
                       </widget>
                       <packing>
                         <property name="position">1</property>
