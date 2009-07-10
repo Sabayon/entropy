@@ -1540,12 +1540,16 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
                 t = ParallelTask(run_tha_bstrd)
                 t.start()
+                dbg_count = 0
                 while t.isAlive():
+                    if dbg_count > 2000:
+                        dbg_count = 0
+                    dbg_count += 1
                     time.sleep(0.2)
-                    if self.do_debug:
+                    if self.do_debug and (dbg_count % 500 = 0):
                         print "process_queue: QueueExecutor thread still alive"
                     self.gtk_loop()
-                    if self.do_debug:
+                    if self.do_debug and (dbg_count % 500 = 0):
                         print "process_queue: after QueueExecutor loop"
 
                 e,i = self.my_inst_errors
