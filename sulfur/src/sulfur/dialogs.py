@@ -277,7 +277,8 @@ class NoticeBoardWindow(MenuSkel):
 
         mytxt = "<big><b>%s</b></big>\n<small>%s</small>" % (
             _("Repositories Notice Board"),
-            _("Here below you will find a list of important news directly issued by your applications maintainers. Double click on each item to retrieve detailed info."),
+            _("Here below you will find a list of important news directly issued by your applications maintainers.\n" \
+                "Double click on each item to retrieve detailed info."),
         )
         self.nb_ui.noticeBoardLabel.set_markup(mytxt)
         self.view = self.nb_ui.noticeView
