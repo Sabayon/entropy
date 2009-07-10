@@ -4201,7 +4201,8 @@ class PkgInfoMenu(MenuSkel):
             self.on_loadUgcButton_clicked(widget, force = False)
 
     def on_showChangeLogButton_clicked(self, widget):
-        if not self.changelog: return
+        if not self.changelog:
+            return
         mybuffer = gtk.TextBuffer()
         mybuffer.set_text(self.changelog)
         xml_clread = gtk.glade.XML( const.GLADE_FILE, 'textReadWindow',domain="entropy" )
@@ -4212,7 +4213,8 @@ class PkgInfoMenu(MenuSkel):
         clView = xml_clread.get_widget( "readTextView" )
         clView.set_buffer(mybuffer)
         read_dialog.set_title(_("Package ChangeLog"))
-        read_dialog.show_all()
+        read_dialog.set_transient_for(self.pkginfo_ui.pkgInfo)
+        read_dialog.show()
 
     def destroy_changelog_read_dialog(self, widget):
         self.changelog_read_dialog.destroy()
