@@ -18,6 +18,7 @@ clean:
 install:
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/sulfur/sulfur/misc
 	mkdir -p $(DESTDIR)/usr/share/pixmaps/sulfur/packages
+	mkdir -p $(DESTDIR)/usr/share/pixmaps/sulfur/gfx
 	mkdir -p $(DESTDIR)/usr/share/applications
 	mkdir -p $(DESTDIR)/usr/share/mimelnk/application
 	mkdir -p $(DESTDIR)/usr/share/mime/packages
@@ -34,6 +35,7 @@ install:
 	install -m644 $(MISCDIR)/entropy-handler.schemas $(DESTDIR)/etc/gconf/schemas/.
 	install -m644 $(PIXDIR)/*.png $(DESTDIR)/usr/share/pixmaps/sulfur/.
 	install -m644 $(PIXDIR)/packages/*.png $(DESTDIR)/usr/share/pixmaps/sulfur/packages/.
+	install -m644 $(PIXDIR)/ugc/*.png $(DESTDIR)/usr/share/pixmaps/sulfur/ugc/.
 	install -m644 $(MISCDIR)/kde_x-sulfur.desktop $(DESTDIR)/usr/share/mimelnk/application/.
 	install -m644 $(MISCDIR)/entropy-mimetypes.xml $(DESTDIR)/usr/share/mime/packages/.
 	install -m644 $(MISCDIR)/*.desktop $(DESTDIR)/usr/share/applications/.
