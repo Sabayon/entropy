@@ -4545,10 +4545,10 @@ class PkgInfoMenu(MenuSkel):
         mbuffer.set_text('\n'.join(messages))
         self.pkginfo_ui.messagesTextView.set_buffer(mbuffer)
         # masked ?
-        masked = 'False'
+        masked = _("No")
         idpackage_masked, idmasking_reason = dbconn.idpackageValidator(pkg.matched_atom[0])
         if idpackage_masked == -1:
-            masked = 'True, %s' % (self.Entropy.SystemSettings['pkg_masking_reasons'][idmasking_reason],)
+            masked = '%s, %s' % (_("Yes"), self.Entropy.SystemSettings['pkg_masking_reasons'][idmasking_reason],)
         self.pkginfo_ui.masked.set_markup( "%s" % (masked,) )
 
         # package changelog
