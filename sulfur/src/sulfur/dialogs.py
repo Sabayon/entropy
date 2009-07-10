@@ -4504,12 +4504,12 @@ class PkgInfoMenu(MenuSkel):
         repo = pkg.matched_atom[1]
         avail_repos = self.Entropy.SystemSettings['repositories']['available']
         if repo == 0:
-            self.pkginfo_ui.location.set_markup("%s" % (_("From your Operating System"),))
+            repo = pkg.repoid
+
+        if remote:
+            self.pkginfo_ui.location.set_markup("%s: %s" % (_("Remotely"),pkg.repoid,))
         else:
-            if remote:
-                self.pkginfo_ui.location.set_markup("%s: %s" % (_("Remotely"),pkg.repoid,))
-            else:
-                self.pkginfo_ui.location.set_markup("%s" % (cleanMarkupString(avail_repos[repo]['description']),))
+            self.pkginfo_ui.location.set_markup("%s" % (cleanMarkupString(avail_repos[repo]['description']),))
 
         self.pkginfo_ui.version.set_markup( "%s" % (cleanMarkupString(pkg.onlyver),) )
         tag = pkg.tag
