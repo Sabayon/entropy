@@ -40,9 +40,9 @@ product|standard
 #    branch|actual branch string (no spaces!)
 #
 #    example:
-#    branch|3.5
+#    branch|4
 #    or:
-#    branch|3.6
+#    branch|5
 #
 # Branch default setting
 branch|4
