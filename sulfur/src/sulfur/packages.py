@@ -868,13 +868,6 @@ class EntropyPackages:
             for match in set_matches:
                 # set dependency
                 if match[1] is None:
-                    """
-                    # this is a set, make sure it exists
-                    set_match, rc = self.Entropy.package_set_match(match[0][1:])
-                    if not rc:
-                        broken = True
-                        break
-                    """
                     yp, new = gp_call(match[0])
                     yp.action = "i"
                 else:
