@@ -1361,7 +1361,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if not matches:
             self.wait_window.hide()
             okDialog( self.ui.main,
-                _("Packages not found in repositories, try again later.") )
+                _("No packages need or can be queued at the moment.") )
             self.unset_busy()
             return
 
