@@ -776,7 +776,10 @@ class SulfurApplicationEventsMixin:
     def on_noticeBoardMenuItem_activate(self, widget):
         self.show_notice_board()
 
-    def on_pkgsetAddButton_clicked(self, widget):
+    def on_pkgsetEditButton_clicked(self, widget):
+        self.on_pkgsetAddButton_clicked(widget, edit = True)
+
+    def on_pkgsetAddButton_clicked(self, widget, edit = False):
 
         current_sets = self.Equo.package_set_list()
         def fake_callback(s):
@@ -797,18 +800,45 @@ class SulfurApplicationEventsMixin:
                 return True
             return False
 
-        input_params = [
-            ('name',_("Package Set name"),fake_callback,False),
-            ('atoms',('list',(_('Package atoms'),[],),),lv_callback,False)
-        ]
+        edit_title = _('Choose what Package Set you want to add')
+        if edit:
+            edit_title = _('Choose what Package Set you want to edit')
+            # pull the set list
+            objs = self.pkgView.collect_selected_items()
+            obj = None
+            for obj in objs:
+                if obj.pkgset:
+                    break
+            if obj is None:
+                return # sorry
+            set_name = obj.onlyname
+            set_match, rc = self.Equo.package_set_match(set_name)
+            if not rc: # set does not exist
+                return
+            repoid, set_name, set_pkgs_list = set_match
+            input_params = [
+                ('name',('filled_text',(_("Package Set name"),set_name,),),fake_callback,False), 
+                ('atoms',('list',(_('Package atoms'),sorted(set_pkgs_list),),),lv_callback,False)
+            ]
+        else:
+            input_params = [
+                ('name',_("Package Set name"),fake_callback,False),
+                ('atoms',('list',(_('Package atoms'),[],),),lv_callback,False)
+            ]
 
         data = self.Equo.inputBox(
-            _('Choose what Package Set you want to add'),
+            edit_title,
             input_params,
             cancel_button = True
         )
         if data == None:
             return
+
+        if edit:
+            rc, msg = self.Equo.remove_user_package_set(data.get("name"))
+            if rc != 0:
+                okDialog(self.ui.main,"%s: %s" % (_("Error"),msg,))
+                return
 
         rc, msg = self.Equo.add_user_package_set(data.get("name"),
             data.get("atoms"))
