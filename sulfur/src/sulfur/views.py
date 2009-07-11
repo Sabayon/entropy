@@ -550,7 +550,6 @@ class EntropyPackageView:
             SulfurSignals.connect('ugc_data_update', self.__update_ugc_event)
 
     def __update_ugc_event(self, event):
-        print "UGC update event triggered", event
         self.view.queue_draw()
 
     def change_model_injector(self, injector):
