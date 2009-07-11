@@ -8065,7 +8065,7 @@ gz</property>
                                         <property name="visible">True</property>
                                         <property name="xalign">0</property>
                                         <property name="yalign">1</property>
-                                        <property name="label">User Generated Content</property>
+                                        <property name="label" translatable="yes">User Generated Content</property>
                                         <property name="use_markup">True</property>
                                       </widget>
                                       <packing>
