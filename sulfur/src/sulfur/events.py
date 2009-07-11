@@ -36,6 +36,7 @@ from sulfur.dialogs import okDialog, inputBox, TextReadDialog, questionDialog, \
     AddRepositoryWindow
 from sulfur.misc import busy_cursor, normal_cursor
 
+
 class SulfurApplicationEventsMixin:
 
     def on_console_click(self, widget, event):

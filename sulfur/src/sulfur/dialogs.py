@@ -25,6 +25,7 @@ from entropy.const import *
 from entropy.misc import TimeScheduled, ParallelTask
 import entropy.tools as entropyTools
 
+from sulfur.event import SulfurSignals
 from sulfur.core import UI
 from sulfur.misc import busy_cursor, normal_cursor
 from sulfur.setup import const, cleanMarkupString, SulfurConf, \
@@ -3876,6 +3877,7 @@ class PkgInfoMenu(MenuSkel):
         self.star_selected_pixmap = const.star_selected_pixmap
         self.star_empty_pixmap = const.star_empty_pixmap
 
+        self.ugc_update_event_handler_id = None
         self.loading_pix = gtk.image_new_from_file(const.loading_pix)
         self.ugc_data = None
         self.ugc_status_message = None
@@ -3979,11 +3981,18 @@ class PkgInfoMenu(MenuSkel):
         for x in content:
             self.contentModel.append(None,[x[0],x[1]])
 
+    def disconnect_event_signals(self):
+        # disconnect signals
+        if self.ugc_update_event_handler_id is not None:
+            SulfurSignals.disconnect(self.ugc_update_event_handler_id)
+
     def on_closeInfo_clicked(self, widget):
+        self.disconnect_event_signals()
         self.reset_ugc_data()
         self.pkginfo_ui.pkgInfo.hide()
 
     def on_pkgInfo_delete_event(self, widget, path):
+        self.disconnect_event_signals()
         self.reset_ugc_data()
         self.pkginfo_ui.pkgInfo.hide()
         return True
@@ -4401,6 +4410,9 @@ class PkgInfoMenu(MenuSkel):
         self.ugcView.set_property('headers-visible',True)
         self.ugcView.set_property('enable-search',True)
 
+    def __update_ugc_event(self, event):
+        self.set_stars_from_repository()
+        self.set_download_numbers_from_repository()
 
     def set_stars(self, count, hover = False):
         pix_path = self.star_normal_pixmap
@@ -4433,12 +4445,15 @@ class PkgInfoMenu(MenuSkel):
             idx += 1
 
     def set_stars_from_repository(self):
-        if not (self.repository and self.pkgkey):
-            return
-        vote = self.Entropy.UGC.UGCCache.get_package_vote(self.repository, self.pkgkey)
-        if isinstance(vote,float):
-            self.set_stars(int(vote))
-            self.vote = int(vote)
+        vote = self.pkg.voteint
+        self.set_stars(vote)
+        self.vote = vote
+
+    def set_download_numbers_from_repository(self):
+        self.pkginfo_ui.ugcDownloaded.set_markup(
+            "<small>%s: <b>%s</b></small>" % (_("Number of downloads"),
+                self.pkg.downloads,)
+        )
 
     def load(self, remote = False):
 
@@ -4472,9 +4487,7 @@ class PkgInfoMenu(MenuSkel):
                 _("Be part of our Community!")
             )
         )
-        self.pkginfo_ui.ugcDownloaded.set_markup(
-            "<small>%s: <b>%s</b></small>" % (_("Number of downloads"), pkg.downloads,)
-        )
+        self.set_download_numbers_from_repository()
 
         bold_items = [  self.pkginfo_ui.locationLabel,
                         self.pkginfo_ui.homepageLabel,
@@ -4639,6 +4652,10 @@ class PkgInfoMenu(MenuSkel):
             self.configProtectModel.append(None,[item,'protect'])
         for item in protect_mask.split():
             self.configProtectModel.append(None,[item,'mask'])
+
+        # connect events
+        self.ugc_update_event_handler_id = \
+            SulfurSignals.connect('ugc_data_update', self.__update_ugc_event)
 
         self.pkginfo_ui.pkgInfo.show()
 

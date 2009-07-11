@@ -36,6 +36,7 @@ from sulfur.package import DummyEntropyPackage
 from sulfur.entropyapi import Equo
 from sulfur.misc import busy_cursor, normal_cursor
 from sulfur.dialogs import MaskedPackagesDialog, ConfirmationDialog, okDialog
+from sulfur.event import SulfurSignals
 
 
 class EntropyPackageViewModelInjector:
@@ -544,6 +545,13 @@ class EntropyPackageView:
 
         # set default model injector
         self.change_model_injector(DefaultPackageViewModelInjector)
+
+        self.ugc_update_event_handler_id = \
+            SulfurSignals.connect('ugc_data_update', self.__update_ugc_event)
+
+    def __update_ugc_event(self, event):
+        print "UGC update event triggered", event
+        self.view.queue_draw()
 
     def change_model_injector(self, injector):
         if not issubclass(injector, EntropyPackageViewModelInjector):

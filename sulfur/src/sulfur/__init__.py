@@ -53,6 +53,7 @@ from sulfur.filters import Filter
 from sulfur.dialogs import *
 from sulfur.progress import Base as BaseProgress
 from sulfur.events import SulfurApplicationEventsMixin
+from sulfur.event import SulfurSignals
 
 
 class SulfurApplication(Controller, SulfurApplicationEventsMixin):
@@ -602,6 +603,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.preferencesLabel.set_markup(mytxt)
 
     def setup_user_generated_content(self):
+
         self.__ugc_task = TimeScheduled(30, self.spawn_user_generated_content)
         self.__ugc_task.set_delay_before(True)
         if "--nougc" not in sys.argv:
@@ -648,6 +650,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 t2 = time.time()
                 td = t2 - t1
                 print "completed UGC update for", repo, "took", td
+
+        # emit ugc update signal
+        SulfurSignals.emit('ugc_data_update')
 
         self._is_working = False
         self._spawning_ugc = False
