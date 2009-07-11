@@ -6198,8 +6198,10 @@ class LicenseDialog:
         self.parent = application.ui.main
         self.Sulfur = application
         self.Entropy = entropy
-        self.xml = gtk.glade.XML( const.GLADE_FILE, 'licenseWindow',domain="entropy" )
-        self.xml_licread = gtk.glade.XML( const.GLADE_FILE, 'textReadWindow',domain="entropy" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, 'licenseWindow',
+            domain = "entropy" )
+        self.xml_licread = gtk.glade.XML( const.GLADE_FILE, 'textReadWindow',
+            domain = "entropy" )
         self.dialog = self.xml.get_widget( "licenseWindow" )
         self.dialog.set_transient_for( self.parent )
         self.read_dialog = self.xml_licread.get_widget( "textReadWindow" )
@@ -6208,7 +6210,6 @@ class LicenseDialog:
         self.licenseView = self.xml_licread.get_widget( "readTextView" )
         self.okReadButton = self.xml_licread.get_widget( "okReadButton" )
         self.okReadButton.connect( "clicked", self.close_read_text )
-
 
         self.okButton = self.xml.get_widget( "confirmLicense" )
         self.stopButton = self.xml.get_widget( "discardLicense" )
@@ -6233,7 +6234,7 @@ class LicenseDialog:
         self.read_dialog.hide()
 
     def run( self ):
-        self.dialog.show_all()
+        self.dialog.show()
         return self.dialog.run()
 
     def destroy( self ):
@@ -6300,7 +6301,8 @@ class LicenseDialog:
             mybuffer = gtk.TextBuffer()
             mybuffer.set_text(unicode(license_text,'raw_unicode_escape'))
             self.licenseView.set_buffer(mybuffer)
-            self.read_dialog.set_title(license_identifier+" license text")
+            txt = "[%s] %s" % (license_identifier, _("license text"),)
+            self.read_dialog.set_title(txt)
             self.read_dialog.show_all()
 
     def accept_selected_license(self, widget):
