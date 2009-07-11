@@ -6303,11 +6303,16 @@ class LicenseDialog:
             self.licenseView.set_buffer(mybuffer)
             txt = "[%s] %s" % (license_identifier, _("license text"),)
             self.read_dialog.set_title(txt)
-            self.read_dialog.show_all()
+            self.read_dialog.show()
 
     def accept_selected_license(self, widget):
         model, iterator = self.view.get_selection().get_selected()
         if model != None and iterator != None:
+
+            if model.iter_depth(iterator):
+                # we need to get its parent
+                iterator = model.get_iter_root()
+
             license_identifier = model.get_value( iterator, 0 )
             chief = model.get_value( iterator, 1 )
             if chief:

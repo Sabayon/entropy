@@ -59,7 +59,7 @@ class QueueExecutor:
                 time.sleep(0.2)
             return self.__on_lic_rc
 
-        return 0,licenses
+        return 0, licenses
 
     def ok_dialog(self, msg):
         def do_dialog():
@@ -69,6 +69,14 @@ class QueueExecutor:
 
     def run(self, install_queue, removal_queue, do_purge_cache = [],
         fetch_only = False, download_sources = False, selected_by_user = None):
+
+        """
+        return statuses:
+        0 = no errors
+        1 = install/removal error
+        2 = license massk error
+        3 = license not accepted
+        """
 
         if selected_by_user == None:
             selected_by_user = set()
@@ -81,7 +89,7 @@ class QueueExecutor:
                 atom = dbconn.retrieveAtom(match[0])
                 self.ok_dialog("%s: %s" % (
                     _("Error enabling masked package"), atom))
-                return -2,1
+                return 2
 
         removalQueue = []
         runQueue = []
@@ -95,14 +103,15 @@ class QueueExecutor:
 
         rc, licenses = self.handle_licenses(runQueue)
         if rc != 0:
-            return 0,0
+            return 3
 
         for lic in licenses:
             self.Entropy.clientDbconn.acceptLicense(lic)
 
         totalqueue = len(runQueue)
         steps_here = 2
-        if fetch_only: steps_here = 1
+        if fetch_only:
+            steps_here = 1
         progress_step = float(1)/((totalqueue*steps_here)+len(removalQueue))
         step = progress_step
         myrange = []
@@ -157,7 +166,7 @@ class QueueExecutor:
             )
             rc = Package.run()
             if rc != 0:
-                return -1,rc
+                return 1
             Package.kill()
             del Package
             self.Entropy.cycleDone()
@@ -180,7 +189,7 @@ class QueueExecutor:
         gobject.timeout_add(0, do_skip_hide)
 
         if fetch_only or download_sources:
-            return 0,0
+            return 0
 
         # then removalQueue
         # NOT conflicts! :-)
@@ -209,7 +218,7 @@ class QueueExecutor:
 
                 rc = Package.run()
                 if rc != 0:
-                    return -1,rc
+                    return 1
 
                 Package.kill()
 
@@ -252,7 +261,7 @@ class QueueExecutor:
 
             rc = Package.run()
             if rc != 0:
-                return -1,rc
+                return 1
 
             Package.kill()
             self.Entropy.cycleDone()
@@ -265,7 +274,7 @@ class QueueExecutor:
             return False
         gobject.timeout_add(0, do_skip_hide_again)
 
-        return 0,0
+        return 0
 
 
 class Equo(EquoInterface):

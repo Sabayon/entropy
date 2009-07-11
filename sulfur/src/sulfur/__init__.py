@@ -1486,6 +1486,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.switch_notebook_page('packages')
             return False
 
+        switch_back_page = None
         self.hide_notebook_tabs_for_install()
         self.disable_ugc = True
         self.set_status_ticker(_("Running tasks"))
@@ -1525,11 +1526,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.ui_lock(True)
 
                 controller = QueueExecutor(self)
-                self.my_inst_errors = None
+                self.my_inst_error = 0
                 self.my_inst_abort = False
                 def run_tha_bstrd():
                     try:
-                        e, i = controller.run(install_queue[:],
+                        e = controller.run(install_queue[:],
                             removal_queue[:], do_purge_cache,
                             fetch_only = fetch_only,
                             download_sources = download_sources,
@@ -1540,7 +1541,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     except:
                         entropy.tools.print_traceback()
                         e, i = 1, None
-                    self.my_inst_errors = (e, i,)
+                    self.my_inst_error = e
 
                 t = ParallelTask(run_tha_bstrd)
                 t.start()
@@ -1556,7 +1557,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     if self.do_debug and (dbg_count % 500 == 0):
                         print "process_queue: after QueueExecutor loop"
 
-                e,i = self.my_inst_errors
+                err = self.my_inst_error
                 if self.do_debug:
                     print "process_queue: left all"
 
@@ -1572,7 +1573,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 if self.do_debug:
                     print "process_queue: gui unlocked"
 
-                if (e == 0) and ((not fetch_only) and (not download_sources)):
+                if (err == 0) and ((not fetch_only) and (not download_sources)):
                     # this triggers post-branch upgrade function inside
                     # Entropy Client SystemSettings plugin
                     self.Equo.SystemSettings.clear()
@@ -1580,12 +1581,18 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 if self.my_inst_abort:
                     okDialog(self.ui.main,
                         _("Attention. You chose to abort the processing."))
-                elif (e != 0):
+                elif err == 1: # install failed
                     okDialog(self.ui.main,
                         _("Attention. An error occured when processing the queue."
                         "\nPlease have a look in the processing terminal.")
                     )
-                elif (e == 0) and restart_needed and \
+                elif err in (2, 3):
+                    # 2: masked package cannot be unmasked
+                    # 3: license not accepted, move back to queue page
+                    switch_back_page = 'queue'
+                    state = False
+
+                elif (err == 0) and restart_needed and \
                     ((not fetch_only) and (not download_sources)):
                     okDialog(self.ui.main,
                         _("Attention. You have updated Entropy."
@@ -1625,7 +1632,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.Equo.FileUpdates.scanfs(dcache = False, quiet = True)
                 if self.Equo.FileUpdates.scandata:
                     if len(self.Equo.FileUpdates.scandata) > 0:
-                        self.switch_notebook_page('filesconf')
+                        switch_back_page = 'filesconf'
                 if self.do_debug:
                     print "process_queue: all done"
 
@@ -1634,6 +1641,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.show_notebook_tabs_after_install()
         self.disable_ugc = False
+        if switch_back_page is not None:
+            self.switch_notebook_page(switch_back_page)
         return state
 
     def ui_lock(self, lock):
