@@ -98,6 +98,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.main.show()
         self.wait_window.hide()
 
+        if entropy.tools.is_april_first():
+            okDialog( self.ui.main,
+                _("April 1st, w0000h0000! Gonna erase your hard disk!"))
+
         self.warn_repositories()
         self.packages_install()
 
