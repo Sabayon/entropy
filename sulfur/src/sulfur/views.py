@@ -22,7 +22,7 @@ import gtk
 import gobject
 import os
 
-from entropy.exceptions import RepositoryError
+from entropy.exceptions import RepositoryError, InvalidPackageSet
 from entropy.const import etpConst, etpSys, initconfig_entropy_constants
 from entropy.misc import ParallelTask
 from entropy.i18n import _, _LOCALE
@@ -1127,10 +1127,16 @@ class EntropyPackageView:
     def on_pkgset_install_undoinstall_activate(self, widget, install = True):
 
         busy_cursor(self.main_window)
-        pkgsets, exp_matches, objs, set_objs, exp_atoms = \
-            self._get_pkgset_data(self.selected_objs, add = install)
+        try:
+            pkgsets, exp_matches, objs, set_objs, exp_atoms = \
+                self._get_pkgset_data(self.selected_objs, add = install)
+        except InvalidPackageSet:
+            okDialog(self.ui.main,
+                _("Package Set has broken dependencies, Sets not found"))
+            return
 
-        if not objs+set_objs: return
+        if not objs+set_objs:
+            return
 
         install_incomplete = [x for x in self.selected_objs if x.set_install_incomplete]
         remove_incomplete = [x for x in self.selected_objs if x.set_remove_incomplete]
@@ -1588,6 +1594,11 @@ class EntropyPackageView:
 
             if pkg.dummy_type == SulfurConf.dummy_category:
                 cell.set_property( 'icon-name', 'package-x-generic' )
+                return
+
+            # check if package is broken
+            if pkg.broken:
+                self.set_pixbuf_to_cell(cell, self.pkg_purge) # X icon
                 return
 
             if not pkg.queued:

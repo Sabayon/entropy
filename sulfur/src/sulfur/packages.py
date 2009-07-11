@@ -867,7 +867,14 @@ class EntropyPackages:
             broken = False
             for match in set_matches:
                 # set dependency
-                if match[1] == None:
+                if match[1] is None:
+                    """
+                    # this is a set, make sure it exists
+                    set_match, rc = self.Entropy.package_set_match(match[0][1:])
+                    if not rc:
+                        broken = True
+                        break
+                    """
                     yp, new = gp_call(match[0])
                     yp.action = "i"
                 else:
@@ -877,7 +884,8 @@ class EntropyPackages:
                         broken = True
                         break
                 myobjs.append(yp)
-            if broken: continue
+            if broken:
+                continue
 
             for yp in myobjs: yp.set_names.clear()
             for yp in myobjs: update_yp(yp)

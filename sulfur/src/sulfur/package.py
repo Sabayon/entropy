@@ -35,6 +35,7 @@ class DummyEntropyPackage:
         self.dbconn = None
         self.masked = None
         self.pkgset = False
+        self.broken = False # used by pkgsets
         self.selected_by_user = False
         self.dummy_type = dummy_type
         self.onlyname = onlyname
@@ -54,6 +55,7 @@ class EntropyPackage:
     def __init__(self, matched_atom, remote = None, pkgset = None):
 
         self.pkgset = pkgset
+        self.broken = False # used by pkgsets
         self.queued = None
         self.action = None
         self.dummy_type = None
@@ -79,24 +81,27 @@ class EntropyPackage:
         if self.pkgset:
 
             # must be available!
-            set_from, set_name, set_deps = EquoIntf.package_set_match(
-                self.matched_atom[1:])[0]
+            set_match, rc = EquoIntf.package_set_match(
+                self.matched_atom[1:])
+            if not rc:
+                # package set broken
+                self.broken = True
+            else:
+                (self.set_from, self.set_name, self.set_matches,) = set_match
+                self.cat = self.set_name
+                self.set_cat_namedesc = self.set_name
+                self.description = self.set_name
+                self.matched_repo = set_name
+
             self.from_installed = False
             self.dbconn = None
             self.dummy_type = -2
-            self.set_from = set_from
             self.is_set_dep = True
-            self.set_name = set_name
-            self.cat = self.set_name
             self.set_names = set()
-            self.set_cat_namedesc = self.set_name
-            self.set_matches = set_deps
             self.onlyname = self.matched_atom
-            self.description = self.set_name
             self.name = self.matched_atom
             self.set_category = False
             self.matched_id = "@"
-            self.matched_repo = set_name
 
         elif self.remote:
 
