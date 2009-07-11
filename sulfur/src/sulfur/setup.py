@@ -62,6 +62,7 @@ class const:
     star_empty_pixmap = PIXMAPS_PATH+'/star_empty.png'
     empty_background = PIXMAPS_PATH+'/empty.png'
     loading_pix = PIXMAPS_PATH+'/loading.gif'
+    loading_pix_small = PIXMAPS_PATH+'/loading_small.gif'
 
     # UGC
     ugc_ok_pix = PIXMAPS_PATH+'/ugc/ok.png'

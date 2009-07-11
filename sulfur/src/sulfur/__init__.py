@@ -143,6 +143,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             sys.stderr = self.output
             sys.stdin = self.input
 
+        # load "loading" pix
+        self._loading_pix_small = gtk.image_new_from_file(const.loading_pix_small)
+
         self.queue = Queue(self)
         self.etpbase.connect_queue(self.queue)
         self.queueView = EntropyQueueView(self.ui.queueView, self.queue)

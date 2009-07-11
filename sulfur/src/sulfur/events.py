@@ -686,15 +686,32 @@ class SulfurApplicationEventsMixin:
         rc = questionDialog(self.ui.main, msg)
         if rc: self.abortQueueNow = True
 
+    def on_show_search_hit(self, do_show):
+        if do_show:
+            self.ui.pkgSearch.set_sensitive(False)
+            self.ui.pkgSearchButtonEvent.remove(self.ui.pkgSearchButtonImg)
+            self.ui.pkgSearchButtonEvent.add(self._loading_pix_small)
+            self.ui.pkgSearchButtonEvent.show_all()
+        else:
+            self.ui.pkgSearchButtonEvent.remove(self._loading_pix_small)
+            self.ui.pkgSearchButtonEvent.add(self.ui.pkgSearchButtonImg)
+            self.ui.pkgSearch.show_all()
+            self.ui.pkgSearch.set_sensitive(True)
+        self.ui.main.queue_draw()
+        while gtk.events_pending():
+            gtk.main_iteration()
+
     def on_search_clicked(self,widget):
         self.etpbase.set_filter(Filter.processFilters)
         ''' Search entry+button handler'''
         txt = self.ui.pkgFilter.get_text()
         flt = Filter.get('KeywordFilter')
         if txt != '':
+            self.on_show_search_hit(True)
             flt.activate()
             lst = txt.split()
             flt.setKeys(lst)
+            self.on_show_search_hit(False)
             self.ui.pkgClr.show()
         else:
             flt.activate(False)

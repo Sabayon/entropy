@@ -518,14 +518,21 @@
                                         </child>
                                         <child>
                                           <widget class="GtkButton" id="pkgSearch">
+                                            <property name="width_request">32</property>
+                                            <property name="height_request">32</property>
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
                                             <property name="receives_default">False</property>
                                             <signal name="clicked" handler="on_search_clicked"/>
                                             <child>
-                                              <widget class="GtkImage" id="image177">
+                                              <widget class="GtkEventBox" id="pkgSearchButtonEvent">
                                                 <property name="visible">True</property>
-                                                <property name="stock">gtk-find</property>
+                                                <child>
+                                                  <widget class="GtkImage" id="pkgSearchButtonImg">
+                                                    <property name="visible">True</property>
+                                                    <property name="stock">gtk-find</property>
+                                                  </widget>
+                                                </child>
                                               </widget>
                                             </child>
                                           </widget>
