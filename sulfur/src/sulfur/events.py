@@ -780,6 +780,9 @@ class SulfurApplicationEventsMixin:
 
         current_sets = self.Equo.package_set_list()
         def fake_callback(s):
+            set_match, rc = self.Equo.package_set_match(s)
+            if rc:
+                return False
             if (s not in current_sets) and (" " not in s) and \
                 (not s.startswith(etpConst['packagesetprefix'])):
                 return True
