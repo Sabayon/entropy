@@ -5911,6 +5911,7 @@ class InputDialog:
     def __init__(self, parent, title, input_parameters, cancel = True):
 
         mywin = gtk.Window()
+        self.callback_parent_window = mywin
         # avoids to taint the returning elements
         # when running nested
         self.parameters = self.parameters.copy()
@@ -6112,7 +6113,10 @@ class InputDialog:
             verify_cb = self.cb_table.get(mywidget)
             valid = verify_cb(content)
             if not valid:
-                okDialog(self.parent, "%s: %s" % (_("Invalid entry"),self.entry_text_table[input_id],) , title = _("Invalid entry"))
+                okDialog(self.callback_parent_window, "%s: %s" % (
+                    _("Invalid entry"),
+                    self.entry_text_table[input_id],),
+                    title = _("Invalid entry"))
                 self.parameters.clear()
                 return
             self.parameters[input_id] = content
