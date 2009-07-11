@@ -213,6 +213,13 @@ def is_supported_image_file(path):
         if mycall(path): return True
     return False
 
+def is_april_first():
+    april_first = "01-04"
+    cur_time = time.strftime("%d-%m")
+    if april_first == cur_time:
+        return True
+    return False
+
 def add_proxy_opener(module, data):
     import types
     if type(module) != types.ModuleType: # FIXME: check if it's urllib2
