@@ -4719,7 +4719,10 @@ class SecurityAdvisoryMenu(MenuSkel):
         myurl = ''
         if data.has_key('url'):
             myurl = data['url']
-        self.advinfo_ui.labelTitle.set_markup( "<small>%s\n<span foreground='%s'>%s</span></small>" % (data['title'],SulfurConf.color_title2,myurl,)) 
+
+        self.advinfo_ui.labelTitle.set_markup( "<small>%s</small>" % (data['title'],))
+        self.advinfo_ui.advLink.set_uri(myurl)
+        self.advinfo_ui.advLink.set_label(myurl)
 
         # description
         desc_text = ' '.join([x.strip() for x in data['description'].split("\n")]).strip()

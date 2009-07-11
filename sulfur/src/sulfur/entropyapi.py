@@ -351,7 +351,7 @@ class Equo(EquoInterface):
             parent = None
 
         choice = choiceDialog(parent, question,
-            _("Entropy needs your attention"), responses)
+            _("Entropy needs your attention"), [_(x) for x in responses])
         try:
             return responses[choice]
         except IndexError:
