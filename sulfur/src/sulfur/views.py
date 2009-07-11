@@ -336,6 +336,38 @@ class DateGroupedSortPackageViewModelInjector(EntropyPackageViewModelInjector):
             for po in dates[date]:
                 self.model.append( parent, (po,) )
 
+class LicenseSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+
+    def __init__(self, *args, **kwargs):
+        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+
+    def packages_inject(self, packages):
+
+        licenses = {}
+        for po in packages:
+            try:
+                lic = po.lic
+            except (TypeError, AttributeError, ValueError,):
+                lic = None
+            if lic is not None:
+                if not lic.strip():
+                    lic = _("Not available")
+                lic_obj = licenses.setdefault(lic, [])
+                lic_obj.append(po)
+
+        for lic in sorted(licenses):
+
+            lic_text = "<b><big>%s</big></b>\n<small>%s</small>" % (
+                cleanMarkupString(lic),
+                _("license"),
+            )
+            mydummy = DummyEntropyPackage(namedesc = lic_text,
+                dummy_type = SulfurConf.dummy_category, onlyname = lic)
+            mydummy.color = SulfurConf.color_package_category
+            self.dummy_cats[lic] = mydummy
+            parent = self.model.append( None, (mydummy,) )
+            for po in licenses[lic]:
+                self.model.append( parent, (po,) )
 
 class EntropyPackageView:
 
@@ -503,7 +535,8 @@ class EntropyPackageView:
                 NameRevSortPackageViewModelInjector,
                 DownloadSortPackageViewModelInjector,
                 DefaultPackageViewModelInjector,
-                DateGroupedSortPackageViewModelInjector],
+                DateGroupedSortPackageViewModelInjector,
+                LicenseSortPackageViewModelInjector],
             'vote': [VoteSortPackageViewModelInjector,
                 VoteRevSortPackageViewModelInjector],
             'repository': [RepoSortPackageViewModelInjector],
