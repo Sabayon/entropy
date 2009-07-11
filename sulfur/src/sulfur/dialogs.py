@@ -5830,8 +5830,9 @@ def inputBox( parent, title, text, input_text = None):
 
 def FileChooser(basedir = None, pattern = None, action = gtk.FILE_CHOOSER_ACTION_OPEN, buttons = (gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK)):
     # open file selector
+    chooser_title = _("Sulfur file chooser")
     dialog = gtk.FileChooserDialog(
-        title = None,
+        title = chooser_title,
         action = action,
         buttons = buttons
     )
