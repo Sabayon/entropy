@@ -343,12 +343,14 @@ class Equo(EquoInterface):
             return False
         gobject.timeout_add(0, update_gui)
 
-    def askQuestion(self, question, importance = 0, responses = ["Yes","No"]):
+    def askQuestion(self, question, importance = 0, responses = ["Yes","No"],
+        parent = None):
 
-        try:
-            parent = self.ui.main
-        except AttributeError:
-            parent = None
+        if parent is None:
+            try:
+                parent = self.ui.main
+            except AttributeError:
+                parent = None
 
         choice = choiceDialog(parent, question,
             _("Entropy needs your attention"), [_(x) for x in responses])
