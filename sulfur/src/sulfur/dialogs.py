@@ -5933,7 +5933,7 @@ class InputDialog:
 
                 input_type, text = input_text
                 combo_options = []
-                if isinstance(text,tuple):
+                if isinstance(text, tuple):
                     text, combo_options = text
 
                 input_label = gtk.Label()
@@ -5985,14 +5985,17 @@ class InputDialog:
                     myvbox_l.pack_start(rm_button, expand = False, fill = False)
 
                     def on_add_button(widget):
-                        mydata = inputDialog(mywin, _("Add atom"), [('atom',_('Atom'),input_cb,False)], True)
-                        if mydata == None: return
+                        mydata = inputDialog(mywin, _("Add atom"),
+                            [('atom',_('Atom'), input_cb, False)], True)
+                        if mydata == None:
+                            return
                         atom = mydata.get('atom')
                         input_widget.append((atom,))
 
                     def on_remove_button(widget):
                         model, iterator = view.get_selection().get_selected()
-                        if iterator == None: return
+                        if iterator == None:
+                            return
                         model.remove(iterator)
 
                     add_button.connect("clicked",on_add_button)
@@ -6000,6 +6003,14 @@ class InputDialog:
 
                     myhbox_l.pack_start(myvbox_l, expand = False, fill = False)
                     mytable.attach(myhbox_l, 0, 2, row_count, row_count+1)
+
+                elif input_type == "filled_text":
+
+                    input_widget = gtk.Entry()
+                    input_widget.set_text(combo_options)
+                    if passworded:
+                        input_widget.set_visibility(False)
+                    mytable.attach(input_label, 0, 1, row_count, row_count+1)
 
                 elif input_type == "text":
 
@@ -6030,7 +6041,7 @@ class InputDialog:
                 self.entry_text_table[input_id] = text
                 self.identifiers_table[input_id] = input_widget
 
-                if input_type in ["list", "text", "combo"]:
+                if input_type in ["list", "text", "combo", "filled_text"]:
                     def my_input_cb(s):
                         return s
                     self.cb_table[input_widget] = my_input_cb
