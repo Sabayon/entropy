@@ -357,7 +357,8 @@ class Equo(EquoInterface):
         except IndexError:
             return responses[0]
 
-    def inputBox(self, title, input_parameters, cancel_button = True):
+    def inputBox(self, title, input_parameters, cancel_button = True,
+        parent = None):
         # @ title: title of the input box
         # @ input_parameters: [('identifier 1','input text 1',
         #       input_verification_callback,False),
@@ -365,10 +366,11 @@ class Equo(EquoInterface):
         # @ cancel_button: show cancel button ?
         # @ output: dictionary as follows:
         #   {'identifier 1': result, 'identifier 2': result}
-        try:
-            parent = self.ui.main
-        except AttributeError:
-            parent = None
+        if parent is None:
+            try:
+                parent = self.ui.main
+            except AttributeError:
+                parent = None
         return inputDialog(parent, title, input_parameters,
             cancel = cancel_button)
 
