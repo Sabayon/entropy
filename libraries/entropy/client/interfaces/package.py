@@ -386,7 +386,8 @@ class Package:
                 myebuild,
                 mydo = "config",
                 tree = "bintree",
-                cpv = spm_atom
+                cpv = spm_atom,
+                licenses = self.infoDict['accept_license']
             )
             if rc == 1:
                 self.Entropy.clientLog.log(
@@ -2136,6 +2137,7 @@ class Package:
         key, slot = self.Entropy.clientDbconn.retrieveKeySlot(idpackage)
         self.infoDict['key'], self.infoDict['slot'] = key, slot
         self.infoDict['version'] = self.Entropy.clientDbconn.retrieveVersion(idpackage)
+        self.infoDict['accept_license'] = self.Entropy.clientDbconn.retrieveLicensedataKeys(idpackage)
         self.infoDict['steps'] = []
         self.infoDict['steps'].append("config")
 
