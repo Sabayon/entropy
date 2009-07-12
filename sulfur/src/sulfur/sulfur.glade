@@ -6552,7 +6552,7 @@ gz</property>
             </child>
             <child>
               <widget class="GtkButton" id="repoSubmitEdit">
-                <property name="label">gtk-edit</property>
+                <property name="label">gtk-save</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="can_default">True</property>
