@@ -412,7 +412,7 @@ if (not options) or ("--help" in options):
     else:
         print_menu(myopts_ext_info)
     if not options:
-        print_error("not enough parameters")
+        print_error(_("not enough parameters"))
     raise SystemExit(1)
 # sure we don't need this after
 del myopts
