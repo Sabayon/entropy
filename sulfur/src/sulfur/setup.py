@@ -47,6 +47,10 @@ class const:
     else:
         ICONS_PATH = MAIN_PATH+'/pixmaps'
 
+    debug = '--debug' in sys.argv
+    if os.getenv('SULFUR_DEBUG') is not None:
+        debug = True
+
     home = os.getenv("HOME")
     if not home: home = "/tmp"
     SETTINGS_FILE = os.path.join(home, ".config/entropy/sulfur.conf")
