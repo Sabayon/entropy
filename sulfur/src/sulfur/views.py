@@ -696,10 +696,10 @@ class EntropyPackageView:
 
                 objs_len = len(objs)
                 set_categories = [obj for obj in objs if obj.set_category]
-                pkgsets = [obj for obj in objs if (obj.pkgset and obj.action in ["i","r"])]
-                installed_objs = [obj for obj in objs if obj.action in ["r","rr"]]
-                updatable_objs = [obj for obj in objs if obj.action in ["u"]]
-                installable_objs = [obj for obj in objs if obj.action in ["i"]]
+                pkgsets = [obj for obj in objs if (obj.pkgset and obj.action in ("i","r"))]
+                installed_objs = [obj for obj in objs if obj.action in ("r","rr")]
+                updatable_objs = [obj for obj in objs if obj.action == "u"]
+                installable_objs = [obj for obj in objs if obj.action == "i"]
 
                 if len(set_categories) == objs_len:
                     self.run_set_menu_stuff(set_categories)
@@ -890,15 +890,18 @@ class EntropyPackageView:
             self.installed_menu.popup( None, None, None, self.loaded_event.button, self.loaded_event.time )
 
     def get_reinstallables(self, objs):
-        reinstallables = self.etpbase.get_groups("reinstallable")
-        r_dict = {}
-        for obj in objs:
-            r_dict[obj.matched_atom] = obj
+        reinstallables = self.etpbase.get_raw_groups("reinstallable")
+        r_dict = dict(((x.matched_atom, x,) for x in objs))
+        # this has been added to support reinstallables on
+        # the "Queue/installation" tab, when objects from available
+        # group are selected
+        r2_dict = dict(((x.installed_match, x,) for x in objs))
+        r_dict.update(r2_dict)
         found = []
         for to_obj in reinstallables:
             t_match = to_obj.installed_match
             r_obj = r_dict.get(t_match)
-            if type(r_obj) != type(None):
+            if r_obj is not None:
                 found.append(to_obj)
         return found
 
