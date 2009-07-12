@@ -133,11 +133,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.pty = pty.openpty()
         self.output = fakeoutfile(self.pty[1])
         self.input = fakeinfile(self.pty[1])
-        self.do_debug = False
-        if "--debug" in sys.argv:
-            self.do_debug = True
-        elif os.getenv('SULFUR_DEBUG') != None:
-            self.do_debug = True
+        self.do_debug = const.debug
+
         if not self.do_debug:
             sys.stdout = self.output
             sys.stderr = self.output
