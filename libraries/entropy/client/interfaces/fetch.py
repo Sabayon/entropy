@@ -212,7 +212,7 @@ class FetchersMixin:
                     red(self.entropyTools.spliturl(best_mirror)[1]),
                 )
                 if rc == -1:
-                    mytxt += " - %s." % (_("files not available on this mirror"),)
+                    mytxt += " - %s." % (_("data not available on this mirror"),)
                 elif rc == -2:
                     self.MirrorStatus.add_failing_mirror(best_mirror,1)
                     mytxt += " - %s." % (_("wrong checksum"),)
