@@ -1707,6 +1707,8 @@ class EntropyQueueView:
         self.model = self.setup_view()
         self.queue = queue
         self.Equo = Equo()
+        self.ugc_update_event_handler_id = \
+            SulfurSignals.connect('ugc_data_update', self.__ugc_refresh)
 
     def setup_view( self ):
 
@@ -1741,6 +1743,9 @@ class EntropyQueueView:
             cell.set_property(stype,'#A7D0FF')
         elif not obj.queued:
             cell.set_property(stype,None)
+
+    def __ugc_refresh(self, event):
+        self.refresh()
 
     def refresh ( self ):
         self.model.clear()
