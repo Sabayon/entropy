@@ -289,6 +289,24 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.progressVBox.hide()
 
         self.setup_preferences()
+        self.setup_events_handling()
+
+    def setup_events_handling(self):
+
+        def hide_queue(event):
+            self.ui.rbPkgQueued.hide()
+
+        def show_queue(event):
+            self.ui.rbPkgQueued.show()
+
+        def queue_changed(event, length):
+            if not length and self.lastPkgPB == "queued":
+                self.set_package_radio("updates")
+
+        # setup queued/installation button events
+        SulfurSignals.connect("install_queue_empty", hide_queue)
+        SulfurSignals.connect("install_queue_filled", show_queue)
+        SulfurSignals.connect("install_queue_changed", queue_changed)
 
     def switch_application_mode(self, do_simple):
         self.ui.UGCMessageLabel.hide()
