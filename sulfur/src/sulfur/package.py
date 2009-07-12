@@ -75,14 +75,11 @@ class EntropyPackage:
         self.set_remove_incomplete = False
         self.is_downgrade = False
 
-        self.matched_atom = matched_atom
-        self.installed_match = None
-
         if self.pkgset:
 
             # must be available!
             set_match, rc = EquoIntf.package_set_match(
-                self.matched_atom[1:])
+                matched_atom[1:])
             if not rc:
                 # package set broken
                 self.broken = True
@@ -98,8 +95,8 @@ class EntropyPackage:
             self.dummy_type = -2
             self.is_set_dep = True
             self.set_names = set()
-            self.onlyname = self.matched_atom
-            self.name = self.matched_atom
+            self.onlyname = matched_atom
+            self.name = matched_atom
             self.set_category = False
             self.matched_id = "@"
 
@@ -107,7 +104,7 @@ class EntropyPackage:
 
             self.dbconn = EquoIntf.open_memory_database()
             idpackage, revision, mydata_upd = self.dbconn.addPackage(self.remote)
-            self.matched_atom = (idpackage,matched_atom[1])
+            matched_atom = (idpackage, matched_atom[1])
             self.from_installed = False
 
         else:
@@ -119,8 +116,29 @@ class EntropyPackage:
                 self.dbconn = EquoIntf.open_repository(matched_atom[1])
                 self.from_installed = False
 
-        if isinstance(self.matched_atom,tuple):
-            self.matched_id, self.matched_repo = self.matched_atom
+        if isinstance(matched_atom, tuple):
+            self.matched_id, self.matched_repo = matched_atom
+
+        self.matched_atom = matched_atom
+        self.installed_match = None
+
+    # for debugging purposes, sample method
+    """
+    def __setattr__(self, name, value):
+        if name in ("installed_match", "matched_atom",):
+            do_search = True
+            try:
+                obj_name = str(self)
+            except:
+                #
+                do_search = False
+            if do_search:
+                if obj_name.find("/flite") != -1:
+                    print repr(self), str(self), "=>" , name, ":", value
+                    if self.__dict__.get(name) is not None:
+                        import pdb; pdb.set_trace()
+        self.__dict__[name] = value
+    """
 
     def __del__(self):
         if hasattr(self,'remote'):
