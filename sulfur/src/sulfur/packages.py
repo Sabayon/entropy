@@ -17,12 +17,15 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+import time
+
 from entropy.i18n import _
 from entropy.const import *
 from entropy.exceptions import *
 
-from sulfur.setup import SulfurConf, cleanMarkupString
+from sulfur.setup import SulfurConf, cleanMarkupString, const
 from sulfur.package import EntropyPackage, DummyEntropyPackage
+from sulfur.event import SulfurSignals
 
 class Queue:
 
@@ -291,10 +294,12 @@ class Queue:
                 del self.before[:]
                 return 0,1
         finally:
-            if self.packages.values():
-                self.Sulfur.ui.rbPkgQueued.show()
+            items = [x for x in self.packages.values() if x]
+            if items:
+                SulfurSignals.emit('install_queue_filled')
             else:
-                self.Sulfur.ui.rbPkgQueued.hide()
+                SulfurSignals.emit('install_queue_empty')
+            SulfurSignals.emit('install_queue_changed', len(items))
             self.Sulfur.wait_window.hide()
 
     def add(self, pkgs, accept = False, always_ask = False):
@@ -341,10 +346,12 @@ class Queue:
                 return status,1
 
         finally:
-            if self.packages.values():
-                self.Sulfur.ui.rbPkgQueued.show()
+            items = [x for x in self.packages.values() if x]
+            if items:
+                SulfurSignals.emit('install_queue_filled')
             else:
-                self.Sulfur.ui.rbPkgQueued.hide()
+                SulfurSignals.emit('install_queue_empty')
+            SulfurSignals.emit('install_queue_changed', len(items))
             self.Sulfur.wait_window.hide()
 
     def elaborate_masked_packages(self, matches):
@@ -582,6 +589,7 @@ class EntropyPackages:
         self.selected_treeview_item = None
         self.selected_advisory_item = None
         self.queue = None
+        self._non_cached_groups = ("queued",)
 
     def connect_queue(self, queue):
         self.queue = queue
@@ -606,9 +614,15 @@ class EntropyPackages:
         self.selected_advisory_item = None
 
     def populate_single_group(self, mask, force = False):
-        if self._packages.has_key(mask) and not force:
+        if self._packages.has_key(mask) and not force and mask not in \
+            self._non_cached_groups:
             return
+        if const.debug:
+            t1 = time.time()
         self._packages[mask] = self._get_groups(mask)
+        if const.debug:
+            print "populate_single_group: generated group content for %s in %s" % (
+                mask, time.time() - t1,)
 
     def get_groups(self, flt):
         if flt == 'all':
@@ -639,7 +653,12 @@ class EntropyPackages:
         return pkgs
 
     def get_raw_groups(self, flt):
+        if const.debug:
+            t1 = time.time()
         self.populate_single_group(flt)
+        if const.debug:
+            print "get_raw_groups: generated group content for %s in %s" % (
+                flt, time.time() - t1,)
         return self._packages[flt]
 
     def get_package_item(self, pkgdata):
@@ -663,6 +682,7 @@ class EntropyPackages:
             except RepositoryError:
                 return 0
             yp.action = 'r'
+            yp.installed_match = (idpackage, 0,)
             yp.color = SulfurConf.color_install
             return yp
         return [x for x in map(fm,
@@ -671,8 +691,8 @@ class EntropyPackages:
 
     def _pkg_get_queued(self):
         data = []
-        for qkey in self.queue.packages:
-            data.extend(self.queue.packages[qkey])
+        for mylist in self.queue.packages.values():
+            data.extend(mylist)
         return data
 
     def _pkg_get_available(self):
@@ -713,15 +733,22 @@ class EntropyPackages:
 
     def _pkg_get_downgrade(self):
 
-        already_in = self.get_raw_groups("updates")[:]
-        already_in += self.get_raw_groups("available")[:]
-        already_in += self.get_raw_groups("reinstallable")[:]
-        already_in += self.get_raw_groups("masked")[:]
-        already_in += self.get_raw_groups("user_masked")[:]
-        already_in += self.get_raw_groups("user_unmasked")[:]
-        already_in = [x.matched_atom for x in already_in]
+        if const.debug:
+            t1 = time.time()
 
-        matches = []
+        already_in = set((x.matched_atom for x in self.get_raw_groups("updates")))
+        already_in |= set((x.matched_atom for x in self.get_raw_groups("available")))
+        already_in |= set((x.matched_atom for x in self.get_raw_groups("reinstallable")))
+        already_in |= set((x.matched_atom for x in self.get_raw_groups("masked")))
+        already_in |= set((x.matched_atom for x in self.get_raw_groups("user_masked")))
+        already_in |= set((x.matched_atom for x in self.get_raw_groups("user_unmasked")))
+
+        if const.debug:
+            print "_pkg_get_downgrade: created already_in in %s" % (
+                time.time() - t1,)
+            t1 = time.time()
+
+        matches = set()
         for repo in self.Entropy.validRepositories:
             try:
                 dbconn = self.Entropy.open_repository(repo)
@@ -729,8 +756,13 @@ class EntropyPackages:
             except (RepositoryError, SystemDatabaseError):
                 continue
             idpackages = dbconn.listAllIdpackages()
-            matches += [(x, repo) for x in idpackages if (x, repo) not in
-                already_in]
+            matches |= set(((x, repo) for x in idpackages if (x, repo) not in
+                already_in))
+
+        if const.debug:
+            print "_pkg_get_downgrade: first iteration in %s" % (
+                time.time() - t1,)
+            t1 = time.time()
 
         final_matches = []
         for match in matches:
@@ -748,6 +780,10 @@ class EntropyPackages:
             yp.color = SulfurConf.color_remove
             final_matches.append(yp)
 
+        if const.debug:
+            print "_pkg_get_downgrade: second iteration in %s" % (
+                time.time() - t1,)
+
         return final_matches
 
     def _pkg_get_reinstallable(self):
@@ -757,13 +793,15 @@ class EntropyPackages:
                 yp, new = self.get_package_item(matched)
             except RepositoryError:
                 return 0
+            # added for reliability
             yp.installed_match = (idpackage,0)
             yp.action = 'rr'
             yp.color = SulfurConf.color_install
             return yp
-        return [x for x in map(fm, self.filter_reinstallable(
+        filtered = self.filter_reinstallable(
             self.Entropy.clientDbconn.listAllPackages(get_scope = True,
-                order_by = 'atom'))) if type(x) is not int]
+            order_by = 'atom'))
+        return [x for x in map(fm, filtered) if type(x) is not int]
 
     def _pkg_get_masked(self):
         gp_call = self.get_package_item
