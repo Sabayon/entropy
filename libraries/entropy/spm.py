@@ -1592,12 +1592,9 @@ class PortagePlugin:
             sys.stdout = f
 
         mypath = etpConst['systemroot']+"/"
-        os.environ["SKIP_EQUO_SYNC"] = "1"
-        os.environ["CD_ROOT"] = "/tmp" # workaround for scripts asking for user intervention
-        os.environ["ROOT"] = mypath
 
-        if licenses:
-            os.environ["ACCEPT_LICENSE"] = str(' '.join(licenses)) # we already do this early
+        # old way to avoid loop of deaths for entropy portage hooks
+        os.environ["SKIP_EQUO_SYNC"] = "1"
 
         # load metadata
         myebuilddir = os.path.dirname(myebuild)
@@ -1616,10 +1613,27 @@ class PortagePlugin:
         # find config
         mysettings = self._get_portage_config("/",mypath)
         mysettings['EBUILD_PHASE'] = mydo
+        # crappy, broken, ebuilds, put accept_license eutils call
+        # in pkg_setup, when environment variables are not setup yet
+        mysettings['LICENSE'] = str(' '.join(licenses))
+        if licenses:
+            # we already do this early
+            mysettings["ACCEPT_LICENSE"] = mysettings['LICENSE']
+
         mysettings['EAPI'] = "0"
         if metadata.has_key('EAPI'):
             mysettings['EAPI'] = metadata['EAPI']
+
+        # workaround for scripts asking for user intervention
+        mysettings['ROOT'] = mypath
+        mysettings['CD_ROOT'] = "/tmp"
+
         mysettings.backup_changes("EAPI")
+        mysettings.backup_changes("ACCEPT_LICENSE")
+        mysettings.backup_changes("LICENSE")
+        mysettings.backup_changes("EBUILD_PHASE")
+        mysettings.backup_changes("ROOT")
+        mysettings.backup_changes("CD_ROOT")
 
         try: # this is a >portage-2.1.4_rc11 feature
             mysettings._environ_whitelist = set(mysettings._environ_whitelist)
