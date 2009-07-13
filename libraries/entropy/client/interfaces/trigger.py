@@ -589,9 +589,11 @@ class Trigger:
             )
             try:
 
-                sys.stdout = stdfile
+                if not etpUi['debug']:
+                    sys.stdout = stdfile
                 self.__ebuild_setup_phase(myebuild, portage_atom)
-                sys.stdout = oldstdout
+                if not etpUi['debug']:
+                    sys.stdout = oldstdout
 
                 rc = self.Spm.spm_doebuild(
                     myebuild,
@@ -682,9 +684,11 @@ class Trigger:
             )
             try:
 
-                sys.stdout = stdfile
+                if not etpUi['debug']:
+                    sys.stdout = stdfile
                 self.__ebuild_setup_phase(myebuild, portage_atom)
-                sys.stdout = oldstdout
+                if not etpUi['debug']:
+                    sys.stdout = oldstdout
 
                 rc = self.Spm.spm_doebuild(
                     myebuild,
