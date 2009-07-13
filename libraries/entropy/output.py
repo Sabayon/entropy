@@ -166,12 +166,14 @@ codes["INFORM"] = codes["darkgreen"]
 codes["UNMERGE_WARN"] = codes["red"]
 codes["MERGE_LIST_PROGRESS"] = codes["yellow"]
 
-def xtermTitle(mystr):
+def xtermTitle(mystr, raw = False):
     """
     Set new xterm title.
 
     @param mystr: new xterm title
     @type mystr: string
+    @keyword raw: write title in raw mode
+    @type raw: bool
     """
     if dotitles and "TERM" in os.environ and sys.stderr.isatty():
         myt = os.environ["TERM"]
