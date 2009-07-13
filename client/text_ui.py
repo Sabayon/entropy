@@ -98,13 +98,10 @@ def package(options):
         else:
             if opt.startswith("--"):
                 continue
-            if opt.endswith(".tbz2") and \
-                os.path.isabs(opt) and \
-                os.access(opt,os.R_OK) and \
-                Equo.entropyTools.is_entropy_package_file(opt):
-                    mytbz2paths.append(opt)
-            elif opt.endswith(".tbz2"):
-                continue
+            etp_file = Equo.entropyTools.is_entropy_package_file(opt)
+            if etp_file:
+                opt = os.path.abspath(opt)
+                mytbz2paths.append(opt)
             elif opt.strip():
                 _myopts.append(opt.strip())
     myopts = _myopts
