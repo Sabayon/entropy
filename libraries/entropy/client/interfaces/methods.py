@@ -839,9 +839,7 @@ class RepositoryMixin:
             mydata = repo_data.get(repoid)
             if mydata is None:
                 const_debug_write(__name__,
-                    "run_repository_post_branch_upgrade_hooks: repo data N/A" % (
-                        repoid,)
-                )
+                    "run_repository_post_branch_upgrade_hooks: repo data N/A")
                 continue
 
             # check if branch upgrade script exists
