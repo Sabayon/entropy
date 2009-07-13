@@ -1623,6 +1623,7 @@ class PortagePlugin:
         if licenses:
             # we already do this early
             mysettings["ACCEPT_LICENSE"] = mysettings['LICENSE']
+            mysettings.backup_changes("ACCEPT_LICENSE")
 
         mysettings['EAPI'] = "0"
         if metadata.has_key('EAPI'):
@@ -1633,7 +1634,6 @@ class PortagePlugin:
         mysettings['CD_ROOT'] = "/tmp"
 
         mysettings.backup_changes("EAPI")
-        mysettings.backup_changes("ACCEPT_LICENSE")
         mysettings.backup_changes("LICENSE")
         mysettings.backup_changes("EBUILD_PHASE")
         mysettings.backup_changes("ROOT")
