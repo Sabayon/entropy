@@ -19,6 +19,7 @@ install:
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/sulfur/sulfur/misc
 	mkdir -p $(DESTDIR)/usr/share/pixmaps/sulfur/packages
 	mkdir -p $(DESTDIR)/usr/share/pixmaps/sulfur/gfx
+	mkdir -p $(DESTDIR)/usr/share/pixmaps/sulfur/ugc
 	mkdir -p $(DESTDIR)/usr/share/applications
 	mkdir -p $(DESTDIR)/usr/share/mimelnk/application
 	mkdir -p $(DESTDIR)/usr/share/mime/packages
