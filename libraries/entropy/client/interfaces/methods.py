@@ -291,9 +291,6 @@ class RepositoryMixin:
 
     def remove_repository(self, repoid, disable = False):
 
-        # ensure that all dbs are closed
-        self.close_all_repositories()
-
         done = False
         if self.SystemSettings['repositories']['available'].has_key(repoid):
             del self.SystemSettings['repositories']['available'][repoid]
@@ -302,6 +299,18 @@ class RepositoryMixin:
         if self.SystemSettings['repositories']['excluded'].has_key(repoid):
             del self.SystemSettings['repositories']['excluded'][repoid]
             done = True
+
+        # also early remove from validRepositories to avoid
+        # issues when reloading SystemSettings which is bound to Entropy Client
+        # SystemSettings plugin, which triggers calculate_world_updates, which
+        # triggers all_repositories_checksum, which triggers open_repository,
+        # which triggers load_repository_database, which triggers an unwanted
+        # output message => "bad repository id specified"
+        if repoid in self.validRepositories:
+            self.validRepositories.remove(repoid)
+
+        # ensure that all dbs are closed
+        self.close_all_repositories()
 
         if done:
 
