@@ -166,9 +166,15 @@ codes["INFORM"] = codes["darkgreen"]
 codes["UNMERGE_WARN"] = codes["red"]
 codes["MERGE_LIST_PROGRESS"] = codes["yellow"]
 
-def xtermTitle(mystr, raw=False):
+def xtermTitle(mystr):
+    """
+    Set new xterm title.
+
+    @param mystr: new xterm title
+    @type mystr: string
+    """
     if dotitles and "TERM" in os.environ and sys.stderr.isatty():
-        myt=os.environ["TERM"]
+        myt = os.environ["TERM"]
         legal_terms = ["xterm","Eterm","aterm","rxvt","screen","kterm","rxvt-unicode","gnome"]
         if myt in legal_terms:
             if not raw:
@@ -182,32 +188,39 @@ def xtermTitle(mystr, raw=False):
 default_xterm_title = None
 
 def xtermTitleReset():
-        global default_xterm_title
-        if default_xterm_title is None:
-                prompt_command = os.getenv('PROMPT_COMMAND')
-                if prompt_command == "":
-                        default_xterm_title = ""
-                elif prompt_command is not None:
-                        from entropy.tools import getstatusoutput
-                        default_xterm_title = getstatusoutput(prompt_command)[1]
-                else:
-                        pwd = os.getenv('PWD','')
-                        home = os.getenv('HOME', '')
-                        if home != '' and pwd.startswith(home):
-                                pwd = '~' + pwd[len(home):]
-                        default_xterm_title = '\x1b]0;%s@%s:%s\x07' % (
-                            os.getenv('LOGNAME', ''),
-                            os.getenv('HOSTNAME', '').split('.', 1)[0],
-                            pwd)
-        xtermTitle(default_xterm_title, raw=True)
+    """
+    Reset xterm title to default.
+    """
+    global default_xterm_title
+    if default_xterm_title is None:
+        prompt_command = os.getenv('PROMPT_COMMAND')
+        if prompt_command == "":
+            default_xterm_title = ""
+        elif prompt_command is not None:
+            from entropy.tools import getstatusoutput
+            default_xterm_title = getstatusoutput(prompt_command)[1]
+        else:
+            pwd = os.getenv('PWD','')
+            home = os.getenv('HOME', '')
+            if home != '' and pwd.startswith(home):
+                pwd = '~' + pwd[len(home):]
+            default_xterm_title = '\x1b]0;%s@%s:%s\x07' % (
+                os.getenv('LOGNAME', ''),
+                os.getenv('HOSTNAME', '').split('.', 1)[0],
+                pwd)
+    xtermTitle(default_xterm_title)
 
 def notitles():
-    "turn off title setting"
+    """
+    Turn off title setting. In this way, xterm title won't be touched.
+    """
     global dotitles
     dotitles=0
 
 def nocolor():
-    "turn off colorization"
+    """
+    Turn off colorization process-wide.
+    """
     os.environ['ETP_NO_COLOR'] = "1"
     global havecolor
     havecolor=0
@@ -217,9 +230,20 @@ if nc:
     nocolor()
 
 def resetColor():
+    """
+    Reset terminal color currently set.
+    """
     return codes["reset"]
 
 def colorize(color_key, text):
+    """
+    Colorize text with given color key using bash/terminal codes.
+
+    @param color_key: color identifier available in entropy.output.codes
+    @type color_key: string
+    @return: coloured text
+    @rtype: string
+    """
     if etpUi['mute']:
         return text
     global havecolor
@@ -228,68 +252,189 @@ def colorize(color_key, text):
     return text
 
 def bold(text):
+    """
+    Make text bold using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("bold", text)
 
 def white(text):
+    """
+    Make text white using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("white", text)
 
 def teal(text):
+    """
+    Make text teal using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("teal", text)
 
 def turquoise(text):
+    """
+    Make text turquoise using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("turquoise", text)
 
 def darkteal(text):
+    """
+    Make text darkteal using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("darkteal", text)
 
-def fuscia(text):
-    return colorize("fuscia", text)
-
-def fuchsia(text):
-    return colorize("fuchsia", text)
-
 def purple(text):
+    """
+    Make text purple using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("purple", text)
 
 def blue(text):
+    """
+    Make text blue using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("blue", text)
 
 def darkblue(text):
+    """
+    Make text darkblue using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("darkblue", text)
 
 def green(text):
+    """
+    Make text green using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("green", text)
 
 def darkgreen(text):
+    """
+    Make text darkgreen using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("darkgreen", text)
 
 def yellow(text):
+    """
+    Make text yellow using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("yellow", text)
 
 def brown(text):
+    """
+    Make text brown using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("brown", text)
 
 def darkyellow(text):
+    """
+    Make text darkyellow using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("darkyellow", text)
 
 def red(text):
+    """
+    Make text red using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("red", text)
 
 def darkred(text):
+    """
+    Make text darkred using bash/terminal codes.
+
+    @param text: text to colorize
+    @type text: string
+    @return: colorized text
+    @rtype: string
+    """
     return colorize("darkred", text)
 
-def create_color_func(color_key):
-    def derived_func(*args):
-        newargs = list(args)
-        newargs.insert(0, color_key)
-        return colorize(*newargs)
-    return derived_func
-
 def enlightenatom(atom):
+    """
+    Colorize package atoms with standard colors.
+
+    @param atom: atom string
+    @type atom: string
+    @return: colorized string
+    @rtype: string
+    """
     out = atom.split("/")
     return blue(out[0])+"/"+red(out[1])
 
 def print_menu(data, args = None):
+    """
+    Function used by Entropy text client (will be moved from here) to
+    print the menu output given a properly formatted list.
+    This method is not intended for general used and will be moved away from
+    here.
+    """
     if args == None:
         args = []
 
@@ -297,7 +442,7 @@ def print_menu(data, args = None):
         return x
     def orig_myfunc_desc(x):
         return x
-    
+
     try:
         i = args.index("--help")
         del args[i]
@@ -376,15 +521,33 @@ def print_menu(data, args = None):
             writechar("\n")
 
 def reset_cursor():
+    """
+    Print to stdout the terminal code to push back cursor at the beginning
+    of the line.
+    """
     if havecolor:
         sys.stdout.write(stuff['ESC'] + '[2K')
-    flush_stdouterr()
+    _flush_stdouterr()
 
-def flush_stdouterr():
+def _flush_stdouterr():
     sys.stdout.flush()
     sys.stderr.flush()
 
 def print_error(msg, back = False, flush = True):
+    """
+    Service function used by Entropy text client (will be moved from here)
+    to write error messages to stdout (not stderr, atm).
+    NOTE: don't use this directly but rather subclass TextInterface class.
+
+    @param msg: text message to print
+    @type msg: string
+    @keyword back: move text cursor back to the beginning of the line
+    @type back: bool
+    @keyword flush: flush stdout and stderr
+    @type flush: bool
+    @return: None
+    @rtype: None
+    """
     if etpUi['mute']:
         return
     if not back:
@@ -402,9 +565,23 @@ def print_error(msg, back = False, flush = True):
         except UnicodeEncodeError:
             print darkred(">>"),msg.encode('utf-8')
     if flush:
-        flush_stdouterr()
+        _flush_stdouterr()
 
 def print_info(msg, back = False, flush = True):
+    """
+    Service function used by Entropy text client (will be moved from here)
+    to write info messages to stdout (not stderr, atm).
+    NOTE: don't use this directly but rather subclass TextInterface class.
+
+    @param msg: text message to print
+    @type msg: string
+    @keyword back: move text cursor back to the beginning of the line
+    @type back: bool
+    @keyword flush: flush stdout and stderr
+    @type flush: bool
+    @return: None
+    @rtype: None
+    """
     if etpUi['mute']:
         return
     if not back:
@@ -422,9 +599,23 @@ def print_info(msg, back = False, flush = True):
         except UnicodeEncodeError:
             print darkgreen(">>"),msg.encode('utf-8')
     if flush:
-        flush_stdouterr()
+        _flush_stdouterr()
 
 def print_warning(msg, back = False, flush = True):
+    """
+    Service function used by Entropy text client (will be moved from here)
+    to write warning messages to stdout (not stderr, atm).
+    NOTE: don't use this directly but rather subclass TextInterface class.
+
+    @param msg: text message to print
+    @type msg: string
+    @keyword back: move text cursor back to the beginning of the line
+    @type back: bool
+    @keyword flush: flush stdout and stderr
+    @type flush: bool
+    @return: None
+    @rtype: None
+    """
     if etpUi['mute']:
         return
     if not back:
@@ -442,9 +633,23 @@ def print_warning(msg, back = False, flush = True):
         except UnicodeEncodeError:
             print red(">>"),msg.encode('utf-8')
     if flush:
-        flush_stdouterr()
+        _flush_stdouterr()
 
-def print_generic(msg): # here we'll wrap any nice formatting
+def print_generic(msg):
+    """
+    Service function used by Entropy text client (will be moved from here)
+    to write generic messages to stdout (not stderr, atm).
+    NOTE: don't use this directly but rather subclass TextInterface class.
+
+    @param msg: text message to print
+    @type msg: string
+    @keyword back: move text cursor back to the beginning of the line
+    @type back: bool
+    @keyword flush: flush stdout and stderr
+    @type flush: bool
+    @return: None
+    @rtype: None
+    """
     if etpUi['mute']:
         return
     writechar("\r")
@@ -452,13 +657,19 @@ def print_generic(msg): # here we'll wrap any nice formatting
         print msg
     except UnicodeEncodeError:
         print msg.encode('utf-8')
-    flush_stdouterr()
+    _flush_stdouterr()
 
-def writechar(char):
+def writechar(chars):
+    """
+    Write characters to stdout (will be moved from here).
+
+    @param chars: chars to write
+    @type chars: string
+    """
     if etpUi['mute']:
         return
     try:
-        sys.stdout.write(char)
+        sys.stdout.write(chars)
         sys.stdout.flush()
     except IOError, e:
         if e.errno == 32:
@@ -466,6 +677,16 @@ def writechar(char):
         raise
 
 def readtext(request, password = False):
+    """
+    Read text from stdin and return it (will be moved from here).
+
+    @param request: textual request to print
+    @type request: string
+    @keyword password: if you are requesting a password, set this to True
+    @type password: bool
+    @return: text read back from stdin
+    @rtype: string
+    """
     xtermTitle(_("Entropy needs your attention"))
     if password:
         from getpass import getpass
@@ -478,23 +699,23 @@ def readtext(request, password = False):
             print request,"",
         except UnicodeEncodeError:
             print request.encode('utf-8'),"",
-        flush_stdouterr()
-        text = my_raw_input()
+        _flush_stdouterr()
+        text = _my_raw_input()
     return text
 
-def my_raw_input(txt = ''):
+def _my_raw_input(txt = ''):
     if txt:
         try:
             print darkgreen(txt),
         except UnicodeEncodeError:
             print darkgreen(txt.encode('utf-8')),
-    flush_stdouterr()
+    _flush_stdouterr()
     response = ''
     while 1:
         y = sys.stdin.read(1)
         if y in ('\n','\r',): break
         response += y
-        flush_stdouterr()
+        _flush_stdouterr()
     return response
 
 class TextInterface:
@@ -524,7 +745,7 @@ class TextInterface:
         if (etpUi['quiet']) or (etpUi['mute']):
             return
 
-        flush_stdouterr()
+        _flush_stdouterr()
 
         myfunc = print_info
         if type == "warning":
@@ -546,7 +767,7 @@ class TextInterface:
         elif importance in (2,3):
             myfunc(header+count_str+text+footer, back = back, flush = False)
 
-        flush_stdouterr()
+        _flush_stdouterr()
 
     # @input question: question to do
     #
@@ -568,13 +789,13 @@ class TextInterface:
             print darkgreen(question),
         except UnicodeEncodeError:
             print darkgreen(question.encode('utf-8')),
-        flush_stdouterr()
+        _flush_stdouterr()
         try:
             while True:
                 xtermTitle(_("Entropy got a question for you"))
-                flush_stdouterr()
-                response = my_raw_input("["+"/".join([colours[i](responses[i]) for i in range(len(responses))])+"] ")
-                flush_stdouterr()
+                _flush_stdouterr()
+                response = _my_raw_input("["+"/".join([colours[i](responses[i]) for i in range(len(responses))])+"] ")
+                _flush_stdouterr()
                 for key in responses:
                     # An empty response will match the first value in responses.
                     if response.upper() == key[:len(response)].upper():
@@ -586,13 +807,13 @@ class TextInterface:
                     except UnicodeEncodeError:
                         print "%s '%s'" % (_("I cannot understand"),response.encode('utf-8'),),
                     '''
-                    flush_stdouterr()
+                    _flush_stdouterr()
         except (EOFError, KeyboardInterrupt):
             print "%s." % (_("Interrupted"),)
             xtermTitleReset()
             raise SystemExit(100)
         xtermTitleReset()
-        flush_stdouterr()
+        _flush_stdouterr()
 
     '''
      @ title: title of the input box
@@ -614,7 +835,7 @@ class TextInterface:
                 print title
             except UnicodeEncodeError:
                 print title.encode('utf-8')
-        flush_stdouterr()
+        _flush_stdouterr()
 
         def option_chooser(option_data):
             mydict = {}
