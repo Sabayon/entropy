@@ -1613,8 +1613,12 @@ class PortagePlugin:
         # find config
         mysettings = self._get_portage_config("/",mypath)
         mysettings['EBUILD_PHASE'] = mydo
+
         # crappy, broken, ebuilds, put accept_license eutils call
         # in pkg_setup, when environment variables are not setup yet
+        # WARNING WARNING WARNING:
+        # if some other hook fails for other reasons, it's because
+        # it may miss env variable here.
         mysettings['LICENSE'] = str(' '.join(licenses))
         if licenses:
             # we already do this early
