@@ -38,6 +38,7 @@ import entropy.tools
 from entropy.const import *
 from entropy.i18n import _
 from entropy.misc import TimeScheduled, ParallelTask
+from entropy.cache import EntropyCacher
 
 # Sulfur Imports
 import gtk, gobject
@@ -61,6 +62,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def __init__(self):
 
         self.Equo = Equo()
+        self.Cacher = EntropyCacher()
 
         self.do_debug = False
         locked = self.Equo.resources_check_lock()
@@ -639,6 +641,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             pass
         if self.do_debug:
             print "quitting UGC"
+        self.Cacher.sync(wait = True)
 
     def ugc_update(self):
 
