@@ -56,6 +56,12 @@
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class QAInterface</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface">source&nbsp;code</a></span></p>
+<p>Entropy QA interface. This class contains all the Entropy QA routines 
+  used by Entropy Server and Entropy Client.</p>
+  <p>An instance of QAInterface can be easily retrieved from 
+  entropy.client.interfaces.Client or entropy.server.interfaces.Server 
+  through an exposed QA() method. This is anyway a stand-alone class.</p>
+
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -70,8 +76,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">OutputInterface</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.qa.QAInterface-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">OutputInterface</span>)</span><br />
+      QAInterface constructor.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.__init__">source&nbsp;code</a></span>
             
@@ -83,14 +90,16 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="test_depends_linking"></a><span class="summary-sig-name">test_depends_linking</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.qa.QAInterface-class.html#test_depends_linking" class="summary-sig-name">test_depends_linking</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">idpackages</span>,
         <span class="summary-sig-arg">dbconn</span>,
-        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Scan for broken shared objects linking for the given idpackages on 
+      the given entropy.db.LocalRepository based instance.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.test_depends_linking">source&nbsp;code</a></span>
             
@@ -102,18 +111,20 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="scan_missing_dependencies"></a><span class="summary-sig-name">scan_missing_dependencies</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.qa.QAInterface-class.html#scan_missing_dependencies" class="summary-sig-name">scan_missing_dependencies</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">idpackages</span>,
         <span class="summary-sig-arg">dbconn</span>,
         <span class="summary-sig-arg">ask</span>=<span class="summary-sig-default">True</span>,
         <span class="summary-sig-arg">self_check</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">black_list</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">black_list_adder</span>=<span class="summary-sig-default">None</span>)</span></td>
+        <span class="summary-sig-arg">black_list_adder</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Scan missing dependencies for the given idpackages on the given 
+      entropy.db.LocalRepository &quot;dbconn&quot; instance.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.scan_missing_dependencies">source&nbsp;code</a></span>
             
@@ -144,30 +155,15 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">string</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="content_test"></a><span class="summary-sig-name">content_test</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">mycontent</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.content_test">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="resolve_dynamic_library"></a><span class="summary-sig-name">resolve_dynamic_library</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.qa.QAInterface-class.html#resolve_dynamic_library" class="summary-sig-name">resolve_dynamic_library</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">library</span>,
-        <span class="summary-sig-arg">requiring_executable</span>)</span></td>
+        <span class="summary-sig-arg">requiring_executable</span>)</span><br />
+      Resolve given library name (as contained into ELF metadata) to a 
+      library path.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.resolve_dynamic_library">source&nbsp;code</a></span>
             
@@ -179,14 +175,18 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">tuple</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_missing_rdepends"></a><span class="summary-sig-name">get_missing_rdepends</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.qa.QAInterface-class.html#get_missing_rdepends" class="summary-sig-name">get_missing_rdepends</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">dbconn</span>,
         <span class="summary-sig-arg">idpackage</span>,
-        <span class="summary-sig-arg">self_check</span>=<span class="summary-sig-default">False</span>)</span></td>
+        <span class="summary-sig-arg">self_check</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Service method able to determine whether dependencies are missing on 
+      the given idpackage (belonging to the given 
+      entropy.db.LocalRepository &quot;dbconn&quot; argument) using shared 
+      objects linking information between packages.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.get_missing_rdepends">source&nbsp;code</a></span>
             
@@ -198,14 +198,17 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list or set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_deep_dependency_list"></a><span class="summary-sig-name">get_deep_dependency_list</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.qa.QAInterface-class.html#get_deep_dependency_list" class="summary-sig-name">get_deep_dependency_list</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">dbconn</span>,
         <span class="summary-sig-arg">idpackage</span>,
-        <span class="summary-sig-arg">atoms</span>=<span class="summary-sig-default">False</span>)</span></td>
+        <span class="summary-sig-arg">atoms</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Service method which returns a complete, expanded list of 
+      dependencies for the given idpackage on the given 
+      entropy.db.LocalRepository &quot;dbconn&quot; instance.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.get_deep_dependency_list">source&nbsp;code</a></span>
             
@@ -217,12 +220,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="entropy_package_checks"></a><span class="summary-sig-name">entropy_package_checks</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package_path</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.qa.QAInterface-class.html#entropy_package_checks" class="summary-sig-name">entropy_package_checks</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package_path</span>)</span><br />
+      Main method for the execution of QA tests on physical Entropy package
+      files.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.entropy_package_checks">source&nbsp;code</a></span>
             
@@ -233,6 +238,259 @@
     </td>
   </tr>
 </table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">OutputInterface</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>QAInterface constructor.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>OutputInterface</code></strong> (TextInterface class or subclass instance) - class instance used to print output. Even if not enforced at the 
+          moment, it should be a subclass of entropy.qa.TextInterface 
+          exposing the updateProgress() method with proper signature.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="test_depends_linking"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">test_depends_linking</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idpackages</span>,
+        <span class="sig-arg">dbconn</span>,
+        <span class="sig-arg">repo</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.test_depends_linking">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Scan for broken shared objects linking for the given idpackages on the
+  given entropy.db.LocalRepository based instance. Note: this only works 
+  for packages actually installed on the running system. It is used by 
+  Entropy Server during packages injection into database to warn about 
+  potentially broken packages.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>idpackages</code></strong> (list) - list of valid idpackages (int) on the given dbconn argument 
+          passed</li>
+        <li><strong class="pname"><code>dbconn</code></strong> (entropy.db.LocalRepository) - entropy.db.LocalRepository instance containing the given 
+          idpackages list</li>
+        <li><strong class="pname"><code>repo</code></strong> (string) - repository identifer from which dbconn and idpackages arguments 
+          belong. Note: at the moment it's only used for output purposes.</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True if any breakage is found, otherwise False</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="scan_missing_dependencies"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">scan_missing_dependencies</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idpackages</span>,
+        <span class="sig-arg">dbconn</span>,
+        <span class="sig-arg">ask</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">self_check</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">repo</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">black_list</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">black_list_adder</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.scan_missing_dependencies">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Scan missing dependencies for the given idpackages on the given 
+  entropy.db.LocalRepository &quot;dbconn&quot; instance. In addition, this
+  method will allow the user through OutputInterface to interactively add 
+  (if ask == True) missing dependencies or blacklist them.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>idpackages</code></strong> (list) - list of valid idpackages (int) on the given dbconn argument 
+          passed</li>
+        <li><strong class="pname"><code>dbconn</code></strong> (entropy.db.LocalRepository) - entropy.db.LocalRepository instance containing the given 
+          idpackages list</li>
+        <li><strong class="pname"><code>ask</code></strong> (bool) - request user interaction when finding missing dependencies</li>
+        <li><strong class="pname"><code>self_check</code></strong> (bool) - also introspect inside the complaining package (to avoid 
+          reporting false positives when circular dependencies occur)</li>
+        <li><strong class="pname"><code>repo</code></strong> (string) - repository identifier of the given entropy.db.LocalRepository 
+          dbconn instance. It is used to correctly place blacklisted items.</li>
+        <li><strong class="pname"><code>black_list</code></strong> (set) - list of dependencies already blacklisted.</li>
+        <li><strong class="pname"><code>black_list_adder</code></strong> (callable) - callable function that accepts two arguments: (1) list (set) of 
+          new dependencies to blacklist for the given (2) repository 
+          identifier.</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>tainting status, if any dependency has been added</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="resolve_dynamic_library"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">resolve_dynamic_library</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">library</span>,
+        <span class="sig-arg">requiring_executable</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.resolve_dynamic_library">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Resolve given library name (as contained into ELF metadata) to a 
+  library path.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>library</code></strong> (string) - library name (as contained into ELF metadata)</li>
+        <li><strong class="pname"><code>requiring_executable</code></strong> (string) - path to ELF object that contains the given library name</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>resolved library path</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_missing_rdepends"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_missing_rdepends</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">dbconn</span>,
+        <span class="sig-arg">idpackage</span>,
+        <span class="sig-arg">self_check</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.get_missing_rdepends">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Service method able to determine whether dependencies are missing on 
+  the given idpackage (belonging to the given entropy.db.LocalRepository 
+  &quot;dbconn&quot; argument) using shared objects linking information 
+  between packages.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>dbconn</code></strong> (entropy.db.LocalRepository instance) - entropy.db.LocalRepository instance from which idpackage argument
+          belongs</li>
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - entropy.db.LocalRepository package identifier</li>
+        <li><strong class="pname"><code>self_check</code></strong> (bool) - also check inside the given package (idpackage) itself</li>
+    </ul></dd>
+    <dt>Returns: tuple</dt>
+        <dd>tuple of length 2, composed by a dictionary with the following 
+          structure: {('KEY', 'SLOT': set([list of missing deps for the 
+          given key])} and a &quot;plain&quot; list (set) of missing 
+          dependencies set([list of missing dependencies])</dd>
+  </dl>
+<div class="fields">      <p><strong>To Do:</strong>
+        swap the first two arguments?
+      </p>
+</div></td></tr></table>
+</div>
+<a name="get_deep_dependency_list"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_deep_dependency_list</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">dbconn</span>,
+        <span class="sig-arg">idpackage</span>,
+        <span class="sig-arg">atoms</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.get_deep_dependency_list">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Service method which returns a complete, expanded list of dependencies
+  for the given idpackage on the given entropy.db.LocalRepository 
+  &quot;dbconn&quot; instance.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>dbconn</code></strong> (entropy.db.LocalRepository instance) - entropy.db.LocalRepository instance which contains the given 
+          idpackage item.</li>
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - Entropy database package key</li>
+        <li><strong class="pname"><code>atoms</code></strong> (bool) - !! return type modifier !! , make method returning a list of atom
+          strings instead of list of db match tuples.</li>
+    </ul></dd>
+    <dt>Returns: list or set</dt>
+        <dd>list of dependencies in form of matching tuple list ( 
+          [(idpackage, repoid,) ... ] ) or plain dependency list (if atom 
+          == True -- set([atom_string1, atom_string2, atom_string3])</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="entropy_package_checks"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">entropy_package_checks</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package_path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.entropy_package_checks">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Main method for the execution of QA tests on physical Entropy package 
+  files.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package_path</code></strong> (string) - path to physical Entropy package file path</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True, if all checks passed</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -264,7 +522,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Jul  8 09:49:30 2009
+    Generated by Epydoc 3.0.1 on Tue Jul 14 13:45:37 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

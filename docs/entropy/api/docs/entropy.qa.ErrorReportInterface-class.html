@@ -59,16 +59,34 @@
 <center>
 <center>  <map id="uml_class_diagram_for_entropy__61" name="uml_class_diagram_for_entropy__61">
 <area shape="rect" href="entropy.tools-module.html" title="# DESCRIPTION: # generic tools for all the handlers applications" alt="" coords="17,28,391,47"/>
-<area shape="rect" href="entropy.qa.ErrorReportInterface-class.html#__init__" title="entropy.qa.ErrorReportInterface.__init__" alt="" coords="17,49,391,68"/>
-<area shape="rect" href="entropy.qa.ErrorReportInterface-class.html#prepare" title="entropy.qa.ErrorReportInterface.prepare" alt="" coords="17,68,391,87"/>
-<area shape="rect" href="entropy.qa.ErrorReportInterface-class.html#submit" title="entropy.qa.ErrorReportInterface.submit" alt="" coords="17,87,391,105"/>
-<area shape="rect" href="entropy.qa.ErrorReportInterface-class.html" title="entropy.qa.ErrorReportInterface" alt="" coords="16,11,392,107"/>
+<area shape="rect" href="entropy.qa.ErrorReportInterface-class.html#__init__" title="ErrorReportInterface constructor." alt="" coords="17,49,391,68"/>
+<area shape="rect" href="entropy.qa.ErrorReportInterface-class.html#prepare" title="This method must be called prior to submit()." alt="" coords="17,68,391,87"/>
+<area shape="rect" href="entropy.qa.ErrorReportInterface-class.html#submit" title="Submit collected data remotely via HTTP POST." alt="" coords="17,87,391,105"/>
+<area shape="rect" href="entropy.qa.ErrorReportInterface-class.html" title="Interface used by Entropy Client to remotely send errors via HTTP POST." alt="" coords="16,11,392,107"/>
 <area shape="rect" href="entropy.client.interfaces.qa.UGCErrorReportInterface-class.html" title="Entropy Errors Reporting Interface that works over User Generated Content (UGC) infrastructure." alt="" coords="69,136,339,163"/>
 </map>
   <img src="uml_class_diagram_for_entropy__61.gif" alt='' usemap="#uml_class_diagram_for_entropy__61" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
+<p>Interface used by Entropy Client to remotely send errors via HTTP 
+  POST. Some anonymous info about the running system are collected and sent
+  over, once the user gives the acknowledgement for this operation. User 
+  should be asked for valid credentials, such as name, surname and email. 
+  This has two advantages: block stupid and lazy people and make possible 
+  for Entropy developers to contact him/her back. Moreover, the same 
+  applies for a simple description. To improve the ability to debug an 
+  issue, it is also asked the user to describe his/her action prior to the 
+  error.</p>
+  <p>Sample code:</p>
+<pre class="py-doctest">
+<span class="py-prompt">&gt;&gt;&gt; </span><span class="py-keyword">from</span> entropy.qa <span class="py-keyword">import</span> ErrorReportInterface
+<span class="py-prompt">&gt;&gt;&gt; </span>error = ErrorReportInterface(<span class="py-string">'http://url_for_http_post'</span>)
+<span class="py-prompt">&gt;&gt;&gt; </span>error.prepare(<span class="py-string">'traceback_text'</span>, <span class="py-string">'John Foo'</span>, <span class="py-string">'john@foo.com'</span>,
+<span class="py-output">        report_data = 'extra traceback info',</span>
+<span class="py-output">        description = 'I was installing foo!')</span>
+<span class="py-output"></span><span class="py-prompt">&gt;&gt;&gt; </span>error.submit()</pre>
+
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -83,8 +101,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">post_url</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.qa.ErrorReportInterface-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">post_url</span>)</span><br />
+      ErrorReportInterface constructor.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.qa-pysrc.html#ErrorReportInterface.__init__">source&nbsp;code</a></span>
             
@@ -96,16 +115,17 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="prepare"></a><span class="summary-sig-name">prepare</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.qa.ErrorReportInterface-class.html#prepare" class="summary-sig-name">prepare</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">tb_text</span>,
         <span class="summary-sig-arg">name</span>,
         <span class="summary-sig-arg">email</span>,
         <span class="summary-sig-arg">report_data</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
-        <span class="summary-sig-arg">description</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span></td>
+        <span class="summary-sig-arg">description</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span><br />
+      This method must be called prior to submit().</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.qa-pysrc.html#ErrorReportInterface.prepare">source&nbsp;code</a></span>
             
@@ -117,11 +137,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="submit"></a><span class="summary-sig-name">submit</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.qa.ErrorReportInterface-class.html#submit" class="summary-sig-name">submit</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Submit collected data remotely via HTTP POST.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.qa-pysrc.html#ErrorReportInterface.submit">source&nbsp;code</a></span>
             
@@ -132,6 +153,102 @@
     </td>
   </tr>
 </table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">post_url</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.qa-pysrc.html#ErrorReportInterface.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>ErrorReportInterface constructor.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>post_url</code></strong> (string) - HTTP post url where to submit data</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="prepare"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">prepare</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">tb_text</span>,
+        <span class="sig-arg">name</span>,
+        <span class="sig-arg">email</span>,
+        <span class="sig-arg">report_data</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>,
+        <span class="sig-arg">description</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.qa-pysrc.html#ErrorReportInterface.prepare">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This method must be called prior to submit(). It is used to prepare 
+  and collect system information before the submission. It is intentionally
+  split from submit() to allow easy reimplementation.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>tb_text</code></strong> (string) - Python traceback text to send</li>
+        <li><strong class="pname"><code>name</code></strong> (string) - submitter name</li>
+        <li><strong class="pname"><code>email</code></strong> (string) - submitter email address</li>
+        <li><strong class="pname"><code>report_data</code></strong> (string) - extra information</li>
+        <li><strong class="pname"><code>description</code></strong> (string) - submitter action description</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="submit"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">submit</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.qa-pysrc.html#ErrorReportInterface.submit">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Submit collected data remotely via HTTP POST.</p>
+  <dl class="fields">
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'><a href="entropy.exceptions.PermissionDenied-class.html">PermissionDenied</a></strong></code> - when prepare() hasn't been called.</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -163,7 +280,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Jul  8 09:49:30 2009
+    Generated by Epydoc 3.0.1 on Tue Jul 14 13:45:37 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
