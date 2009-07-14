@@ -25,11 +25,13 @@ class _SulfurSignals(gobject.GObject):
 gobject.type_register(_SulfurSignals)
 gobject.signal_new("ugc_data_update", _SulfurSignals, gobject.SIGNAL_RUN_FIRST,
                    gobject.TYPE_NONE, ())
-gobject.signal_new("install_queue_empty", _SulfurSignals, gobject.SIGNAL_RUN_FIRST,
-                   gobject.TYPE_NONE, ())
-gobject.signal_new("install_queue_filled", _SulfurSignals, gobject.SIGNAL_RUN_FIRST,
-                   gobject.TYPE_NONE, ())
-gobject.signal_new("install_queue_changed", _SulfurSignals, gobject.SIGNAL_RUN_FIRST,
-                   gobject.TYPE_NONE, (int,))
+gobject.signal_new("install_queue_empty", _SulfurSignals,
+    gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, ())
+gobject.signal_new("install_queue_filled", _SulfurSignals,
+    gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, ())
+gobject.signal_new("install_queue_changed", _SulfurSignals,
+    gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, (int,))
+gobject.signal_new("pkg_properties__ugc_tab_clicked", _SulfurSignals,
+    gobject.SIGNAL_RUN_FIRST, gobject.TYPE_NONE, ())
 
 SulfurSignals = _SulfurSignals()

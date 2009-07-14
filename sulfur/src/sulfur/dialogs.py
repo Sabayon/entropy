@@ -3898,6 +3898,10 @@ class PkgInfoMenu(MenuSkel):
         #self.pkginfo_ui.pkgInfo.connect('button-press-event', self.on_button_press)
         self.setupPkgPropertiesView()
 
+        self.ugc_tab_clicked_signal_handler_id = \
+            SulfurSignals.connect('pkg_properties__ugc_tab_clicked',
+                self._ugc_tab_clicked)
+
     def set_pixbuf_to_cell(self, cell, path):
         try:
             pixbuf = gtk.gdk.pixbuf_new_from_file(path)
@@ -3985,6 +3989,8 @@ class PkgInfoMenu(MenuSkel):
         # disconnect signals
         if self.ugc_update_event_handler_id is not None:
             SulfurSignals.disconnect(self.ugc_update_event_handler_id)
+        if self.ugc_tab_clicked_signal_handler_id is not None:
+            SulfurSignals.disconnect(self.ugc_tab_clicked_signal_handler_id)
 
     def on_closeInfo_clicked(self, widget):
         self.disconnect_event_signals()
@@ -4077,7 +4083,7 @@ class PkgInfoMenu(MenuSkel):
             docs_cache = self.Entropy.UGC.UGCCache.get_alldocs_cache(self.pkgkey, self.repository)
         if docs_cache == None:
             docs_data, err_msg = self.Entropy.UGC.get_docs(self.repository, self.pkgkey)
-            if not isinstance(docs_data,tuple):
+            if not isinstance(docs_data, (list, tuple,)):
                 self.ugc_data = {}
             else:
                 self.ugc_data = self.digest_remote_docs_data(docs_data)
@@ -4206,8 +4212,11 @@ class PkgInfoMenu(MenuSkel):
 
     def on_infoBook_switch_page(self, widget, page, page_num):
         if (page_num == self.ugc_page_idx) and (not self.switched_to_ugc_page):
-            self.switched_to_ugc_page = True
-            self.on_loadUgcButton_clicked(widget, force = False)
+            SulfurSignals.emit('pkg_properties__ugc_tab_clicked')
+
+    def _ugc_tab_clicked(self, event):
+        self.switched_to_ugc_page = True
+        self.on_loadUgcButton_clicked(None, force = False)
 
     def on_showChangeLogButton_clicked(self, widget):
         if not self.changelog:
