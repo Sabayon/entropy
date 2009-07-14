@@ -1063,7 +1063,7 @@
                     <child>
                       <widget class="GtkLabel" id="label4">
                         <property name="visible">True</property>
-                        <property name="label" translatable="yes">Packages</property>
+                        <property name="label" translatable="yes">Applications</property>
                       </widget>
                       <packing>
                         <property name="position">1</property>
