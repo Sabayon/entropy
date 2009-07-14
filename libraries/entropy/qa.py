@@ -1,25 +1,23 @@
 # -*- coding: utf-8 -*-
-'''
-    # DESCRIPTION:
-    # Entropy Object Oriented Interface
+"""
 
-    Copyright (C) 2007-2009 Fabio Erculiani
+    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
+    @contact: lxnay@sabayonlinux.org
+    @copyright: Fabio Erculiani
+    @license: GPL-2
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    B{Entropy Framework QA module}.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    This module contains various Quality Assurance routines used by Entropy.
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-'''
-# pylint ~ok
+    B{QAInterface} is the main class for QA routines used by Entropy Server
+    and Entropy Client such as binary packages health check, dependency
+    test, broken or missing library tes.
+
+    B{ErrorReportInterface} is the HTTP POST based class for Entropy Client
+    exceptions (errors) submission.
+
+"""
 import os
 import sys
 import subprocess
@@ -34,10 +32,29 @@ from entropy.core import SystemSettings
 
 class QAInterface:
 
+    """
+    Entropy QA interface. This class contains all the Entropy
+    QA routines used by Entropy Server and Entropy Client.
+
+    An instance of QAInterface can be easily retrieved from
+    entropy.client.interfaces.Client or entropy.server.interfaces.Server
+    through an exposed QA() method.
+    This is anyway a stand-alone class.
+
+    """
+
     import entropy.tools as entropyTools
     from entropy.misc import Lifo
     def __init__(self, OutputInterface):
+        """
+        QAInterface constructor.
 
+        @param OutputInterface: class instance used to print output.
+        Even if not enforced at the moment, it should be a subclass of
+        entropy.qa.TextInterface exposing the updateProgress() method
+        with proper signature.
+        @type OutputInterface: TextInterface class or subclass instance
+        """
         self.Output = OutputInterface
         self.SystemSettings = SystemSettings()
 
@@ -49,8 +66,29 @@ class QAInterface:
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
     def test_depends_linking(self, idpackages, dbconn, repo = None):
+        """
+        Scan for broken shared objects linking for the given idpackages on
+        the given entropy.db.LocalRepository based instance.
+        Note: this only works for packages actually installed on the running
+        system.
+        It is used by Entropy Server during packages injection into database
+        to warn about potentially broken packages.
 
-        repo = self.SystemSettings['repositories']['default_repository']
+        @param idpackages: list of valid idpackages (int) on the given dbconn
+            argument passed
+        @type idpackages: list
+        @param dbconn: entropy.db.LocalRepository instance containing the
+            given idpackages list
+        @type dbconn: entropy.db.LocalRepository
+        @keyword repo: repository identifer from which dbconn and idpackages
+            arguments belong. Note: at the moment it's only used for output
+            purposes.
+        @type repo: string
+        @return: True if any breakage is found, otherwise False
+        @rtype: bool
+        """
+        if repo is None:
+            repo = self.SystemSettings['repositories']['default_repository']
 
         scan_msg = blue(_("Now searching for broken depends"))
         self.Output.updateProgress(
@@ -103,7 +141,7 @@ class QAInterface:
                     count = (count, maxcount,)
                 )
                 mycontent = dbconn.retrieveContent(mydepend)
-                mybreakages = self.content_test(mycontent)
+                mybreakages = self._content_test(mycontent)
                 if not mybreakages:
                     continue
                 broken = True
@@ -143,8 +181,38 @@ class QAInterface:
     def scan_missing_dependencies(self, idpackages, dbconn, ask = True,
             self_check = False, repo = None, black_list = None,
             black_list_adder = None):
+        """
+        Scan missing dependencies for the given idpackages on the given
+        entropy.db.LocalRepository "dbconn" instance. In addition, this method
+        will allow the user through OutputInterface to interactively add (if ask
+        == True) missing dependencies or blacklist them.
 
-        if repo == None:
+        @param idpackages: list of valid idpackages (int) on the given dbconn
+            argument passed
+        @type idpackages: list
+        @param dbconn: entropy.db.LocalRepository instance containing the
+            given idpackages list
+        @type dbconn: entropy.db.LocalRepository
+        @keyword ask: request user interaction when finding missing dependencies
+        @type ask: bool
+        @keyword self_check: also introspect inside the complaining package
+            (to avoid reporting false positives when circular dependencies
+            occur)
+        @type self_check: bool
+        @keyword repo: repository identifier of the given
+            entropy.db.LocalRepository dbconn instance.
+            It is used to correctly place blacklisted items.
+        @type repo: string
+        @keyword black_list: list of dependencies already blacklisted.
+        @type black_list: set
+        @keyword black_list_adder: callable function that accepts two arguments:
+            (1) list (set) of new dependencies to blacklist for the
+            given (2) repository identifier.
+        @type black_list_adder: callable
+        @return: tainting status, if any dependency has been added
+        @rtype: bool
+        """
+        if repo is None:
             repo = self.SystemSettings['repositories']['default_repository']
 
         if not isinstance(black_list, set):
@@ -523,8 +591,18 @@ class QAInterface:
 
         return packagesMatched, plain_brokenexecs, 0
 
-    def content_test(self, mycontent):
+    def _content_test(self, mycontent):
+        """
+        Test whether the given list of files contain files
+        with broken shared object links.
 
+        @param mycontent: list of file paths
+        @type mycontent: list or set
+        @return: dict containing a map between file path
+        and list (set) of broken libraries (just the library name,
+            the same that is contained inside ELF metadata)
+        @rtype: dict
+        """
         def is_contained(needed, content):
             for item in content:
                 if os.path.basename(item) == needed:
@@ -559,7 +637,18 @@ class QAInterface:
         return broken_libs
 
     def resolve_dynamic_library(self, library, requiring_executable):
+        """
+        Resolve given library name (as contained into ELF metadata) to
+        a library path.
 
+        @param library: library name (as contained into ELF metadata)
+        @type library: string
+        @param requiring_executable: path to ELF object that contains the given
+            library name
+        @type requiring_executable: string
+        @return: resolved library path
+        @rtype: string
+        """
         def do_resolve(mypaths):
             found_path = None
             for mypath in mypaths:
@@ -585,7 +674,28 @@ class QAInterface:
         return found_path
 
     def get_missing_rdepends(self, dbconn, idpackage, self_check = False):
+        """
+        Service method able to determine whether dependencies are missing
+        on the given idpackage (belonging to the given
+        entropy.db.LocalRepository "dbconn" argument) using shared objects
+        linking information between packages.
 
+        @todo: swap the first two arguments?
+        @param dbconn: entropy.db.LocalRepository instance from which idpackage
+            argument belongs
+        @type dbconn: entropy.db.LocalRepository instance
+        @param idpackage: entropy.db.LocalRepository package identifier
+        @type idpackage: int
+        @keyword self_check: also check inside the given package
+            (idpackage) itself
+        @type self_check: bool
+        @return: tuple of length 2, composed by a dictionary with the
+            following structure:
+            {('KEY', 'SLOT': set([list of missing deps for the given key])}
+            and a "plain" list (set) of missing dependencies
+            set([list of missing dependencies])
+        @rtype: tuple
+        """
         rdepends = {}
         rdepends_plain = set()
         neededs = dbconn.retrieveNeeded(idpackage, extended = True)
@@ -689,7 +799,24 @@ class QAInterface:
         return rdepends, rdepends_plain
 
     def get_deep_dependency_list(self, dbconn, idpackage, atoms = False):
+        """
+        Service method which returns a complete, expanded list of dependencies
+        for the given idpackage on the given entropy.db.LocalRepository
+        "dbconn" instance.
 
+        @param dbconn: entropy.db.LocalRepository instance which contains
+            the given idpackage item.
+        @type dbconn: entropy.db.LocalRepository instance
+        @param idpackage: Entropy database package key
+        @type idpackage: int
+        @keyword atoms: !! return type modifier !! , make method returning
+            a list of atom strings instead of list of db match tuples.
+        @type atoms: bool
+        @return: list of dependencies in form of matching tuple list
+            ( [(idpackage, repoid,) ... ] ) or plain dependency list (if
+            atom == True -- set([atom_string1, atom_string2, atom_string3])
+        @rtype: list or set
+        """
         mybuffer = self.Lifo()
         matchcache = set()
         depcache = set()
@@ -732,7 +859,15 @@ class QAInterface:
         return matchcache
 
     def __analyze_package_edb(self, pkg_path):
+        """
+        Check if the physical Entropy package file contains
+        a valid Entropy embedded database.
 
+        @param pkg_path: path to physical entropy package file
+        @type pkg_path: string
+        @return: package validity
+        @rtype: bool
+        """
         from entropy.db import LocalRepository, dbapi2
         fd, tmp_path = tempfile.mkstemp()
         extract_path = self.entropyTools.extract_edb(pkg_path, tmp_path)
@@ -777,6 +912,15 @@ class QAInterface:
         return valid
 
     def entropy_package_checks(self, package_path):
+        """
+        Main method for the execution of QA tests on physical Entropy
+        package files.
+
+        @param package_path: path to physical Entropy package file path
+        @type package_path: string
+        @return: True, if all checks passed
+        @rtype: bool
+        """
         qa_methods = [self.__analyze_package_edb]
         for method in qa_methods:
             qa_rc = method(package_path)
@@ -787,8 +931,37 @@ class QAInterface:
 
 class ErrorReportInterface:
 
+    """
+
+    Interface used by Entropy Client to remotely send errors via HTTP POST.
+    Some anonymous info about the running system are collected and sent over,
+    once the user gives the acknowledgement for this operation.
+    User should be asked for valid credentials, such as name, surname and email.
+    This has two advantages: block stupid and lazy people and make possible
+    for Entropy developers to contact him/her back.
+    Moreover, the same applies for a simple description. To improve the
+    ability to debug an issue, it is also asked the user to describe his/her
+    action prior to the error.
+
+    Sample code:
+
+        >>> from entropy.qa import ErrorReportInterface
+        >>> error = ErrorReportInterface('http://url_for_http_post')
+        >>> error.prepare('traceback_text', 'John Foo', 'john@foo.com',
+                report_data = 'extra traceback info',
+                description = 'I was installing foo!')
+        >>> error.submit()
+
+    """
+
     import entropy.tools as entropyTools
     def __init__(self, post_url):
+        """
+        ErrorReportInterface constructor.
+
+        @param post_url: HTTP post url where to submit data
+        @type post_url: string
+        """
         from entropy.misc import MultipartPostHandler
         import urllib2
         self.url = post_url
@@ -812,6 +985,25 @@ class ErrorReportInterface:
             urllib2._opener = None
 
     def prepare(self, tb_text, name, email, report_data = "", description = ""):
+
+        """
+        This method must be called prior to submit(). It is used to prepare
+        and collect system information before the submission.
+        It is intentionally split from submit() to allow easy reimplementation.
+
+        @param tb_text: Python traceback text to send
+        @type tb_text: string
+        @param name: submitter name
+        @type name: string
+        @param email: submitter email address
+        @type email: string
+        @keyword report_data: extra information
+        @type report_data: string
+        @keyword description: submitter action description
+        @type description: string
+        @return: None
+        @rtype: None
+        """
 
         import sys
         from entropy.tools import getstatusoutput
@@ -839,6 +1031,13 @@ class ErrorReportInterface:
 
     # params is a dict, key(HTTP post item name): value
     def submit(self):
+        """
+        Submit collected data remotely via HTTP POST.
+
+        @raise PermissionDenied: when prepare() hasn't been called.
+        @return: None
+        @rtype: None
+        """
         if self.generated:
             result = self.opener.open(self.url, self.params).read()
             if result.strip() == "1":
