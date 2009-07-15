@@ -197,7 +197,6 @@ class RepositoryMixin:
                     self.clear_dump_cache(etpCache['world'])
                     self.clear_dump_cache(etpCache['install'])
                     self.clear_dump_cache(etpCache['remove'])
-                    self.calculate_world_updates(use_cache = False)
         return conn
 
     def get_repository_revision(self, reponame):
