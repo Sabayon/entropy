@@ -41,6 +41,9 @@ class QAInterface:
     through an exposed QA() method.
     This is anyway a stand-alone class.
 
+    @todo: standardize QAInterface methods names
+    @todo: remove non-QA methods
+
     """
 
     import entropy.tools as entropyTools
