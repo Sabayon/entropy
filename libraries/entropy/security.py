@@ -1,25 +1,17 @@
 # -*- coding: utf-8 -*-
-'''
-    # DESCRIPTION:
-    # Entropy Object Oriented Interface
+"""
 
-    Copyright (C) 2007-2009 Fabio Erculiani
+    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
+    @contact: lxnay@sabayonlinux.org
+    @copyright: Fabio Erculiani
+    @license: GPL-2
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    B{Entropy Framework Security module}.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    This module contains Entropy GLSA-based Security interfaces.
+    
 
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-'''
-# pylint ~ ok
+"""
 import os
 import shutil
 from entropy.exceptions import IncorrectParameter, InvalidData
@@ -33,31 +25,38 @@ class SecurityInterface:
     ~~ GIVES YOU WINGS ~~
     """
 
-    # thanks to Gentoo "gentoolkit" package, License below:
+    """
+    @note: thanks to Gentoo "gentoolkit" package, License below:
+    @note:    This program is licensed under the GPL, version 2
 
-    # This program is licensed under the GPL, version 2
+    @note: WARNING: this code is not intended to replace any Security mechanism,
+    @note: but it's just a way to handle Gentoo GLSAs.
+    @note: There are possible security holes and probably bugs in this code.
 
-    # WARNING: this code is only tested by a few people and should NOT be used
-    # on production systems at this stage.
-    # There are possible security holes and probably
-    # bugs in this code. If you test it please report ANY success or failure to
-    # me (genone@gentoo.org).
+    This class implements the Entropy packages Security framework.
+    It can be used to retrieve security advisories, get information
+    about unapplied advisories, etc.
 
-    # The following planned features are currently on hold:
-    # - getting GLSAs from http/ftp servers
-    #   (not really useful without the fixed ebuilds)
-    # - GPG signing/verification (until key policy is clear)
+    """
 
     import entropy.tools as entropyTools
-    def __init__(self, EquoInstance):
+    def __init__(self, entropy_client_instance):
+
+        """
+        SecurityInterface constructor.
+
+        @param entropy_client_instance: a valid entropy.client.interfaces.Client
+            instance
+        @type entropy_client_instance: entropy.client.interfaces.Client instance
+        """
 
         # disabled for now
         from entropy.client.interfaces import Client
-        if not isinstance(EquoInstance, Client):
+        if not isinstance(entropy_client_instance, Client):
             mytxt = _("A valid Client interface instance is needed")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
-        self.Entropy = EquoInstance
+        self.Entropy = entropy_client_instance
         from entropy.cache import EntropyCacher
         self.__cacher = EntropyCacher()
         from entropy.core import SystemSettings
@@ -127,6 +126,10 @@ class SecurityInterface:
 
     def __prepare_unpack(self):
 
+        """
+        Prepare GLSAs unpack directory and its permissions.
+        """
+
         if os.path.isfile(self.unpackdir) or os.path.islink(self.unpackdir):
             os.remove(self.unpackdir)
 
@@ -141,13 +144,31 @@ class SecurityInterface:
         const_setup_perms(self.unpackdir, etpConst['entropygid'])
 
     def __download_glsa_package(self):
+        """
+        Download GLSA compressed package from a trusted source.
+        """
         return self.__generic_download(self.security_url, self.download_package)
 
     def __download_glsa_package_cksum(self):
+        """
+        Download GLSA compressed package checksum (md5) from a trusted source.
+        """
         return self.__generic_download(self.security_url_checksum,
             self.download_package_checksum, show_speed = False)
 
     def __generic_download(self, url, save_to, show_speed = True):
+        """
+        Generic, secure, URL download method.
+
+        @param url: download URL
+        @type url: string
+        @param save_to: path to save file
+        @type save_to: string
+        @keyword show_speed: if True, download speed will be shown
+        @type show_speed: bool
+        @return: download status (True if download succeeded)
+        @rtype: bool
+        """
         fetcher = self.Entropy.urlFetcher(url, save_to, resume = False,
             show_speed = show_speed)
         fetcher.progress = self.Entropy.progress
@@ -160,6 +181,10 @@ class SecurityInterface:
         return True
 
     def __verify_checksum(self):
+
+        """
+        Verify downloaded GLSA checksum against downloaded GLSA package.
+        """
 
         # read checksum
         if not os.path.isfile(self.download_package_checksum) or \
@@ -187,6 +212,9 @@ class SecurityInterface:
         return 0
 
     def __unpack_advisories(self):
+        """
+        Unpack downloaded GLSA package containing GLSA advisories.
+        """
         rc_unpack = self.entropyTools.uncompress_tar_bz2(
             self.download_package,
             self.unpacked_package,
@@ -196,6 +224,9 @@ class SecurityInterface:
         return rc_unpack
 
     def __clear_previous_advisories(self):
+        """
+        Remove previously installed GLSA advisories.
+        """
         if os.listdir(etpConst['securitydir']):
             shutil.rmtree(etpConst['securitydir'], True)
             if not os.path.isdir(etpConst['securitydir']):
@@ -203,20 +234,41 @@ class SecurityInterface:
             const_setup_perms(self.unpackdir, etpConst['entropygid'])
 
     def __put_advisories_in_place(self):
+        """
+        Place unpacked advisories in place (into etpConst['securitydir']).
+        """
         for advfile in os.listdir(self.unpacked_package):
             from_file = os.path.join(self.unpacked_package, advfile)
             to_file = os.path.join(etpConst['securitydir'], advfile)
-            shutil.move(from_file, to_file)
+            try:
+                os.rename(from_file, to_file)
+            except OSError:
+                shutil.move(from_file, to_file)
 
     def __cleanup_garbage(self):
+        """
+        Remove GLSA unpack directory.
+        """
         shutil.rmtree(self.unpackdir, True)
 
     def clear(self, xcache = False):
+        """
+        Clear SecurityInterface cache (RAM and on-disk).
+
+        @keyword xcache: also remove Entropy on-disk cache if True
+        @type xcache: bool
+        """
         self.adv_metadata = None
         if xcache:
             self.Entropy.clear_dump_cache(etpCache['advisories'])
 
     def get_advisories_cache(self):
+
+        """
+        Return cached advisories information metadata. It first tries to load
+        them from RAM and, in case of failure, it tries to gather the info
+        from disk, using EntropyCacher.
+        """
 
         if self.adv_metadata != None:
             return self.adv_metadata
@@ -237,6 +289,9 @@ class SecurityInterface:
                 return self.adv_metadata
 
     def set_advisories_cache(self, adv_metadata):
+        """
+        
+        """
         if self.Entropy.xcache:
             dir_checksum = self.entropyTools.md5sum_directory(
                 etpConst['securitydir'])
