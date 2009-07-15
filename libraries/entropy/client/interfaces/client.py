@@ -521,8 +521,8 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
 
         # load User Generated Content Interface
         if load_ugc:
-            from entropy.client.services.ugc.interfaces import Client as ugcClient
-            self.UGC = ugcClient(self)
+            from entropy.client.services.ugc.interfaces import Client as ugc_cl
+            self.UGC = ugc_cl(self)
 
         # class init
         LoadersMixin.__init__(self)
@@ -563,19 +563,15 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         if do_validate_repo_cache:
             self.validate_repositories_cache()
 
-        if not self.repo_validation:
+        if self.repo_validation:
+            self.validate_repositories()
+        else:
             self.validRepositories.extend(
                 self.SystemSettings['repositories']['order'])
 
         # add our SystemSettings plugin
         # Make sure we connect Entropy Client plugin AFTER client db init
-        # WARNING: needs to be executed before self.validate_repositories()
-        # because it calls calculate_world_updates() which needs it
         self.SystemSettings.add_plugin(self.sys_settings_client_plugin)
-
-        # now we can run it
-        if self.repo_validation:
-            self.validate_repositories()
 
         const_debug_write(__name__, "singleton loaded")
 
