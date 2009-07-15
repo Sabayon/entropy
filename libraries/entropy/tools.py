@@ -287,7 +287,10 @@ def islive():
     return const_islive()
 
 def get_file_size(file_path):
-    mystat = os.lstat(file_path)
+    my = file_path[:]
+    if isinstance(my, unicode):
+        my = my.encode("utf-8")
+    mystat = os.lstat(my)
     return int(mystat.st_size)
 
 def sum_file_sizes(file_list):
