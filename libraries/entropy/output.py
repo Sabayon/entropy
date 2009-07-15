@@ -722,6 +722,20 @@ def _my_raw_input(txt = ''):
 
 class TextInterface:
 
+    """
+    TextInterface is a base class for handling the communication between
+    user and Entropy-based applications.
+
+    This class works for text-based applications, it must be inherited
+    from subclasses and its methods reimplemented to make Entropy working
+    on situations where a terminal is not used as UI (Graphical applications,
+    web-based interfaces, remote interfaces, etc).
+
+    Every part of Entropy is using the methods in this class to communicate
+    with the user, channel is bi-directional.
+
+    """
+
     # @input text: text to write
     # @input back: write on on the same line?
     # @input importance:
@@ -744,7 +758,12 @@ class TextInterface:
     #
     # feel free to reimplement this
     def updateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
-        if (etpUi['quiet']) or (etpUi['mute']):
+
+        """
+        
+        """
+
+        if etpUi['quiet'] or etpUi['mute']:
             return
 
         _flush_stdouterr()
