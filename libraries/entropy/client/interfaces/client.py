@@ -563,17 +563,22 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         if do_validate_repo_cache:
             self.validate_repositories_cache()
 
-        if self.repo_validation:
-            self.validate_repositories()
-        else:
+        if not self.repo_validation:
             self.validRepositories.extend(
                 self.SystemSettings['repositories']['order'])
 
         # add our SystemSettings plugin
         # Make sure we connect Entropy Client plugin AFTER client db init
+        # WARNING: needs to be executed before self.validate_repositories()
+        # because it calls calculate_world_updates() which needs it
         self.SystemSettings.add_plugin(self.sys_settings_client_plugin)
 
+        # now we can run it
+        if self.repo_validation:
+            self.validate_repositories()
+
         const_debug_write(__name__, "singleton loaded")
+
 
     def destroy(self):
         self.__instance_destroyed = True
