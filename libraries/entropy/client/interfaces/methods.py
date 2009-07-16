@@ -773,7 +773,7 @@ class RepositoryMixin:
 
             if branch_mig_md5sum != '0':
                 args = ["/bin/sh", branch_mig_script, repoid, 
-                    etpConst['systemroot'], old_branch, new_branch]
+                    etpConst['systemroot'] + "/", old_branch, new_branch]
                 const_debug_write(__name__,
                     "run_repositories_post_branch_switch_hooks: run: %s" % (
                         args,)
@@ -901,7 +901,7 @@ class RepositoryMixin:
                 )
 
                 args = ["/bin/sh", branch_upg_script, repoid,
-                    etpConst['systemroot'], from_branch, branch]
+                    etpConst['systemroot'] + "/", from_branch, branch]
                 proc = subprocess.Popen(args, stdin = sys.stdin,
                     stdout = sys.stdout, stderr = sys.stderr)
                 mig_rc = proc.wait()
