@@ -22,6 +22,7 @@
 
 from __future__ import with_statement
 import os
+import sys
 import time
 import subprocess
 import shutil
@@ -1669,10 +1670,13 @@ class Client:
 
         if self.ssl:
 
-            try:
-                from OpenSSL import SSL, crypto
-            except ImportError:
+            if "--nopyopenssl" in sys.argv:
                 self.pyopenssl = False
+            else:
+                try:
+                    from OpenSSL import SSL, crypto
+                except ImportError:
+                    self.pyopenssl = False
 
             # SSL module (Python 2.6)
             try:
@@ -1789,29 +1793,27 @@ class Client:
         data = self.append_eos(data)
         try:
 
-            if self.ssl and not self.pyopenssl:
+            encode_done = False
+            mydata = data[:]
+            while 1:
                 try:
-                    self.sock_conn.write(data)
-                except UnicodeEncodeError:
-                    self.sock_conn.write(data.encode('utf-8'))
-            else:
-                encode_done = False
-                mydata = data[:]
-                while 1:
-                    try:
+                    if self.ssl and not self.pyopenssl:
+                        sent = self.sock_conn.write(mydata)
+                    else:
                         sent = self.sock_conn.send(mydata)
-                        if sent == len(mydata):
-                            break
-                        mydata = mydata[sent:]
-                    except (self.SSL_exceptions['WantWriteError'],self.SSL_exceptions['WantReadError'],):
-                        time.sleep(0.2)
-                        continue
-                    except UnicodeEncodeError, e:
-                        if encode_done:
-                            raise
-                        mydata = mydata.encode('utf-8')
-                        encode_done = True
-                        continue
+                    if sent == len(mydata):
+                        break
+                    mydata = mydata[sent:]
+                except (self.SSL_exceptions['WantWriteError'],
+                    self.SSL_exceptions['WantReadError'],):
+                    time.sleep(0.2)
+                    continue
+                except UnicodeEncodeError, e:
+                    if encode_done:
+                        raise
+                    mydata = mydata.encode('utf-8')
+                    encode_done = True
+                    continue
 
         except self.SSL_exceptions['Error'], e:
             self.disconnect()
@@ -2063,7 +2065,7 @@ class Client:
         try:
             self.sock_conn.connect((self.hostname, self.hostport))
             if self.ssl and not self.pyopenssl:
-                if self.ssl_mod != None:
+                if self.ssl_mod is not None:
                     self.sock_conn = self.ssl_mod.wrap_socket(self.real_sock_conn)
                 else:
                     self.sock_conn = self.socket.ssl(self.real_sock_conn)
