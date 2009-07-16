@@ -464,7 +464,7 @@ class SocketHost:
                         xlen = len(x)
                         self.__data_counter -= xlen
                         self.buffered_data += x
-                        if xlen == 0:
+                        if xlen == 0 and self.__data_counter:
                             buf_empty_watchdog_count -= 1
                             time.sleep(0.05)
                             if buf_empty_watchdog_count < 1:
