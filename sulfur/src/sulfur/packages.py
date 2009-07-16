@@ -265,7 +265,7 @@ class Queue:
                 mydependencies = set()
                 myQA = self.Entropy.QA()
                 for pkg in pkgs:
-                    mydeps = myQA._get_deep_dependency_list(
+                    mydeps = myQA.get_deep_dependency_list(
                         self.Entropy.clientDbconn, pkg.matched_atom[0])
                     mydependencies |= set([x for x in mydeps if x in xlist])
                 # what are in queue?
