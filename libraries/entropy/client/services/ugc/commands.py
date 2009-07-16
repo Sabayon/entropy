@@ -387,32 +387,39 @@ class Client(Base):
         )
         return self.do_generic_handler(cmd, session_id)
 
-    def ugc_do_download_stats(self, session_id, pkgkeys):
+    def ugc_do_download_stats(self, session_id, package_names):
 
-        release_string = '--N/A--'
-        rel_file = etpConst['systemreleasefile']
-        if os.path.isfile(rel_file) and os.access(rel_file,os.R_OK):
-            with open(rel_file,"r") as f:
-                release_string = f.read(512)
+        sub_lists = self.entropyTools.split_indexable_into_chunks(
+            package_names, 100)
 
-        hw_hash = self.SystemSettings['hw_hash']
-        if not hw_hash:
-            hw_hash = ''
+        last_srv_rc_data = None
+        for pkgkeys in sub_lists:
 
-        mydict = {
-            'branch': self.SystemSettings['repositories']['branch'],
-            'release_string': release_string,
-            'hw_hash': hw_hash,
-            'pkgkeys': ' '.join(pkgkeys),
-        }
-        xml_string = self.entropyTools.xml_from_dict(mydict)
+            release_string = '--N/A--'
+            rel_file = etpConst['systemreleasefile']
+            if os.path.isfile(rel_file) and os.access(rel_file,os.R_OK):
+                with open(rel_file,"r") as f:
+                    release_string = f.read(512)
 
-        cmd = "%s %s %s" % (
-            session_id,
-            'ugc:do_download_stats',
-            xml_string,
-        )
-        return self.do_generic_handler(cmd, session_id)
+            hw_hash = self.SystemSettings['hw_hash']
+            if not hw_hash:
+                hw_hash = ''
+
+            mydict = {
+                'branch': self.SystemSettings['repositories']['branch'],
+                'release_string': release_string,
+                'hw_hash': hw_hash,
+                'pkgkeys': ' '.join(pkgkeys),
+            }
+            xml_string = self.entropyTools.xml_from_dict(mydict)
+
+            cmd = "%s %s %s" % (
+                session_id,
+                'ugc:do_download_stats',
+                xml_string,
+            )
+            last_srv_rc_data = self.do_generic_handler(cmd, session_id)
+        return last_srv_rc_data
 
     def ugc_get_downloads(self, session_id, pkgkey):
 
