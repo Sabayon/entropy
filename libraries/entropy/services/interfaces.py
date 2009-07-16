@@ -391,6 +391,7 @@ class SocketHost:
         def __init__(self, request, client_address, server):
 
             # pre-init attribues
+            self.__inst_token = self.entropyTools.get_random_number()
             self.server = None
             self.request = None
             self.client_address = None
@@ -447,7 +448,9 @@ class SocketHost:
 
                     # command length exceeds our command length limit
                     if self.data_counter > self.max_command_length:
-                        raise InterruptError('InterruptError: command too long: %s, limit: %s' % (self.data_counter,self.max_command_length,))
+                        raise InterruptError(
+                            'InterruptError: command too long: %s, limit: %s' % (
+                                self.data_counter, self.max_command_length,))
 
                     while self.data_counter > 0:
                         if self.ssl:
@@ -468,6 +471,8 @@ class SocketHost:
                     print tb
                     self.server.processor.HostInterface.socketLog.write(tb)
                     self.server.processor.HostInterface.socketLog.write(repr(data))
+                    self.server.processor.HostInterface.socketLog.write(str(self))
+                    self.server.processor.HostInterface.socketLog.write(str(self.__inst_token))
                     self.server.processor.HostInterface.updateProgress(
                         'interrupted: %s, reason: %s - from client: %s' % (
                             self.server.server_address,
