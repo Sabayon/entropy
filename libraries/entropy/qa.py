@@ -181,7 +181,7 @@ class QAInterface:
                         )
         return broken
 
-    def scan_missing_dependencies(self, idpackages, dbconn, ask = True,
+    def test_missing_dependencies(self, idpackages, dbconn, ask = True,
             self_check = False, repo = None, black_list = None,
             black_list_adder = None):
         """

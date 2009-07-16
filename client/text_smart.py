@@ -202,7 +202,7 @@ def InflateHandler(mytbz2s, savedir):
         mydbconn.initializeDatabase()
         idpackage, yyy, xxx = mydbconn.addPackage(mydata, revision = mydata['revision'])
         del yyy, xxx
-        Qa.scan_missing_dependencies([idpackage], mydbconn)
+        Qa.test_missing_dependencies([idpackage], mydbconn)
         mydbconn.closeDB()
         Equo.entropyTools.aggregate_edb(tbz2file = etptbz2path, dbfile = dbpath)
         os.remove(dbpath)

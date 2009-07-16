@@ -2064,7 +2064,7 @@ class Server(Singleton, TextInterface):
                 if idpackages_added:
                     dbconn = self.open_server_repository(read_only = False,
                         no_upload = True, repo = repo)
-                    missing_deps_taint = my_qa.scan_missing_dependencies(
+                    missing_deps_taint = my_qa.test_missing_dependencies(
                         idpackages_added,
                         dbconn,
                         ask = ask,
@@ -2095,7 +2095,7 @@ class Server(Singleton, TextInterface):
         if idpackages_added:
             dbconn = self.open_server_repository(read_only = False,
                 no_upload = True, repo = repo)
-            missing_deps_taint = my_qa.scan_missing_dependencies(
+            missing_deps_taint = my_qa.test_missing_dependencies(
                 idpackages_added,
                 dbconn,
                 ask = ask,
@@ -2932,7 +2932,7 @@ class Server(Singleton, TextInterface):
             if idpackages_added:
                 dbconn = self.open_server_repository(read_only = False,
                     no_upload = True, repo = repo)
-                my_qa.scan_missing_dependencies(
+                my_qa.test_missing_dependencies(
                     idpackages_added, dbconn, ask = True,
                     repo = repo, self_check = True,
                     black_list = \
