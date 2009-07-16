@@ -419,6 +419,10 @@ class Client(Base):
                 xml_string,
             )
             last_srv_rc_data = self.do_generic_handler(cmd, session_id)
+            if not isinstance(last_srv_rc_data, tuple):
+                return last_srv_rc_data
+            elif last_srv_rc_data[0] != True:
+                return last_srv_rc_data
         return last_srv_rc_data
 
     def ugc_get_downloads(self, session_id, pkgkey):
