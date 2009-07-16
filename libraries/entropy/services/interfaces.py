@@ -453,7 +453,7 @@ class SocketHost:
                             'InterruptError: command too long: %s, limit: %s' % (
                                 self.__data_counter, self.max_command_length,))
 
-                    buf_empty_watchdog_count = 200
+                    buf_empty_watchdog_count = 50 # * 0.05 = 2,5 seconds
                     while self.__data_counter > 0:
                         if self.ssl:
                             x = ''
@@ -464,7 +464,9 @@ class SocketHost:
                         xlen = len(x)
                         self.__data_counter -= xlen
                         self.buffered_data += x
-                        if xlen == 0 and self.__data_counter:
+                        # if we did not receive a shit and we still
+                        # need some data, trigger the watchdog
+                        if (xlen == 0) and (self.__data_counter > 0):
                             buf_empty_watchdog_count -= 1
                             time.sleep(0.05)
                             if buf_empty_watchdog_count < 1:
