@@ -453,6 +453,19 @@ def get_random_number():
         random.seed()
         return random.randint(10000,99999)
 
+def split_indexable_into_chunks(mystr, chunk_len):
+    chunks = []
+    my = mystr[:]
+    mylen = len(my)
+    mycount = 0
+    while mylen:
+        chunk = my[:chunk_len]
+        chunks.append(chunk)
+        my_chunk_len = len(chunk)
+        my = my[my_chunk_len:]
+        mylen -= my_chunk_len
+    return chunks
+
 def countdown(secs=5, what="Counting...", back = False):
     if secs:
         if back:
