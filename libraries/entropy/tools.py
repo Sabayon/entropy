@@ -2494,6 +2494,43 @@ def is_elf_file(elf_file):
         return True
     return False
 
+def resolve_dynamic_library(library, requiring_executable):
+    """
+    Resolve given library name (as contained into ELF metadata) to
+    a library path.
+
+    @param library: library name (as contained into ELF metadata)
+    @type library: string
+    @param requiring_executable: path to ELF object that contains the given
+        library name
+    @type requiring_executable: string
+    @return: resolved library path
+    @rtype: string
+    """
+    def do_resolve(mypaths):
+        found_path = None
+        for mypath in mypaths:
+            mypath = os.path.join(etpConst['systemroot']+mypath, library)
+            if not os.access(mypath, os.R_OK):
+                continue
+            if os.path.isdir(mypath):
+                continue
+            if not is_elf_file(mypath):
+                continue
+            found_path = mypath
+            break
+        return found_path
+
+    mypaths = collect_linker_paths()
+    found_path = do_resolve(mypaths)
+
+    if not found_path:
+        mypaths = read_elf_linker_paths(requiring_executable)
+        found_path = do_resolve(mypaths)
+
+    return found_path
+
+
 readelf_avail_check = False
 ldd_avail_check = False
 

@@ -41,7 +41,6 @@ class QAInterface:
     through an exposed QA() method.
     This is anyway a stand-alone class.
 
-    @todo: standardize QAInterface methods names
     @todo: remove non-QA methods
 
     """
@@ -509,7 +508,8 @@ class QAInterface:
                 etpConst['systemroot'] + executable)
 
             def mymf2(mylib):
-                return not self.resolve_dynamic_library(mylib, executable)
+                return not self.entropyTools.resolve_dynamic_library(mylib,
+                    executable)
 
             mylibs = set(filter(mymf2, myelfs))
 
@@ -652,7 +652,8 @@ class QAInterface:
                 # is this inside myself ?
                 if is_contained(myneeded, mycontent):
                     continue
-                found = self.resolve_dynamic_library(myneeded, mylib)
+                found = self.entropyTools.resolve_dynamic_library(myneeded,
+                    mylib)
                 if found:
                     continue
                 if not broken_libs.has_key(mylib):
@@ -660,43 +661,6 @@ class QAInterface:
                 broken_libs[mylib].add(myneeded)
 
         return broken_libs
-
-    def resolve_dynamic_library(self, library, requiring_executable):
-        """
-        Resolve given library name (as contained into ELF metadata) to
-        a library path.
-
-        @param library: library name (as contained into ELF metadata)
-        @type library: string
-        @param requiring_executable: path to ELF object that contains the given
-            library name
-        @type requiring_executable: string
-        @return: resolved library path
-        @rtype: string
-        """
-        def do_resolve(mypaths):
-            found_path = None
-            for mypath in mypaths:
-                mypath = os.path.join(etpConst['systemroot']+mypath, library)
-                if not os.access(mypath, os.R_OK):
-                    continue
-                if os.path.isdir(mypath):
-                    continue
-                if not self.entropyTools.is_elf_file(mypath):
-                    continue
-                found_path = mypath
-                break
-            return found_path
-
-        mypaths = self.entropyTools.collect_linker_paths()
-        found_path = do_resolve(mypaths)
-
-        if not found_path:
-            mypaths = self.entropyTools.read_elf_linker_paths(
-                requiring_executable)
-            found_path = do_resolve(mypaths)
-
-        return found_path
 
     def get_missing_rdepends(self, dbconn, idpackage, self_check = False):
         """
