@@ -251,7 +251,7 @@ class QAInterface:
                 back = True,
                 count = (count, maxcount,)
             )
-            missing_extended, missing = self.get_missing_rdepends(dbconn,
+            missing_extended, missing = self._get_missing_rdepends(dbconn,
                 idpackage, self_check = self_check)
             missing -= black_list
             for item in missing_extended.keys():
@@ -662,7 +662,7 @@ class QAInterface:
 
         return broken_libs
 
-    def get_missing_rdepends(self, dbconn, idpackage, self_check = False):
+    def _get_missing_rdepends(self, dbconn, idpackage, self_check = False):
         """
         Service method able to determine whether dependencies are missing
         on the given idpackage (belonging to the given
