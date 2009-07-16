@@ -1082,13 +1082,13 @@ class Server(Singleton, TextInterface):
 
         return deps_not_matched
 
-    def libraries_test(self, get_files = False, repo = None):
+    def test_shared_objects(self, get_files = False, repo = None):
 
         # load db
         dbconn = self.open_server_repository(read_only = True,
             no_upload = True, repo = repo)
         QA = self.QA()
-        packages_matched, brokenexecs, status = QA.libraries_test(dbconn,
+        packages_matched, brokenexecs, status = QA.test_shared_objects(dbconn,
             broken_symbols = True)
         if status != 0:
             return 1, None

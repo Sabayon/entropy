@@ -198,7 +198,7 @@ elif (options[0] == "deptest"):
 
 elif (options[0] == "libtest"):
     import server_reagent
-    rc = server_reagent.Entropy.libraries_test()
+    rc = server_reagent.Entropy.test_shared_objects()
     x = server_reagent.Entropy.close_server_databases()
     raise SystemExit(0)
 

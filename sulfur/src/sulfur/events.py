@@ -991,7 +991,7 @@ class SulfurApplicationEventsMixin:
 
         def exec_task():
             try:
-                x, y, z = QA.libraries_test(self.Equo.clientDbconn,
+                x, y, z = QA.test_shared_objects(self.Equo.clientDbconn,
                     task_bombing_func = task_bombing)
                 packages_matched.update(x)
                 broken_execs.update(y)

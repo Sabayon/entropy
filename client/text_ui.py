@@ -1670,7 +1670,7 @@ def librariesTest(listfiles = False):
         etpUi['quiet'] = True
 
     QA = Equo.QA()
-    packagesMatched, brokenlibs, status = QA.libraries_test(Equo.clientDbconn)
+    packagesMatched, brokenlibs, status = QA.test_shared_objects(Equo.clientDbconn)
     if status != 0:
         restore_qstats()
         return -1,1

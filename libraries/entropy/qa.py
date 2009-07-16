@@ -335,8 +335,30 @@ class QAInterface:
 
         return taint
 
-    def libraries_test(self, dbconn, broken_symbols = False,
+    def test_shared_objects(self, dbconn, broken_symbols = False,
         task_bombing_func = None):
+
+        """
+        Scan system looking for broken shared object ELF library dependencies.
+
+        @param dbconn: entropy.db.LocalRepository instance which contains
+            information on packages installed on the system (for example:
+            entropy.client.interfaces.Client.clientDbconn ).
+        @type dbconn: entropy.db.LocalRepository instance
+        @keyword broken_symbols: enable or disable broken symbols extra check.
+            Symbols which are going to be checked have to be listed into:
+            /etc/entropy/brokensyms.conf (regexp supported).
+        @type broken_symbols: bool
+        @keyword task_bombing_func: callable that will be called on every
+            scan iteration to allow external routines to cleanly stop the
+            execution of this function.
+        @type task_bombing_func: callable
+        packagesMatched, plain_brokenexecs, 0
+        @return: tuple of length 3, composed by (1) a dict of matched packages,
+            (2) a list (set) of broken ELF objects and (3) the execution status
+            (int, 0 means success).
+        @rtype: tuple
+        """
 
         self.Output.updateProgress(
             blue(_("Libraries test")),

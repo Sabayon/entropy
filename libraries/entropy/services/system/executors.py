@@ -658,7 +658,7 @@ class Base:
             mystdin = self._get_stdin(queue_id)
             if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
             try:
-                return self.SystemManagerExecutor.SystemInterface.Entropy.libraries_test()
+                return self.SystemManagerExecutor.SystemInterface.Entropy.test_shared_objects()
             except Exception, e:
                 self.entropyTools.print_traceback()
                 return False,unicode(e)
