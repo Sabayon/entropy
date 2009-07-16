@@ -391,6 +391,7 @@ class SocketHost:
         def __init__(self, request, client_address, server):
 
             # pre-init attribues
+            self.__buffered_data = None
             self.__inst_token = self.entropyTools.get_random_number()
             self.server = None
             self.request = None
@@ -417,6 +418,14 @@ class SocketHost:
                 # for ValueError exception trapping:
                 data = None
 
+                self.server.processor.HostInterface.updateProgress(
+                    '[from: %s] request arrived :: counter: %s | buf_data: %s' % (
+                        self.client_address,
+                        self.__data_counter,
+                        len(self.__buffered_data),
+                    )
+                )
+
                 try:
 
                     data = self.request.recv(1024)
@@ -439,13 +448,13 @@ class SocketHost:
                                     self.__data_counter,
                                 )
                             )
-                            self.buffered_data = ''
+                            self.__buffered_data = ''
                             return True
                         mystrlen = data.split(self.myeos)[0]
                         self.__data_counter = int(mystrlen)
                         data = data[len(mystrlen)+1:]
                         self.__data_counter -= len(data)
-                        self.buffered_data += data
+                        self.__buffered_data += data
 
                     # command length exceeds our command length limit
                     if self.__data_counter > self.max_command_length:
@@ -465,7 +474,7 @@ class SocketHost:
                             x = self.request.recv(data_buf)
                         xlen = len(x)
                         self.__data_counter -= xlen
-                        self.buffered_data += x
+                        self.__buffered_data += x
                         # if we did not receive a shit and we still
                         # need some data, trigger the watchdog
                         if (xlen == 0) and (self.__data_counter > 0):
@@ -530,15 +539,15 @@ class SocketHost:
                     )
                     return True
 
-                if not self.buffered_data:
+                if not self.__buffered_data:
                     return True
 
-                cmd = self.server.processor.process(self.buffered_data, self.request, self.client_address)
+                cmd = self.server.processor.process(self.__buffered_data, self.request, self.client_address)
                 if cmd == 'close':
                     # send KAPUTT signal JA!
                     self.server.processor.transmit(self.server.processor.HostInterface.answers['cl'])
                     return True
-                self.buffered_data = ''
+                self.__buffered_data = ''
                 return False
 
         def fork_lock_acquire(self):
@@ -630,7 +639,7 @@ class SocketHost:
 
         def setup(self):
             self.__data_counter = None
-            self.buffered_data = ''
+            self.__buffered_data = ''
 
 
     class CommandProcessor:
