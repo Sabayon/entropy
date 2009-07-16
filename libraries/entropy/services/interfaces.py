@@ -462,7 +462,9 @@ class SocketHost:
 
                     self.data_counter = None
                 except ValueError:
-                    self.entropyTools.print_traceback()
+                    tb = self.entropyTools.get_traceback()
+                    print tb
+                    self.server.processor.HostInterface.socketLog.write(tb)
                     self.server.processor.HostInterface.updateProgress(
                         'interrupted: %s, reason: %s - from client: %s' % (
                             self.server.server_address,
