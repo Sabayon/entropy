@@ -2412,6 +2412,18 @@ class Server(Singleton, TextInterface):
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['confsetsdirname'])
 
+    def get_local_post_branch_mig_script(self, repo = None, branch = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etp_post_branch_hop_script'])
+
+    def get_local_post_branch_upg_script(self, repo = None, branch = None):
+        if repo == None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etp_post_branch_upgrade_script'])
+
     def get_local_database_dir(self, repo = None, branch = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if repo == None:

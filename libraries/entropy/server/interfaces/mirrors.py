@@ -1140,6 +1140,17 @@ class Server:
         extra_text_files.append(data['database_revision_file'])
         critical.append(data['database_revision_file'])
 
+
+        # branch migration support scripts
+        data['database_post_branch_hop_script'] = \
+            self.Entropy.get_local_post_branch_mig_script(repo)
+        extra_text_files.append(data['database_post_branch_hop_script'])
+
+        data['database_post_branch_upgrade_script'] = \
+            self.Entropy.get_local_post_branch_upg_script(repo)
+        extra_text_files.append(data['database_post_branch_upgrade_script'])
+
+
         database_ts_file = self.Entropy.get_local_database_timestamp_file(repo)
         if os.path.isfile(database_ts_file) or download:
             data['database_timestamp_file'] = database_ts_file
