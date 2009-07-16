@@ -412,6 +412,8 @@ class SocketHost:
             if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
 
                 self.timed_out = False
+                # for ValueError exception trapping:
+                data = None
 
                 try:
 
@@ -420,7 +422,7 @@ class SocketHost:
                         while self.request.pending():
                             data += self.request.recv(1024)
 
-                    if self.data_counter == None:
+                    if self.data_counter is None:
                         if data == '': # client wants to close
                             return True
                         elif data == self.server.processor.HostInterface.answers['noop']:
@@ -465,6 +467,7 @@ class SocketHost:
                     tb = self.entropyTools.get_traceback()
                     print tb
                     self.server.processor.HostInterface.socketLog.write(tb)
+                    self.server.processor.HostInterface.socketLog.write(repr(data))
                     self.server.processor.HostInterface.updateProgress(
                         'interrupted: %s, reason: %s - from client: %s' % (
                             self.server.server_address,
