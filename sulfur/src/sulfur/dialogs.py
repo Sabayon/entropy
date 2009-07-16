@@ -5031,7 +5031,7 @@ class UGCAddMenu(MenuSkel):
             self.ugcadd_ui.ugcAddStatusLabel.set_markup(txt)
             return False
         else:
-            okDialog(self.window, _("Document added successfully. Thank you"), title = _("Success!"))
+            okDialog(self.ugcadd_ui.ugcAdd, _("Document added successfully. Thank you"), title = _("Success!"))
             self.on_closeAdd_clicked(None,None)
             self.refresh_cb()
             return True
