@@ -454,13 +454,15 @@ class SocketHost:
                                 self.__data_counter, self.max_command_length,))
 
                     buf_empty_watchdog_count = 50 # * 0.05 = 2,5 seconds
+                    buf_len = 1024
                     while self.__data_counter > 0:
+                        data_buf = buf_len
+                        if self.__data_counter < buf_len:
+                            data_buf = self.__data_counter
                         if self.ssl:
-                            x = ''
-                            while self.request.pending():
-                                x += self.request.recv(1024)
+                            x = self.request.recv(data_buf)
                         else:
-                            x = self.request.recv(1024)
+                            x = self.request.recv(data_buf)
                         xlen = len(x)
                         self.__data_counter -= xlen
                         self.buffered_data += x
