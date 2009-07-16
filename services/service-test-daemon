@@ -1,0 +1,86 @@
+#!/usr/bin/python
+import sys, time
+sys.path.insert(0,'/usr/lib/entropy/libraries')
+sys.path.insert(0,'/usr/lib/entropy/client')
+sys.path.insert(0,'../libraries')
+sys.path.insert(0,'../client')
+# disable pid management
+sys.argv.append("--no-pid-handling")
+do_ssl = False
+do_stdout_logging = True
+do_port = 1027
+
+from entropy.const import etpConst
+etpConst['socket_service']['session_ttl'] = 300
+from entropy.core import SystemSettings
+SysSettings = SystemSettings()
+from entropy.tools import get_year
+from entropy.output import print_menu, nocolor
+
+myopts = [
+    None,
+    (0," ~ "+SysSettings['system']['name']+" ~ "+sys.argv[0]+" ~ ",1,'Service test daemon - (C) %s' % (get_year(),) ),
+    None,
+    (0,_('Basic Options'),0,None),
+    None,
+    (1,'--help',2,_('this output')),
+    (1,'--nocolor',1,_('disable colorized output')),
+    None,
+    (0,_('Application Options'),0,None),
+    None,
+    (1,'--ssl',2,_('enable SSL service too')),
+    (1,'--nostdout',1,_('disable output to stdout, redirect to log file')),
+    (1,'--community',1,_('this service hosts a community repository')),
+    (1,'--port=N',1,_('specify listening port (SSL will be N+1)')),
+    None,
+]
+
+if "--nocolor" in sys.argv:
+    nocolor()
+
+if "--help" in sys.argv:
+    print_menu(myopts)
+    raise SystemExit(1)
+
+if "--ssl" in sys.argv:
+    do_ssl = True
+if "--nostdout" in sys.argv:
+    do_stdout_logging = False
+if "--community" in sys.argv:
+    community_repo = True
+if "--port" in sys.argv:
+    idx = sys.argv.index("--port")+1
+    try:
+        do_port = int(sys.argv[idx])
+    except (IndexError, ValueError,):
+        pass
+
+from entropy.services.test.interfaces import Server as ServiceServer
+from entropy.misc import ParallelTask
+
+def run_srv(s):
+    try:
+        s.go()
+    except (KeyboardInterrupt, SystemExit,):
+        s.killall()
+
+srv = ServiceServer(
+        do_ssl = do_ssl,
+        stdout_logging = do_stdout_logging,
+        entropy_interface_kwargs = {
+            'community_repo': etpConst['community']['mode']
+        }
+    )
+srv.port = do_port
+
+thread_names = ["system_socket"]
+task = ParallelTask(run_srv, srv)
+task.setName(thread_names[0])
+task.start()
+
+try:
+    while task.isAlive():
+        time.sleep(1)
+except KeyboardInterrupt:
+    raise SystemExit(1)
+raise SystemExit(0)
