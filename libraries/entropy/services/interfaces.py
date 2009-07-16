@@ -397,6 +397,7 @@ class SocketHost:
             self.client_address = None
             self.SocketServer.BaseRequestHandler.__init__(self, request,
                 client_address, server)
+            self.__data_counter = None
 
         def data_receiver(self):
 
@@ -423,7 +424,7 @@ class SocketHost:
                         while self.request.pending():
                             data += self.request.recv(1024)
 
-                    if self.data_counter is None:
+                    if self.__data_counter is None:
                         if data == '': # client wants to close
                             return True
                         elif data == self.server.processor.HostInterface.answers['noop']:
@@ -435,24 +436,25 @@ class SocketHost:
                                     "malformed EOS",
                                     self.client_address,
                                     repr(data),
-                                    self.data_counter,
+                                    self.__data_counter,
                                 )
                             )
                             self.buffered_data = ''
                             return True
                         mystrlen = data.split(self.myeos)[0]
-                        self.data_counter = int(mystrlen)
+                        self.__data_counter = int(mystrlen)
                         data = data[len(mystrlen)+1:]
-                        self.data_counter -= len(data)
+                        self.__data_counter -= len(data)
                         self.buffered_data += data
 
                     # command length exceeds our command length limit
-                    if self.data_counter > self.max_command_length:
+                    if self.__data_counter > self.max_command_length:
                         raise InterruptError(
                             'InterruptError: command too long: %s, limit: %s' % (
-                                self.data_counter, self.max_command_length,))
+                                self.__data_counter, self.max_command_length,))
 
-                    while self.data_counter > 0:
+                    buf_empty_watchdog_count = 200
+                    while self.__data_counter > 0:
                         if self.ssl:
                             x = ''
                             while self.request.pending():
@@ -460,12 +462,16 @@ class SocketHost:
                         else:
                             x = self.request.recv(1024)
                         xlen = len(x)
-                        self.data_counter -= xlen
+                        self.__data_counter -= xlen
                         self.buffered_data += x
-                        if not xlen:
-                            break
+                        if xlen == 0:
+                            buf_empty_watchdog_count -= 1
+                            time.sleep(0.05)
+                            if buf_empty_watchdog_count < 1:
+                                raise ValueError(
+                                    "buffer counter watchdog trigger")
 
-                    self.data_counter = None
+                    self.__data_counter = None
                 except ValueError:
                     tb = self.entropyTools.get_traceback()
                     print tb
@@ -619,7 +625,7 @@ class SocketHost:
             self.request.close()
 
         def setup(self):
-            self.data_counter = None
+            self.__data_counter = None
             self.buffered_data = ''
 
 
