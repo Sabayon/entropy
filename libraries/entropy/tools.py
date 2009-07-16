@@ -2450,7 +2450,6 @@ def is_valid_md5(myhash):
         return True
     return False
 
-
 def open_buffer():
     try:
         import cStringIO as stringio
@@ -2530,11 +2529,8 @@ def resolve_dynamic_library(library, requiring_executable):
 
     return found_path
 
-
 readelf_avail_check = False
 ldd_avail_check = False
-
-# FIXME: reimplement this
 def read_elf_dynamic_libraries(elf_file):
     global readelf_avail_check
     if not readelf_avail_check:
@@ -2551,8 +2547,6 @@ def read_elf_broken_symbols(elf_file):
         ldd_avail_check = True
     return set([x.strip().split("\t")[0].split()[-1] for x in getstatusoutput('/usr/bin/ldd -r %s' % (elf_file,))[1].split("\n") if (x.find("undefined symbol:") != -1)])
 
-
-# FIXME: reimplement this
 def read_elf_linker_paths(elf_file):
     global readelf_avail_check
     if not readelf_avail_check:
