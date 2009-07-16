@@ -62,7 +62,11 @@
   entropy.client.interfaces.Client or entropy.server.interfaces.Server 
   through an exposed QA() method. This is anyway a stand-alone class.</p>
 
-<!-- ==================== INSTANCE METHODS ==================== -->
+<hr />
+<div class="fields">      <p><strong>To Do:</strong>
+        remove non-QA methods
+      </p>
+</div><!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
@@ -115,7 +119,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.qa.QAInterface-class.html#scan_missing_dependencies" class="summary-sig-name">scan_missing_dependencies</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.qa.QAInterface-class.html#test_missing_dependencies" class="summary-sig-name">test_missing_dependencies</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">idpackages</span>,
         <span class="summary-sig-arg">dbconn</span>,
         <span class="summary-sig-arg">ask</span>=<span class="summary-sig-default">True</span>,
@@ -126,46 +130,7 @@
       Scan missing dependencies for the given idpackages on the given 
       entropy.db.LocalRepository &quot;dbconn&quot; instance.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.scan_missing_dependencies">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="libraries_test"></a><span class="summary-sig-name">libraries_test</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">dbconn</span>,
-        <span class="summary-sig-arg">broken_symbols</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">task_bombing_func</span>=<span class="summary-sig-default">None</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.libraries_test">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">string</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.qa.QAInterface-class.html#resolve_dynamic_library" class="summary-sig-name">resolve_dynamic_library</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">library</span>,
-        <span class="summary-sig-arg">requiring_executable</span>)</span><br />
-      Resolve given library name (as contained into ELF metadata) to a 
-      library path.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.resolve_dynamic_library">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.test_missing_dependencies">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -179,16 +144,14 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.qa.QAInterface-class.html#get_missing_rdepends" class="summary-sig-name">get_missing_rdepends</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.qa.QAInterface-class.html#test_shared_objects" class="summary-sig-name">test_shared_objects</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">dbconn</span>,
-        <span class="summary-sig-arg">idpackage</span>,
-        <span class="summary-sig-arg">self_check</span>=<span class="summary-sig-default">False</span>)</span><br />
-      Service method able to determine whether dependencies are missing on 
-      the given idpackage (belonging to the given 
-      entropy.db.LocalRepository &quot;dbconn&quot; argument) using shared 
-      objects linking information between packages.</td>
+        <span class="summary-sig-arg">broken_symbols</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">task_bombing_func</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Scan system looking for broken shared object ELF library 
+      dependencies.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.get_missing_rdepends">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.test_shared_objects">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -311,14 +274,14 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="scan_missing_dependencies"></a>
+<a name="test_missing_dependencies"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">scan_missing_dependencies</span>(<span class="sig-arg">self</span>,
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">test_missing_dependencies</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">idpackages</span>,
         <span class="sig-arg">dbconn</span>,
         <span class="sig-arg">ask</span>=<span class="sig-default">True</span>,
@@ -328,7 +291,7 @@
         <span class="sig-arg">black_list_adder</span>=<span class="sig-default">None</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.scan_missing_dependencies">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.test_missing_dependencies">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
@@ -358,74 +321,43 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="resolve_dynamic_library"></a>
+<a name="test_shared_objects"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">resolve_dynamic_library</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">library</span>,
-        <span class="sig-arg">requiring_executable</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.resolve_dynamic_library">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Resolve given library name (as contained into ELF metadata) to a 
-  library path.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>library</code></strong> (string) - library name (as contained into ELF metadata)</li>
-        <li><strong class="pname"><code>requiring_executable</code></strong> (string) - path to ELF object that contains the given library name</li>
-    </ul></dd>
-    <dt>Returns: string</dt>
-        <dd>resolved library path</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_missing_rdepends"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_missing_rdepends</span>(<span class="sig-arg">self</span>,
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">test_shared_objects</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">dbconn</span>,
-        <span class="sig-arg">idpackage</span>,
-        <span class="sig-arg">self_check</span>=<span class="sig-default">False</span>)</span>
+        <span class="sig-arg">broken_symbols</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">task_bombing_func</span>=<span class="sig-default">None</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.get_missing_rdepends">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.test_shared_objects">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Service method able to determine whether dependencies are missing on 
-  the given idpackage (belonging to the given entropy.db.LocalRepository 
-  &quot;dbconn&quot; argument) using shared objects linking information 
-  between packages.</p>
+  <p>Scan system looking for broken shared object ELF library 
+  dependencies.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>dbconn</code></strong> (entropy.db.LocalRepository instance) - entropy.db.LocalRepository instance from which idpackage argument
-          belongs</li>
-        <li><strong class="pname"><code>idpackage</code></strong> (int) - entropy.db.LocalRepository package identifier</li>
-        <li><strong class="pname"><code>self_check</code></strong> (bool) - also check inside the given package (idpackage) itself</li>
+        <li><strong class="pname"><code>dbconn</code></strong> (entropy.db.LocalRepository instance) - entropy.db.LocalRepository instance which contains information on
+          packages installed on the system (for example: 
+          entropy.client.interfaces.Client.clientDbconn ).</li>
+        <li><strong class="pname"><code>broken_symbols</code></strong> (bool) - enable or disable broken symbols extra check. Symbols which are 
+          going to be checked have to be listed into: 
+          /etc/entropy/brokensyms.conf (regexp supported).</li>
+        <li><strong class="pname"><code>task_bombing_func</code></strong> (callable packagesMatched, plain_brokenexecs, 0) - callable that will be called on every scan iteration to allow 
+          external routines to cleanly stop the execution of this function.</li>
     </ul></dd>
     <dt>Returns: tuple</dt>
-        <dd>tuple of length 2, composed by a dictionary with the following 
-          structure: {('KEY', 'SLOT': set([list of missing deps for the 
-          given key])} and a &quot;plain&quot; list (set) of missing 
-          dependencies set([list of missing dependencies])</dd>
+        <dd>tuple of length 3, composed by (1) a dict of matched packages, 
+          (2) a list (set) of broken ELF objects and (3) the execution 
+          status (int, 0 means success).</dd>
   </dl>
-<div class="fields">      <p><strong>To Do:</strong>
-        swap the first two arguments?
-      </p>
-</div></td></tr></table>
+</td></tr></table>
 </div>
 <a name="get_deep_dependency_list"></a>
 <div>
@@ -522,7 +454,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Jul 14 13:45:37 2009
+    Generated by Epydoc 3.0.1 on Thu Jul 16 09:22:25 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -125,11 +125,9 @@ class SecurityInterface:
             f_down.close()
 
     def __prepare_unpack(self):
-
         """
         Prepare GLSAs unpack directory and its permissions.
         """
-
         if os.path.isfile(self.unpackdir) or os.path.islink(self.unpackdir):
             os.remove(self.unpackdir)
 
@@ -181,11 +179,9 @@ class SecurityInterface:
         return True
 
     def __verify_checksum(self):
-
         """
         Verify downloaded GLSA checksum against downloaded GLSA package.
         """
-
         # read checksum
         if not os.path.isfile(self.download_package_checksum) or \
             not os.access(self.download_package_checksum, os.R_OK):
@@ -263,13 +259,11 @@ class SecurityInterface:
             self.Entropy.clear_dump_cache(etpCache['advisories'])
 
     def get_advisories_cache(self):
-
         """
         Return cached advisories information metadata. It first tries to load
         them from RAM and, in case of failure, it tries to gather the info
         from disk, using EntropyCacher.
         """
-
         if self.adv_metadata != None:
             return self.adv_metadata
 
@@ -608,7 +602,7 @@ class SecurityInterface:
         @type	vnode: xml.dom.Node
         @param	vnode: a <vulnerable> or <unaffected> Node that
                 contains the version information for this atom
-        @rtype:		String
+        @rtype:		string
         @return:	the version string
         """
         return self.op_mappings[vnode.getAttribute("range")] + \
@@ -619,12 +613,12 @@ class SecurityInterface:
         creates from the given package name and information in the 
         I{versionNode} a (syntactical) valid portage atom.
 
-        @type	pkgname: String
+        @type	pkgname: string
         @param	pkgname: the name of the package for this atom
         @type	vnode: xml.dom.Node
         @param	vnode: a <vulnerable> or <unaffected> Node that
                 contains the version information for this atom
-        @rtype:		String
+        @rtype:		string
         @return:	the portage atom
         """
         return str(self.op_mappings[vnode.getAttribute("range")] + pkgname + \

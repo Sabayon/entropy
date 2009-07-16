@@ -58,24 +58,33 @@
 <h1 class="epydoc">Class TextInterface</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.output-pysrc.html#TextInterface">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_entropy__60" name="uml_class_diagram_for_entropy__60">
-<area shape="rect" href="entropy.output.TextInterface-class.html#updateProgress" title="entropy.output.TextInterface.updateProgress" alt="" coords="152,36,792,55"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#askQuestion" title="entropy.output.TextInterface.askQuestion" alt="" coords="152,55,792,73"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#inputBox" title="entropy.output.TextInterface.inputBox" alt="" coords="152,73,792,92"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#cycleDone" title="entropy.output.TextInterface.cycleDone" alt="" coords="152,92,792,111"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#setTitle" title="entropy.output.TextInterface.setTitle" alt="" coords="152,111,792,129"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#setTotalCycles" title="entropy.output.TextInterface.setTotalCycles" alt="" coords="152,129,792,148"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#outputInstanceTest" title="entropy.output.TextInterface.outputInstanceTest" alt="" coords="152,148,792,167"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#nocolor" title="entropy.output.TextInterface.nocolor" alt="" coords="152,167,792,185"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#notitles" title="entropy.output.TextInterface.notitles" alt="" coords="152,185,792,204"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html" title="entropy.output.TextInterface" alt="" coords="151,11,793,205"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#updateProgress" title="entropy.output.TextInterface.updateProgress" alt="" coords="155,36,795,55"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#askQuestion" title="entropy.output.TextInterface.askQuestion" alt="" coords="155,55,795,73"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#inputBox" title="entropy.output.TextInterface.inputBox" alt="" coords="155,73,795,92"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#cycleDone" title="entropy.output.TextInterface.cycleDone" alt="" coords="155,92,795,111"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#setTitle" title="entropy.output.TextInterface.setTitle" alt="" coords="155,111,795,129"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#setTotalCycles" title="entropy.output.TextInterface.setTotalCycles" alt="" coords="155,129,795,148"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#outputInstanceTest" title="entropy.output.TextInterface.outputInstanceTest" alt="" coords="155,148,795,167"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#nocolor" title="entropy.output.TextInterface.nocolor" alt="" coords="155,167,795,185"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#notitles" title="entropy.output.TextInterface.notitles" alt="" coords="155,185,795,204"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="153,11,796,205"/>
 <area shape="rect" href="entropy.services.repository.interfaces.Server.ServiceInterface-class.html" title="entropy.services.repository.interfaces.Server.ServiceInterface" alt="" coords="16,235,333,261"/>
-<area shape="rect" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="384,235,560,261"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html" title="entropy.server.interfaces.main.Server" alt="" coords="611,235,792,261"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html" title="entropy.server.interfaces.main.Server" alt="" coords="384,235,565,261"/>
+<area shape="rect" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="616,235,792,261"/>
 </map>
   <img src="uml_class_diagram_for_entropy__60.gif" alt='' usemap="#uml_class_diagram_for_entropy__60" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
+<p>TextInterface is a base class for handling the communication between 
+  user and Entropy-based applications.</p>
+  <p>This class works for text-based applications, it must be inherited 
+  from subclasses and its methods reimplemented to make Entropy working on 
+  situations where a terminal is not used as UI (Graphical applications, 
+  web-based interfaces, remote interfaces, etc).</p>
+  <p>Every part of Entropy is using the methods in this class to 
+  communicate with the user, channel is bi-directional.</p>
+
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -276,7 +285,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Tue Jul 14 13:45:36 2009
+    Generated by Epydoc 3.0.1 on Thu Jul 16 09:22:25 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
