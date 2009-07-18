@@ -65,7 +65,7 @@ class SecurityInterface:
         self.previous_checksum = "0"
         self.advisories_changed = None
         self.adv_metadata = None
-        self.affected_atoms = None
+        self.affected_atoms = set()
 
         from xml.dom import minidom
         self.minidom = minidom
@@ -284,7 +284,10 @@ class SecurityInterface:
 
     def set_advisories_cache(self, adv_metadata):
         """
-        
+        Set advisories information metadata cache.
+
+        @param adv_metadata: advisories metadata to store
+        @type adv_metadata: dict
         """
         if self.Entropy.xcache:
             dir_checksum = self.entropyTools.md5sum_directory(
@@ -298,7 +301,10 @@ class SecurityInterface:
             )
             self.__cacher.push(c_hash, adv_metadata)
 
-    def get_advisories_list(self):
+    def _get_advisories_list(self):
+        """
+        Return a list of advisory files. Internal method.
+        """
         if not self.check_advisories_availability():
             return []
         xmls = os.listdir(etpConst['securitydir'])
@@ -307,13 +313,18 @@ class SecurityInterface:
         return xmls
 
     def get_advisories_metadata(self):
+        """
+        Get security advisories metadata.
 
+        @return: advisories metadata
+        @rtype: dict
+        """
         cached = self.get_advisories_cache()
         if cached != None:
             return cached
 
         adv_metadata = {}
-        xmls = self.get_advisories_list()
+        xmls = self._get_advisories_list()
         maxlen = len(xmls)
         count = 0
         for xml in xmls:
@@ -328,7 +339,7 @@ class SecurityInterface:
             exc_string = ""
             exc_err = ""
             try:
-                xml_metadata = self.get_xml_metadata(xml)
+                xml_metadata = self.__get_xml_metadata(xml)
             except KeyboardInterrupt:
                 return {}
             except Exception, err:
@@ -361,9 +372,16 @@ class SecurityInterface:
         self.adv_metadata = adv_metadata.copy()
         return adv_metadata
 
-    # this function filters advisories for packages that aren't
-    # in the repositories. Note: only keys will be matched
     def filter_advisories(self, adv_metadata):
+        """
+        This function filters advisories metadata dict removing non-applicable
+        ones.
+
+        @param adv_metadata: security advisories metadata dict
+        @type adv_metadata: dict
+        @return: filtered security advisories metadata
+        @rtype: dict
+        """
         keys = adv_metadata.keys()
         for key in keys:
             valid = True
@@ -395,6 +413,19 @@ class SecurityInterface:
         return adv_metadata
 
     def is_affected(self, adv_key, adv_data = None):
+        """
+        Determine whether the system is affected by vulnerabilities listed
+        in the provided security advisory identifier.
+
+        @param adv_key: security advisories identifier
+        @type adv_key: string
+        @keyword adv_data: use the provided security advisories instead of
+            the stored one.
+        @type adv_data: dict
+        @return: True, if system is affected by vulnerabilities listed in the
+            provided security advisory.
+        @rtype: bool
+        """
         if not adv_data:
             adv_data = self.get_advisories_metadata()
         if adv_key not in adv_data:
@@ -421,21 +452,35 @@ class SecurityInterface:
             for atom in vul_atoms:
                 match = self.Entropy.clientDbconn.atomMatch(atom)
                 if (match[0] != -1) and (match not in unaffected_atoms):
-                    if self.affected_atoms == None:
-                        self.affected_atoms = set()
                     self.affected_atoms.add(atom)
                     return True
         return False
 
     def get_vulnerabilities(self):
-        return self.get_affection()
+        """
+        Return advisories metadata for installed packages containing
+        vulnerabilities.
+
+        @return: advisories metadata for vulnerable packages.
+        @rtype: dict
+        """
+        return self.__get_affection()
 
     def get_fixed_vulnerabilities(self):
-        return self.get_affection(affected = False)
+        """
+        Return advisories metadata for installed packages not affected
+        by any vulnerability.
 
-    # if not affected: not affected packages will be returned
-    # if affected: affected packages will be returned
-    def get_affection(self, affected = True):
+        @return: advisories metadata for NON-vulnerable packages.
+        @rtype: dict
+        """
+        return self.__get_affection(affected = False)
+
+    def __get_affection(self, affected = True):
+        """
+        If not affected: not affected packages will be returned.
+        If affected: affected packages will be returned.
+        """
         adv_data = self.get_advisories_metadata()
         adv_data_keys = adv_data.keys()
         valid_keys = set()
@@ -464,21 +509,34 @@ class SecurityInterface:
         return adv_data
 
     def get_affected_atoms(self):
+        """
+        Return a list of package atoms affected by vulnerabilities.
+
+        @return: list (set) of package atoms affected by vulnerabilities
+        @rtype: set
+        """
         adv_data = self.get_advisories_metadata()
         adv_data_keys = adv_data.keys()
         del adv_data
-        self.affected_atoms = set()
+        self.affected_atoms.clear()
         for key in adv_data_keys:
             self.is_affected(key)
         return self.affected_atoms
 
-    def get_xml_metadata(self, xmlfilename):
+    def __get_xml_metadata(self, xmlfilename):
+        """
+        Parses a Gentoo GLSA XML file extracting advisory metadata.
 
+        @param xmlfilename: GLSA filename
+        @type xmlfilename: string
+        @return: advisory metadata extracted
+        @rtype: dict
+        """
         xml_data = {}
         xmlfile = os.path.join(etpConst['securitydir'], xmlfilename)
         try:
             xmldoc = self.minidom.parse(xmlfile)
-        except:
+        except (IOError, OSError, TypeError, AttributeError,):
             return None
 
         # get base data
@@ -599,11 +657,11 @@ class SecurityInterface:
         creates from the information in the I{versionNode} a 
         version string (format <op><version>).
 
-        @type	vnode: xml.dom.Node
-        @param	vnode: a <vulnerable> or <unaffected> Node that
-                contains the version information for this atom
-        @rtype:		string
-        @return:	the version string
+        @param vnode: a <vulnerable> or <unaffected> Node that
+            contains the version information for this atom
+        @type vnode: xml.dom.Node
+        @return: the version string
+        @rtype: string
         """
         return self.op_mappings[vnode.getAttribute("range")] + \
             vnode.firstChild.data.strip()
@@ -613,18 +671,24 @@ class SecurityInterface:
         creates from the given package name and information in the 
         I{versionNode} a (syntactical) valid portage atom.
 
-        @type	pkgname: string
-        @param	pkgname: the name of the package for this atom
-        @type	vnode: xml.dom.Node
-        @param	vnode: a <vulnerable> or <unaffected> Node that
-                contains the version information for this atom
-        @rtype:		string
-        @return:	the portage atom
+        @param pkgname: the name of the package for this atom
+        @type pkgname: string
+        @param vnode: a <vulnerable> or <unaffected> Node that
+            contains the version information for this atom
+        @type vnode: xml.dom.Node
+        @return: the portage atom
+        @rtype: string
         """
         return str(self.op_mappings[vnode.getAttribute("range")] + pkgname + \
             "-" + vnode.firstChild.data.strip())
 
     def check_advisories_availability(self):
+        """
+        Return whether security advisories are available.
+
+        @return: availability
+        @rtype: bool
+        """
         if not os.path.lexists(etpConst['securitydir']):
             return False
         if not os.path.isdir(etpConst['securitydir']):
@@ -634,7 +698,14 @@ class SecurityInterface:
         return False
 
     def fetch_advisories(self, do_cache = True):
+        """
+        This is the service method for remotely fetch advisories metadata.
 
+        @keyword do_cache: generates advisories cache
+        @type do_cache: bool
+        @return: execution status (0 means all file)
+        @rtype: int
+        """
         mytxt = "%s: %s" % (
             bold(_("Security Advisories")),
             blue(_("testing service connection")),
@@ -672,7 +743,7 @@ class SecurityInterface:
         # lock
         self.Entropy.resources_create_lock()
         try:
-            rc_lock = self.run_fetch()
+            rc_lock = self.__run_fetch()
         except:
             self.Entropy.resources_remove_lock()
             raise
@@ -703,7 +774,7 @@ class SecurityInterface:
 
         return 0
 
-    def run_fetch(self):
+    def __run_fetch(self):
         # prepare directories
         self.__prepare_unpack()
 
