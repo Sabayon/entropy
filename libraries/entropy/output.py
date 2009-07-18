@@ -736,31 +736,36 @@ class TextInterface:
 
     """
 
-    # @input text: text to write
-    # @input back: write on on the same line?
-    # @input importance:
-    #           values: 0,1,2,3 (latter is a blocker - popup menu on a GUI env)
-    #           used to specify information importance, 0<important<2
-    # @input type:
-    #           values: "info, warning, error"
-    #
-    # @input count:
-    #           if you need to print an incremental count ( 100/250...101/251..)
-    #           just pass count = [first integer,second integer] or even a tuple!
-    # @input header:
-    #           text header (decoration?), that's it
-    #
-    # @input footer:
-    #           text footer (decoration?), that's it
-    #
-    # @input percent:
-    #           if percent is True: count will be treating as a percentual count[0]/count[1]*100
-    #
-    # feel free to reimplement this
-    def updateProgress(self, text, header = "", footer = "", back = False, importance = 0, type = "info", count = [], percent = False):
+    def updateProgress(self, text, header = "", footer = "", back = False,
+        importance = 0, type = "info", count = None, percent = False):
 
         """
-        
+        Text output print function. By default text is written to stdout.
+
+        @param text: text to write to stdout
+        @type text: string
+        @keyword header: text header (decoration?)
+        @type header: string
+        @keyword footer: text footer (decoration?)
+        @type footer: string
+        @keyword back: push back cursor to the beginning of the line
+        @type back: bool
+        @keyword importance: message importance (default valid values:
+            0, 1, 2, 3
+        @type importance: int
+        @keyword type: message type (default valid values: "info", "warning",
+            "error")
+        @type type: string
+        @keyword count: tuple of lengh 2, containing count information to make
+            function print something like "(10/100) doing stuff". In this case
+            tuple would be: (10, 100,)
+        @type count: tuple
+        @keyword percent: determine whether "count" argument should be printed
+            as percentual value (for values like (10, 100,), "(10%) doing stuff"
+            will be printed.
+        @keyword percent: bool
+        @return: None
+        @rtype: None
         """
 
         if etpUi['quiet'] or etpUi['mute']:
@@ -778,78 +783,98 @@ class TextInterface:
         if count:
             if len(count) > 1:
                 if percent:
-                    count_str = " ("+str(round((float(count[0])/count[1])*100,1))+"%) "
+                    percent_str = str(round((float(count[0])/count[1])*100,1))
+                    count_str = " ("+percent_str+"%) "
                 else:
-                    count_str = " (%s/%s) " % (red(str(count[0])),blue(str(count[1])),)
-        if importance == 0:
-            myfunc(header+count_str+text+footer, back = back, flush = False)
-        elif importance == 1:
-            myfunc(header+count_str+text+footer, back = back, flush = False)
-        elif importance in (2,3):
-            myfunc(header+count_str+text+footer, back = back, flush = False)
+                    count_str = " (%s/%s) " % (red(str(count[0])),
+                        blue(str(count[1])),)
 
+        myfunc(header+count_str+text+footer, back = back, flush = False)
         _flush_stdouterr()
 
-    # @input question: question to do
-    #
-    # @input importance:
-    #           values: 0,1,2 (latter is a blocker - popup menu on a GUI env)
-    #           used to specify information importance, 0<important<2
-    #
-    # @input responses:
-    #           list of options whose users can choose between
-    #
-    # feel free to reimplement this
-    def askQuestion(self, question, importance = 0, responses = ["Yes","No"]):
+    def askQuestion(self, question, importance = 0, responses = None):
 
-        colours = [green, red, blue, darkgreen, darkred, darkblue, brown, purple]
-        colours += colours[:]
-        if len(responses) > len(colours):
-            raise IncorrectParameter("IncorrectParameter: %s = %s" % (_("maximum responses length"),len(colours),))
+        """
+        Questions asking function. It asks the user to answer the question given
+        by choosing between a preset list of answers given by the "reposonses"
+        argument.
+
+        @param question: question text
+        @type question: string
+        @keyword importance: question importance (no default valid values)
+        @type importance: int
+        @keyword responses: list of valid answers which user has to choose from
+        @type responses: tuple or list
+        @return: None
+        @rtype: None
+        """
+
+        if responses is None:
+            responses = (_("Yes"),_("No"),)
+
+        colours = [green, red, blue, darkgreen, darkred, darkblue,
+            brown, purple]
+        colours_len = len(colours)
+
         try:
             print darkgreen(question),
         except UnicodeEncodeError:
             print darkgreen(question.encode('utf-8')),
         _flush_stdouterr()
+
         try:
-            while True:
+            while 1:
+
                 xtermTitle(_("Entropy got a question for you"))
                 _flush_stdouterr()
-                response = _my_raw_input("["+"/".join([colours[i](responses[i]) for i in range(len(responses))])+"] ")
+                answer_items = [colours[x % colours_len](responses[x]) \
+                    for x in xrange(len(responses))]
+                response = _my_raw_input("["+"/".join(answer_items)+"] ")
                 _flush_stdouterr()
+
                 for key in responses:
-                    # An empty response will match the first value in responses.
                     if response.upper() == key[:len(response)].upper():
                         xtermTitleReset()
                         return key
-                    '''
-                    try:
-                        print "%s '%s'" % (_("I cannot understand"),response,),
-                    except UnicodeEncodeError:
-                        print "%s '%s'" % (_("I cannot understand"),response.encode('utf-8'),),
-                    '''
                     _flush_stdouterr()
+
         except (EOFError, KeyboardInterrupt):
             print "%s." % (_("Interrupted"),)
             xtermTitleReset()
             raise SystemExit(100)
+
         xtermTitleReset()
         _flush_stdouterr()
 
-    '''
-     @ title: title of the input box
-     @ input_parameters: [
-        ('identifier 1','input text 1',input_verification_callback,False),
-        ('password','Password',input_verification_callback,True),
-        ('item_3',('checkbox','Checkbox option (boolean request) - please choose',),input_verification_callback,True),
-        ('item_4',('combo',('Select your favorite option',['option 1', 'option 2', 'option 3']),),input_verification_callback,True),
-        ('item_4',('list',('Setup your list',['default list item 1', 'default list item 2']),),input_verification_callback,True)
-    ]
-     @ cancel_button: show cancel button ?
-     @ output: dictionary as follows:
-       {'identifier 1': result, 'identifier 2': result}
-    '''
     def inputBox(self, title, input_parameters, cancel_button = True):
+        """
+        Generic input box (form) creator and data collector.
+
+        @param title: input box title
+        @type title: string
+        @param input_parameters: list of properly formatted tuple items.
+        @type input_parameters: list
+        @keyword cancel_button: make possible to "cancel" the input request.
+        @type cancel_button: bool
+        @return: dict containing input box answers
+        @rtype: dict
+
+        input_parameters supported items:
+
+        [input id], [input text title], [input verification callback], [
+            no text echo?]
+        ('identifier 1', 'input text 1', input_verification_callback, False)
+
+        ('item_3', ('checkbox', 'Checkbox option (boolean request) - please choose',),
+            input_verification_callback, True)
+
+        ('item_4', ('combo', ('Select your favorite option', ['option 1', 'option 2', 'option 3']),),
+            input_verification_callback, True)
+
+        ('item_4',('list',('Setup your list',['default list item 1', 'default list item 2']),),
+            input_verification_callback, True)
+
+        """
         results = {}
         if title:
             try:
@@ -993,20 +1018,37 @@ class TextInterface:
     # useful for reimplementation
     # in this wait you can send a signal to a widget (total progress bar?)
     def cycleDone(self):
-        return
+        """
+        Not actually implemented. Can be useful for external applications and
+        its used to determine when a certain transaction is done.
+        """
+        pass
 
     def setTitle(self, title):
+        """
+        Set application title.
+
+        @param title: new application title
+        @type title: string
+        """
         xtermTitle(title)
 
     def setTotalCycles(self, total):
-        return
-
-    def outputInstanceTest(self):
-        return
+        """
+        Not actually implemented. Can be useful for external applications and
+        its used to set the amount of logical transactions that this interface
+        has to go through.
+        """
+        pass
 
     def nocolor(self):
+        """
+        Disable coloured output. Used for terminals.
+        """
         nocolor()
 
     def notitles(self):
+        """
+        Disable the ability to effectively set the application title.
+        """
         notitles()
-
