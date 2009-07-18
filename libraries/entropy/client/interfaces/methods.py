@@ -30,7 +30,7 @@ import tempfile
 from entropy.i18n import _
 from entropy.const import *
 from entropy.exceptions import *
-from entropy.db import dbapi2, LocalRepository, EntropyRepository
+from entropy.db import dbapi2, EntropyRepository, EntropyRepository
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown
 
 
@@ -171,7 +171,7 @@ class RepositoryMixin:
                     self.__repo_error_messages_cache.add(repoid)
                 raise RepositoryError("RepositoryError: %s" % (t,))
 
-            conn = LocalRepository(
+            conn = EntropyRepository(
                 readOnly = True,
                 dbFile = dbfile,
                 clientDatabase = True,
@@ -466,7 +466,7 @@ class RepositoryMixin:
             self.entropyTools.print_traceback(f = self.clientLog)
         else:
             try:
-                conn = LocalRepository(readOnly = False, dbFile = db_path,
+                conn = EntropyRepository(readOnly = False, dbFile = db_path,
                     clientDatabase = True, dbname = etpConst['clientdbid'],
                     xcache = self.xcache, indexing = self.indexing,
                     OutputInterface = self, ServiceInterface = self
@@ -549,7 +549,7 @@ class RepositoryMixin:
             indexing = self.indexing
         if dbname == None:
             dbname = etpConst['genericdbid']
-        return LocalRepository(
+        return EntropyRepository(
             readOnly = readOnly,
             dbFile = dbfile,
             clientDatabase = True,
@@ -563,7 +563,7 @@ class RepositoryMixin:
     def open_memory_database(self, dbname = None):
         if dbname == None:
             dbname = etpConst['genericdbid']
-        dbc = LocalRepository(
+        dbc = EntropyRepository(
             readOnly = False,
             dbFile = ':memory:',
             clientDatabase = True,

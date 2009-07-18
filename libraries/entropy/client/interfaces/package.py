@@ -31,7 +31,7 @@ from entropy.i18n import _
 from entropy.output import TextInterface, brown, blue, bold, darkgreen, \
     darkblue, red, purple, darkred, print_info, print_error, print_warning
 from entropy.misc import TimeScheduled
-from entropy.db import dbapi2, LocalRepository
+from entropy.db import dbapi2, EntropyRepository
 from entropy.client.interfaces.client import Client
 from entropy.cache import EntropyCacher
 
@@ -1329,7 +1329,7 @@ class Package:
 
         # this is useful to avoid the removal of installed files by __remove_package just because
         # there's a difference in the directory path, perhaps, which is not handled correctly by
-        # LocalRepository.contentDiff for obvious reasons (think about stuff in /usr/lib and /usr/lib64,
+        # EntropyRepository.contentDiff for obvious reasons (think about stuff in /usr/lib and /usr/lib64,
         # where the latter is just a symlink to the former)
         if self.infoDict.get('removecontent'):
             my_remove_content = set([x for x in self.infoDict['removecontent'] \

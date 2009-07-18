@@ -7,11 +7,11 @@ import os
 from entropy.client.interfaces import Client
 from entropy.const import etpConst, etpUi
 from entropy.core import SystemSettings
-from entropy.db import LocalRepository
+from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError
 import _misc
 
-class LocalRepositoryTest(unittest.TestCase):
+class EntropyRepositoryTest(unittest.TestCase):
 
     def setUp(self):
         self.mem_repoid = "mem_repo"

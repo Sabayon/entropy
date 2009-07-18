@@ -34,7 +34,7 @@ from entropy.server.interfaces.mirrors import Server as MirrorsServer
 from entropy.i18n import _
 from entropy.core import SystemSettings, SystemSettingsPlugin
 from entropy.transceivers import FtpInterface
-from entropy.db import LocalRepository
+from entropy.db import EntropyRepository
 
 class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
@@ -827,7 +827,7 @@ class Server(Singleton, TextInterface):
     def open_memory_database(self, dbname = None):
         if dbname == None:
             dbname = etpConst['genericdbid']
-        dbc = LocalRepository(
+        dbc = EntropyRepository(
             readOnly = False,
             dbFile = ':memory:',
             clientDatabase = True,
@@ -889,7 +889,7 @@ class Server(Singleton, TextInterface):
             self.__sync_lock_cache.add(repo)
 
         local_dbfile_exists = os.path.lexists(local_dbfile)
-        conn = LocalRepository(
+        conn = EntropyRepository(
             readOnly = read_only,
             dbFile = local_dbfile,
             noUpload = no_upload,

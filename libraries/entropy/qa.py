@@ -70,7 +70,7 @@ class QAInterface:
     def test_depends_linking(self, idpackages, dbconn, repo = None):
         """
         Scan for broken shared objects linking for the given idpackages on
-        the given entropy.db.LocalRepository based instance.
+        the given entropy.db.EntropyRepository based instance.
         Note: this only works for packages actually installed on the running
         system.
         It is used by Entropy Server during packages injection into database
@@ -79,9 +79,9 @@ class QAInterface:
         @param idpackages: list of valid idpackages (int) on the given dbconn
             argument passed
         @type idpackages: list
-        @param dbconn: entropy.db.LocalRepository instance containing the
+        @param dbconn: entropy.db.EntropyRepository instance containing the
             given idpackages list
-        @type dbconn: entropy.db.LocalRepository
+        @type dbconn: entropy.db.EntropyRepository
         @keyword repo: repository identifer from which dbconn and idpackages
             arguments belong. Note: at the moment it's only used for output
             purposes.
@@ -185,16 +185,16 @@ class QAInterface:
             black_list_adder = None):
         """
         Scan missing dependencies for the given idpackages on the given
-        entropy.db.LocalRepository "dbconn" instance. In addition, this method
+        entropy.db.EntropyRepository "dbconn" instance. In addition, this method
         will allow the user through OutputInterface to interactively add (if ask
         == True) missing dependencies or blacklist them.
 
         @param idpackages: list of valid idpackages (int) on the given dbconn
             argument passed
         @type idpackages: list
-        @param dbconn: entropy.db.LocalRepository instance containing the
+        @param dbconn: entropy.db.EntropyRepository instance containing the
             given idpackages list
-        @type dbconn: entropy.db.LocalRepository
+        @type dbconn: entropy.db.EntropyRepository
         @keyword ask: request user interaction when finding missing dependencies
         @type ask: bool
         @keyword self_check: also introspect inside the complaining package
@@ -202,7 +202,7 @@ class QAInterface:
             occur)
         @type self_check: bool
         @keyword repo: repository identifier of the given
-            entropy.db.LocalRepository dbconn instance.
+            entropy.db.EntropyRepository dbconn instance.
             It is used to correctly place blacklisted items.
         @type repo: string
         @keyword black_list: list of dependencies already blacklisted.
@@ -340,10 +340,10 @@ class QAInterface:
         """
         Scan system looking for broken shared object ELF library dependencies.
 
-        @param dbconn: entropy.db.LocalRepository instance which contains
+        @param dbconn: entropy.db.EntropyRepository instance which contains
             information on packages installed on the system (for example:
             entropy.client.interfaces.Client.clientDbconn ).
-        @type dbconn: entropy.db.LocalRepository instance
+        @type dbconn: entropy.db.EntropyRepository instance
         @keyword broken_symbols: enable or disable broken symbols extra check.
             Symbols which are going to be checked have to be listed into:
             /etc/entropy/brokensyms.conf (regexp supported).
@@ -666,14 +666,14 @@ class QAInterface:
         """
         Service method able to determine whether dependencies are missing
         on the given idpackage (belonging to the given
-        entropy.db.LocalRepository "dbconn" argument) using shared objects
+        entropy.db.EntropyRepository "dbconn" argument) using shared objects
         linking information between packages.
 
         @todo: swap the first two arguments?
-        @param dbconn: entropy.db.LocalRepository instance from which idpackage
+        @param dbconn: entropy.db.EntropyRepository instance from which idpackage
             argument belongs
-        @type dbconn: entropy.db.LocalRepository instance
-        @param idpackage: entropy.db.LocalRepository package identifier
+        @type dbconn: entropy.db.EntropyRepository instance
+        @param idpackage: entropy.db.EntropyRepository package identifier
         @type idpackage: int
         @keyword self_check: also check inside the given package
             (idpackage) itself
@@ -790,12 +790,12 @@ class QAInterface:
     def get_deep_dependency_list(self, dbconn, idpackage, atoms = False):
         """
         Service method which returns a complete, expanded list of dependencies
-        for the given idpackage on the given entropy.db.LocalRepository
+        for the given idpackage on the given entropy.db.EntropyRepository
         "dbconn" instance.
 
-        @param dbconn: entropy.db.LocalRepository instance which contains
+        @param dbconn: entropy.db.EntropyRepository instance which contains
             the given idpackage item.
-        @type dbconn: entropy.db.LocalRepository instance
+        @type dbconn: entropy.db.EntropyRepository instance
         @param idpackage: Entropy database package key
         @type idpackage: int
         @keyword atoms: !! return type modifier !! , make method returning
@@ -857,7 +857,7 @@ class QAInterface:
         @return: package validity
         @rtype: bool
         """
-        from entropy.db import LocalRepository, dbapi2
+        from entropy.db import EntropyRepository, dbapi2
         fd, tmp_path = tempfile.mkstemp()
         extract_path = self.entropyTools.extract_edb(pkg_path, tmp_path)
         if extract_path is None:
@@ -865,7 +865,7 @@ class QAInterface:
             os.close(fd)
             return False # error!
         try:
-            dbc = LocalRepository(
+            dbc = EntropyRepository(
                 readOnly = False,
                 dbFile = tmp_path,
                 clientDatabase = True,

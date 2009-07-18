@@ -8,11 +8,11 @@ import shutil
 from entropy.server.interfaces import Server
 from entropy.const import etpConst, const_extract_srv_repo_params
 from entropy.core import SystemSettings
-from entropy.db import LocalRepository
+from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError
 import _misc
 
-class LocalRepositoryTest(unittest.TestCase):
+class EntropyRepositoryTest(unittest.TestCase):
 
     def setUp(self):
         self.default_repo = "foo"

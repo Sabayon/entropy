@@ -10,7 +10,7 @@ from entropy.core import SystemSettings
 from entropy.db import EntropyRepository
 import _misc
 
-class LocalRepositoryTest(unittest.TestCase):
+class EntropyRepositoryTest(unittest.TestCase):
 
     def setUp(self):
         self.Client = Client(noclientdb = 2, indexing = False, xcache = False,

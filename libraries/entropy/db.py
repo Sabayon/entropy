@@ -8,18 +8,18 @@
 
     B{Entropy Framework repository database module}.
     Entropy repositories (server and client) are implemented as relational
-    databases. Currently, LocalRepository class is the object that wraps
+    databases. Currently, EntropyRepository class is the object that wraps
     sqlite3 database queries and repository logic: there are no more
     abstractions between the two because there is only one implementation
     available at this time. In future, entropy.db will feature more backends
     such as MySQL embedded, SparQL, remote repositories support via TCP socket,
     etc. This will require a new layer between the repository interface now
-    offered by LocalRepository and the underlying data retrieval logic.
+    offered by EntropyRepository and the underlying data retrieval logic.
     Every repository interface available inherits from EntropyRepository
     class and has to reimplement its own Schema subclass and its get_init
-    method (see LocalRepository documentation for more information).
+    method (see EntropyRepository documentation for more information).
 
-    I{LocalRepository} is the sqlite3 implementation of the repository
+    I{EntropyRepository} is the sqlite3 implementation of the repository
     interface, as written above.
 
     I{ServerRepositoryStatus} is a singleton containing the status of
@@ -60,7 +60,12 @@ except ImportError: # fallback to pysqlite
 
 class ServerRepositoryStatus(Singleton):
 
+    """
+    Server-side Repositories status information container.
+    """
+
     def init_singleton(self):
+        """ Singleton "constructor" """
         self.__data = {}
 
     def __create_if_necessary(self, db):
@@ -71,38 +76,99 @@ class ServerRepositoryStatus(Singleton):
             self.__data[db]['unlock_msg'] = False
 
     def set_unlock_msg(self, db):
+        """
+        Set bit which determines if the unlock warning has been already
+        printed to user.
+
+        @param db: database identifier
+        @type db: string
+        """
         self.__create_if_necessary(db)
         self.__data[db]['unlock_msg'] = True
 
     def unset_unlock_msg(self, db):
+        """
+        Unset bit which determines if the unlock warning has been already
+        printed to user.
+
+        @param db: database identifier
+        @type db: string
+        """
         self.__create_if_necessary(db)
         self.__data[db]['unlock_msg'] = False
 
     def set_tainted(self, db):
+        """
+        Set bit which determines if the repository which db points to has been
+        modified.
+
+        @param db: database identifier
+        @type db: string
+        """
         self.__create_if_necessary(db)
         self.__data[db]['tainted'] = True
 
     def unset_tainted(self, db):
+        """
+        Unset bit which determines if the repository which db points to has been
+        modified.
+
+        @param db: database identifier
+        @type db: string
+        """
         self.__create_if_necessary(db)
         self.__data[db]['tainted'] = False
 
     def set_bumped(self, db):
+        """
+        Set bit which determines if the repository which db points to has been
+        revision bumped.
+
+        @param db: database identifier
+        @type db: string
+        """
         self.__create_if_necessary(db)
         self.__data[db]['bumped'] = True
 
     def unset_bumped(self, db):
+        """
+        Unset bit which determines if the repository which db points to has been
+        revision bumped.
+
+        @param db: database identifier
+        @type db: string
+        """
         self.__create_if_necessary(db)
         self.__data[db]['bumped'] = False
 
     def is_tainted(self, db):
+        """
+        Return whether repository which db points to has been modified.
+
+        @param db: database identifier
+        @type db: string
+        """
         self.__create_if_necessary(db)
         return self.__data[db]['tainted']
 
     def is_bumped(self, db):
+        """
+        Return whether repository which db points to has been revision bumped.
+
+        @param db: database identifier
+        @type db: string
+        """
         self.__create_if_necessary(db)
         return self.__data[db]['bumped']
 
     def is_unlock_msg(self, db):
+        """
+        Return whether repository which db points to has outputed the unlock
+        warning message.
+
+        @param db: database identifier
+        @type db: string
+        """
         self.__create_if_necessary(db)
         return self.__data[db]['unlock_msg']
 
@@ -110,34 +176,14 @@ class ServerRepositoryStatus(Singleton):
 class EntropyRepository:
 
     """
-    Entropy repository interface base class.
-    This class contains database implementation independent logic, and
-    is inherited by all the Entropy repository interfaces implementations
-    (actually only LocalRepository).
+    EntropyRepository implements SQLite3 based storage. In a Model-View based
+    pattern, it can be considered the "model".
+    Actually it's the only one available but more model backends will be
+    supported in future (which will inherit this class directly).
+
+    Every Entropy repository storage interface MUST inherit from this base
+    class.
     """
-
-    class Schema:
-
-        def get_init(self):
-            raise NotImplementedError
-
-    def __init__(self):
-        """
-        EntropyRepository base repository interface class constructor.
-
-        @return: None
-        @rtype: None
-        """
-        self.SystemSettings = SystemSettings()
-        self.srv_sys_settings_plugin = \
-            etpConst['system_settings_plugins_ids']['server_plugin']
-        self.dbMatchCacheKey = etpCache['dbMatch']
-        self.client_settings_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
-        self.db_branch = self.SystemSettings['repositories']['branch']
-        self.Cacher = EntropyCacher()
-
-
-class LocalRepository(EntropyRepository):
 
     class Schema:
 
@@ -425,7 +471,17 @@ class LocalRepository(EntropyRepository):
         indexing = True, OutputInterface = None, ServiceInterface = None,
         skipChecks = False, useBranch = None, lockRemote = True):
 
-        EntropyRepository.__init__(self)
+        """
+        EntropyRepository constructor.
+        """
+
+        self.SystemSettings = SystemSettings()
+        self.srv_sys_settings_plugin = \
+            etpConst['system_settings_plugins_ids']['server_plugin']
+        self.dbMatchCacheKey = etpCache['dbMatch']
+        self.client_settings_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        self.db_branch = self.SystemSettings['repositories']['branch']
+        self.Cacher = EntropyCacher()
 
         self.dbname = dbname
         self.lockRemote = lockRemote
