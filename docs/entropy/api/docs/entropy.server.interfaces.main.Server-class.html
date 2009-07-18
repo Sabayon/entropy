@@ -75,19 +75,19 @@
 <area shape="rect" href="entropy.server.interfaces.main.Server-class.html#setup_community_repositories_settings" title="entropy.server.interfaces.main.Server.setup_community_repositories_settings" alt="" coords="17,484,1175,503"/>
 <area shape="rect" href="entropy.server.interfaces.main.Server-class.html#update_database_package_sets" title="entropy.server.interfaces.main.Server.update_database_package_sets" alt="" coords="17,521,1175,540"/>
 <area shape="rect" href="entropy.server.interfaces.main.Server-class.html" title="entropy.server.interfaces.main.Server" alt="" coords="16,235,1176,541"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="284,101,452,120"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#is_singleton" title="Return if the instance is a singleton" alt="" coords="284,120,452,139"/>
-<area shape="rect" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton" alt="" coords="283,76,453,140"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#updateProgress" title="entropy.output.TextInterface.updateProgress" alt="" coords="505,36,1145,55"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#askQuestion" title="entropy.output.TextInterface.askQuestion" alt="" coords="505,55,1145,73"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#inputBox" title="entropy.output.TextInterface.inputBox" alt="" coords="505,73,1145,92"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#cycleDone" title="entropy.output.TextInterface.cycleDone" alt="" coords="505,92,1145,111"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#setTitle" title="entropy.output.TextInterface.setTitle" alt="" coords="505,111,1145,129"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#setTotalCycles" title="entropy.output.TextInterface.setTotalCycles" alt="" coords="505,129,1145,148"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#outputInstanceTest" title="entropy.output.TextInterface.outputInstanceTest" alt="" coords="505,148,1145,167"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#nocolor" title="entropy.output.TextInterface.nocolor" alt="" coords="505,167,1145,185"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#notitles" title="entropy.output.TextInterface.notitles" alt="" coords="505,185,1145,204"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="504,11,1147,205"/>
+<area shape="rect" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="277,101,445,120"/>
+<area shape="rect" href="entropy.core.Singleton-class.html#is_singleton" title="Return if the instance is a singleton" alt="" coords="277,120,445,139"/>
+<area shape="rect" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton" alt="" coords="276,76,447,140"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#updateProgress" title="Text output print function." alt="" coords="499,36,1163,55"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#askQuestion" title="Questions asking function." alt="" coords="499,55,1163,73"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#inputBox" title="Generic input box (form) creator and data collector." alt="" coords="499,73,1163,92"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#cycleDone" title="Not actually implemented." alt="" coords="499,92,1163,111"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#setTitle" title="Set application title." alt="" coords="499,111,1163,129"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#setTotalCycles" title="Not actually implemented." alt="" coords="499,129,1163,148"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#outputInstanceTest" title="entropy.output.TextInterface.outputInstanceTest" alt="" coords="499,148,1163,167"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#nocolor" title="Disable coloured output." alt="" coords="499,167,1163,185"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html#notitles" title="Disable the ability to effectively set the application title." alt="" coords="499,185,1163,204"/>
+<area shape="rect" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="497,11,1164,205"/>
 </map>
   <img src="uml_class_diagram_for_entropy__62.gif" alt='' usemap="#uml_class_diagram_for_entropy__62" ismap="ismap" class="graph-without-title" />
 </center>
@@ -1266,6 +1266,42 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a name="get_local_post_branch_mig_script"></a><span class="summary-sig-name">get_local_post_branch_mig_script</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_post_branch_mig_script">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_local_post_branch_upg_script"></a><span class="summary-sig-name">get_local_post_branch_upg_script</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_post_branch_upg_script">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a name="get_local_database_dir"></a><span class="summary-sig-name">get_local_database_dir</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
@@ -1884,7 +1920,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Jul 16 09:22:25 2009
+    Generated by Epydoc 3.0.1 on Sat Jul 18 08:41:42 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
