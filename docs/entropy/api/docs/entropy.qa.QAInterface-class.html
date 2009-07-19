@@ -103,7 +103,7 @@
         <span class="summary-sig-arg">dbconn</span>,
         <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span><br />
       Scan for broken shared objects linking for the given idpackages on 
-      the given entropy.db.LocalRepository based instance.</td>
+      the given entropy.db.EntropyRepository based instance.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.test_depends_linking">source&nbsp;code</a></span>
             
@@ -128,7 +128,7 @@
         <span class="summary-sig-arg">black_list</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">black_list_adder</span>=<span class="summary-sig-default">None</span>)</span><br />
       Scan missing dependencies for the given idpackages on the given 
-      entropy.db.LocalRepository &quot;dbconn&quot; instance.</td>
+      entropy.db.EntropyRepository &quot;dbconn&quot; instance.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.test_missing_dependencies">source&nbsp;code</a></span>
             
@@ -171,7 +171,7 @@
         <span class="summary-sig-arg">atoms</span>=<span class="summary-sig-default">False</span>)</span><br />
       Service method which returns a complete, expanded list of 
       dependencies for the given idpackage on the given 
-      entropy.db.LocalRepository &quot;dbconn&quot; instance.</td>
+      entropy.db.EntropyRepository &quot;dbconn&quot; instance.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.qa-pysrc.html#QAInterface.get_deep_dependency_list">source&nbsp;code</a></span>
             
@@ -255,7 +255,7 @@
   </tr></table>
   
   <p>Scan for broken shared objects linking for the given idpackages on the
-  given entropy.db.LocalRepository based instance. Note: this only works 
+  given entropy.db.EntropyRepository based instance. Note: this only works 
   for packages actually installed on the running system. It is used by 
   Entropy Server during packages injection into database to warn about 
   potentially broken packages.</p>
@@ -264,7 +264,7 @@
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>idpackages</code></strong> (list) - list of valid idpackages (int) on the given dbconn argument 
           passed</li>
-        <li><strong class="pname"><code>dbconn</code></strong> (entropy.db.LocalRepository) - entropy.db.LocalRepository instance containing the given 
+        <li><strong class="pname"><code>dbconn</code></strong> (entropy.db.EntropyRepository) - entropy.db.EntropyRepository instance containing the given 
           idpackages list</li>
         <li><strong class="pname"><code>repo</code></strong> (string) - repository identifer from which dbconn and idpackages arguments 
           belong. Note: at the moment it's only used for output purposes.</li>
@@ -296,20 +296,20 @@
   </tr></table>
   
   <p>Scan missing dependencies for the given idpackages on the given 
-  entropy.db.LocalRepository &quot;dbconn&quot; instance. In addition, this
-  method will allow the user through OutputInterface to interactively add 
-  (if ask == True) missing dependencies or blacklist them.</p>
+  entropy.db.EntropyRepository &quot;dbconn&quot; instance. In addition, 
+  this method will allow the user through OutputInterface to interactively 
+  add (if ask == True) missing dependencies or blacklist them.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>idpackages</code></strong> (list) - list of valid idpackages (int) on the given dbconn argument 
           passed</li>
-        <li><strong class="pname"><code>dbconn</code></strong> (entropy.db.LocalRepository) - entropy.db.LocalRepository instance containing the given 
+        <li><strong class="pname"><code>dbconn</code></strong> (entropy.db.EntropyRepository) - entropy.db.EntropyRepository instance containing the given 
           idpackages list</li>
         <li><strong class="pname"><code>ask</code></strong> (bool) - request user interaction when finding missing dependencies</li>
         <li><strong class="pname"><code>self_check</code></strong> (bool) - also introspect inside the complaining package (to avoid 
           reporting false positives when circular dependencies occur)</li>
-        <li><strong class="pname"><code>repo</code></strong> (string) - repository identifier of the given entropy.db.LocalRepository 
+        <li><strong class="pname"><code>repo</code></strong> (string) - repository identifier of the given entropy.db.EntropyRepository 
           dbconn instance. It is used to correctly place blacklisted items.</li>
         <li><strong class="pname"><code>black_list</code></strong> (set) - list of dependencies already blacklisted.</li>
         <li><strong class="pname"><code>black_list_adder</code></strong> (callable) - callable function that accepts two arguments: (1) list (set) of 
@@ -343,8 +343,8 @@
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>dbconn</code></strong> (entropy.db.LocalRepository instance) - entropy.db.LocalRepository instance which contains information on
-          packages installed on the system (for example: 
+        <li><strong class="pname"><code>dbconn</code></strong> (entropy.db.EntropyRepository instance) - entropy.db.EntropyRepository instance which contains information 
+          on packages installed on the system (for example: 
           entropy.client.interfaces.Client.clientDbconn ).</li>
         <li><strong class="pname"><code>broken_symbols</code></strong> (bool) - enable or disable broken symbols extra check. Symbols which are 
           going to be checked have to be listed into: 
@@ -377,12 +377,12 @@
   </tr></table>
   
   <p>Service method which returns a complete, expanded list of dependencies
-  for the given idpackage on the given entropy.db.LocalRepository 
+  for the given idpackage on the given entropy.db.EntropyRepository 
   &quot;dbconn&quot; instance.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>dbconn</code></strong> (entropy.db.LocalRepository instance) - entropy.db.LocalRepository instance which contains the given 
+        <li><strong class="pname"><code>dbconn</code></strong> (entropy.db.EntropyRepository instance) - entropy.db.EntropyRepository instance which contains the given 
           idpackage item.</li>
         <li><strong class="pname"><code>idpackage</code></strong> (int) - Entropy database package key</li>
         <li><strong class="pname"><code>atoms</code></strong> (bool) - !! return type modifier !! , make method returning a list of atom
@@ -454,7 +454,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sat Jul 18 08:41:42 2009
+    Generated by Epydoc 3.0.1 on Sun Jul 19 08:06:42 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
