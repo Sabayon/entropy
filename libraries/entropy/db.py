@@ -748,9 +748,7 @@ class EntropyRepository:
             return True
         return False
 
-    # never use this unless you know what you're doing
     def initializeDatabase(self):
-        self.checkReadOnly()
         my = self.Schema()
         for table in self.listAllTables():
             try:
@@ -764,13 +762,6 @@ class EntropyRepository:
         self.setCacheSize(8192)
         self.setDefaultCacheSize(8192)
         self.commitChanges()
-
-    def checkReadOnly(self):
-        if self.readOnly:
-            raise OperationNotPermitted("OperationNotPermitted: %s." % (
-                    _("can't do that on a readonly database"),
-                )
-            )
 
     # check for /usr/portage/profiles/updates changes
     def serverUpdatePackagesData(self):
@@ -1395,8 +1386,6 @@ class EntropyRepository:
     def handlePackage(self, etpData, forcedRevision = -1,
         formattedContent = False):
 
-        self.checkReadOnly()
-
         if self.clientDatabase:
             return self.addPackage(etpData, revision = forcedRevision,
                 formatted_content = formattedContent)
@@ -1479,8 +1468,6 @@ class EntropyRepository:
 
     def addPackage(self, etpData, revision = -1, idpackage = None,
         do_remove = True, do_commit = True, formatted_content = False):
-
-        self.checkReadOnly()
 
         if revision == -1:
             try:
@@ -1721,7 +1708,6 @@ class EntropyRepository:
     def removePackage(self, idpackage, do_cleanup = True, do_commit = True,
         do_rss = True):
 
-        self.checkReadOnly()
         # clear caches
         self.clearCache()
 
