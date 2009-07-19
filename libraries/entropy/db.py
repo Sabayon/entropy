@@ -183,6 +183,8 @@ class EntropyRepository:
 
     Every Entropy repository storage interface MUST inherit from this base
     class.
+
+    @todo: refactoring and generalization needed
     """
 
     class Schema:
@@ -473,6 +475,37 @@ class EntropyRepository:
 
         """
         EntropyRepository constructor.
+
+        @keyword readOnly: open file in read-only mode
+        @type readOnly: bool
+        @keyword noUpload: server-side setting for not allowing database
+            uploads when remote revision is lower than local
+        @type noUpload: bool
+        @keyword dbFile: path to database to open
+        @type dbFile: string
+        @keyword clientDatabase: state that EntropyRepository instance is
+            a client-side one
+        @type clientDatabase: bool
+        @keyword xcache: enable on-disk cache
+        @type xcache: bool
+        @keyword dbname: EntropyRepository instance identifier
+        @type dbname: string
+        @keyword indexing: enable database indexes
+        @type indexing: bool
+        @keyword OutputInterface: interface used to communicate with the user.
+            must inherit entropy.output.TextInterface
+        @type OutputInterface: entropy.output.TextInterface based instance
+        @keyword ServiceInterface: any class instance that could be useful
+            when writing custom routines
+        @type ServiceInterface: Python class instance
+        @keyword skipChecks: if True, skip integrity checks
+        @type skipChecks: bool
+        @keyword useBranch: if True, it won't use SystemSettings' branch
+            setting but rather the one provided
+        @type useBranch: string
+        @keyword lockRemote: determine whether remote server-side database
+            should be locked when updating the local version
+        @type lockRemote: bool
         """
 
         self.SystemSettings = SystemSettings()
@@ -524,7 +557,7 @@ class EntropyRepository:
 
         if not self.clientDatabase:
             self.server_repo = self.dbname[len(etpConst['serverdbid']):]
-            self.create_dbstatus_data()
+            self._create_dbstatus_data()
 
         if not self.skipChecks:
             # no caching for non root and server connections
@@ -557,9 +590,21 @@ class EntropyRepository:
         self.dbclosed = False
 
     def setCacheSize(self, size):
+        """
+        Change low-level, storage engine based cache size.
+
+        @param size: new size
+        @type size: int
+        """
         self.cursor.execute('PRAGMA cache_size = '+str(size))
 
     def setDefaultCacheSize(self, size):
+        """
+        Change default low-level, storage engine based cache size.
+
+        @param size: new default size
+        @type size: int
+        """
         self.cursor.execute('PRAGMA default_cache_size = '+str(size))
 
 
@@ -567,7 +612,10 @@ class EntropyRepository:
         if not self.dbclosed:
             self.closeDB()
 
-    def create_dbstatus_data(self):
+    def _create_dbstatus_data(self):
+        """
+        Server-side function that setups server status information
+        """
         taint_file = self.ServiceInterface.get_local_database_taint_file(
             self.server_repo)
         if os.path.isfile(taint_file):
@@ -576,7 +624,11 @@ class EntropyRepository:
             dbs.set_bumped(self.dbFile)
 
     def closeDB(self):
-
+        """
+        Close repository storage communication.
+        Note: once issues this, you won't be able to use such instance
+        anymore.
+        """
         self.dbclosed = True
 
         # if the class is opened readOnly, close and forget
@@ -611,10 +663,15 @@ class EntropyRepository:
         self.connection.close()
 
     def vacuum(self):
+        """
+        Repository storage cleanup and optimization function.
+        """
         self.cursor.execute("vacuum")
 
     def commitChanges(self):
-
+        """
+        Commit actual changes and make them permanently stored.
+        """
         if self.readOnly:
             return
 
@@ -631,9 +688,13 @@ class EntropyRepository:
                 # bump revision, setting DatabaseBump causes
                 # the session to just bump once
                 dbs.set_bumped(self.dbFile)
-                self.revisionBump()
+                self._revisionBump()
 
     def taintDatabase(self):
+        """
+        Server-side method that render your repository storage tainted,
+        modified.
+        """
         # if it's equo to open it, this should be avoided
         if self.clientDatabase:
             return
@@ -647,6 +708,10 @@ class EntropyRepository:
         ServerRepositoryStatus().set_tainted(self.dbFile)
 
     def untaintDatabase(self):
+        """
+        Server-side method that render your repository storage NOT tainted,
+        modified.
+        """
         # if it's equo to open it, this should be avoided
         if self.clientDatabase:
             return
@@ -657,7 +722,11 @@ class EntropyRepository:
         if os.path.isfile(taint_file):
             os.remove(taint_file)
 
-    def revisionBump(self):
+    def _revisionBump(self):
+        """
+        Entropy repository revision bumping function. Every time it's called,
+        revision is incremented by 1.
+        """
         revision_file = self.ServiceInterface.get_local_database_revision_file(
             repo = self.server_repo)
         if not os.path.isfile(revision_file):
