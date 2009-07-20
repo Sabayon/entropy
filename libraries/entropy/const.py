@@ -1244,9 +1244,8 @@ def const_kill_threads():
     import threading
     threads = threading.enumerate()
     for running_t in threads:
-        if not hasattr(running_t,'kill'):
-            continue
-        running_t.kill()
+        if hasattr(running_t,'kill'):
+            running_t.kill()
         running_t.join()
 
 def __const_handle_exception(etype, value, t_back):
