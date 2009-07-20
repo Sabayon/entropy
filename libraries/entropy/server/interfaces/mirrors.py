@@ -1142,13 +1142,17 @@ class Server:
 
 
         # branch migration support scripts
-        data['database_post_branch_hop_script'] = \
-            self.Entropy.get_local_post_branch_mig_script(repo)
-        extra_text_files.append(data['database_post_branch_hop_script'])
+        post_branch_mig_file = self.Entropy.get_local_post_branch_mig_script(
+            repo)
+        if os.path.isfile(post_branch_mig_file) or download:
+            data['database_post_branch_hop_script'] = post_branch_mig_file
+            extra_text_files.append(data['database_post_branch_hop_script'])
 
-        data['database_post_branch_upgrade_script'] = \
-            self.Entropy.get_local_post_branch_upg_script(repo)
-        extra_text_files.append(data['database_post_branch_upgrade_script'])
+        post_branch_upg_file = self.Entropy.get_local_post_branch_upg_script(
+            repo)
+        if os.path.isfile(post_branch_upg_file) or download:
+            data['database_post_branch_upgrade_script'] = post_branch_upg_file
+            extra_text_files.append(data['database_post_branch_upgrade_script'])
 
 
         database_ts_file = self.Entropy.get_local_database_timestamp_file(repo)
