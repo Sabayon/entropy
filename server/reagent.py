@@ -156,6 +156,7 @@ for opt in options:
         _options.append(opt)
 options = _options
 
+rc = 1
 if not entropyTools.is_root():
     print_error("you must be root in order to run "+sys.argv[0])
 
@@ -163,13 +164,11 @@ elif (options[0] == "update"):
     import server_reagent
     rc = server_reagent.update(options[1:])
     server_reagent.Entropy.close_server_databases()
-    raise SystemExit(rc)
 
 elif (options[0] == "inject"):
     import server_reagent
     rc = server_reagent.inject(options[1:])
     server_reagent.Entropy.close_server_databases()
-    raise SystemExit(rc)
 
 # database tool
 elif (options[0] == "database"):
@@ -178,52 +177,46 @@ elif (options[0] == "database"):
     import server_reagent
     server_reagent.database(options[1:])
     server_reagent.Entropy.close_server_databases()
-    raise SystemExit(0)
+    rc = 0
 
 elif (options[0] == "query"):
     import server_query
     rc = server_query.query(options[1:])
-    raise SystemExit(rc)
 
 elif (options[0] == "repo"):
     import server_reagent
     rc = server_reagent.repositories(options[1:])
-    raise SystemExit(rc)
 
 elif (options[0] == "deptest"):
     import server_reagent
     server_reagent.Entropy.dependencies_test()
     server_reagent.Entropy.close_server_databases()
-    raise SystemExit(0)
+    rc = 0
 
 elif (options[0] == "libtest"):
     import server_reagent
     rc = server_reagent.Entropy.test_shared_objects()
     x = server_reagent.Entropy.close_server_databases()
-    raise SystemExit(0)
 
 elif (options[0] == "depends"):
     import server_reagent
     rc = server_reagent.Entropy.depends_table_initialize()
     server_reagent.Entropy.close_server_databases()
-    raise SystemExit(rc)
 
 elif (options[0] == "libpaths"):
     import server_reagent
     rc = server_reagent.Entropy.library_paths_table_initialize()
     server_reagent.Entropy.close_server_databases()
-    raise SystemExit(rc)
 
 # cleanup
 elif (options[0] == "cleanup"):
     rc = entropyTools.cleanup()
-    raise SystemExit(rc)
 
 # deptest tool
 elif (options[0] == "spm"):
     import server_reagent
     rc = server_reagent.spm(options[1:])
     server_reagent.Entropy.close_server_databases()
-    raise SystemExit(rc)
 
-raise SystemExit(1)
+const_kill_threads()
+raise SystemExit(rc)
