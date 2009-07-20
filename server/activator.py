@@ -115,29 +115,29 @@ for opt in options:
         _options.append(opt)
 options = _options
 
+rc = 1
 if not entropyTools.is_root():
     print_error("you must be root in order to run activator")
-    raise SystemExit(2)
+    rc = 2
 elif (options[0] == "sync"):
     import server_activator
     rc = server_activator.sync(options[1:])
-    raise SystemExit(rc)
 elif (options[0] == "tidy"):
     import server_activator
     rc = server_activator.sync(options[1:], justTidy = True)
-    raise SystemExit(rc)
 elif (options[0] == "database"):
     import server_activator
     server_activator.database(options[1:])
-    raise SystemExit(0)
+    rc = 0
 elif (options[0] == "packages"):
     import server_activator
     server_activator.packages(options[1:])
-    raise SystemExit(0)
+    rc = 0
 # database tool
 elif (options[0] == "notice"):
     import server_activator
     server_activator.notice(options[1:])
-    raise SystemExit(0)
+    rc = 0
 
-raise SystemExit(1)
+const_kill_threads()
+raise SystemExit(rc)
