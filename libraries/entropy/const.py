@@ -409,7 +409,7 @@ def const_default_settings(rootdir):
             default_etp_client_repodir + default_etp_dbdir + "/" + \
             default_etp_dbclientfile,
         # prefix of the name of self.dbname in
-        # entropy.db.EntropyRepository class for the repositories
+        # entropy.db.LocalRepository class for the repositories
         'dbnamerepoprefix': "repo_",
         # prefix of database backups
         'dbbackupprefix': 'etp_backup_',
@@ -1244,6 +1244,9 @@ def const_kill_threads():
     import threading
     threads = threading.enumerate()
     for running_t in threads:
+        # do not join current thread
+        if running_t.getName() == 'MainThread':
+            continue
         if hasattr(running_t,'kill'):
             running_t.kill()
         running_t.join()
