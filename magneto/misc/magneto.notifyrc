@@ -1,0 +1,11 @@
+[Global]
+IconName=magneto
+Comment=Magneto Entropy Notification Applet events
+
+[Context/Application]
+Name=Application
+
+[Event/Updates]
+Name=Update Notification Event
+Contexts=Application
+Action=Popup

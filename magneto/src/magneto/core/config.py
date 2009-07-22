@@ -1,12 +1,24 @@
-# This file is a portion of the Red Hat Network Panel Applet
-#
-# Copyright (C) 2008 Sabayon Linux
-# Distributed under GPL version 2.
-#
-# $Id: applet.py,v 1.10 2003/09/15 15:07:19 veillard Exp $
+"""
 
+    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
+    @contact: lxnay@sabayonlinux.org
+    @copyright: Fabio Erculiani
+    @license: GPL-2
+
+    B{Entropy Updates Notification Applet (Magneto) configuration module}
+
+"""
 import os
 import entropy.dump as dumpTools
+
+# Paths
+PIXMAPS_PATH = "/usr/share/pixmaps/magneto"
+ICON_PATH_NAME = "magneto.png"
+ICON_PATH = os.path.join("../..", ICON_PATH_NAME)
+if not os.path.isdir(PIXMAPS_PATH):
+    PIXMAPS_PATH = "../gfx/magneto"
+if not os.path.isfile(ICON_PATH):
+    ICON_PATH = "../gfx/%s" % (ICON_PATH_NAME,)
 
 APPLET_STATES = [ "STARTUP", "NOCONSENT", "CONFIGURING", "OKAY",
     "CRITICAL", "BUSY", "ERROR", "DISCONNECTED", "DISABLE" ]
@@ -36,7 +48,7 @@ ANIMATION_TOTAL_TIME = 0.75
 home = os.getenv("HOME")
 if not home: home = "/tmp"
 SETTINGS_FILE = os.path.join(home,
-    ".config/entropy/entropy-notification-applet.conf")
+    ".config/entropy/magneto.conf")
 
 def save_settings(settings):
     global SETTINGS_FILE

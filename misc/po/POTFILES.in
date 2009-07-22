@@ -37,6 +37,7 @@
 ../libraries/entropy/client/interfaces/loaders.py
 ../libraries/entropy/client/interfaces/methods.py
 ../libraries/entropy/client/interfaces/package.py
+../libraries/entropy/client/interfaces/qa.py
 ../libraries/entropy/client/interfaces/repository.py
 ../libraries/entropy/client/interfaces/trigger.py
 ../libraries/entropy/cache.py
@@ -55,6 +56,9 @@
 ../libraries/entropy/tools.py
 ../libraries/entropy/transceivers.py
 ../libraries/entropy/xpak.py
+../libraries/sys_big_send_test.py
+../libraries/ugc_big_send_test.py
+../libraries/ugc_small_send_test.py
 ../client/equo.py
 ../client/text_cache.py
 ../client/text_configuration.py
@@ -75,6 +79,7 @@
 ../sulfur/src/sulfur/core.py
 ../sulfur/src/sulfur/dialogs.py
 ../sulfur/src/sulfur/entropyapi.py
+../sulfur/src/sulfur/event.py
 ../sulfur/src/sulfur/events.py
 ../sulfur/src/sulfur/filters.py
 ../sulfur/src/sulfur/__init__.py
@@ -85,9 +90,11 @@
 ../sulfur/src/sulfur/setup.py
 ../sulfur/src/sulfur/views.py
 ../sulfur/src/sulfur/widgets.py
-../entropy-notification-applet/src/applet.py
-../entropy-notification-applet/src/etp_applet_components.py
-../entropy-notification-applet/src/etp_applet_config.py
-../entropy-notification-applet/src/etp_applet.py
+../magneto/src/magneto/kde/components.py
+../magneto/src/magneto/kde/__init__.py
+../magneto/src/magneto/kde/interfaces.py
+../magneto/src/magneto/gtk/components.py
+../magneto/src/magneto/gtk/__init__.py
+../magneto/src/magneto/gtk/interfaces.py
 ../sulfur/src/sulfur/sulfur.glade
-../entropy-notification-applet/src/etp_applet.glade
+../magneto/src/magneto/gtk/magneto.glade

@@ -1,6 +1,6 @@
 PKGNAME = entropy
 PYTHON = python2
-SUBDIRS = client conf docs entropy-notification-applet handlers libraries misc/po misc server sulfur
+SUBDIRS = client conf docs handlers libraries misc/po misc server sulfur
 SERVER_INSPKGS = reagent.py activator.py server_reagent.py server_activator.py repository-admin-daemon repository-services-daemon.example server_query.py
 
 all:
@@ -100,9 +100,21 @@ updates-daemon-install:
 	install -m 644 misc/dbus/system-services/org.entropy.Client.service $(DESTDIR)/usr/share/dbus-1/system-services/
 	install -m 644 misc/dbus/interfaces/org.entropy.Client.xml $(DESTDIR)/usr/share/dbus-1/interfaces/
 
-notification-applet-install:
+magneto-core-install:
 
-	make DESTDIR="$(DESTDIR)" -C entropy-notification-applet install
+	make DESTDIR="$(DESTDIR)" -C magneto magneto-core-install
+
+magneto-loader-install:
+
+	make DESTDIR="$(DESTDIR)" -C magneto magneto-loader-install
+
+magneto-gtk-install:
+
+	make DESTDIR="$(DESTDIR)" -C magneto magneto-gtk-install
+
+magneto-kde-install:
+
+	make DESTDIR="$(DESTDIR)" -C magneto magneto-kde-install
 
 sulfur-install:
 
@@ -117,4 +129,4 @@ pycompile-all:
 
 	$(PYTHON) -c "import compileall; compileall.compile_dir('$(DESTDIR)/$(LIBDIR)/entropy', force = True, quiet = True)"
 
-install: entropy-install entropy-server-install equo-install notification-applet-install sulfur-install updates-daemon-install
+install: entropy-install entropy-server-install equo-install sulfur-install updates-daemon-install magneto-core-install magneto-loader-install magneto-gtk-install magneto-kde-install

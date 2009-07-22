@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Magneto Updates Notifier
+Comment=Magneto is the Entropy Updates Notification Applet
+Icon=magneto.png
+Exec=magneto
+Type=Application
+Terminal=false
+Encoding=UTF-8
+Categories=System;Application;

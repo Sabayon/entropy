@@ -1,9 +1,0 @@
-[Desktop Entry]
-Name=Entropy Alert Icon
-Comment=Panel icon for indication that newer Entropy packages are available
-Icon=entropy-applet.png
-Exec=etp-applet-gui
-Type=Application
-Terminal=false
-Encoding=UTF-8
-Categories=System;Application;
