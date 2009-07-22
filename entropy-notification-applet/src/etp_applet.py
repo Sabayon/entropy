@@ -35,8 +35,7 @@ import dbus.mainloop.glib
 
 # applet imports
 import etp_applet_config
-from etp_applet_components import AppletNoticeWindow, \
-    AppletErrorDialog, AppletIconPixbuf
+from etp_applet_components import AppletNoticeWindow, AppletIconPixbuf
 
 # Entropy imports
 from entropy.i18n import _
@@ -104,9 +103,7 @@ class EntropyApplet:
         self.animator = None
         self.client = None
         self.notice_window = None
-        self.error_dialog = None
         self.error_threshold = 0
-        self.last_error = None
         self.package_updates = []
         self.last_alert = None
         self.tooltip_text = ""
@@ -453,12 +450,6 @@ class EntropyApplet:
     def notice_window_closed(self):
         self.notice_window = None
 
-    def error_dialog_closed(self):
-        self.error_dialog = None
-        self.last_error = None
-        self.set_state("OKAY")
-        self.update_tooltip(_("Waiting before checkin..."))
-
     def applet_face_click(self, icon, button, activate_time):
         if button == 3:
             self.menu.popup(None, None, None, 0, activate_time)
@@ -467,12 +458,6 @@ class EntropyApplet:
     def applet_face_click2(self, icon):
 
         if not self.current_state in [ "OKAY", "ERROR", "CRITICAL" ]:
-            return
-
-        if self.last_error:
-            if self.error_dialog:
-                return
-            self.error_dialog = AppletErrorDialog(self, self.last_error)
             return
 
         self.never_viewed_notices = 0

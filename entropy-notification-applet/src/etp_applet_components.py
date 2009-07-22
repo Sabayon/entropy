@@ -134,34 +134,6 @@ class AppletNoticeWindow(GladeWindow):
             self.package_list_model.append((name, avail,))
 
 
-class AppletErrorDialog(GladeWindow):
-    def __init__(self, parent, error):
-        GladeWindow.__init__(self)
-        self.window = gtk.MessageDialog(None, 0,
-            gtk.MESSAGE_WARNING, gtk.BUTTONS_OK, str(error))
-        self.window.set_modal(gtk.TRUE)
-        self.window.connect("close", self.on_close)
-        self.window.connect('response', self.on_close)
-        self.parent = parent
-        self.window.show()
-
-    def close_dialog(self, *rest):
-        self.parent.error_dialog_closed()
-        self.window.destroy()
-
-    def on_close(self, *data):
-        self.close_dialog()
-
-def growToParent(*args):
-    return
-
-class WrappingLabel(gtk.Label):
-    def __init__(self, label=""):
-        gtk.Label.__init__(self, label)
-        self.set_line_wrap(gtk.TRUE)
-        self.ignoreEvents = 0
-        self.connect("size-allocate", growToParent)
-
 class AppletIconPixbuf:
 
     def __init__(self):
