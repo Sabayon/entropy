@@ -876,6 +876,10 @@ class SulfurApplicationEventsMixin:
         avail_pkgsets = [x for x in map(mymf, self.Equo.package_set_list()) if \
             x != 0]
 
+        if not avail_pkgsets:
+            okDialog(self.ui.main,_("No package sets available for removal."))
+            return
+
         def fake_callback(s):
             return s
         input_params = [
