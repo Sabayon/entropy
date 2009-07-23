@@ -35,6 +35,7 @@ class DummyEntropyPackage:
         self.dbconn = None
         self.masked = None
         self.pkgset = False
+        self.is_pkgset_cat = False
         self.broken = False # used by pkgsets
         self.selected_by_user = False
         self.dummy_type = dummy_type
@@ -55,6 +56,7 @@ class EntropyPackage:
     def __init__(self, matched_atom, remote = None, pkgset = None):
 
         self.pkgset = pkgset
+        self.is_pkgset_cat = False
         self.broken = False # used by pkgsets
         self.queued = None
         self.action = None

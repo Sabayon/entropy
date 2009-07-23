@@ -97,6 +97,7 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
             mydummy = DummyEntropyPackage(namedesc = cat_text,
                 dummy_type = SulfurConf.dummy_category, onlyname = category)
             mydummy.color = SulfurConf.color_package_category
+            mydummy.is_pkgset_cat = True
             set_data = self.entropy.package_set_match(category)[0]
             if not set_data:
                 continue
