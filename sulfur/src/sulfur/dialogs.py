@@ -5528,6 +5528,18 @@ class ConfirmationDialog:
 
     def show_data_simpledict( self, model, pkgs ):
         model.clear()
+        if pkgs.has_key("downgrade"):
+            if pkgs['downgrade']:
+                label = "<b>%s</b>" % _("To be downgraded")
+                parent = model.append( None, [label] )
+                for pkg in pkgs['downgrade']:
+                    model.append( parent, [pkg] )
+        if pkgs.has_key("remove"):
+            if pkgs['remove']:
+                label = "<b>%s</b>" % _("To be removed")
+                parent = model.append( None, [label] )
+                for pkg in pkgs['remove']:
+                    model.append( parent, [pkg] )
         if pkgs.has_key("reinstall"):
             if pkgs['reinstall']:
                 label = "<b>%s</b>" % _("To be reinstalled")
@@ -5545,18 +5557,6 @@ class ConfirmationDialog:
                 label = "<b>%s</b>" % _("To be updated")
                 parent = model.append( None, [label] )
                 for pkg in pkgs['update']:
-                    model.append( parent, [pkg] )
-        if pkgs.has_key("downgrade"):
-            if pkgs['downgrade']:
-                label = "<b>%s</b>" % _("To be downgraded")
-                parent = model.append( None, [label] )
-                for pkg in pkgs['downgrade']:
-                    model.append( parent, [pkg] )
-        if pkgs.has_key("remove"):
-            if pkgs['remove']:
-                label = "<b>%s</b>" % _("To be removed")
-                parent = model.append( None, [label] )
-                for pkg in pkgs['remove']:
                     model.append( parent, [pkg] )
 
     def show_data_simple( self, model, pkgs ):
