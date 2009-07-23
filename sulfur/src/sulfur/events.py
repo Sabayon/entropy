@@ -639,6 +639,24 @@ class SulfurApplicationEventsMixin:
                 break
             self.load_package_info_menu(obj)
 
+    def on_pkg_click(self, widget):
+        """
+        When Packages View gtk.TreeView elements are single clicked.
+        """
+        objs = self.pkgView.collect_selected_items()
+        obj = None
+        for x in objs:
+            if x.is_pkgset_cat:
+                obj = x
+                break
+        if obj is None:
+            # disable edit set button
+            self.ui.pkgsetEditButton.set_sensitive(False)
+        else:
+            # enable edit set button
+            self.ui.pkgsetEditButton.set_sensitive(True)
+
+
     def on_license_double_clicked( self, widget, iterator, path ):
         ( model, iterator ) = widget.get_selection().get_selected()
         if model != None and iterator != None:
@@ -823,8 +841,9 @@ class SulfurApplicationEventsMixin:
             # pull the set list
             objs = self.pkgView.collect_selected_items()
             obj = None
-            for obj in objs:
-                if obj.pkgset:
+            for x in objs:
+                if x.is_pkgset_cat:
+                    obj = x
                     break
             if obj is None:
                 return # sorry

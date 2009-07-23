@@ -630,6 +630,7 @@
                             <property name="can_focus">True</property>
                             <property name="rules_hint">True</property>
                             <property name="rubber_banding">True</property>
+                            <signal name="cursor_changed" handler="on_pkg_click"/>
                             <signal name="row_activated" handler="on_pkg_doubleclick"/>
                           </widget>
                         </child>
@@ -976,6 +977,7 @@
                             <child>
                               <widget class="GtkButton" id="pkgsetEditButton">
                                 <property name="visible">True</property>
+                                <property name="sensitive">False</property>
                                 <property name="can_focus">True</property>
                                 <property name="receives_default">True</property>
                                 <signal name="clicked" handler="on_pkgsetEditButton_clicked"/>
