@@ -28,6 +28,7 @@
 """
 from __future__ import with_statement
 import os
+import sys
 from entropy.exceptions import IncorrectParameter, SystemDatabaseError
 from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, \
@@ -623,7 +624,7 @@ class SystemSettings(Singleton):
                 os.access(os.path.join(sets_dir, x),os.R_OK))]
             for set_file in set_files:
                 try:
-                    set_file = str(set_file)
+                    set_file = set_file.decode(sys.getfilesystemencoding())
                 except (UnicodeDecodeError, UnicodeEncodeError,):
                     continue
                 pkg_set_data[set_file] = os.path.join(sets_dir, set_file)
