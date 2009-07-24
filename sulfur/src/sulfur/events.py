@@ -824,6 +824,8 @@ class SulfurApplicationEventsMixin:
             #    return False
 
             # does it exist?
+            if not isinstance(s, unicode):
+                s = s.decode('utf-8')
             set_match, rc = self.Equo.package_set_match(s)
             if rc:
                 return False
