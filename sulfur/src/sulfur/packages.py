@@ -889,7 +889,11 @@ class EntropyPackages:
             set_matches, set_installed_matches, install_incomplete, \
                 remove_incomplete = \
                 self._pkg_get_pkgset_matches_installed_matches(set_deps)
-            if not (set_matches and set_installed_matches): continue
+
+            if not (set_matches and set_installed_matches):
+                #print set_name, "===>", set_matches, "--", set_installed_matches, "--", "EMPTY"
+                continue
+
             cat_namedesc = self._pkg_get_pkgset_set_from_desc(set_from)
             set_objects = []
 
@@ -897,7 +901,7 @@ class EntropyPackages:
                 yp.color = SulfurConf.color_install
                 yp.set_cat_namedesc = cat_namedesc
                 yp.set_names.add(set_name)
-                yp.set_from = set_from
+                yp.set_from.add(set_from)
                 yp.set_matches = set_matches
                 yp.set_installed_matches = set_installed_matches
 
@@ -915,11 +919,12 @@ class EntropyPackages:
                         broken = True
                         break
                 myobjs.append(yp)
+
             if broken:
                 continue
 
-            for yp in myobjs: yp.set_names.clear()
-            for yp in myobjs: update_yp(yp)
+            for yp in myobjs:
+                update_yp(yp)
             objects += myobjs
 
         return objects

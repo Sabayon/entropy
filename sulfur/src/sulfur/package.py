@@ -43,7 +43,7 @@ class DummyEntropyPackage:
         self.set_names = set()
         self.set_matches = set()
         self.set_installed_matches = set()
-        self.set_from = None
+        self.set_from = set()
         self.set_cat_namedesc = None
         self.set_category = False
         self.set_install_incomplete = False
@@ -70,7 +70,7 @@ class EntropyPackage:
         self.set_names = set()
         self.set_matches = set()
         self.set_installed_matches = set()
-        self.set_from = None
+        self.set_from = set()
         self.set_cat_namedesc = None
         self.set_category = False
         self.set_install_incomplete = False
@@ -86,11 +86,12 @@ class EntropyPackage:
                 # package set broken
                 self.broken = True
             else:
-                (self.set_from, self.set_name, self.set_matches,) = set_match
+                (set_from, self.set_name, self.set_matches,) = set_match
+                self.set_from.add(set_from)
                 self.cat = self.set_name
                 self.set_cat_namedesc = self.set_name
                 self.description = self.set_name
-                self.matched_repo = set_name
+                self.matched_repo = self.set_name
 
             self.from_installed = False
             self.dbconn = None
@@ -232,9 +233,10 @@ class EntropyPackage:
 
     def get_repository(self):
         if self.pkgset:
-            x = self.set_from
-            if x == etpConst['userpackagesetsid']: x = _("User")
-            return x
+            if etpConst['userpackagesetsid'] in self.set_from:
+                return _("User")
+            return ' '.join([x for x in sorted(self.set_from)])
+
         if self.matched_atom[1] == 0:
             return self.dbconn.retrievePackageFromInstalledTable(self.matched_id)
         else: return self.matched_repo

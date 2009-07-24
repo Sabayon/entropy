@@ -104,7 +104,7 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
 
             set_from, set_name, set_deps = set_data
             mydummy.set_category = category
-            mydummy.set_from = set_from
+            mydummy.set_from.add(set_from)
 
             mydummy.set_matches, mydummy.set_installed_matches, \
                 mydummy.set_install_incomplete, \
@@ -1067,6 +1067,9 @@ class EntropyPackageView:
 
     def _get_pkgset_data(self, items, add = True, remove_action = False):
 
+        print "_get_pkgset_data", repr(items), items
+        import pdb; pdb.set_trace()
+
         pkgsets = set()
         realpkgs = set()
         if remove_action:
@@ -1094,8 +1097,17 @@ class EntropyPackageView:
         pkgsets.update(selected_sets)
 
         exp_atoms = set()
+        broken_sets = set()
         for pkgset in pkgsets:
-            exp_atoms |= self.Equo.package_set_expand(pkgset)
+            try:
+                exp_atoms |= self.Equo.package_set_expand(pkgset)
+            except InvalidPackageSet:
+                # this package set is broken
+                broken_sets.add(pkgset)
+                continue
+
+        # remove broken sets
+        pkgsets.difference_update(broken_sets)
 
         exp_matches = set()
         if remove_action:
