@@ -422,11 +422,14 @@ class CalculatorsMixin:
             dbconn = self.open_repository(repoid)
         return dbconn
 
-    def package_set_match(self, package_set, multiMatch = False, matchRepo = None, server_repos = [], serverInstance = None, search = False):
+    def package_set_match(self, package_set, multiMatch = False,
+        matchRepo = None, server_repos = [], serverInstance = None,
+        search = False):
 
         # support match in repository from shell
         # set@repo1,repo2,repo3
-        package_set, repos = self.entropyTools.dep_get_match_in_repos(package_set)
+        package_set, repos = self.entropyTools.dep_get_match_in_repos(
+            package_set)
         if (matchRepo == None) and (repos != None):
             matchRepo = repos
 
@@ -450,19 +453,25 @@ class CalculatorsMixin:
 
             # check inside SystemSettings
             if not server_repos:
+                sys_pkgsets = self.SystemSettings['system_package_sets']
                 if search:
-                    mysets = [x for x in self.SystemSettings['system_package_sets'].keys() if (x.find(package_set) != -1)]
+                    mysets = [x for x in sys_pkgsets.keys() if \
+                        (x.find(package_set) != -1)]
                     for myset in mysets:
-                        mydata = self.SystemSettings['system_package_sets'].get(myset)
-                        set_data.append((etpConst['userpackagesetsid'], unicode(myset), mydata.copy(),))
+                        mydata = sys_pkgsets.get(myset)
+                        set_data.append((etpConst['userpackagesetsid'],
+                            unicode(myset), mydata.copy(),))
                 else:
-                    mydata = self.SystemSettings['system_package_sets'].get(package_set)
-                    if mydata != None:
-                        set_data.append((etpConst['userpackagesetsid'], unicode(package_set), mydata,))
-                        if not multiMatch: break
+                    mydata = sys_pkgsets.get(package_set)
+                    if mydata is not None:
+                        set_data.append((etpConst['userpackagesetsid'],
+                            unicode(package_set), mydata,))
+                        if not multiMatch:
+                            break
 
             for repoid in valid_repos:
-                dbconn = self.__package_set_match_open_db(repoid, serverInstance)
+                dbconn = self.__package_set_match_open_db(repoid,
+                    serverInstance)
                 if search:
                     mysets = dbconn.searchSets(package_set)
                     for myset in mysets:
@@ -470,13 +479,19 @@ class CalculatorsMixin:
                         set_data.append((repoid, myset, mydata.copy(),))
                 else:
                     mydata = dbconn.retrievePackageSet(package_set)
-                    if mydata: set_data.append((repoid, package_set, mydata,))
-                    if not multiMatch: break
+                    if mydata:
+                        set_data.append((repoid, package_set, mydata,))
+                    if not multiMatch:
+                        break
 
             break
 
-        if not set_data: return (),False
-        if multiMatch: return set_data,True
+        if not set_data:
+            return (),False
+
+        if multiMatch:
+            return set_data,True
+
         return set_data.pop(0),True
 
     def get_unsatisfied_dependencies(self, dependencies, deep_deps = False, depcache = None):
