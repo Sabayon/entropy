@@ -1067,9 +1067,6 @@ class EntropyPackageView:
 
     def _get_pkgset_data(self, items, add = True, remove_action = False):
 
-        print "_get_pkgset_data", repr(items), items
-        import pdb; pdb.set_trace()
-
         pkgsets = set()
         realpkgs = set()
         if remove_action:
