@@ -818,9 +818,17 @@ class SulfurApplicationEventsMixin:
 
         current_sets = self.Equo.package_set_list()
         def fake_callback(s):
+
+            ## check if package set name is sane
+            #if not entropy.tools.is_valid_string(s):
+            #    return False
+
+            # does it exist?
             set_match, rc = self.Equo.package_set_match(s)
             if rc:
                 return False
+
+            # is the name valid after all?
             if (s not in current_sets) and (" " not in s) and \
                 (not s.startswith(etpConst['packagesetprefix'])):
                 return True
@@ -871,12 +879,12 @@ class SulfurApplicationEventsMixin:
             return
 
         if edit:
-            rc, msg = self.Equo.remove_user_package_set(data.get("name"))
+            rc, msg = self.Equo.remove_user_package_set(unicode(data.get("name")))
             if rc != 0:
                 okDialog(self.ui.main,"%s: %s" % (_("Error"),msg,))
                 return
 
-        rc, msg = self.Equo.add_user_package_set(data.get("name"),
+        rc, msg = self.Equo.add_user_package_set(unicode(data.get("name")),
             data.get("atoms"))
         if rc != 0:
             okDialog(self.ui.main,"%s: %s" % (_("Error"),msg,))

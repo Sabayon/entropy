@@ -891,7 +891,6 @@ class EntropyPackages:
                 self._pkg_get_pkgset_matches_installed_matches(set_deps)
 
             if not (set_matches and set_installed_matches):
-                #print set_name, "===>", set_matches, "--", set_installed_matches, "--", "EMPTY"
                 continue
 
             cat_namedesc = self._pkg_get_pkgset_set_from_desc(set_from)
