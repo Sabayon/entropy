@@ -1102,7 +1102,8 @@ class EntropyPackageView:
             try:
                 exp_atoms |= self.Equo.package_set_expand(pkgset)
             except InvalidPackageSet:
-                # this package set is broken
+                # this package set is broken or doesn't exist
+                # we can exclude it from our data collection
                 broken_sets.add(pkgset)
                 continue
 
