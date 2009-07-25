@@ -465,6 +465,7 @@ class EntropyPackageView:
         self.view.connect("leave-notify-event",self.treeview_leave_notify)
         self.store = self.setupView()
         self.dummyCats = {}
+        self.__install_statuses = {}
         self.queue = qview.queue
         self.queueView = qview
         self.ui = ui
@@ -1286,7 +1287,6 @@ class EntropyPackageView:
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
-
     def on_pkgsetRemove_activate(self, widget):
         return self.on_pkgset_remove_undoremove_activate(widget)
 
@@ -1554,6 +1554,7 @@ class EntropyPackageView:
         gobject.timeout_add(0, do_refresh)
 
     def clear(self):
+        self.__install_statuses.clear()
         self.store.clear()
 
     def set_filtering_string(self, filter_string):
@@ -1693,15 +1694,33 @@ class EntropyPackageView:
                 return
 
             if not pkg.queued:
+
                 if pkg.action in ["r","rr"]:
-                    self.set_pixbuf_to_cell(cell, self.pkg_install_ok)
+
+                    # grab install status to determine what pixmap showing
+                    # for installed packages, this could be slow, but let'see
+                    inst_status = self.__install_statuses.get(pkg.matched_atom)
+                    if inst_status is None:
+                        try:
+                            inst_status = pkg.install_status
+                        except self.Equo.dbapi2.ProgrammingError:
+                            inst_status = 0
+                        self.__install_statuses[pkg.matched_atom] = inst_status
+
+                    if inst_status is 2:
+                        self.set_pixbuf_to_cell(cell, self.pkg_install_updatable)
+                    else:
+                        self.set_pixbuf_to_cell(cell, self.pkg_install_ok)
+
                 elif pkg.action == "i":
                     self.set_pixbuf_to_cell(cell, self.pkg_install_new)
                 elif pkg.action == "d":
                     self.set_pixbuf_to_cell(cell, self.pkg_downgrade)
                 else:
                     self.set_pixbuf_to_cell(cell, self.pkg_install_updatable)
+
             else:
+
                 if pkg.queued == "r" and not pkg.do_purge:
                     self.set_pixbuf_to_cell(cell, self.pkg_remove)
                 if pkg.queued == "r" and pkg.do_purge:
