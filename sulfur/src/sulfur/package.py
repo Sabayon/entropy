@@ -507,14 +507,12 @@ class EntropyPackage:
     def get_ugc_package_downloads(self):
         if self.pkgset:
             return 0
-        if self.from_installed:
-            return 0
         atom = self.get_name()
         if not atom:
             return 0
         key = self.entropyTools.dep_getkey(atom)
-        return EquoIntf.UGC.UGCCache.get_package_downloads(self.matched_repo,
-            key)
+        return EquoIntf.UGC.UGCCache.get_package_downloads(
+            self.get_repository(), key)
 
     def get_attribute(self,attr):
         x = None
