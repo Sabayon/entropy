@@ -4926,7 +4926,16 @@ class UGCInfoMenu(MenuSkel):
             self.ugcinfo_ui.ugcTable.remove(self.ugcinfo_ui.descriptionContent)
             self.ugcinfo_ui.buttonBox.hide()
             mybuf = gtk.TextBuffer()
-            mybuf.set_text(unicode(self.ugc_data['ddata'].tostring(),'raw_unicode_escape'))
+            ###
+            # we need to properly handle raw data coming from ddata dict key
+            ###
+            if isinstance(self.ugc_data['ddata'], unicode):
+                buf_text = self.ugc_data['ddata']
+            elif isinstance(self.ugc_data['ddata'], str):
+                buf_text = unicode(self.ugc_data['ddata'], 'raw_unicode_escape')
+            else: # mysql shitty type?
+                buf_text = unicode(self.ugc_data['ddata'].tostring(),'raw_unicode_escape')
+            mybuf.set_text(buf_text)
             self.ugcinfo_ui.textContent.set_buffer(mybuf)
         else:
             self.ugcinfo_ui.textFrame.hide()
