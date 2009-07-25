@@ -1512,21 +1512,30 @@ class EntropyPackageView:
         self.dummyCats.clear()
         self.clear()
         search_col = 0
-        if widget == None: widget = self.ui.viewPkg
+
+        if widget == None:
+            widget = self.ui.viewPkg
 
         widget.set_model(None)
         widget.set_model(self.store)
 
-        if empty:
+        if not pkgs:
+            widget.set_property('headers-visible', False)
+            widget.set_property('enable-search', False)
+            empty_item = self.etpbase._pkg_get_empty_search_item()
+            self.store.append(None, (empty_item,))
+
+        elif empty:
+            widget.set_property('headers-visible', False)
+            widget.set_property('enable-search', False)
             for po in pkgs:
-                self.store.append( None, (po,) )
-            widget.set_property('headers-visible',False)
-            widget.set_property('enable-search',False)
+                self.store.append(None, (po,))
+
         else:
             # current injectors fills the model
             self.Injector.inject(pkgs, pkgsets)
 
-            widget.set_search_column( search_col )
+            widget.set_search_column(search_col)
             widget.set_search_equal_func(self.atom_search)
             widget.set_property('headers-visible',True)
             widget.set_property('enable-search',True)
