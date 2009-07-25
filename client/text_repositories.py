@@ -119,6 +119,7 @@ def showRepositoryFile(myfile, repos):
             sys.stdout.write(line)
             line = f.readline()
         f.close()
+        sys.stdout.write("\n")
 
 def showRepositories():
     print_info(darkred(" * ")+darkgreen("%s:" % (_("Active Repositories"),) ))
