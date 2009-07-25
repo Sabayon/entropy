@@ -443,6 +443,10 @@ class EntropyPackageView:
         self.set_pixbuf_to_image(self.img_pkgset_remove,self.pkg_remove)
         self.img_pkgset_undoremove = gtk.Image()
         self.set_pixbuf_to_image(self.img_pkgset_undoremove,self.pkg_remove)
+        self.img_pkg_updateinstall = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_updateinstall,self.pkg_update)
+        self.img_pkg_undoupdateinstall = gtk.Image()
+        self.set_pixbuf_to_image(self.img_pkg_undoupdateinstall,self.pkg_downgrade)
 
         self.img_pkg_update_remove = gtk.Image()
         self.set_pixbuf_to_image(self.img_pkg_update_remove,self.pkg_remove)
@@ -480,12 +484,17 @@ class EntropyPackageView:
         self.installed_undoremove = self.installed_menu_xml.get_widget( "undoremove" )
         self.installed_unmask = self.installed_menu_xml.get_widget( "unmask" )
         self.installed_mask = self.installed_menu_xml.get_widget( "mask" )
+        self.installed_update = self.installed_menu_xml.get_widget( "updateinstall" )
+        self.installed_undoupdate = self.installed_menu_xml.get_widget( "undoupdateinstall" )
+
         self.installed_reinstall.set_image(self.img_pkg_reinstall)
         self.installed_undoreinstall.set_image(self.img_pkg_undoreinstall)
         self.installed_remove.set_image(self.img_pkg_remove)
         self.installed_undoremove.set_image(self.img_pkg_undoremove)
         self.installed_purge.set_image(self.img_pkg_purge)
         self.installed_undopurge.set_image(self.img_pkg_undopurge)
+        self.installed_update.set_image(self.img_pkg_updateinstall)
+        self.installed_undoupdate.set_image(self.img_pkg_undoupdateinstall)
 
         # updates right click menu
         self.updates_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageUpdates",domain="entropy" )
@@ -613,6 +622,8 @@ class EntropyPackageView:
         self.installed_purge.hide()
         if self.show_purge:
             self.installed_purge.show()
+        self.installed_update.hide()
+        self.installed_undoupdate.hide()
 
     def hide_installed_packages_menu(self):
         self.installed_unmask.hide()
@@ -623,6 +634,8 @@ class EntropyPackageView:
         self.installed_reinstall.hide()
         self.installed_purge.hide()
         self.installed_mask.hide()
+        self.installed_update.hide()
+        self.installed_undoupdate.hide()
 
     def collect_view_iters(self, widget = None):
         if widget == None:
@@ -854,6 +867,7 @@ class EntropyPackageView:
             queued_r = [x for x in objs if (x.queued == "r" and not x.do_purge)]
             queued_rr = [x for x in objs if (x.queued == "rr" and not x.do_purge)]
             queued_r_purge = [x for x in objs if (x.queued == "r" and x.do_purge)]
+            queued_updatable = [x for x in objs if x.install_status == 2]
 
             if len(queued_r) == objs_len:
                 self.installed_undoremove.show()
@@ -862,10 +876,13 @@ class EntropyPackageView:
                 self.set_loaded_reinstallable(objs)
             elif len(queued_r_purge) == objs_len:
                 self.installed_undopurge.show()
+            elif len(queued_updatable) == objs_len:
+                self.installed_undoupdate.show()
 
         else:
 
             syspkgs = [x for x in objs if x.syspkg]
+            queued_updatable = [x for x in objs if x.install_status == 2]
 
             # is it a system package ?
             if syspkgs:
@@ -874,12 +891,18 @@ class EntropyPackageView:
 
             reinstallables = self.get_reinstallables(objs)
             if len(reinstallables) != objs_len:
-                if syspkgs: do_show = False
                 self.installed_reinstall.hide()
             else:
                 self.loaded_reinstallables = reinstallables
                 if not reinstallables:
                     self.installed_reinstall.hide()
+
+            if syspkgs:
+                self.installed_remove.hide()
+                self.installed_purge.hide()
+
+            if len(queued_updatable) == objs_len:
+                self.installed_update.show()
 
             if self.show_mask:
                 user_unmasked = [x for x in objs if x.user_unmasked]
@@ -1309,6 +1332,39 @@ class EntropyPackageView:
         normal_cursor(self.main_window)
         self.view.queue_draw()
 
+    def on_updateinstall_activate(self, widget):
+        """
+        Triggered from the Installed packages view for those which have
+        updates available.
+        """
+        # need to translate installed objects into updates
+        selected_objs = self.get_installed_pkg_objs_for_selected()
+
+        busy_cursor(self.main_window)
+        if selected_objs:
+            status = self.add_to_queue(selected_objs, "u")
+            if status == 0:
+                # also update original objects
+                for obj in self.selected_objs:
+                    obj.queued = "u"
+        self.queueView.refresh()
+        normal_cursor(self.main_window)
+        self.view.queue_draw()
+
+    def on_undoupdateinstall_activate(self, widget):
+        """
+        Triggered from the Installed packages view for those which have
+        updates available.
+        """
+        busy_cursor(self.main_window)
+        # need to translate installed objects into updates
+        selected_objs = self.get_installed_pkg_objs_for_selected()
+        self.remove_queued(selected_objs)
+        self.remove_queued(self.selected_objs)
+        self.queueView.refresh()
+        normal_cursor(self.main_window)
+        self.view.queue_draw()
+
     # installed packages mask action
     def on_mask_activate(self, widget):
 
@@ -1485,7 +1541,6 @@ class EntropyPackageView:
         t = ParallelTask(self.refresh_vote_info, obj)
         t.start()
 
-
     def refresh_vote_info(self, obj):
         time.sleep(5)
         obj.voted = 0.0
@@ -1507,6 +1562,19 @@ class EntropyPackageView:
         self.ui.pkgFilter.set_text(filter_string)
         self.ui.pkgSearch.clicked()
         return True
+
+    def get_installed_pkg_objs_for_selected(self):
+        selected_objs = []
+        for inst_obj in self.selected_objs:
+            key, slot = inst_obj.keyslot
+            m_tup = self.Equo.atom_match(key, matchSlot = slot)
+            if m_tup[0] != -1:
+                ep, new = self.etpbase.get_package_item(m_tup)
+                if new:
+                    raise ValueError("trying to load new package objects when" \
+                        " shouldn't be allowed")
+                selected_objs.append(ep)
+        return selected_objs
 
     def populate(self, pkgs, widget = None, empty = False, pkgsets = False):
         self.dummyCats.clear()

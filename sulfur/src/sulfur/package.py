@@ -270,10 +270,8 @@ class EntropyPackage:
         if self.pkgset:
             return 0
 
-        if self.from_installed:
-            return 0
         key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
-        matches = EquoIntf.clientDbconn.searchKeySlot(key,slot)
+        matches = EquoIntf.clientDbconn.searchKeySlot(key, slot)
         if not matches: # not installed, new!
             return 1
         else:

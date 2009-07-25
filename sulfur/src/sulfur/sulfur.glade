@@ -6660,6 +6660,34 @@ gz</property>
         <signal name="activate" handler="on_mask_activate"/>
       </widget>
     </child>
+    <child>
+      <widget class="GtkImageMenuItem" id="updateinstall">
+        <property name="label" translatable="yes">Update</property>
+        <property name="visible">True</property>
+        <property name="use_stock">False</property>
+        <signal name="activate" handler="on_updateinstall_activate"/>
+        <child internal-child="image">
+          <widget class="GtkImage" id="image1">
+            <property name="visible">True</property>
+            <property name="stock">gtk-missing-image</property>
+          </widget>
+        </child>
+      </widget>
+    </child>
+    <child>
+      <widget class="GtkImageMenuItem" id="undoupdateinstall">
+        <property name="label" translatable="yes">Undo Update</property>
+        <property name="visible">True</property>
+        <property name="use_stock">False</property>
+        <signal name="activate" handler="on_undoupdateinstall_activate"/>
+        <child internal-child="image">
+          <widget class="GtkImage" id="image2">
+            <property name="visible">True</property>
+            <property name="stock">gtk-missing-image</property>
+          </widget>
+        </child>
+      </widget>
+    </child>
   </widget>
   <widget class="GtkMenu" id="packageUpdates">
     <child>
