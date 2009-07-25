@@ -6340,9 +6340,16 @@ class LicenseDialog:
     def read_selected_license(self, widget):
         model, iterator = self.view.get_selection().get_selected()
         if model != None and iterator != None:
+
+            if model.iter_depth(iterator):
+                # we need to get its parent
+                iterator = model.get_iter_root()
+
             license_identifier = model.get_value( iterator, 0 )
-            if not self.licenses.has_key(license_identifier): # for security reasons
+            # for security reasons
+            if not self.licenses.has_key(license_identifier):
                 return
+
             packages = self.licenses[license_identifier]
             license_text = ''
             for package in packages:
@@ -6351,6 +6358,7 @@ class LicenseDialog:
                 if dbconn.isLicensedataKeyAvailable(license_identifier):
                     license_text = dbconn.retrieveLicenseText(license_identifier)
                     break
+
             # prepare textview
             mybuffer = gtk.TextBuffer()
             mybuffer.set_text(unicode(license_text,'raw_unicode_escape'))
