@@ -586,8 +586,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             del self.FileUpdates
         if hasattr(self,'clientLog'):
             self.clientLog.close()
-        if hasattr(self,'Cacher'):
-            self.Cacher.stop()
         if hasattr(self,'SystemSettings') and \
             hasattr(self,'sys_settings_client_plugin_id'):
 
