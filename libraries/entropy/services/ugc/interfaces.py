@@ -822,7 +822,11 @@ class Server(RemoteDatabase):
 
         if iddoctypes is None:
             iddoctypes = self.DOC_TYPES.values()
-        iddoctypes_str = "("+', '.join([str(x) for x in iddoctypes])+")"
+
+        if len(iddoctypes) == 1:
+            iddoctypes_str = " = %s" % (iddoctypes[0],)
+        else:
+            iddoctypes_str = "IN ("+', '.join([str(x) for x in iddoctypes])+")"
 
         myterm = "%"+pkgkey_string+"%"
 
@@ -882,7 +886,12 @@ class Server(RemoteDatabase):
 
         if iddoctypes is None:
             iddoctypes = self.DOC_TYPES.values()
-        iddoctypes_str = "("+', '.join([str(x) for x in iddoctypes])+")"
+
+        if len(iddoctypes) == 1:
+            iddoctypes_str = " = %s" % (iddoctypes[0],)
+        else:
+            iddoctypes_str = "IN ("+', '.join([str(x) for x in iddoctypes])+")"
+
         myterm = "%"+pkgkey_string+"%"
 
         search_params = [myterm,results_offset,results_limit]
@@ -942,7 +951,12 @@ class Server(RemoteDatabase):
 
         if iddoctypes is None:
             iddoctypes = self.DOC_TYPES.values()
-        iddoctypes_str = "("+', '.join([str(x) for x in iddoctypes])+")"
+
+        if len(iddoctypes) == 1:
+            iddoctypes_str = " = %s" % (iddoctypes[0],)
+        else:
+            iddoctypes_str = "IN ("+', '.join([str(x) for x in iddoctypes])+")"
+
         myterm = "%"+pkgkey_string+"%"
         search_params = [myterm,myterm,myterm,results_offset,results_limit]
 
@@ -1001,7 +1015,12 @@ class Server(RemoteDatabase):
 
         if iddoctypes is None:
             iddoctypes = self.DOC_TYPES.values()
-        iddoctypes_str = "("+', '.join([str(x) for x in iddoctypes])+")"
+
+        if len(iddoctypes) == 1:
+            iddoctypes_str = " = %s" % (iddoctypes[0],)
+        else:
+            iddoctypes_str = "IN ("+', '.join([str(x) for x in iddoctypes])+")"
+
         myterm = "%"+keyword_string+"%"
 
         search_params = [myterm,results_offset,results_limit]
@@ -1061,7 +1080,12 @@ class Server(RemoteDatabase):
 
         if iddoctypes is None:
             iddoctypes = self.DOC_TYPES.values()
-        iddoctypes_str = "("+', '.join([str(x) for x in iddoctypes])+")"
+
+        if len(iddoctypes) == 1:
+            iddoctypes_str = " = %s" % (iddoctypes[0],)
+        else:
+            iddoctypes_str = "IN ("+', '.join([str(x) for x in iddoctypes])+")"
+
         try:
             myterm = int(iddoc_string)
         except ValueError:
