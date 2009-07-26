@@ -6361,7 +6361,11 @@ class LicenseDialog:
 
             # prepare textview
             mybuffer = gtk.TextBuffer()
-            mybuffer.set_text(unicode(license_text,'raw_unicode_escape'))
+            try:
+                utf_lic_text = license_text.decode('utf-8')
+            except UnicodeDecodeError: # old license text stored, will be rm'ed
+                utf_lic_text = unicode(license_text,'raw_unicode_escape')
+            mybuffer.set_text(utf_lic_text)
             self.licenseView.set_buffer(mybuffer)
             txt = "[%s] %s" % (license_identifier, _("license text"),)
             self.read_dialog.set_title(txt)
