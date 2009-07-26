@@ -1561,7 +1561,12 @@ class CalculatorsMixin:
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
 
         # get all the installed packages
-        idpackages = self.clientDbconn.listAllIdpackages(order_by = 'atom')
+        try:
+            idpackages = self.clientDbconn.listAllIdpackages(order_by = 'atom')
+        except self.dbapi2.OperationalError:
+            # client db is broken!
+            raise SystemDatabaseError("installed packages database is broken")
+
         maxlen = len(idpackages)
         count = 0
         mytxt = _("Calculating world packages")

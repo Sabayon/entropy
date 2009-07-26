@@ -188,8 +188,12 @@ def worldUpdate(onlyfetch = False, replay = False, resume = False,
     if not resume:
 
         print_info(red(" @@ ")+blue("%s..." % (_("Calculating System Updates"),) ))
-        update, remove, fine, spm_fine = Equo.calculate_world_updates(
-            empty_deps = replay)
+        try:
+            update, remove, fine, spm_fine = Equo.calculate_world_updates(
+                empty_deps = replay)
+        except SystemDatabaseError:
+            # handled in equo.py
+            raise
 
         if (etpUi['verbose'] or etpUi['pretend']):
             print_info(red(" @@ ") + "%s => %s" % (

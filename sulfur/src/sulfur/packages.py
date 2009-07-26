@@ -724,7 +724,13 @@ class EntropyPackages:
             yp.action = 'u'
             yp.color = SulfurConf.color_update
             return yp
-        updates, remove, fine, spm_fine = self.Entropy.calculate_world_updates()
+
+        try:
+            updates, remove, fine, spm_fine = \
+                self.Entropy.calculate_world_updates()
+        except SystemDatabaseError:
+            # broken client db
+            return []
 
         # we need to cache these too on get_package_item
         map(fm, spm_fine)

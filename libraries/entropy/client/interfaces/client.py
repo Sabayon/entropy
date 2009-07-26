@@ -188,7 +188,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         try:
             update, remove, fine, spm_fine = self._helper.calculate_world_updates(
                 critical_updates = False)
-        except (ValueError,):
+        except (ValueError, SystemDatabaseError,):
             update = 1 # foo!
 
         # actually execute this only if

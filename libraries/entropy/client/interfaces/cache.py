@@ -93,7 +93,7 @@ class CacheMixin:
             if do_install_queue:
                 self.get_install_queue(update, False, False)
             self.calculate_available_packages()
-        except:
+        except: # except SystemDatabaseError @ calculate_world_updates
             pass
 
         self.updateProgress(
