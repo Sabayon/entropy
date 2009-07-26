@@ -259,7 +259,7 @@ def ugcDocuments(options):
 
     if cmd == "get":
         data, err_string = Equo.UGC.get_docs(repository, pkgkey)
-        if not isinstance(data,tuple):
+        if not isinstance(data,(list,tuple,)):
             print_error(
                 "[%s:%s] %s: %s, %s" % (
                     darkgreen(repository),
