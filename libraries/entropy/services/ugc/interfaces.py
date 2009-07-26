@@ -820,9 +820,10 @@ class Server(RemoteDatabase):
     def search_pkgkey_items(self, pkgkey_string, iddoctypes = None, results_offset = 0, results_limit = 30, order_by = None):
         self.check_connection()
 
-        if iddoctypes == None:
-            iddoctypes = [self.DOC_TYPES[x] for x in self.DOC_TYPES]
-        iddoctypes = "("+', '.join([str(self.DOC_TYPES[x]) for x in self.DOC_TYPES])+")"
+        if iddoctypes is None:
+            iddoctypes = self.DOC_TYPES.values()
+        iddoctypes_str = "("+', '.join([str(x) for x in iddoctypes])+")"
+
         myterm = "%"+pkgkey_string+"%"
 
         search_params = [myterm,results_offset,results_limit]
@@ -838,19 +839,37 @@ class Server(RemoteDatabase):
             order_by_string = 'ORDER BY tot_downloads DESC'
 
         self.execute_query("""
-        SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, 
-        sum(entropy_downloads.`count`) as `tot_downloads`, 
-        entropy_user_scores.`score` as `score` FROM 
-        entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE 
-        entropy_base.`key` LIKE %s AND 
-        entropy_docs.`iddoctype` IN """+iddoctypes+""" AND 
-        entropy_docs.`idkey` = entropy_base.`idkey` AND 
-        entropy_votes.`idkey` = entropy_base.`idkey` AND 
-        entropy_downloads.`idkey` = entropy_base.`idkey` AND 
-        entropy_docs.`userid` = entropy_user_scores.`userid` 
-        GROUP BY entropy_docs.`iddoc` """+order_by_string+""" LIMIT %s,%s""", search_params)
+        SELECT
+            SQL_CALC_FOUND_ROWS entropy_base.`key`,
+            entropy_docs.*,
+            entropy_downloads.iddownload,
+            entropy_downloads.ddate,
+            entropy_votes.idvote,
+            entropy_votes.vdate,
+            entropy_votes.vote,
+            avg(entropy_votes.vote) as avg_vote, 
+            sum(entropy_downloads.`count`) as tot_downloads, 
+            entropy_user_scores.score as `score`
+        FROM 
+            entropy_base
+        LEFT JOIN entropy_votes ON entropy_base.idkey = entropy_votes.idkey
+        LEFT JOIN entropy_docs ON entropy_base.idkey = entropy_docs.idkey
+        LEFT JOIN entropy_docs as ed ON entropy_base.idkey = ed.idkey
+        LEFT JOIN entropy_user_scores on entropy_docs.userid = entropy_user_scores.userid
+        LEFT JOIN entropy_downloads on entropy_base.idkey = entropy_downloads.idkey
+        WHERE 
+            entropy_base.`key` LIKE %s AND
+            entropy_docs.iddoctype IN """+iddoctypes_str+""" 
+            GROUP BY entropy_docs.`iddoc`
+            """+order_by_string+"""
+            LIMIT %s,%s
+        """, search_params)
 
         results = self.fetchall()
+        for item in results:
+            if item['avg_vote'] is None:
+                item['avg_vote'] = 0.0
+
         self.execute_query('SELECT FOUND_ROWS() as count')
         data = self.fetchone() or {}
         count = data.get('count', 0)
@@ -861,9 +880,9 @@ class Server(RemoteDatabase):
     def search_username_items(self, pkgkey_string, iddoctypes = None, results_offset = 0, results_limit = 30, order_by = None):
         self.check_connection()
 
-        if iddoctypes == None:
-            iddoctypes = [self.DOC_TYPES[x] for x in self.DOC_TYPES]
-        iddoctypes = "("+', '.join([str(self.DOC_TYPES[x]) for x in self.DOC_TYPES])+")"
+        if iddoctypes is None:
+            iddoctypes = self.DOC_TYPES.values()
+        iddoctypes_str = "("+', '.join([str(x) for x in iddoctypes])+")"
         myterm = "%"+pkgkey_string+"%"
 
         search_params = [myterm,results_offset,results_limit]
@@ -879,18 +898,38 @@ class Server(RemoteDatabase):
             order_by_string = 'ORDER BY tot_downloads DESC'
 
         self.execute_query("""
-        SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, 
-        sum(entropy_downloads.`count`) as `tot_downloads`, 
-        entropy_user_scores.`score` as `score` FROM 
-        entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE 
-        entropy_docs.`username` LIKE %s AND entropy_docs.`iddoctype` IN """+iddoctypes+""" AND 
-        entropy_docs.`idkey` = entropy_base.`idkey` AND 
-        entropy_votes.`idkey` = entropy_base.`idkey` AND 
-        entropy_downloads.`idkey` = entropy_base.`idkey` AND 
-        entropy_docs.`userid` = entropy_user_scores.`userid` 
-        GROUP BY entropy_docs.`iddoc` """+order_by_string+""" LIMIT %s,%s""", search_params)
+        SELECT
+            SQL_CALC_FOUND_ROWS entropy_base.`key`,
+            entropy_docs.*,
+            entropy_downloads.iddownload,
+            entropy_downloads.ddate,
+            entropy_votes.idvote,
+            entropy_votes.vdate,
+            entropy_votes.vote,
+            avg(entropy_votes.vote) as avg_vote, 
+            sum(entropy_downloads.`count`) as tot_downloads, 
+            entropy_user_scores.score as `score`
+        FROM 
+            entropy_base
+        LEFT JOIN entropy_votes ON entropy_base.idkey = entropy_votes.idkey
+        LEFT JOIN entropy_docs ON entropy_base.idkey = entropy_docs.idkey
+        LEFT JOIN entropy_docs as ed ON entropy_base.idkey = ed.idkey
+        LEFT JOIN entropy_user_scores on entropy_docs.userid = entropy_user_scores.userid
+        LEFT JOIN entropy_downloads on entropy_base.idkey = entropy_downloads.idkey
+        WHERE 
+            entropy_docs.`username` LIKE %s AND
+            entropy_docs.iddoctype IN """+iddoctypes_str+""" 
+            GROUP BY entropy_docs.`iddoc`
+            """+order_by_string+"""
+            LIMIT %s,%s
+        """, search_params)
 
         results = self.fetchall()
+        # avg_vote can be POTENTIALLY None, we need to change it to float(0.0)
+        for item in results:
+            if item['avg_vote'] is None:
+                item['avg_vote'] = 0.0
+
         self.execute_query('SELECT FOUND_ROWS() as count')
         data = self.fetchone() or {}
         count = data.get('count', 0)
@@ -901,9 +940,9 @@ class Server(RemoteDatabase):
     def search_content_items(self, pkgkey_string, iddoctypes = None, results_offset = 0, results_limit = 30, order_by = None):
         self.check_connection()
 
-        if iddoctypes == None:
-            iddoctypes = [self.DOC_TYPES[x] for x in self.DOC_TYPES]
-        iddoctypes = "("+', '.join([str(self.DOC_TYPES[x]) for x in self.DOC_TYPES])+")"
+        if iddoctypes is None:
+            iddoctypes = self.DOC_TYPES.values()
+        iddoctypes_str = "("+', '.join([str(x) for x in iddoctypes])+")"
         myterm = "%"+pkgkey_string+"%"
         search_params = [myterm,myterm,myterm,results_offset,results_limit]
 
@@ -918,19 +957,38 @@ class Server(RemoteDatabase):
             order_by_string = 'ORDER BY tot_downloads DESC'
 
         self.execute_query("""
-        SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, 
-        sum(entropy_downloads.`count`) as `tot_downloads`, 
-        entropy_user_scores.`score` as `score` FROM 
-        entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE 
-        (entropy_docs.`title` LIKE %s OR entropy_docs.`description` LIKE %s OR entropy_docs.`ddata` LIKE %s) AND 
-        entropy_docs.`iddoctype` IN """+iddoctypes+""" AND 
-        entropy_docs.`idkey` = entropy_base.`idkey` AND 
-        entropy_votes.`idkey` = entropy_base.`idkey` AND 
-        entropy_downloads.`idkey` = entropy_base.`idkey` AND 
-        entropy_docs.`userid` = entropy_user_scores.`userid` 
-        GROUP BY entropy_docs.`iddoc` """+order_by_string+""" LIMIT %s,%s""", search_params)
+        SELECT
+            SQL_CALC_FOUND_ROWS entropy_base.`key`,
+            entropy_docs.*,
+            entropy_downloads.iddownload,
+            entropy_downloads.ddate,
+            entropy_votes.idvote,
+            entropy_votes.vdate,
+            entropy_votes.vote,
+            avg(entropy_votes.vote) as avg_vote, 
+            sum(entropy_downloads.`count`) as tot_downloads, 
+            entropy_user_scores.score as `score`
+        FROM 
+            entropy_base
+        LEFT JOIN entropy_votes ON entropy_base.idkey = entropy_votes.idkey
+        LEFT JOIN entropy_docs ON entropy_base.idkey = entropy_docs.idkey
+        LEFT JOIN entropy_docs as ed ON entropy_base.idkey = ed.idkey
+        LEFT JOIN entropy_user_scores on entropy_docs.userid = entropy_user_scores.userid
+        LEFT JOIN entropy_downloads on entropy_base.idkey = entropy_downloads.idkey
+        WHERE 
+            (entropy_docs.`title` LIKE %s OR entropy_docs.`description` LIKE %s OR entropy_docs.`ddata` LIKE %s) AND
+            entropy_docs.iddoctype IN """+iddoctypes_str+"""
+            GROUP BY entropy_docs.`iddoc`
+            """+order_by_string+"""
+            LIMIT %s,%s
+        """, search_params)
 
         results = self.fetchall()
+        # avg_vote can be POTENTIALLY None, we need to change it to float(0.0)
+        for item in results:
+            if item['avg_vote'] is None:
+                item['avg_vote'] = 0.0
+
         self.execute_query('SELECT FOUND_ROWS() as count')
         data = self.fetchone() or {}
         count = data.get('count', 0)
@@ -941,9 +999,9 @@ class Server(RemoteDatabase):
     def search_keyword_items(self, keyword_string, iddoctypes = None, results_offset = 0, results_limit = 30, order_by = None):
         self.check_connection()
 
-        if iddoctypes == None:
-            iddoctypes = [self.DOC_TYPES[x] for x in self.DOC_TYPES]
-        iddoctypes = "("+', '.join([str(self.DOC_TYPES[x]) for x in self.DOC_TYPES])+")"
+        if iddoctypes is None:
+            iddoctypes = self.DOC_TYPES.values()
+        iddoctypes_str = "("+', '.join([str(x) for x in iddoctypes])+")"
         myterm = "%"+keyword_string+"%"
 
         search_params = [myterm,results_offset,results_limit]
@@ -959,20 +1017,38 @@ class Server(RemoteDatabase):
             order_by_string = 'ORDER BY tot_downloads DESC'
 
         self.execute_query("""
-        SELECT SQL_CALC_FOUND_ROWS *, avg(entropy_votes.`vote`) as avg_vote, 
-        sum(entropy_downloads.`count`) as `tot_downloads`, 
-        entropy_user_scores.`score` as `score` FROM 
-        entropy_docs,entropy_base,entropy_docs_keywords,entropy_votes,entropy_downloads,entropy_user_scores WHERE 
-        entropy_docs_keywords.`keyword` LIKE %s AND 
-        entropy_docs.`iddoctype` IN """+iddoctypes+""" AND 
-        entropy_docs.`idkey` = entropy_base.`idkey` AND 
-        entropy_docs_keywords.`iddoc` = entropy_docs.`iddoc` AND 
-        entropy_votes.`idkey` = entropy_base.`idkey` AND 
-        entropy_downloads.`idkey` = entropy_base.`idkey` AND 
-        entropy_docs.`userid` = entropy_user_scores.`userid` 
-        GROUP BY entropy_docs.`iddoc` """+order_by_string+""" LIMIT %s,%s""", search_params)
+        SELECT
+            SQL_CALC_FOUND_ROWS entropy_base.`key`,
+            entropy_docs.*,
+            entropy_downloads.iddownload,
+            entropy_downloads.ddate,
+            entropy_votes.idvote,
+            entropy_votes.vdate,
+            entropy_votes.vote,
+            avg(entropy_votes.vote) as avg_vote, 
+            sum(entropy_downloads.`count`) as tot_downloads, 
+            entropy_user_scores.score as `score`
+        FROM 
+            entropy_base
+        LEFT JOIN entropy_votes ON entropy_base.idkey = entropy_votes.idkey
+        LEFT JOIN entropy_docs ON entropy_base.idkey = entropy_docs.idkey
+        LEFT JOIN entropy_docs as ed ON entropy_base.idkey = ed.idkey
+        LEFT JOIN entropy_user_scores on entropy_docs.userid = entropy_user_scores.userid
+        LEFT JOIN entropy_downloads on entropy_base.idkey = entropy_downloads.idkey
+        WHERE 
+            entropy_docs_keywords.`keyword` LIKE %s AND 
+            entropy_docs.iddoctype IN """+iddoctypes_str+"""
+            GROUP BY entropy_docs.`iddoc`
+            """+order_by_string+"""
+            LIMIT %s,%s
+        """, search_params)
 
         results = self.fetchall()
+        # avg_vote can be POTENTIALLY None, we need to change it to float(0.0)
+        for item in results:
+            if item['avg_vote'] is None:
+                item['avg_vote'] = 0.0
+
         self.execute_query('SELECT FOUND_ROWS() as count')
         data = self.fetchone() or {}
         count = data.get('count', 0)
@@ -983,9 +1059,9 @@ class Server(RemoteDatabase):
     def search_iddoc_item(self, iddoc_string, iddoctypes = None, results_offset = 0, results_limit = 30, order_by = None):
         self.check_connection()
 
-        if iddoctypes == None:
-            iddoctypes = [self.DOC_TYPES[x] for x in self.DOC_TYPES]
-        iddoctypes = "("+', '.join([str(self.DOC_TYPES[x]) for x in self.DOC_TYPES])+")"
+        if iddoctypes is None:
+            iddoctypes = self.DOC_TYPES.values()
+        iddoctypes_str = "("+', '.join([str(x) for x in iddoctypes])+")"
         try:
             myterm = int(iddoc_string)
         except ValueError:
@@ -1009,7 +1085,7 @@ class Server(RemoteDatabase):
         entropy_user_scores.`score` as `score` FROM 
         entropy_docs,entropy_base,entropy_votes,entropy_downloads,entropy_user_scores WHERE 
         entropy_docs.`iddoc` = %s AND 
-        entropy_docs.`iddoctype` IN """+iddoctypes+""" AND 
+        entropy_docs.`iddoctype` IN """+iddoctypes_str+""" AND 
         entropy_docs.`idkey` = entropy_base.`idkey` AND 
         entropy_votes.`idkey` = entropy_base.`idkey` AND 
         entropy_downloads.`idkey` = entropy_base.`idkey` AND 
@@ -1017,6 +1093,11 @@ class Server(RemoteDatabase):
         GROUP BY entropy_docs.`iddoc` """+order_by_string+""" LIMIT %s,%s""", search_params)
 
         results = self.fetchall()
+        # avg_vote can be POTENTIALLY None, we need to change it to float(0.0)
+        for item in results:
+            if item['avg_vote'] is None:
+                item['avg_vote'] = 0.0
+
         self.execute_query('SELECT FOUND_ROWS() as count')
         data = self.fetchone() or {}
         count = data.get('count', 0)
