@@ -863,7 +863,7 @@ class Server(RemoteDatabase):
         LEFT JOIN entropy_downloads on entropy_base.idkey = entropy_downloads.idkey
         WHERE 
             entropy_base.`key` LIKE %s AND
-            entropy_docs.iddoctype IN """+iddoctypes_str+""" 
+            entropy_docs.iddoctype """+iddoctypes_str+""" 
             GROUP BY entropy_docs.`iddoc`
             """+order_by_string+"""
             LIMIT %s,%s
@@ -927,7 +927,7 @@ class Server(RemoteDatabase):
         LEFT JOIN entropy_downloads on entropy_base.idkey = entropy_downloads.idkey
         WHERE 
             entropy_docs.`username` LIKE %s AND
-            entropy_docs.iddoctype IN """+iddoctypes_str+""" 
+            entropy_docs.iddoctype """+iddoctypes_str+""" 
             GROUP BY entropy_docs.`iddoc`
             """+order_by_string+"""
             LIMIT %s,%s
@@ -991,7 +991,7 @@ class Server(RemoteDatabase):
         LEFT JOIN entropy_downloads on entropy_base.idkey = entropy_downloads.idkey
         WHERE 
             (entropy_docs.`title` LIKE %s OR entropy_docs.`description` LIKE %s OR entropy_docs.`ddata` LIKE %s) AND
-            entropy_docs.iddoctype IN """+iddoctypes_str+"""
+            entropy_docs.iddoctype """+iddoctypes_str+"""
             GROUP BY entropy_docs.`iddoc`
             """+order_by_string+"""
             LIMIT %s,%s
@@ -1056,7 +1056,7 @@ class Server(RemoteDatabase):
         LEFT JOIN entropy_downloads on entropy_base.idkey = entropy_downloads.idkey
         WHERE 
             entropy_docs_keywords.`keyword` LIKE %s AND 
-            entropy_docs.iddoctype IN """+iddoctypes_str+"""
+            entropy_docs.iddoctype """+iddoctypes_str+"""
             GROUP BY entropy_docs.`iddoc`
             """+order_by_string+"""
             LIMIT %s,%s
