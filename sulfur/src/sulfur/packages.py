@@ -929,7 +929,7 @@ class EntropyPackages:
         return objects
 
     def _pkg_get_fake_updates(self):
-        # load a pixmap inside the treeview
+
         msg2 = _("Try clicking the %s button in the %s page") % (
             _("Update Repositories"), _("Repository Selection"),)
 
@@ -942,6 +942,29 @@ class EntropyPackages:
         myobj = DummyEntropyPackage(namedesc = msg,
             dummy_type = SulfurConf.dummy_empty)
         return [myobj]
+
+    def _pkg_get_empty_search_item(self):
+
+        if self.filterCallback:
+            msg2 = _("No packages found means nothing to show!")
+
+            msg = "<big><b><span foreground='%s'>%s</span></b></big>\n%s.\n%s" % (
+                SulfurConf.color_title,
+                _("Nothing found"),
+                _("No packages found using the provided search term"),
+                msg2,
+            )
+        else:
+            msg2 = _("No packages to show")
+            msg = "<big><b><span foreground='%s'>%s</span></b></big>\n%s.\n%s" % (
+                SulfurConf.color_title,
+                _("No packages to show"),
+                _("There are no packages that can be shown, sorry."),
+                msg2,
+            )
+        myobj = DummyEntropyPackage(namedesc = msg,
+            dummy_type = SulfurConf.dummy_empty)
+        return myobj
 
     def _get_groups(self,mask):
 
