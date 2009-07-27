@@ -1171,7 +1171,10 @@ class Package:
                         )
                         self.entropyTools.ebeep(20)
                         shutil.rmtree(rootdir, True)
-                        os.rmdir(rootdir)
+                        try:
+                            os.rmdir(rootdir)
+                        except OSError:
+                            pass
 
                     tolink = os.readlink(imagepathDir)
                     live_tolink = None
