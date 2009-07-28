@@ -609,7 +609,7 @@ class Server:
                 "[repo:%s|%s|#%s] %s: %s" % (
                     brown(repo),
                     darkgreen(crippled_uri),
-                    brown(tries),
+                    brown(str(tries)),
                     blue(_("downloading package")),
                     darkgreen(pkg_to_join_path),
                 ),
@@ -630,7 +630,7 @@ class Server:
                     "[repo:%s|%s|#%s] %s: %s %s" % (
                         brown(repo),
                         darkgreen(crippled_uri),
-                        brown(tries),
+                        brown(str(tries)),
                         blue(_("package")),
                         darkgreen(pkg_to_join_path),
                         blue(_("does not exist")),
@@ -650,7 +650,7 @@ class Server:
                     "[repo:%s|%s|#%s] %s: %s %s" % (
                         brown(repo),
                         darkgreen(crippled_uri),
-                        brown(tries),
+                        brown(str(tries)),
                         blue(_("package")),
                         darkgreen(pkgfile),
                         blue(_("is not listed in the repository !")),
@@ -667,7 +667,7 @@ class Server:
                 "[repo:%s|%s|#%s] %s: %s" % (
                     brown(repo),
                     darkgreen(crippled_uri),
-                    brown(tries),
+                    brown(str(tries)),
                     blue(_("verifying checksum of package")),
                     darkgreen(pkgfile),
                 ),
@@ -684,7 +684,7 @@ class Server:
                     "[repo:%s|%s|#%s] %s: %s %s" % (
                         brown(repo),
                         darkgreen(crippled_uri),
-                        brown(tries),
+                        brown(str(tries)),
                         blue(_("package")),
                         darkgreen(pkgfile),
                         blue(_("downloaded successfully")),
@@ -699,7 +699,7 @@ class Server:
                     "[repo:%s|%s|#%s] %s: %s %s" % (
                         brown(repo),
                         darkgreen(crippled_uri),
-                        brown(tries),
+                        brown(str(tries)),
                         blue(_("package")),
                         darkgreen(pkgfile),
                         blue(_("checksum does not match. re-downloading...")),
@@ -718,7 +718,7 @@ class Server:
             "[repo:%s|%s|#%s] %s: %s %s" % (
                 brown(repo),
                 darkgreen(crippled_uri),
-                brown(tries),
+                brown(str(tries)),
                 blue(_("package")),
                 darkgreen(pkgfile),
                 blue(_("seems broken. Consider to re-package it. Giving up!")),
