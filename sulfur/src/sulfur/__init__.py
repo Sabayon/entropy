@@ -635,13 +635,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             print "entering UGC"
         try:
             self.ugc_update()
+            self.Cacher.sync(wait = True)
         except (SystemExit,):
             raise
         except:
             pass
         if self.do_debug:
             print "quitting UGC"
-        self.Cacher.sync(wait = True)
 
     def ugc_update(self):
 
