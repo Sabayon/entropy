@@ -581,7 +581,6 @@ class Server:
             self.entropyTools.print_traceback()
             return False # issues
 
-        try:
         while tries < 5:
             tries += 1
 
