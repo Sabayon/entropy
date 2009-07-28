@@ -574,6 +574,14 @@ class Server:
         crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
 
         tries = 0
+
+        try:
+            ftp = FtpInterface(uri, self.Entropy)
+        except ConnectionError:
+            self.entropyTools.print_traceback()
+            return False # issues
+
+        try:
         while tries < 5:
             tries += 1
 
@@ -595,11 +603,6 @@ class Server:
                 back = True
             )
 
-            try:
-                ftp = FtpInterface(uri, self.Entropy)
-            except ConnectionError:
-                self.entropyTools.print_traceback()
-                return False # issues
             dirpath = os.path.join(
                 self.Entropy.get_remote_packages_relative_path(repo),
                 pkg_to_join_dirpath)
@@ -693,6 +696,7 @@ class Server:
                     type = "info",
                     header = darkgreen(" * ")
                 )
+                ftp.close()
                 return True
             else:
                 self.Entropy.updateProgress(
@@ -727,6 +731,7 @@ class Server:
             type = "error",
             header = darkred(" !!! ")
         )
+        ftp.close()
         return False
 
 
