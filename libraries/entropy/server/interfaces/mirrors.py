@@ -585,7 +585,7 @@ class Server:
                 "[repo:%s|%s|#%s] %s: %s" % (
                     brown(repo),
                     darkgreen(crippled_uri),
-                    brown(tries),
+                    brown(str(tries)),
                     blue(_("connecting to download package")),
                     darkgreen(pkg_to_join_path),
                 ),
