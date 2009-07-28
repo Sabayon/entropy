@@ -904,10 +904,6 @@ create an empty repository database in the provided path
 
 switch to the specified branch the provided atoms (or world)
 
-=item B<md5check>
-
-verify integrity of the provided atoms (or world)
-
 =item B<md5remote>
 
 verify remote integrity of the provided atoms (or world)
@@ -1115,6 +1111,10 @@ read the current notice board
 =item B<deptest>
 
 look for unsatisfied dependencies across community repositories
+
+=item B<pkgtest>
+
+verify the integrity of local package files
 
 =item B<depends>
 

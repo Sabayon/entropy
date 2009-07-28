@@ -3397,6 +3397,8 @@ class Server(Singleton, TextInterface):
                     header = "   "
                 )
 
+        my_qa = self.QA()
+
         totalcounter = str(len(available))
         currentcounter = 0
         for idpackage in available:
@@ -3408,7 +3410,7 @@ class Server(Singleton, TextInterface):
             self.updateProgress(
                 "[branch:%s] %s %s" % (
                         brown(orig_branch),
-                        blue(_("checking hash of")),
+                        blue(_("checking status of")),
                         darkgreen(pkgfile),
                 ),
                 importance = 1,
@@ -3422,7 +3424,8 @@ class Server(Singleton, TextInterface):
             pkgpath = os.path.join(self.get_local_packages_directory(repo),
                 orig_branch, pkgfile)
             result = self.entropyTools.compare_md5(pkgpath, storedmd5)
-            if result:
+            qa_fine = my_qa.entropy_package_checks(pkgpath)
+            if result and qa_fine:
                 fine.add(idpackage)
             else:
                 failed.add(idpackage)

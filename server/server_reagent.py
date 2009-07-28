@@ -612,12 +612,6 @@ def database(options):
         return 0
 
     # used by reagent
-    elif (options[0] == "md5check"):
-
-        mypackages = options[1:]
-        return Entropy.verify_local_packages(mypackages, ask = not databaseRequestNoAsk)
-
-    # used by reagent
     elif (options[0] == "md5remote"):
 
         mypackages = options[1:]

@@ -278,7 +278,6 @@ myopts_extended = [
                 (4,'--branch=<branch>',1,_('choose on what branch operating')),
             (3,'create-empty-database',1,_('create an empty repository database in the provided path')),
             (3,'switchbranch <from branch> <to branch>',2,_('switch to the specified branch the provided atoms (or world)')),
-            (3,'md5check',2,_('verify integrity of the provided atoms (or world)')),
             (3,'md5remote',2,_('verify remote integrity of the provided atoms (or world)')),
             (3,'backup',3,_('backup current repository database')),
             (3,'restore',3,_('restore a previously backed-up repository database')),
@@ -338,6 +337,7 @@ myopts_extended = [
         None,
 
         (2,'deptest',2,_('look for unsatisfied dependencies across community repositories')),
+        (2,'pkgtest',2,_('verify the integrity of local package files')),
         (2,'depends',2,_('regenerate the depends table')),
 
     None,
@@ -706,6 +706,16 @@ def main():
                         rc = 1
                     else:
                         server_reagent.Entropy.dependencies_test()
+                        server_reagent.Entropy.close_server_databases()
+
+                elif myopts[0] == "pkgtest":
+                    try:
+                        import server_reagent
+                    except ImportError:
+                        print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                        rc = 1
+                    else:
+                        server_reagent.Entropy.verify_local_packages(["world"], ask = etpUi['ask'])
                         server_reagent.Entropy.close_server_databases()
 
                 elif myopts[0] == "depends":

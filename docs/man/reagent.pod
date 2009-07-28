@@ -187,10 +187,6 @@ create an empty repository database in the provided path
 
 switch to the specified branch the repository
 
-=item B<md5check>
-
-verify integrity of the provided atoms (or world)
-
 =item B<md5remote>
 
 verify remote integrity of the provided atoms (or world)
@@ -318,6 +314,10 @@ look for unsatisfied dependencies
 =item B<libtest>
 
 look for missing libraries
+
+=item B<pkgtest>
+
+verify the integrity of local package files
 
 =item B<depends>
 

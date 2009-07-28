@@ -80,7 +80,6 @@ myopts = [
         (2,'multiremove',3,_('remove the provided injected atoms (all if no atom specified)')),
         (2,'create-empty-database',2,_('create an empty repository database in the provided path')),
         (2,'switchbranch <from branch> <to branch>',3,_('switch to the specified branch the repository')),
-        (2,'md5check',3,_('verify integrity of the provided atoms (or world)')),
         (2,'md5remote',3,_('verify remote integrity of the provided atoms (or world)')),
         (2,'backup',4,_('backup current repository database')),
         (2,'restore',4,_('restore a previously backed-up repository database')),
@@ -110,6 +109,7 @@ myopts = [
     None,
     (1,'deptest',3,_('look for unsatisfied dependencies')),
     (1,'libtest',3,_('look for missing libraries')),
+    (1,'pkgtest',3,_('verify the integrity of local package files')),
     (1,'depends',3,_('regenerate the depends table')),
     (1,'libpaths',2,_('regenerate the library paths table')),
     None,
@@ -190,6 +190,13 @@ elif (options[0] == "repo"):
 elif (options[0] == "deptest"):
     import server_reagent
     server_reagent.Entropy.dependencies_test()
+    server_reagent.Entropy.close_server_databases()
+    rc = 0
+
+elif (options[0] == "pkgtest"):
+
+    import server_reagent
+    server_reagent.Entropy.verify_local_packages(["world"], ask = etpUi['ask'])
     server_reagent.Entropy.close_server_databases()
     rc = 0
 
