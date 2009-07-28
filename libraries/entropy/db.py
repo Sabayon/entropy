@@ -742,6 +742,9 @@ class EntropyRepository:
         f.close()
 
     def isDatabaseTainted(self):
+        """
+        
+        """
         taint_file = self.ServiceInterface.get_local_database_taint_file(
             repo = self.server_repo)
         if os.path.isfile(taint_file):
@@ -2389,11 +2392,15 @@ class EntropyRepository:
         if endswith:
             self.cursor.execute("""
             SELECT baseinfo.idpackage FROM baseinfo,extrainfo 
-            WHERE extrainfo.download LIKE (?)""", ("%"+download_relative_path,))
+            WHERE extrainfo.download LIKE (?) AND
+            baseinfo.idpackage = extrainfo.idpackage
+            """, ("%"+download_relative_path,))
         else:
             self.cursor.execute("""
             SELECT baseinfo.idpackage FROM baseinfo,extrainfo 
-            WHERE extrainfo.download = (?)""", (download_relative_path,))
+            WHERE extrainfo.download = (?) AND
+            baseinfo.idpackage = extrainfo.idpackage
+            """, (download_relative_path,))
         idpackage = self.cursor.fetchone()
         if idpackage: return idpackage[0]
         return -1
