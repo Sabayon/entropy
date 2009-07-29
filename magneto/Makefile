@@ -19,6 +19,7 @@ magneto-loader-install:
 	mkdir -p $(DESTDIR)/usr/bin
 	mkdir -p $(DESTDIR)/usr/share/applications
 	mkdir -p $(DESTDIR)/usr/share/autostart
+	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/magneto
 	install -m644 $(MISCDIR)/*.desktop $(DESTDIR)/usr/share/autostart/.
 	install -m644 $(MISCDIR)/*.desktop $(DESTDIR)/etc/xdg/autostart/.
 	install -m644 $(MISCDIR)/*.desktop $(DESTDIR)/usr/share/applications/.
