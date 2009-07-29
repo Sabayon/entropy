@@ -2,6 +2,11 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
+  0.98.1:
+
+    - UGC + SSL + transfer tests
+    - entropy.db API docs in place
+
   1.0_beta1:
 
     - Documentation + code style cleanup (NLnet Milestone 7)
