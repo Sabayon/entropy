@@ -1,2 +1,4 @@
 #!/bin/bash
-/usr/lib/entropy/magneto/magneto.py "$@"
+pyexec="/usr/bin/python2"
+[[ ! -x "${pyexec}" ]] && pyexec="/usr/bin/python"
+${pyexec} /usr/lib/entropy/magneto/magneto.py "$@"

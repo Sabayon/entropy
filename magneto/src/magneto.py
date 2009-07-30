@@ -1,3 +1,4 @@
+#!/usr/bin/python -O
 """
 
     @author: Fabio Erculiani <lxnay@sabayonlinux.org>
