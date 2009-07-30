@@ -62,7 +62,7 @@ class GladeWindow:
 
         path = filename
         if not os.path.isfile(filename):
-            path = "/usr/lib/entropy/magneto/gtk/%s" % (filename,)
+            path = "/usr/lib/entropy/magneto/magneto/gtk/%s" % (filename,)
         if not os.path.isfile(path):
             path = "magneto/gtk/%s" % (filename,)
 
