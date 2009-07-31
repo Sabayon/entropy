@@ -468,19 +468,31 @@ class MultipleUrlFetcher:
         if isinstance(dsl,int) and self.__url_path_list:
             speed_limit = dsl/len(self.__url_path_list)
 
+        class MyFetcher(self.__url_fetcher):
+
+            def __init__(self, klass, multiple, *args, **kwargs):
+                klass.__init__(self, *args, **kwargs)
+                self.__multiple_fetcher = multiple
+
+            def updateProgress(self):
+                return self.__multiple_fetcher.updateProgress()
+
+            def handle_statistics(self, *args, **kwargs):
+                return self.__multiple_fetcher.handle_statistics(*args,
+                    **kwargs)
+
         for url, path_to_save in self.__url_path_list:
             th_id += 1
-            downloader = self.__url_fetcher(url, path_to_save,
+            downloader = MyFetcher(self.__url_fetcher, self, url, path_to_save,
                 checksum = self.__checksum, show_speed = self.__show_speed,
-                resume = self.__resume, abort_check_func = self.__abort_check_func,
+                resume = self.__resume,
+                abort_check_func = self.__abort_check_func,
                 disallow_redirect = self.__disallow_redirect,
                 thread_stop_func = self.__handle_threads_stop,
                 speed_limit = speed_limit,
                 OutputInterface = self.__Output
             )
             downloader.set_id(th_id)
-            downloader.updateProgress = self.updateProgress
-            downloader.handle_statistics = self.handle_statistics
 
             def do_download(ds, th_id, downloader):
                 ds[th_id] = downloader.download()
