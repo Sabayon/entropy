@@ -1,0 +1,4 @@
+#!/bin/sh
+KERNEL_PACKAGE="sys-kernel/"
+[[ -z "${1}" ]] && echo "usage: $(basename ${0}) <entropy-kernel-tag>" && exit 1
+reagent query tags "${1}" -q | grep -v ${KERNEL_PACKAGE} | cut -d# -f 1 | sed 's/^/~/g' | xargs emerge

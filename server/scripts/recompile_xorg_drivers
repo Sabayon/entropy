@@ -1,0 +1,2 @@
+#!/bin/sh
+reagent query search x11-drivers/xf86-input x11-drivers/xf86-video -q | cut -d# -f 1 | sed 's/x11/=x11/' | xargs emerge
