@@ -10,7 +10,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   0.99:
 
     - entropy.client + entropy.spm API docs in place
-    - packages.db.branch_warning support
     - packages.db.keywords support
 
   1.0_beta1:
