@@ -335,7 +335,7 @@ class QAInterface:
         return taint
 
     def test_shared_objects(self, dbconn, broken_symbols = False,
-        task_bombing_func = None):
+        task_bombing_func = None, self_dir_check = True):
 
         """
         Scan system looking for broken shared object ELF library dependencies.
@@ -504,8 +504,10 @@ class QAInterface:
                     header = "  "
                 )
 
+            real_exec_path = etpConst['systemroot'] + executable
+
             myelfs = self.entropyTools.read_elf_dynamic_libraries(
-                etpConst['systemroot'] + executable)
+                real_exec_path)
 
             def mymf2(mylib):
                 return not self.entropyTools.resolve_dynamic_library(mylib,
@@ -523,8 +525,22 @@ class QAInterface:
                         if reg_lib.match(mylib):
                             mylib_matched = True
                             break
+
                     if mylib_matched: # filter out
                         mylib_filter.add(mylib)
+
+                    elif self_dir_check:
+                        # check inside the same directory of the failing ELF
+                        # obviously, we're looking for another ELF object
+                        my_real_exec_dir = os.path.dirname(real_exec_path)
+                        mylib_guess = os.path.join(my_real_exec_dir, mylib)
+                        if os.access(mylib_guess, os.R_OK | os.F_OK):
+                            if self.entropyTools.is_elf_file(mylib_guess):
+                                # we have found the missing library,
+                                # which wasn't in LDPATH, booooo @ package
+                                # developers !! boooo!
+                                mylib_filter.add(mylib)
+
                 mylibs -= mylib_filter
 
 
