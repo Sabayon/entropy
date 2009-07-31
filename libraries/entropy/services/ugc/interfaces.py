@@ -1054,6 +1054,7 @@ class Server(RemoteDatabase):
         LEFT JOIN entropy_docs as ed ON entropy_base.idkey = ed.idkey
         LEFT JOIN entropy_user_scores on entropy_docs.userid = entropy_user_scores.userid
         LEFT JOIN entropy_downloads on entropy_base.idkey = entropy_downloads.idkey
+	LEFT JOIN entropy_docs_keywords on entropy_docs_keywords.iddoc = entropy_docs.iddoc
         WHERE 
             entropy_docs_keywords.`keyword` LIKE %s AND 
             entropy_docs.iddoctype """+iddoctypes_str+"""
