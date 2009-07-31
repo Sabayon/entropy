@@ -743,7 +743,11 @@ class EntropyRepository:
 
     def isDatabaseTainted(self):
         """
-        
+        Server-side function used to determine whether repository database
+        has been modified.
+
+        @return: taint status
+        @rtype: bool
         """
         taint_file = self.ServiceInterface.get_local_database_taint_file(
             repo = self.server_repo)
@@ -752,6 +756,10 @@ class EntropyRepository:
         return False
 
     def initializeDatabase(self):
+        """
+        WARNING: it will erase your database.
+        This method (re)initialize the repository, dropping all its content.
+        """
         my = self.Schema()
         for table in self.listAllTables():
             try:
@@ -765,117 +773,6 @@ class EntropyRepository:
         self.setCacheSize(8192)
         self.setDefaultCacheSize(8192)
         self.commitChanges()
-
-    # check for /usr/portage/profiles/updates changes
-    def serverUpdatePackagesData(self):
-
-        etpConst['server_treeupdatescalled'].add(self.server_repo)
-
-        repo_updates_file = self.ServiceInterface.get_local_database_treeupdates_file(self.server_repo)
-        doRescan = False
-
-        stored_digest = self.retrieveRepositoryUpdatesDigest(self.server_repo)
-        if stored_digest == -1:
-            doRescan = True
-
-        # check portage files for changes if doRescan is still false
-        portage_dirs_digest = "0"
-        if not doRescan:
-
-            treeupdates_dict = self.ServiceInterface.repository_treeupdate_digests
-
-            if treeupdates_dict.has_key(self.server_repo):
-                portage_dirs_digest = treeupdates_dict.get(self.server_repo)
-            else:
-
-                spm = self.ServiceInterface.SpmService
-                # grab portdir
-                updates_dir = etpConst['systemroot'] + \
-                    spm.get_spm_setting("PORTDIR") + "/profiles/updates"
-                if os.path.isdir(updates_dir):
-                    # get checksum
-                    mdigest = self.entropyTools.md5sum_directory(updates_dir,
-                        get_obj = True)
-                    # also checksum etpConst['etpdatabaseupdatefile']
-                    if os.path.isfile(repo_updates_file):
-                        f = open(repo_updates_file)
-                        block = f.read(1024)
-                        while block:
-                            mdigest.update(block)
-                            block = f.read(1024)
-                        f.close()
-                    portage_dirs_digest = mdigest.hexdigest()
-                    treeupdates_dict[self.server_repo] = portage_dirs_digest
-                del updates_dir
-
-        if doRescan or (str(stored_digest) != str(portage_dirs_digest)):
-
-            # force parameters
-            self.readOnly = False
-            self.noUpload = True
-
-            # reset database tables
-            self.clearTreeupdatesEntries(self.server_repo)
-
-            spm = self.ServiceInterface.SpmService
-            updates_dir = etpConst['systemroot'] + \
-                spm.get_spm_setting("PORTDIR") + "/profiles/updates"
-            update_files = self.entropyTools.sort_update_files(
-                os.listdir(updates_dir))
-            update_files = [os.path.join(updates_dir, x) for x in update_files]
-            # now load actions from files
-            update_actions = []
-            for update_file in update_files:
-                f = open(update_file, "r")
-                mycontent = f.readlines()
-                f.close()
-                lines = [x.strip() for x in mycontent if x.strip()]
-                update_actions.extend(lines)
-
-            # add entropy packages.db.repo_updates content
-            if os.path.isfile(repo_updates_file):
-                f = open(repo_updates_file, "r")
-                mycontent = f.readlines()
-                f.close()
-                lines = [x.strip() for x in mycontent if x.strip() and \
-                    not x.strip().startswith("#")]
-                update_actions.extend(lines)
-            # now filter the required actions
-            update_actions = self.filterTreeUpdatesActions(update_actions)
-            if update_actions:
-
-                mytxt = "%s: %s. %s %s" % (
-                    bold(_("ATTENTION")),
-                    red(_("forcing package updates")),
-                    red(_("Syncing with")),
-                    blue(updates_dir),
-                )
-                self.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "info",
-                    header = brown(" * ")
-                )
-                # lock database
-                if self.lockRemote:
-                    self.ServiceInterface.do_server_repository_sync_lock(
-                        self.server_repo, self.noUpload)
-                # now run queue
-                try:
-                    self.runTreeUpdatesActions(update_actions)
-                except:
-                    # destroy digest
-                    self.setRepositoryUpdatesDigest(self.server_repo, "-1")
-                    raise
-
-                # store new actions
-                self.addRepositoryUpdatesActions(
-                    self.server_repo, update_actions, self.db_branch)
-
-            # store new digest into database
-            self.setRepositoryUpdatesDigest(
-                self.server_repo, portage_dirs_digest)
-            self.commitChanges()
 
     def clientUpdatePackagesData(self, clientDbconn, force = False):
 

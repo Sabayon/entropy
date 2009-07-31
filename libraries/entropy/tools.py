@@ -523,14 +523,12 @@ def sha1(filepath):
     readfile.close()
     return m.hexdigest()
 
-def md5sum_directory(directory, get_obj = False):
+def md5sum_directory(directory):
     if not os.path.isdir(directory):
         raise DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
     myfiles = os.listdir(directory)
     m = hashlib.md5()
     if not myfiles:
-        if get_obj:
-            return m
         return "0" # no files means 0
 
     for currentdir,subdirs,files in os.walk(directory):
@@ -542,9 +540,26 @@ def md5sum_directory(directory, get_obj = False):
                 m.update(block)
                 block = readfile.read(1024)
             readfile.close()
-    if get_obj:
-        return m
     return m.hexdigest()
+
+def md5obj_directory(directory):
+    if not os.path.isdir(directory):
+        raise DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
+    myfiles = os.listdir(directory)
+    m = hashlib.md5()
+    if not myfiles:
+        return m
+
+    for currentdir,subdirs,files in os.walk(directory):
+        for myfile in files:
+            myfile = os.path.join(currentdir,myfile)
+            readfile = open(myfile)
+            block = readfile.read(1024)
+            while block:
+                m.update(block)
+                block = readfile.read(1024)
+            readfile.close()
+    return m
 
 # kindly stolen from Anaconda
 # Copyright 1999-2008 Red Hat, Inc. <iutil.py>
