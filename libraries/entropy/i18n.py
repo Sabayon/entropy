@@ -32,7 +32,7 @@ try:
     gettext.textdomain('entropy')
     gettext.install('entropy', unicode=True)
     # thanks weirdness!
-    _ = _
+    _ = gettext.gettext
 except (ImportError,OSError,):
     def _(raw_string):
         """
