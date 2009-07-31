@@ -1710,13 +1710,25 @@ class Package:
 
     def install_step(self):
         self.error_on_not_prepared()
-        mytxt = "%s: %s" % (blue(_("Installing package")),red(self.infoDict['atom']),)
+        mytxt = "%s: %s" % (
+            blue(_("Installing package")),
+            red(self.infoDict['atom']),
+        )
         self.Entropy.updateProgress(
             mytxt,
             importance = 1,
             type = "info",
             header = red("   ## ")
         )
+        if self.infoDict.get('description'):
+            mytxt = "[%s]" % (purple(self.infoDict.get('description')),)
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = red("   ## ")
+            )
+
         rc = self.__install_package()
         if rc != 0:
             mytxt = "%s. %s. %s: %s" % (
@@ -2177,6 +2189,12 @@ class Package:
         self.infoDict['signatures'] = dbconn.retrieveSignatures(idpackage)
         self.infoDict['accept_license'] = dbconn.retrieveLicensedataKeys(idpackage)
         self.infoDict['conflicts'] = self.Entropy.get_match_conflicts(self.matched_atom)
+        description = dbconn.retrieveDescription(idpackage)
+        if description:
+            if len(description) > 74:
+                description = description[:74].strip()
+                description += "..."
+        self.infoDict['description'] = description
 
         # fill action queue
         self.infoDict['removeidpackage'] = -1
