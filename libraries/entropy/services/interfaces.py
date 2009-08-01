@@ -400,6 +400,13 @@ class SocketHost:
                 client_address, server)
             self.__data_counter = None
 
+        def _ssl_poll(self, filter_type, caller_name):
+            poller = self.select.poll()
+            poller.register(self.request, filter_type)
+            res = poller.poll(self.request.gettimeout() * 1000)
+            if len(res) != 1:
+                raise TimeoutError("Connection timed out on %s" % caller_name)
+
         def data_receiver(self):
 
             if self.timed_out:
