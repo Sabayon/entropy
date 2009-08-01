@@ -23,6 +23,7 @@
 from __future__ import with_statement
 import os
 import sys
+import select
 import time
 import subprocess
 import shutil
@@ -1979,6 +1980,13 @@ class Client:
             return True
         return False
 
+    def _ssl_poll(self, filter_type, caller_name):
+        poller = select.poll()
+        poller.register(self.sock_conn, filter_type)
+        res = poller.poll(self.sock_conn.gettimeout() * 1000)
+        if len(res) != 1:
+            raise TimeoutError("Connection timed out on %s" % caller_name)
+
     def receive(self):
 
         self.check_socket_connection()
@@ -2001,7 +2009,6 @@ class Client:
             return data
 
         myeos = self.answers['eos']
-        ssl_error_loop_count = 0
         while 1:
 
             try:
@@ -2106,23 +2113,10 @@ class Client:
                         header = self.output_header
                     )
                 return None
-            except (self.SSL_exceptions['WantReadError'],self.SSL_exceptions['WantX509LookupError'],), e:
-                ssl_error_loop_count += 1
-                if ssl_error_loop_count > 3000000:
-                    if not self.quiet:
-                        mytxt = _("too many WantReadError error while receiving data")
-                        self.Output.updateProgress(
-                            "[%s:%s] %s: %s" % (
-                                    brown(self.hostname),
-                                    bold(str(self.hostport)),
-                                    blue(mytxt),
-                                    e,
-                            ),
-                            importance = 1,
-                            type = "warning",
-                            header = self.output_header
-                        )
-                    return None
+            except (self.SSL_exceptions['WantReadError'],
+                self.SSL_exceptions['WantX509LookupError'],
+                self.SSL_exceptions['WantWriteError'],):
+                self._ssl_poll(select.POLLIN, 'read')
                 continue
             except self.SSL_exceptions['ZeroReturnError']:
                 break
