@@ -526,10 +526,10 @@ class SocketHost:
                     )
                     return True
                 except (self.ssl_exceptions['WantReadError'], self.ssl_exceptions['WantX509LookupError'],):
-                    self._ssl_poll(self.select.POLLIN, 'write')
+                    self._ssl_poll(self.select.POLLIN, 'read')
                     return False
                 except self.ssl_exceptions['WantWriteError']:
-                    self._ssl_poll(self.select.POLLIN, 'write')
+                    self._ssl_poll(self.select.POLLOUT, 'read')
                     return False
                 except self.ssl_exceptions['ZeroReturnError']:
                     return True
