@@ -115,6 +115,9 @@ class LibraryNotFound(EntropyException):
 class SSLError(EntropyException):
     """SSL support is not available"""
 
+class TimeoutError(EntropyException):
+    """Generic Timeout Error exception"""
+
 class EntropyPackageException(EntropyException):
     """Malformed or missing package data"""
 
