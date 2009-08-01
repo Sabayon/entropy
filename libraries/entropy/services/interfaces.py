@@ -399,6 +399,7 @@ class SocketHost:
             self.SocketServer.BaseRequestHandler.__init__(self, request,
                 client_address, server)
             self.__data_counter = None
+            self.__DEBUG = False
 
         def data_receiver(self):
 
@@ -418,13 +419,14 @@ class SocketHost:
                 # for ValueError exception trapping:
                 data = None
 
-                self.server.processor.HostInterface.updateProgress(
-                    '[from: %s] request arrived :: counter: %s | buf_data: %s' % (
-                        self.client_address,
-                        self.__data_counter,
-                        len(self.__buffered_data),
+                if self.__DEBUG:
+                    self.server.processor.HostInterface.updateProgress(
+                        '[from: %s] request arrived :: counter: %s | buf_data: %s' % (
+                            self.client_address,
+                            self.__data_counter,
+                            len(self.__buffered_data),
+                        )
                     )
-                )
 
                 try:
 
@@ -635,18 +637,20 @@ class SocketHost:
             while 1:
 
                 try:
-                    self.server.processor.HostInterface.updateProgress(
-                        '[from: %s] calling data_receiver' % (
-                            self.client_address,
+                    if self.__DEBUG:
+                        self.server.processor.HostInterface.updateProgress(
+                            '[from: %s] calling data_receiver' % (
+                                self.client_address,
+                            )
                         )
-                    )
                     dobreak = self.data_receiver()
-                    self.server.processor.HostInterface.updateProgress(
-                        '[from: %s] quitting data_receiver :: dobreak: %s' % (
-                            self.client_address,
-                            dobreak,
+                    if self.__DEBUG:
+                        self.server.processor.HostInterface.updateProgress(
+                            '[from: %s] quitting data_receiver :: dobreak: %s' % (
+                                self.client_address,
+                                dobreak,
+                            )
                         )
-                    )
                     if dobreak: break
                 except Exception, e:
                     self.server.processor.HostInterface.updateProgress(
