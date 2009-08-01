@@ -518,7 +518,9 @@ class SocketHost:
                         )
                     )
                     return True
-                except (self.ssl_exceptions['WantReadError'], self.ssl_exceptions['WantX509LookupError'],):
+                except self.ssl_exceptions['WantX509LookupError']:
+                    return False
+                except self.ssl_exceptions['WantReadError']:
                     self.server.processor.HostInterface._ssl_poll(
                         self.request, select.POLLIN, 'read')
                     return False
