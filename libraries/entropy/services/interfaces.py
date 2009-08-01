@@ -428,6 +428,14 @@ class SocketHost:
 
                 try:
 
+                    if self.ssl and hasattr(self.request, 'setblocking'):
+                        # set SSL socket in blocking mode
+                        # this fixes bugs related to data stream flooding
+                        # with SSL - pyOpenSSL, probably because handshake
+                        # and WantRead/WantWrite bullshit is handled
+                        # automatically
+                        self.request.setblocking(True)
+
                     data = self.request.recv(1024)
                     if self.ssl:
                         while self.request.pending():
