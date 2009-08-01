@@ -1925,10 +1925,11 @@ class Client:
                     if sent == len(mydata):
                         break
                     mydata = mydata[sent:]
-                except (self.SSL_exceptions['WantWriteError'],
-                    self.SSL_exceptions['WantReadError'],):
-                    time.sleep(0.2)
-                    continue
+
+                except self.SSL_exceptions['WantWriteError']:
+                    self._ssl_poll(select.POLLOUT, 'write')
+                except self.SSL_exceptions['WantReadError']:
+                    self._ssl_poll(select.POLLIN, 'write')
                 except UnicodeEncodeError, e:
                     if encode_done:
                         raise
@@ -2113,11 +2114,12 @@ class Client:
                         header = self.output_header
                     )
                 return None
-            except (self.SSL_exceptions['WantReadError'],
-                self.SSL_exceptions['WantX509LookupError'],
-                self.SSL_exceptions['WantWriteError'],):
-                self._ssl_poll(select.POLLIN, 'read')
+            except self.SSL_exceptions['WantX509LookupError']:
                 continue
+            except self.SSL_exceptions['WantReadError']:
+                self._ssl_poll(select.POLLIN, 'read')
+            except self.SSL_exceptions['WantWriteError']:
+                self._ssl_poll(select.POLLOUT, 'read')
             except self.SSL_exceptions['ZeroReturnError']:
                 break
             except self.SSL_exceptions['SysCallError'], e:
@@ -2167,6 +2169,10 @@ class Client:
                 self.sock_conn = self.SSL['m'].Connection(self.context, self.real_sock_conn)
             else:
                 self.sock_conn = self.real_sock_conn
+            # make sure that SSL socket is in BLOCKING mode
+            # this is what we want also to avoid issues with data stream
+            # flooding
+            self.real_sock_conn.setblocking(True)
         else:
             self.sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
             if hasattr(self.sock_conn,'settimeout'):
