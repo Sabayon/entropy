@@ -22,6 +22,7 @@
 
 from __future__ import with_statement
 import os
+import select
 import shutil
 import time
 from entropy.const import etpConst, ETP_LOGLEVEL_NORMAL, ETP_LOGPRI_INFO, \
@@ -191,7 +192,6 @@ class SocketHost:
 
         import entropy.tools as entropyTools
         import socket as socket_mod
-        import select
         import SocketServer
         # This means the main server will not do the equivalent of a
         # pthread_join() on the new threads.  With this set, Ctrl-C will
@@ -351,7 +351,7 @@ class SocketHost:
 
         def serve_forever(self):
             while self.alive:
-                #r,w,e = self.select.select([self.socket], [], [], 1)
+                #r,w,e = select.select([self.socket], [], [], 1)
                 #if r:
                 self.handle_request()
 
@@ -400,20 +400,13 @@ class SocketHost:
                 client_address, server)
             self.__data_counter = None
 
-        def _ssl_poll(self, filter_type, caller_name):
-            poller = self.select.poll()
-            poller.register(self.request, filter_type)
-            res = poller.poll(self.request.gettimeout() * 1000)
-            if len(res) != 1:
-                raise TimeoutError("Connection timed out on %s" % caller_name)
-
         def data_receiver(self):
 
             if self.timed_out:
                 return True
             self.timed_out = True
             try:
-                ready_to_read, ready_to_write, in_error = self.select.select(
+                ready_to_read, ready_to_write, in_error = select.select(
                     [self.request], [], [], self.default_timeout)
             except KeyboardInterrupt:
                 self.timed_out = True
@@ -526,10 +519,12 @@ class SocketHost:
                     )
                     return True
                 except (self.ssl_exceptions['WantReadError'], self.ssl_exceptions['WantX509LookupError'],):
-                    self._ssl_poll(self.select.POLLIN, 'read')
+                    self.server.processor.HostInterface._ssl_poll(
+                        self.request, select.POLLIN, 'read')
                     return False
                 except self.ssl_exceptions['WantWriteError']:
-                    self._ssl_poll(self.select.POLLOUT, 'read')
+                    self.server.processor.HostInterface._ssl_poll(
+                        self.request, select.POLLOUT, 'read')
                     return False
                 except self.ssl_exceptions['ZeroReturnError']:
                     return True
@@ -1922,6 +1917,13 @@ class SocketHost:
             if session in self.sessions:
                 return self.sessions[session].get('rc')
 
+    def _ssl_poll(self, sock_obj, filter_type, caller_name):
+        poller = select.poll()
+        poller.register(sock_obj, filter_type)
+        res = poller.poll(sock_obj.gettimeout() * 1000)
+        if len(res) != 1:
+            raise TimeoutError("Connection timed out on %s" % caller_name)
+
     def transmit(self, channel, data):
         if self.SSL:
             mydata = self.append_eos(data)
@@ -1932,9 +1934,10 @@ class SocketHost:
                     if sent == len(mydata):
                         break
                     mydata = mydata[sent:]
-                except (self.SSL_exceptions['WantWriteError'],self.SSL_exceptions['WantReadError']):
-                    time.sleep(0.2)
-                    continue
+                except self.SSL_exceptions['WantWriteError']:
+                    self._ssl_poll(channel, select.POLLOUT, 'write')
+                except self.SSL_exceptions['WantReadError']:
+                    self._ssl_poll(channel, select.POLLIN, 'write')
                 except UnicodeEncodeError:
                     if encode_done:
                         raise
