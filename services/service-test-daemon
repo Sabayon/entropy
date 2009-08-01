@@ -12,6 +12,8 @@ do_port = 1027
 
 from entropy.const import etpConst
 etpConst['socket_service']['session_ttl'] = 300
+# listen on all the avail. interfaces
+etpConst['socket_service']['hostname'] = "*"
 from entropy.core import SystemSettings
 SysSettings = SystemSettings()
 from entropy.tools import get_year
