@@ -391,6 +391,7 @@ class SocketHost:
         def __init__(self, request, client_address, server):
 
             # pre-init attribues
+            self.__DEBUG = False
             self.__buffered_data = None
             self.__inst_token = self.entropyTools.get_random_number()
             self.server = None
@@ -399,7 +400,6 @@ class SocketHost:
             self.SocketServer.BaseRequestHandler.__init__(self, request,
                 client_address, server)
             self.__data_counter = None
-            self.__DEBUG = False
 
         def data_receiver(self):
 
