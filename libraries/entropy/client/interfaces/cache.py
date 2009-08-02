@@ -31,23 +31,17 @@ class CacheMixin:
     def validate_repositories_cache(self):
         # is the list of repos changed?
         cached = self.Cacher.pop(etpCache['repolist'])
-        if cached == None:
+        if cached != self.SystemSettings['repositories']['order']:
             # invalidate matching cache
             try:
                 self.repository_move_clear_cache()
             except IOError:
                 pass
-        elif isinstance(cached,tuple):
-            difflist = [x for x in cached if x not in \
-                self.SystemSettings['repositories']['order']]
-            for repoid in difflist:
-                try: self.repository_move_clear_cache(repoid)
-                except IOError: pass
-        self.store_repository_list_cache()
+            self.store_repository_list_cache()
 
     def store_repository_list_cache(self):
         self.Cacher.push(etpCache['repolist'],
-            tuple(self.SystemSettings['repositories']['order']),
+            self.SystemSettings['repositories']['order'],
             async = False)
 
     def generate_cache(self, depcache = True, configcache = True,
