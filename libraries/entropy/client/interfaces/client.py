@@ -600,6 +600,97 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self.closeAllSecurity()
         self.closeAllQA()
 
+    def repository_packages_spm_sync(self, repository_identifier, repo_db,
+        force = False):
+        """
+        Service method used to sync package names with Source Package Manager
+        via metadata stored in Repository dbs collected at server-time.
+        Source Package Manager can change package names, categories or slot
+        and Entropy repositories must be kept in sync.
+
+        In other words, it checks for /usr/portage/profiles/updates changes,
+        of course indirectly, since there is no way entropy.client can directly
+        depend on Portage.
+
+        @param repository_identifier: repository identifier which repo_db
+            parameter is bound
+        @type repository_identifier: string
+        @param repo_db: repository database instance
+        @type repo_db: entropy.db.EntropyRepository
+        @return: bool stating if changes have been made
+        @rtype: bool
+        """
+        if not self.clientDbconn:
+            # nothing to do if client db is not availabe
+            return False
+
+        etpConst['client_treeupdatescalled'].add(repository_identifier)
+
+        doRescan = False
+        shell_rescan = os.getenv("ETP_TREEUPDATES_RESCAN")
+        if shell_rescan:
+            doRescan = True
+
+        # check database digest
+        stored_digest = repo_db.retrieveRepositoryUpdatesDigest(
+            repository_identifier)
+        if stored_digest == -1:
+            doRescan = True
+
+        # check stored value in client database
+        client_digest = "0"
+        if not doRescan:
+            client_digest = self.clientDbconn.retrieveRepositoryUpdatesDigest(
+                repository_identifier)
+
+        if doRescan or (str(stored_digest) != str(client_digest)) or force:
+
+            # reset database tables
+            self.clientDbconn.clearTreeupdatesEntries(repository_identifier)
+
+            # load updates
+            update_actions = repo_db.retrieveTreeUpdatesActions(
+                repository_identifier)
+            # now filter the required actions
+            update_actions = self.clientDbconn.filterTreeUpdatesActions(
+                update_actions)
+
+            if update_actions:
+
+                mytxt = "%s: %s." % (
+                    bold(_("ATTENTION")),
+                    red(_("forcing packages metadata update")),
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "info",
+                    header = darkred(" * ")
+                )
+                mytxt = "%s %s." % (
+                    red(_("Updating system database using repository")),
+                    blue(repository_identifier),
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "info",
+                    header = darkred(" * ")
+                )
+                # run stuff
+                self.clientDbconn.runTreeUpdatesActions(update_actions)
+
+            # store new digest into database
+            self.clientDbconn.setRepositoryUpdatesDigest(repository_identifier,
+                stored_digest)
+            # store new actions
+            self.clientDbconn.addRepositoryUpdatesActions(etpConst['clientdbid'],
+                update_actions, self.SystemSettings['repositories']['branch'])
+            self.clientDbconn.commitChanges()
+            # clear client cache
+            self.clientDbconn.clearCache()
+            return True
+
     def is_destroyed(self):
         return self.__instance_destroyed
 

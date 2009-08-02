@@ -1152,7 +1152,7 @@ class Repository:
                 self.entropyTools.is_root(): # only as root due to Portage
                 for repo in self.reponames:
                     dbc = self.Entropy.open_repository(repo)
-                    dbc.clientUpdatePackagesData(self.Entropy.clientDbconn)
+                    self.Entropy.repository_packages_spm_sync(repo, dbc)
                 self.Entropy.close_all_repositories()
 
         if self.syncErrors:

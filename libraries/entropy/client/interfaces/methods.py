@@ -186,11 +186,10 @@ class RepositoryMixin:
             (self.entropyTools.is_root()) and \
             (not repoid.endswith(etpConst['packagesext'])):
                 # only as root due to Portage
-                updated = False
                 try:
-                    updated = conn.clientUpdatePackagesData(self.clientDbconn)
+                    updated = self.repository_packages_spm_sync(repoid, conn)
                 except (self.dbapi2.OperationalError, self.dbapi2.DatabaseError):
-                    pass
+                    updated = False
                 if updated:
                     self.clear_dump_cache(etpCache['world_update'])
                     self.clear_dump_cache(etpCache['critical_update'])
