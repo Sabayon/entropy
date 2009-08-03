@@ -78,8 +78,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertNotEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
 
         # now test multimatch
-        idpackage, rev, new_data = self.test_db.addPackage(db_data,
-            do_remove = False)
+        idpackage, rev, new_data = self.test_db.addPackage(db_data)
         results, rc = self.test_db.atomMatch(pkg_name, multiMatch = True)
         self.assertEqual(2, len(results))
         self.assert_(type(results) is set)

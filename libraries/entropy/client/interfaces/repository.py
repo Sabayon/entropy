@@ -853,8 +853,8 @@ class Repository:
             try:
                 mydbconn.addPackage(
                     mydata, revision = mydata['revision'],
-                    idpackage = idpackage, do_remove = False,
-                    do_commit = False, formatted_content = True
+                    idpackage = idpackage, do_commit = False,
+                    formatted_content = True
                 )
             except (self.dbapi2.Error,):
                 self.Entropy.updateProgress(

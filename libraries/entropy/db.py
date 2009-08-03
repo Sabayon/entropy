@@ -30,6 +30,8 @@
     "packages.db.revision" file. Only server-side (or community) repositories
     are subject to this automation (revision file update on commit).
 
+    @todo: migrate to "_" (underscore) convention
+
 """
 
 from __future__ import with_statement
@@ -1134,7 +1136,14 @@ class EntropyRepository:
         return quickpkg_queue
 
     def doTreeupdatesSpmCleanup(self, spm_moves):
-        # FIXME move from here to entropy.server / entropy.client
+        """
+        Erase dead Source Package Manager db entries.
+
+        @todo: make more Portage independent (create proper entropy.spm
+            methods for dealing with this)
+        @param spm_moves: list of raw package name/slot update actions.
+        @type spm_moves: list
+        """
         # now erase Spm entries if necessary
         for action in spm_moves:
             command = action.split()
@@ -1184,10 +1193,92 @@ class EntropyRepository:
 
     def handlePackage(self, etpData, forcedRevision = -1,
         formattedContent = False):
+        """
+        Update or add a package to repository automatically handling
+        its scope and thus removal of previous versions if requested by
+        the given metadata.
+        etpData is a dict() containing all the information bound to
+        a package:
+
+            {
+                'signatures':
+                    {
+                        'sha256': u'zzz',
+                        'sha1': u'zzz',
+                        'sha512': u'zzz'
+                 },
+                'slot': u'0',
+                'datecreation': u'1247681752.93',
+                'description': u'Standard (de)compression library',
+                'useflags': set([u'kernel_linux']),
+                'eclasses': set([u'multilib']),
+                'config_protect_mask': u'string string', 'etpapi': 3,
+                'mirrorlinks': [],
+                'cxxflags': u'-Os -march=x86-64 -pipe',
+                'injected': False,
+                'licensedata': {u'ZLIB': u"lictext"},
+                'dependencies': {},
+                'chost': u'x86_64-pc-linux-gnu',
+                'config_protect': u'string string',
+                'download': u'packages/amd64/4/sys-libs:zlib-1.2.3-r1.tbz2',
+                'conflicts': set([]),
+                'digest': u'fd54248ae060c287b1ec939de3e55332',
+                'size': u'136302',
+                'category': u'sys-libs',
+                'license': u'ZLIB',
+                'needed_paths': {},
+                'sources': set(),
+                'name': u'zlib',
+                'versiontag': u'',
+                'changelog': u"text",
+                'provide': set([]),
+                'trigger': u'text',
+                'counter': 22331,
+                'messages': [],
+                'branch': u'4',
+                'content': {},
+                'needed': [(u'libc.so.6', 2)],
+                'version': u'1.2.3-r1',
+                'keywords': set(),
+                'cflags': u'-Os -march=x86-64 -pipe',
+                'disksize': 932206, 'spm_phases': None,
+                'homepage': u'http://www.zlib.net/',
+                'systempackage': True,
+                'revision': 0
+            }
+
+        @param etpData: Entropy package metadata dict
+        @type etpData: dict
+        @keyword forcedRevision: force a specific package revision
+        @type forcedRevision: int
+        @keyword formattedContent: tells whether content metadata is already
+            formatted for insertion
+        @type formattedContent: bool
+
+        @return: tuple composed by
+            - idpackage: unique Entropy Repository package identifier
+            - revision: final package revision selected
+            - etpData: new Entropy package metadata dict
+        @rtype: tuple
+        """
+
+        def remove_conflicting_packages(pkgdata):
+            manual_deps = set()
+            removelist = self.retrieve_packages_to_remove(
+                pkgdata['name'], pkgdata['category'],
+                pkgdata['slot'], pkgdata['injected']
+            )
+            for r_idpackage in removelist:
+                manual_deps |= self.retrieveManualDependencies(r_idpackage)
+                self.removePackage(r_idpackage, do_cleanup = False,
+                    do_commit = False)
+            return manual_deps
 
         if self.clientDatabase:
+            man_deps = remove_conflicting_packages(etpData)
             return self.addPackage(etpData, revision = forcedRevision,
-                formatted_content = formattedContent)
+                formatted_content = formattedContent,
+                manual_dependencies = man_deps)
 
         # build atom string, server side
         pkgatom = self.entropyTools.create_package_atom_string(
@@ -1195,8 +1286,10 @@ class EntropyRepository:
             etpData['versiontag'])
         foundid = self.isPackageAvailable(pkgatom)
         if foundid < 0: # same atom doesn't exist in any branch
+            man_deps = remove_conflicting_packages(etpData)
             return self.addPackage(etpData, revision = forcedRevision,
-                formatted_content = formattedContent)
+                formatted_content = formattedContent,
+                manual_dependencies = man_deps)
 
         idpackage = self.getIDPackage(pkgatom)
         curRevision = forcedRevision
@@ -1211,13 +1304,37 @@ class EntropyRepository:
             self.removePackage(idpackage)
             if forcedRevision == -1: curRevision += 1
 
+        man_deps = remove_conflicting_packages(etpData)
         # add the new one
         return self.addPackage(etpData, revision = curRevision,
-            formatted_content = formattedContent)
+            formatted_content = formattedContent,
+            manual_dependencies = man_deps)
 
     def retrieve_packages_to_remove(self, name, category, slot, injected):
+        """
+        Return a list of packages that would be removed given name, category,
+        slot and injection status.
+
+        @param name: package name
+        @type name: string
+        @param category: package category
+        @type category: string
+        @param slot: package slot
+        @type slot: string
+        @param injected: injection status (packages marked as injected are
+            always considered not automatically removable)
+        @type injected: bool
+
+        @return: list (set) of removable packages (idpackages)
+        @rtype: set
+        """
 
         removelist = set()
+        if injected:
+            # read: if package has been injected, we'll skip
+            # the removal of packages in the same slot,
+            # usually used server side btw
+            return removelist
 
         # support for expiration-based packages handling, also internally
         # called Fat Scope.
@@ -1249,25 +1366,29 @@ class EntropyRepository:
                     searchsimilar = [x for x in searchsimilar if x[1] \
                         not in idpkgs]
 
-        if not injected:
-            # read: if package has been injected, we'll skip
-            # the removal of packages in the same slot,
-            # usually used server side btw
-            for atom, idpackage in searchsimilar:
-                # get the package slot
-                myslot = self.retrieveSlot(idpackage)
-                # we merely ignore packages with
-                # negative counters, since they're the injected ones
-                if self.isInjected(idpackage): continue
-                if slot == myslot:
-                    # remove!
-                    removelist.add(idpackage)
+        for atom, idpackage in searchsimilar:
+            # get the package slot
+            myslot = self.retrieveSlot(idpackage)
+            # we merely ignore packages with
+            # negative counters, since they're the injected ones
+            if self.isInjected(idpackage): continue
+            if slot == myslot:
+                # remove!
+                removelist.add(idpackage)
 
         return removelist
 
     def addPackage(self, etpData, revision = -1, idpackage = None,
-        do_remove = True, do_commit = True, formatted_content = False):
+        do_commit = True, formatted_content = False,
+        manual_dependencies = None):
+        """
+        Add package to this Entropy repository. The main difference between
+        handlePackage and this is that from here, no packages with conflicting
+        scope are going to be removed.
+        For more information about etpData layout, please see
+        I{handlePackage()}.
 
+        """
         if revision == -1:
             try:
                 revision = int(etpData['revision'])
@@ -1278,17 +1399,8 @@ class EntropyRepository:
             etpData['revision'] = revision
 
         manual_deps = set()
-        if do_remove:
-            removelist = self.retrieve_packages_to_remove(
-                            etpData['name'],
-                            etpData['category'],
-                            etpData['slot'],
-                            etpData['injected']
-            )
-            for r_idpackage in removelist:
-                manual_deps |= self.retrieveManualDependencies(r_idpackage)
-                self.removePackage(r_idpackage, do_cleanup = False,
-                    do_commit = False)
+        if manual_dependencies:
+            manual_deps.update(manual_dependencies)
 
         # create new category if it doesn't exist
         catid = self.isCategoryAvailable(etpData['category'])
@@ -3970,7 +4082,6 @@ class EntropyRepository:
                 mydata,
                 revision = mydata['revision'],
                 idpackage = idpackage,
-                do_remove = False,
                 do_commit = False,
                 formatted_content = True
             )
