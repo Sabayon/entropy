@@ -774,9 +774,19 @@ class EntropyRepository:
         self.setDefaultCacheSize(8192)
         self.commitChanges()
 
-    # this functions will filter either data from /usr/portage/profiles/updates/*
-    # or repository database returning only the needed actions
     def filterTreeUpdatesActions(self, actions):
+        """
+        This method should be considered internal and not suited for general
+        audience. Given a raw package name/slot updates list, it returns
+        the action that should be really taken because not applied.
+
+        @param actions: list of raw treeupdates actions, for example:
+            ['move x11-foo/bar app-foo/bar', 'slotmove x11-foo/bar 2 3']
+        @type actions: list
+        @return: list of raw treeupdates actions that should be really
+            worked out
+        @rtype: list
+        """
         new_actions = []
         for action in actions:
 
@@ -841,9 +851,19 @@ class EntropyRepository:
                     new_actions.append(action)
         return new_actions
 
-    # this is the place to add extra actions support
     def runTreeUpdatesActions(self, actions):
+        # this is the place to add extra actions support
+        """
+        Method not suited for general purpose usage.
+        Executes package name/slot update actions passed.
 
+        @param actions: list of raw treeupdates actions, for example:
+            ['move x11-foo/bar app-foo/bar', 'slotmove x11-foo/bar 2 3']
+        @type actions: list
+
+        @return: list (set) of packages that should be repackaged
+        @rtype: set
+        """
         mytxt = "%s: %s, %s." % (
             bold(_("SPM")),
             blue(_("Running fixpackages")),
@@ -898,26 +918,6 @@ class EntropyRepository:
                 header = purple(" @@ ")
             )
 
-        if quickpkg_atoms and not self.clientDatabase:
-            # quickpkg package and packages owning it as a dependency
-            try:
-                self.runTreeUpdatesQuickpkgAction(quickpkg_atoms)
-            except:
-                self.entropyTools.print_traceback()
-                mytxt = "%s: %s: %s, %s." % (
-                    bold(_("WARNING")),
-                    red(_("Cannot complete quickpkg for atoms")),
-                    blue(str(list(quickpkg_atoms))),
-                    _("do it manually"),
-                )
-                self.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "warning",
-                    header = darkred(" * ")
-                )
-            self.commitChanges()
-
         if spm_moves:
             try:
                 self.doTreeupdatesSpmCleanup(spm_moves)
@@ -944,15 +944,28 @@ class EntropyRepository:
         # discard cache
         self.clearCache()
 
+        return quickpkg_atoms
 
-    # -- move action:
-    # 1) move package key to the new name: category + name + atom
-    # 2) update all the dependencies in dependenciesreference to the new key
-    # 3) run fixpackages which will update /var/db/pkg files
-    # 4) automatically run quickpkg() to build the new binary and
-    #    tainted binaries owning tainted iddependency and taint database
+
     def runTreeUpdatesMoveAction(self, move_command, quickpkg_queue):
+        # -- move action:
+        # 1) move package key to the new name: category + name + atom
+        # 2) update all the dependencies in dependenciesreference to the new key
+        # 3) run fixpackages which will update /var/db/pkg files
+        # 4) automatically run quickpkg() to build the new binary and
+        #    tainted binaries owning tainted iddependency and taint database
+        """
+        Method not suited for general purpose usage.
+        Executes package name move action passed.
 
+        @param move_command: raw treeupdates move action, for example:
+            'move x11-foo/bar app-foo/bar'
+        @type move_command: string
+        @param quickpkg_queue: current package regeneration queue
+        @type quickpkg_queue: list
+        @return: updated package regeneration queue
+        @rtype: list
+        """
         dep_from = move_command[0]
         key_from = self.entropyTools.dep_getkey(dep_from)
         key_to = move_command[1]
@@ -1028,16 +1041,27 @@ class EntropyRepository:
         return quickpkg_queue
 
 
-    # -- slotmove action:
-    # 1) move package slot
-    # 2) update all the dependencies in dependenciesreference owning
-    #    same matched atom + slot
-    # 3) run fixpackages which will update /var/db/pkg files
-    # 4) automatically run quickpkg() to build the new
-    #    binary and tainted binaries owning tainted iddependency
-    #    and taint database
     def runTreeUpdatesSlotmoveAction(self, slotmove_command, quickpkg_queue):
+        # -- slotmove action:
+        # 1) move package slot
+        # 2) update all the dependencies in dependenciesreference owning
+        #    same matched atom + slot
+        # 3) run fixpackages which will update /var/db/pkg files
+        # 4) automatically run quickpkg() to build the new
+        #    binary and tainted binaries owning tainted iddependency
+        #    and taint database
+        """
+        Method not suited for general purpose usage.
+        Executes package slot move action passed.
 
+        @param slotmove_command: raw treeupdates slot move action, for example:
+            'slotmove x11-foo/bar 2 3'
+        @type slotmove_command: string
+        @param quickpkg_queue: current package regeneration queue
+        @type quickpkg_queue: list
+        @return: updated package regeneration queue
+        @rtype: list
+        """
         atom = slotmove_command[0]
         atomkey = self.entropyTools.dep_getkey(atom)
         slot_from = slotmove_command[1]
@@ -1101,71 +1125,8 @@ class EntropyRepository:
             quickpkg_queue.add(myatom)
         return quickpkg_queue
 
-    def runTreeUpdatesQuickpkgAction(self, atoms):
-
-        self.commitChanges()
-
-        package_paths = set()
-        runatoms = set()
-        for myatom in atoms:
-            mymatch = self.atomMatch(myatom)
-            if mymatch[0] == -1:
-                continue
-            myatom = self.retrieveAtom(mymatch[0])
-            runatoms.add(myatom)
-
-        for myatom in runatoms:
-            self.updateProgress(
-                red("%s: " % (_("repackaging"),) )+blue(myatom),
-                importance = 1,
-                type = "warning",
-                header = blue("  # ")
-            )
-            mydest = self.ServiceInterface.get_local_store_directory(
-                repo = self.server_repo)
-            try:
-                mypath = self.ServiceInterface.quickpkg(myatom, mydest)
-            except:
-                # remove broken bin before raising
-                mypath = os.path.join(mydest,
-                    os.path.basename(myatom)+etpConst['packagesext'])
-                if os.path.isfile(mypath):
-                    os.remove(mypath)
-                self.entropyTools.print_traceback()
-                mytxt = "%s: %s: %s, %s." % (
-                    bold(_("WARNING")),
-                    red(_("Cannot complete quickpkg for atom")),
-                    blue(myatom),
-                    _("do it manually"),
-                )
-                self.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "warning",
-                    header = darkred(" * ")
-                )
-                continue
-            package_paths.add(mypath)
-        packages_data = [(x, False,) for x in package_paths]
-        idpackages = self.ServiceInterface.add_packages_to_repository(
-            packages_data, repo = self.server_repo)
-
-        if not idpackages:
-
-            mytxt = "%s: %s. %s." % (
-                bold(_("ATTENTION")),
-                red(_("runTreeUpdatesQuickpkgAction did not run properly")),
-                red(_("Please update packages manually")),
-            )
-            self.updateProgress(
-                mytxt,
-                importance = 1,
-                type = "warning",
-                header = darkred(" * ")
-            )
-
     def doTreeupdatesSpmCleanup(self, spm_moves):
-
+        # FIXME move from here to entropy.server / entropy.client
         # now erase Spm entries if necessary
         for action in spm_moves:
             command = action.split()

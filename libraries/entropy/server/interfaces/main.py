@@ -1066,11 +1066,33 @@ class Server(Singleton, TextInterface):
                         repo, repo_db.noUpload)
                 # now run queue
                 try:
-                    repo_db.runTreeUpdatesActions(update_actions)
+                    quickpkg_list = repo_db.runTreeUpdatesActions(
+                        update_actions)
                 except:
                     # destroy digest
                     repo_db.setRepositoryUpdatesDigest(repo, "-1")
                     raise
+
+                if quickpkg_list:
+                    # quickpkg package and packages owning it as a dependency
+                    try:
+                        self._run_packages_spm_sync_quickpkg(
+                            quickpkg_list, repo_db, repo)
+                    except:
+                        self.entropyTools.print_traceback()
+                        mytxt = "%s: %s: %s, %s." % (
+                            bold(_("WARNING")),
+                            red(_("Cannot complete quickpkg for atoms")),
+                            blue(str(sorted(quickpkg_list))),
+                            _("do it manually"),
+                        )
+                        self.updateProgress(
+                            mytxt,
+                            importance = 1,
+                            type = "warning",
+                            header = darkred(" * ")
+                        )
+                    repo_db.commitChanges()
 
                 # store new actions
                 repo_db.addRepositoryUpdatesActions(
@@ -1080,6 +1102,68 @@ class Server(Singleton, TextInterface):
             repo_db.setRepositoryUpdatesDigest(
                 repo, portage_dirs_digest)
             repo_db.commitChanges()
+
+    def _run_packages_spm_sync_quickpkg(self, atoms, repo_db, repo):
+        """
+        Executes packages regeneration for given atoms.
+        """
+        package_paths = set()
+        runatoms = set()
+        for myatom in atoms:
+            mymatch = repo_db.atomMatch(myatom)
+            if mymatch[0] == -1:
+                continue
+            myatom = repo_db.retrieveAtom(mymatch[0])
+            runatoms.add(myatom)
+
+        for myatom in runatoms:
+            self.updateProgress(
+                red("%s: " % (_("repackaging"),) )+blue(myatom),
+                importance = 1,
+                type = "warning",
+                header = blue("  # ")
+            )
+            mydest = self.get_local_store_directory(repo = repo)
+            try:
+                mypath = self.quickpkg(myatom, mydest)
+            except:
+                # remove broken bin before raising
+                mypath = os.path.join(mydest,
+                    os.path.basename(myatom) + etpConst['packagesext'])
+                if os.path.isfile(mypath):
+                    os.remove(mypath)
+                self.entropyTools.print_traceback()
+                mytxt = "%s: %s: %s, %s." % (
+                    bold(_("WARNING")),
+                    red(_("Cannot complete quickpkg for atom")),
+                    blue(myatom),
+                    _("do it manually"),
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" * ")
+                )
+                continue
+            package_paths.add(mypath)
+        packages_data = [(x, False,) for x in package_paths]
+        idpackages = self.add_packages_to_repository(
+            packages_data, repo = repo)
+
+        if not idpackages:
+
+            mytxt = "%s: %s. %s." % (
+                bold(_("ATTENTION")),
+                red(_("package files rebuild did not run properly")),
+                red(_("Please update packages manually")),
+            )
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "warning",
+                header = darkred(" * ")
+            )
 
     def deps_tester(self, default_repo = None):
 
