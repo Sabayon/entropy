@@ -68,6 +68,7 @@ class ServerRepositoryStatus(Singleton):
     def init_singleton(self):
         """ Singleton "constructor" """
         self.__data = {}
+        self.__updates_log = {}
 
     def __create_if_necessary(self, db):
         if db not in self.__data:
@@ -173,6 +174,14 @@ class ServerRepositoryStatus(Singleton):
         self.__create_if_necessary(db)
         return self.__data[db]['unlock_msg']
 
+    def get_updates_log(self, db):
+        """
+        Return dict() object containing metadata related to package
+        updates occured in a server-side repository.
+        """
+        if db not in self.__updates_log:
+            self.__updates_log[db] = {}
+        return self.__updates_log[db]
 
 class EntropyRepository:
 
@@ -1437,49 +1446,69 @@ class EntropyRepository:
     def _write_rss_for_added_package(self, pkgatom, revision, description,
         homepage):
 
-        rssAtom = pkgatom+"~"+str(revision)
-        rssObj = self.dumpTools.loadobj(etpConst['rss-dump-name'])
-        if rssObj:
-            self.ServiceInterface.rssMessages = rssObj.copy()
-        if not isinstance(self.ServiceInterface.rssMessages, dict):
-            self.ServiceInterface.rssMessages = {}
-        if not self.ServiceInterface.rssMessages.has_key('added'):
-            self.ServiceInterface.rssMessages['added'] = {}
-        if not self.ServiceInterface.rssMessages.has_key('removed'):
-            self.ServiceInterface.rssMessages['removed'] = {}
-        if rssAtom in self.ServiceInterface.rssMessages['removed']:
-            del self.ServiceInterface.rssMessages['removed'][rssAtom]
+        # setup variables we're going to use
+        srv_repo = self.server_repo
+        rss_atom = "%s~%s" % (pkgatom, revision,)
+        status = ServerRepositoryStatus()
+        srv_updates = status.get_updates_log(srv_repo)
+        rss_name = srv_repo + etpConst['rss-dump-name']
 
-        self.ServiceInterface.rssMessages['added'][rssAtom] = {}
-        self.ServiceInterface.rssMessages['added'][rssAtom]['description'] = \
-            description
-        self.ServiceInterface.rssMessages['added'][rssAtom]['homepage'] = \
-            homepage
-        self.ServiceInterface.rssMessages['light'][rssAtom] = {}
-        self.ServiceInterface.rssMessages['light'][rssAtom]['description'] = \
-            description
-        self.dumpTools.dumpobj(etpConst['rss-dump-name'],
-            self.ServiceInterface.rssMessages)
+        # load metadata from on disk cache, if available
+        rss_obj = self.dumpTools.loadobj(rss_name)
+        if rss_obj:
+            srv_updates.update(rss_obj)
+
+        # setup metadata keys, if not available
+        if not srv_updates.has_key('added'):
+            srv_updates['added'] = {}
+        if not srv_updates.has_key('removed'):
+            srv_updates['removed'] = {}
+
+        # if pkgatom (rss_atom) is in the "removed" metadata, drop it
+        if rss_atom in srv_updates['removed']:
+            del srv_updates['removed'][rss_atom]
+
+        # add metadata
+        srv_updates['added'][rss_atom] = {}
+        srv_updates['added'][rss_atom]['description'] = description
+        srv_updates['added'][rss_atom]['homepage'] = homepage
+        srv_updates['light'][rss_atom] = {}
+        srv_updates['light'][rss_atom]['description'] = description
+
+        # save to disk
+        self.dumpTools.dumpobj(rss_name, srv_updates)
 
     def _write_rss_for_removed_package(self, idpackage):
 
-        rssObj = self.dumpTools.loadobj(etpConst['rss-dump-name'])
-        if rssObj:
-            self.ServiceInterface.rssMessages = rssObj.copy()
-        rssAtom = self.retrieveAtom(idpackage)
-        rssRevision = self.retrieveRevision(idpackage)
-        rssAtom += "~"+str(rssRevision)
-        if not isinstance(self.ServiceInterface.rssMessages, dict):
-            self.ServiceInterface.rssMessages = {}
-        if not self.ServiceInterface.rssMessages.has_key('added'):
-            self.ServiceInterface.rssMessages['added'] = {}
-        if not self.ServiceInterface.rssMessages.has_key('removed'):
-            self.ServiceInterface.rssMessages['removed'] = {}
-        if rssAtom in self.ServiceInterface.rssMessages['added']:
-            del self.ServiceInterface.rssMessages['added'][rssAtom]
-        if rssAtom in self.ServiceInterface.rssMessages.get('light', []):
-            del self.ServiceInterface.rssMessages['light'][rssAtom]
+        # setup variables we're going to use
+        srv_repo = self.server_repo
+        rss_revision = self.retrieveRevision(idpackage)
+        rss_atom = "%s~%s" % (self.retrieveAtom(idpackage), rss_revision,)
+        status = ServerRepositoryStatus()
+        srv_updates = status.get_updates_log(srv_repo)
+        rss_name = srv_repo + etpConst['rss-dump-name']
 
+        # load metadata from on disk cache, if available
+        rss_obj = self.dumpTools.loadobj(rss_name)
+        if rss_obj:
+            srv_updates.update(rss_obj)
+
+        # setup metadata keys, if not available
+        if not srv_updates.has_key('added'):
+            srv_updates['added'] = {}
+        if not srv_updates.has_key('removed'):
+            srv_updates['removed'] = {}
+        if not srv_updates.has_key('light'):
+            srv_updates['light'] = []
+
+        # if pkgatom (rss_atom) is in the "added" metadata, drop it
+        if rss_atom in srv_updates['added']:
+            del srv_updates['added'][rss_atom]
+        # same thing for light key
+        if rss_atom in srv_updates['light']:
+            del srv_updates['light'][rss_atom]
+
+        # add metadata
         mydict = {}
         try:
             mydict['description'] = self.retrieveDescription(idpackage)
@@ -1489,11 +1518,10 @@ class EntropyRepository:
             mydict['homepage'] = self.retrieveHomepage(idpackage)
         except TypeError:
             mydict['homepage'] = ""
+        srv_updates['removed'][rss_atom] = mydict
 
-        self.dumpTools.dumpobj(etpConst['rss-dump-name'],
-            self.ServiceInterface.rssMessages)
-
-        self.ServiceInterface.rssMessages['removed'][rssAtom] = mydict
+        # save to disk
+        self.dumpTools.dumpobj(rss_name, srv_updates)
 
     def removePackage(self, idpackage, do_cleanup = True, do_commit = True,
         do_rss = True):

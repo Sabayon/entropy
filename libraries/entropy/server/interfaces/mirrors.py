@@ -1023,11 +1023,14 @@ class Server:
 
     def update_rss_feed(self, repo = None):
 
+        if repo == None:
+            repo = self.Entropy.default_repository
+
         product = self.SystemSettings['repositories']['product']
         #db_dir = self.Entropy.get_local_database_dir(repo)
         rss_path = self.Entropy.get_local_database_rss_file(repo)
         rss_light_path = self.Entropy.get_local_database_rsslight_file(repo)
-        rss_dump_name = etpConst['rss-dump-name']
+        rss_dump_name = repo + etpConst['rss-dump-name']
         db_revision_path = self.Entropy.get_local_database_revision_file(repo)
 
         rss_title = u"%s Online Repository Status" % (
