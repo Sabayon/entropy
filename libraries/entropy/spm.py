@@ -26,9 +26,10 @@ import shutil
 import tempfile
 from entropy.const import etpConst, etpUi
 from entropy.exceptions import *
-from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, bold
+from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, \
+    bold
 from entropy.i18n import _
-from entropy.core import SystemSettings
+from entropy.core import SystemSettings, Singleton
 
 class Spm:
 
@@ -56,9 +57,8 @@ class Spm:
         if backend == "portage":
             return PortagePlugin
 
-class PortagePlugin:
-
-    import entropy.tools as entropyTools
+class SpmPlugin(Singleton):
+    """Base class for Source Package Manager plugins"""
 
     class paren_normalize(list):
         """Take a dependency structure as returned by paren_reduce or use_reduce
@@ -96,7 +96,33 @@ class PortagePlugin:
                         self._zap_parens(x, dest)
             return dest
 
-    def __init__(self, OutputInterface):
+    def init_singleton(self, output_interface):
+        """
+        Source Package Manager Plugin singleton method.
+        This method must be reimplemented by subclasses.
+
+        @param output_interface: Entropy output interface
+        @type output_interface: entropy.output.TextInterface based instances
+        @raise NotImplementedError: when method is not reimplemented
+        """
+        raise NotImplementedError
+
+def get_spm(output_interface):
+    """
+    Service function that returns an Entropy SPM interface instance.
+
+    @param output_interface: Entropy Output Interface instance
+    @type output_interface: entropy.output.TextInterface based instance
+    @return: currently selected SPM interface
+    @rtype: entropy.spm.SpmPlugin instance
+    """
+    spmintf = Spm.get_spm_interface()
+    return spmintf(output_interface)
+
+class PortagePlugin(SpmPlugin):
+
+    import entropy.tools as entropyTools
+    def init_singleton(self, OutputInterface):
 
         if not hasattr(OutputInterface,'updateProgress'):
             mytxt = _("OutputInterface does not have an updateProgress method")
