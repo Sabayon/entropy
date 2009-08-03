@@ -24,7 +24,7 @@ from __future__ import with_statement
 import os
 import sys
 from entropy.core import Singleton
-from entropy.output import TextInterface
+from entropy.output import TextInterface, bold, red, darkred, blue
 from entropy.db import dbapi2
 from entropy.client.interfaces.loaders import LoadersMixin
 from entropy.client.interfaces.cache import CacheMixin
@@ -36,6 +36,7 @@ from entropy.const import etpConst, etpCache, etpUi, const_debug_write
 from entropy.core import SystemSettings, SystemSettingsPlugin
 from entropy.misc import LogFile
 from entropy.exceptions import SystemDatabaseError, RepositoryError
+from entropy.i18n import _
 
 class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
