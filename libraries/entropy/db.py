@@ -43,6 +43,7 @@ from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen, \
     TextInterface
 from entropy.cache import EntropyCacher
 from entropy.core import Singleton, SystemSettings
+from entropy.spm import get_spm
 
 try: # try with sqlite3 from >=python 2.5
     from sqlite3 import dbapi2
@@ -875,14 +876,12 @@ class EntropyRepository:
             type = "warning",
             header = darkred(" * ")
         )
-        if self.clientDatabase:
-            try:
-                spm = self.ServiceInterface.Spm()
-                spm.run_fixpackages()
-            except:
-                pass
-        else:
-            self.ServiceInterface.SpmService.run_fixpackages()
+        try:
+            spm = get_spm(self)
+            spm.run_fixpackages()
+        except:
+            self.entropyTools.print_traceback()
+            pass
 
         spm_moves = set()
         quickpkg_atoms = set()
@@ -1134,13 +1133,12 @@ class EntropyRepository:
                 continue
             key = command[1]
             name = key.split("/")[1]
-            if self.clientDatabase:
-                try:
-                    spm = self.ServiceInterface.Spm()
-                except:
-                    continue
-            else:
-                spm = self.ServiceInterface.SpmService
+            try:
+                spm = get_spm(self)
+            except:
+                self.entropyTools.print_traceback()
+                continue
+
             vdb_path = spm.get_vdb_path()
             pkg_path = os.path.join(vdb_path, key.split("/")[0])
             try:
@@ -2162,9 +2160,7 @@ class EntropyRepository:
         return cat
 
     def get_category_description_from_disk(self, category):
-        if not self.ServiceInterface:
-            return {}
-        return self.ServiceInterface.SpmService.get_category_description_data(category)
+        return get_spm(self).get_category_description_data(category)
 
     def getIDPackage(self, atom, branch = None):
         branch_string = ''
