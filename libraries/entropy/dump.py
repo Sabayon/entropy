@@ -185,7 +185,8 @@ def loadobj(name, complete_path = False):
                     try:
                         obj = pickle.load(dmp_f)
                     except (ValueError, EOFError, IOError,
-                        OSError, pickle.UnpicklingError, TypeError,):
+                        OSError, pickle.UnpicklingError, TypeError,
+                        AttributeError,):
                         pass
                     return obj
             except (IOError, OSError,):
