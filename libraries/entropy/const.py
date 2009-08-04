@@ -36,9 +36,18 @@ import gzip
 import bz2
 
 # ETP_ARCH_CONST setup
-ETP_ARCH_CONST = "x86"
-if os.uname()[4] == "x86_64":
-    ETP_ARCH_CONST = "amd64"
+# add more arches here
+ETP_ARCH_MAP = {
+    ("i386", "i486", "i586", "i686",): "x86",
+    ("x86_64",): "amd64",
+    ("sun4u",): None,
+    ("ppc",): None,
+}
+_uname_m = os.uname()[4]
+ETP_ARCH_CONST = 'UNKNOWN'
+for arches, arch in ETP_ARCH_MAP.items():
+    if _uname_m in arches:
+        ETP_ARCH_CONST = arch
 
 etpSys = {
     'archs': ["x86", "amd64"],
