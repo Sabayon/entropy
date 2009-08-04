@@ -1458,11 +1458,16 @@ class CalculatorsMixin:
             try:
                 dbconn = self.open_repository(repo)
                 dbconn.validateDatabase()
-            except (RepositoryError,SystemDatabaseError):
+            except (RepositoryError, SystemDatabaseError):
                 self.cycleDone()
                 continue
-            idpackages = [x for x in dbconn.listAllIdpackages(
-                order_by = 'atom') if dbconn.idpackageValidator(x)[0] != -1]
+            try:
+                # db may be corrupted, we cannot deal with it here
+                idpackages = [x for x in dbconn.listAllIdpackages(
+                    order_by = 'atom') if dbconn.idpackageValidator(x)[0] != -1]
+            except dbconn.dbapi2.OperationalError:
+                self.cycleDone()
+                continue
             count = 0
             maxlen = len(idpackages)
             myavailable = []
