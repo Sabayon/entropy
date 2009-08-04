@@ -178,8 +178,7 @@ class RepositoryMixin:
                 dbname = etpConst['dbnamerepoprefix']+repoid,
                 xcache = xcache,
                 indexing = indexing,
-                OutputInterface = self,
-                ServiceInterface = self
+                OutputInterface = self
             )
 
         if (repoid not in etpConst['client_treeupdatescalled']) and \
@@ -468,7 +467,7 @@ class RepositoryMixin:
                 conn = EntropyRepository(readOnly = False, dbFile = db_path,
                     clientDatabase = True, dbname = etpConst['clientdbid'],
                     xcache = self.xcache, indexing = self.indexing,
-                    OutputInterface = self, ServiceInterface = self
+                    OutputInterface = self
                 )
             except (self.dbapi2.DatabaseError,):
                 self.entropyTools.print_traceback(f = self.clientLog)
@@ -570,8 +569,7 @@ class RepositoryMixin:
             xcache = False,
             indexing = False,
             OutputInterface = self,
-            skipChecks = True,
-            ServiceInterface = self
+            skipChecks = True
         )
         dbc.initializeDatabase()
         return dbc

@@ -835,8 +835,7 @@ class Server(Singleton, TextInterface):
             xcache = False,
             indexing = False,
             OutputInterface = self,
-            skipChecks = True,
-            ServiceInterface = self
+            skipChecks = True
         )
         dbc.initializeDatabase()
         return dbc
@@ -894,7 +893,6 @@ class Server(Singleton, TextInterface):
             dbFile = local_dbfile,
             noUpload = no_upload,
             OutputInterface = self,
-            ServiceInterface = self,
             dbname = etpConst['serverdbid']+repo,
             useBranch = use_branch,
             lockRemote = lock_remote

@@ -482,8 +482,8 @@ class EntropyRepository:
     import threading
     def __init__(self, readOnly = False, noUpload = False, dbFile = None,
         clientDatabase = False, xcache = False, dbname = etpConst['serverdbid'],
-        indexing = True, OutputInterface = None, ServiceInterface = None,
-        skipChecks = False, useBranch = None, lockRemote = True):
+        indexing = True, OutputInterface = None, skipChecks = False,
+        useBranch = None, lockRemote = True):
 
         """
         EntropyRepository constructor.
@@ -507,9 +507,6 @@ class EntropyRepository:
         @keyword OutputInterface: interface used to communicate with the user.
             must inherit entropy.output.TextInterface
         @type OutputInterface: entropy.output.TextInterface based instance
-        @keyword ServiceInterface: any class instance that could be useful
-            when writing custom routines
-        @type ServiceInterface: Python class instance
         @keyword skipChecks: if True, skip integrity checks
         @type skipChecks: bool
         @keyword useBranch: if True, it won't use SystemSettings' branch
@@ -549,7 +546,6 @@ class EntropyRepository:
         self.updateProgress = self.OutputInterface.updateProgress
         self.askQuestion = self.OutputInterface.askQuestion
         # setup service interface
-        self.ServiceInterface = ServiceInterface
         self.readOnly = readOnly
         self.noUpload = noUpload
         self.clientDatabase = clientDatabase
@@ -628,8 +624,9 @@ class EntropyRepository:
         """
         Server-side function that setups server status information
         """
-        taint_file = self.ServiceInterface.get_local_database_taint_file(
-            self.server_repo)
+        from entropy.server.interfaces import Server
+        srv = Server()
+        taint_file = srv.get_local_database_taint_file(self.server_repo)
         if os.path.isfile(taint_file):
             dbs = ServerRepositoryStatus()
             dbs.set_tainted(self.dbFile)
@@ -658,8 +655,9 @@ class EntropyRepository:
         sts = ServerRepositoryStatus()
         if not sts.is_tainted(self.dbFile):
             # we can unlock it, no changes were made
-            self.ServiceInterface.MirrorsService.lock_mirrors(False,
-                repo = self.server_repo)
+            from entropy.server.interfaces import Server
+            srv = Server()
+            srv.MirrorsService.lock_mirrors(False, repo = self.server_repo)
         elif not sts.is_unlock_msg(self.dbFile):
             u_msg = _("Mirrors have not been unlocked. Remember to sync them.")
             self.updateProgress(
@@ -708,11 +706,10 @@ class EntropyRepository:
         modified.
         """
         # if it's equo to open it, this should be avoided
-        if self.clientDatabase:
-            return
+        from entropy.server.interfaces import Server
+        srv = Server()
         # taint the database status
-        taint_file = self.ServiceInterface.get_local_database_taint_file(
-            repo = self.server_repo)
+        taint_file = srv.get_local_database_taint_file(repo = self.server_repo)
         f = open(taint_file, "w")
         f.write(etpConst['currentarch']+" database tainted\n")
         f.flush()
@@ -725,12 +722,11 @@ class EntropyRepository:
         modified.
         """
         # if it's equo to open it, this should be avoided
-        if self.clientDatabase:
-            return
+        from entropy.server.interfaces import Server
+        srv = Server()
         ServerRepositoryStatus().unset_tainted(self.dbFile)
         # untaint the database status
-        taint_file = self.ServiceInterface.get_local_database_taint_file(
-            repo = self.server_repo)
+        taint_file = srv.get_local_database_taint_file(repo = self.server_repo)
         if os.path.isfile(taint_file):
             os.remove(taint_file)
 
@@ -739,7 +735,9 @@ class EntropyRepository:
         Entropy repository revision bumping function. Every time it's called,
         revision is incremented by 1.
         """
-        revision_file = self.ServiceInterface.get_local_database_revision_file(
+        from entropy.server.interfaces import Server
+        srv = Server()
+        revision_file = srv.get_local_database_revision_file(
             repo = self.server_repo)
         if not os.path.isfile(revision_file):
             revision = 1
@@ -761,8 +759,9 @@ class EntropyRepository:
         @return: taint status
         @rtype: bool
         """
-        taint_file = self.ServiceInterface.get_local_database_taint_file(
-            repo = self.server_repo)
+        from entropy.server.interfaces import Server
+        srv = Server()
+        taint_file = srv.get_local_database_taint_file(repo = self.server_repo)
         if os.path.isfile(taint_file):
             return True
         return False
