@@ -128,14 +128,14 @@ class const:
 
            (_("Translation:"),
             (
-                "Andre Parhan (Dutch)",
-                "Fabio Erculiani (Italian)",
-                "Roger Calvò (Catalan)",
-                "Daniel Halens (Spanish)",
-                "N/A (French)",
-                "N/A (German)",
-                "N/A (Polish)",
-                "N/A (Russian)",
+                "Catalan - Roger Calvò",
+                "Chinese - N/A",
+                "Dutch - Andre Parhan",
+                "French - N/A",
+                "German - N/A",
+                "Italian - Fabio Erculiani",
+                "Portuguese - Lucas Paulino Azevedo",
+                "Spanish - Daniel Halens Rodriguez",
                 )
             ),
 
