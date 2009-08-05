@@ -539,7 +539,7 @@ class EntropyRepository:
             raise IncorrectParameter("IncorrectParameter: %s" % (
                 _("valid database path needed"),) )
 
-        self.__write_mutex = self.threading.Lock()
+        self.__write_mutex = self.threading.RLock()
         self.dbapi2 = dbapi2
         # setup output interface
         self.OutputInterface = OutputInterface
@@ -863,6 +863,15 @@ class EntropyRepository:
         return new_actions
 
     def runTreeUpdatesActions(self, actions):
+        """
+        docstring_title
+
+        @param actions:
+        @type actions:
+        @return:
+        @rtype:
+
+        """
         # this is the place to add extra actions support
         """
         Method not suited for general purpose usage.
@@ -957,6 +966,17 @@ class EntropyRepository:
 
 
     def runTreeUpdatesMoveAction(self, move_command, quickpkg_queue):
+        """
+        docstring_title
+
+        @param move_command:
+        @type move_command:
+        @param quickpkg_queue:
+        @type quickpkg_queue:
+        @return:
+        @rtype:
+
+        """
         # -- move action:
         # 1) move package key to the new name: category + name + atom
         # 2) update all the dependencies in dependenciesreference to the new key
@@ -1051,6 +1071,17 @@ class EntropyRepository:
 
 
     def runTreeUpdatesSlotmoveAction(self, slotmove_command, quickpkg_queue):
+        """
+        docstring_title
+
+        @param slotmove_command:
+        @type slotmove_command:
+        @param quickpkg_queue:
+        @type quickpkg_queue:
+        @return:
+        @rtype:
+
+        """
         # -- slotmove action:
         # 1) move package slot
         # 2) update all the dependencies in dependenciesreference owning
@@ -1253,7 +1284,6 @@ class EntropyRepository:
         @keyword formattedContent: tells whether content metadata is already
             formatted for insertion
         @type formattedContent: bool
-
         @return: tuple composed by
             - idpackage: unique Entropy Repository package identifier
             - revision: final package revision selected
@@ -1262,37 +1292,54 @@ class EntropyRepository:
         """
 
         def remove_conflicting_packages(pkgdata):
+            """
+            docstring_title
+
+            @param pkgdata:
+            @type pkgdata:
+            @return:
+            @rtype:
+
+            """
+
             manual_deps = set()
             removelist = self.retrieve_packages_to_remove(
                 pkgdata['name'], pkgdata['category'],
                 pkgdata['slot'], pkgdata['injected']
             )
+
             for r_idpackage in removelist:
                 manual_deps |= self.retrieveManualDependencies(r_idpackage)
                 self.removePackage(r_idpackage, do_cleanup = False,
                     do_commit = False)
-            return manual_deps
+
+            # inject old manual dependencies back to package metadata
+            for manual_dep in manual_deps:
+                if manual_dep in pkgdata['dependencies']:
+                    continue
+                pkgdata['dependencies'][manual_dep] = etpConst['spm']['mdepend_id']
+
+
 
         if self.clientDatabase:
-            man_deps = remove_conflicting_packages(etpData)
+            remove_conflicting_packages(etpData)
             return self.addPackage(etpData, revision = forcedRevision,
-                formatted_content = formattedContent,
-                manual_dependencies = man_deps)
+                formatted_content = formattedContent)
 
         # build atom string, server side
         pkgatom = self.entropyTools.create_package_atom_string(
             etpData['category'], etpData['name'], etpData['version'],
             etpData['versiontag'])
+
         foundid = self.isPackageAvailable(pkgatom)
         if foundid < 0: # same atom doesn't exist in any branch
-            man_deps = remove_conflicting_packages(etpData)
+            remove_conflicting_packages(etpData)
             return self.addPackage(etpData, revision = forcedRevision,
-                formatted_content = formattedContent,
-                manual_dependencies = man_deps)
+                formatted_content = formattedContent)
 
         idpackage = self.getIDPackage(pkgatom)
         curRevision = forcedRevision
-        if forcedRevision == -1:
+        if forcedRevision is -1:
             curRevision = 0
             if idpackage != -1:
                 curRevision = self.retrieveRevision(idpackage)
@@ -1301,13 +1348,13 @@ class EntropyRepository:
         if idpackage != -1:
             # injected packages wouldn't be removed by addPackages
             self.removePackage(idpackage)
-            if forcedRevision == -1: curRevision += 1
+            if forcedRevision is -1:
+                curRevision += 1
 
-        man_deps = remove_conflicting_packages(etpData)
         # add the new one
+        remove_conflicting_packages(etpData)
         return self.addPackage(etpData, revision = curRevision,
-            formatted_content = formattedContent,
-            manual_dependencies = man_deps)
+            formatted_content = formattedContent)
 
     def retrieve_packages_to_remove(self, name, category, slot, injected):
         """
@@ -1378,17 +1425,36 @@ class EntropyRepository:
         return removelist
 
     def addPackage(self, etpData, revision = -1, idpackage = None,
-        do_commit = True, formatted_content = False,
-        manual_dependencies = None):
+        do_commit = True, formatted_content = False):
         """
         Add package to this Entropy repository. The main difference between
-        handlePackage and this is that from here, no packages with conflicting
-        scope are going to be removed.
+        handlePackage and this is that from here, no packages are going to be
+        removed, in any case.
         For more information about etpData layout, please see
         I{handlePackage()}.
 
+        @param etpData: Entropy package metadata
+        @type etpData: dict
+        @keyword revision: force a specific Entropy package revision
+        @type revision: int
+        @keyword idpackage: add package to Entropy repository using the
+            provided package identifier, this is very dangerous and could
+            cause packages with the same identifier to be removed.
+        @type idpackage: int
+        @keyword do_commit: if True, automatically commits the executed
+            transaction (could cause slowness)
+        @type do_commit: bool
+        @keyword formatted_content: if True, determines whether the content
+            metadata (usually the biggest part) in etpData is already
+            prepared for insertion
+        @type formatted_content: bool
+        @return: tuple composed by
+            - idpackage: unique Entropy Repository package identifier
+            - revision: final package revision selected
+            - etpData: new Entropy package metadata dict
+        @rtype: tuple
         """
-        if revision == -1:
+        if revision is -1:
             try:
                 revision = int(etpData['revision'])
             except (KeyError, ValueError):
@@ -1397,32 +1463,27 @@ class EntropyRepository:
         elif not etpData.has_key('revision'):
             etpData['revision'] = revision
 
-        manual_deps = set()
-        if manual_dependencies:
-            manual_deps.update(manual_dependencies)
-
         # create new category if it doesn't exist
         catid = self.isCategoryAvailable(etpData['category'])
-        if catid == -1: catid = self.addCategory(etpData['category'])
+        if catid is -1: catid = self.addCategory(etpData['category'])
 
         # create new license if it doesn't exist
         licid = self.isLicenseAvailable(etpData['license'])
-        if licid == -1: licid = self.addLicense(etpData['license'])
+        if licid is -1: licid = self.addLicense(etpData['license'])
 
         idprotect = self.isProtectAvailable(etpData['config_protect'])
-        if idprotect == -1: idprotect = self.addProtect(
+        if idprotect is -1: idprotect = self.addProtect(
             etpData['config_protect'])
 
         idprotect_mask = self.isProtectAvailable(
             etpData['config_protect_mask'])
-        if idprotect_mask == -1: idprotect_mask = self.addProtect(
+        if idprotect_mask is -1: idprotect_mask = self.addProtect(
             etpData['config_protect_mask'])
 
         idflags = self.areCompileFlagsAvailable(
             etpData['chost'],etpData['cflags'],etpData['cxxflags'])
-        if idflags == -1: idflags = self.addCompileFlags(
+        if idflags is -1: idflags = self.addCompileFlags(
             etpData['chost'],etpData['cflags'],etpData['cxxflags'])
-
 
         trigger = 0
         if etpData['trigger']:
@@ -1440,28 +1501,35 @@ class EntropyRepository:
             licid, etpData['etpapi'], trigger,)
 
         myidpackage_string = 'NULL'
-        if isinstance(idpackage, int):
-            manual_deps |= self.retrieveManualDependencies(idpackage)
+        if isinstance(idpackage, (int, long,)):
+
+            manual_deps = self.retrieveManualDependencies(idpackage)
+
             # does it exist?
             self.removePackage(idpackage, do_cleanup = False,
                 do_commit = False, do_rss = False)
             myidpackage_string = '?'
             mybaseinfo_data = (idpackage,)+mybaseinfo_data
+
+            # merge old manual dependencies
+            dep_dict = etpData['dependencies']
+            for manual_dep in manual_deps:
+                if manual_dep in dep_dict:
+                    continue
+                dep_dict[manual_dep] = etpConst['spm']['mdepend_id']
+
         else:
+            # force to None
             idpackage = None
 
-        # merge old manual dependencies
-        for manual_dep in manual_deps:
-            if manual_dep in etpData['dependencies']: continue
-            etpData['dependencies'][manual_dep] = etpConst['spm']['mdepend_id']
 
         with self.__write_mutex:
 
-            self.cursor.execute("""
+            cur = self.cursor.execute("""
             INSERT INTO baseinfo VALUES (%s,?,?,?,?,?,?,?,?,?,?,?)""" % (
                 myidpackage_string,), mybaseinfo_data)
             if idpackage == None:
-                idpackage = self.cursor.lastrowid
+                idpackage = cur.lastrowid
 
             # extrainfo
             self.cursor.execute(
@@ -1493,7 +1561,10 @@ class EntropyRepository:
                 etpData['changelog'])
         # package signatures
         if etpData.get('signatures'):
-            self.insertSignatures(idpackage, etpData['signatures'])
+            signatures = etpData['signatures']
+            sha1, sha256, sha512 = signatures['sha1'], signatures['sha256'], \
+                signatures['sha512']
+            self.insertSignatures(idpackage, sha1, sha256, sha512)
         # needed libraries paths
         if etpData.get('needed_paths'):
             for lib in sorted(etpData['needed_paths']):
@@ -1590,6 +1661,15 @@ class EntropyRepository:
         self.dumpTools.dumpobj(rss_name, srv_updates)
 
     def _write_rss_for_removed_package(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage:
+        @type idpackage:
+        @return:
+        @rtype:
+
+        """
 
         # setup variables we're going to use
         srv_repo = self.server_repo
@@ -1636,7 +1716,23 @@ class EntropyRepository:
 
     def removePackage(self, idpackage, do_cleanup = True, do_commit = True,
         do_rss = True):
+        """
+        Remove package from this Entropy repository using it's identifier
+        (idpackage).
 
+        @param idpackage: Entropy repository package indentifier
+        @type idpackage: int
+        @keyword do_cleanup: if True, executes repository metadata cleanup
+            at the end
+        @type do_cleanup: bool
+        @keyword do_commit: if True, commits the transaction (could cause
+            slowness)
+        @type do_commit: bool
+        @keyword do_rss: triggered only for server-side repositories, if True,
+            generates information about the removal in RSS form, dumping data
+            to cache (used internally to handle RSS support for repositories).
+        @type do_rss: bool
+        """
         # clear caches
         self.clearCache()
 
@@ -1675,7 +1771,7 @@ class EntropyRepository:
                 DELETE FROM installedtable WHERE idpackage = %d;
             """ % r_tup)
 
-        # not yet possible to add these calls above
+        # FIXME: move these inside the main SQL script above
         try:
             self.removeAutomergefiles(idpackage)
         except self.dbapi2.OperationalError:
@@ -1700,12 +1796,28 @@ class EntropyRepository:
             self.commitChanges()
 
     def removeMirrorEntries(self, mirrorname):
+        """
+        Remove source packages mirror entries from database for the given
+        mirror name. This is a representation of Portage's "thirdpartymirrors".
+
+        @param mirrorname: mirror name
+        @type mirrorname: string
+        """
         with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM mirrorlinks WHERE mirrorname = (?)
             """,(mirrorname,))
 
     def addMirrors(self, mirrorname, mirrorlist):
+        """
+        Add source package mirror entry to database.
+        This is a representation of Portage's "thirdpartymirrors".
+
+        @param mirrorname: name of the mirror from which "mirrorlist" belongs
+        @type mirrorname: string
+        @param mirrorlist: list of URLs belonging to the given mirror name
+        @type mirrorlist: list
+        """
         with self.__write_mutex:
             data = [(mirrorname, x,) for x in mirrorlist]
             self.cursor.executemany("""
@@ -1713,161 +1825,430 @@ class EntropyRepository:
             """, data)
 
     def addCategory(self, category):
+        """
+        Add package category string to repository. Return its identifier
+        (idcategory).
+
+        @param category: name of the category to add
+        @type category: string
+        @return: category identifier (idcategory)
+        @rtype: int
+        """
         with self.__write_mutex:
-            self.cursor.execute("""
+            cur = self.cursor.execute("""
             INSERT into categories VALUES (NULL,?)
             """, (category,))
-            return self.cursor.lastrowid
+            return cur.lastrowid
 
     def addProtect(self, protect):
+        """
+        Add a single, generic CONFIG_PROTECT (not defined as _MASK/whatever
+        here) path. Return its identifier (idprotect).
+
+        @param protect: CONFIG_PROTECT path to add
+        @type protect: string
+        @return: protect identifier (idprotect)
+        @rtype: int
+        """
         with self.__write_mutex:
-            self.cursor.execute("""
+            cur = self.cursor.execute("""
             INSERT into configprotectreference VALUES (NULL,?)
             """, (protect,))
-            return self.cursor.lastrowid
-
+            return cur.lastrowid
 
     def addSource(self, source):
+        """
+        Add source code package download path to repository. Return its
+        identifier (idsource).
+
+        @param source: source package download path
+        @type source: string
+        @return: source identifier (idprotect)
+        @rtype: int
+        """
         with self.__write_mutex:
-            self.cursor.execute("""
+            cur = self.cursor.execute("""
             INSERT into sourcesreference VALUES (NULL,?)
             """, (source,))
-            return self.cursor.lastrowid
+            return cur.lastrowid
 
     def addDependency(self, dependency):
+        """
+        Add dependency string to repository. Return its identifier
+        (iddependency).
+
+        @param dependency: dependency string
+        @type dependency: string
+        @return: dependency identifier (iddependency)
+        @rtype: int
+        """
         with self.__write_mutex:
-            self.cursor.execute('INSERT into dependenciesreference VALUES (NULL,?)', (dependency,))
-            return self.cursor.lastrowid
+            cur = self.cursor.execute("""
+            INSERT into dependenciesreference VALUES (NULL,?)
+            """, (dependency,))
+            return cur.lastrowid
 
     def addKeyword(self, keyword):
+        """
+        Add package SPM keyword string to repository.
+        Return its identifier (idkeyword).
+
+        @param keyword: keyword string
+        @type keyword: string
+        @return: keyword identifier (idkeyword)
+        @rtype: int
+        """
         with self.__write_mutex:
-            self.cursor.execute('INSERT into keywordsreference VALUES (NULL,?)', (keyword,))
-            return self.cursor.lastrowid
+            cur = self.cursor.execute("""
+            INSERT into keywordsreference VALUES (NULL,?)
+            """, (keyword,))
+            return cur.lastrowid
 
     def addUseflag(self, useflag):
+        """
+        Add package USE flag string to repository.
+        Return its identifier (iduseflag).
+
+        @param useflag: useflag string
+        @type useflag: string
+        @return: useflag identifier (iduseflag)
+        @rtype: int
+        """
         with self.__write_mutex:
-            self.cursor.execute('INSERT into useflagsreference VALUES (NULL,?)', (useflag,))
-            return self.cursor.lastrowid
+            cur = self.cursor.execute("""
+            INSERT into useflagsreference VALUES (NULL,?)
+            """, (useflag,))
+            return cur.lastrowid
 
     def addEclass(self, eclass):
+        """
+        Add package SPM Eclass string to repository.
+        Return its identifier (ideclass).
+
+        @param eclass: eclass string
+        @type eclass: string
+        @return: eclass identifier (ideclass)
+        @rtype: int
+        """
         with self.__write_mutex:
-            self.cursor.execute('INSERT into eclassesreference VALUES (NULL,?)', (eclass,))
-            return self.cursor.lastrowid
+            cur = self.cursor.execute("""
+            INSERT into eclassesreference VALUES (NULL,?)
+            """, (eclass,))
+            return cur.lastrowid
 
     def addNeeded(self, needed):
+        """
+        Add package libraries' ELF object NEEDED string to repository.
+        Return its identifier (idneeded).
+
+        @param needed: NEEDED string (as shown in `readelf -d elf.so`) 
+        @type needed: string
+        @return: needed identifier (idneeded)
+        @rtype: int
+        """
         with self.__write_mutex:
-            self.cursor.execute('INSERT into neededreference VALUES (NULL,?)', (needed,))
-            return self.cursor.lastrowid
+            cur = self.cursor.execute("""
+            INSERT into neededreference VALUES (NULL,?)
+            """, (needed,))
+            return cur.lastrowid
 
     def addLicense(self, pkglicense):
+        """
+        Add package license name string to repository.
+        Return its identifier (idlicense).
+
+        @param pkglicense: license name string
+        @type pkglicense: string
+        @return: license name identifier (idlicense)
+        @rtype: int
+        """
         if not self.entropyTools.is_valid_string(pkglicense):
             pkglicense = ' ' # workaround for broken license entries
         with self.__write_mutex:
-            self.cursor.execute('INSERT into licenses VALUES (NULL,?)', (pkglicense,))
-            return self.cursor.lastrowid
+            cur = self.cursor.execute("""
+            INSERT into licenses VALUES (NULL,?)
+            """, (pkglicense,))
+            return cur.lastrowid
 
     def addCompileFlags(self, chost, cflags, cxxflags):
+        """
+        Add package Compiler flags used to repository.
+        Return its identifier (idflags).
+
+        @param chost: CHOST string
+        @type chost: string
+        @param cflags: CFLAGS string
+        @type cflags: string
+        @param cxxflags: CXXFLAGS string
+        @type cxxflags: string
+        @return: Compiler flags triple identifier (idflags)
+        @rtype: int
+        """
         with self.__write_mutex:
-            self.cursor.execute('INSERT into flags VALUES (NULL,?,?,?)', (chost,cflags,cxxflags,))
-            return self.cursor.lastrowid
+            cur = self.cursor.execute("""
+            INSERT into flags VALUES (NULL,?,?,?)
+            """, (chost,cflags,cxxflags,))
+            return cur.lastrowid
 
     def setSystemPackage(self, idpackage, do_commit = True):
+        """
+        Mark a package as system package, which means that entropy.client
+        will deny its removal.
+
+        @param idpackage: package identifier
+        @type idpackage: int
+        @keyword do_commit: determine whether executing commit or not
+        @type do_commit: bool
+        """
         with self.__write_mutex:
-            self.cursor.execute('INSERT into systempackages VALUES (?)', (idpackage,))
+            self.cursor.execute("""
+            INSERT into systempackages VALUES (?)
+            """, (idpackage,))
             if do_commit:
                 self.commitChanges()
 
     def setInjected(self, idpackage, do_commit = True):
+        """
+        Mark package as injected, injection is usually set for packages
+        manually added to repository. Injected packages are not removed
+        automatically even when featuring conflicting scope with other
+        that are being added. If a package is injected, it means that
+        maintainers have to handle it manually.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @keyword do_commit: determine whether executing commit or not
+        @type do_commit: bool
+        """
         with self.__write_mutex:
             if not self.isInjected(idpackage):
-                self.cursor.execute('INSERT into injected VALUES (?)', (idpackage,))
+                self.cursor.execute("""
+                INSERT into injected VALUES (?)
+                """, (idpackage,))
             if do_commit:
                 self.commitChanges()
 
-    # date expressed the unix way
     def setDateCreation(self, idpackage, date):
+        """
+        Update the creation date for package. Creation date is stored in
+        string based unix time format.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param date: unix time in string form
+        @type date: string
+        """
         with self.__write_mutex:
-            self.cursor.execute('UPDATE extrainfo SET datecreation = (?) WHERE idpackage = (?)', (str(date), idpackage,))
+            self.cursor.execute("""
+            UPDATE extrainfo SET datecreation = (?) WHERE idpackage = (?)
+            """, (str(date), idpackage,))
             self.commitChanges()
 
     def setDigest(self, idpackage, digest):
+        """
+        Set package file md5sum for package. This information is used
+        by entropy.client when downloading packages.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param digest: md5 hash for package file
+        @type digest: string
+        """
         with self.__write_mutex:
-            self.cursor.execute('UPDATE extrainfo SET digest = (?) WHERE idpackage = (?)', (digest, idpackage,))
+            self.cursor.execute("""
+            UPDATE extrainfo SET digest = (?) WHERE idpackage = (?)
+            """, (digest, idpackage,))
             self.commitChanges()
 
-    def setSignatures(self, idpackage, signatures):
+    def setSignatures(self, idpackage, sha1, sha256, sha512):
+        """
+        Set package file extra hashes (sha1, sha256, sha512) for package.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param sha1: SHA1 hash for package file
+        @type sha1: string
+        @param sha256: SHA256 hash for package file
+        @type sha256: string
+        @param sha512: SHA512 hash for package file
+        @type sha512: string
+        """
         with self.__write_mutex:
-            sha1, sha256, sha512 = signatures['sha1'], signatures['sha256'], \
-                signatures['sha512']
             self.cursor.execute("""
             UPDATE packagesignatures SET sha1 = (?), sha256 = (?), sha512 = (?)
             WHERE idpackage = (?)
             """, (sha1, sha256, sha512, idpackage))
 
     def setDownloadURL(self, idpackage, url):
+        """
+        Set download URL prefix for package.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param url: URL prefix to set
+        @type url: string
+        """
         with self.__write_mutex:
-            self.cursor.execute('UPDATE extrainfo SET download = (?) WHERE idpackage = (?)', (url, idpackage,))
+            self.cursor.execute("""
+            UPDATE extrainfo SET download = (?) WHERE idpackage = (?)
+            """, (url, idpackage,))
             self.commitChanges()
 
     def setCategory(self, idpackage, category):
+        """
+        Set category name for package.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param category: category to set
+        @type category: string
+        """
         # create new category if it doesn't exist
         catid = self.isCategoryAvailable(category)
-        if (catid == -1):
+        if catid is -1:
             # create category
             catid = self.addCategory(category)
+
         with self.__write_mutex:
-            self.cursor.execute('UPDATE baseinfo SET idcategory = (?) WHERE idpackage = (?)', (catid, idpackage,))
+            self.cursor.execute("""
+            UPDATE baseinfo SET idcategory = (?) WHERE idpackage = (?)
+            """, (catid, idpackage,))
             self.commitChanges()
 
     def setCategoryDescription(self, category, description_data):
+        """
+        Set description for given category name.
+
+        @param category: category name
+        @type category: string
+        @param description_data: category description for several locales.
+            {'en': "This is blah", 'it': "Questo e' blah", ... }
+        @type description_data: dict
+        """
         with self.__write_mutex:
-            self.cursor.execute('DELETE FROM categoriesdescription WHERE category = (?)', (category,))
+
+            self.cursor.execute("""
+            DELETE FROM categoriesdescription WHERE category = (?)
+            """, (category,))
             for locale in description_data:
                 mydesc = description_data[locale]
-                #if type(mydesc) is unicode:
-                #    mydesc = mydesc.encode('raw_unicode_escape')
-                self.cursor.execute('INSERT INTO categoriesdescription VALUES (?,?,?)', (category, locale, mydesc,))
+                self.cursor.execute("""
+                INSERT INTO categoriesdescription VALUES (?,?,?)
+                """, (category, locale, mydesc,))
+
             self.commitChanges()
 
     def setName(self, idpackage, name):
+        """
+        Set name for package.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param name: package name
+        @type name: string
+
+        """
         with self.__write_mutex:
-            self.cursor.execute('UPDATE baseinfo SET name = (?) WHERE idpackage = (?)', (name, idpackage,))
+            self.cursor.execute("""
+            UPDATE baseinfo SET name = (?) WHERE idpackage = (?)
+            """, (name, idpackage,))
             self.commitChanges()
 
     def setDependency(self, iddependency, dependency):
+        """
+        Set dependency string for iddependency (dependency identifier).
+
+        @param iddependency: dependency string identifier
+        @type iddependency: int
+        @param dependency: dependency string
+        @type dependency: string
+        """
         with self.__write_mutex:
-            self.cursor.execute('UPDATE dependenciesreference SET dependency = (?) WHERE iddependency = (?)', (dependency, iddependency,))
+            self.cursor.execute("""
+            UPDATE dependenciesreference SET dependency = (?)
+            WHERE iddependency = (?)
+            """, (dependency, iddependency,))
             self.commitChanges()
 
     def setAtom(self, idpackage, atom):
+        """
+        Set atom string for package. "Atom" is the full, unique name of
+        a package.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param atom: atom string
+        @type atom: string
+        """
         with self.__write_mutex:
-            self.cursor.execute('UPDATE baseinfo SET atom = (?) WHERE idpackage = (?)', (atom, idpackage,))
+            self.cursor.execute("""
+            UPDATE baseinfo SET atom = (?) WHERE idpackage = (?)
+            """, (atom, idpackage,))
             self.commitChanges()
 
     def setSlot(self, idpackage, slot):
+        """
+        Set slot string for package. Please refer to Portage SLOT documentation
+        for more info.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param slot: slot string
+        @type slot: string
+        """
         with self.__write_mutex:
-            self.cursor.execute('UPDATE baseinfo SET slot = (?) WHERE idpackage = (?)', (slot, idpackage,))
+            self.cursor.execute("""
+            UPDATE baseinfo SET slot = (?) WHERE idpackage = (?)
+            """, (slot, idpackage,))
             self.commitChanges()
 
     def removeLicensedata(self, license_name):
+        """
+        Remove license text for given license name identifier.
+
+        @param license_name: available license name identifier
+        @type license_name: string
+        """
         with self.__write_mutex:
-            self.cursor.execute('DELETE FROM licensedata WHERE licensename = (?)', (license_name,))
+            self.cursor.execute("""
+            DELETE FROM licensedata WHERE licensename = (?)
+            """, (license_name,))
 
     def removeDependencies(self, idpackage):
+        """
+        Remove all the dependencies of package.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        """
         with self.__write_mutex:
-            self.cursor.execute("DELETE FROM dependencies WHERE idpackage = (?)", (idpackage,))
+            self.cursor.execute("""
+            DELETE FROM dependencies WHERE idpackage = (?)
+            """, (idpackage,))
             self.commitChanges()
 
     def insertDependencies(self, idpackage, depdata):
+        """
+        Insert dependencies for package. "depdata" is a dict() with dependency
+        strings as keys and dependency type as values.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param depdata: dependency dictionary
+            {'app-foo/foo': dep_type_integer, ...}
+        @type depdata: dict
+        """
 
         dcache = set()
         add_dep = self.addDependency
         is_dep_avail = self.isDependencyAvailable
         def mymf(dep):
 
-            if dep in dcache: return 0
+            if dep in dcache:
+                return 0
             iddep = is_dep_avail(dep)
-            if iddep == -1: iddep = add_dep(dep)
+            if iddep is -1:
+                iddep = add_dep(dep)
 
             deptype = 0
             if isinstance(depdata, dict):
@@ -1876,92 +2257,262 @@ class EntropyRepository:
             dcache.add(dep)
             return (idpackage, iddep, deptype,)
 
-        # do not place inside the with statement, otherwise there'll be an obvious lockup
-        deps = [x for x in map(mymf, depdata) if type(x) != int]
+        deps = (x for x in map(mymf, depdata) if type(x) != int)
         with self.__write_mutex:
-            self.cursor.executemany('INSERT into dependencies VALUES (?,?,?)', deps)
+            self.cursor.executemany("""
+            INSERT into dependencies VALUES (?,?,?)
+            """, deps)
 
     def insertManualDependencies(self, idpackage, manual_deps):
+        """
+        Insert manually added dependencies to dep. list of package.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param manual_deps: list of dependency strings
+        @type manual_deps: list
+        """
         mydict = {}
         for manual_dep in manual_deps:
             mydict[manual_dep] = etpConst['spm']['mdepend_id']
         return self.insertDependencies(idpackage, mydict)
 
     def removeContent(self, idpackage):
+        """
+        Remove content metadata for package.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        """
         with self.__write_mutex:
             self.cursor.execute("DELETE FROM content WHERE idpackage = (?)", (idpackage,))
             self.commitChanges()
 
     def insertContent(self, idpackage, content, already_formatted = False):
+        """
+        Insert content metadata for package. "content" can either be a dict()
+        or a list of triples (tuples of length 3, (idpackage, path, type,)).
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param content: content metadata to insert.
+            {'/path/to/foo': 'obj(content type)',}
+            or
+            [(idpackage, path, type,) ...]
+        @type content: dict, list
+        @keyword already_formatted: if True, "content" is expected to be
+            already formatted for insertion, this means that "content" must be
+            a list of tuples of length 3.
+        @type already_formatted: bool
+        """
 
         with self.__write_mutex:
+
             if already_formatted:
-                self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',((idpackage, x, y,) for a, x, y in content))
+                self.cursor.executemany("""
+                INSERT INTO content VALUES (?,?,?)
+                """, ((idpackage, x, y,) for a, x, y in content))
                 return
+
             def my_cmap(xfile):
                 return (idpackage, xfile, content[xfile],)
-            self.cursor.executemany('INSERT INTO content VALUES (?,?,?)',map(my_cmap, content))
+
+            self.cursor.executemany("""
+            INSERT INTO content VALUES (?,?,?)
+            """, map(my_cmap, content))
 
     def insertNeededPaths(self, library, paths):
+        """
+        Insert paths where given ELF obj (library) name can be located.
+        "library" is an ELF object name.
+
+        @param library: library name
+        @type library: string
+        @param paths: list of paths (list of strings)
+        @type paths: list
+        """
         with self.__write_mutex:
-            self.cursor.executemany('INSERT OR IGNORE INTO neededlibrarypaths VALUES (?,?,?)',
-                ((library, path, elfclass,) for path, elfclass in paths))
+            self.cursor.executemany("""
+            INSERT OR IGNORE INTO neededlibrarypaths VALUES (?,?,?)
+            """, ((library, path, elfclass,) for path, elfclass in paths))
 
     def insertAutomergefiles(self, idpackage, automerge_data):
+        """
+        Insert configuration files automerge information for package.
+        "automerge_data" contains configuration files paths and their belonging
+        md5 hash.
+        This features allows entropy.client to "auto-merge" or "auto-remove"
+        configuration files never touched by user.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param automerge_data: list of tuples of length 2.
+            [('/path/to/conf/file', 'md5_checksum_string',) ... ]
+        @type automerge_data: list
+        """
         with self.__write_mutex:
             self.cursor.executemany('INSERT INTO automergefiles VALUES (?,?,?)',
                 ((idpackage, x, y,) for x, y in automerge_data))
 
     def removeAutomergefiles(self, idpackage):
+        """
+        Remove configuration files automerge information for package.
+        "automerge_data" contains configuration files paths and their belonging
+        md5 hash.
+        This features allows entropy.client to "auto-merge" or "auto-remove"
+        configuration files never touched by user.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        """
         with self.__write_mutex:
-            self.cursor.execute('DELETE FROM automergefiles WHERE idpackage = (?)', (idpackage,))
+            self.cursor.execute("""
+            DELETE FROM automergefiles WHERE idpackage = (?)
+            """, (idpackage,))
 
     def removeSignatures(self, idpackage):
+        """
+        Remove extra package file hashes (SHA1, SHA256, SHA512) for package.
+        Entropy package files metadata contains up to 4 hashes:
+            md5, sha1, sha256, sha512
+        While md5 is here for historical reasons (being the first supported)
+        sha1, sha256, sha512 have been added recently and located into a
+        separate database table called "packagesignatures". Such hashes
+        can be not available for older packages, so don't be scared, aliens
+        are not to blame.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        """
         with self.__write_mutex:
-            self.cursor.execute('DELETE FROM packagesignatures WHERE idpackage = (?)', (idpackage,))
+            self.cursor.execute("""
+            DELETE FROM packagesignatures WHERE idpackage = (?)
+            """, (idpackage,))
 
     def removeSpmPhases(self, idpackage):
+        """
+        Remove Source Package Manager phases for package.
+        Entropy can call several Source Package Manager (the PM which Entropy
+        relies on) package installation/removal phases.
+        Such phase names are listed here.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        """
         with self.__write_mutex:
-            self.cursor.execute('DELETE FROM packagespmphases WHERE idpackage = (?)', (idpackage,))
+            self.cursor.execute("""
+            DELETE FROM packagespmphases WHERE idpackage = (?)
+            """, (idpackage,))
 
     def insertChangelog(self, category, name, changelog_txt):
+        """
+        Insert package changelog for package (in this case using category +
+        name as key).
+
+        @param category: package category
+        @type category: string
+        @param name: package name
+        @type name: string
+        @param changelog_txt: changelog text
+        @type changelog_txt: string
+        """
         with self.__write_mutex:
+
             mytxt = changelog_txt.encode('raw_unicode_escape')
-            self.cursor.execute('DELETE FROM packagechangelogs WHERE category = (?) AND name = (?)', (category, name,))
-            self.cursor.execute('INSERT INTO packagechangelogs VALUES (?,?,?)', (category, name, buffer(mytxt),))
+
+            self.cursor.execute("""
+            DELETE FROM packagechangelogs WHERE category = (?) AND name = (?)
+            """, (category, name,))
+
+            self.cursor.execute("""
+            INSERT INTO packagechangelogs VALUES (?,?,?)
+            """, (category, name, buffer(mytxt),))
 
     def removeChangelog(self, category, name):
+        """
+        Remove ChangeLog for package (in this case using category + name as key)
+
+        @param category: package category
+        @type category: string
+        @param name: package name
+        @type name: string
+        """
         with self.__write_mutex:
-            self.cursor.execute('DELETE FROM packagechangelogs WHERE category = (?) AND name = (?)', (category, name,))
+            self.cursor.execute("""
+            DELETE FROM packagechangelogs WHERE category = (?) AND name = (?)
+            """, (category, name,))
 
     def insertLicenses(self, licenses_data):
+        """
+        insert license data (license names and text) into repository.
+
+        @param licenses_data: dictionary containing license names as keys and
+            text as values
+        @type licenses_data: dict
+        """
 
         mylicenses = licenses_data.keys()
-        is_lic_avail = self.isLicensedataKeyAvailable
         def my_mf(mylicense):
-            return not is_lic_avail(mylicense)
+            return not self.isLicensedataKeyAvailable(mylicense)
 
         def my_mm(mylicense):
-            lic_data = licenses_data.get(mylicense,'')
+
+            lic_data = licenses_data.get(mylicense, '')
+
             # support both utf8 and str input
             if isinstance(lic_data, unicode): # encode to str
                 try:
                     lic_data = lic_data.encode('raw_unicode_escape')
                 except (UnicodeDecodeError,):
                     lic_data = lic_data.encode('utf-8')
+
             return (mylicense, buffer(lic_data), 0,)
 
         with self.__write_mutex:
-            self.cursor.executemany('INSERT into licensedata VALUES (?,?,?)',map(my_mm, list(set(filter(my_mf, mylicenses)))))
+            self.cursor.executemany("""
+            INSERT into licensedata VALUES (?,?,?)
+            """, map(my_mm, list(set(filter(my_mf, mylicenses)))))
 
     def insertConfigProtect(self, idpackage, idprotect, mask = False):
+        """
+        Insert CONFIG_PROTECT (configuration files protection) entry identifier
+        for package. This entry is usually a space separated string of directory
+        and files which are used to handle user-protected configuration files
+        or directories, those that are going to be stashed in separate paths
+        waiting for user merge decisions.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param idprotect: configuration files protection identifier
+        @type idprotect: int
+        @keyword mask: if True, idproctect will be considered a "mask" entry,
+            meaning that configuration files starting with paths referenced
+            by idprotect will be forcefully merged.
+        @type mask: bool
+        """
 
         mytable = 'configprotect'
-        if mask: mytable += 'mask'
+        if mask:
+            mytable += 'mask'
         with self.__write_mutex:
-            self.cursor.execute('INSERT into %s VALUES (?,?)' % (mytable,), (idpackage, idprotect,))
+            self.cursor.execute("""
+            INSERT into %s VALUES (?,?)
+            """ % (mytable,), (idpackage, idprotect,))
 
     def insertMirrors(self, mirrors):
+        """
+        Insert list of "mirror name" and "mirror list" into repository.
+        The term "mirror" in this case references to Source Package Manager
+        package download mirrors.
+        Argument format is like this for historical reasons and may change in
+        future.
+
+        @todo: change argument format
+        @param mirrors: list of tuples of length 2 containing string as first
+            item and list as second.
+            [('openoffice', ['http://openoffice1', 'http://..."],), ...]
+        @type mirrors: list
+        """
 
         for mirrorname, mirrorlist in mirrors:
             # remove old
@@ -1970,79 +2521,160 @@ class EntropyRepository:
             self.addMirrors(mirrorname, mirrorlist)
 
     def insertKeywords(self, idpackage, keywords):
+        """
+        Insert keywords for package. Keywords are strings contained in package
+        metadata stating what architectures or subarchitectures are supported
+        by package. It is historically used also for masking packages (making
+        them not available).
 
-        mydata = set()
-        for key in keywords:
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param keywords: list of keywords
+        @type keywords: list
+        """
+
+        def mymf(key):
             idkeyword = self.isKeywordAvailable(key)
-            if (idkeyword == -1):
+            if idkeyword is -1:
                 # create category
                 idkeyword = self.addKeyword(key)
-            mydata.add((idpackage, idkeyword,))
+            return (idpackage, idkeyword,)
 
         with self.__write_mutex:
-            self.cursor.executemany('INSERT into keywords VALUES (?,?)', mydata)
+            self.cursor.executemany("""
+            INSERT into keywords VALUES (?,?)
+            """, map(mymf, keywords))
 
     def insertUseflags(self, idpackage, useflags):
+        """
+        Insert Source Package Manager USE (components build) flags for package.
 
-        mydata = set()
-        for flag in useflags:
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param useflags: list of use flags strings
+        @type useflags: list
+        """
+
+        def mymf(flag):
             iduseflag = self.isUseflagAvailable(flag)
-            if (iduseflag == -1):
+            if iduseflag is -1:
                 # create category
                 iduseflag = self.addUseflag(flag)
-            mydata.add((idpackage, iduseflag,))
+            return (idpackage, iduseflag,)
 
         with self.__write_mutex:
-            self.cursor.executemany('INSERT into useflags VALUES (?,?)', mydata)
+            self.cursor.executemany("""
+            INSERT into useflags VALUES (?,?)
+            """, map(mymf, useflags))
 
-    def insertSignatures(self, idpackage, signatures):
+    def insertSignatures(self, idpackage, sha1, sha256, sha512):
+        """
+        Insert package file extra hashes (sha1, sha256, sha512) for package.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param sha1: SHA1 hash for package file
+        @type sha1: string
+        @param sha256: SHA256 hash for package file
+        @type sha256: string
+        @param sha512: SHA512 hash for package file
+        @type sha512: string
+        """
         with self.__write_mutex:
-            sha1, sha256, sha512 = signatures['sha1'], signatures['sha256'], \
-                signatures['sha512']
             self.cursor.execute("""
             INSERT INTO packagesignatures VALUES (?,?,?,?)
             """, (idpackage, sha1, sha256, sha512))
 
     def insertSpmPhases(self, idpackage, phases):
+        """
+        Insert Source Package Manager phases for package.
+        Entropy can call several Source Package Manager (the PM which Entropy
+        relies on) package installation/removal phases.
+        Such phase names are listed here.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param phases: list of available Source Package Manager phases
+        @type phases: list
+        """
         with self.__write_mutex:
             self.cursor.execute("""
             INSERT INTO packagespmphases VALUES (?,?)
             """, (idpackage,phases,))
 
     def insertSources(self, idpackage, sources):
+        """
+        Insert source code package download URLs for idpackage.
 
-        mydata = set()
-        for source in sources:
-            if (not source) or (source == "") or (not self.entropyTools.is_valid_string(source)):
-                continue
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param sources: list of source URLs
+        @type sources: list
+        """
+        def mymf(source):
+
+            if (not source) or (source == "") or \
+            (not self.entropyTools.is_valid_string(source)):
+                return 0
+
             idsource = self.isSourceAvailable(source)
-            if (idsource == -1):
-                # create category
+            if idsource is -1:
                 idsource = self.addSource(source)
-            mydata.add((idpackage, idsource,))
+
+            return (idpackage, idsource,)
 
         with self.__write_mutex:
-            self.cursor.executemany('INSERT into sources VALUES (?,?)', mydata)
+            self.cursor.executemany("""
+            INSERT into sources VALUES (?,?)
+            """, (x for x in map(mymf, sources) if x is not 0))
 
     def insertConflicts(self, idpackage, conflicts):
+        """
+        Insert dependency conflicts for package.
 
-        def myiter():
-            for conflict in conflicts:
-                yield (idpackage, conflict,)
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param conflicts: list of dep. conflicts
+        @type conflicts: list
+        """
+
+        def mymf(confict):
+            return (idpackage, conflict,)
 
         with self.__write_mutex:
-            self.cursor.executemany('INSERT into conflicts VALUES (?,?)', myiter())
+            self.cursor.executemany("""
+            INSERT into conflicts VALUES (?,?)
+            """, map(mymf, conflicts))
 
     def insertMessages(self, idpackage, messages):
+        """
+        Insert user messages for package.
 
-        def myiter():
-            for message in messages:
-                yield (idpackage, message,)
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param messages: list of messages
+        @type messages: list
+        """
+        def mymf(message):
+            return (idpackage, message,)
 
         with self.__write_mutex:
-            self.cursor.executemany('INSERT into messages VALUES (?,?)', myiter())
+            self.cursor.executemany("""
+            INSERT into messages VALUES (?,?)
+            """, map(mymf, messages))
 
     def insertProvide(self, idpackage, provides):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param provides:
+        @type provides:
+        @return:
+        @rtype:
+
+        """
 
         def myiter():
             for atom in provides:
@@ -2052,11 +2684,22 @@ class EntropyRepository:
             self.cursor.executemany('INSERT into provide VALUES (?,?)', myiter())
 
     def insertNeeded(self, idpackage, neededs):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param neededs:
+        @type neededs:
+        @return:
+        @rtype:
+
+        """
 
         mydata = set()
         for needed, elfclass in neededs:
             idneeded = self.isNeededAvailable(needed)
-            if idneeded == -1:
+            if idneeded is -1:
                 # create eclass
                 idneeded = self.addNeeded(needed)
             mydata.add((idpackage, idneeded, elfclass))
@@ -2065,11 +2708,22 @@ class EntropyRepository:
             self.cursor.executemany('INSERT into needed VALUES (?,?,?)', mydata)
 
     def insertEclasses(self, idpackage, eclasses):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param eclasses:
+        @type eclasses:
+        @return:
+        @rtype:
+
+        """
 
         mydata = set()
         for eclass in eclasses:
             idclass = self.isEclassAvailable(eclass)
-            if (idclass == -1):
+            if (idclass is -1):
                 # create eclass
                 idclass = self.addEclass(eclass)
             mydata.add((idpackage, idclass,))
@@ -2078,15 +2732,40 @@ class EntropyRepository:
             self.cursor.executemany('INSERT into eclasses VALUES (?,?)', mydata)
 
     def insertOnDiskSize(self, idpackage, mysize):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param mysize:
+        @type mysize:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('INSERT into sizes VALUES (?,?)', (idpackage, mysize,))
 
     def insertTrigger(self, idpackage, trigger):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param trigger:
+        @type trigger:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('INSERT into triggers VALUES (?,?)', (idpackage, buffer(trigger),))
 
     def insertBranchMigration(self, repository, from_branch, to_branch,
         post_migration_md5sum, post_upgrade_md5sum):
+        """
+        
+        """
         with self.__write_mutex:
             self.cursor.execute("""
             INSERT OR REPLACE INTO entropy_branch_migration VALUES (?,?,?,?,?)
@@ -2099,6 +2778,9 @@ class EntropyRepository:
 
     def setBranchMigrationPostUpgradeMd5sum(self, repository, from_branch,
         to_branch, post_upgrade_md5sum):
+        """
+        
+        """
         with self.__write_mutex:
             self.cursor.execute("""
             UPDATE entropy_branch_migration SET post_upgrade_md5sum = (?) WHERE
@@ -2107,6 +2789,21 @@ class EntropyRepository:
 
 
     def insertPortageCounter(self, idpackage, counter, branch, injected):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param counter:
+        @type counter:
+        @param branch:
+        @type branch:
+        @param injected:
+        @type injected:
+        @return:
+        @rtype:
+
+        """
 
         if (counter != -1) and not injected:
 
@@ -2154,6 +2851,19 @@ class EntropyRepository:
         return counter
 
     def insertCounter(self, idpackage, counter, branch = None):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param counter:
+        @type counter:
+        @keyword branch:
+        @type branch:
+        @return:
+        @rtype:
+
+        """
         if not branch: branch = self.db_branch
         if not branch: branch = self.SystemSettings['repositories']['branch']
         with self.__write_mutex:
@@ -2166,12 +2876,34 @@ class EntropyRepository:
             self.commitChanges()
 
     def setTrashedCounter(self, counter):
+        """
+        docstring_title
+
+        @param counter:
+        @type counter:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('DELETE FROM trashedcounters WHERE counter = (?)', (counter,))
             self.cursor.execute('INSERT INTO trashedcounters VALUES (?)', (counter,))
             self.commitChanges()
 
     def setCounter(self, idpackage, counter, branch = None):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param counter:
+        @type counter:
+        @keyword branch:
+        @type branch:
+        @return:
+        @rtype:
+
+        """
 
         branchstring = ''
         insertdata = [counter, idpackage]
@@ -2188,6 +2920,19 @@ class EntropyRepository:
                     raise
 
     def contentDiff(self, idpackage, dbconn, dbconn_idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param dbconn:
+        @type dbconn:
+        @param dbconn_idpackage:
+        @type dbconn_idpackage:
+        @return:
+        @rtype:
+
+        """
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
         # create a random table and fill
         randomtable = "cdiff%s" % (self.entropyTools.get_random_number(),)
@@ -2204,16 +2949,23 @@ class EntropyRepository:
                 xfile = dbconn.cursor.fetchone()
 
             # now compare
-            self.cursor.execute("""
+            cur = self.cursor.execute("""
             SELECT file FROM content 
             WHERE content.idpackage = (?) AND 
             content.file NOT IN (SELECT file from %s)""" % (randomtable,), (idpackage,))
-            diff = self.fetchall2set(self.cursor.fetchall())
+            diff = self.fetchall2set(cur.fetchall())
             return diff
         finally:
             self.cursor.execute('DROP TABLE IF EXISTS %s' % (randomtable,))
 
     def doCleanups(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         self.cleanupUseflags()
         self.cleanupSources()
         self.cleanupEclasses()
@@ -2223,42 +2975,91 @@ class EntropyRepository:
         self.cleanupChangelogs()
 
     def cleanupUseflags(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM useflagsreference 
             WHERE idflag NOT IN (SELECT idflag FROM useflags)""")
 
     def cleanupSources(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM sourcesreference 
             WHERE idsource NOT IN (SELECT idsource FROM sources)""")
 
     def cleanupEclasses(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM eclassesreference 
             WHERE idclass NOT IN (SELECT idclass FROM eclasses)""")
 
     def cleanupNeeded(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM neededreference 
             WHERE idneeded NOT IN (SELECT idneeded FROM needed)""")
 
     def cleanupNeededPaths(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM neededlibrarypaths 
             WHERE library NOT IN (SELECT library FROM neededreference)""")
 
     def cleanupDependencies(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM dependenciesreference 
             WHERE iddependency NOT IN (SELECT iddependency FROM dependencies)""")
 
     def cleanupChangelogs(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM packagechangelogs 
@@ -2268,10 +3069,17 @@ class EntropyRepository:
             )""")
 
     def getNewNegativeCounter(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         counter = -2
         try:
-            self.cursor.execute('SELECT min(counter) FROM counters')
-            dbcounter = self.cursor.fetchone()
+            cur = self.cursor.execute('SELECT min(counter) FROM counters')
+            dbcounter = cur.fetchone()
             mycounter = 0
             if dbcounter:
                 mycounter = dbcounter[0]
@@ -2286,60 +3094,114 @@ class EntropyRepository:
         return counter
 
     def getApi(self):
-        self.cursor.execute('SELECT max(etpapi) FROM baseinfo')
-        api = self.cursor.fetchone()
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
+        cur = self.cursor.execute('SELECT max(etpapi) FROM baseinfo')
+        api = cur.fetchone()
         if api: api = api[0]
         else: api = -1
         return api
 
     def getCategory(self, idcategory):
-        self.cursor.execute('SELECT category from categories WHERE idcategory = (?)', (idcategory,))
-        cat = self.cursor.fetchone()
-        if cat: cat = cat[0]
+        cur = self.cursor.execute("""
+        SELECT category from categories WHERE idcategory = (?)
+        """, (idcategory,))
+        cat = cur.fetchone()
+        if cat:
+            cat = cat[0]
         return cat
 
     def get_category_description_from_disk(self, category):
+        """
+        docstring_title
+
+        @param category:
+        @type category:
+        @return:
+        @rtype:
+
+        """
         return get_spm(self).get_category_description_data(category)
 
     def getIDPackage(self, atom, branch = None):
+        """
+        docstring_title
+
+        @param atom:
+        @type atom:
+        @keyword branch:
+        @type branch:
+        @return:
+        @rtype:
+
+        """
         branch_string = ''
         params = [atom]
         if branch:
             branch_string = ' AND branch = (?)'
             params.append(branch)
-        self.cursor.execute('SELECT idpackage FROM baseinfo WHERE atom = (?)'+branch_string, params)
-        idpackage = self.cursor.fetchone()
-        if idpackage: return idpackage[0]
+        cur = self.cursor.execute("""
+        SELECT idpackage FROM baseinfo WHERE atom = (?)
+        """ + branch_string, params)
+        idpackage = cur.fetchone()
+        if idpackage:
+            return idpackage[0]
         return -1
 
-    def getIDPackageFromDownload(self, download_relative_path, endswith = False):
+    def getIDPackageFromDownload(self, download_relative_path,
+        endswith = False):
         if endswith:
-            self.cursor.execute("""
+            cur = self.cursor.execute("""
             SELECT baseinfo.idpackage FROM baseinfo,extrainfo 
             WHERE extrainfo.download LIKE (?) AND
             baseinfo.idpackage = extrainfo.idpackage
             """, ("%"+download_relative_path,))
         else:
-            self.cursor.execute("""
+            cur = self.cursor.execute("""
             SELECT baseinfo.idpackage FROM baseinfo,extrainfo 
             WHERE extrainfo.download = (?) AND
             baseinfo.idpackage = extrainfo.idpackage
             """, (download_relative_path,))
-        idpackage = self.cursor.fetchone()
+        idpackage = cur.fetchone()
         if idpackage: return idpackage[0]
         return -1
 
     def getIDPackagesFromFile(self, file):
-        self.cursor.execute('SELECT idpackage FROM content WHERE file = (?)', (file,))
-        return self.fetchall2list(self.cursor.fetchall())
+        cur = self.cursor.execute("""
+        SELECT idpackage FROM content WHERE file = (?)
+        """, (file,))
+        return self.fetchall2list(cur.fetchall())
 
     def getIDCategory(self, category):
+        """
+        docstring_title
+
+        @param category:
+        @type category:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT "idcategory" FROM categories WHERE category = (?)', (category,))
         idcat = self.cursor.fetchone()
         if idcat: return idcat[0]
         return -1
 
     def getVersioningData(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT version,versiontag,revision FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         return self.cursor.fetchone()
 
@@ -2420,6 +3282,17 @@ class EntropyRepository:
         return self.cursor.fetchone()
 
     def getTriggerInfo(self, idpackage, content = True):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @keyword content:
+        @type content:
+        @return:
+        @rtype:
+
+        """
 
         atom, category, name, \
         version, slot, versiontag, \
@@ -2526,27 +3399,81 @@ class EntropyRepository:
         return data
 
     def fetchall2set(self, item):
+        """
+        docstring_title
+
+        @param item:
+        @type item:
+        @return:
+        @rtype:
+
+        """
         mycontent = set()
         for x in item:
             mycontent |= set(x)
         return mycontent
 
     def fetchall2list(self, item):
+        """
+        docstring_title
+
+        @param item:
+        @type item:
+        @return:
+        @rtype:
+
+        """
         content = []
         for x in item:
             content += list(x)
         return content
 
     def fetchone2list(self, item):
+        """
+        docstring_title
+
+        @param item:
+        @type item:
+        @return:
+        @rtype:
+
+        """
         return list(item)
 
     def fetchone2set(self, item):
+        """
+        docstring_title
+
+        @param item:
+        @type item:
+        @return:
+        @rtype:
+
+        """
         return set(item)
 
     def clearCache(self, depends = False):
+        """
+        docstring_title
+
+        @keyword depends:
+        @type depends:
+        @return:
+        @rtype:
+
+        """
 
         self.live_cache.clear()
         def do_clear(name):
+            """
+            docstring_title
+
+            @param name:
+            @type name:
+            @return:
+            @rtype:
+
+            """
             dump_path = os.path.join(etpConst['dumpstoragedir'], name)
             dump_dir = os.path.dirname(dump_path)
             if os.path.isdir(dump_dir):
@@ -2561,6 +3488,15 @@ class EntropyRepository:
             do_clear(etpCache['filter_satisfied_deps'])
 
     def retrieveRepositoryUpdatesDigest(self, repository):
+        """
+        docstring_title
+
+        @param repository:
+        @type repository:
+        @return:
+        @rtype:
+
+        """
         if not self.doesTableExist("treeupdates"):
             return -1
         self.cursor.execute('SELECT digest FROM treeupdates WHERE repository = (?)', (repository,))
@@ -2571,6 +3507,15 @@ class EntropyRepository:
             return -1
 
     def listAllTreeUpdatesActions(self, no_ids_repos = False):
+        """
+        docstring_title
+
+        @keyword no_ids_repos:
+        @type no_ids_repos:
+        @return:
+        @rtype:
+
+        """
         if no_ids_repos:
             self.cursor.execute('SELECT command,branch,date FROM treeupdatesactions')
         else:
@@ -2578,6 +3523,17 @@ class EntropyRepository:
         return self.cursor.fetchall()
 
     def retrieveTreeUpdatesActions(self, repository, forbranch = None):
+        """
+        docstring_title
+
+        @param repository:
+        @type repository:
+        @keyword forbranch:
+        @type forbranch:
+        @return:
+        @rtype:
+
+        """
 
         if not self.doesTableExist("treeupdatesactions"): return []
         if forbranch == None: forbranch = self.db_branch
@@ -2594,28 +3550,81 @@ class EntropyRepository:
 
     # mainly used to restore a previous table, used by reagent in --initialize
     def bumpTreeUpdatesActions(self, updates):
+        """
+        docstring_title
+
+        @param updates:
+        @type updates:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('DELETE FROM treeupdatesactions')
             self.cursor.executemany('INSERT INTO treeupdatesactions VALUES (?,?,?,?,?)', updates)
             self.commitChanges()
 
     def removeTreeUpdatesActions(self, repository):
+        """
+        docstring_title
+
+        @param repository:
+        @type repository:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('DELETE FROM treeupdatesactions WHERE repository = (?)', (repository,))
             self.commitChanges()
 
     def insertTreeUpdatesActions(self, updates, repository):
+        """
+        docstring_title
+
+        @param updates:
+        @type updates:
+        @param repository:
+        @type repository:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             myupdates = [[repository]+list(x) for x in updates]
             self.cursor.executemany('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', myupdates)
             self.commitChanges()
 
     def setRepositoryUpdatesDigest(self, repository, digest):
+        """
+        docstring_title
+
+        @param repository:
+        @type repository:
+        @param digest:
+        @type digest:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('DELETE FROM treeupdates where repository = (?)', (repository,)) # doing it for safety
             self.cursor.execute('INSERT INTO treeupdates VALUES (?,?)', (repository, digest,))
 
     def addRepositoryUpdatesActions(self, repository, actions, branch):
+        """
+        docstring_title
+
+        @param repository:
+        @type repository:
+        @param actions:
+        @type actions:
+        @param branch:
+        @type branch:
+        @return:
+        @rtype:
+
+        """
 
         mytime = str(self.entropyTools.get_current_unix_time())
         with self.__write_mutex:
@@ -2635,9 +3644,25 @@ class EntropyRepository:
         return False
 
     def clearPackageSets(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('DELETE FROM packagesets')
 
     def insertPackageSets(self, sets_data):
+        """
+        docstring_title
+
+        @param sets_data:
+        @type sets_data:
+        @return:
+        @rtype:
+
+        """
 
         mysets = []
         for setname in sorted(sets_data.keys()):
@@ -2651,6 +3676,13 @@ class EntropyRepository:
             self.cursor.executemany('INSERT INTO packagesets VALUES (?,?)', mysets)
 
     def retrievePackageSets(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if not self.doesTableExist("packagesets"): return {}
         self.cursor.execute('SELECT setname,dependency FROM packagesets')
         data = self.cursor.fetchall()
@@ -2662,24 +3694,69 @@ class EntropyRepository:
         return sets
 
     def retrievePackageSet(self, setname):
+        """
+        docstring_title
+
+        @param setname:
+        @type setname:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT dependency FROM packagesets WHERE setname = (?)', (setname,))
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveSystemPackages(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT idpackage FROM systempackages')
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveAtom(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT atom FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         atom = self.cursor.fetchone()
         if atom: return atom[0]
 
     def retrieveBranch(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT branch FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         br = self.cursor.fetchone()
         if br: return br[0]
 
     def retrieveTrigger(self, idpackage, get_unicode = False):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @keyword get_unicode:
+        @type get_unicode:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT data FROM triggers WHERE idpackage = (?)', (idpackage,))
         trigger = self.cursor.fetchone()
         if not trigger:
@@ -2689,16 +3766,43 @@ class EntropyRepository:
         return unicode(trigger[0], 'raw_unicode_escape')
 
     def retrieveDownloadURL(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT download FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         download = self.cursor.fetchone()
         if download: return download[0]
 
     def retrieveDescription(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT description FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         description = self.cursor.fetchone()
         if description: return description[0]
 
     def retrieveHomepage(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT homepage FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         home = self.cursor.fetchone()
         if home: return home[0]
@@ -2714,17 +3818,44 @@ class EntropyRepository:
         return -1
 
     def retrieveMessages(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT message FROM messages WHERE idpackage = (?)', (idpackage,))
         return self.fetchall2list(self.cursor.fetchall())
 
     # in bytes
     def retrieveSize(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT size FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         size = self.cursor.fetchone()
         if size: return size[0]
 
     # in bytes
     def retrieveOnDiskSize(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT size FROM sizes WHERE idpackage = (?)', (idpackage,))
         size = self.cursor.fetchone() # do not use [0]!
         if not size: size = 0
@@ -2732,11 +3863,29 @@ class EntropyRepository:
         return size
 
     def retrieveDigest(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT digest FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         digest = self.cursor.fetchone()
         if digest: return digest[0]
 
     def retrieveSignatures(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         mydict = {
             'sha1': None,
             'sha256': None,
@@ -2753,11 +3902,27 @@ class EntropyRepository:
         return mydict
 
     def retrieveName(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT name FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         name = self.cursor.fetchone()
         if name: return name[0]
 
     def retrieveKeySlot(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        
+        """
         self.cursor.execute("""
         SELECT categories.category || "/" || baseinfo.name,baseinfo.slot FROM baseinfo,categories 
         WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory""", (idpackage,))
@@ -2765,6 +3930,13 @@ class EntropyRepository:
         return data
 
     def retrieveKeySlotAggregated(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        
+        """
         self.cursor.execute("""
         SELECT categories.category || "/" || baseinfo.name || ":" || baseinfo.slot FROM baseinfo,categories 
         WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory""", (idpackage,))
@@ -2772,6 +3944,13 @@ class EntropyRepository:
         if data: return data[0]
 
     def retrieveKeySlotTag(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        
+        """
         self.cursor.execute("""
         SELECT categories.category || "/" || baseinfo.name,baseinfo.slot,baseinfo.versiontag FROM baseinfo,categories 
         WHERE baseinfo.idpackage = (?) and baseinfo.idcategory = categories.idcategory""", (idpackage,))
@@ -2779,26 +3958,68 @@ class EntropyRepository:
         return data
 
     def retrieveVersion(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT version FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         ver = self.cursor.fetchone()
         if ver: return ver[0]
 
     def retrieveRevision(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT revision FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         rev = self.cursor.fetchone()
         if rev: return rev[0]
 
     def retrieveDateCreation(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT datecreation FROM extrainfo WHERE idpackage = (?)', (idpackage,))
         date = self.cursor.fetchone()
         if date: return date[0]
 
     def retrieveApi(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT etpapi FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         api = self.cursor.fetchone()
         if api: return api[0]
 
     def retrieveUseflags(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        """
         self.cursor.execute("""
         SELECT flagname FROM useflags,useflagsreference 
         WHERE useflags.idpackage = (?) AND 
@@ -2806,6 +4027,12 @@ class EntropyRepository:
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveEclasses(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        """
         self.cursor.execute("""
         SELECT classname FROM eclasses,eclassesreference 
         WHERE eclasses.idpackage = (?) AND 
@@ -2813,6 +4040,15 @@ class EntropyRepository:
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveSpmPhases(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage:
+        @type idpackage:
+        @return:
+        @rtype:
+
+        """
         # FIXME: remove this check in future:
         if not self.doesTableExist('packagespmphases'):
             return None
@@ -2824,6 +4060,12 @@ class EntropyRepository:
         if rslt: return rslt[0]
 
     def retrieveNeededRaw(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        """
         self.cursor.execute("""
         SELECT library FROM needed,neededreference 
         WHERE needed.idpackage = (?) AND 
@@ -2831,6 +4073,19 @@ class EntropyRepository:
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveNeeded(self, idpackage, extended = False, format = False):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @keyword extended:
+        @type extended:
+        @keyword format:
+        @type format:
+        @return:
+        @rtype:
+
+        """
 
         if extended:
             self.cursor.execute("""
@@ -2854,6 +4109,15 @@ class EntropyRepository:
         return needed
 
     def retrieveNeededPaths(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         if not self.doesTableExist('neededlibrarypaths'):
             return {}
         self.cursor.execute("""
@@ -2870,6 +4134,17 @@ class EntropyRepository:
         return data
 
     def retrieveNeededLibraryPaths(self, needed_library_name, elfclass):
+        """
+        docstring_title
+
+        @param needed_library_name:
+        @type needed_library_name:
+        @param elfclass:
+        @type elfclass:
+        @return:
+        @rtype:
+
+        """
         if not self.doesTableExist('neededlibrarypaths'):
             return set()
         self.cursor.execute("""
@@ -2883,26 +4158,67 @@ class EntropyRepository:
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveNeededLibraryIdpackages(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if not self.doesTableExist('neededlibraryidpackages'):
             return []
         self.cursor.execute('SELECT idpackage, library, elfclass FROM neededlibraryidpackages')
         return self.cursor.fetchall()
 
     def clearNeededLibraryIdpackages(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if not self.doesTableExist('neededlibraryidpackages'):
             return
         self.cursor.execute('DELETE FROM neededlibraryidpackages')
 
     def setNeededLibraryIdpackages(self, library_map):
+        """
+        docstring_title
+
+        @param library_map:
+        @type library_map:
+        @return:
+        @rtype:
+
+        """
         if not self.doesTableExist('neededlibraryidpackages'):
             return
         self.cursor.executemany('INSERT INTO neededlibraryidpackages VALUES (?,?,?)', library_map)
 
     def retrieveConflicts(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT conflict FROM conflicts WHERE idpackage = (?)', (idpackage,))
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveProvide(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT atom FROM provide WHERE idpackage = (?)', (idpackage,))
         return self.fetchall2set(self.cursor.fetchall())
 
@@ -2916,13 +4232,42 @@ class EntropyRepository:
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrievePostDependencies(self, idpackage, extended = False):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @keyword extended:
+        @type extended:
+        @return:
+        @rtype:
+
+        """
         return self.retrieveDependencies(idpackage, extended = extended, deptype = etpConst['spm']['pdepend_id'])
 
     def retrieveManualDependencies(self, idpackage, extended = False):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @keyword extended:
+        @type extended:
+        @return:
+        @rtype:
+
+        """
         return self.retrieveDependencies(idpackage, extended = extended, deptype = etpConst['spm']['mdepend_id'])
 
     def retrieveDependencies(self, idpackage, extended = False, deptype = None,
         exclude_deptypes = None):
+
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        """
 
         searchdata = [idpackage]
 
@@ -2957,16 +4302,40 @@ class EntropyRepository:
         return deps
 
     def retrieveIdDependencies(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT iddependency FROM dependencies WHERE idpackage = (?)', (idpackage,))
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveDependencyFromIddependency(self, iddependency):
+        """
+        docstring_title
+
+        @param iddependency:
+        @type iddependency:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT dependency FROM dependenciesreference WHERE iddependency = (?)', (iddependency,))
         dep = self.cursor.fetchone()
         if dep: dep = dep[0]
         return dep
 
     def retrieveKeywords(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        """
         self.cursor.execute("""
         SELECT keywordname FROM keywords,keywordsreference 
         WHERE keywords.idpackage = (?) AND 
@@ -2974,6 +4343,12 @@ class EntropyRepository:
         return self.fetchall2set(self.cursor.fetchall())
 
     def retrieveProtect(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        """
         self.cursor.execute("""
         SELECT protect FROM configprotect,configprotectreference 
         WHERE configprotect.idpackage = (?) AND 
@@ -2984,6 +4359,12 @@ class EntropyRepository:
         return protect
 
     def retrieveProtectMask(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        """
         self.cursor.execute("""
         SELECT protect FROM configprotectmask,configprotectreference 
         WHERE idpackage = (?) AND 
@@ -2994,6 +4375,12 @@ class EntropyRepository:
         return protect
 
     def retrieveSources(self, idpackage, extended = False):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        """
         self.cursor.execute("""
         SELECT sourcesreference.source FROM sources,sourcesreference 
         WHERE idpackage = (?) AND 
@@ -3016,6 +4403,17 @@ class EntropyRepository:
         return source_data
 
     def retrieveAutomergefiles(self, idpackage, get_dict = False):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @keyword get_dict:
+        @type get_dict:
+        @return:
+        @rtype:
+
+        """
         if not self.doesTableExist('automergefiles'):
             self.createAutomergefilesTable()
         # like portage does
@@ -3028,6 +4426,13 @@ class EntropyRepository:
 
     def retrieveContent(self, idpackage, extended = False, contentType = None,
         formatted = False, insert_formatted = False, order_by = ''):
+
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        """
 
         extstring = ''
         if extended:
@@ -3081,6 +4486,15 @@ class EntropyRepository:
         return fl
 
     def retrieveChangelog(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         if not self.doesTableExist('packagechangelogs'):
             return None
         self.cursor.execute("""
@@ -3098,6 +4512,17 @@ class EntropyRepository:
                 return unicode(changelog, 'utf-8')
 
     def retrieveChangelogByKey(self, category, name):
+        """
+        docstring_title
+
+        @param category:
+        @type category:
+        @param name:
+        @type name:
+        @return:
+        @rtype:
+
+        """
         if not self.doesTableExist('packagechangelogs'):
             return None
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
@@ -3106,16 +4531,43 @@ class EntropyRepository:
         if changelog: return unicode(changelog[0], 'raw_unicode_escape')
 
     def retrieveSlot(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT slot FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         slot = self.cursor.fetchone()
         if slot: return slot[0]
 
     def retrieveVersionTag(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT versiontag FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         vtag = self.cursor.fetchone()
         if vtag: return vtag[0]
 
     def retrieveMirrorInfo(self, mirrorname):
+        """
+        docstring_title
+
+        @param mirrorname:
+        @type mirrorname:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT mirrorlink FROM mirrorlinks WHERE mirrorname = (?)', (mirrorname,))
         mirrorlist = self.fetchall2set(self.cursor.fetchall())
         return mirrorlist
@@ -3129,6 +4581,15 @@ class EntropyRepository:
         if cat: return cat[0]
 
     def retrieveCategoryDescription(self, category):
+        """
+        docstring_title
+
+        @param category:
+        @type category:
+        @return:
+        @rtype:
+
+        """
         data = {}
         self.cursor.execute('SELECT description,locale FROM categoriesdescription WHERE category = (?)', (category,))
         description_data = self.cursor.fetchall()
@@ -3137,6 +4598,15 @@ class EntropyRepository:
         return data
 
     def retrieveLicensedata(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
 
         # insert license information
         licenses = self.retrieveLicense(idpackage)
@@ -3161,6 +4631,15 @@ class EntropyRepository:
         return licdata
 
     def retrieveLicensedataKeys(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
 
         licenses = self.retrieveLicense(idpackage)
         if licenses == None:
@@ -3179,6 +4658,15 @@ class EntropyRepository:
         return licdata
 
     def retrieveLicenseText(self, license_name):
+        """
+        docstring_title
+
+        @param license_name:
+        @type license_name:
+        @return:
+        @rtype:
+
+        """
 
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
 
@@ -3189,6 +4677,15 @@ class EntropyRepository:
         return str(text[0])
 
     def retrieveLicense(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute("""
         SELECT license FROM baseinfo,licenses 
         WHERE baseinfo.idpackage = (?) AND 
@@ -3197,6 +4694,15 @@ class EntropyRepository:
         if licname: return licname[0]
 
     def retrieveCompileFlags(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute("""
         SELECT chost,cflags,cxxflags FROM flags,extrainfo 
         WHERE extrainfo.idpackage = (?) AND 
@@ -3208,6 +4714,15 @@ class EntropyRepository:
 
     def retrieveDepends(self, idpackage, atoms = False, key_slot = False,
         exclude_deptypes = None):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
 
         # WARNING: never remove this, otherwise equo.db
         # (client database) dependstable will be always broken (trust me)
@@ -3250,6 +4765,13 @@ class EntropyRepository:
         return result
 
     def retrieveUnusedIdpackages(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
 
         # WARNING: never remove this, otherwise equo.db (client database)
         # dependstable will be always broken (trust me)
@@ -3264,6 +4786,15 @@ class EntropyRepository:
         return self.fetchall2list(self.cursor.fetchall())
 
     def isPackageAvailable(self, pkgatom):
+        """
+        docstring_title
+
+        @param pkgatom:
+        @type pkgatom:
+        @return:
+        @rtype:
+
+        """
         # You must provide the full atom to this function
         # WARNING: this function does not support branches
         pkgatom = self.entropyTools.remove_package_operators(pkgatom)
@@ -3273,6 +4804,15 @@ class EntropyRepository:
         return -1
 
     def isIDPackageAvailable(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT idpackage FROM baseinfo WHERE idpackage = (?)', (idpackage,))
         result = self.cursor.fetchone()
         if not result:
@@ -3280,6 +4820,15 @@ class EntropyRepository:
         return True
 
     def areIDPackagesAvailable(self, idpackages):
+        """
+        docstring_title
+
+        @param idpackages: list of package indentifiers
+        @type idpackages: list
+        @return:
+        @rtype:
+
+        """
         sql = 'SELECT count(idpackage) FROM baseinfo WHERE idpackage IN (%s)' % (','.join([str(x) for x in set(idpackages)]),)
         self.cursor.execute(sql)
         count = self.cursor.fetchone()[0]
@@ -3288,18 +4837,47 @@ class EntropyRepository:
         return True
 
     def isCategoryAvailable(self, category):
+        """
+        docstring_title
+
+        @param category:
+        @type category:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT idcategory FROM categories WHERE category = (?)', (category,))
         result = self.cursor.fetchone()
         if result: return result[0]
         return -1
 
     def isProtectAvailable(self, protect):
+        """
+        docstring_title
+
+        @param protect:
+        @type protect:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT idprotect FROM configprotectreference WHERE protect = (?)', (protect,))
         result = self.cursor.fetchone()
         if result: return result[0]
         return -1
 
     def isFileAvailable(self, myfile, get_id = False):
+        """
+        docstring_title
+
+        @param myfile:
+        @type myfile:
+        @keyword get_id:
+        @type get_id:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT idpackage FROM content WHERE file = (?)', (myfile,))
         result = self.cursor.fetchall()
         if get_id:
@@ -3309,6 +4887,19 @@ class EntropyRepository:
         return False
 
     def resolveNeeded(self, needed, elfclass = -1, extended = False):
+        """
+        docstring_title
+
+        @param needed:
+        @type needed:
+        @keyword elfclass:
+        @type elfclass:
+        @keyword extended:
+        @type extended:
+        @return:
+        @rtype:
+
+        """
 
         args = [needed]
         elfclass_txt = ''
@@ -3337,42 +4928,109 @@ class EntropyRepository:
             return self.fetchall2set(self.cursor.fetchall())
 
     def isSourceAvailable(self, source):
+        """
+        docstring_title
+
+        @param source:
+        @type source:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT idsource FROM sourcesreference WHERE source = (?)', (source,))
         result = self.cursor.fetchone()
         if result: return result[0]
         return -1
 
     def isDependencyAvailable(self, dependency):
+        """
+        docstring_title
+
+        @param dependency:
+        @type dependency:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT iddependency FROM dependenciesreference WHERE dependency = (?)', (dependency,))
         result = self.cursor.fetchone()
         if result: return result[0]
         return -1
 
     def isKeywordAvailable(self, keyword):
+        """
+        docstring_title
+
+        @param keyword:
+        @type keyword:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT idkeyword FROM keywordsreference WHERE keywordname = (?)', (keyword,))
         result = self.cursor.fetchone()
         if result: return result[0]
         return -1
 
     def isUseflagAvailable(self, useflag):
+        """
+        docstring_title
+
+        @param useflag:
+        @type useflag:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT idflag FROM useflagsreference WHERE flagname = (?)', (useflag,))
         result = self.cursor.fetchone()
         if result: return result[0]
         return -1
 
     def isEclassAvailable(self, eclass):
+        """
+        docstring_title
+
+        @param eclass:
+        @type eclass:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT idclass FROM eclassesreference WHERE classname = (?)', (eclass,))
         result = self.cursor.fetchone()
         if result: return result[0]
         return -1
 
     def isNeededAvailable(self, needed):
+        """
+        docstring_title
+
+        @param needed:
+        @type needed:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT idneeded FROM neededreference WHERE library = (?)', (needed,))
         result = self.cursor.fetchone()
         if result: return result[0]
         return -1
 
     def isCounterAvailable(self, counter, branch = None, branch_operator = "="):
+        """
+        docstring_title
+
+        @param counter:
+        @type counter:
+        @keyword branch:
+        @type branch:
+        @keyword branch_operator:
+        @type branch_operator:
+        @return:
+        @rtype:
+
+        """
         params = [counter]
         branch_string = ''
         if branch:
@@ -3385,12 +5043,30 @@ class EntropyRepository:
         return False
 
     def isCounterTrashed(self, counter):
+        """
+        docstring_title
+
+        @param counter:
+        @type counter:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT counter FROM trashedcounters WHERE counter = (?)', (counter,))
         result = self.cursor.fetchone()
         if result: return True
         return False
 
     def isLicensedataKeyAvailable(self, license_name):
+        """
+        docstring_title
+
+        @param license_name:
+        @type license_name:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT licensename FROM licensedata WHERE licensename = (?)', (license_name,))
         result = self.cursor.fetchone()
         if not result:
@@ -3398,6 +5074,15 @@ class EntropyRepository:
         return True
 
     def isLicenseAccepted(self, license_name):
+        """
+        docstring_title
+
+        @param license_name:
+        @type license_name:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT licensename FROM licenses_accepted WHERE licensename = (?)', (license_name,))
         result = self.cursor.fetchone()
         if not result:
@@ -3405,6 +5090,15 @@ class EntropyRepository:
         return True
 
     def acceptLicense(self, license_name):
+        """
+        docstring_title
+
+        @param license_name:
+        @type license_name:
+        @return:
+        @rtype:
+
+        """
         if self.readOnly or (not self.entropyTools.is_user_in_entropy_group()):
             return
         if self.isLicenseAccepted(license_name):
@@ -3414,6 +5108,15 @@ class EntropyRepository:
             self.commitChanges()
 
     def isLicenseAvailable(self, pkglicense):
+        """
+        docstring_title
+
+        @param pkglicense:
+        @type pkglicense:
+        @return:
+        @rtype:
+
+        """
         if not self.entropyTools.is_valid_string(pkglicense):
             pkglicense = ' '
         self.cursor.execute('SELECT idlicense FROM licenses WHERE license = (?)', (pkglicense,))
@@ -3422,6 +5125,15 @@ class EntropyRepository:
         return -1
 
     def isSystemPackage(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage:
+        @type idpackage:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT idpackage FROM systempackages WHERE idpackage = (?)', (idpackage,))
         result = self.cursor.fetchone()
         if result:
@@ -3429,6 +5141,15 @@ class EntropyRepository:
         return False
 
     def isInjected(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT idpackage FROM injected WHERE idpackage = (?)', (idpackage,))
         result = self.cursor.fetchone()
         if result:
@@ -3436,6 +5157,19 @@ class EntropyRepository:
         return False
 
     def areCompileFlagsAvailable(self, chost, cflags, cxxflags):
+        """
+        docstring_title
+
+        @param chost:
+        @type chost:
+        @param cflags:
+        @type cflags:
+        @param cxxflags:
+        @type cxxflags:
+        @return:
+        @rtype:
+
+        """
 
         self.cursor.execute('SELECT idflags FROM flags WHERE chost = (?) AND cflags = (?) AND cxxflags = (?)',
             (chost, cflags, cxxflags,)
@@ -3445,6 +5179,21 @@ class EntropyRepository:
         return -1
 
     def searchBelongs(self, file, like = False, branch = None, branch_operator = "="):
+        """
+        docstring_title
+
+        @param file:
+        @type file:
+        @keyword like:
+        @type like:
+        @keyword branch:
+        @type branch:
+        @keyword branch_operator:
+        @type branch_operator:
+        @return:
+        @rtype:
+
+        """
 
         branchstring = ''
         searchkeywords = [file]
@@ -3466,6 +5215,9 @@ class EntropyRepository:
 
     ''' search packages that uses the eclass provided '''
     def searchEclassedPackages(self, eclass, atoms = False): # atoms = return atoms directly
+        """
+        
+        """
         if atoms:
             self.cursor.execute("""
             SELECT baseinfo.atom,eclasses.idpackage FROM baseinfo,eclasses,eclassesreference 
@@ -3479,6 +5231,9 @@ class EntropyRepository:
 
     ''' search packages whose versiontag matches the one provided '''
     def searchTaggedPackages(self, tag, atoms = False): # atoms = return atoms directly
+        """
+        
+        """
         if atoms:
             self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE versiontag = (?)', (tag,))
             return self.cursor.fetchall()
@@ -3487,6 +5242,19 @@ class EntropyRepository:
             return self.fetchall2set(self.cursor.fetchall())
 
     def searchLicenses(self, mylicense, caseSensitive = False, atoms = False):
+        """
+        docstring_title
+
+        @param mylicense:
+        @type mylicense:
+        @keyword caseSensitive:
+        @type caseSensitive:
+        @keyword atoms:
+        @type atoms:
+        @return:
+        @rtype:
+
+        """
 
         if not self.entropyTools.is_valid_string(mylicense):
             return []
@@ -3510,7 +5278,11 @@ class EntropyRepository:
         return self.fetchall2set(self.cursor.fetchall())
 
     ''' search packages whose slot matches the one provided '''
-    def searchSlottedPackages(self, slot, atoms = False): # atoms = return atoms directly
+    def searchSlottedPackages(self, slot, atoms = False):
+        # atoms = return atoms directly
+        """
+        
+        """
         if atoms:
             self.cursor.execute('SELECT atom,idpackage FROM baseinfo WHERE slot = (?)', (slot,))
             return self.cursor.fetchall()
@@ -3519,6 +5291,19 @@ class EntropyRepository:
             return self.fetchall2set(self.cursor.fetchall())
 
     def searchKeySlot(self, key, slot, branch = None):
+        """
+        docstring_title
+
+        @param key:
+        @type key:
+        @param slot:
+        @type slot:
+        @keyword branch:
+        @type branch:
+        @return:
+        @rtype:
+
+        """
 
         branchstring = ''
         cat, name = key.split("/")
@@ -3537,6 +5322,17 @@ class EntropyRepository:
 
     ''' search packages that need the specified library (in neededreference table) specified by keyword '''
     def searchNeeded(self, keyword, like = False):
+        """
+        docstring_title
+
+        @param keyword:
+        @type keyword:
+        @keyword like:
+        @type like:
+        @return:
+        @rtype:
+
+        """
         if like:
             self.cursor.execute("""
             SELECT needed.idpackage FROM needed,neededreference 
@@ -3551,6 +5347,21 @@ class EntropyRepository:
 
     ''' search dependency string inside dependenciesreference table and retrieve iddependency '''
     def searchDependency(self, dep, like = False, multi = False, strings = False):
+        """
+        docstring_title
+
+        @param dep:
+        @type dep:
+        @keyword like:
+        @type like:
+        @keyword multi:
+        @type multi:
+        @keyword strings:
+        @type strings:
+        @return:
+        @rtype:
+
+        """
         sign = "="
         if like:
             sign = "LIKE"
@@ -3571,14 +5382,43 @@ class EntropyRepository:
 
     ''' search iddependency inside dependencies table and retrieve idpackages '''
     def searchIdpackageFromIddependency(self, iddep):
+        """
+        docstring_title
+
+        @param iddep:
+        @type iddep:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT idpackage FROM dependencies WHERE iddependency = (?)', (iddep,))
         return self.fetchall2set(self.cursor.fetchall())
 
     def searchSets(self, keyword):
+        """
+        docstring_title
+
+        @param keyword:
+        @type keyword:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT DISTINCT(setname) FROM packagesets WHERE setname LIKE (?)', ("%"+keyword+"%",))
         return self.fetchall2set(self.cursor.fetchall())
 
     def searchSimilarPackages(self, mystring, atom = False):
+        """
+        docstring_title
+
+        @param mystring:
+        @type mystring:
+        @keyword atom:
+        @type atom:
+        @return:
+        @rtype:
+
+        """
         s_item = 'name'
         if atom: s_item = 'atom'
         self.cursor.execute("""
@@ -3587,6 +5427,27 @@ class EntropyRepository:
         return self.fetchall2list(self.cursor.fetchall())
 
     def searchPackages(self, keyword, sensitive = False, slot = None, tag = None, branch = None, order_by = 'atom', just_id = False):
+        """
+        docstring_title
+
+        @param keyword:
+        @type keyword:
+        @keyword sensitive:
+        @type sensitive:
+        @keyword slot:
+        @type slot:
+        @keyword tag:
+        @type tag:
+        @keyword branch:
+        @type branch:
+        @keyword order_by:
+        @type order_by:
+        @keyword just_id:
+        @type just_id:
+        @return:
+        @rtype:
+
+        """
 
         searchkeywords = ["%"+keyword+"%"]
         slotstring = ''
@@ -3626,6 +5487,23 @@ class EntropyRepository:
         return self.cursor.fetchall()
 
     def searchProvide(self, keyword, slot = None, tag = None, branch = None, justid = False):
+        """
+        docstring_title
+
+        @param keyword:
+        @type keyword:
+        @keyword slot:
+        @type slot:
+        @keyword tag:
+        @type tag:
+        @keyword branch:
+        @type branch:
+        @keyword justid:
+        @type justid:
+        @return:
+        @rtype:
+
+        """
 
         slotstring = ''
         searchkeywords = [keyword]
@@ -3666,6 +5544,21 @@ class EntropyRepository:
         return self.cursor.fetchall()
 
     def searchPackagesByName(self, keyword, sensitive = False, branch = None, justid = False):
+        """
+        docstring_title
+
+        @param keyword:
+        @type keyword:
+        @keyword sensitive:
+        @type sensitive:
+        @keyword branch:
+        @type branch:
+        @keyword justid:
+        @type justid:
+        @return:
+        @rtype:
+
+        """
 
         if sensitive:
             searchkeywords = [keyword]
@@ -3696,6 +5589,19 @@ class EntropyRepository:
 
 
     def searchPackagesByCategory(self, keyword, like = False, branch = None):
+        """
+        docstring_title
+
+        @param keyword:
+        @type keyword:
+        @keyword like:
+        @type like:
+        @keyword branch:
+        @type branch:
+        @return:
+        @rtype:
+
+        """
 
         searchkeywords = [keyword]
         branchstring = ''
@@ -3717,6 +5623,23 @@ class EntropyRepository:
         return self.cursor.fetchall()
 
     def searchPackagesByNameAndCategory(self, name, category, sensitive = False, branch = None, justid = False):
+        """
+        docstring_title
+
+        @param name:
+        @type name:
+        @param category:
+        @type category:
+        @keyword sensitive:
+        @type sensitive:
+        @keyword branch:
+        @type branch:
+        @keyword justid:
+        @type justid:
+        @return:
+        @rtype:
+
+        """
 
         myname = name
         mycat = category
@@ -3757,6 +5680,19 @@ class EntropyRepository:
         return results
 
     def isPackageScopeAvailable(self, atom, slot, revision):
+        """
+        docstring_title
+
+        @param atom:
+        @type atom:
+        @param slot:
+        @type slot:
+        @param revision:
+        @type revision:
+        @return:
+        @rtype:
+
+        """
         searchdata = (atom, slot, revision,)
         self.cursor.execute('SELECT idpackage FROM baseinfo where atom = (?) and slot = (?) and revision = (?)', searchdata)
         rslt = self.cursor.fetchone()
@@ -3790,6 +5726,21 @@ class EntropyRepository:
         return self.cursor.fetchone()
 
     def listAllPackages(self, get_scope = False, order_by = None, branch = None, branch_operator = "="):
+        """
+        docstring_title
+
+        @keyword get_scope:
+        @type get_scope:
+        @keyword order_by:
+        @type order_by:
+        @keyword branch:
+        @type branch:
+        @keyword branch_operator:
+        @type branch_operator:
+        @return:
+        @rtype:
+
+        """
 
         branchstring = ''
         searchkeywords = []
@@ -3807,6 +5758,15 @@ class EntropyRepository:
         return self.cursor.fetchall()
 
     def listAllInjectedPackages(self, justFiles = False):
+        """
+        docstring_title
+
+        @keyword justFiles:
+        @type justFiles:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT idpackage FROM injected')
         injecteds = self.fetchall2set(self.cursor.fetchall())
         results = set()
@@ -3820,6 +5780,19 @@ class EntropyRepository:
         return results
 
     def listAllCounters(self, onlycounters = False, branch = None, branch_operator = "="):
+        """
+        docstring_title
+
+        @keyword onlycounters:
+        @type onlycounters:
+        @keyword branch:
+        @type branch:
+        @keyword branch_operator:
+        @type branch_operator:
+        @return:
+        @rtype:
+
+        """
 
         branchstring = ''
         if branch:
@@ -3832,6 +5805,19 @@ class EntropyRepository:
             return self.cursor.fetchall()
 
     def listAllIdpackages(self, branch = None, branch_operator = "=", order_by = None):
+        """
+        docstring_title
+
+        @keyword branch:
+        @type branch:
+        @keyword branch_operator:
+        @type branch_operator:
+        @keyword order_by:
+        @type order_by:
+        @return:
+        @rtype:
+
+        """
 
         branchstring = ''
         orderbystring = ''
@@ -3856,6 +5842,15 @@ class EntropyRepository:
             return set()
 
     def listAllDependencies(self, only_deps = False):
+        """
+        docstring_title
+
+        @keyword only_deps:
+        @type only_deps:
+        @return:
+        @rtype:
+
+        """
         if only_deps:
             self.cursor.execute('SELECT dependency FROM dependenciesreference')
             return self.fetchall2set(self.cursor.fetchall())
@@ -3864,6 +5859,13 @@ class EntropyRepository:
             return self.cursor.fetchall()
 
     def listAllBranches(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
 
         cache = self.live_cache.get('listAllBranches')
         if cache != None:
@@ -3876,6 +5878,17 @@ class EntropyRepository:
         return results
 
     def listIdPackagesInIdcategory(self, idcategory, order_by = 'atom'):
+        """
+        docstring_title
+
+        @param idcategory:
+        @type idcategory:
+        @keyword order_by:
+        @type order_by:
+        @return:
+        @rtype:
+
+        """
         order_by_string = ''
         if order_by in ("atom", "name", "version",):
             order_by_string = ' ORDER BY %s' % (order_by,)
@@ -3890,6 +5903,17 @@ class EntropyRepository:
         return set(self.cursor.fetchall())
 
     def listAllDownloads(self, do_sort = True, full_path = False):
+        """
+        docstring_title
+
+        @keyword do_sort:
+        @type do_sort:
+        @keyword full_path:
+        @type full_path:
+        @return:
+        @rtype:
+
+        """
 
         order_string = ''
         if do_sort:
@@ -3909,6 +5933,17 @@ class EntropyRepository:
         return results
 
     def listAllFiles(self, clean = False, count = False):
+        """
+        docstring_title
+
+        @keyword clean:
+        @type clean:
+        @keyword count:
+        @type count:
+        @return:
+        @rtype:
+
+        """
         self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
         if count:
             self.cursor.execute('SELECT count(file) FROM content')
@@ -3923,6 +5958,15 @@ class EntropyRepository:
                 return self.fetchall2list(self.cursor.fetchall())
 
     def listAllCategories(self, order_by = ''):
+        """
+        docstring_title
+
+        @keyword order_by:
+        @type order_by:
+        @return:
+        @rtype:
+
+        """
         order_by_string = ''
         if order_by: order_by_string = ' order by %s' % (order_by,)
         self.cursor.execute('SELECT idcategory,category FROM categories %s' % (
@@ -3930,6 +5974,15 @@ class EntropyRepository:
         return self.cursor.fetchall()
 
     def listConfigProtectDirectories(self, mask = False):
+        """
+        docstring_title
+
+        @keyword mask:
+        @type mask:
+        @return:
+        @rtype:
+
+        """
         mask_t = ''
         if mask: mask_t = 'mask'
         self.cursor.execute("""
@@ -3952,6 +6005,13 @@ class EntropyRepository:
             self.clearCache()
 
     def databaseStructureUpdates(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
 
         old_readonly = self.readOnly
         self.readOnly = False
@@ -4000,6 +6060,13 @@ class EntropyRepository:
         self.connection.commit()
 
     def validateDatabase(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('select name from SQLITE_MASTER where type = (?) and name = (?)', ("table", "baseinfo"))
         rslt = self.cursor.fetchone()
         if rslt == None:
@@ -4012,6 +6079,15 @@ class EntropyRepository:
             raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
 
     def getIdpackagesDifferences(self, foreign_idpackages):
+        """
+        docstring_title
+
+        @param foreign_idpackages:
+        @type foreign_idpackages:
+        @return:
+        @rtype:
+
+        """
         myids = self.listAllIdpackages()
         if isinstance(foreign_idpackages, (list, tuple,)):
             outids = set(foreign_idpackages)
@@ -4022,12 +6098,36 @@ class EntropyRepository:
         return added_ids, removed_ids
 
     def uniformBranch(self, branch):
+        """
+        docstring_title
+
+        @param branch:
+        @type branch:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('UPDATE baseinfo SET branch = (?)', (branch,))
             self.commitChanges()
             self.clearCache()
 
     def alignDatabases(self, dbconn, force = False, output_header = "  ", align_limit = 300):
+        """
+        docstring_title
+
+        @param dbconn:
+        @type dbconn:
+        @keyword force:
+        @type force:
+        @keyword output_header:
+        @type output_header:
+        @keyword align_limit:
+        @type align_limit:
+        @return:
+        @rtype:
+
+        """
 
         added_ids, removed_ids = self.getIdpackagesDifferences(dbconn.listAllIdpackages())
 
@@ -4101,6 +6201,13 @@ class EntropyRepository:
         return 0
 
     def checkDatabaseApi(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
 
         dbapi = self.getApi()
         if int(dbapi) > int(etpConst['etpapi']):
@@ -4112,6 +6219,17 @@ class EntropyRepository:
             )
 
     def doDatabaseImport(self, dumpfile, dbfile):
+        """
+        docstring_title
+
+        @param dumpfile:
+        @type dumpfile:
+        @param dbfile:
+        @type dbfile:
+        @return:
+        @rtype:
+
+        """
         import subprocess
         sqlite3_exec = "/usr/bin/sqlite3 %s < %s" % (dbfile, dumpfile,)
         retcode = subprocess.call(sqlite3_exec, shell = True)
@@ -4119,6 +6237,10 @@ class EntropyRepository:
 
     def doDatabaseExport(self, dumpfile, gentle_with_tables = True,
         exclude_tables = None):
+
+        """
+        
+        """
 
         if not exclude_tables:
             exclude_tables = []
@@ -4178,12 +6300,24 @@ class EntropyRepository:
         # remember to close the file
 
     def listAllTables(self):
+        """
+        
+        """
         self.cursor.execute("""
         SELECT name FROM SQLITE_MASTER WHERE type = "table"
         """)
         return self.fetchall2list(self.cursor.fetchall())
 
     def doesTableExist(self, table):
+        """
+        docstring_title
+
+        @param table:
+        @type table:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('select name from SQLITE_MASTER where type = "table" and name = (?)', (table,))
         rslt = self.cursor.fetchone()
         if rslt == None:
@@ -4191,6 +6325,17 @@ class EntropyRepository:
         return True
 
     def doesColumnInTableExist(self, table, column):
+        """
+        docstring_title
+
+        @param table:
+        @type table:
+        @param column:
+        @type column:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('PRAGMA table_info( %s )' % (table,))
         rslt = (x[1] for x in self.cursor.fetchall())
         if column in rslt:
@@ -4198,6 +6343,19 @@ class EntropyRepository:
         return False
 
     def database_checksum(self, do_order = False, strict = True, strings = False):
+        """
+        docstring_title
+
+        @keyword do_order:
+        @type do_order:
+        @keyword strict:
+        @type strict:
+        @keyword strings:
+        @type strings:
+        @return:
+        @rtype:
+
+        """
 
         c_tup = ("database_checksum", do_order, strict, strings,)
         cache = self.live_cache.get(c_tup)
@@ -4214,6 +6372,17 @@ class EntropyRepository:
             flags_order = 'order by chost'
 
         def do_update_md5(m, cursor):
+            """
+            docstring_title
+
+            @param m:
+            @type m:
+            @param cursor:
+            @type cursor:
+            @return:
+            @rtype:
+
+            """
             mydata = cursor.fetchall()
             for record in mydata:
                 for item in record:
@@ -4273,18 +6442,51 @@ class EntropyRepository:
 #
 
     def updateInstalledTableSource(self, idpackage, source):
+        """
+        docstring_title
+
+        @param idpackage:
+        @type idpackage:
+        @param source:
+        @type source:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute("""
             UPDATE installedtable SET source = (?) WHERE idpackage = (?)
             """, (source, idpackage,))
 
     def addPackageToInstalledTable(self, idpackage, repoid, source = 0):
+        """
+        docstring_title
+
+        @param idpackage:
+        @type idpackage:
+        @param repoid:
+        @type repoid:
+        @keyword source:
+        @type source:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('INSERT into installedtable VALUES (?,?,?)',
                 (idpackage, repoid, source,))
             # self.commitChanges()
 
     def retrievePackageFromInstalledTable(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage:
+        @type idpackage:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             try:
                 self.cursor.execute("""
@@ -4295,12 +6497,30 @@ class EntropyRepository:
                 return 'Not available'
 
     def removePackageFromInstalledTable(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage:
+        @type idpackage:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM installedtable
             WHERE idpackage = (?)""", (idpackage,))
 
     def removePackageFromDependsTable(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage:
+        @type idpackage:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             try:
                 self.cursor.execute('DELETE FROM dependstable WHERE idpackage = (?)', (idpackage,))
@@ -4309,6 +6529,13 @@ class EntropyRepository:
                 return 1 # need reinit
 
     def createDependsTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.executescript("""
                 CREATE TABLE IF NOT EXISTS dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );
@@ -4319,11 +6546,25 @@ class EntropyRepository:
             self.commitChanges()
 
     def sanitizeDependsTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('DELETE FROM dependstable where iddependency = -1')
             self.commitChanges()
 
     def isDependsTableSane(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         try:
             self.cursor.execute('SELECT iddependency FROM dependstable WHERE iddependency = -1')
         except (self.dbapi2.OperationalError,):
@@ -4338,16 +6579,43 @@ class EntropyRepository:
         return True
 
     def createXpakTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('CREATE TABLE xpakdata ( idpackage INTEGER PRIMARY KEY, data BLOB );')
             self.commitChanges()
 
     def storeXpakMetadata(self, idpackage, blob):
+        """
+        docstring_title
+
+        @param idpackage:
+        @type idpackage:
+        @param blob:
+        @type blob:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('INSERT into xpakdata VALUES (?,?)', (int(idpackage), buffer(blob),))
             self.commitChanges()
 
     def retrieveXpakMetadata(self, idpackage):
+        """
+        docstring_title
+
+        @param idpackage:
+        @type idpackage:
+        @return:
+        @rtype:
+
+        """
         try:
             self.cursor.execute('SELECT data from xpakdata where idpackage = (?)', (idpackage,))
             mydata = self.cursor.fetchone()
@@ -4384,10 +6652,24 @@ class EntropyRepository:
         return meta
 
     def dropContent(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('DELETE FROM content')
 
     def dropAllIndexes(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT name FROM SQLITE_MASTER WHERE type = "index"')
         indexes = self.fetchall2set(self.cursor.fetchall())
         with self.__write_mutex:
@@ -4396,6 +6678,15 @@ class EntropyRepository:
                     self.cursor.execute('DROP INDEX IF EXISTS %s' % (index,))
 
     def listAllIndexes(self, only_entropy = True):
+        """
+        docstring_title
+
+        @keyword only_entropy:
+        @type only_entropy:
+        @return:
+        @rtype:
+
+        """
         self.cursor.execute('SELECT name FROM SQLITE_MASTER WHERE type = "index"')
         indexes = self.fetchall2set(self.cursor.fetchall())
         if not only_entropy:
@@ -4409,6 +6700,13 @@ class EntropyRepository:
 
 
     def createAllIndexes(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         self.createContentIndex()
         self.createBaseinfoIndex()
         self.createKeywordsIndex()
@@ -4433,6 +6731,13 @@ class EntropyRepository:
         self.createNeededlibraryidpackagesIndex()
 
     def createPackagesetsIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 try:
@@ -4442,6 +6747,13 @@ class EntropyRepository:
                     pass
 
     def createNeededlibraryidpackagesIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 try:
@@ -4457,6 +6769,13 @@ class EntropyRepository:
                     pass
 
     def createNeededlibrarypathsIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 try:
@@ -4474,6 +6793,13 @@ class EntropyRepository:
                     pass
 
     def createAutomergefilesIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 try:
@@ -4487,6 +6813,13 @@ class EntropyRepository:
                     pass
 
     def createNeededIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.executescript("""
@@ -4497,16 +6830,37 @@ class EntropyRepository:
                 """)
 
     def createMessagesIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS messagesindex ON messages ( idpackage )')
 
     def createCompileFlagsIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS flagsindex ON flags ( chost,cflags,cxxflags )')
 
     def createUseflagsIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.executescript("""
@@ -4516,12 +6870,28 @@ class EntropyRepository:
                 """)
 
     def dropContentIndex(self, only_file = False):
+        """
+        docstring_title
+
+        @keyword only_file:
+        @type only_file:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute("DROP INDEX IF EXISTS contentindex_file")
             if not only_file:
                 self.cursor.executescript("DROP INDEX IF EXISTS contentindex_couple;")
 
     def createContentIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 if self.doesTableExist("content"):
@@ -4531,11 +6901,25 @@ class EntropyRepository:
                     """)
 
     def createConfigProtectReferenceIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS configprotectreferenceindex ON configprotectreference ( protect )')
 
     def createBaseinfoIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.executescript("""
@@ -4546,21 +6930,49 @@ class EntropyRepository:
                 """)
 
     def createLicensedataIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS licensedataindex ON licensedata ( licensename )')
 
     def createLicensesIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS licensesindex ON licenses ( license )')
 
     def createCategoriesIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS categoriesindex_category ON categories ( category )')
 
     def createKeywordsIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.executescript("""
@@ -4570,6 +6982,13 @@ class EntropyRepository:
                 """)
 
     def createDependenciesIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.executescript("""
@@ -4579,6 +6998,13 @@ class EntropyRepository:
                 """)
 
     def createCountersIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.executescript("""
@@ -4587,6 +7013,13 @@ class EntropyRepository:
                 """)
 
     def createSourcesIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.executescript("""
@@ -4596,6 +7029,13 @@ class EntropyRepository:
                 """)
 
     def createProvideIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.executescript("""
@@ -4604,6 +7044,13 @@ class EntropyRepository:
                 """)
 
     def createConflictsIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.executescript("""
@@ -4612,12 +7059,26 @@ class EntropyRepository:
                 """)
 
     def createExtrainfoIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( description )')
                 self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex_pkgindex ON extrainfo ( idpackage )')
 
     def createEclassesIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.executescript("""
@@ -4627,6 +7088,17 @@ class EntropyRepository:
                 """)
 
     def regenerateCountersTable(self, vdb_path, output = False):
+        """
+        docstring_title
+
+        @param vdb_path:
+        @type vdb_path:
+        @keyword output:
+        @type output:
+        @return:
+        @rtype:
+
+        """
 
         # this is necessary now, counters table should be empty
         self.cursor.execute("DELETE FROM counters;")
@@ -4681,6 +7153,15 @@ class EntropyRepository:
         self.commitChanges()
 
     def clearTreeupdatesEntries(self, repository):
+        """
+        docstring_title
+
+        @param repository:
+        @type repository:
+        @return:
+        @rtype:
+
+        """
         if not self.doesTableExist("treeupdates"):
             self.createTreeupdatesTable()
         # treeupdates
@@ -4689,11 +7170,25 @@ class EntropyRepository:
             self.commitChanges()
 
     def resetTreeupdatesDigests(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('UPDATE treeupdates SET digest = "-1"')
             self.commitChanges()
 
     def migrateCountersTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self._migrateCountersTable()
 
@@ -4712,6 +7207,13 @@ class EntropyRepository:
         self.commitChanges()
 
     def createNeededlibrarypathsTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.executescript("""
                 DROP TABLE IF EXISTS neededlibrarypaths;
@@ -4724,6 +7226,13 @@ class EntropyRepository:
             """)
 
     def createNeededlibraryidpackagesTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.executescript("""
                 DROP TABLE IF EXISTS neededlibraryidpackages;
@@ -4735,6 +7244,13 @@ class EntropyRepository:
             """)
 
     def createInstalledTableSource(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('ALTER TABLE installedtable ADD source INTEGER;')
             self.cursor.execute("""
@@ -4742,18 +7258,46 @@ class EntropyRepository:
             """, (etpConst['install_sources']['unknown'],))
 
     def createPackagechangelogsTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('CREATE TABLE packagechangelogs ( category VARCHAR, name VARCHAR, changelog BLOB, PRIMARY KEY (category, name));')
 
     def createAutomergefilesTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('CREATE TABLE automergefiles ( idpackage INTEGER, configfile VARCHAR, md5 VARCHAR );')
 
     def createPackagesignaturesTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('CREATE TABLE packagesignatures ( idpackage INTEGER PRIMARY KEY, sha1 VARCHAR, sha256 VARCHAR, sha512 VARCHAR );')
 
     def createPackagespmphases(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute("""
                 CREATE TABLE packagespmphases (
@@ -4763,6 +7307,13 @@ class EntropyRepository:
             """)
 
     def createEntropyBranchMigrationTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute("""
                 CREATE TABLE entropy_branch_migration (
@@ -4776,31 +7327,82 @@ class EntropyRepository:
             """)
 
     def createPackagesetsTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('CREATE TABLE packagesets ( setname VARCHAR, dependency VARCHAR );')
 
     def createCategoriesdescriptionTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('CREATE TABLE categoriesdescription ( category VARCHAR, locale VARCHAR, description VARCHAR );')
 
     def createTreeupdatesTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('CREATE TABLE treeupdates ( repository VARCHAR PRIMARY KEY, digest VARCHAR );')
 
     def createLicensedataTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('CREATE TABLE licensedata ( licensename VARCHAR UNIQUE, text BLOB, compressed INTEGER );')
 
     def createLicensesAcceptedTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('CREATE TABLE licenses_accepted ( licensename VARCHAR UNIQUE );')
 
     def createInstalledTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.execute('DROP TABLE IF EXISTS installedtable;')
             self.cursor.execute('CREATE TABLE installedtable ( idpackage INTEGER PRIMARY KEY, repositoryname VARCHAR, source INTEGER );')
 
     def addDependsRelationToDependsTable(self, iterable):
+        """
+        docstring_title
+
+        @param iterable:
+        @type iterable:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             self.cursor.executemany('INSERT into dependstable VALUES (?,?)', iterable)
             if (self.entropyTools.is_user_in_entropy_group()) and \
@@ -4809,6 +7411,13 @@ class EntropyRepository:
                     self.connection.commit() # we don't care much about syncing the database since it's quite trivial
 
     def clearDependsTable(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
         if not self.doesTableExist("dependstable"):
             return
         self.cursor.executescript("""
@@ -4817,6 +7426,15 @@ class EntropyRepository:
         """)
 
     def regenerateDependsTable(self, output = True):
+        """
+        docstring_title
+
+        @keyword output:
+        @type output:
+        @return:
+        @rtype:
+
+        """
 
         depends = self.listAllDependencies()
         count = 0
@@ -4835,7 +7453,7 @@ class EntropyRepository:
                 )
 
             idpackage, rc = am(atom)
-            if idpackage == -1:
+            if idpackage is -1:
                 continue
             mydata.add((iddep, idpackage))
 
@@ -4846,6 +7464,15 @@ class EntropyRepository:
         self.sanitizeDependsTable()
 
     def regenerateLibrarypathsidpackageTable(self, output = True):
+        """
+        docstring_title
+
+        @keyword output:
+        @type output:
+        @return:
+        @rtype:
+
+        """
 
         if output:
             self.updateProgress(
@@ -4882,6 +7509,17 @@ class EntropyRepository:
             )
 
     def moveCountersToBranch(self, to_branch, from_branch = None):
+        """
+        docstring_title
+
+        @param to_branch:
+        @type to_branch:
+        @keyword from_branch:
+        @type from_branch:
+        @return:
+        @rtype:
+
+        """
         with self.__write_mutex:
             if from_branch is not None:
                 self.cursor.execute('UPDATE counters SET branch = (?) WHERE branch = (?)', (to_branch, from_branch,))
@@ -4891,11 +7529,31 @@ class EntropyRepository:
             self.clearCache()
 
     def atomMatchFetchCache(self, *args):
+        """
+        docstring_title
+
+        @param *args:
+        @type *args:
+        @return:
+        @rtype:
+
+        """
         if self.xcache:
             cached = self.dumpTools.loadobj("%s/%s/%s" % (self.dbMatchCacheKey, self.dbname, hash(tuple(args)),))
             if cached != None: return cached
 
     def atomMatchStoreCache(self, *args, **kwargs):
+        """
+        docstring_title
+
+        @param *args:
+        @type *args:
+        @param **kwargs:
+        @type **kwargs:
+        @return:
+        @rtype:
+
+        """
         if self.xcache:
             self.Cacher.push("%s/%s/%s" % (
                 self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),
@@ -4903,6 +7561,19 @@ class EntropyRepository:
             )
 
     def atomMatchValidateCache(self, cached_obj, multiMatch, extendedResults):
+        """
+        docstring_title
+
+        @param cached_obj:
+        @type cached_obj:
+        @param multiMatch:
+        @type multiMatch:
+        @param extendedResults:
+        @type extendedResults:
+        @return:
+        @rtype:
+
+        """
 
         # time wasted for a reason
         data, rc = cached_obj
@@ -4925,6 +7596,17 @@ class EntropyRepository:
         return cached_obj
 
     def _idpackageValidator_live(self, idpackage, reponame):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param reponame:
+        @type reponame:
+        @return:
+        @rtype:
+
+        """
         if (idpackage, reponame) in self.SystemSettings['live_packagemasking']['mask_matches']:
             # do not cache this
             return -1, self.SystemSettings['pkg_masking_reference']['user_live_mask']
@@ -4932,6 +7614,19 @@ class EntropyRepository:
             return idpackage, self.SystemSettings['pkg_masking_reference']['user_live_unmask']
 
     def _idpackageValidator_user_package_mask(self, idpackage, reponame, live):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param reponame:
+        @type reponame:
+        @param live:
+        @type live:
+        @return:
+        @rtype:
+
+        """
         # check if user package.mask needs it masked
 
         mykw = "%smask_ids" % (reponame,)
@@ -4955,6 +7650,19 @@ class EntropyRepository:
             return -1, myr
 
     def _idpackageValidator_user_package_unmask(self, idpackage, reponame, live):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param reponame:
+        @type reponame:
+        @param live:
+        @type live:
+        @return:
+        @rtype:
+
+        """
         # see if we can unmask by just lookin into user package.unmask stuff -> self.SystemSettings['unmask']
         mykw = "%sunmask_ids" % (reponame,)
         user_package_unmask_ids = self.SystemSettings.get(mykw)
@@ -4976,6 +7684,19 @@ class EntropyRepository:
             return idpackage, myr
 
     def _idpackageValidator_packages_db_mask(self, idpackage, reponame, live):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param reponame:
+        @type reponame:
+        @param live:
+        @type live:
+        @return:
+        @rtype:
+
+        """
         # check if repository packages.db.mask needs it masked
         repos_mask = {}
         client_plg_id = etpConst['system_settings_plugins_ids']['client_plugin']
@@ -5005,6 +7726,19 @@ class EntropyRepository:
                 return -1, myr
 
     def _idpackageValidator_package_license_mask(self, idpackage, reponame, live):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param reponame:
+        @type reponame:
+        @param live:
+        @type live:
+        @return:
+        @rtype:
+
+        """
         if self.SystemSettings['license_mask']:
             mylicenses = self.retrieveLicense(idpackage)
             mylicenses = mylicenses.strip().split()
@@ -5020,6 +7754,19 @@ class EntropyRepository:
                 return -1, myr
 
     def _idpackageValidator_keyword_mask(self, idpackage, reponame, live):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param reponame:
+        @type reponame:
+        @param live:
+        @type live:
+        @return:
+        @rtype:
+
+        """
 
         mykeywords = self.retrieveKeywords(idpackage)
         # WORKAROUND for buggy entries
@@ -5104,6 +7851,17 @@ class EntropyRepository:
     # function that validate one atom by reading keywords settings
     # validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
     def idpackageValidator(self, idpackage, live = True):
+        """
+        docstring_title
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @keyword live:
+        @type live:
+        @return:
+        @rtype:
+
+        """
 
         if self.dbname == etpConst['clientdbid']:
             return idpackage, 0
@@ -5149,6 +7907,15 @@ class EntropyRepository:
     # packages filter used by atomMatch, input must me foundIDs, a list like this:
     # [608,1867]
     def packagesFilter(self, results):
+        """
+        docstring_title
+
+        @param results:
+        @type results:
+        @return:
+        @rtype:
+
+        """
         # keywordsFilter ONLY FILTERS results if
         # self.dbname.startswith(etpConst['dbnamerepoprefix']) => repository database is open
         if not self.dbname.startswith(etpConst['dbnamerepoprefix']):
@@ -5157,7 +7924,7 @@ class EntropyRepository:
         newresults = set()
         for idpackage in results:
             idpackage, reason = self.idpackageValidator(idpackage)
-            if idpackage == -1: continue
+            if idpackage is -1: continue
             newresults.add(idpackage)
         return newresults
 
@@ -5196,7 +7963,7 @@ class EntropyRepository:
         return idpackage
 
     def __do_operator_compare(self, token, operators, compare):
-        if operators == ">" and compare == -1:
+        if operators == ">" and compare is -1:
             return token
         elif operators == ">=" and compare < 1:
             return token

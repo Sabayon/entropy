@@ -2363,7 +2363,8 @@ class Server(Singleton, TextInterface):
             for hash_key in sorted(signatures):
                 hash_func = getattr(self.entropyTools, hash_key)
                 signatures[hash_key] = hash_func(package_path)
-            dbconn.setSignatures(idpackage, signatures)
+            dbconn.setSignatures(idpackage, signatures['sha1'],
+                signatures['sha256'], signatures['sha512'])
             self.entropyTools.create_md5_file(package_path)
             # remove garbage
             os.remove(dbpath)
