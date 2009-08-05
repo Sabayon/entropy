@@ -678,11 +678,14 @@ class EntropyRepository:
         """
         self.cursor.execute("vacuum")
 
-    def commitChanges(self):
+    def commitChanges(self, force = False):
         """
         Commit actual changes and make them permanently stored.
+
+        @keyword force: force commit, despite read-only bit being set
+        @type force: bool
         """
-        if self.readOnly:
+        if self.readOnly and not force:
             return
 
         try:
@@ -863,15 +866,6 @@ class EntropyRepository:
         return new_actions
 
     def runTreeUpdatesActions(self, actions):
-        """
-        docstring_title
-
-        @param actions:
-        @type actions:
-        @return:
-        @rtype:
-
-        """
         # this is the place to add extra actions support
         """
         Method not suited for general purpose usage.
@@ -966,17 +960,6 @@ class EntropyRepository:
 
 
     def runTreeUpdatesMoveAction(self, move_command, quickpkg_queue):
-        """
-        docstring_title
-
-        @param move_command:
-        @type move_command:
-        @param quickpkg_queue:
-        @type quickpkg_queue:
-        @return:
-        @rtype:
-
-        """
         # -- move action:
         # 1) move package key to the new name: category + name + atom
         # 2) update all the dependencies in dependenciesreference to the new key
@@ -1071,17 +1054,6 @@ class EntropyRepository:
 
 
     def runTreeUpdatesSlotmoveAction(self, slotmove_command, quickpkg_queue):
-        """
-        docstring_title
-
-        @param slotmove_command:
-        @type slotmove_command:
-        @param quickpkg_queue:
-        @type quickpkg_queue:
-        @return:
-        @rtype:
-
-        """
         # -- slotmove action:
         # 1) move package slot
         # 2) update all the dependencies in dependenciesreference owning
@@ -1292,15 +1264,6 @@ class EntropyRepository:
         """
 
         def remove_conflicting_packages(pkgdata):
-            """
-            docstring_title
-
-            @param pkgdata:
-            @type pkgdata:
-            @return:
-            @rtype:
-
-            """
 
             manual_deps = set()
             removelist = self.retrieve_packages_to_remove(
@@ -1819,10 +1782,9 @@ class EntropyRepository:
         @type mirrorlist: list
         """
         with self.__write_mutex:
-            data = [(mirrorname, x,) for x in mirrorlist]
             self.cursor.executemany("""
             INSERT into mirrorlinks VALUES (?,?)
-            """, data)
+            """, ((mirrorname, x,) for x in mirrorlist))
 
     def addCategory(self, category):
         """
@@ -2600,7 +2562,7 @@ class EntropyRepository:
         with self.__write_mutex:
             self.cursor.execute("""
             INSERT INTO packagespmphases VALUES (?,?)
-            """, (idpackage,phases,))
+            """, (idpackage, phases,))
 
     def insertSources(self, idpackage, sources):
         """
@@ -2637,14 +2599,10 @@ class EntropyRepository:
         @param conflicts: list of dep. conflicts
         @type conflicts: list
         """
-
-        def mymf(confict):
-            return (idpackage, conflict,)
-
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into conflicts VALUES (?,?)
-            """, map(mymf, conflicts))
+            """, ((idpackage, x,) for x in conflicts))
 
     def insertMessages(self, idpackage, messages):
         """
@@ -2655,57 +2613,54 @@ class EntropyRepository:
         @param messages: list of messages
         @type messages: list
         """
-        def mymf(message):
-            return (idpackage, message,)
-
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into messages VALUES (?,?)
-            """, map(mymf, messages))
+            """, ((idpackage, x,) for x in messages))
 
     def insertProvide(self, idpackage, provides):
         """
-        docstring_title
+        Insert PROVIDE metadata for idpackage.
+        This has been added for supporting Portage Source Package Manager
+        old-style meta-packages support.
+        Packages can provide extra atoms, you can see it like aliases, where
+        these can be given by multiple packages. This allowed to make available
+        multiple applications providing the same functionality which depending
+        packages can reference, without forcefully being bound to a single
+        package.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @param provides:
-        @type provides:
-        @return:
-        @rtype:
-
+        @param provides: list of atom strings
+        @type provides: list
         """
-
-        def myiter():
-            for atom in provides:
-                yield (idpackage, atom,)
-
         with self.__write_mutex:
-            self.cursor.executemany('INSERT into provide VALUES (?,?)', myiter())
+            self.cursor.executemany("""
+            INSERT into provide VALUES (?,?)
+            """, ((idpackage, x,) for x in provides))
 
     def insertNeeded(self, idpackage, neededs):
         """
-        docstring_title
+        Insert package libraries' ELF object NEEDED string for package.
+        Return its identifier (idneeded).
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @param neededs:
-        @type neededs:
-        @return:
-        @rtype:
-
+        @param neededs: list of NEEDED string (as shown in `readelf -d elf.so`)
+        @type neededs: string
         """
-
-        mydata = set()
-        for needed, elfclass in neededs:
+        def mymf(needed_data):
+            needed, elfclass = needed_data
             idneeded = self.isNeededAvailable(needed)
             if idneeded is -1:
                 # create eclass
                 idneeded = self.addNeeded(needed)
-            mydata.add((idpackage, idneeded, elfclass))
+            return (idpackage, idneeded, elfclass,)
 
         with self.__write_mutex:
-            self.cursor.executemany('INSERT into needed VALUES (?,?,?)', mydata)
+            self.cursor.executemany("""
+            INSERT into needed VALUES (?,?,?)
+            """, map(mymf, neededs))
 
     def insertEclasses(self, idpackage, eclasses):
         """
@@ -6707,6 +6662,7 @@ class EntropyRepository:
         @rtype:
 
         """
+        self.createMirrorlinksIndex()
         self.createContentIndex()
         self.createBaseinfoIndex()
         self.createKeywordsIndex()
@@ -6730,6 +6686,20 @@ class EntropyRepository:
         self.createNeededlibrarypathsIndex()
         self.createNeededlibraryidpackagesIndex()
 
+    def createMirrorlinksIndex(self):
+        """
+        docstring_title
+
+        @return:
+        @rtype:
+
+        """
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.execute("""
+                CREATE INDEX IF NOT EXISTS mirrorlinks_mirrorname
+                ON mirrorlinks ( mirrorname )""")
+
     def createPackagesetsIndex(self):
         """
         docstring_title
@@ -6741,8 +6711,9 @@ class EntropyRepository:
         if self.indexing:
             with self.__write_mutex:
                 try:
-                    self.cursor.execute('CREATE INDEX IF NOT EXISTS packagesetsindex ON packagesets ( setname )')
-                    self.commitChanges()
+                    self.cursor.execute("""
+                    CREATE INDEX IF NOT EXISTS packagesetsindex
+                    ON packagesets ( setname )""")
                 except self.dbapi2.OperationalError:
                     pass
 
