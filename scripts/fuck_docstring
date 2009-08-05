@@ -1,0 +1,144 @@
+#!/usr/bin/python
+import sys
+import os
+import re
+
+"""
+@todo: fix .find('"\"\"')
+@todo: string trailing "#"
+@todo: support function args split into multiple lines
+"""
+
+args = sys.argv[1:]
+indent_level = 4 # spaces
+func_reg = re.compile(r"\s*def.*?\w\(.*?\):$")
+indent_level_reg = re.compile(r"^\s*")
+args_reg = re.compile(r"\(.*?\)")
+do_docstring_private = False
+do_docstring_protected = True
+do_write_return_docstring = True
+
+if not args:
+    sys.stdout.write("usage: %s [path]\n" % (sys.argv[0],))
+    raise SystemExit(1)
+
+def write_new_line(buf, data):
+    buf.write(data)
+    sys.stdout.write(data)
+
+for path in args:
+
+    if not os.access(path, os.F_OK | os.R_OK | os.W_OK):
+        sys.stderr.write("unable to deal with %s\n" % (path,))
+        sys.stderr.flush()
+        continue
+
+    f = open(path, "r")
+    line = f.readline()
+
+    out = open(path + ".ds", "w")
+
+    while line:
+
+        # function name
+        r_match = func_reg.match(line)
+        if r_match is not None:
+
+            ###
+            ### extract metadata
+            ###
+            # we've found a defined function
+            raw_func_str = r_match.group()
+            my_indent_level = len(indent_level_reg.match(line).group())
+            extr_str = r_match.group()[:-1].strip()[len("def"):].strip()
+            dodoc = True
+            if extr_str.startswith("__") and not do_docstring_private:
+                dodoc = False
+            elif extr_str.startswith("__") and not do_docstring_protected:
+                dodoc = False
+
+            dowrite = False
+            grab_lines = []
+            args_string = ''
+            if dodoc:
+
+                # write current line, to make sure to have function definition
+                # in place
+                write_new_line(out, line)
+
+                my_indent_level += indent_level
+
+                # extract arguments
+                my_args = args_reg.findall(extr_str)
+                if my_args:
+                    my_args = my_args[0][1:-1].split(",")
+                    if "self" in my_args:
+                        my_args.remove("self")
+
+                    # eventually write arguments string
+                    for myarg in my_args:
+
+                        if "=" in myarg:
+                            myarg = myarg.strip().split()[0]
+                            # keyword arg
+                            args_string += '%s@keyword %s:\n' % (
+                                " "*my_indent_level, myarg,)
+                        else:
+                            myarg = myarg.strip()
+                            # arg
+                            args_string += '%s@param %s:\n' % (
+                                " "*my_indent_level, myarg,)
+
+                        args_string += '%s@type %s:\n' % (
+                            " "*my_indent_level, myarg,)
+
+                    if do_write_return_docstring:
+                        args_string += '%s@return:\n' % (
+                            " "*my_indent_level,)
+                        args_string += '%s@rtype:\n' % (
+                            " "*my_indent_level,)
+
+
+                # now it is necessary to check if a docstring is
+                # already set, if so, skip this
+                # grab next line
+                while 1:
+                    line = f.readline()
+                    if not line.strip():
+                        # line empty
+                        grab_lines.append(line)
+                        continue
+                    elif line.find('"""') == -1:
+                        # line is not empty and does not contain
+                        # a docstring
+                        dowrite = True
+                        grab_lines.append(line)
+                    # current line will be written to stdout
+                    # after if condition
+                    break
+
+            if dowrite:
+
+                mydocstr = '%s"""\n%s%s\n\n%s\n%s"""\n' % (
+                    " "*my_indent_level, " "*my_indent_level,
+                    "docstring_title", args_string,
+                    " "*my_indent_level,
+                )
+                grab_lines.insert(0, mydocstr)
+
+            # flushing read lines, preparing for contining or
+            # writing docstring
+            for grab_line in grab_lines:
+                write_new_line(out, grab_line)
+
+            if dowrite:
+                line = f.readline()
+                continue
+
+        write_new_line(out, line)
+        line = f.readline()
+
+    sys.stdout.flush()
+    out.flush()
+    out.close()
+    f.close()
