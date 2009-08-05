@@ -64,6 +64,8 @@
     </li>
     </ul>
     </li>
+    <li> <strong class="uidlink"><a href="entropy.services.system.executors.Base-class.html">entropy.services.system.executors.Base</a></strong>
+    </li>
     <li> <strong class="uidlink"><a href="entropy.client.services.ugc.commands.Base-class.html">entropy.client.services.ugc.commands.Base</a></strong>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.client.services.ugc.commands.Client-class.html">entropy.client.services.ugc.commands.Client</a></strong>
@@ -75,8 +77,6 @@
     </ul>
     </li>
     </ul>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.services.system.executors.Base-class.html">entropy.services.system.executors.Base</a></strong>
     </li>
     <li> <strong class="uidlink">urllib2.BaseHandler</strong>
     <ul>
@@ -210,8 +210,6 @@ Content (UGC) infrastructure.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.interfaces.package.Package-class.html">entropy.client.interfaces.package.Package</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.spm.PortagePlugin-class.html">entropy.spm.PortagePlugin</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.qa.QAInterface-class.html">entropy.qa.QAInterface</a></strong>:
       <em class="summary">Entropy QA interface.</em>
     </li>
@@ -260,9 +258,9 @@ Content (UGC) infrastructure.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.BuiltInCommands-class.html">entropy.services.interfaces.SocketHost.BuiltInCommands</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.services.system.commands.Repository-class.html">entropy.services.system.commands.Repository</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.services.repository.commands.Repository-class.html">entropy.services.repository.commands.Repository</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.services.system.commands.Repository-class.html">entropy.services.system.commands.Repository</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.test.commands.Test-class.html">entropy.services.test.commands.Test</a></strong>
     </li>
@@ -276,9 +274,9 @@ Content (UGC) infrastructure.</em>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.services.system.interfaces.Server-class.html">entropy.services.system.interfaces.Server</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.services.repository.interfaces.Server-class.html">entropy.services.repository.interfaces.Server</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.services.test.interfaces.Server-class.html">entropy.services.test.interfaces.Server</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.services.repository.interfaces.Server-class.html">entropy.services.repository.interfaces.Server</a></strong>
     </li>
     </ul>
     </li>
@@ -425,6 +423,9 @@ Content (UGC) infrastructure.</em>
     <li> <strong class="uidlink"><a href="entropy.exceptions.SystemDatabaseError-class.html">entropy.exceptions.SystemDatabaseError</a></strong>:
       <em class="summary">Cannot open system database</em>
     </li>
+    <li> <strong class="uidlink"><a href="entropy.exceptions.TimeoutError-class.html">entropy.exceptions.TimeoutError</a></strong>:
+      <em class="summary">Generic Timeout Error exception</em>
+    </li>
     </ul>
     </li>
     </ul>
@@ -446,6 +447,13 @@ Content (UGC) infrastructure.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.db.ServerRepositoryStatus-class.html">entropy.db.ServerRepositoryStatus</a></strong>:
       <em class="summary">Server-side Repositories status information container.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.spm.SpmPlugin-class.html">entropy.spm.SpmPlugin</a></strong>:
+      <em class="summary">Base class for Source Package Manager plugins</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.spm.PortagePlugin-class.html">entropy.spm.PortagePlugin</a></strong>
+    </li>
+    </ul>
     </li>
     <li> <strong class="uidlink"><a href="entropy.core.SystemSettings-class.html">entropy.core.SystemSettings</a></strong>:
       <em class="summary">This is the place where all the Entropy settings are stored if they
@@ -478,7 +486,7 @@ Content (UGC) infrastructure.</em>
       <em class="summary">list() -&gt; new list list(sequence) -&gt; new list initialized 
         from sequence's items</em>
     <ul>
-    <li> <strong class="uidlink"><a href="entropy.spm.PortagePlugin.paren_normalize-class.html">entropy.spm.PortagePlugin.paren_normalize</a></strong>:
+    <li> <strong class="uidlink"><a href="entropy.spm.SpmPlugin.paren_normalize-class.html">entropy.spm.SpmPlugin.paren_normalize</a></strong>:
       <em class="summary">Take a dependency structure as returned by paren_reduce or 
         use_reduce and generate an equivalent structure that has no 
         redundant lists.</em>
@@ -521,7 +529,7 @@ Content (UGC) infrastructure.</em>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sun Jul 19 08:06:37 2009
+    Generated by Epydoc 3.0.1 on Wed Aug  5 16:58:52 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

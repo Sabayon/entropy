@@ -668,10 +668,25 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="md5sum_directory"></a><span class="summary-sig-name">md5sum_directory</span>(<span class="summary-sig-arg">directory</span>,
-        <span class="summary-sig-arg">get_obj</span>=<span class="summary-sig-default">False</span>)</span></td>
+          <td><span class="summary-sig"><a name="md5sum_directory"></a><span class="summary-sig-name">md5sum_directory</span>(<span class="summary-sig-arg">directory</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#md5sum_directory">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="md5obj_directory"></a><span class="summary-sig-name">md5obj_directory</span>(<span class="summary-sig-arg">directory</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.tools-pysrc.html#md5obj_directory">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -2653,6 +2668,30 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
         <a name="ldd_avail_check"></a><span class="summary-name">ldd_avail_check</span> = <code title="False">False</code>
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="entropy.tools-module.html#ETP_ARCH_MAP" class="summary-name">ETP_ARCH_MAP</a> = <code title="{('i386', 'i486', 'i586', 'i686'): 'x86',
+ ('ppc'): None,
+ ('sun4u'): None,
+ ('x86_64'): 'amd64'}"><code class="variable-group">{</code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">i386</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i486</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i586</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i686</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">x86</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">ppc</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="arch"></a><span class="summary-name">arch</span> = <code title="'x86'"><code class="variable-quote">'</code><code class="variable-string">x86</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="arches"></a><span class="summary-name">arches</span> = <code title="('i386', 'i486', 'i586', 'i686')"><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">i386</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i486</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i586</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i686</code><code class="variable-quote">'</code><code class="variable-group">)</code></code>
+    </td>
+  </tr>
 </table>
 <!-- ==================== FUNCTION DETAILS ==================== -->
 <a name="section-FunctionDetails"></a>
@@ -3087,6 +3126,27 @@ d<code class="re-op">*</code><code class="re-group">)</code><code class="re-op">
   </dl>
 </td></tr></table>
 </div>
+<a name="ETP_ARCH_MAP"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">ETP_ARCH_MAP</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">i386</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i486</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i586</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i686</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">x86</code><code class="variable-quote">'</code><code class="variable-op">,</code>
+ <code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">ppc</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
+ <code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">sun4u</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
+ <code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">x86_64</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">amd64</code><code class="variable-quote">'</code><code class="variable-group">}</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
@@ -3119,7 +3179,7 @@ d<code class="re-op">*</code><code class="re-group">)</code><code class="re-op">
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sun Jul 19 08:06:37 2009
+    Generated by Epydoc 3.0.1 on Wed Aug  5 16:58:52 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

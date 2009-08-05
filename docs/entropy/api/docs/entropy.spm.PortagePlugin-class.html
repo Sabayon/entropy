@@ -56,6 +56,35 @@
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class PortagePlugin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.spm-pysrc.html#PortagePlugin">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__86" name="uml_class_diagram_for_entropy__86">
+<area shape="rect" href="entropy.tools-module.html" title="# DESCRIPTION: # generic tools for all the handlers applications" alt="" coords="17,215,396,233"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html#init_singleton" title="Source Package Manager Plugin singleton method." alt="" coords="17,236,396,255"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html#write_to_log" title="entropy.spm.PortagePlugin.write_to_log" alt="" coords="17,255,396,273"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html#write_traceback_to_log" title="entropy.spm.PortagePlugin.write_traceback_to_log" alt="" coords="17,273,396,292"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html#list_glsa_packages" title="entropy.spm.PortagePlugin.list_glsa_packages" alt="" coords="17,292,396,311"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html#get_glsa_id_information" title="entropy.spm.PortagePlugin.get_glsa_id_information" alt="" coords="17,311,396,329"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html#run_fixpackages" title="entropy.spm.PortagePlugin.run_fixpackages" alt="" coords="17,329,396,348"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html#get_world_file" title="entropy.spm.PortagePlugin.get_world_file" alt="" coords="17,348,396,367"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html#get_third_party_mirrors" title="entropy.spm.PortagePlugin.get_third_party_mirrors" alt="" coords="17,367,396,385"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html#get_spm_setting" title="entropy.spm.PortagePlugin.get_spm_setting" alt="" coords="17,385,396,404"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html#get_config_protect_and_mask" title="entropy.spm.PortagePlugin.get_config_protect_and_mask" alt="" coords="17,404,396,423"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html#get_best_atom" title="entropy.spm.PortagePlugin.get_best_atom" alt="" coords="17,423,396,441"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html#get_best_masked_atom" title="entropy.spm.PortagePlugin.get_best_masked_atom" alt="" coords="17,441,396,460"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html#get_category_description_data" title="entropy.spm.PortagePlugin.get_category_description_data" alt="" coords="17,460,396,479"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html#extract_pkg_metadata" title="entropy.spm.PortagePlugin.extract_pkg_metadata" alt="" coords="17,497,396,516"/>
+<area shape="rect" href="entropy.spm.PortagePlugin-class.html" title="entropy.spm.PortagePlugin" alt="" coords="16,197,397,517"/>
+<area shape="rect" href="entropy.spm.SpmPlugin.paren_normalize-class.html" title="Take a dependency structure as returned by paren_reduce or use_reduce and &#160;generate an equivalent structure that has no redundant lists." alt="" coords="156,140,257,159"/>
+<area shape="rect" href="entropy.spm.SpmPlugin-class.html" title="Base class for Source Package Manager plugins" alt="" coords="155,123,259,168"/>
+<area shape="rect" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="123,36,291,55"/>
+<area shape="rect" href="entropy.core.Singleton-class.html#is_destroyed" title="In our world, Singleton instances may be destroyed, this is done by setting a private bool var __is_destroyed" alt="" coords="123,55,291,73"/>
+<area shape="rect" href="entropy.core.Singleton-class.html#is_singleton" title="Return if the instance is a singleton" alt="" coords="123,73,291,92"/>
+<area shape="rect" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton" alt="" coords="121,11,292,93"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__86.gif" alt='' usemap="#uml_class_diagram_for_entropy__86" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
 <!-- ==================== NESTED CLASSES ==================== -->
 <a name="section-NestedClasses"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -64,14 +93,11 @@
   <td align="left" colspan="2" class="table-header">
     <span class="table-header">Nested Classes</span></td>
 </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="entropy.spm.PortagePlugin.paren_normalize-class.html" class="summary-name">paren_normalize</a><br />
-      Take a dependency structure as returned by paren_reduce or 
-        use_reduce and generate an equivalent structure that has no 
-        redundant lists.
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.spm.SpmPlugin-class.html">SpmPlugin</a></code></b>:
+      <code><a href="entropy.spm.SpmPlugin.paren_normalize-class.html">paren_normalize</a></code>
+      </p>
     </td>
   </tr>
 </table>
@@ -89,10 +115,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="__init__"></a><span class="summary-sig-name">__init__</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">OutputInterface</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.spm.PortagePlugin-class.html#init_singleton" class="summary-sig-name">init_singleton</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">OutputInterface</span>)</span><br />
+      Source Package Manager Plugin singleton method.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm-pysrc.html#PortagePlugin.__init__">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm-pysrc.html#PortagePlugin.init_singleton">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1153,6 +1180,57 @@
       
     </td>
   </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
+      <code><a href="entropy.core.Singleton-class.html#is_destroyed">is_destroyed</a></code>,
+      <code><a href="entropy.core.Singleton-class.html#is_singleton">is_singleton</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__init__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__str__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== STATIC METHODS ==================== -->
+<a name="section-StaticMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Static Methods</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
+      <code><a href="entropy.core.Singleton-class.html#__new__">__new__</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
 </table>
 <!-- ==================== METHOD DETAILS ==================== -->
 <a name="section-MethodDetails"></a>
@@ -1163,6 +1241,39 @@
     <span class="table-header">Method Details</span></td>
 </tr>
 </table>
+<a name="init_singleton"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">init_singleton</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">OutputInterface</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm-pysrc.html#PortagePlugin.init_singleton">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Source Package Manager Plugin singleton method. This method must be 
+  reimplemented by subclasses.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>output_interface</code></strong> - Entropy output interface</li>
+    </ul></dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>NotImplementedError</strong></code> - when method is not reimplemented</li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="entropy.spm.SpmPlugin-class.html#init_singleton">SpmPlugin.init_singleton</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
 <a name="paren_reduce"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -1318,7 +1429,7 @@ leaving an array with subarrays
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sun Jul 19 08:06:45 2009
+    Generated by Epydoc 3.0.1 on Wed Aug  5 16:58:58 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
