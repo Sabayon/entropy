@@ -1873,6 +1873,7 @@ class Repository:
         )
         dbconn = self.Entropy.open_repository(repo)
         dbconn.createAllIndexes()
+        dbconn.commitChanges(force = True)
         # get list of indexes
         repo_indexes = dbconn.listAllIndexes()
         if self.Entropy.clientDbconn != None:
