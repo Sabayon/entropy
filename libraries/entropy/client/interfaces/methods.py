@@ -116,7 +116,15 @@ class RepositoryMixin:
                 continue
             self.__repodb_cache[item].closeDB()
         self.__repodb_cache.clear()
-        if mask_clear: self.SystemSettings.clear()
+
+        # disable hooks during SystemSettings cleanup
+        # otherwise it makes entropy.client.interfaces.repository crazy
+        old_value = self._can_run_sys_set_hooks
+        self._can_run_sys_set_hooks = False
+        if mask_clear:
+            self.SystemSettings.clear()
+        self._can_run_sys_set_hooks = old_value
+
 
     def is_repository_connection_cached(self, repoid):
         if (repoid,etpConst['systemroot'],) in self.__repodb_cache:

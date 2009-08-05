@@ -46,9 +46,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         SystemSettingsPlugin.__init__(self, plugin_id, helper_interface)
         self.__repos_files = {}
         self.__repos_mtime = {}
-        # this is a workaround to avoid running
-        # some post_setup hooks at class init
-        self.__hooks_on_init = True
 
     def __setup_repos_files(self, system_settings):
         """
@@ -445,13 +442,12 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         """
         Reimplemented from SystemSettingsPlugin.
         """
-        if not self.__hooks_on_init:
+        if self._helper._can_run_sys_set_hooks:
             # run post-branch migration scripts if branch setting got changed
             self.__run_post_branch_migration_hooks(system_settings_instance)
             # run post-branch upgrade migration scripts if the function
             # above created migration files to handle
             self.__run_post_branch_upgrade_hooks(system_settings_instance)
-        self.__hooks_on_init = False
 
 
 class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixin, \
@@ -462,6 +458,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             load_ugc = True, url_fetcher = None,
             multiple_url_fetcher = None):
 
+        self._can_run_sys_set_hooks = False
         const_debug_write(__name__, "debug enabled")
         self.sys_settings_client_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
@@ -574,6 +571,8 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         # Make sure we connect Entropy Client plugin AFTER client db init
         self.SystemSettings.add_plugin(self.sys_settings_client_plugin)
 
+        # enable System Settings hooks
+        self._can_run_sys_set_hooks = True
         const_debug_write(__name__, "singleton loaded")
 
 
