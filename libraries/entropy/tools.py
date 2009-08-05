@@ -2389,7 +2389,11 @@ def save_repository_settings(repodata, remove = False, disable = False, enable =
             line = repolines_data[cc]['line']
             content.append(line)
 
-    _save_repositories_content(content)
+    try:
+        _save_repositories_content(content)
+    except OSError: # permission denied?
+        return False
+    return True
 
 def _save_repositories_content(content):
     if os.path.isfile(etpConst['repositoriesconf']):
