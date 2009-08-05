@@ -276,7 +276,7 @@ def noticeBoardReader(reponame):
             sel = show_notice_selector('', items)
         except KeyboardInterrupt:
             return 0
-        if (sel >= 0) and (sel <= counter):
+        if (sel >= 0) and (sel < counter):
             show_notice(sel, items.get(sel))
         elif sel == -1:
             return 0
