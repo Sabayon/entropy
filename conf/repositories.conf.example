@@ -7,10 +7,10 @@
 #|   repository|repository_id|repository description|<packages mirror 1> <packages mirror 2> <...>|<database uri>#compression_method#<service port,ssl service port>
 #
 #    example:
-#|       repository|sabayonlinux.org|Sabayon Linux Official Repository|http://www.sabayonlinux.org/packages|http://www.sabayonlinux.org/database#bz2#1026,1027
+#|       repository|sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org/packages|http://pkg.sabayon.org/db#bz2#1026,1027
 #
 # Sabayon Linux Official Repository
-repository|sabayonlinux.org|Sabayon Linux Official Repository|http://svn.sabayonlinux.org/entropy|http://svn.sabayonlinux.org/entropy#bz2
+repository|sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org|http://pkg.sabayon.org#bz2
 repository|sabayonlinux.org||http://mirrors.cs.wmich.edu/sabayon/entropy|
 repository|sabayonlinux.org||http://ftp.cc.uoc.gr/mirrors/linux/SabayonLinux/entropy|
 repository|sabayonlinux.org||http://mirror.dun.nu/sabayonlinux/entropy|
