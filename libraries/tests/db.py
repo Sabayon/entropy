@@ -20,6 +20,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.client_sysset_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         self.test_db = self.__open_test_db()
+        self.test_db2 = self.__open_test_db()
         self.SystemSettings = SystemSettings()
 
     def tearDown(self):
@@ -29,6 +30,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         sys.stdout.write("%s ran\n" % (self,))
         sys.stdout.flush()
         self.test_db.closeDB()
+        self.test_db2.closeDB()
         self.Client.destroy()
 
     def __open_test_db(self):
@@ -39,6 +41,54 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(self.test_db_name,self.test_db.dbname)
         self.assert_(self.test_db.doesTableExist('baseinfo'))
         self.assert_(self.test_db.doesTableExist('extrainfo'))
+
+    def test_db_contentdiff(self):
+
+        test_entry = {
+            u'/path/to/foo': u"dir",
+            u'/path/to/foo/foo': u"obj",
+        }
+
+        test_pkg = _misc.get_test_package()
+        data = self.Spm.extract_pkg_metadata(test_pkg, silent = True)
+        data['content'].update(test_entry.copy())
+        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        db_data = self.test_db.getPackageData(idpackage)
+
+        test_pkg2 = _misc.get_test_package2()
+        data2 = self.Spm.extract_pkg_metadata(test_pkg2, silent = True)
+        data2['content'].update(test_entry.copy())
+        idpackage2, rev2, new_data2 = self.test_db2.handlePackage(data2)
+        db_data2 = self.test_db2.getPackageData(idpackage2)
+
+        cont_diff = self.test_db.contentDiff(idpackage, self.test_db2,
+            idpackage2)
+
+        for key in test_entry:
+            try:
+                self.assert_(key not in cont_diff)
+            except AssertionError:
+                print key
+                raise
+
+        py_diff = sorted([x for x in db_data['content'] if x not in \
+            db_data2['content']])
+
+        self.assertEqual(sorted(cont_diff), py_diff)
+
+        orig_diff = [u'/lib64', u'/lib64/libz.so', u'/lib64/libz.so.1',
+            u'/lib64/libz.so.1.2.3', u'/usr/include', u'/usr/include/zconf.h',
+            u'/usr/include/zlib.h', u'/usr/lib64/libz.a',
+            u'/usr/lib64/libz.so', u'/usr/share/doc/zlib-1.2.3-r1',
+            u'/usr/share/doc/zlib-1.2.3-r1/ChangeLog.bz2',
+            u'/usr/share/doc/zlib-1.2.3-r1/FAQ.bz2',
+            u'/usr/share/doc/zlib-1.2.3-r1/README.bz2',
+            u'/usr/share/doc/zlib-1.2.3-r1/algorithm.txt.bz2',
+            u'/usr/share/man', u'/usr/share/man/man3',
+            u'/usr/share/man/man3/zlib.3.bz2'
+        ]
+        self.assertEqual(orig_diff, py_diff)
+
 
     def test_db_insert_compare_match(self):
 
