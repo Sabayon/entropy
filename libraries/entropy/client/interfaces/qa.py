@@ -56,7 +56,7 @@ class UGCErrorReportInterface(ErrorReportInterface):
         @param repository_id -- valid repository identifier
         @type basestring
         """
-        ErrorReportInterface.__init__(self)
+        ErrorReportInterface.__init__(self, '#fake#')
         self.__system_settings = SystemSettings()
 
         if repository_id == None:
