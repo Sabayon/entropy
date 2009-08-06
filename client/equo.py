@@ -870,7 +870,7 @@ def main():
 
         from entropy.client.interfaces.qa import UGCErrorReportInterface
         try:
-            error = UGCErrorReportInterface( )
+            error = UGCErrorReportInterface()
         except (IncorrectParameter, OnlineMirrorError,):
             from entropy.qa import ErrorReportInterface
             post_url = "http://svn.sabayonlinux.org/entropy/standard" + \
