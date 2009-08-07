@@ -1653,7 +1653,7 @@ class EntropyRepository:
         if not srv_updates.has_key('removed'):
             srv_updates['removed'] = {}
         if not srv_updates.has_key('light'):
-            srv_updates['light'] = []
+            srv_updates['light'] = {}
 
         # if pkgatom (rss_atom) is in the "added" metadata, drop it
         if rss_atom in srv_updates['added']:
@@ -3631,12 +3631,10 @@ class EntropyRepository:
         """
         This method should be considered internal and not suited for general
         audience.
+        This method rewrites "treeupdates" metadata in repository.
 
-        @param updates:
-        @type updates:
-        @return:
-        @rtype:
-
+        @param updates: new treeupdates metadata
+        @type updates: list
         """
         with self.__write_mutex:
             self.cursor.execute('DELETE FROM treeupdatesactions')
@@ -3647,78 +3645,99 @@ class EntropyRepository:
 
     def removeTreeUpdatesActions(self, repository):
         """
-        docstring_title
+        This method should be considered internal and not suited for general
+        audience.
+        This method removes "treeupdates" metadata in repository.
 
-        @param repository:
-        @type repository:
-        @return:
-        @rtype:
-
+        @param repository: remove treeupdates metadata for provided repository
+        @type repository: string
         """
         with self.__write_mutex:
-            self.cursor.execute('DELETE FROM treeupdatesactions WHERE repository = (?)', (repository,))
+            self.cursor.execute("""
+            DELETE FROM treeupdatesactions WHERE repository = (?)
+            """, (repository,))
             self.commitChanges()
 
     def insertTreeUpdatesActions(self, updates, repository):
         """
-        docstring_title
+        This method should be considered internal and not suited for general
+        audience.
+        This method insert "treeupdates" metadata in repository.
 
-        @param updates:
-        @type updates:
-        @param repository:
-        @type repository:
-        @return:
-        @rtype:
-
+        @param updates: new treeupdates metadata
+        @type updates: list
+        @param repository: insert treeupdates metadata for provided repository
+        @type repository: string
         """
         with self.__write_mutex:
             myupdates = ([repository]+list(x) for x in updates)
-            self.cursor.executemany('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', myupdates)
+            self.cursor.executemany("""
+            INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)
+            """, myupdates)
             self.commitChanges()
 
     def setRepositoryUpdatesDigest(self, repository, digest):
         """
-        docstring_title
+        This method should be considered internal and not suited for general
+        audience.
+        Set "treeupdates" checksum (digest) for provided repository.
 
-        @param repository:
-        @type repository:
-        @param digest:
-        @type digest:
-        @return:
-        @rtype:
-
+        @param repository: repository identifier
+        @type repository: string
+        @param digest: treeupdates checksum string (md5)
+        @type digest: string
         """
         with self.__write_mutex:
-            self.cursor.execute('DELETE FROM treeupdates where repository = (?)', (repository,)) # doing it for safety
-            self.cursor.execute('INSERT INTO treeupdates VALUES (?,?)', (repository, digest,))
+            self.cursor.executescript("""
+            DELETE FROM treeupdates where repository = (?);
+            INSERT INTO treeupdates VALUES (?,?);
+            """, (repository, repository, digest,))
 
     def addRepositoryUpdatesActions(self, repository, actions, branch):
         """
-        docstring_title
+        This method should be considered internal and not suited for general
+        audience.
+        Add "treeupdates" actions for repository and branch provided.
 
-        @param repository:
-        @type repository:
-        @param actions:
-        @type actions:
-        @param branch:
-        @type branch:
-        @return:
-        @rtype:
-
+        @param repository: repository identifier
+        @type repository: string
+        @param actions: list of raw treeupdates action strings
+        @type actions: list
+        @param branch: branch metadata to bind to the provided actions
+        @type branch: string
         """
 
         mytime = str(self.entropyTools.get_current_unix_time())
         with self.__write_mutex:
-            myupdates = [
+            myupdates = (
                 (repository, x, branch, mytime,) for x in actions \
                 if not self.doesTreeupdatesActionExist(repository, x, branch)
-            ]
-            self.cursor.executemany('INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)', myupdates)
+            )
+            self.cursor.executemany("""
+            INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)
+            """, myupdates)
 
     def doesTreeupdatesActionExist(self, repository, command, branch):
+        """
+        This method should be considered internal and not suited for general
+        audience.
+        Return whether provided "treeupdates" action in repository with
+        provided branch exists.
+
+        @param repository: repository identifier
+        @type repository: string
+        @param command: treeupdates command
+        @type command: string
+        @param branch: branch metadata bound to command argument value given
+        @type branch: string
+        @return: if True, provided treeupdates action already exists
+        @rtype: bool
+        """
         self.cursor.execute("""
         SELECT * FROM treeupdatesactions 
-        WHERE repository = (?) and command = (?) and branch = (?)""", (repository, command, branch,))
+        WHERE repository = (?) and command = (?)
+        and branch = (?)""", (repository, command, branch,))
+
         result = self.cursor.fetchone()
         if result:
             return True
