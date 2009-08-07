@@ -901,7 +901,7 @@ class Package:
                 f.flush()
                 f.close()
                 # update counter inside clientDatabase
-                self.Entropy.clientDbconn.insertCounter(newidpackage, counter)
+                self.Entropy.clientDbconn.insertSpmUid(newidpackage, counter)
             else:
                 mytxt = brown(_("Cannot update Portage counter, destination %s does not exist.") % (destination,))
                 self.Entropy.updateProgress(

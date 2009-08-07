@@ -2138,7 +2138,7 @@ class Server(Singleton, TextInterface):
                 trashing_counters.add(mydbconn.retrieveCounter(myitem))
 
         for mycounter in trashing_counters:
-            dbconn.setTrashedCounter(mycounter)
+            dbconn.setTrashedUid(mycounter)
 
         # add package info to our current server repository
         dbconn.removePackageFromInstalledTable(idpackage)
@@ -2932,8 +2932,8 @@ class Server(Singleton, TextInterface):
     def transform_package_into_injected(self, idpackage, repo = None):
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
-        counter = dbconn.getNewNegativeCounter()
-        dbconn.setCounter(idpackage, counter)
+        counter = dbconn.getNewNegativeSpmUid()
+        dbconn.setSpmUid(idpackage, counter)
         dbconn.setInjected(idpackage)
 
     def initialize_server_database(self, empty = True, repo = None,
