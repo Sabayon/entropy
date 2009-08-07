@@ -3036,7 +3036,7 @@ class Server:
                 )
                 continue
 
-            except EntropyPackageException:
+            except EntropyPackageException, err:
 
                 mirrors_errors = True
                 broken_mirrors.add(uri)
