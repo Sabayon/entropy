@@ -877,7 +877,8 @@ class QAInterface:
         fd, tmp_path = tempfile.mkstemp()
         extract_path = self.entropyTools.extract_edb(pkg_path, tmp_path)
         if extract_path is None:
-            os.remove(tmp_path)
+            if os.access(tmp_path, os.F_OK):
+                os.remove(tmp_path)
             os.close(fd)
             return False # error!
         try:
