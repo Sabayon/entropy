@@ -1916,19 +1916,22 @@ class Package:
             xterm_header = ""
 
         if self.infoDict.has_key('remove_installed_vanished'):
-            self.xterm_title += ' Installed package vanished'
+            self.xterm_title += ' %s' % (_("Installed package vanished"),)
             self.Entropy.setTitle(self.xterm_title)
             rc = self.vanished_step()
             return rc
 
         if self.infoDict.has_key('fetch_not_available'):
-            self.xterm_title += ' Fetch not available'
+            self.xterm_title += ' %s' % (_("Fetch not available"),)
             self.Entropy.setTitle(self.xterm_title)
             rc = self.fetch_not_available_step()
             return rc
 
         def do_fetch():
-            self.xterm_title += ' %s: %s' % (_("Fetching"),os.path.basename(self.infoDict['download']),)
+            self.xterm_title += ' %s: %s' % (
+                _("Fetching"),
+                os.path.basename(self.infoDict['download']),
+            )
             self.Entropy.setTitle(self.xterm_title)
             return self.fetch_step()
 
@@ -1939,12 +1942,15 @@ class Package:
             return self.multi_fetch_step()
 
         def do_sources_fetch():
-            self.xterm_title += ' %s: %s' % (_("Fetching sources"),os.path.basename(self.infoDict['atom']),)
+            self.xterm_title += ' %s: %s' % (
+                _("Fetching sources"),
+                os.path.basename(self.infoDict['atom']),)
             self.Entropy.setTitle(self.xterm_title)
             return self.sources_fetch_step()
 
         def do_checksum():
-            self.xterm_title += ' %s: %s' % (_("Verifying"),os.path.basename(self.infoDict['download']),)
+            self.xterm_title += ' %s: %s' % (_("Verifying"),
+                os.path.basename(self.infoDict['download']),)
             self.Entropy.setTitle(self.xterm_title)
             return self.checksum_step()
 
@@ -1957,10 +1963,16 @@ class Package:
         def do_unpack():
             if not self.infoDict['merge_from']:
                 mytxt = _("Unpacking")
-                self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['download']),)
+                self.xterm_title += ' %s: %s' % (
+                    mytxt,
+                    os.path.basename(self.infoDict['download']),
+                )
             else:
                 mytxt = _("Merging")
-                self.xterm_title += ' %s: %s' % (mytxt,os.path.basename(self.infoDict['atom']),)
+                self.xterm_title += ' %s: %s' % (
+                    mytxt,
+                    os.path.basename(self.infoDict['atom']),
+                )
             self.Entropy.setTitle(self.xterm_title)
             return self.unpack_step()
 
