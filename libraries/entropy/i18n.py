@@ -31,8 +31,10 @@ try:
     gettext.bindtextdomain('entropy', '/usr/share/locale')
     gettext.textdomain('entropy')
     gettext.install('entropy', unicode=True)
-    # thanks weirdness!
-    _ = gettext.gettext
+
+    # do not use gettext.gettext because it returns str instead of unicode
+    _ = _
+
 except (ImportError,OSError,):
     def _(raw_string):
         """
