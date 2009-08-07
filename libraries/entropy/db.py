@@ -2836,11 +2836,13 @@ class EntropyRepository:
 
         with self.__write_mutex:
 
-            self.cursor.executescript("""
+            self.cursor.execute("""
             DELETE FROM counters WHERE (counter = (?) OR
             idpackage = (?)) AND branch = (?);
+            """, (spm_package_uid, idpackage, branch,))
+            self.cursor.execute("""
             INSERT INTO counters VALUES (?,?,?);
-            """, (spm_package_uid, idpackage, branch,) * 2)
+            """, (spm_package_uid, idpackage, branch,))
 
             self.commitChanges()
 
@@ -3688,10 +3690,12 @@ class EntropyRepository:
         @type digest: string
         """
         with self.__write_mutex:
-            self.cursor.executescript("""
-            DELETE FROM treeupdates where repository = (?);
-            INSERT INTO treeupdates VALUES (?,?);
-            """, (repository, repository, digest,))
+            self.cursor.execute("""
+            DELETE FROM treeupdates where repository = (?)
+            """, (repository,))
+            self.cursor.execute("""
+            INSERT INTO treeupdates VALUES (?,?)
+            """, (repository, digest,))
 
     def addRepositoryUpdatesActions(self, repository, actions, branch):
         """
