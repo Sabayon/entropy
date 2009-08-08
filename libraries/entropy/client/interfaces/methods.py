@@ -40,7 +40,7 @@ class RepositoryMixin:
     __repodb_cache = {}
     _memory_db_instances = {}
 
-    def validate_repositories(self):
+    def validate_repositories(self, quiet = False):
         self.MirrorStatus.clear()
         self.__repo_error_messages_cache.clear()
 
@@ -55,11 +55,17 @@ class RepositoryMixin:
         for repoid in self.SystemSettings['repositories']['order']:
             # open database
             try:
+
                 dbc = self.open_repository(repoid)
                 dbc.listConfigProtectDirectories()
                 dbc.validateDatabase()
                 self.validRepositories.append(repoid)
+
             except RepositoryError:
+
+                if quiet:
+                    continue
+
                 t = _("Repository") + " " + repoid + " " + \
                     _("is not available") + ". " + _("Cannot validate")
                 t2 = _("Please update your repositories now in order to remove this message!")
@@ -75,7 +81,12 @@ class RepositoryMixin:
                     type = "warning"
                 )
                 continue # repo not available
-            except (self.dbapi2.OperationalError,self.dbapi2.DatabaseError,SystemDatabaseError,):
+            except (self.dbapi2.OperationalError,
+                self.dbapi2.DatabaseError,SystemDatabaseError,):
+
+                if quiet:
+                    continue
+
                 t = _("Repository") + " " + repoid + " " + \
                     _("is corrupted") + ". " + _("Cannot validate")
                 self.updateProgress(
@@ -84,6 +95,7 @@ class RepositoryMixin:
                                     type = "warning"
                                    )
                 continue
+
         # to avoid having zillions of open files when loading a lot of EquoInterfaces
         self.close_all_repositories(mask_clear = False)
 
@@ -1254,11 +1266,14 @@ class MiscMixin:
         # this is also useful when no config file or parameter into it exists
         etpConst['branch'] = branch
         self.entropyTools.write_new_branch(branch)
+        # there are no valid repos atm
+        del self.validRepositories[:]
         self.SystemSettings.clear()
 
         # reset treeupdatesactions
         self.reopen_client_repository()
         self.clientDbconn.resetTreeupdatesDigests()
+        self.validate_repositories(quiet = True)
         self.close_all_repositories()
         if self.xcache:
             self.Cacher.start()
