@@ -1608,6 +1608,8 @@ class EntropyRepository:
             srv_updates['added'] = {}
         if not srv_updates.has_key('removed'):
             srv_updates['removed'] = {}
+        if not srv_updates.has_key('light'):
+            srv_updates['light'] = {}
 
         # if pkgatom (rss_atom) is in the "removed" metadata, drop it
         if rss_atom in srv_updates['removed']:
