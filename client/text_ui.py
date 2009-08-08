@@ -348,13 +348,6 @@ def branchHop(branch):
     Equo.set_branch(branch)
     status = True
 
-    # remove old repos
-    for repo_path in old_repo_paths:
-        try:
-            shutil.rmtree(repo_path, True)
-        except shutil.Error:
-            continue
-
     try:
         repoConn = Equo.Repositories([], forceUpdate = False,
             fetchSecurity = False)
@@ -373,12 +366,21 @@ def branchHop(branch):
         status = False
     else:
         rc = repoConn.sync()
-        if rc:
+        if rc and rc != 1:
+            # rc != 1 means not all the repos have been downloaded
             status = False
 
     if status:
 
         Equo.clientDbconn.moveCountersToBranch(branch)
+
+        # remove old repos
+        for repo_path in old_repo_paths:
+            try:
+                shutil.rmtree(repo_path, True)
+            except shutil.Error:
+                continue
+
         mytxt = "%s %s: %s" % (red(" @@ "),
             darkgreen(_("Succesfully switched to branch")), purple(branch),)
         print_info(mytxt)
