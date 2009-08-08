@@ -1786,7 +1786,7 @@ class EntropyRepository:
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into mirrorlinks VALUES (?,?)
-            """, ((mirrorname, x,) for x in mirrorlist))
+            """, [(mirrorname, x,) for x in mirrorlist])
 
     def addCategory(self, category):
         """
@@ -2221,7 +2221,7 @@ class EntropyRepository:
             dcache.add(dep)
             return (idpackage, iddep, deptype,)
 
-        deps = (x for x in map(mymf, depdata) if type(x) != int)
+        deps = [x for x in map(mymf, depdata) if type(x) is not int]
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into dependencies VALUES (?,?,?)
@@ -2275,11 +2275,11 @@ class EntropyRepository:
             if already_formatted:
                 self.cursor.executemany("""
                 INSERT INTO content VALUES (?,?,?)
-                """, ((idpackage, x, y,) for a, x, y in content))
+                """, [(idpackage, x, y,) for a, x, y in content])
             else:
                 self.cursor.executemany("""
                 INSERT INTO content VALUES (?,?,?)
-                """, ((idpackage, x, content[x],) for x in content))
+                """, [(idpackage, x, content[x],) for x in content])
 
     def insertNeededPaths(self, library, paths):
         """
@@ -2294,7 +2294,7 @@ class EntropyRepository:
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT OR IGNORE INTO neededlibrarypaths VALUES (?,?,?)
-            """, ((library, path, elfclass,) for path, elfclass in paths))
+            """, [(library, path, elfclass,) for path, elfclass in paths])
 
     def insertAutomergefiles(self, idpackage, automerge_data):
         """
@@ -2312,7 +2312,7 @@ class EntropyRepository:
         """
         with self.__write_mutex:
             self.cursor.executemany('INSERT INTO automergefiles VALUES (?,?,?)',
-                ((idpackage, x, y,) for x, y in automerge_data))
+                [(idpackage, x, y,) for x, y in automerge_data])
 
     def removeAutomergefiles(self, idpackage):
         """
@@ -2587,7 +2587,7 @@ class EntropyRepository:
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into sources VALUES (?,?)
-            """, (x for x in map(mymf, sources) if x is not 0))
+            """, [x for x in map(mymf, sources) if x is not 0])
 
     def insertConflicts(self, idpackage, conflicts):
         """
@@ -2601,7 +2601,7 @@ class EntropyRepository:
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into conflicts VALUES (?,?)
-            """, ((idpackage, x,) for x in conflicts))
+            """, [(idpackage, x,) for x in conflicts])
 
     def insertMessages(self, idpackage, messages):
         """
@@ -2615,7 +2615,7 @@ class EntropyRepository:
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into messages VALUES (?,?)
-            """, ((idpackage, x,) for x in messages))
+            """, [(idpackage, x,) for x in messages])
 
     def insertProvide(self, idpackage, provides):
         """
@@ -2636,7 +2636,7 @@ class EntropyRepository:
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into provide VALUES (?,?)
-            """, ((idpackage, x,) for x in provides))
+            """, [(idpackage, x,) for x in provides])
 
     def insertNeeded(self, idpackage, neededs):
         """
@@ -3674,7 +3674,7 @@ class EntropyRepository:
         @type repository: string
         """
         with self.__write_mutex:
-            myupdates = ([repository]+list(x) for x in updates)
+            myupdates = [[repository]+list(x) for x in updates]
             self.cursor.executemany("""
             INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)
             """, myupdates)
@@ -3715,10 +3715,10 @@ class EntropyRepository:
 
         mytime = str(self.entropyTools.get_current_unix_time())
         with self.__write_mutex:
-            myupdates = (
+            myupdates = [
                 (repository, x, branch, mytime,) for x in actions \
                 if not self.doesTreeupdatesActionExist(repository, x, branch)
-            )
+            ]
             self.cursor.executemany("""
             INSERT INTO treeupdatesactions VALUES (NULL,?,?,?,?)
             """, myupdates)
