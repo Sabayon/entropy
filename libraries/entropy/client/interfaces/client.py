@@ -186,7 +186,10 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         try:
             update, remove, fine, spm_fine = self._helper.calculate_world_updates(
                 critical_updates = False)
-        except (ValueError, SystemDatabaseError,):
+        except (ValueError, SystemDatabaseError, RepositoryError,):
+            # RepositoryError is triggered when branch is hopped
+            # SystemDatabaseError is triggered when no client db is avail
+            # ValueError is triggered when repos are broken
             update = 1 # foo!
 
         # actually execute this only if
