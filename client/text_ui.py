@@ -339,9 +339,21 @@ def branchHop(branch):
         print_warning(mytxt)
         return 2, -1
 
+    old_repo_paths = []
+    avail_data = Equo.SystemSettings['repositories']['available']
+    for repoid in sorted(avail_data):
+        old_repo_paths.append(avail_data[repoid]['dbpath'][:])
+
     old_branch = Equo.SystemSettings['repositories']['branch'][:]
     Equo.set_branch(branch)
     status = True
+
+    # remove old repos
+    for repo_path in old_repo_paths:
+        try:
+            shutil.rmtree(repo_path, True)
+        except shutil.Error:
+            continue
 
     try:
         repoConn = Equo.Repositories([], forceUpdate = False,
