@@ -1134,7 +1134,7 @@ class Repository:
             self.Entropy.cycleDone()
 
             # remove garbage
-            if os.path.isfile(dbfile_old):
+            if os.access(dbfile_old, os.R_OK | os.F_OK):
                 os.remove(dbfile_old)
 
         # keep them closed
@@ -1151,7 +1151,11 @@ class Repository:
             if isinstance(self.Entropy.clientDbconn, EntropyRepository) and \
                 self.entropyTools.is_root(): # only as root due to Portage
                 for repo in self.reponames:
-                    dbc = self.Entropy.open_repository(repo)
+                    try:
+                        dbc = self.Entropy.open_repository(repo)
+                    except RepositoryError:
+                        # download failed and repo is not available, skip!
+                        continue
                     self.Entropy.repository_packages_spm_sync(repo, dbc)
                 self.Entropy.close_all_repositories()
 
