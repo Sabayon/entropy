@@ -2135,7 +2135,7 @@ class Server(Singleton, TextInterface):
                     mydata['injected']
             )
             for myitem in mylist:
-                trashing_counters.add(mydbconn.retrieveCounter(myitem))
+                trashing_counters.add(mydbconn.retrieveSpmUid(myitem))
 
         for mycounter in trashing_counters:
             dbconn.setTrashedUid(mycounter)

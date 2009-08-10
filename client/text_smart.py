@@ -327,7 +327,7 @@ def smartpackagegenerator(matchedPackages):
             else:
                 xpakdata = mydbconn.retrieveXpakMetadata(myidpackage) # already a smart package
             # add
-            idpk, rev, y = mergeDbconn.handlePackage(etpData = data, forcedRevision = matchedAtoms[package]['revision']) # get the original rev
+            idpk, rev, y = mergeDbconn.handlePackage(data, forcedRevision = matchedAtoms[package]['revision']) # get the original rev
             del y
             mergeDbconn.storeXpakMetadata(idpk,xpakdata)
         mydbconn.closeDB()

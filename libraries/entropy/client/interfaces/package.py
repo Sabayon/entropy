@@ -85,13 +85,13 @@ class Package:
 
         self.error_on_not_prepared()
 
-        if repository == None:
+        if repository is None:
             repository = self.infoDict['repository']
-        if checksum == None:
+        if checksum is None:
             checksum = self.infoDict['checksum']
-        if download == None:
+        if download is None:
             download = self.infoDict['download']
-        if signatures == None:
+        if signatures is None:
             signatures = self.infoDict['signatures']
 
         def do_signatures_validation(signatures):
@@ -103,7 +103,7 @@ class Package:
                     # entropy versions
                     if hash_val in signatures:
                         continue
-                    elif hash_val == None:
+                    elif hash_val is None:
                         continue
                     elif not hasattr(self.entropyTools,
                         'compare_%s' % (hash_type,)):
@@ -1026,8 +1026,7 @@ class Package:
             del data['needed_paths']
 
         idpackage, rev, x = self.Entropy.clientDbconn.handlePackage(
-            etpData = data, forcedRevision = data['revision'],
-            formattedContent = True)
+            data, forcedRevision = data['revision'], formattedContent = True)
 
         # update datecreation
         ctime = self.entropyTools.get_current_unix_time()
@@ -1912,7 +1911,7 @@ class Package:
         return rc
 
     def run_stepper(self, xterm_header):
-        if xterm_header == None:
+        if xterm_header is None:
             xterm_header = ""
 
         if self.infoDict.has_key('remove_installed_vanished'):
@@ -2198,7 +2197,13 @@ class Package:
         self.infoDict['name'] = dbconn.retrieveName(idpackage)
         self.infoDict['messages'] = dbconn.retrieveMessages(idpackage)
         self.infoDict['checksum'] = dbconn.retrieveDigest(idpackage)
-        self.infoDict['signatures'] = dbconn.retrieveSignatures(idpackage)
+        sha1, sha256, sha512 = dbconn.retrieveSignatures(idpackage)
+        signatures = {
+            'sha1': sha1,
+            'sha256': sha256,
+            'sha512': sha512,
+        }
+        self.infoDict['signatures'] = signatures
         self.infoDict['accept_license'] = dbconn.retrieveLicensedataKeys(idpackage)
         self.infoDict['conflicts'] = self.Entropy.get_match_conflicts(self.matched_atom)
         description = dbconn.retrieveDescription(idpackage)
@@ -2353,7 +2358,13 @@ class Package:
             self.infoDict['download'] = dbconn.retrieveSources(idpackage, extended = True)
         else:
             self.infoDict['checksum'] = dbconn.retrieveDigest(idpackage)
-            self.infoDict['signatures'] = dbconn.retrieveSignatures(idpackage)
+            sha1, sha256, sha512 = dbconn.retrieveSignatures(idpackage)
+            signatures = {
+                'sha1': sha1,
+                'sha256': sha256,
+                'sha512': sha512,
+            }
+            self.infoDict['signatures'] = signatures
             self.infoDict['download'] = dbconn.retrieveDownloadURL(idpackage)
 
         if not self.infoDict['download']:
@@ -2436,7 +2447,14 @@ class Package:
 
             download = dbconn.retrieveDownloadURL(idpackage)
             digest = dbconn.retrieveDigest(idpackage)
-            signatures = dbconn.retrieveSignatures(idpackage)
+
+            sha1, sha256, sha512 = dbconn.retrieveSignatures(idpackage)
+            signatures = {
+                'sha1': sha1,
+                'sha256': sha256,
+                'sha512': sha512,
+            }
+
             repo_size = dbconn.retrieveSize(idpackage)
             orig_branch = self.Entropy.get_branch_from_download_relative_uri(download)
             if self.Entropy.check_needed_package_download(download, None) < 0:
