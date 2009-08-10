@@ -84,6 +84,8 @@ class MiscTest(unittest.TestCase):
 
         self.t_sched_run = False
         def do_t():
+            import time
+            time.sleep(1)
             self.t_sched_run = True
 
         t = ParallelTask(do_t)
