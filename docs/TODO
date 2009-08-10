@@ -5,6 +5,8 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   0.98.4:
 
     - entropy.db API docs in place
+    - "Would you like to look for packages that can be removed along with the selected above ?"
+    - Collision found during removal of /usr/share/ati/amdcccle/amdcccle_ja.qm - cannot overwrite
 
   0.99:
 
