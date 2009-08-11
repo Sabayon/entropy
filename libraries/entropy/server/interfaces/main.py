@@ -1112,9 +1112,11 @@ class Server(Singleton, TextInterface):
             if mymatch[0] == -1:
                 continue
             myatom = repo_db.retrieveAtom(mymatch[0])
+            myatom = self.entropyTools.remove_tag(myatom)
             runatoms.add(myatom)
 
         for myatom in runatoms:
+
             self.updateProgress(
                 red("%s: " % (_("repackaging"),) )+blue(myatom),
                 importance = 1,
