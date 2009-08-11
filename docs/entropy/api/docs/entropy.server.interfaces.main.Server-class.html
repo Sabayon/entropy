@@ -67,12 +67,12 @@
 <area shape="rect" href="entropy.server.interfaces.main.Server-class.html#ensure_paths" title="entropy.server.interfaces.main.Server.ensure_paths" alt="" coords="17,316,1175,335"/>
 <area shape="rect" href="entropy.server.interfaces.main.Server-class.html#migrate_repository_databases_to_new_branched_path" title="entropy.server.interfaces.main.Server.migrate_repository_databases_to_new_branched_path" alt="" coords="17,335,1175,353"/>
 <area shape="rect" href="entropy.server.interfaces.main.Server-class.html#setup_services" title="entropy.server.interfaces.main.Server.setup_services" alt="" coords="17,353,1175,372"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#setup_entropy_settings" title="entropy.server.interfaces.main.Server.setup_entropy_settings" alt="" coords="17,372,1175,391"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#close_server_databases" title="entropy.server.interfaces.main.Server.close_server_databases" alt="" coords="17,391,1175,409"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#close_server_database" title="entropy.server.interfaces.main.Server.close_server_database" alt="" coords="17,409,1175,428"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#get_available_repositories" title="entropy.server.interfaces.main.Server.get_available_repositories" alt="" coords="17,428,1175,447"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#switch_default_repository" title="entropy.server.interfaces.main.Server.switch_default_repository" alt="" coords="17,447,1175,465"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#setup_community_repositories_settings" title="entropy.server.interfaces.main.Server.setup_community_repositories_settings" alt="" coords="17,465,1175,484"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#Spm" title="Get Source Package Manager interface instance." alt="" coords="17,372,1175,391"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#setup_entropy_settings" title="entropy.server.interfaces.main.Server.setup_entropy_settings" alt="" coords="17,391,1175,409"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#close_server_databases" title="entropy.server.interfaces.main.Server.close_server_databases" alt="" coords="17,409,1175,428"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#close_server_database" title="entropy.server.interfaces.main.Server.close_server_database" alt="" coords="17,428,1175,447"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#get_available_repositories" title="entropy.server.interfaces.main.Server.get_available_repositories" alt="" coords="17,447,1175,465"/>
+<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#switch_default_repository" title="entropy.server.interfaces.main.Server.switch_default_repository" alt="" coords="17,465,1175,484"/>
 <area shape="rect" href="entropy.server.interfaces.main.Server-class.html#update_database_package_sets" title="entropy.server.interfaces.main.Server.update_database_package_sets" alt="" coords="17,503,1175,521"/>
 <area shape="rect" href="entropy.server.interfaces.main.Server-class.html" title="entropy.server.interfaces.main.Server" alt="" coords="16,216,1176,523"/>
 <area shape="rect" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="277,92,445,111"/>
@@ -214,6 +214,23 @@
           <td><span class="summary-sig"><a name="setup_services"></a><span class="summary-sig-name">setup_services</span>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.setup_services">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">entropy.spm.SpmPlugin based instance</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.server.interfaces.main.Server-class.html#Spm" class="summary-sig-name">Spm</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get Source Package Manager interface instance.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.Spm">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1878,6 +1895,27 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="Spm"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">Spm</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.Spm">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get Source Package Manager interface instance.</p>
+  <dl class="fields">
+    <dt>Returns: entropy.spm.SpmPlugin based instance</dt>
+        <dd>Source Package Manager interface instance</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="repository_packages_spm_sync"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -1965,7 +2003,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Aug  5 16:58:57 2009
+    Generated by Epydoc 3.0.1 on Tue Aug 11 13:37:21 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
