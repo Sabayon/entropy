@@ -1026,7 +1026,7 @@ class EntropyRepository:
         iddeps = self.searchDependency(key_from, like = True, multi = True)
         for iddep in iddeps:
             # update string
-            mydep = self.retrieveDependencyFromIddependency(iddep)
+            mydep = self.getDependency(iddep)
             mydep_key = self.entropyTools.dep_getkey(mydep)
             # avoid changing wrong atoms -> dev-python/qscintilla-python would
             # become x11-libs/qscintilla if we don't do this check
@@ -1115,7 +1115,7 @@ class EntropyRepository:
             iddeps = self.searchDependency(atomkey, like = True, multi = True)
             for iddep in iddeps:
                 # update string
-                mydep = self.retrieveDependencyFromIddependency(iddep)
+                mydep = self.getDependency(iddep)
                 mydep_key = self.entropyTools.dep_getkey(mydep)
                 if mydep_key != atomkey:
                     continue
@@ -1992,7 +1992,7 @@ class EntropyRepository:
             if do_commit:
                 self.commitChanges()
 
-    def setDateCreation(self, idpackage, date):
+    def setCreationDate(self, idpackage, date):
         """
         Update the creation date for package. Creation date is stored in
         string based unix time format.
@@ -3066,6 +3066,22 @@ class EntropyRepository:
             return api[0]
         return -1
 
+    def getDependency(self, iddependency):
+        """
+        Return dependency string for given dependency identifier.
+
+        @param iddependency: dependency identifier
+        @type iddependency: int
+        @return: dependency string
+        @rtype: string or None
+        """
+        cur = self.cursor.execute("""
+        SELECT dependency FROM dependenciesreference WHERE iddependency = (?)
+        """, (iddependency,))
+        dep = cur.fetchone()
+        if dep:
+            return dep[0]
+
     def getCategory(self, idcategory):
         """
         Get category name from category identifier.
@@ -3790,14 +3806,13 @@ class EntropyRepository:
             list (set) of dependencies as value
         @rtype: dict
         """
-        try:
-            cur = self.cursor.execute("""
-            SELECT setname,dependency FROM packagesets
-            """)
-        except self.dbapi2.OperationalError:
-            # no table, keep this for a while, allowing backward compat.
+        # FIXME backward compatibility
+        if not self.doesTableExist('packagesets'):
             return {}
+
+        cur = self.cursor.execute("SELECT setname, dependency FROM packagesets")
         data = cur.fetchall()
+
         sets = {}
         for setname, dependency in data:
             obj = sets.setdefault(setname, set())
@@ -4026,19 +4041,18 @@ class EntropyRepository:
             hashes if available, otherwise the same but with None as values.
         @rtype: tuple
         """
-        try:
-            cur = self.cursor.execute("""
-            SELECT sha1, sha256, sha512 FROM packagesignatures 
-            WHERE idpackage = (?)""", (idpackage,))
-            data = cur.fetchone()
-            sha1, sha256, sha512 = None, None, None
-            if data:
-                sha1, sha256, sha512 = data
-        except self.dbapi2.OperationalError:
-            # table not found, keep for a while
-            sha1, sha256, sha512 = None, None, None
+        # FIXME backward compatibility
+        if not self.doesTableExist('packagesignatures'):
+            return None, None, None
 
-        return sha1, sha256, sha512
+        cur = self.cursor.execute("""
+        SELECT sha1, sha256, sha512 FROM packagesignatures
+        WHERE idpackage = (?)""", (idpackage,))
+        data = cur.fetchone()
+
+        if data:
+            return data
+        return None, None, None
 
     def retrieveName(self, idpackage):
         """
@@ -4110,200 +4124,229 @@ class EntropyRepository:
         baseinfo.versiontag FROM baseinfo, categories WHERE
         baseinfo.idpackage = (?) AND
         baseinfo.idcategory = categories.idcategory""", (idpackage,))
-        data = cur.fetchone()
-        return data
+        return cur.fetchone()
 
     def retrieveVersion(self, idpackage):
         """
-        docstring_title
+        Return package version for given package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
-
+        @return: package version
+        @rtype: string or None
         """
-        self.cursor.execute('SELECT version FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-        ver = self.cursor.fetchone()
-        if ver: return ver[0]
+        cur = self.cursor.execute("""
+        SELECT version FROM baseinfo WHERE idpackage = (?)""", (idpackage,))
+        ver = cur.fetchone()
+        if ver:
+            return ver[0]
 
     def retrieveRevision(self, idpackage):
         """
-        docstring_title
+        Return package Entropy-revision for given package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
+        @return: Entropy-revision for given package indentifier
+        @rtype: int or None
 
         """
-        self.cursor.execute('SELECT revision FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-        rev = self.cursor.fetchone()
-        if rev: return rev[0]
+        cur = self.cursor.execute("""
+        SELECT revision FROM baseinfo WHERE idpackage = (?)
+        """, (idpackage,))
+        rev = cur.fetchone()
+        if rev:
+            return rev[0]
 
-    def retrieveDateCreation(self, idpackage):
+    def retrieveCreationDate(self, idpackage):
         """
-        docstring_title
+        Return creation date for given package identifier.
+        Creation date returned is a string representation of UNIX time format.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
+        @return: creation date for given package identifier
+        @rtype: string or None
 
         """
-        self.cursor.execute('SELECT datecreation FROM extrainfo WHERE idpackage = (?)', (idpackage,))
-        date = self.cursor.fetchone()
-        if date: return date[0]
+        cur = self.cursor.execute("""
+        SELECT datecreation FROM extrainfo WHERE idpackage = (?)
+        """, (idpackage,))
+        date = cur.fetchone()
+        if date:
+            return date[0]
 
     def retrieveApi(self, idpackage):
         """
-        docstring_title
+        Return Entropy API in use when given package identifier was added.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
-
+        @return: Entropy API for given package identifier
+        @rtype: int or None
         """
-        self.cursor.execute('SELECT etpapi FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-        api = self.cursor.fetchone()
-        if api: return api[0]
+        cur = self.cursor.execute("""
+        SELECT etpapi FROM baseinfo WHERE idpackage = (?)
+        """, (idpackage,))
+        api = cur.fetchone()
+        if api:
+            return api[0]
 
     def retrieveUseflags(self, idpackage):
         """
-        docstring_title
+        Return "USE flags" metadatum for given package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
+        @return: list (set) of USE flags for given package identifier.
+        @rtype: set
         """
-        self.cursor.execute("""
+        cur = self.cursor.execute("""
         SELECT flagname FROM useflags,useflagsreference 
         WHERE useflags.idpackage = (?) AND 
         useflags.idflag = useflagsreference.idflag""", (idpackage,))
-        return self._fetchall2set(self.cursor.fetchall())
+        return self._fetchall2set(cur.fetchall())
 
     def retrieveEclasses(self, idpackage):
         """
-        docstring_title
+        Return "eclass" metadatum for given package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
+        @return: list (set) of eclasses for given package identifier
+        @rtype: set
         """
-        self.cursor.execute("""
-        SELECT classname FROM eclasses,eclassesreference 
-        WHERE eclasses.idpackage = (?) AND 
+        cur = self.cursor.execute("""
+        SELECT classname FROM eclasses,eclassesreference
+        WHERE eclasses.idpackage = (?) AND
         eclasses.idclass = eclassesreference.idclass""", (idpackage,))
-        return self._fetchall2set(self.cursor.fetchall())
+        return self._fetchall2set(cur.fetchall())
 
     def retrieveSpmPhases(self, idpackage):
         """
-        docstring_title
+        Return "Source Package Manager install phases" for given package
+        identifier.
 
-        @param idpackage:
-        @type idpackage:
-        @return:
-        @rtype:
-
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return: "Source Package Manager available install phases" string
+        @rtype: string or None
         """
-        # FIXME: remove this check in future:
+        # FIXME backward compatibility
         if not self.doesTableExist('packagespmphases'):
             return None
-        self.cursor.execute("""
-        SELECT phases FROM packagespmphases
-        WHERE idpackage = (?)
+
+        cur = self.cursor.execute("""
+        SELECT phases FROM packagespmphases WHERE idpackage = (?)
         """, (idpackage,))
-        rslt = self.cursor.fetchone()
-        if rslt: return rslt[0]
+        spm_phases = cur.fetchone()
+
+        if spm_phases:
+            return spm_phases[0]
 
     def retrieveNeededRaw(self, idpackage):
         """
-        docstring_title
+        Return (raw format) "NEEDED" ELF metadata for libraries contained
+        in given package.
 
         @param idpackage: package indentifier
         @type idpackage: int
+        @return: list (set) of "NEEDED" entries contained in ELF objects
+            packed into package file
+        @rtype: set
         """
-        self.cursor.execute("""
-        SELECT library FROM needed,neededreference 
+        cur = self.cursor.execute("""
+        SELECT library FROM needed,neededreference
         WHERE needed.idpackage = (?) AND 
         needed.idneeded = neededreference.idneeded""", (idpackage,))
-        return self._fetchall2set(self.cursor.fetchall())
+        return self._fetchall2set(cur.fetchall())
 
     def retrieveNeeded(self, idpackage, extended = False, format = False):
         """
-        docstring_title
+        Return "NEEDED" elf metadata for libraries contained in given package.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @keyword extended:
-        @type extended:
-        @keyword format:
-        @type format:
-        @return:
-        @rtype:
-
+        @keyword extended: also return ELF class information for every
+            library name
+        @type extended: bool
+        @keyword format: properly format output, returning a dictionary with
+            library name as key and ELF class as value
+        @type format: bool
+        @return: "NEEDED" metadata for libraries contained in given package.
+        @rtype: list or set
         """
-
         if extended:
-            self.cursor.execute("""
-            SELECT library,elfclass FROM needed,neededreference 
-            WHERE needed.idpackage = (?) AND 
-            needed.idneeded = neededreference.idneeded order by library""", (idpackage,))
-            needed = self.cursor.fetchall()
+
+            cur = self.cursor.execute("""
+            SELECT library,elfclass FROM needed,neededreference
+            WHERE needed.idpackage = (?) AND
+            needed.idneeded = neededreference.idneeded order by library
+            """, (idpackage,))
+            needed = cur.fetchall()
+
         else:
-            self.cursor.execute("""
-            SELECT library FROM needed,neededreference 
-            WHERE needed.idpackage = (?) AND 
-            needed.idneeded = neededreference.idneeded ORDER BY library""", (idpackage,))
-            needed = self._fetchall2list(self.cursor.fetchall())
+
+            cur = self.cursor.execute("""
+            SELECT library FROM needed,neededreference
+            WHERE needed.idpackage = (?) AND
+            needed.idneeded = neededreference.idneeded ORDER BY library
+            """, (idpackage,))
+            needed = self._fetchall2list(cur.fetchall())
 
         if extended and format:
-            data = {}
-            for lib, elfclass in needed:
-                data[lib] = elfclass
-            needed = data
-
+            return dict((lib, elfclass,) for lib, elfclass in needed)
         return needed
 
     def retrieveNeededPaths(self, idpackage):
         """
-        docstring_title
+        Return library linker paths available at the time package entered
+        repository.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
-
+        @return: available linker paths (/etc/ld.so.conf content) metadata.
+            Dictionary composed by library name as key and tuple of path and
+            ELF class as values
+        @rtype: dict
         """
+        # FIXME backward compatibility
         if not self.doesTableExist('neededlibrarypaths'):
-            return {}
-        self.cursor.execute("""
+            return set()
+
+        cur = self.cursor.execute("""
             SELECT neededlibrarypaths.library, neededlibrarypaths.path,
             neededlibrarypaths.elfclass FROM
             neededlibrarypaths, neededreference, needed WHERE
-            needed.idpackage = (?) AND needed.idneeded = neededreference.idneeded
-            AND neededreference.library = neededlibrarypaths.library
+            needed.idpackage = (?) AND
+            needed.idneeded = neededreference.idneeded AND
+            neededreference.library = neededlibrarypaths.library
         """, (idpackage,))
+
         data = {}
-        for lib, path, elfclass in self.cursor.fetchall():
+        for lib, path, elfclass in cur.fetchall():
             obj = data.setdefault(lib, set())
             obj.add((path, elfclass))
         return data
 
     def retrieveNeededLibraryPaths(self, needed_library_name, elfclass):
         """
-        docstring_title
+        Return registered library paths for given library name
+        needed_library_name and ELF class.
 
-        @param needed_library_name:
-        @type needed_library_name:
-        @param elfclass:
-        @type elfclass:
-        @return:
-        @rtype:
-
+        @param needed_library_name: library name (libfoo.so.1.2.3)
+        @type needed_library_name: string
+        @param elfclass: ELF class of library name
+        @type elfclass: int
+        @return: list (set) of paths in where library is available
+        @rtype: set
         """
+
+        # FIXME backward compatibility
         if not self.doesTableExist('neededlibrarypaths'):
             return set()
-        self.cursor.execute("""
+
+        cur = self.cursor.execute("""
             SELECT path FROM neededlibrarypaths, neededreference, needed
             WHERE neededlibrarypaths.library = (?) AND
             neededlibrarypaths.elfclass = (?) AND
@@ -4311,120 +4354,154 @@ class EntropyRepository:
             needed.elfclass = neededlibrarypaths.elfclass AND
             needed.idneeded = neededreference.idneeded
         """, (needed_library_name, elfclass,))
-        return self._fetchall2set(self.cursor.fetchall())
+
+        return self._fetchall2set(cur.fetchall())
 
     def retrieveNeededLibraryIdpackages(self):
         """
-        docstring_title
+        Return raw list of packages containing library with given ELF class.
+        For example:
+            [(123, u'libfoo.so.1.2.3', 2,), ...]
+        This is useful to determine which package provides a given library for
+        each ELF class available.
 
-        @return:
-        @rtype:
-
+        @return: list of tuples of length 3 (see description)
+        @rtype: list
         """
+        # FIXME backward compatibility
         if not self.doesTableExist('neededlibraryidpackages'):
             return []
-        self.cursor.execute('SELECT idpackage, library, elfclass FROM neededlibraryidpackages')
-        return self.cursor.fetchall()
+
+        cur = self.cursor.execute("""
+        SELECT idpackage, library, elfclass FROM neededlibraryidpackages
+        """)
+        return cur.fetchall()
 
     def clearNeededLibraryIdpackages(self):
         """
-        docstring_title
-
-        @return:
-        @rtype:
-
+        Clear package and library names binding metadata.
+        See retrieveNeededLibraryIdpackages() for more information.
         """
+        # FIXME backward compatibility
         if not self.doesTableExist('neededlibraryidpackages'):
             return
+
         self.cursor.execute('DELETE FROM neededlibraryidpackages')
 
     def setNeededLibraryIdpackages(self, library_map):
         """
-        docstring_title
+        Inject given package <-> library name <-> ELF class map into
+        repository.
 
-        @param library_map:
-        @type library_map:
-        @return:
-        @rtype:
-
+        @param library_map: list of tuples of length 3, for example:
+            [(123, u'libfoo.so.1.2.3', 2,), ...]
+        @type library_map: list
         """
+        # FIXME backward compatibility
         if not self.doesTableExist('neededlibraryidpackages'):
             return
-        self.cursor.executemany('INSERT INTO neededlibraryidpackages VALUES (?,?,?)', library_map)
+
+        self.cursor.executemany("""
+        INSERT INTO neededlibraryidpackages VALUES (?,?,?)
+        """, library_map)
 
     def retrieveConflicts(self, idpackage):
         """
-        docstring_title
+        Return list of conflicting dependencies for given package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
+        @return: list (set) of conflicting package dependencies
+        @rtype: set
 
         """
-        self.cursor.execute('SELECT conflict FROM conflicts WHERE idpackage = (?)', (idpackage,))
-        return self._fetchall2set(self.cursor.fetchall())
+        cur = self.cursor.execute("""
+        SELECT conflict FROM conflicts WHERE idpackage = (?)
+        """, (idpackage,))
+        return self._fetchall2set(cur.fetchall())
 
     def retrieveProvide(self, idpackage):
         """
-        docstring_title
+        Return list of dependencies/atoms are provided by the given package
+        identifier (see Portage documentation about old-style PROVIDEs).
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
-
+        @return: list (set) of atoms provided by package
+        @rtype: set
         """
-        self.cursor.execute('SELECT atom FROM provide WHERE idpackage = (?)', (idpackage,))
-        return self._fetchall2set(self.cursor.fetchall())
+        cur = self.cursor.execute("""
+        SELECT atom FROM provide WHERE idpackage = (?)
+        """, (idpackage,))
+        return self._fetchall2set(cur.fetchall())
 
     def retrieveDependenciesList(self, idpackage):
-        self.cursor.execute("""
-        SELECT dependenciesreference.dependency FROM dependencies,dependenciesreference 
-        WHERE dependencies.idpackage = (?) AND 
-        dependencies.iddependency = dependenciesreference.iddependency 
-        UNION SELECT "!" || conflict FROM conflicts 
+        """
+        Return list of dependencies, including conflicts for given package
+        identifier.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return: list (set) of dependencies of package
+        @rtype: set
+        """
+        cur = self.cursor.execute("""
+        SELECT dependenciesreference.dependency
+        FROM dependencies, dependenciesreference
+        WHERE dependencies.idpackage = (?) AND
+        dependencies.iddependency = dependenciesreference.iddependency
+        UNION SELECT "!" || conflict FROM conflicts
         WHERE idpackage = (?)""", (idpackage, idpackage,))
-        return self._fetchall2set(self.cursor.fetchall())
+        return self._fetchall2set(cur.fetchall())
 
     def retrievePostDependencies(self, idpackage, extended = False):
         """
-        docstring_title
+        Return list of post-merge package dependencies for given package
+        identifier.
+        Note: this function is just a wrapper of retrieveDependencies()
+        providing deptype (dependency type) = post-dependencies.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @keyword extended:
-        @type extended:
-        @return:
-        @rtype:
-
+        @keyword extended: return in extended format
+        @type extended: bool
         """
-        return self.retrieveDependencies(idpackage, extended = extended, deptype = etpConst['spm']['pdepend_id'])
+        return self.retrieveDependencies(idpackage, extended = extended,
+            deptype = etpConst['spm']['pdepend_id'])
 
     def retrieveManualDependencies(self, idpackage, extended = False):
         """
-        docstring_title
+        Return manually added dependencies for given package identifier.
+        Note: this function is just a wrapper of retrieveDependencies()
+        providing deptype (dependency type) = manual-dependencies.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @keyword extended:
-        @type extended:
-        @return:
-        @rtype:
-
+        @keyword extended: return in extended format
+        @type extended: bool
         """
-        return self.retrieveDependencies(idpackage, extended = extended, deptype = etpConst['spm']['mdepend_id'])
+        return self.retrieveDependencies(idpackage, extended = extended,
+            deptype = etpConst['spm']['mdepend_id'])
 
     def retrieveDependencies(self, idpackage, extended = False, deptype = None,
         exclude_deptypes = None):
-
         """
-        docstring_title
+        Return dependencies for given package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
+        @keyword extended: return in extended format (list of tuples of length 2
+            composed by dependency name and dependency type)
+        @type extended: bool
+        @keyword deptype: return only given type of dependencies
+            see etpConst['spm']['*depend_id'] for dependency type
+            identifiers
+        @type deptype: bool
+        @keyword exclude_deptypes: list of dependency types to exclude
+        @type exclude_deptypes: list
+        @return: dependencies of given package
+        @rtype: list or set
         """
-
         searchdata = [idpackage]
 
         depstring = ''
@@ -4435,124 +4512,140 @@ class EntropyRepository:
         excluded_deptypes_query = ""
         if exclude_deptypes != None:
             for dep_type in exclude_deptypes:
+                if not isinstance(dep_type, (int, long,)):
+                    # filter out crap
+                    continue
                 excluded_deptypes_query += " AND dependencies.type != %s" % (
                     dep_type,)
 
         if extended:
-            self.cursor.execute("""
-            SELECT dependenciesreference.dependency,dependencies.type 
-            FROM dependencies,dependenciesreference 
-            WHERE dependencies.idpackage = (?) AND 
-            dependencies.iddependency = dependenciesreference.iddependency %s %s""" % (
+            cur = self.cursor.execute("""
+            SELECT dependenciesreference.dependency,dependencies.type
+            FROM dependencies,dependenciesreference
+            WHERE dependencies.idpackage = (?) AND
+            dependencies.iddependency =
+            dependenciesreference.iddependency %s %s""" % (
                 depstring,excluded_deptypes_query,), searchdata)
-            deps = self.cursor.fetchall()
+            return cur.fetchall()
         else:
-            self.cursor.execute("""
+            cur = self.cursor.execute("""
             SELECT dependenciesreference.dependency 
             FROM dependencies,dependenciesreference 
             WHERE dependencies.idpackage = (?) AND 
-            dependencies.iddependency = dependenciesreference.iddependency %s %s""" % (
+            dependencies.iddependency =
+            dependenciesreference.iddependency %s %s""" % (
                 depstring,excluded_deptypes_query,), searchdata)
-            deps = self._fetchall2set(self.cursor.fetchall())
-
-        return deps
+            return self._fetchall2set(cur.fetchall())
 
     def retrieveIdDependencies(self, idpackage):
         """
-        docstring_title
+        Return list of dependency identifiers for given package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
-
+        @return: list (set) of dependency identifiers
+        @rtype: set
         """
-        self.cursor.execute('SELECT iddependency FROM dependencies WHERE idpackage = (?)', (idpackage,))
-        return self._fetchall2set(self.cursor.fetchall())
-
-    def retrieveDependencyFromIddependency(self, iddependency):
-        """
-        docstring_title
-
-        @param iddependency:
-        @type iddependency:
-        @return:
-        @rtype:
-
-        """
-        self.cursor.execute('SELECT dependency FROM dependenciesreference WHERE iddependency = (?)', (iddependency,))
-        dep = self.cursor.fetchone()
-        if dep: dep = dep[0]
-        return dep
+        cur = self.cursor.execute("""
+        SELECT iddependency FROM dependencies WHERE idpackage = (?)
+        """, (idpackage,))
+        return self._fetchall2set(cur.fetchall())
 
     def retrieveKeywords(self, idpackage):
         """
-        docstring_title
+        Return package SPM keyword list for given package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
+        @return: list (set) of keywords for given package identifier
+        @rtype: set
         """
-        self.cursor.execute("""
-        SELECT keywordname FROM keywords,keywordsreference 
-        WHERE keywords.idpackage = (?) AND 
+        cur = self.cursor.execute("""
+        SELECT keywordname FROM keywords,keywordsreference
+        WHERE keywords.idpackage = (?) AND
         keywords.idkeyword = keywordsreference.idkeyword""", (idpackage,))
-        return self._fetchall2set(self.cursor.fetchall())
+        return self._fetchall2set(cur.fetchall())
 
     def retrieveProtect(self, idpackage):
         """
-        docstring_title
+        Return CONFIG_PROTECT (configuration file protection) string
+        (containing a list of space reparated paths) metadata for given
+        package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
+        @return: CONFIG_PROTECT string
+        @rtype: string
         """
-        self.cursor.execute("""
-        SELECT protect FROM configprotect,configprotectreference 
-        WHERE configprotect.idpackage = (?) AND 
-        configprotect.idprotect = configprotectreference.idprotect""", (idpackage,))
-        protect = self.cursor.fetchone()
-        if not protect: protect = ''
-        else: protect = protect[0]
-        return protect
+        cur = self.cursor.execute("""
+        SELECT protect FROM configprotect,configprotectreference
+        WHERE configprotect.idpackage = (?) AND
+        configprotect.idprotect = configprotectreference.idprotect
+        """, (idpackage,))
+
+        protect = cur.fetchone()
+        if protect:
+            return protect[0]
+        return ''
 
     def retrieveProtectMask(self, idpackage):
         """
-        docstring_title
+        Return CONFIG_PROTECT_MASK (mask for configuration file protection)
+        string (containing a list of space reparated paths) metadata for given
+        package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
+        @return: CONFIG_PROTECT_MASK string
+        @rtype: string
         """
         self.cursor.execute("""
         SELECT protect FROM configprotectmask,configprotectreference 
         WHERE idpackage = (?) AND 
-        configprotectmask.idprotect = configprotectreference.idprotect""", (idpackage,))
+        configprotectmask.idprotect = configprotectreference.idprotect
+        """, (idpackage,))
+
         protect = self.cursor.fetchone()
-        if not protect: protect = ''
-        else: protect = protect[0]
-        return protect
+        if protect:
+            return protect[0]
+        return ''
 
     def retrieveSources(self, idpackage, extended = False):
         """
-        docstring_title
+        Return source package URLs for given package identifier.
+        "source" as in source code.
 
         @param idpackage: package indentifier
         @type idpackage: int
+        @keyword extended: 
+        @type extended: bool
+        @return: if extended is True, dict composed by source URLs as key
+            and list of mirrors as value, otherwise just a list (set) of
+            source package URLs.
+        @rtype: dict or set
         """
-        self.cursor.execute("""
-        SELECT sourcesreference.source FROM sources,sourcesreference 
-        WHERE idpackage = (?) AND 
-        sources.idsource = sourcesreference.idsource""", (idpackage,))
-        sources = self._fetchall2set(self.cursor.fetchall())
+        cur = self.cursor.execute("""
+        SELECT sourcesreference.source FROM sources, sourcesreference
+        WHERE idpackage = (?) AND
+        sources.idsource = sourcesreference.idsource
+        """, (idpackage,))
+        sources = self._fetchall2set(cur.fetchall())
         if not extended:
             return sources
 
         source_data = {}
         mirror_str = "mirror://"
         for source in sources:
+
             source_data[source] = set()
             if source.startswith(mirror_str):
+
                 mirrorname = source.split("/")[2]
                 mirror_url =  source.split("/", 3)[3:][0]
-                source_data[source] |= set([os.path.join(url, mirror_url) for url in self.retrieveMirrorInfo(mirrorname)])
+                source_data[source] |= set(
+                    [os.path.join(url, mirror_url) for url in \
+                        self.retrieveMirrorInfo(mirrorname)])
+
             else:
                 source_data[source].add(source)
 
@@ -4560,36 +4653,59 @@ class EntropyRepository:
 
     def retrieveAutomergefiles(self, idpackage, get_dict = False):
         """
-        docstring_title
+        Return previously merged protected configuration files list and
+        their md5 hashes for given package identifier.
+        This is part of the "automerge" feature which uses file md5 checksum
+        to determine if a protected configuration file can be merged auto-
+        matically.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @keyword get_dict:
-        @type get_dict:
-        @return:
-        @rtype:
-
+        @keyword get_dict: return a dictionary with configuration file as key
+            and md5 hash as value
+        @type get_dict: bool
+        @return: automerge metadata for given package identifier
+        @rtype: list or set
         """
+        # FIXME backward compatibility
         if not self.doesTableExist('automergefiles'):
             self.createAutomergefilesTable()
+
         # like portage does
-        self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
-        self.cursor.execute('SELECT configfile, md5 FROM automergefiles WHERE idpackage = (?)', (idpackage,))
-        data = self.cursor.fetchall()
+        self.connection.text_factory = lambda x: \
+            unicode(x, "raw_unicode_escape")
+
+        cur = self.cursor.execute("""
+        SELECT configfile, md5 FROM automergefiles WHERE idpackage = (?)
+        """, (idpackage,))
+        data = cur.fetchall()
+
         if get_dict:
             data = dict(((x, y,) for x, y in data))
         return data
 
     def retrieveContent(self, idpackage, extended = False, contentType = None,
         formatted = False, insert_formatted = False, order_by = ''):
-
         """
-        docstring_title
+        Return files contained in given package.
 
         @param idpackage: package indentifier
         @type idpackage: int
+        @keyword extended: return in extended format
+        @type extended: bool
+        @keyword contentType: only return given entry type, which can be:
+            "obj", "sym" or "dir"
+        @type contentType: int
+        @keyword formatted: return in dict() form
+        @type formatted: bool
+        @keyword insert_formatted: return in list of tuples form, ready to
+            be added with insertContent()
+        @keyword order_by: order by string, valid values are:
+            "type" (if extended is True), "file" or "idpackage"
+        @type order_by: string
+        @return: content metadata
+        @rtype: dict or list or set
         """
-
         extstring = ''
         if extended:
             extstring = ",type"
@@ -4611,55 +4727,68 @@ class EntropyRepository:
         while 1:
             try:
 
-                self.cursor.execute('SELECT %s file%s FROM content WHERE idpackage = (?) %s%s' % (
-                    extstring_idpackage, extstring, contentstring, order_by_string,),
-                    searchkeywords)
+                cur = self.cursor.execute("""
+                SELECT %s file%s FROM content WHERE idpackage = (?) %s%s""" % (
+                    extstring_idpackage, extstring,
+                    contentstring, order_by_string,),
+                searchkeywords)
 
                 if extended and insert_formatted:
-                    fl = self.cursor.fetchall()
+                    fl = cur.fetchall()
+
                 elif extended and formatted:
                     fl = {}
-                    items = self.cursor.fetchone()
+                    items = cur.fetchone()
                     while items:
                         fl[items[0]] = items[1]
-                        items = self.cursor.fetchone()
+                        items = cur.fetchone()
+
                 elif extended:
-                    fl = self.cursor.fetchall()
+                    fl = cur.fetchall()
+
                 else:
                     if order_by:
-                        fl = self._fetchall2list(self.cursor.fetchall())
+                        fl = self._fetchall2list(cur.fetchall())
                     else:
-                        fl = self._fetchall2set(self.cursor.fetchall())
+                        fl = self._fetchall2set(cur.fetchall())
+
                 break
-            except (self.dbapi2.OperationalError,):
+
+            except self.dbapi2.OperationalError:
+
                 if did_try:
                     raise
                 did_try = True
-                # XXX support for old entropy db entries, which were
+
+                # FIXME support for old entropy db entries, which were
                 # not inserted in utf-8
-                self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+                self.connection.text_factory = lambda x: \
+                    unicode(x, "raw_unicode_escape")
                 continue
+
         return fl
 
     def retrieveChangelog(self, idpackage):
         """
-        docstring_title
+        Return Source Package Manager ChangeLog for given package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
-
+        @return: ChangeLog content
+        @rtype: string or None
         """
+        # FIXME backward compatibility
         if not self.doesTableExist('packagechangelogs'):
             return None
-        self.cursor.execute("""
-        SELECT packagechangelogs.changelog FROM packagechangelogs,baseinfo,categories 
-        WHERE baseinfo.idpackage = (?) AND 
-        baseinfo.idcategory = categories.idcategory AND 
-        packagechangelogs.name = baseinfo.name AND 
+
+        cur = self.cursor.execute("""
+        SELECT packagechangelogs.changelog
+        FROM packagechangelogs, baseinfo, categories
+        WHERE baseinfo.idpackage = (?) AND
+        baseinfo.idcategory = categories.idcategory AND
+        packagechangelogs.name = baseinfo.name AND
         packagechangelogs.category = categories.category""", (idpackage,))
-        changelog = self.cursor.fetchone()
+        changelog = cur.fetchone()
         if changelog:
             changelog = changelog[0]
             try:
@@ -4669,115 +4798,144 @@ class EntropyRepository:
 
     def retrieveChangelogByKey(self, category, name):
         """
-        docstring_title
+        Return Source Package Manager ChangeLog content for given package
+        category and name.
 
-        @param category:
-        @type category:
-        @param name:
-        @type name:
-        @return:
-        @rtype:
-
+        @param category: package category
+        @type category: string
+        @param name: package name
+        @type name: string
+        @return: ChangeLog content
+        @rtype: string or None
         """
+        # FIXME backward compatibility
         if not self.doesTableExist('packagechangelogs'):
             return None
-        self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
-        self.cursor.execute('SELECT changelog FROM packagechangelogs WHERE category = (?) AND name = (?)', (category, name,))
-        changelog = self.cursor.fetchone()
-        if changelog: return unicode(changelog[0], 'raw_unicode_escape')
+
+        self.connection.text_factory = lambda x: \
+            unicode(x, "raw_unicode_escape")
+
+        cur = self.cursor.execute("""
+        SELECT changelog FROM packagechangelogs WHERE category = (?)AND
+        name = (?)""", (category, name,))
+
+        changelog = cur.fetchone()
+        if changelog:
+            return unicode(changelog[0], 'raw_unicode_escape')
 
     def retrieveSlot(self, idpackage):
         """
-        docstring_title
+        Return "slot" metadatum for given package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
-
+        @return: package slot
+        @rtype: string or None
         """
-        self.cursor.execute('SELECT slot FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-        slot = self.cursor.fetchone()
-        if slot: return slot[0]
+        cur = self.cursor.execute("""
+        SELECT slot FROM baseinfo WHERE idpackage = (?)""", (idpackage,))
+        slot = cur.fetchone()
+        if slot:
+            return slot[0]
 
     def retrieveVersionTag(self, idpackage):
         """
-        docstring_title
+        Return "tag" metadatum for given package identifier.
+        Tagging packages allows, for example, to support multiple
+        different, colliding atoms in the same repository and still being
+        able to exactly reference them. It's actually used to provide
+        versions of external kernel modules for different kernels.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
-
+        @return: tag string
+        @rtype: string or None
         """
-        self.cursor.execute('SELECT versiontag FROM baseinfo WHERE idpackage = (?)', (idpackage,))
-        vtag = self.cursor.fetchone()
-        if vtag: return vtag[0]
+        cur = self.cursor.execute("""
+        SELECT versiontag FROM baseinfo WHERE idpackage = (?)
+        """, (idpackage,))
+        vtag = cur.fetchone()
+        if vtag:
+            return vtag[0]
 
     def retrieveMirrorInfo(self, mirrorname):
         """
-        docstring_title
+        Return available mirror URls for given mirror name.
 
-        @param mirrorname:
-        @type mirrorname:
-        @return:
-        @rtype:
-
+        @param mirrorname: mirror name (for eg. "openoffice")
+        @type mirrorname: string
+        @return: list (set) of URLs providing the "openoffice" mirroring service
+        @rtype: set
         """
-        self.cursor.execute('SELECT mirrorlink FROM mirrorlinks WHERE mirrorname = (?)', (mirrorname,))
-        mirrorlist = self._fetchall2set(self.cursor.fetchall())
-        return mirrorlist
+        cur = self.cursor.execute("""
+        SELECT mirrorlink FROM mirrorlinks WHERE mirrorname = (?)
+        """, (mirrorname,))
+        return self._fetchall2set(cur.fetchall())
 
     def retrieveCategory(self, idpackage):
-        self.cursor.execute("""
-        SELECT category FROM baseinfo,categories 
-        WHERE baseinfo.idpackage = (?) AND 
-        baseinfo.idcategory = categories.idcategory""", (idpackage,))
-        cat = self.cursor.fetchone()
-        if cat: return cat[0]
-
-    def retrieveCategoryDescription(self, category):
         """
-        docstring_title
-
-        @param category:
-        @type category:
-        @return:
-        @rtype:
-
-        """
-        data = {}
-        self.cursor.execute('SELECT description,locale FROM categoriesdescription WHERE category = (?)', (category,))
-        description_data = self.cursor.fetchall()
-        for description, locale in description_data:
-            data[locale] = description
-        return data
-
-    def retrieveLicensedata(self, idpackage):
-        """
-        docstring_title
+        Return category name for given package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
+        @return: category where package is in
+        @rtype: string or None
+        """
+        cur = self.cursor.execute("""
+        SELECT category FROM baseinfo,categories 
+        WHERE baseinfo.idpackage = (?) AND 
+        baseinfo.idcategory = categories.idcategory""", (idpackage,))
 
+        cat = cur.fetchone()
+        if cat:
+            return cat[0]
+
+    def retrieveCategoryDescription(self, category):
+        """
+        Return description text for given category.
+
+        @param category: category name
+        @type category: string
+        @return: category description dict, locale as key, description as value
+        @rtype: dict
+        """
+        cur = self.cursor.execute("""
+        SELECT description, locale FROM categoriesdescription
+        WHERE category = (?)
+        """, (category,))
+
+        return dict((locale, desc,) for desc, locale in cur.fetchall())
+
+    def retrieveLicensedata(self, idpackage):
+        """
+        Return license metadata for given package identifier.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return: dictionary composed by license name as key and license text
+            as value
+        @rtype: dict
         """
 
-        # insert license information
         licenses = self.retrieveLicense(idpackage)
         if licenses is None:
             return {}
-        licenses = licenses.split()
+
         licdata = {}
-        for licname in licenses:
+        for licname in licenses.split():
+
             licname = licname.strip()
+            if not licname:
+                continue
+
             if not self.entropyTools.is_valid_string(licname):
                 continue
 
-            self.cursor.execute('SELECT text FROM licensedata WHERE licensename = (?)', (licname,))
-            lictext = self.cursor.fetchone()
-            if lictext != None:
+            cur = self.cursor.execute("""
+            SELECT text FROM licensedata WHERE licensename = (?)
+            """, (licname,))
+            lictext = cur.fetchone()
+            if lictext is not None:
                 lictext = lictext[0]
                 try:
                     licdata[licname] = unicode(lictext, 'raw_unicode_escape')
@@ -4788,66 +4946,76 @@ class EntropyRepository:
 
     def retrieveLicensedataKeys(self, idpackage):
         """
-        docstring_title
+        Return license names available for given package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
-
+        @return: list (set) of license names which text is available in
+            repository
+        @rtype: set
         """
 
         licenses = self.retrieveLicense(idpackage)
         if licenses is None:
             return set()
-        licenses = licenses.split()
+
         licdata = set()
-        for licname in licenses:
+        for licname in licenses.split():
+
             licname = licname.strip()
+            if not licname:
+                continue
+
             if not self.entropyTools.is_valid_string(licname):
                 continue
-            self.cursor.execute('SELECT licensename FROM licensedata WHERE licensename = (?)', (licname,))
-            licidentifier = self.cursor.fetchone()
-            if licidentifier:
-                licdata.add(licidentifier[0])
+
+            cur = self.cursor.execute("""
+            SELECT licensename FROM licensedata WHERE licensename = (?)
+            """, (licname,))
+            lic_id = cur.fetchone()
+            if lic_id:
+                licdata.add(lic_id)
 
         return licdata
 
     def retrieveLicenseText(self, license_name):
         """
-        docstring_title
+        Return license text for given license name.
 
-        @param license_name:
-        @type license_name:
-        @return:
-        @rtype:
-
+        @param license_name: license name (for eg. GPL-2)
+        @type license_name: string
+        @return: license text
+        @rtype: string (raw format) or None
         """
 
-        self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+        self.connection.text_factory = lambda x: \
+            unicode(x, "raw_unicode_escape")
 
-        self.cursor.execute('SELECT text FROM licensedata WHERE licensename = (?)', (license_name,))
-        text = self.cursor.fetchone()
-        if not text:
-            return None
-        return str(text[0])
+        cur = self.cursor.execute("""
+        SELECT text FROM licensedata WHERE licensename = (?)
+        """, (license_name,))
+
+        text = cur.fetchone()
+        if text:
+            return str(text[0])
 
     def retrieveLicense(self, idpackage):
         """
-        docstring_title
+        Return "license" metadatum for given package identifier.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
-
+        @return: license string
+        @rtype: string or None
         """
-        self.cursor.execute("""
+        cur = self.cursor.execute("""
         SELECT license FROM baseinfo,licenses 
         WHERE baseinfo.idpackage = (?) AND 
         baseinfo.idlicense = licenses.idlicense""", (idpackage,))
-        licname = self.cursor.fetchone()
-        if licname: return licname[0]
+
+        licname = cur.fetchone()
+        if licname:
+            return licname[0]
 
     def retrieveCompileFlags(self, idpackage):
         """

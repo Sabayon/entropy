@@ -1255,7 +1255,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
             print_info(darkgreen("       %s:\t\t" % (_("Keywords"),) ) + \
                 red(' '.join(pkgkeywords)))
 
-            mydate = dbconn.retrieveDateCreation(idpackage)
+            mydate = dbconn.retrieveCreationDate(idpackage)
             pkgcreatedate = "N/A"
             if mydate:
                 pkgcreatedate = Equo.entropyTools.convert_unix_time_to_human_time(

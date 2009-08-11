@@ -455,13 +455,13 @@ class EntropyPackage:
     def get_creation_date(self):
         if self.pkgset:
             return 0
-        return self.dbconn.retrieveDateCreation(self.matched_id)
+        return self.dbconn.retrieveCreationDate(self.matched_id)
 
     def get_creation_date_formatted(self):
         if self.pkgset:
             return 0
         return EquoIntf.entropyTools.convert_unix_time_to_human_time(
-            float(self.dbconn.retrieveDateCreation(self.matched_id)))
+            float(self.dbconn.retrieveCreationDate(self.matched_id)))
 
     def get_release(self):
         if self.pkgset:
@@ -523,7 +523,7 @@ class EntropyPackage:
         elif attr == "license":
             x = self.dbconn.retrieveLicense(self.matched_id)
         elif attr == "creationdate":
-            x = self.dbconn.retrieveDateCreation(self.matched_id)
+            x = self.dbconn.retrieveCreationDate(self.matched_id)
         elif attr == "version":
             x = self.dbconn.retrieveVersion(self.matched_id)
         elif attr == "revision":
@@ -545,7 +545,7 @@ class EntropyPackage:
     def _get_time( self ):
         if self.pkgset:
             return 0
-        return self.dbconn.retrieveDateCreation(self.matched_id)
+        return self.dbconn.retrieveCreationDate(self.matched_id)
 
     def get_filelist( self ):
         if self.pkgset:

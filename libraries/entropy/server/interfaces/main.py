@@ -2924,7 +2924,7 @@ class Server(Singleton, TextInterface):
         # if packages removal is triggered by expiration
         # we will have to check if our package is really
         # expired and remove its reverse deps too
-        mydate = dbconn.retrieveDateCreation(idpackage)
+        mydate = dbconn.retrieveCreationDate(idpackage)
         # cross fingers hoping that time is set correctly
         mydelta = cur_unix_time - float(mydate)
         if mydelta > pkg_exp_secs:

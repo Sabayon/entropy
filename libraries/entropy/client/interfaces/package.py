@@ -1030,7 +1030,7 @@ class Package:
 
         # update datecreation
         ctime = self.entropyTools.get_current_unix_time()
-        self.Entropy.clientDbconn.setDateCreation(idpackage, str(ctime))
+        self.Entropy.clientDbconn.setCreationDate(idpackage, str(ctime))
 
         # add idpk to the installedtable
         self.Entropy.clientDbconn.removePackageFromInstalledTable(idpackage)
