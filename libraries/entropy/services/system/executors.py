@@ -253,15 +253,16 @@ class Base:
             return False,'no item in queue'
 
         use_data = {}
+        spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
         for atom in atoms:
             try:
-                status = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.enable_package_useflags(atom, useflags)
+                status = spm.enable_package_useflags(atom, useflags)
             except:
                 continue
             if status:
                 use_data[atom] = {}
-                matched_atom = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_best_atom(atom)
-                use_data[atom] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_useflags(matched_atom)
+                matched_atom = spm.get_best_atom(atom)
+                use_data[atom] = spm.get_package_useflags(matched_atom)
 
         return True, use_data
 
@@ -272,15 +273,16 @@ class Base:
             return False,'no item in queue'
 
         use_data = {}
+        spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
         for atom in atoms:
             try:
-                status = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.disable_package_useflags(atom, useflags)
+                status = spm.disable_package_useflags(atom, useflags)
             except:
                 continue
             if status:
                 use_data[atom] = {}
-                matched_atom = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_best_atom(atom)
-                use_data[atom] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_useflags(matched_atom)
+                matched_atom = spm.get_best_atom(atom)
+                use_data[atom] = spm.get_package_useflags(matched_atom)
 
         return True, use_data
 
@@ -291,6 +293,7 @@ class Base:
             return False,'no item in queue'
 
         atoms_data = {}
+        spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
         for atom in atoms:
 
             try:
@@ -298,7 +301,7 @@ class Base:
                 category = key.split("/")[0]
             except:
                 continue
-            matched_atom = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_best_atom(atom)
+            matched_atom = spm.get_best_atom(atom)
             if not matched_atom: continue
 
             if not atoms_data.has_key(category):
@@ -314,7 +317,8 @@ class Base:
         if queue_data == None:
             return False,'no item in queue'
 
-        packages = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_available_packages(categories)
+        spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
+        packages = spm.get_available_packages(categories)
         package_data = {}
         for package in packages:
             try:
@@ -334,7 +338,8 @@ class Base:
         if queue_data == None:
             return False,'no item in queue'
 
-        packages, pkg_len = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_packages(categories = categories)
+        spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
+        packages, pkg_len = spm.get_installed_packages(categories = categories)
         package_data = {}
         for package in packages:
             try:
@@ -972,10 +977,11 @@ class Base:
             return False,'no item in queue'
 
         data = {}
-        glsa_ids = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.list_glsa_packages(list_type)
+        spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
+        glsa_ids = spm.list_glsa_packages(list_type)
         if not glsa_ids: return False,data
         for myid in glsa_ids:
-            data[myid] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_glsa_id_information(myid)
+            data[myid] = spm.get_glsa_id_information(myid)
         return True,data
 
     def get_notice_board(self, queue_id, repoid):
@@ -1149,23 +1155,24 @@ class Base:
         data = {}
         data['atom'] = matched_atom
         data['key'] = self.entropyTools.dep_getkey(matched_atom)
+        spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
         try:
             if from_installed:
-                data['slot'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_package_slot(matched_atom)
-                portage_matched_atom = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_best_atom("%s:%s" % (data['key'],data['slot'],))
+                data['slot'] = spm.get_installed_package_slot(matched_atom)
+                portage_matched_atom = spm.get_best_atom("%s:%s" % (data['key'],data['slot'],))
                 # get installed package description
                 data['available_atom'] = portage_matched_atom
                 if portage_matched_atom:
-                    data['use'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_useflags(portage_matched_atom)
+                    data['use'] = spm.get_package_useflags(portage_matched_atom)
                 else:
                     # get use flags of the installed package
-                    data['use'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_package_useflags(matched_atom)
-                data['description'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_package_description(matched_atom)
+                    data['use'] = spm.get_installed_package_useflags(matched_atom)
+                data['description'] = spm.get_installed_package_description(matched_atom)
             else:
-                data['slot'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_slot(matched_atom)
-                data['use'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_useflags(matched_atom)
-                data['installed_atom'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_installed_atom("%s:%s" % (data['key'],data['slot'],))
-                data['description'] = self.SystemManagerExecutor.SystemInterface.Entropy.SpmService.get_package_description(matched_atom)
+                data['slot'] = spm.get_package_slot(matched_atom)
+                data['use'] = spm.get_package_useflags(matched_atom)
+                data['installed_atom'] = spm.get_installed_atom("%s:%s" % (data['key'],data['slot'],))
+                data['description'] = spm.get_package_description(matched_atom)
         except KeyError:
             pass
 

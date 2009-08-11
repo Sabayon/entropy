@@ -35,6 +35,7 @@ from entropy.i18n import _
 from entropy.core import SystemSettings, SystemSettingsPlugin
 from entropy.transceivers import FtpInterface
 from entropy.db import EntropyRepository
+from entropy.spm import get_spm
 
 class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
@@ -470,8 +471,17 @@ class Server(Singleton, TextInterface):
         self.dumpTools = self.ClientService.dumpTools
         self.QA = self.ClientService.QA
         self.backup_entropy_settings()
-        self.SpmService = self.ClientService.Spm()
+
         self.MirrorsService = MirrorsServer(self)
+
+    def Spm(self):
+        """
+        Get Source Package Manager interface instance.
+
+        @return: Source Package Manager interface instance
+        @rtype: entropy.spm.SpmPlugin based instance
+        """
+        return get_spm(self)
 
     def setup_entropy_settings(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
@@ -992,7 +1002,7 @@ class Server(Singleton, TextInterface):
                     repo)
             else:
 
-                spm = self.SpmService
+                spm = self.Spm()
                 # grab portdir
                 updates_dir = etpConst['systemroot'] + \
                     spm.get_spm_setting("PORTDIR") + "/profiles/updates"
@@ -1021,7 +1031,7 @@ class Server(Singleton, TextInterface):
             repo_db.clearTreeupdatesEntries(repo)
 
             updates_dir = etpConst['systemroot'] + \
-                self.SpmService.get_spm_setting("PORTDIR") + "/profiles/updates"
+                self.Spm().get_spm_setting("PORTDIR") + "/profiles/updates"
             update_files = self.entropyTools.sort_update_files(
                 os.listdir(updates_dir))
             update_files = [os.path.join(updates_dir, x) for x in update_files]
@@ -1318,7 +1328,7 @@ class Server(Singleton, TextInterface):
             header = red(" @@ ")
         )
 
-        packages = self.SpmService.query_belongs_multiple(brokenexecs)
+        packages = self.Spm().query_belongs_multiple(brokenexecs)
 
         if packages:
             mytxt = "%s:" % (_("These are the matched packages"),)
@@ -1377,7 +1387,7 @@ class Server(Singleton, TextInterface):
             type = "info",
             header = red(" @@ ")
         )
-        installed_packages, length = self.SpmService.get_installed_packages()
+        installed_packages, length = self.Spm().get_installed_packages()
         not_found = {}
         count = 0
         for installed_package in installed_packages:
@@ -1393,9 +1403,9 @@ class Server(Singleton, TextInterface):
                 header = darkred(" @@ ")
             )
             key, slot = (self.entropyTools.dep_getkey(installed_package),
-                self.SpmService.get_installed_package_slot(installed_package),)
+                self.Spm().get_installed_package_slot(installed_package),)
             pkg_atom = "%s:%s" % (key, slot,)
-            tree_atom = self.SpmService.get_best_atom(pkg_atom)
+            tree_atom = self.Spm().get_best_atom(pkg_atom)
             if not tree_atom:
                 not_found[installed_package] = pkg_atom
                 self.updateProgress(
@@ -2119,7 +2129,7 @@ class Server(Singleton, TextInterface):
             header = brown(" * "),
             back = True
         )
-        mydata = self.SpmService.extract_pkg_metadata(package_file,
+        mydata = self.Spm().extract_pkg_metadata(package_file,
             inject = inject)
         idpackage, revision, mydata = dbconn.handlePackage(mydata)
 
@@ -2418,7 +2428,7 @@ class Server(Singleton, TextInterface):
         return False
 
     def quickpkg(self, atom, storedir):
-        return self.SpmService.quickpkg(atom, storedir)
+        return self.Spm().quickpkg(atom, storedir)
 
 
     def remove_packages(self, idpackages, repo = None):
@@ -2775,7 +2785,7 @@ class Server(Singleton, TextInterface):
 
     def scan_package_changes(self):
 
-        installed_packages = self.SpmService.get_installed_packages_counter()
+        installed_packages = self.Spm().get_installed_packages_counter()
         installed_counters = set()
         to_be_added = set()
         to_be_removed = set()
@@ -2837,7 +2847,7 @@ class Server(Singleton, TextInterface):
 
                 add = True
                 for spm_atom, spm_counter in to_be_added:
-                    addslot = self.SpmService.get_installed_package_slot(
+                    addslot = self.Spm().get_installed_package_slot(
                         spm_atom)
                     addkey = self.entropyTools.dep_getkey(spm_atom)
                     # workaround for ebuilds not having slot
@@ -2863,7 +2873,7 @@ class Server(Singleton, TextInterface):
                     # search into portage then
                     try:
                         key, slot = dbconn.retrieveKeySlot(idpackage)
-                        trashed = self.SpmService.get_installed_atom(
+                        trashed = self.Spm().get_installed_atom(
                             key+":"+slot)
                     except TypeError: # referred to retrieveKeySlot
                         trashed = True
@@ -3110,7 +3120,7 @@ class Server(Singleton, TextInterface):
 
                 pkg_path = os.path.join(self.get_local_packages_directory(repo),
                     branch, pkg)
-                mydata = self.SpmService.extract_pkg_metadata(pkg_path,
+                mydata = self.Spm().extract_pkg_metadata(pkg_path,
                     inject = doinject)
 
                 # get previous revision
@@ -3903,7 +3913,7 @@ class Server(Singleton, TextInterface):
             repo = self.default_repository
 
         # portage sets
-        sets_data = self.SpmService.get_sets_expanded(builtin_sets = False)
+        sets_data = self.Spm().get_sets_expanded(builtin_sets = False)
         sets_data.update(self.get_entropy_sets(repo, branch))
 
         if validate:

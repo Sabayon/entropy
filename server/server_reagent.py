@@ -298,7 +298,7 @@ def update(options):
 
         if repackageItems:
 
-            appdb = Entropy.SpmService.get_vdb_path()
+            appdb = Entropy.Spm().get_vdb_path()
             packages = []
             dbconn = Entropy.open_server_repository(read_only = True, no_upload = True)
 
@@ -333,7 +333,7 @@ def update(options):
                 if myatom in tba:
                     tb_added_new.add(tba.get(myatom))
                     continue
-                inst_myatom = Entropy.SpmService.get_installed_atom(myatom)
+                inst_myatom = Entropy.Spm().get_installed_atom(myatom)
                 if inst_myatom in tba:
                     tb_added_new.add(tba.get(inst_myatom))
             toBeAdded = tb_added_new
@@ -727,7 +727,7 @@ def spm(options):
 def spm_compile_categories(options, do_list = False):
 
     categories = sorted(set(options))
-    packages = Entropy.SpmService.get_available_packages(categories)
+    packages = Entropy.Spm().get_available_packages(categories)
     packages = sorted(packages)
     if do_list:
         print ' '.join(["="+x for x in packages])
@@ -747,7 +747,7 @@ def spm_compile_pkgset(pkgsets, do_rebuild = False, do_dbupdate = False,
         return 1
 
     # filter available sets
-    avail_sets = Entropy.SpmService.get_sets(False)
+    avail_sets = Entropy.Spm().get_sets(False)
     avail_pkgsets = dict(((x,avail_sets.get(x),) for x in pkgsets \
         if x in avail_sets))
     for pkgset in pkgsets:
@@ -769,13 +769,13 @@ def spm_compile_pkgset(pkgsets, do_rebuild = False, do_dbupdate = False,
     # expand package sets
     for pkgset in pkgsets:
 
-        set_pkgs = [str(x) for x in Entropy.SpmService.get_set_atoms(pkgset)]
-        set_atoms = [Entropy.SpmService.get_best_atom(x) for x in set_pkgs]
+        set_pkgs = [str(x) for x in Entropy.Spm().get_set_atoms(pkgset)]
+        set_atoms = [Entropy.Spm().get_best_atom(x) for x in set_pkgs]
         set_atoms = [x for x in set_atoms if x != None]
 
         if not do_rebuild:
             set_atoms = [x for x in set_atoms if not \
-                Entropy.SpmService.get_installed_atom(x)]
+                Entropy.Spm().get_installed_atom(x)]
         set_atoms = ["="+x for x in set_atoms]
         if not set_atoms:
             continue
