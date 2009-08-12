@@ -4924,8 +4924,7 @@ class EntropyRepository:
         licdata = {}
         for licname in licenses.split():
 
-            licname = licname.strip()
-            if not licname:
+            if not licname.strip():
                 continue
 
             if not self.entropyTools.is_valid_string(licname):
@@ -4973,7 +4972,7 @@ class EntropyRepository:
             """, (licname,))
             lic_id = cur.fetchone()
             if lic_id:
-                licdata.add(lic_id)
+                licdata.add(lic_id[0])
 
         return licdata
 
