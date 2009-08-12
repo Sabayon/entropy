@@ -4962,8 +4962,7 @@ class EntropyRepository:
         licdata = set()
         for licname in licenses.split():
 
-            licname = licname.strip()
-            if not licname:
+            if not licname.strip():
                 continue
 
             if not self.entropyTools.is_valid_string(licname):
