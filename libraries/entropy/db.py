@@ -3043,7 +3043,7 @@ class EntropyRepository:
             if dbcounter:
                 mycounter = dbcounter[0]
 
-            if mycounter >= -1:
+            if mycounter >= -1 or mycounter is None:
                 counter = -2
             else:
                 counter = mycounter-1
