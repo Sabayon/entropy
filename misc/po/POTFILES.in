@@ -56,9 +56,6 @@
 ../libraries/entropy/tools.py
 ../libraries/entropy/transceivers.py
 ../libraries/entropy/xpak.py
-../libraries/sys_big_send_test.py
-../libraries/ugc_big_send_test.py
-../libraries/ugc_small_send_test.py
 ../client/equo.py
 ../client/text_cache.py
 ../client/text_configuration.py
