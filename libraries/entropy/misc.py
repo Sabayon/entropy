@@ -114,6 +114,8 @@ class Lifo:
         for key, buf_entry in self.__buf.items():
             # identity is generally faster, so try
             # this first
+            if self.__buf is None: # shutting down py
+                break
             if entry is buf_entry:
                 self.__buf.pop(key)
                 continue
