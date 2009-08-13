@@ -87,13 +87,13 @@ class MiscTest(unittest.TestCase):
             import time
             time.sleep(1)
             self.t_sched_run = True
-            print "parallel done"
+            #print "parallel done"
 
         t = ParallelTask(do_t)
         t.start()
-        print "joining"
+        #print "joining"
         t.join()
-        print "joined"
+        #print "joined"
         self.assert_(self.t_sched_run)
 
     def test_email_sender(self):
