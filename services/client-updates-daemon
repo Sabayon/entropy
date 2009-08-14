@@ -392,6 +392,21 @@ class UpdatesDaemon(dbus.service.Object):
         return self.__updates
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
+        out_signature = 'b')
+    def is_system_changed(self):
+
+        entropy = Entropy()
+        try:
+            curr_hash = entropy.clientDbconn.database_checksum(
+                do_order = True, strict = False)
+            return curr_hash != self.__system_db_hash
+        except Exception, err:
+            entropyTools.print_traceback(f = DAEMON_LOG)
+            msg = "is_system_changed: %s: %s" % (_("System Check: error"), err,)
+            self.do_alert(_("System Check: error"), msg)
+        return False
+
+    @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = 'av')
     def get_updates_atoms(self):
 

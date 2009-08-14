@@ -6,6 +6,7 @@
      <method name="trigger_check"/>
      <method name="get_updates"/>
      <method name="get_updates_atoms"/>
+     <method name="is_system_changed"/>
      <method name="close_connection"/>
   </interface>
 </node>
