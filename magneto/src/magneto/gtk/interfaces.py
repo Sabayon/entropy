@@ -106,7 +106,7 @@ class Magneto(MagnetoCore):
 
     def close_service(self):
         MagnetoCore.close_service(self)
-        gtk.main_quit()
+        gobject.timeout_add(0, gtk.main_quit)
 
     def change_icon(self, image):
         to_image = self.icons.best_match(image, self.applet_size)
