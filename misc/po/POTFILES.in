@@ -93,5 +93,8 @@
 ../magneto/src/magneto/gtk/components.py
 ../magneto/src/magneto/gtk/__init__.py
 ../magneto/src/magneto/gtk/interfaces.py
+../magneto/src/magneto/core/config.py
+../magneto/src/magneto/core/__init__.py
+../magneto/src/magneto/core/interfaces.py
 ../sulfur/src/sulfur/sulfur.glade
 ../magneto/src/magneto/gtk/magneto.glade
