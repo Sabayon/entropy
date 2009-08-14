@@ -125,7 +125,7 @@ class QAInterface:
                 back = True,
                 count = (count, maxcount,)
             )
-            mydepends = dbconn.retrieveDepends(idpackage)
+            mydepends = dbconn.retrieveReverseDependencies(idpackage)
             if not mydepends:
                 continue
             for mydepend in mydepends:

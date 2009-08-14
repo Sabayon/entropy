@@ -426,7 +426,7 @@ def database(options):
 
         # test if counters table exists, because if not, it's useless to run the diff scan
         try:
-            Equo.clientDbconn.isCounterAvailable(1)
+            Equo.clientDbconn.isSpmUidAvailable(1)
         except:
             mytxt = "%s %s: %s %s." % (
                 bold(_("Entropy database")),
@@ -449,12 +449,12 @@ def database(options):
         # packages to be added/updated (handle add/update later)
         for x in installed_packages:
             installedCounters.add(x[1])
-            counter = Equo.clientDbconn.isCounterAvailable(x[1])
+            counter = Equo.clientDbconn.isSpmUidAvailable(x[1])
             if (not counter):
                 toBeAdded.add(tuple(x))
 
         # packages to be removed from the database
-        databaseCounters = Equo.clientDbconn.listAllCounters()
+        databaseCounters = Equo.clientDbconn.listAllSpmUids()
         for x in databaseCounters:
             if x[0] < 0: # skip packages without valid counter
                 continue
@@ -809,8 +809,8 @@ def getinfo(dict = False):
     info['Installed database'] = conn
     if (conn):
         # print db info
-        info['Removal internal protected directories'] = Equo.clientDbconn.listConfigProtectDirectories()
-        info['Removal internal protected directory masks'] = Equo.clientDbconn.listConfigProtectDirectories(mask = True)
+        info['Removal internal protected directories'] = Equo.clientDbconn.listConfigProtectEntries()
+        info['Removal internal protected directory masks'] = Equo.clientDbconn.listConfigProtectEntries(mask = True)
         info['Total installed packages'] = len(Equo.clientDbconn.listAllIdpackages())
 
     # repository databases info (if found on the system)
@@ -821,8 +821,8 @@ def getinfo(dict = False):
             # print info about this database
             dbconn = Equo.open_repository(x)
             info['Repository databases'][x] = {}
-            info['Repository databases'][x]['Installation internal protected directories'] = dbconn.listConfigProtectDirectories()
-            info['Repository databases'][x]['Installation internal protected directory masks'] = dbconn.listConfigProtectDirectories(mask = True)
+            info['Repository databases'][x]['Installation internal protected directories'] = dbconn.listConfigProtectEntries()
+            info['Repository databases'][x]['Installation internal protected directory masks'] = dbconn.listConfigProtectEntries(mask = True)
             info['Repository databases'][x]['Total available packages'] = len(dbconn.listAllIdpackages())
             info['Repository databases'][x]['Database revision'] = Equo.get_repository_revision(x)
             info['Repository databases'][x]['Database hash'] = Equo.get_repository_db_file_checksum(x)

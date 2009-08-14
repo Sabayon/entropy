@@ -2793,7 +2793,7 @@ class Server(Singleton, TextInterface):
                 installed_counters.add(spm_counter)
                 server_dbconn = self.open_server_repository(read_only = True,
                     no_upload = True, repo = server_repo)
-                counter = server_dbconn.isCounterAvailable(spm_counter)
+                counter = server_dbconn.isSpmUidAvailable(spm_counter)
                 if counter:
                     found = True
                     break
@@ -2805,8 +2805,7 @@ class Server(Singleton, TextInterface):
         for server_repo in server_repos:
             server_dbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = server_repo)
-            database_counters[server_repo] = server_dbconn.listAllCounters(
-                branch = self.SystemSettings['repositories']['branch'])
+            database_counters[server_repo] = server_dbconn.listAllSpmUids()
 
         ordered_counters = set()
         for server_repo in database_counters:
@@ -2895,7 +2894,8 @@ class Server(Singleton, TextInterface):
                             # expired !!!
                             # add this and its depends (reverse deps)
                             to_be_removed.add((idpackage, xrepo))
-                            for my_id in dbconn.retrieveDepends(idpackage):
+                            for my_id in dbconn.retrieveReverseDependencies(
+                                idpackage):
                                 to_be_removed.add((my_id, xrepo))
 
                     else:
@@ -2927,7 +2927,7 @@ class Server(Singleton, TextInterface):
         for repo in server_repos:
             dbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = repo)
-            if dbconn.isCounterTrashed(counter):
+            if dbconn.isSpmUidTrashed(counter):
                 return True
         return False
 
@@ -2974,7 +2974,7 @@ class Server(Singleton, TextInterface):
             if dbconn.doesTableExist("injected") and \
                 dbconn.doesTableExist("extrainfo"):
                 injected_packages = dbconn.listAllInjectedPackages(
-                    justFiles = True)
+                    just_files = True)
                 injected_packages = set([os.path.basename(x) for x \
                     in injected_packages])
 

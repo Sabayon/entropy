@@ -313,7 +313,8 @@ class EntropyPackage:
     def get_inverse_dependencies(self):
         if self.pkgset:
             return []
-        return self.dbconn.retrieveDepends(self.matched_id, atoms = True)
+        return self.dbconn.retrieveReverseDependencies(self.matched_id,
+            atoms = True)
 
     def get_conflicts(self):
         if self.pkgset:

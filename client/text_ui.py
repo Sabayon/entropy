@@ -281,7 +281,7 @@ def worldUpdate(onlyfetch = False, replay = False, resume = False,
     equo_client_settings['collisionprotect'] = oldcollprotect
 
     # verify that client database idpackage still exist, validate here before passing removePackage() wrong info
-    remove = [x for x in remove if Equo.clientDbconn.isIDPackageAvailable(x)]
+    remove = [x for x in remove if Equo.clientDbconn.isIdpackageAvailable(x)]
 
     if remove and Equo.validRepositories and (not onlyfetch):
         remove = sorted(remove)
@@ -1323,7 +1323,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False,
         foundAtoms = []
         if atomsdata:
             for idpackage in atomsdata:
-                if not Equo.clientDbconn.isIDPackageAvailable(idpackage):
+                if not Equo.clientDbconn.isIdpackageAvailable(idpackage):
                     continue
                 foundAtoms.append(idpackage)
         else:

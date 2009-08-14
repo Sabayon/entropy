@@ -1259,7 +1259,7 @@ class Repository(SocketCommands):
             for mystring in mysearchlist:
                 m_idpackage, m_result = dbconn.atomMatch(mystring)
                 if m_idpackage == -1: continue
-                idpackages = dbconn.retrieveDepends(m_idpackage)
+                idpackages = dbconn.retrieveReverseDependencies(m_idpackage)
                 for idpackage in idpackages:
                     search_results['ordered_idpackages'].add(idpackage)
                     search_results['data'][idpackage] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)

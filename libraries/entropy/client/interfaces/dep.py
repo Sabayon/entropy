@@ -173,14 +173,16 @@ class CalculatorsMixin:
                 matches = [(x[0][0],x[1],) for x in data]
             for m_id, m_repo in matches:
                 m_db = self.__atom_match_open_db(m_repo, server_inst)
-                if not m_db.isIDPackageAvailable(m_id): return None
+                if not m_db.isIdpackageAvailable(m_id):
+                    return None
         else:
             m_id, m_repo = cached_obj # (14479, 'sabayonlinux.org')
             if extendedResults:
                 # ((14479, u'4.4.2', u'', 0), 'sabayonlinux.org')
                 m_id, m_repo = cached_obj[0][0],cached_obj[1]
             m_db = self.__atom_match_open_db(m_repo, server_inst)
-            if not m_db.isIDPackageAvailable(m_id): return None
+            if not m_db.isIdpackageAvailable(m_id):
+                return None
 
         return cached_obj
 
@@ -1082,7 +1084,7 @@ class CalculatorsMixin:
         if cmpstat == 0: return set()
 
         keyslots = set()
-        mydepends = self.clientDbconn.retrieveDepends(clientmatch[0])
+        mydepends = self.clientDbconn.retrieveReverseDependencies(clientmatch[0])
         am = self.atom_match
         cdb_rdeps = self.clientDbconn.retrieveDependencies
         cdb_rks = self.clientDbconn.retrieveKeySlot
@@ -1350,7 +1352,7 @@ class CalculatorsMixin:
         # post-dependencies won't be pulled in
         pdepend_id = etpConst['spm']['pdepend_id']
         # check if dependstable is sane before beginning
-        self.clientDbconn.retrieveDepends(idpackages[0])
+        self.clientDbconn.retrieveReverseDependencies(idpackages[0])
         count = 0
 
         rem_dep_text = _("Calculating inverse dependencies for")
@@ -1376,7 +1378,7 @@ class CalculatorsMixin:
                     continue
 
                 # obtain its inverse deps
-                depends = self.clientDbconn.retrieveDepends(idpackage,
+                depends = self.clientDbconn.retrieveReverseDependencies(idpackage,
                     exclude_deptypes = (pdepend_id,))
                 # filter already satisfied ones
                 depends = set([x for x in depends if x not in monotree])
@@ -1402,7 +1404,7 @@ class CalculatorsMixin:
                         (self.clientDbconn.isSystemPackage(x) or \
                             self.is_installed_idpackage_in_system_mask(x) )]
                     for x in mydeps:
-                        mydepends = self.clientDbconn.retrieveDepends(x)
+                        mydepends = self.clientDbconn.retrieveReverseDependencies(x)
                         mydepends -= set([y for y in mydepends if y \
                             not in monotree])
                         if not mydepends:

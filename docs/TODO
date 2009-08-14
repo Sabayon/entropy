@@ -16,6 +16,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - "Would you like to look for packages that can be removed along with the selected above ?"
     - Collision found during removal of /usr/share/ati/amdcccle/amdcccle_ja.qm - cannot overwrite
     - .po files QA tool
+    - db._cur2set()
 
   1.0_beta1:
 
@@ -31,7 +32,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0 - deprecations:
 
-    - databaseStructureUpdates (missing tables creation)
+    - _databaseStructureUpdates (missing tables creation)
 
   2.0:
 

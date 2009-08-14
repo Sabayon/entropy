@@ -47,7 +47,7 @@ class RepositoryMixin:
             try:
 
                 dbc = self.open_repository(repoid)
-                dbc.listConfigProtectDirectories()
+                dbc.listConfigProtectEntries()
                 dbc.validateDatabase()
                 self.validRepositories.append(repoid)
 
@@ -1376,11 +1376,11 @@ class MiscMixin:
         cl_id = self.sys_settings_client_plugin_id
         misc_data = self.SystemSettings[cl_id]['misc']
         if mask:
-            _pmask = self.clientDbconn.listConfigProtectDirectories(mask = True)
+            _pmask = self.clientDbconn.listConfigProtectEntries(mask = True)
             config_protect = set(_pmask)
             config_protect |= set(misc_data['configprotectmask'])
         else:
-            _protect = self.clientDbconn.listConfigProtectDirectories()
+            _protect = self.clientDbconn.listConfigProtectEntries()
             config_protect = set(_protect)
             config_protect |= set(misc_data['configprotect'])
         config_protect = [etpConst['systemroot']+x for x in config_protect]

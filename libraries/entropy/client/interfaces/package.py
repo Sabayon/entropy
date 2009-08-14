@@ -1032,7 +1032,7 @@ class Package:
                 automerge_data)
 
         # clear depends table, this will make clientdb dependstable to be
-        # regenerated during the next request (retrieveDepends)
+        # regenerated during the next request (retrieveReverseDependencies)
         self.Entropy.clientDbconn.clearDependsTable()
         return idpackage
 
@@ -1158,7 +1158,13 @@ class Package:
                             header = red(" !!! ")
                         )
                         self.entropyTools.ebeep(20)
-                        shutil.rmtree(rootdir, True)
+                        # fucking kill it in any case!
+                        # rootdir must die! die die die die!
+                        # /me brings chainsaw
+                        try:
+                            shutil.rmtree(rootdir, True)
+                        except (shutil.Error, OSError,):
+                            pass
                         try:
                             os.rmdir(rootdir)
                         except OSError:
@@ -1850,7 +1856,7 @@ class Package:
     def removeconflict_step(self):
         self.error_on_not_prepared()
         for idpackage in self.infoDict['conflicts']:
-            if not self.Entropy.clientDbconn.isIDPackageAvailable(idpackage):
+            if not self.Entropy.clientDbconn.isIdpackageAvailable(idpackage):
                 continue
             pkg = self.Entropy.Package()
             pkg.prepare((idpackage,),"remove_conflict", self.infoDict['remove_metaopts'])
@@ -2118,7 +2124,7 @@ class Package:
         self.infoDict.clear()
         idpackage = self.matched_atom[0]
 
-        if not self.Entropy.clientDbconn.isIDPackageAvailable(idpackage):
+        if not self.Entropy.clientDbconn.isIdpackageAvailable(idpackage):
             self.infoDict['remove_installed_vanished'] = True
             return 0
 
@@ -2227,7 +2233,7 @@ class Package:
         self.infoDict['removeidpackage'] = inst_idpackage
 
         if self.infoDict['removeidpackage'] != -1:
-            avail = self.Entropy.clientDbconn.isIDPackageAvailable(self.infoDict['removeidpackage'])
+            avail = self.Entropy.clientDbconn.isIdpackageAvailable(self.infoDict['removeidpackage'])
             if avail:
                 self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(self.infoDict['removeidpackage'])
             else:

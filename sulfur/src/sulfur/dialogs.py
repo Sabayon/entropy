@@ -4470,7 +4470,7 @@ class PkgInfoMenu(MenuSkel):
         dbconn = self.pkg.dbconn
         avail = False
         if dbconn:
-            avail = dbconn.isIDPackageAvailable(pkg.matched_atom[0])
+            avail = dbconn.isIdpackageAvailable(pkg.matched_atom[0])
         if not avail:
             return
         from_repo = True

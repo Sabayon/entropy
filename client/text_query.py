@@ -309,7 +309,7 @@ def search_inverse_dependencies(atoms, dbconn = None, Equo = None):
                 idpackage_masked, idmasking_reason = dbconn.idpackageValidator(
                     result[0])
 
-            searchResults = dbconn.retrieveDepends(result[0])
+            searchResults = dbconn.retrieveReverseDependencies(result[0])
             for idpackage in searchResults:
                 print_package_info(idpackage, dbconn, clientSearch = True,
                     strictOutput = etpUi['quiet'], Equo = Equo,
