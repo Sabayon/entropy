@@ -3331,7 +3331,7 @@ audience.</td>
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#retrieveCompileFlags" class="summary-sig-name">retrieveCompileFlags</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">idpackage</span>)</span><br />
-      docstring_title</td>
+      Return Compiler flags during building of package.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.retrieveCompileFlags">source&nbsp;code</a></span>
             
@@ -3343,18 +3343,18 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list or set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#retrieveDepends" class="summary-sig-name">retrieveDepends</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#retrieveReverseDependencies" class="summary-sig-name">retrieveReverseDependencies</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">idpackage</span>,
         <span class="summary-sig-arg">atoms</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">key_slot</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">exclude_deptypes</span>=<span class="summary-sig-default">None</span>)</span><br />
-      docstring_title</td>
+      Return reverse (or inverse) dependencies for given package.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.retrieveDepends">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.retrieveReverseDependencies">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -3364,12 +3364,13 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#retrieveUnusedIdpackages" class="summary-sig-name">retrieveUnusedIdpackages</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
+      Return packages (through their identifiers) not referenced by any 
+      other as dependency (unused packages).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.retrieveUnusedIdpackages">source&nbsp;code</a></span>
             
@@ -3381,15 +3382,15 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isPackageAvailable" class="summary-sig-name">isPackageAvailable</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">pkgatom</span>)</span><br />
-      docstring_title</td>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isAtomAvailable" class="summary-sig-name">isAtomAvailable</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">atom</span>)</span><br />
+      Return whether given atom is available in repository.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isPackageAvailable">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isAtomAvailable">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -3399,33 +3400,15 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isIDPackageAvailable" class="summary-sig-name">isIDPackageAvailable</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">idpackage</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isIDPackageAvailable">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#areIDPackagesAvailable" class="summary-sig-name">areIDPackagesAvailable</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#areIdpackagesAvailable" class="summary-sig-name">areIdpackagesAvailable</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">idpackages</span>)</span><br />
-      docstring_title</td>
+      Return whether list of package identifiers are available.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.areIDPackagesAvailable">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.areIdpackagesAvailable">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -3435,13 +3418,31 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isIdpackageAvailable" class="summary-sig-name">isIdpackageAvailable</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackage</span>)</span><br />
+      Return whether given package identifier is available in repository.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isIdpackageAvailable">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isCategoryAvailable" class="summary-sig-name">isCategoryAvailable</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">category</span>)</span><br />
-      docstring_title</td>
+      Return whether given category is available in repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isCategoryAvailable">source&nbsp;code</a></span>
             
@@ -3453,13 +3454,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isProtectAvailable" class="summary-sig-name">isProtectAvailable</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">protect</span>)</span><br />
-      docstring_title</td>
+      Return whether given CONFIG_PROTECT* entry is available in 
+      repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isProtectAvailable">source&nbsp;code</a></span>
             
@@ -3471,14 +3473,15 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool or set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isFileAvailable" class="summary-sig-name">isFileAvailable</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">myfile</span>,
         <span class="summary-sig-arg">get_id</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      Return whether given file path is available in repository (owned by 
+      one or more packages).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isFileAvailable">source&nbsp;code</a></span>
             
@@ -3490,7 +3493,7 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list or set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -3498,7 +3501,8 @@ audience.</td>
         <span class="summary-sig-arg">needed</span>,
         <span class="summary-sig-arg">elfclass</span>=<span class="summary-sig-default">-1</span>,
         <span class="summary-sig-arg">extended</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      Resolve NEEDED ELF entry (a library name) to idpackages owning given 
+      needed (stressing, needed = library name)</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.resolveNeeded">source&nbsp;code</a></span>
             
@@ -3510,13 +3514,13 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isSourceAvailable" class="summary-sig-name">isSourceAvailable</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">source</span>)</span><br />
-      docstring_title</td>
+      Return whether given source package URL is available in repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isSourceAvailable">source&nbsp;code</a></span>
             
@@ -3528,13 +3532,13 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isDependencyAvailable" class="summary-sig-name">isDependencyAvailable</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">dependency</span>)</span><br />
-      docstring_title</td>
+      Return whether given dependency string is available in repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isDependencyAvailable">source&nbsp;code</a></span>
             
@@ -3546,13 +3550,13 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isKeywordAvailable" class="summary-sig-name">isKeywordAvailable</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">keyword</span>)</span><br />
-      docstring_title</td>
+      Return whether keyword string is available in repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isKeywordAvailable">source&nbsp;code</a></span>
             
@@ -3564,13 +3568,13 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isUseflagAvailable" class="summary-sig-name">isUseflagAvailable</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">useflag</span>)</span><br />
-      docstring_title</td>
+      Return whether USE flag name is available in repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isUseflagAvailable">source&nbsp;code</a></span>
             
@@ -3582,13 +3586,13 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isEclassAvailable" class="summary-sig-name">isEclassAvailable</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">eclass</span>)</span><br />
-      docstring_title</td>
+      Return whether eclass name is available in repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isEclassAvailable">source&nbsp;code</a></span>
             
@@ -3600,13 +3604,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isNeededAvailable" class="summary-sig-name">isNeededAvailable</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">needed</span>)</span><br />
-      docstring_title</td>
+      Return whether NEEDED ELF entry (library name) is available in 
+      repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isNeededAvailable">source&nbsp;code</a></span>
             
@@ -3618,17 +3623,16 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isCounterAvailable" class="summary-sig-name">isCounterAvailable</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">counter</span>,
-        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">branch_operator</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">=</code><code class="variable-quote">'</code></span>)</span><br />
-      docstring_title</td>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isSpmUidAvailable" class="summary-sig-name">isSpmUidAvailable</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">spm_uid</span>)</span><br />
+      Return whether Source Package Manager package identifier is available
+      in repository.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isCounterAvailable">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isSpmUidAvailable">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -3638,15 +3642,16 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isCounterTrashed" class="summary-sig-name">isCounterTrashed</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">counter</span>)</span><br />
-      docstring_title</td>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isSpmUidTrashed" class="summary-sig-name">isSpmUidTrashed</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">spm_uid</span>)</span><br />
+      Return whether Source Package Manager package identifier has been 
+      trashed.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isCounterTrashed">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isSpmUidTrashed">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -3656,13 +3661,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isLicensedataKeyAvailable" class="summary-sig-name">isLicensedataKeyAvailable</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">license_name</span>)</span><br />
-      docstring_title</td>
+      Return whether license name is available in License database, which 
+      is the one containing actual license texts.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isLicensedataKeyAvailable">source&nbsp;code</a></span>
             
@@ -3674,13 +3680,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isLicenseAccepted" class="summary-sig-name">isLicenseAccepted</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">license_name</span>)</span><br />
-      docstring_title</td>
+      Return whether given license (through its name) has been accepted by 
+      user.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isLicenseAccepted">source&nbsp;code</a></span>
             
@@ -3698,7 +3705,7 @@ audience.</td>
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#acceptLicense" class="summary-sig-name">acceptLicense</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">license_name</span>)</span><br />
-      docstring_title</td>
+      Mark license name as accepted by user.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.acceptLicense">source&nbsp;code</a></span>
             
@@ -3710,13 +3717,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isLicenseAvailable" class="summary-sig-name">isLicenseAvailable</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">pkglicense</span>)</span><br />
-      docstring_title</td>
+      Return whether license metdatatum (NOT license name) is available in 
+      repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isLicenseAvailable">source&nbsp;code</a></span>
             
@@ -3728,13 +3736,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isSystemPackage" class="summary-sig-name">isSystemPackage</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">idpackage</span>)</span><br />
-      docstring_title</td>
+      Return whether package is part of core system (though, a system 
+      package).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isSystemPackage">source&nbsp;code</a></span>
             
@@ -3746,13 +3755,15 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#isInjected" class="summary-sig-name">isInjected</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">idpackage</span>)</span><br />
-      docstring_title</td>
+      Return whether package has been injected into repository (means that 
+      will be never ever removed due to colliding scope when other packages
+      will be added).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isInjected">source&nbsp;code</a></span>
             
@@ -3764,7 +3775,7 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -3772,7 +3783,7 @@ audience.</td>
         <span class="summary-sig-arg">chost</span>,
         <span class="summary-sig-arg">cflags</span>,
         <span class="summary-sig-arg">cxxflags</span>)</span><br />
-      docstring_title</td>
+      Return whether given Compiler FLAGS are available in repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.areCompileFlagsAvailable">source&nbsp;code</a></span>
             
@@ -3784,16 +3795,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#searchBelongs" class="summary-sig-name">searchBelongs</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">file</span>,
-        <span class="summary-sig-arg">like</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">branch_operator</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">=</code><code class="variable-quote">'</code></span>)</span><br />
-      docstring_title</td>
+        <span class="summary-sig-arg">like</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Search packages which given file path belongs to.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchBelongs">source&nbsp;code</a></span>
             
@@ -3805,13 +3814,15 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">set or list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="searchEclassedPackages"></a><span class="summary-sig-name">searchEclassedPackages</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#searchEclassedPackages" class="summary-sig-name">searchEclassedPackages</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">eclass</span>,
-        <span class="summary-sig-arg">atoms</span>=<span class="summary-sig-default">False</span>)</span></td>
+        <span class="summary-sig-arg">atoms</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Search packages which their Source Package Manager counterpar are 
+      using given eclass.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchEclassedPackages">source&nbsp;code</a></span>
             
@@ -3823,13 +3834,15 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">set or list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="searchTaggedPackages"></a><span class="summary-sig-name">searchTaggedPackages</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#searchTaggedPackages" class="summary-sig-name">searchTaggedPackages</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">tag</span>,
-        <span class="summary-sig-arg">atoms</span>=<span class="summary-sig-default">False</span>)</span></td>
+        <span class="summary-sig-arg">atoms</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Search packages which &quot;tag&quot; metadatum matches the given 
+      one.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchTaggedPackages">source&nbsp;code</a></span>
             
@@ -3841,7 +3854,7 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">set or list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -3849,7 +3862,7 @@ audience.</td>
         <span class="summary-sig-arg">mylicense</span>,
         <span class="summary-sig-arg">caseSensitive</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">atoms</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      Search packages using given license (mylicense).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchLicenses">source&nbsp;code</a></span>
             
@@ -3861,13 +3874,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">set or list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="searchSlottedPackages"></a><span class="summary-sig-name">searchSlottedPackages</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#searchSlottedPackages" class="summary-sig-name">searchSlottedPackages</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">slot</span>,
-        <span class="summary-sig-arg">atoms</span>=<span class="summary-sig-default">False</span>)</span></td>
+        <span class="summary-sig-arg">atoms</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Search packages with given slot string.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchSlottedPackages">source&nbsp;code</a></span>
             
@@ -3879,15 +3893,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#searchKeySlot" class="summary-sig-name">searchKeySlot</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">key</span>,
-        <span class="summary-sig-arg">slot</span>,
-        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span><br />
-      docstring_title</td>
+        <span class="summary-sig-arg">slot</span>)</span><br />
+      Search package with given key and slot</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchKeySlot">source&nbsp;code</a></span>
             
@@ -3899,14 +3912,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#searchNeeded" class="summary-sig-name">searchNeeded</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">keyword</span>,
+        <span class="summary-sig-arg">needed</span>,
         <span class="summary-sig-arg">like</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      Search packages that need given NEEDED ELF entry (library name).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchNeeded">source&nbsp;code</a></span>
             
@@ -3918,7 +3931,7 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int or set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -3927,7 +3940,7 @@ audience.</td>
         <span class="summary-sig-arg">like</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">multi</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">strings</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      Search dependency name in repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchDependency">source&nbsp;code</a></span>
             
@@ -3939,13 +3952,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="searchIdpackageFromIddependency"></a><span class="summary-sig-name">searchIdpackageFromIddependency</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#searchIdpackageFromIddependency" class="summary-sig-name">searchIdpackageFromIddependency</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">iddep</span>)</span><br />
-      search iddependency inside dependencies table and retrieve idpackages</td>
+      Search package identifiers owning dependency given (in form of 
+      dependency identifier).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchIdpackageFromIddependency">source&nbsp;code</a></span>
             
@@ -3957,13 +3971,13 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#searchSets" class="summary-sig-name">searchSets</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">keyword</span>)</span><br />
-      docstring_title</td>
+      Search package sets in repository using given search keyword.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchSets">source&nbsp;code</a></span>
             
@@ -3975,14 +3989,15 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#searchSimilarPackages" class="summary-sig-name">searchSimilarPackages</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">mystring</span>,
         <span class="summary-sig-arg">atom</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      Search similar packages (basing on package string given by mystring 
+      argument) using SOUNDEX algorithm (ahhh Google...).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchSimilarPackages">source&nbsp;code</a></span>
             
@@ -3994,7 +4009,7 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">set or list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -4003,10 +4018,10 @@ audience.</td>
         <span class="summary-sig-arg">sensitive</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">slot</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">tag</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">order_by</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">atom</code><code class="variable-quote">'</code></span>,
         <span class="summary-sig-arg">just_id</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      Search packages using given package name &quot;keyword&quot; 
+      argument.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchPackages">source&nbsp;code</a></span>
             
@@ -4018,7 +4033,7 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list or set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -4028,7 +4043,7 @@ audience.</td>
         <span class="summary-sig-arg">tag</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">justid</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      Search in old-style Portage PROVIDE metadata.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchProvide">source&nbsp;code</a></span>
             
@@ -4040,12 +4055,13 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="searchPackagesByDescription"></a><span class="summary-sig-name">searchPackagesByDescription</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">keyword</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#searchPackagesByDescription" class="summary-sig-name">searchPackagesByDescription</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">keyword</span>)</span><br />
+      Search packages using given description string as keyword.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchPackagesByDescription">source&nbsp;code</a></span>
             
@@ -4057,7 +4073,7 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list or set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -4066,7 +4082,7 @@ audience.</td>
         <span class="summary-sig-arg">sensitive</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">justid</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      Search packages by package name.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchPackagesByName">source&nbsp;code</a></span>
             
@@ -4078,7 +4094,7 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -4086,7 +4102,7 @@ audience.</td>
         <span class="summary-sig-arg">keyword</span>,
         <span class="summary-sig-arg">like</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span><br />
-      docstring_title</td>
+      Search packages by category name.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchPackagesByCategory">source&nbsp;code</a></span>
             
@@ -4098,7 +4114,7 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list or set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -4108,7 +4124,7 @@ audience.</td>
         <span class="summary-sig-arg">sensitive</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">justid</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      Search packages matching given name and category strings.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchPackagesByNameAndCategory">source&nbsp;code</a></span>
             
@@ -4120,7 +4136,7 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">tuple</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
@@ -4128,7 +4144,7 @@ audience.</td>
         <span class="summary-sig-arg">atom</span>,
         <span class="summary-sig-arg">slot</span>,
         <span class="summary-sig-arg">revision</span>)</span><br />
-      docstring_title</td>
+      Return whether given package scope is available.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isPackageScopeAvailable">source&nbsp;code</a></span>
             
@@ -4161,16 +4177,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#listAllPackages" class="summary-sig-name">listAllPackages</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">get_scope</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">order_by</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">branch_operator</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">=</code><code class="variable-quote">'</code></span>)</span><br />
-      docstring_title</td>
+        <span class="summary-sig-arg">order_by</span>=<span class="summary-sig-default">None</span>)</span><br />
+      List all packages in repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllPackages">source&nbsp;code</a></span>
             
@@ -4182,13 +4196,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#listAllInjectedPackages" class="summary-sig-name">listAllInjectedPackages</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">justFiles</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+        <span class="summary-sig-arg">just_files</span>=<span class="summary-sig-default">False</span>)</span><br />
+      List all the &quot;injected&quot; package download URLs in 
+      repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllInjectedPackages">source&nbsp;code</a></span>
             
@@ -4200,17 +4215,15 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#listAllCounters" class="summary-sig-name">listAllCounters</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">onlycounters</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">branch_operator</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">=</code><code class="variable-quote">'</code></span>)</span><br />
-      docstring_title</td>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#listAllSpmUids" class="summary-sig-name">listAllSpmUids</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      List all Source Package Manager unique package identifiers bindings 
+      with packages in repository.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllCounters">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllSpmUids">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -4220,15 +4233,13 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list or set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#listAllIdpackages" class="summary-sig-name">listAllIdpackages</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">branch_operator</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">=</code><code class="variable-quote">'</code></span>,
         <span class="summary-sig-arg">order_by</span>=<span class="summary-sig-default">None</span>)</span><br />
-      docstring_title</td>
+      List all package identifiers available in repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllIdpackages">source&nbsp;code</a></span>
             
@@ -4240,13 +4251,12 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#listAllDependencies" class="summary-sig-name">listAllDependencies</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">only_deps</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#listAllDependencies" class="summary-sig-name">listAllDependencies</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      List all dependencies available in repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllDependencies">source&nbsp;code</a></span>
             
@@ -4258,31 +4268,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#listAllBranches" class="summary-sig-name">listAllBranches</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllBranches">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#listIdPackagesInIdcategory" class="summary-sig-name">listIdPackagesInIdcategory</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">idcategory</span>,
         <span class="summary-sig-arg">order_by</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">atom</code><code class="variable-quote">'</code></span>)</span><br />
-      docstring_title</td>
+      List package identifiers available in given category identifier.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listIdPackagesInIdcategory">source&nbsp;code</a></span>
             
@@ -4294,31 +4287,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="listIdpackageDependencies"></a><span class="summary-sig-name">listIdpackageDependencies</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">idpackage</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listIdpackageDependencies">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list or set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#listAllDownloads" class="summary-sig-name">listAllDownloads</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">do_sort</span>=<span class="summary-sig-default">True</span>,
         <span class="summary-sig-arg">full_path</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      List all package download URLs stored in repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllDownloads">source&nbsp;code</a></span>
             
@@ -4330,14 +4306,14 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int or list or set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#listAllFiles" class="summary-sig-name">listAllFiles</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">clean</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">count</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      List all file paths owned by packaged stored in repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllFiles">source&nbsp;code</a></span>
             
@@ -4349,13 +4325,13 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#listAllCategories" class="summary-sig-name">listAllCategories</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">order_by</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span><br />
-      docstring_title</td>
+      List all categories available in repository.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllCategories">source&nbsp;code</a></span>
             
@@ -4367,15 +4343,16 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#listConfigProtectDirectories" class="summary-sig-name">listConfigProtectDirectories</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#listConfigProtectEntries" class="summary-sig-name">listConfigProtectEntries</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">mask</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      List CONFIG_PROTECT* entries (configuration file/directories 
+      protection).</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listConfigProtectDirectories">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listConfigProtectEntries">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -4389,9 +4366,10 @@ audience.</td>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="switchBranch"></a><span class="summary-sig-name">switchBranch</span>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#switchBranch" class="summary-sig-name">switchBranch</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">idpackage</span>,
-        <span class="summary-sig-arg">tobranch</span>)</span></td>
+        <span class="summary-sig-arg">tobranch</span>)</span><br />
+      Switch branch string in repository to new value.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.switchBranch">source&nbsp;code</a></span>
             
@@ -4407,25 +4385,8 @@ audience.</td>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#databaseStructureUpdates" class="summary-sig-name">databaseStructureUpdates</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.databaseStructureUpdates">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#validateDatabase" class="summary-sig-name">validateDatabase</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
+      Validates Entropy repository by doing basic integrity checks.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.validateDatabase">source&nbsp;code</a></span>
             
@@ -4706,23 +4667,6 @@ audience.</td>
       docstring_title</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.removePackageFromDependsTable">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#createDependsTable" class="summary-sig-name">createDependsTable</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createDependsTable">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -5392,161 +5336,7 @@ audience.</td>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#createNeededlibrarypathsTable" class="summary-sig-name">createNeededlibrarypathsTable</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createNeededlibrarypathsTable">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#createNeededlibraryidpackagesTable" class="summary-sig-name">createNeededlibraryidpackagesTable</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createNeededlibraryidpackagesTable">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#createInstalledTableSource" class="summary-sig-name">createInstalledTableSource</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createInstalledTableSource">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#createPackagechangelogsTable" class="summary-sig-name">createPackagechangelogsTable</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createPackagechangelogsTable">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#createAutomergefilesTable" class="summary-sig-name">createAutomergefilesTable</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createAutomergefilesTable">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#createPackagesignaturesTable" class="summary-sig-name">createPackagesignaturesTable</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createPackagesignaturesTable">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#createPackagespmphases" class="summary-sig-name">createPackagespmphases</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createPackagespmphases">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#createEntropyBranchMigrationTable" class="summary-sig-name">createEntropyBranchMigrationTable</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createEntropyBranchMigrationTable">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#createPackagesetsTable" class="summary-sig-name">createPackagesetsTable</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createPackagesetsTable">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#createCategoriesdescriptionTable" class="summary-sig-name">createCategoriesdescriptionTable</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
+          <td><span class="summary-sig"><a name="createCategoriesdescriptionTable"></a><span class="summary-sig-name">createCategoriesdescriptionTable</span>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createCategoriesdescriptionTable">source&nbsp;code</a></span>
             
@@ -5562,44 +5352,9 @@ audience.</td>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#createLicensedataTable" class="summary-sig-name">createLicensedataTable</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
+          <td><span class="summary-sig"><a name="createLicensedataTable"></a><span class="summary-sig-name">createLicensedataTable</span>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createLicensedataTable">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#createLicensesAcceptedTable" class="summary-sig-name">createLicensesAcceptedTable</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createLicensesAcceptedTable">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#createInstalledTable" class="summary-sig-name">createInstalledTable</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createInstalledTable">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -10415,39 +10170,51 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <pre class="literalblock">
+
+Return Compiler flags during building of package.
+    (CHOST, CXXFLAGS, LDFLAGS)
+
+@param idpackage: package indentifier
+@type idpackage: int
+@return: tuple of length 3 composed by (CHOST, CFLAGS, CXXFLAGS)
+@rtype: tuple
+
+</pre>
   <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
-    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="retrieveDepends"></a>
+<a name="retrieveReverseDependencies"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">retrieveDepends</span>(<span class="sig-arg">self</span>,
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">retrieveReverseDependencies</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">idpackage</span>,
         <span class="sig-arg">atoms</span>=<span class="sig-default">False</span>,
         <span class="sig-arg">key_slot</span>=<span class="sig-default">False</span>,
         <span class="sig-arg">exclude_deptypes</span>=<span class="sig-default">None</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.retrieveDepends">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.retrieveReverseDependencies">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return reverse (or inverse) dependencies for given package.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
+        <li><strong class="pname"><code>atoms</code></strong> (bool) - if True, method returns list of atoms</li>
+        <li><strong class="pname"><code>key_slot</code></strong> (bool) - if True, method returns list of dependencies in key:slot form, 
+          example: [('app-foo/bar','2',), ...]</li>
+        <li><strong class="pname"><code>exclude_deptypes</code></strong> (iterable) - exclude given dependency types from returned data</li>
     </ul></dd>
+    <dt>Returns: list or set</dt>
+        <dd>reverse dependency list</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10465,80 +10232,91 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return packages (through their identifiers) not referenced by any 
+  other as dependency (unused packages).</p>
   <dl class="fields">
+    <dt>Returns: list</dt>
+        <dd>unused idpackages ordered by atom</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="isPackageAvailable"></a>
+<a name="isAtomAvailable"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">isPackageAvailable</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">pkgatom</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isAtomAvailable</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">atom</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isPackageAvailable">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isAtomAvailable">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether given atom is available in repository.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>pkgatom</code></strong> ()</li>
+        <li><strong class="pname"><code>atom</code></strong> (string) - package atom</li>
     </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>idpackage or -1 if not found</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="isIDPackageAvailable"></a>
+<a name="areIdpackagesAvailable"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">isIDPackageAvailable</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">idpackage</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">areIdpackagesAvailable</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idpackages</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isIDPackageAvailable">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.areIdpackagesAvailable">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether list of package identifiers are available. They must be
+  all available to return True</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>idpackages</code></strong> (iterable) - list of package indentifiers</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>availability (True if all are available)</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="isIdpackageAvailable"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isIdpackageAvailable</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idpackage</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isIdpackageAvailable">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return whether given package identifier is available in 
+  repository.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
     </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="areIDPackagesAvailable"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">areIDPackagesAvailable</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">idpackages</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.areIDPackagesAvailable">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackages</code></strong> (list) - list of package indentifiers</li>
-    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>availability (True if available)</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10557,12 +10335,14 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether given category is available in repository.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>category</code></strong> ()</li>
+        <li><strong class="pname"><code>category</code></strong> (string) - category name</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>availability (True if available)</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10581,12 +10361,16 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether given CONFIG_PROTECT* entry is available in 
+  repository.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>protect</code></strong> ()</li>
+        <li><strong class="pname"><code>protect</code></strong> (string) - CONFIG_PROTECT* entry (path to a protected directory or file that
+          won't be overwritten by Entropy Client during package merge)</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>availability (True if available)</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10606,13 +10390,17 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether given file path is available in repository (owned by 
+  one or more packages).</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>myfile</code></strong> ()</li>
-        <li><strong class="pname"><code>get_id</code></strong> ()</li>
+        <li><strong class="pname"><code>myfile</code></strong> (string) - path to file or directory</li>
+        <li><strong class="pname"><code>get_id</code></strong> (bool) - return list (set) of idpackages owning myfile</li>
     </ul></dd>
+    <dt>Returns: bool or set</dt>
+        <dd>availability (True if available), when get_id is True, it returns
+          a list (set) of idpackages owning myfile</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10633,14 +10421,18 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Resolve NEEDED ELF entry (a library name) to idpackages owning given 
+  needed (stressing, needed = library name)</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>needed</code></strong> ()</li>
-        <li><strong class="pname"><code>elfclass</code></strong> ()</li>
-        <li><strong class="pname"><code>extended</code></strong> ()</li>
+        <li><strong class="pname"><code>needed</code></strong> (string) - library name</li>
+        <li><strong class="pname"><code>elfclass</code></strong> (int) - look for library name matching given ELF class</li>
+        <li><strong class="pname"><code>extended</code></strong> (bool) - return a list of tuple of length 2, first element is idpackage, 
+          second is actual library path</li>
     </ul></dd>
+    <dt>Returns: list or set</dt>
+        <dd>list of packages owning given library</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10659,12 +10451,15 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether given source package URL is available in repository. 
+  Returns source package URL identifier (idsource).</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>source</code></strong> ()</li>
+        <li><strong class="pname"><code>source</code></strong> (string) - source package URL</li>
     </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>source package URL identifier (idsource) or -1 if not found</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10683,12 +10478,15 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether given dependency string is available in repository. 
+  Returns dependency identifier (iddependency).</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>dependency</code></strong> ()</li>
+        <li><strong class="pname"><code>dependency</code></strong> (string) - dependency string</li>
     </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>dependency identifier (iddependency) or -1 if not found</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10707,12 +10505,15 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether keyword string is available in repository. Returns 
+  keyword identifier (idkeyword)</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>keyword</code></strong> ()</li>
+        <li><strong class="pname"><code>keyword</code></strong> (string) - keyword string</li>
     </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>keyword identifier (idkeyword) or -1 if not found</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10731,12 +10532,15 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether USE flag name is available in repository. Returns USE 
+  flag identifier (idflag).</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>useflag</code></strong> ()</li>
+        <li><strong class="pname"><code>useflag</code></strong> (string) - USE flag name</li>
     </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>USE flag identifier or -1 if not found</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10755,12 +10559,15 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether eclass name is available in repository. Returns Eclass 
+  identifier (idclass)</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>eclass</code></strong> ()</li>
+        <li><strong class="pname"><code>eclass</code></strong> (string) - eclass name</li>
     </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>Eclass identifier or -1 if not found</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10779,64 +10586,71 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether NEEDED ELF entry (library name) is available in 
+  repository. Returns NEEDED entry identifier</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>needed</code></strong> ()</li>
+        <li><strong class="pname"><code>needed</code></strong> (string) - NEEDED ELF entry (library name)</li>
     </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>NEEDED entry identifier or -1 if not found</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="isCounterAvailable"></a>
+<a name="isSpmUidAvailable"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">isCounterAvailable</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">counter</span>,
-        <span class="sig-arg">branch</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">branch_operator</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">=</code><code class="variable-quote">'</code></span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isSpmUidAvailable</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">spm_uid</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isCounterAvailable">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isSpmUidAvailable">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether Source Package Manager package identifier is available 
+  in repository.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>counter</code></strong> ()</li>
-        <li><strong class="pname"><code>branch</code></strong> ()</li>
-        <li><strong class="pname"><code>branch_operator</code></strong> ()</li>
+        <li><strong class="pname"><code>spm_uid</code></strong> (int) - Source Package Manager package identifier</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>availability (True, if available)</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="isCounterTrashed"></a>
+<a name="isSpmUidTrashed"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">isCounterTrashed</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">counter</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">isSpmUidTrashed</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">spm_uid</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isCounterTrashed">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.isSpmUidTrashed">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether Source Package Manager package identifier has been 
+  trashed. One is trashed when it gets removed from a repository while 
+  still sitting there in place on live system. This is a trick to allow 
+  multiple-repositories management to work fine when shitting around.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>counter</code></strong> ()</li>
+        <li><strong class="pname"><code>spm_uid</code></strong> (int) - Source Package Manager package identifier</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>availability (True, if available)</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10855,12 +10669,15 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether license name is available in License database, which is
+  the one containing actual license texts.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>license_name</code></strong> ()</li>
+        <li><strong class="pname"><code>license_name</code></strong> (string) - license name which license text is available</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>availability (True, if available)</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10879,12 +10696,15 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether given license (through its name) has been accepted by 
+  user.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>license_name</code></strong> ()</li>
+        <li><strong class="pname"><code>license_name</code></strong> (string) - license name</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>if license name has been accepted by user</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10903,14 +10723,32 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Mark license name as accepted by user. Only and only if user is 
+  allowed to accept them:</p>
+  <ul>
+    <li>
+      in entropy group
+    </li>
+    <li>
+      db not open in read only mode
+    </li>
+  </ul>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>license_name</code></strong> ()</li>
+        <li><strong class="pname"><code>license_name</code></strong> (string) - license name</li>
     </ul></dd>
   </dl>
-</td></tr></table>
+<div class="fields">      <strong>To Do:</strong>
+      <ul class="nomargin-top">
+        <li>
+        check if readOnly is really required
+        </li>
+        <li>
+        check if is_user_in_entropy_group is really required
+        </li>
+      </ul>
+</div></td></tr></table>
 </div>
 <a name="isLicenseAvailable"></a>
 <div>
@@ -10927,12 +10765,16 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether license metdatatum (NOT license name) is available in 
+  repository.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>pkglicense</code></strong> ()</li>
+        <li><strong class="pname"><code>pkglicense</code></strong> (string) - &quot;license&quot; package metadatum (returned by 
+          retrieveLicense)</li>
     </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>&quot;license&quot; metadatum identifier (idlicense)</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10951,12 +10793,15 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether package is part of core system (though, a system 
+  package).</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> ()</li>
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>if True, package is part of core system</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -10975,12 +10820,16 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether package has been injected into repository (means that 
+  will be never ever removed due to colliding scope when other packages 
+  will be added).</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>injection status (True if injected)</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11001,14 +10850,16 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether given Compiler FLAGS are available in repository.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>chost</code></strong> ()</li>
-        <li><strong class="pname"><code>cflags</code></strong> ()</li>
-        <li><strong class="pname"><code>cxxflags</code></strong> ()</li>
+        <li><strong class="pname"><code>chost</code></strong> (string) - CHOST flag</li>
+        <li><strong class="pname"><code>cflags</code></strong> (string) - CFLAGS flag</li>
+        <li><strong class="pname"><code>cxxflags</code></strong> (string) - CXXFLAGS flag</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>availability (True if available)</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11021,24 +10872,80 @@ each ELF class available.
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">searchBelongs</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">file</span>,
-        <span class="sig-arg">like</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">branch</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">branch_operator</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">=</code><code class="variable-quote">'</code></span>)</span>
+        <span class="sig-arg">like</span>=<span class="sig-default">False</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchBelongs">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Search packages which given file path belongs to.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>file</code></strong> ()</li>
-        <li><strong class="pname"><code>like</code></strong> ()</li>
-        <li><strong class="pname"><code>branch</code></strong> ()</li>
-        <li><strong class="pname"><code>branch_operator</code></strong> ()</li>
+        <li><strong class="pname"><code>file</code></strong> (string) - file path to search</li>
+        <li><strong class="pname"><code>like</code></strong> (bool) - do not match exact case</li>
     </ul></dd>
+    <dt>Returns: set</dt>
+        <dd>list (set) of package identifiers owning given file</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="searchEclassedPackages"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">searchEclassedPackages</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">eclass</span>,
+        <span class="sig-arg">atoms</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchEclassedPackages">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Search packages which their Source Package Manager counterpar are 
+  using given eclass.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>eclass</code></strong> (string) - eclass name to search</li>
+        <li><strong class="pname"><code>atoms</code></strong> (bool) - return list of atoms instead of package identifiers</li>
+    </ul></dd>
+    <dt>Returns: set or list</dt>
+        <dd>list of packages using given eclass</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="searchTaggedPackages"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">searchTaggedPackages</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">tag</span>,
+        <span class="sig-arg">atoms</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchTaggedPackages">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Search packages which &quot;tag&quot; metadatum matches the given 
+  one.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>tag</code></strong> (string) - tag name to search</li>
+        <li><strong class="pname"><code>atoms</code></strong> (bool) - return list of atoms instead of package identifiers</li>
+    </ul></dd>
+    <dt>Returns: set or list</dt>
+        <dd>list of packages using given tag</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11059,14 +10966,47 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Search packages using given license (mylicense).</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>mylicense</code></strong> ()</li>
-        <li><strong class="pname"><code>caseSensitive</code></strong> ()</li>
-        <li><strong class="pname"><code>atoms</code></strong> ()</li>
+        <li><strong class="pname"><code>mylicense</code></strong> (string) - license name to search</li>
+        <li><strong class="pname"><code>caseSensitive</code></strong> (bool) - search in case sensitive mode (default off)</li>
+        <li><strong class="pname"><code>atoms</code></strong> (bool) - return list of atoms instead of package identifiers</li>
     </ul></dd>
+    <dt>Returns: set or list</dt>
+        <dd>list of packages using given license</dd>
+  </dl>
+<div class="fields">      <p><strong>To Do:</strong>
+        check if is_valid_string is really required
+      </p>
+</div></td></tr></table>
+</div>
+<a name="searchSlottedPackages"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">searchSlottedPackages</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">slot</span>,
+        <span class="sig-arg">atoms</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchSlottedPackages">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Search packages with given slot string.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>slot</code></strong> (string) - slot to search</li>
+        <li><strong class="pname"><code>atoms</code></strong> (bool) - return list of atoms instead of package identifiers</li>
+    </ul></dd>
+    <dt>Returns: set or list</dt>
+        <dd>list of packages using given slot</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11079,22 +11019,22 @@ each ELF class available.
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">searchKeySlot</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">key</span>,
-        <span class="sig-arg">slot</span>,
-        <span class="sig-arg">branch</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">slot</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchKeySlot">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Search package with given key and slot</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>key</code></strong> ()</li>
-        <li><strong class="pname"><code>slot</code></strong> ()</li>
-        <li><strong class="pname"><code>branch</code></strong> ()</li>
+        <li><strong class="pname"><code>key</code></strong> (string) - package key</li>
+        <li><strong class="pname"><code>slot</code></strong> (string) - package slot</li>
     </ul></dd>
+    <dt>Returns: set</dt>
+        <dd>list (set) of package identifiers</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11106,7 +11046,7 @@ each ELF class available.
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">searchNeeded</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">keyword</span>,
+        <span class="sig-arg">needed</span>,
         <span class="sig-arg">like</span>=<span class="sig-default">False</span>)</span>
   </h3>
   </td><td align="right" valign="top"
@@ -11114,13 +11054,15 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Search packages that need given NEEDED ELF entry (library name).</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>keyword</code></strong> ()</li>
-        <li><strong class="pname"><code>like</code></strong> ()</li>
+        <li><strong class="pname"><code>needed</code></strong> (string) - NEEDED ELF entry (shared object library name)</li>
+        <li><strong class="pname"><code>like</code></strong> (bool) - do not match exact case</li>
     </ul></dd>
+    <dt>Returns: set</dt>
+        <dd>list (set) of package identifiers</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11142,15 +11084,47 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Search dependency name in repository. Returns dependency identifier 
+  (iddependency) or dependency strings (if strings argument is True).</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>dep</code></strong> ()</li>
-        <li><strong class="pname"><code>like</code></strong> ()</li>
-        <li><strong class="pname"><code>multi</code></strong> ()</li>
-        <li><strong class="pname"><code>strings</code></strong> ()</li>
+        <li><strong class="pname"><code>dep</code></strong> (string) - dependency name</li>
+        <li><strong class="pname"><code>like</code></strong> (bool) - do not match exact case</li>
+        <li><strong class="pname"><code>multi</code></strong> (bool) - return all the matching dependency names</li>
+        <li><strong class="pname"><code>strings</code></strong> (bool) - return dependency names rather than dependency identifiers</li>
     </ul></dd>
+    <dt>Returns: int or set</dt>
+        <dd>list of dependency identifiers (if multi is True) or strings (if 
+          strings is True) or dependency identifier</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="searchIdpackageFromIddependency"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">searchIdpackageFromIddependency</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">iddep</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchIdpackageFromIddependency">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Search package identifiers owning dependency given (in form of 
+  dependency identifier).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>iddep</code></strong> (int) - dependency identifier</li>
+    </ul></dd>
+    <dt>Returns: set</dt>
+        <dd>list (set) of package identifiers owning given dependency 
+          identifier</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11169,12 +11143,14 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Search package sets in repository using given search keyword.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>keyword</code></strong> ()</li>
+        <li><strong class="pname"><code>keyword</code></strong> (string) - package set name to search</li>
     </ul></dd>
+    <dt>Returns: set</dt>
+        <dd>list (set) of package sets available matching given keyword</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11194,13 +11170,16 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Search similar packages (basing on package string given by mystring 
+  argument) using SOUNDEX algorithm (ahhh Google...).</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>mystring</code></strong> ()</li>
-        <li><strong class="pname"><code>atom</code></strong> ()</li>
+        <li><strong class="pname"><code>mystring</code></strong> (string) - package string to search</li>
+        <li><strong class="pname"><code>atom</code></strong> (bool) - return full atoms instead of package names</li>
     </ul></dd>
+    <dt>Returns: set</dt>
+        <dd>list of similar package names</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11216,7 +11195,6 @@ each ELF class available.
         <span class="sig-arg">sensitive</span>=<span class="sig-default">False</span>,
         <span class="sig-arg">slot</span>=<span class="sig-default">None</span>,
         <span class="sig-arg">tag</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">branch</span>=<span class="sig-default">None</span>,
         <span class="sig-arg">order_by</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">atom</code><code class="variable-quote">'</code></span>,
         <span class="sig-arg">just_id</span>=<span class="sig-default">False</span>)</span>
   </h3>
@@ -11225,18 +11203,21 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Search packages using given package name &quot;keyword&quot; 
+  argument.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>keyword</code></strong> ()</li>
-        <li><strong class="pname"><code>sensitive</code></strong> ()</li>
-        <li><strong class="pname"><code>slot</code></strong> ()</li>
-        <li><strong class="pname"><code>tag</code></strong> ()</li>
-        <li><strong class="pname"><code>branch</code></strong> ()</li>
-        <li><strong class="pname"><code>order_by</code></strong> ()</li>
-        <li><strong class="pname"><code>just_id</code></strong> ()</li>
+        <li><strong class="pname"><code>keyword</code></strong> (string) - package string</li>
+        <li><strong class="pname"><code>sensitive</code></strong> (bool) - case sensitive?</li>
+        <li><strong class="pname"><code>slot</code></strong> (string) - search matching given slot</li>
+        <li><strong class="pname"><code>tag</code></strong> (string) - search matching given package tag</li>
+        <li><strong class="pname"><code>order_by</code></strong> (string) - order results by &quot;atom&quot;, &quot;name&quot; or 
+          &quot;version&quot;</li>
+        <li><strong class="pname"><code>just_id</code></strong> (bool) - just return package identifiers (returning set())</li>
     </ul></dd>
+    <dt>Returns: set or list</dt>
+        <dd>packages found matching given search criterias</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11259,16 +11240,45 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Search in old-style Portage PROVIDE metadata. WARNING: this method is 
+  deprecated and will be removed someday.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>keyword</code></strong> ()</li>
-        <li><strong class="pname"><code>slot</code></strong> ()</li>
-        <li><strong class="pname"><code>tag</code></strong> ()</li>
-        <li><strong class="pname"><code>branch</code></strong> ()</li>
-        <li><strong class="pname"><code>justid</code></strong> ()</li>
+        <li><strong class="pname"><code>keyword</code></strong> (string) - search term</li>
+        <li><strong class="pname"><code>slot</code></strong> (string) - match given package slot</li>
+        <li><strong class="pname"><code>tag</code></strong> (string) - match given package tag</li>
+        <li><strong class="pname"><code>branch</code></strong> (string) - match given package branch</li>
+        <li><strong class="pname"><code>justid</code></strong> (bool) - return list of package identifiers (set())</li>
     </ul></dd>
+    <dt>Returns: list or set</dt>
+        <dd>found PROVIDE metadata</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="searchPackagesByDescription"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">searchPackagesByDescription</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">keyword</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchPackagesByDescription">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Search packages using given description string as keyword.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>keyword</code></strong> (string) - description sub-string to search</li>
+    </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>list of tuples of length 2 containing atom and idpackage values</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11290,15 +11300,18 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Search packages by package name.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>keyword</code></strong> ()</li>
-        <li><strong class="pname"><code>sensitive</code></strong> ()</li>
-        <li><strong class="pname"><code>branch</code></strong> ()</li>
-        <li><strong class="pname"><code>justid</code></strong> ()</li>
+        <li><strong class="pname"><code>keyword</code></strong> (string) - package name to search</li>
+        <li><strong class="pname"><code>sensitive</code></strong> (bool) - case sensitive?</li>
+        <li><strong class="pname"><code>branch</code></strong> (string) - search in given package branch</li>
+        <li><strong class="pname"><code>justid</code></strong> (bool) - return list of package identifiers (set()) otherwise return a 
+          list of tuples of length 2 containing atom and idpackage values</li>
     </ul></dd>
+    <dt>Returns: list or set</dt>
+        <dd>list of packages found</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11319,14 +11332,16 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Search packages by category name.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>keyword</code></strong> ()</li>
-        <li><strong class="pname"><code>like</code></strong> ()</li>
-        <li><strong class="pname"><code>branch</code></strong> ()</li>
+        <li><strong class="pname"><code>keyword</code></strong> (string) - category name</li>
+        <li><strong class="pname"><code>like</code></strong> (bool) - do not match exact case</li>
+        <li><strong class="pname"><code>branch</code></strong> (string) - search in given package branch</li>
     </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>list of tuples of length 2 containing atom and idpackage values</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11349,16 +11364,19 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Search packages matching given name and category strings.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>name</code></strong> ()</li>
-        <li><strong class="pname"><code>category</code></strong> ()</li>
-        <li><strong class="pname"><code>sensitive</code></strong> ()</li>
-        <li><strong class="pname"><code>branch</code></strong> ()</li>
-        <li><strong class="pname"><code>justid</code></strong> ()</li>
+        <li><strong class="pname"><code>name</code></strong> (string) - package name to search</li>
+        <li><strong class="pname"><code>category</code></strong> (string) - package category to search</li>
+        <li><strong class="pname"><code>sensitive</code></strong> (bool) - case sensitive?</li>
+        <li><strong class="pname"><code>branch</code></strong> (string) - search in given package branch</li>
+        <li><strong class="pname"><code>justid</code></strong> (bool) - return list of package identifiers (set()) otherwise return a 
+          list of tuples of length 2 containing atom and idpackage values</li>
     </ul></dd>
+    <dt>Returns: list or set</dt>
+        <dd>list of packages found</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11379,14 +11397,17 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether given package scope is available. Also check if package
+  found is masked and return masking reason identifier.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>atom</code></strong> ()</li>
-        <li><strong class="pname"><code>slot</code></strong> ()</li>
-        <li><strong class="pname"><code>revision</code></strong> ()</li>
+        <li><strong class="pname"><code>atom</code></strong> (string) - package atom string</li>
+        <li><strong class="pname"><code>slot</code></strong> (string) - package slot string</li>
+        <li><strong class="pname"><code>revision</code></strong> (int) - entropy package revision</li>
     </ul></dd>
+    <dt>Returns: tuple</dt>
+        <dd>tuple composed by (idpackage or -1, idreason or 0,)</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11431,24 +11452,25 @@ each ELF class available.
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">listAllPackages</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">get_scope</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">order_by</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">branch</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">branch_operator</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">=</code><code class="variable-quote">'</code></span>)</span>
+        <span class="sig-arg">order_by</span>=<span class="sig-default">None</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllPackages">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>List all packages in repository.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>get_scope</code></strong> ()</li>
-        <li><strong class="pname"><code>order_by</code></strong> ()</li>
-        <li><strong class="pname"><code>branch</code></strong> ()</li>
-        <li><strong class="pname"><code>branch_operator</code></strong> ()</li>
+        <li><strong class="pname"><code>get_scope</code></strong> (bool) - return also entropy package revision</li>
+        <li><strong class="pname"><code>order_by</code></strong> (string) - order by given metadatum, &quot;atom&quot;, &quot;slot&quot;, 
+          &quot;revision&quot; or &quot;idpackage&quot;</li>
     </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>list of tuples of length 3 (or 4 if get_scope is True), 
+          containing (atom, idpackage, branch,) if get_scope is False and 
+          (idpackage, atom, slot, revision,) if get_scope is True</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11460,47 +11482,45 @@ each ELF class available.
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">listAllInjectedPackages</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">justFiles</span>=<span class="sig-default">False</span>)</span>
+        <span class="sig-arg">just_files</span>=<span class="sig-default">False</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllInjectedPackages">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>List all the &quot;injected&quot; package download URLs in 
+  repository.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>justFiles</code></strong> ()</li>
+        <li><strong class="pname"><code>just_files</code></strong> (bool) - just return download URLs</li>
     </ul></dd>
+    <dt>Returns: set</dt>
+        <dd>list (set) of download URLs (if just_files) otherwise list of 
+          tuples of length 2 composed by (download URL, idpackage,)</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="listAllCounters"></a>
+<a name="listAllSpmUids"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">listAllCounters</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">onlycounters</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">branch</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">branch_operator</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">=</code><code class="variable-quote">'</code></span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">listAllSpmUids</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllCounters">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllSpmUids">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>List all Source Package Manager unique package identifiers bindings 
+  with packages in repository.</p>
   <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>onlycounters</code></strong> ()</li>
-        <li><strong class="pname"><code>branch</code></strong> ()</li>
-        <li><strong class="pname"><code>branch_operator</code></strong> ()</li>
-    </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>list of tuples of length 2 composed by (spm_uid, idpackage,)</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11512,8 +11532,6 @@ each ELF class available.
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">listAllIdpackages</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">branch</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">branch_operator</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">=</code><code class="variable-quote">'</code></span>,
         <span class="sig-arg">order_by</span>=<span class="sig-default">None</span>)</span>
   </h3>
   </td><td align="right" valign="top"
@@ -11521,14 +11539,15 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>List all package identifiers available in repository.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>branch</code></strong> ()</li>
-        <li><strong class="pname"><code>branch_operator</code></strong> ()</li>
-        <li><strong class="pname"><code>order_by</code></strong> ()</li>
+        <li><strong class="pname"><code>order_by</code></strong> (string) - order by &quot;atom&quot;, &quot;idpackage&quot;, 
+          &quot;version&quot;, &quot;name&quot;, &quot;idcategory&quot;</li>
     </ul></dd>
+    <dt>Returns: list or set</dt>
+        <dd>list (if order_by) or set of package identifiers</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11539,39 +11558,18 @@ each ELF class available.
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">listAllDependencies</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">only_deps</span>=<span class="sig-default">False</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">listAllDependencies</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllDependencies">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>List all dependencies available in repository.</p>
   <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>only_deps</code></strong> ()</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="listAllBranches"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">listAllBranches</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listAllBranches">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
+    <dt>Returns: list</dt>
+        <dd>list of tuples of length 2 containing (iddependency, dependency 
+          name,)</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11591,13 +11589,15 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>List package identifiers available in given category identifier.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idcategory</code></strong> ()</li>
-        <li><strong class="pname"><code>order_by</code></strong> ()</li>
+        <li><strong class="pname"><code>idcategory</code></strong> (int) - cateogory identifier</li>
+        <li><strong class="pname"><code>order_by</code></strong> (string) - order by &quot;atom&quot;, &quot;name&quot;, &quot;version&quot;</li>
     </ul></dd>
+    <dt>Returns: set</dt>
+        <dd>list (set) of available package identifiers in category.</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11617,13 +11617,15 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>List all package download URLs stored in repository.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>do_sort</code></strong> ()</li>
-        <li><strong class="pname"><code>full_path</code></strong> ()</li>
+        <li><strong class="pname"><code>do_sort</code></strong> (bool) - sort by name</li>
+        <li><strong class="pname"><code>full_path</code></strong> (bool) - return full URL (not just package file name)</li>
     </ul></dd>
+    <dt>Returns: list or set</dt>
+        <dd>list (or set if do_sort is True) of package download URLs</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11643,13 +11645,15 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>List all file paths owned by packaged stored in repository.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>clean</code></strong> ()</li>
-        <li><strong class="pname"><code>count</code></strong> ()</li>
+        <li><strong class="pname"><code>clean</code></strong> (bool) - return a clean list (not duplicates)</li>
+        <li><strong class="pname"><code>count</code></strong> (bool) - count elements and return number</li>
     </ul></dd>
+    <dt>Returns: int or list or set</dt>
+        <dd>list of files available or their count</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11668,55 +11672,67 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>List all categories available in repository.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>order_by</code></strong> ()</li>
+        <li><strong class="pname"><code>order_by</code></strong> (string) - order by &quot;category&quot;, &quot;idcategory&quot;</li>
     </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>list of tuples of length 2 composed by (idcategory, category,)</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="listConfigProtectDirectories"></a>
+<a name="listConfigProtectEntries"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">listConfigProtectDirectories</span>(<span class="sig-arg">self</span>,
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">listConfigProtectEntries</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">mask</span>=<span class="sig-default">False</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listConfigProtectDirectories">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.listConfigProtectEntries">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>List CONFIG_PROTECT* entries (configuration file/directories 
+  protection).</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>mask</code></strong> ()</li>
+        <li><strong class="pname"><code>mask</code></strong> (bool) - return CONFIG_PROTECT_MASK metadata instead of CONFIG_PROTECT</li>
     </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>list of protected/masked directories</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="databaseStructureUpdates"></a>
+<a name="switchBranch"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">databaseStructureUpdates</span>(<span class="sig-arg">self</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">switchBranch</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idpackage</span>,
+        <span class="sig-arg">tobranch</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.databaseStructureUpdates">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.switchBranch">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Switch branch string in repository to new value.</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - package identifier</li>
+        <li><strong class="pname"><code>tobranch</code></strong> (string) - new branch value</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11734,8 +11750,12 @@ each ELF class available.
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Validates Entropy repository by doing basic integrity checks.</p>
   <dl class="fields">
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'><a href="entropy.exceptions.SystemDatabaseError-class.html">SystemDatabaseError</a></strong></code> - when repository is not reliable</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -11960,7 +11980,7 @@ each ELF class available.
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> ()</li>
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
         <li><strong class="pname"><code>source</code></strong> ()</li>
     </ul></dd>
   </dl>
@@ -11987,7 +12007,7 @@ each ELF class available.
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> ()</li>
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
         <li><strong class="pname"><code>repoid</code></strong> ()</li>
         <li><strong class="pname"><code>source</code></strong> ()</li>
     </ul></dd>
@@ -12013,7 +12033,7 @@ each ELF class available.
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> ()</li>
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -12037,7 +12057,7 @@ each ELF class available.
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> ()</li>
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -12061,27 +12081,8 @@ each ELF class available.
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> ()</li>
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
     </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="createDependsTable"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createDependsTable</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createDependsTable">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
   </dl>
 </td></tr></table>
 </div>
@@ -12162,7 +12163,7 @@ each ELF class available.
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> ()</li>
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
         <li><strong class="pname"><code>blob</code></strong> ()</li>
     </ul></dd>
   </dl>
@@ -12187,7 +12188,7 @@ each ELF class available.
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> ()</li>
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -12850,253 +12851,6 @@ each ELF class available.
   </dl>
 </td></tr></table>
 </div>
-<a name="createNeededlibrarypathsTable"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createNeededlibrarypathsTable</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createNeededlibrarypathsTable">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="createNeededlibraryidpackagesTable"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createNeededlibraryidpackagesTable</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createNeededlibraryidpackagesTable">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="createInstalledTableSource"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createInstalledTableSource</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createInstalledTableSource">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="createPackagechangelogsTable"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createPackagechangelogsTable</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createPackagechangelogsTable">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="createAutomergefilesTable"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createAutomergefilesTable</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createAutomergefilesTable">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="createPackagesignaturesTable"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createPackagesignaturesTable</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createPackagesignaturesTable">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="createPackagespmphases"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createPackagespmphases</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createPackagespmphases">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="createEntropyBranchMigrationTable"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createEntropyBranchMigrationTable</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createEntropyBranchMigrationTable">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="createPackagesetsTable"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createPackagesetsTable</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createPackagesetsTable">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="createCategoriesdescriptionTable"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createCategoriesdescriptionTable</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createCategoriesdescriptionTable">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="createLicensedataTable"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createLicensedataTable</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createLicensedataTable">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="createLicensesAcceptedTable"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createLicensesAcceptedTable</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createLicensesAcceptedTable">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="createInstalledTable"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">createInstalledTable</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.createInstalledTable">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
 <a name="addDependsRelationToDependsTable"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -13374,7 +13128,7 @@ each ELF class available.
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Aug 13 15:12:24 2009
+    Generated by Epydoc 3.0.1 on Fri Aug 14 17:19:11 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
