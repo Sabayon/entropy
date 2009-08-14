@@ -371,20 +371,28 @@ class AuthStore(Singleton):
         myhome = os.getenv("HOME")
         if myhome != None:
             if os.path.isdir(myhome) and os.access(myhome,os.W_OK):
-                self.access_file = os.path.join(myhome,".config/entropy",os.path.basename(self.access_file))
+                self.access_file = os.path.join(myhome,".config/entropy",
+                    os.path.basename(self.access_file))
         self.access_dir = os.path.dirname(self.access_file)
 
     def setup_permissions(self):
         if not os.path.isdir(self.access_dir):
             os.makedirs(self.access_dir)
         if not os.path.isfile(self.access_file):
-            f = open(self.access_file,"w")
+            f = open(self.access_file, "w")
             f.close()
-        if etpConst['entropygid'] != None:
-            try:
-                const_setup_file(self.access_dir, etpConst['entropygid'], 0600)
-            except OSError:
-                pass
+        gid = etpConst['entropygid']
+        if gid is None:
+            gid = 0
+
+        try:
+            const_setup_file(self.access_dir, gid, 0700)
+        except OSError:
+            pass
+        try:
+            const_setup_file(self.access_file, gid, 0600)
+        except OSError:
+            pass
 
     def parse_document(self):
         self.store.clear()
