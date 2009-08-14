@@ -10,6 +10,7 @@
 """
 
 # System imports
+import sys
 import time
 import subprocess
 import dbus
@@ -91,8 +92,9 @@ class MagnetoCore(MagnetoCoreUI):
     """
     def __init__(self, icon_loader_class, main_loop_class):
 
-        import signal
-        signal.signal(signal.SIGINT, signal.SIG_DFL)
+        if "--debug" not in sys.argv:
+            import signal
+            signal.signal(signal.SIGINT, signal.SIG_DFL)
 
         # Notice Window Widget status
         self.notice_window_shown = None
@@ -237,6 +239,20 @@ class MagnetoCore(MagnetoCoreUI):
         self.show_alert(_("Sabayon repositories status"),
             _("Repositories are being updated automatically")
         )
+
+    def is_system_changed(self):
+
+        # enable applet if disabled
+        if not config.settings['APPLET_ENABLED']:
+            return False
+
+        # dbus daemon not available
+        if not self._dbus_service_available:
+            return False
+
+        iface = dbus.Interface(
+            self._entropy_dbus_object, dbus_interface="org.entropy.Client")
+        return iface.is_system_changed()
 
     def send_check_updates_signal(self, widget=None):
 
