@@ -137,6 +137,7 @@ class UpdatesDaemon(dbus.service.Object):
         self.__alive = False
         self.__is_working_mutex = Lock()
         self.__updater = None
+        self.__system_changes_checker = None
         self.__oncall_updater = None
         self.__quit_service_wd = None
         self.__quit_service_trigger = False
@@ -145,6 +146,7 @@ class UpdatesDaemon(dbus.service.Object):
         self.__updates = []
         self.__updates_atoms = []
         self.__system_db_hash = None
+        self.__last_system_db_mtime = None
 
         # start dbus service
         object_path = "/notifier"
@@ -168,19 +170,35 @@ class UpdatesDaemon(dbus.service.Object):
             1000, self.run_oncall_fetcher)
         self.__quit_service_wd = gobject.timeout_add(
             2000, self.quit_service_watchdog)
+        self.__system_changes_checker = gobject.timeout_add(
+            60*1000, self.check_system_changes)
 
     def stop(self):
         if self.__alive:
             self.__alive = False
+
             if self.__updater != None:
                 gobject.source_remove(self.__updater)
+
+            if self.__system_changes_checker != None:
+                gobject.source_remove(self.__system_changes_checker)
+
             if self.__oncall_updater != None:
                 gobject.source_remove(self.__oncall_updater)
+
             if self.__quit_service_wd != None:
                 gobject.source_remove(self.__quit_service_wd)
 
     def do_alert(self, string, msg, urgency = "critical"):
         write_output('alert: %s, %s, urgency: %s' % (string, msg, urgency,))
+
+    def check_system_changes(self):
+        changed = self._is_system_changed()
+        if changed:
+            # trigger check and push
+            self.__trigger_oncall_updater = True
+        # keep alive
+        return self.__alive
 
     def run_oncall_fetcher(self):
         if not self.__trigger_oncall_updater:
@@ -237,26 +255,18 @@ class UpdatesDaemon(dbus.service.Object):
             if rc_res == 1:
                 err = _("Not all the repositories have been fetched")
                 self.do_alert( _("Updates: repository issues"), err )
-                entropy.destroy()
-                del entropy
-                return rc_res
+                return 0 # fine anyway
             elif rc_res == 2:
                 err = _("No repositories found online")
                 self.do_alert( _("Updates: repository issues"), err )
-                entropy.destroy()
-                del entropy
-                return rc_res
+                return 0 # try to calculate updates anyway
             elif rc_res == 128:
                 err = _("Synchronization errors. Cannot update repositories.")
                 self.do_alert( _("Updates: sync issues"), err )
-                entropy.destroy()
-                del entropy
                 return rc_res
             elif isinstance(rc_res, basestring):
                 self.do_alert( _("Updates: unhandled error"), rc_res )
-                entropy.destroy()
-                del entropy
-                return rc_res
+                return 1
 
         return 0
 
@@ -391,20 +401,31 @@ class UpdatesDaemon(dbus.service.Object):
         self.__system_db_hash = curr_hash
         return self.__updates
 
+    def _is_system_changed(self):
+        with self.__is_working_mutex:
+            entropy = Entropy()
+            locked = entropy.resources_check_lock()
+            if locked:
+                if DAEMON_DEBUG:
+                    write_output("_is_system_changed: resources locked!")
+                return False # resources are locked, nothing changed yet :P
+
+            last_mtime = self.__last_system_db_mtime
+            dbfile = entropy.clientDbconn.dbFile
+            try:
+                cur_mtime = os.path.getmtime(dbfile)
+            except OSError:
+                cur_mtime = 0.0
+            changed = last_mtime != cur_mtime
+            if DAEMON_DEBUG and changed:
+                write_output("_is_system_changed: system db mtime changed!")
+            self.__last_system_db_mtime = cur_mtime
+            return changed
+
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = 'b')
     def is_system_changed(self):
-
-        entropy = Entropy()
-        try:
-            curr_hash = entropy.clientDbconn.database_checksum(
-                do_order = True, strict = False)
-            return curr_hash != self.__system_db_hash
-        except Exception, err:
-            entropyTools.print_traceback(f = DAEMON_LOG)
-            msg = "is_system_changed: %s: %s" % (_("System Check: error"), err,)
-            self.do_alert(_("System Check: error"), msg)
-        return False
+        return self._is_system_changed()
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = 'av')
@@ -425,8 +446,6 @@ class UpdatesDaemon(dbus.service.Object):
                     continue
 
             self.__updates_atoms.extend(atoms)
-            entropy.destroy()
-            del entropy
             return self.__updates_atoms
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
