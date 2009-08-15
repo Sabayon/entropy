@@ -36,13 +36,9 @@ magneto-kde-install:
 
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/magneto/magneto/kde
 	mkdir -p $(DESTDIR)/usr/share/apps/magneto
-	# deprecated, kept for compat
-	mkdir -p $(DESTDIR)/usr/kde/4.2/share/apps/magneto
 	install -m644 src/magneto/kde/*.py $(DESTDIR)/$(LIBDIR)/entropy/magneto/magneto/kde/.
 	# install Magneto notification service
 	install -m644 $(MISCDIR)/magneto.notifyrc $(DESTDIR)/usr/share/apps/magneto/.
-	# deprecated, kept for compat
-	install -m644 $(MISCDIR)/magneto.notifyrc $(DESTDIR)/usr/kde/4.2/share/apps/magneto/.
 
 
 install: magneto-core-install magneto-loader-install magneto-gtk-install magneto-kde-install
