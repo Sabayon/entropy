@@ -239,22 +239,17 @@ entropy.services.ugc" class="py-name" href="#" onclick="return doclink('link-37'
 <a name="L72"></a><tt class="py-lineno">72</tt>  <tt class="py-line"><tt class="py-docstring">        @return submission status -- bool</tt> </tt>
 <a name="L73"></a><tt class="py-lineno">73</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
 <a name="L74"></a><tt class="py-lineno">74</tt>  <tt class="py-line"> </tt>
-<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line">        <tt class="py-keyword">def</tt> <tt class="py-def-name">convert_to_str</tt><tt class="py-op">(</tt><tt class="py-param">el</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">el</tt><tt class="py-op">,</tt> <tt class="py-name">basestring</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
-<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">                <tt class="py-name">el</tt> <tt class="py-op">=</tt> <tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">el</tt><tt class="py-op">)</tt> </tt>
-<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">el</tt> </tt>
-</div><a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line"> </tt>
-<a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">generated</tt><tt class="py-op">:</tt> </tt>
-<a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line">            <tt class="py-name">done</tt><tt class="py-op">,</tt> <tt class="py-name">err_msg</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-44" class="py-name"><a title="entropy" class="py-name" href="#" onclick="return doclink('link-44', 'entropy', 'link-0');">entropy</a></tt><tt class="py-op">.</tt><tt id="link-45" class="py-name"><a title="entropy.services.ugc.commands.UGC" class="py-name" href="#" onclick="return doclink('link-45', 'UGC', 'link-27');">UGC</a></tt><tt class="py-op">.</tt><tt id="link-46" class="py-name" targets="Method entropy.client.services.ugc.commands.Client.report_error()=entropy.client.services.ugc.commands.Client-class.html#report_error,Method entropy.client.services.ugc.interfaces.Client.report_error()=entropy.client.services.ugc.interfaces.Client-class.html#report_error"><a title="entropy.client.services.ugc.commands.Client.report_error
+<a name="L75"></a><tt class="py-lineno">75</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">generated</tt><tt class="py-op">:</tt> </tt>
+<a name="L76"></a><tt class="py-lineno">76</tt>  <tt class="py-line">            <tt class="py-name">done</tt><tt class="py-op">,</tt> <tt class="py-name">err_msg</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-44" class="py-name"><a title="entropy" class="py-name" href="#" onclick="return doclink('link-44', 'entropy', 'link-0');">entropy</a></tt><tt class="py-op">.</tt><tt id="link-45" class="py-name"><a title="entropy.services.ugc.commands.UGC" class="py-name" href="#" onclick="return doclink('link-45', 'UGC', 'link-27');">UGC</a></tt><tt class="py-op">.</tt><tt id="link-46" class="py-name" targets="Method entropy.client.services.ugc.commands.Client.report_error()=entropy.client.services.ugc.commands.Client-class.html#report_error,Method entropy.client.services.ugc.interfaces.Client.report_error()=entropy.client.services.ugc.interfaces.Client-class.html#report_error"><a title="entropy.client.services.ugc.commands.Client.report_error
 entropy.client.services.ugc.interfaces.Client.report_error" class="py-name" href="#" onclick="return doclink('link-46', 'report_error', 'link-46');">report_error</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__repository_id</tt><tt class="py-op">,</tt> </tt>
-<a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">params</tt><tt class="py-op">)</tt> </tt>
-<a name="L83"></a><tt class="py-lineno">83</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">done</tt><tt class="py-op">:</tt> </tt>
-<a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">True</tt> </tt>
-<a name="L85"></a><tt class="py-lineno">85</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
-<a name="L86"></a><tt class="py-lineno">86</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
-<a name="L87"></a><tt class="py-lineno">87</tt>  <tt class="py-line">            <tt class="py-name">mytxt</tt> <tt class="py-op">=</tt> <tt class="py-name">_</tt><tt class="py-op">(</tt><tt class="py-string">"Not prepared yet"</tt><tt class="py-op">)</tt> </tt>
-<a name="L88"></a><tt class="py-lineno">88</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-47" class="py-name"><a title="entropy.exceptions.PermissionDenied" class="py-name" href="#" onclick="return doclink('link-47', 'PermissionDenied', 'link-17');">PermissionDenied</a></tt><tt class="py-op">(</tt><tt class="py-string">"PermissionDenied: %s"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">mytxt</tt><tt class="py-op">,</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
-</div></div><a name="L89"></a><tt class="py-lineno">89</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<a name="L77"></a><tt class="py-lineno">77</tt>  <tt class="py-line">                <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">params</tt><tt class="py-op">)</tt> </tt>
+<a name="L78"></a><tt class="py-lineno">78</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">done</tt><tt class="py-op">:</tt> </tt>
+<a name="L79"></a><tt class="py-lineno">79</tt>  <tt class="py-line">                <tt class="py-keyword">return</tt> <tt class="py-name">True</tt> </tt>
+<a name="L80"></a><tt class="py-lineno">80</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">False</tt> </tt>
+<a name="L81"></a><tt class="py-lineno">81</tt>  <tt class="py-line">        <tt class="py-keyword">else</tt><tt class="py-op">:</tt> </tt>
+<a name="L82"></a><tt class="py-lineno">82</tt>  <tt class="py-line">            <tt class="py-name">mytxt</tt> <tt class="py-op">=</tt> <tt class="py-name">_</tt><tt class="py-op">(</tt><tt class="py-string">"Not prepared yet"</tt><tt class="py-op">)</tt> </tt>
+<a name="L83"></a><tt class="py-lineno">83</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt id="link-47" class="py-name"><a title="entropy.exceptions.PermissionDenied" class="py-name" href="#" onclick="return doclink('link-47', 'PermissionDenied', 'link-17');">PermissionDenied</a></tt><tt class="py-op">(</tt><tt class="py-string">"PermissionDenied: %s"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">mytxt</tt><tt class="py-op">,</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L84"></a><tt class="py-lineno">84</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -292,7 +287,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Aug 14 17:19:23 2009
+    Generated by Epydoc 3.0.1 on Sat Aug 15 22:40:54 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
