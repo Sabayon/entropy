@@ -7,10 +7,10 @@
     @license: GPL-2
 
     B{Entropy Source Package Manager module}.
+    @todo: define real API for SpmPlugin.
 
 """
 import os
-import stat
 import sys
 import shutil
 import tempfile

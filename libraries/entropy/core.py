@@ -650,7 +650,6 @@ class SystemSettings(Singleton):
         # parse main settings
         self.__setup_package_sets_vars()
 
-        data = {}
         for item in self.__setting_files_order:
             myattr = '_%s_parser' % (item,)
             if not hasattr(self, myattr):
