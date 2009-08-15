@@ -466,7 +466,6 @@ class Server(RemoteDatabase):
 
     def get_ugc_metadata_doctypes(self, pkgkey, typeslist):
         self.check_connection()
-        metadata = []
         self.execute_query("""
             SELECT * FROM entropy_docs,entropy_base WHERE 
             entropy_docs.`idkey` = entropy_base.`idkey` AND 
@@ -1717,7 +1716,6 @@ class Client:
     import entropy.dump as dumpTools
     import entropy.tools as entropyTools
     import zlib
-    import select
     def __init__(self, OutputInterface, ClientCommandsClass, quiet = False, show_progress = True, output_header = '', ssl = False, socket_timeout = 25):
         #, server_ca_cert = None, server_cert = None):
 

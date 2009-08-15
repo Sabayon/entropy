@@ -104,7 +104,7 @@ class Repository(SocketCommands):
 
         dbpath = self.get_database_path(repository, arch, product, branch)
         dbconn = self.HostInterface.open_db(dbpath, docache = False)
-        mychecksum = dbconn.database_checksum(do_order = True, strict = False, strings = True)
+        mychecksum = dbconn.checksum(do_order = True, strict = False, strings = True)
         myids = dbconn.listAllIdpackages()
         dbconn.closeDB()
         foreign_idpackages = set(foreign_idpackages)
