@@ -428,7 +428,7 @@ def ebeep(count = 5):
         os.system("sleep 0.35; echo -ne \"\a\"; sleep 0.35")
         mycount -= 1
 
-def application_lock_check(option = None, gentle = False):
+def application_lock_check(gentle = False):
     if etpConst['applicationlock']:
         if not gentle:
             raise SystemExit(10)
@@ -446,7 +446,6 @@ def split_indexable_into_chunks(mystr, chunk_len):
     chunks = []
     my = mystr[:]
     mylen = len(my)
-    mycount = 0
     while mylen:
         chunk = my[:chunk_len]
         chunks.append(chunk)
@@ -2111,7 +2110,7 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
                 tar.chown(tarinfo, epath)
                 fix_uid_gid(tarinfo, epath)
                 tar.utime(tarinfo, epath)
-                mode = tarinfo.mode
+                # mode = tarinfo.mode
                 # xorg-server /usr/bin/X symlink of /usr/bin/Xorg
                 # which is setuid. Symlinks don't need chmod. PERIOD!
                 if not os.path.islink(epath):

@@ -496,7 +496,7 @@ def ugcDocuments(options):
                 continue
             doc_data = doc_data[0]
             data, err_msg = Equo.UGC.remove_document_autosense(repository, identifier, doc_data['iddoctype'])
-            if data == False:
+            if data is False:
                 print_error(
                     "[%s:%s] %s: %s, %s" % (
                         darkgreen(repository),

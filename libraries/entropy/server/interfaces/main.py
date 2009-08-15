@@ -289,7 +289,6 @@ class Server(Singleton, TextInterface):
             raise PermissionDenied("PermissionDenied: %s" % (mytxt,))
 
         # settings
-        from entropy.misc import LogFile
         self.SystemSettings = SystemSettings()
         self.community_repo = community_repo
         from entropy.db import dbapi2
@@ -475,7 +474,6 @@ class Server(Singleton, TextInterface):
 
     def setup_entropy_settings(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        curr_repoid = srv_set['default_repository_id']
         backup_list = [
             'etpdatabaseclientfilepath',
             'clientdbid',
@@ -800,7 +798,6 @@ class Server(Singleton, TextInterface):
 
         if mirrors is None:
             mirrors = []
-        product = self.SystemSettings['repositories']['product']
         dbc = self.open_memory_database(dbname = etpConst['serverdbid']+repoid)
         self._memory_db_instances[repoid] = dbc
 
@@ -1427,7 +1424,7 @@ class Server(Singleton, TextInterface):
     def depends_table_initialize(self, repo = None):
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
-        dbconn.regenerateDependsTable()
+        dbconn.regenerateReverseDependenciesMetadata()
         dbconn.taintDatabase()
         dbconn.commitChanges()
 
@@ -1756,7 +1753,6 @@ class Server(Singleton, TextInterface):
             )
             return False
 
-        tmp_db_path = self.entropyTools.get_random_temp_file()
         for from_branch in sorted(mapped_branches):
 
             self.updateProgress(
@@ -1969,7 +1965,7 @@ class Server(Singleton, TextInterface):
                         darkred(to_repo),
                         brown(branch),
                         bold(_("cannot switch, package not found, skipping")),
-                        darkgreen(),
+                        darkgreen(match_atom),
                         red(from_file),
                     ),
                     importance = 1,
@@ -2143,8 +2139,8 @@ class Server(Singleton, TextInterface):
             dbconn.setTrashedUid(mycounter)
 
         # add package info to our current server repository
-        dbconn.removePackageFromInstalledTable(idpackage)
-        dbconn.addPackageToInstalledTable(idpackage, repo)
+        dbconn.dropInstalledPackageFromStore(idpackage)
+        dbconn.storeInstalledPackage(idpackage, repo)
         atom = dbconn.retrieveAtom(idpackage)
 
         self.updateProgress(
@@ -2784,7 +2780,6 @@ class Server(Singleton, TextInterface):
         exp_based_scope = my_settings['exp_based_scope']
 
         server_repos = my_settings['repositories'].keys()
-        exp_pkgs_cache = {}
 
         # packages to be added
         for spm_atom, spm_counter in installed_packages:
@@ -2963,20 +2958,25 @@ class Server(Singleton, TextInterface):
             dbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = repo, warnings = warnings)
 
-            if dbconn.doesTableExist("baseinfo") and \
-                dbconn.doesTableExist("extrainfo"):
+            try:
+                dbconn.validateDatabase()
                 idpackages = dbconn.listAllIdpackages()
+            except SystemDatabaseError:
+                pass
 
-            if dbconn.doesTableExist("treeupdatesactions"):
+            try:
                 treeupdates_actions = dbconn.listAllTreeUpdatesActions()
+            except dbconn.dbapi2.Error:
+                pass
 
             # save list of injected packages
-            if dbconn.doesTableExist("injected") and \
-                dbconn.doesTableExist("extrainfo"):
+            try:
                 injected_packages = dbconn.listAllInjectedPackages(
                     just_files = True)
                 injected_packages = set([os.path.basename(x) for x \
                     in injected_packages])
+            except dbconn.dbapi2.Error:
+                pass
 
             for idpackage in idpackages:
                 url = dbconn.retrieveDownloadURL(idpackage)
@@ -3847,7 +3847,7 @@ class Server(Singleton, TextInterface):
         dbconn.commitChanges()
 
         # now migrate counters
-        dbconn.moveCountersToBranch(to_branch, from_branch = from_branch)
+        dbconn.moveSpmUidsToBranch(to_branch, from_branch = from_branch)
 
         self.close_server_database(dbconn)
         mytxt = blue("%s.") % (_("migration loop completed"),)

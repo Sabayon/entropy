@@ -372,7 +372,7 @@ def branchHop(branch):
 
     if status:
 
-        Equo.clientDbconn.moveCountersToBranch(branch)
+        Equo.clientDbconn.moveSpmUidsToBranch(branch)
 
         # remove old repos
         for repo_path in old_repo_paths:
@@ -533,7 +533,9 @@ def _showPackageInfo(foundAtoms, deps):
                 idx = pkginstalled[0]
                 installedVer = Equo.clientDbconn.retrieveVersion(idx)
                 installedTag = Equo.clientDbconn.retrieveVersionTag(idx)
-                installedRepo = Equo.clientDbconn.retrievePackageFromInstalledTable(idx)
+                installedRepo = Equo.clientDbconn.getInstalledPackageRepository(idx)
+                if installedRepo is None:
+                    installedRepo = _("Not available")
                 if not installedTag:
                     installedTag = "NoTag"
                 installedRev = Equo.clientDbconn.retrieveRevision(idx)
@@ -827,7 +829,9 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     installedVer = Equo.clientDbconn.retrieveVersion(idx)
                     installedTag = Equo.clientDbconn.retrieveVersionTag(idx)
                     installedRev = Equo.clientDbconn.retrieveRevision(idx)
-                    installedRepo = Equo.clientDbconn.retrievePackageFromInstalledTable(idx)
+                    installedRepo = Equo.clientDbconn.getInstalledPackageRepository(idx)
+                    if installedRepo is None:
+                        installedRepo = _("Not available")
                     onDiskFreedSize += Equo.clientDbconn.retrieveOnDiskSize(idx)
 
                 if not (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']):
@@ -897,7 +901,9 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
                     if not pkgatom:
                         continue
                     onDiskFreedSize += Equo.clientDbconn.retrieveOnDiskSize(idpackage)
-                    installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
+                    installedfrom = Equo.clientDbconn.getInstalledPackageRepository(idpackage)
+                    if installedfrom is None:
+                        installedfrom = _("Not available")
                     repoinfo = red("[")+brown("%s: " % (_("from"),) )+bold(installedfrom)+red("] ")
                     print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
 
@@ -1281,7 +1287,9 @@ def configurePackages(packages = []):
         pkgatom = Equo.clientDbconn.retrieveAtom(idpackage)
         if not pkgatom: continue
 
-        installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
+        installedfrom = Equo.clientDbconn.getInstalledPackageRepository(idpackage)
+        if installedfrom is None:
+            installedfrom = _("Not available")
         mytxt = " | %s: " % (_("Installed from"),)
         print_info("   # "+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+mytxt+red(installedfrom))
 
@@ -1402,8 +1410,10 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False,
 
             plainRemovalQueue.append(idpackage)
 
-            installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(
+            installedfrom = Equo.clientDbconn.getInstalledPackageRepository(
                 idpackage)
+            if installedfrom is None:
+                installedfrom = _("Not available")
             disksize = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
             disksize = Equo.entropyTools.bytes_into_human(disksize)
             disksizeinfo = " | %s: %s" % (blue(_("Disk size")),
@@ -1452,7 +1462,9 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False,
                     rematom = Equo.clientDbconn.retrieveAtom(idpackage)
                     if not rematom:
                         continue
-                    installedfrom = Equo.clientDbconn.retrievePackageFromInstalledTable(idpackage)
+                    installedfrom = Equo.clientDbconn.getInstalledPackageRepository(idpackage)
+                    if installedfrom is None:
+                        installedfrom = _("Not available")
                     disksize = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
                     disksize = Equo.entropyTools.bytes_into_human(disksize)
                     repositoryInfo = bold("[")+darkgreen("%s:" % (_("from"),) )+brown(installedfrom)+bold("]")

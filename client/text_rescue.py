@@ -174,7 +174,7 @@ def database(options):
                     pass
 
             idpk, rev, xx = Equo.clientDbconn.addPackage(mydata, revision = mydata['revision'])
-            Equo.clientDbconn.addPackageToInstalledTable(idpk,"gentoo-db")
+            Equo.clientDbconn.storeInstalledPackage(idpk,"gentoo-db")
             os.remove(temptbz2)
 
         print_info(red("  %s." % (_("All the Gentoo packages have been injected into Entropy database"),) ))
@@ -212,7 +212,7 @@ def database(options):
                         Equo.clientDbconn.removePackage(myidpackage)
 
         print_info(red("  %s..." % (_("Now generating depends caching table"),) ))
-        Equo.clientDbconn.regenerateDependsTable()
+        Equo.clientDbconn.regenerateReverseDependenciesMetadata()
         print_info(red("  %s...") % (_("Now indexing tables"),) )
         Equo.clientDbconn.indexing = True
         Equo.clientDbconn.createAllIndexes()
@@ -220,7 +220,11 @@ def database(options):
         return 0
 
     elif (options[0] == "check"):
-        if Equo.clientDbconn.doesTableExist("baseinfo"):
+        try:
+            valid = Equo.clientDbconn.validateDatabase()
+        except SystemDatabaseError:
+            valid = False
+        if valid:
             Equo.client_repository_sanity_check()
         else:
             mytxt = "# %s: %s" % (bold(_("ATTENTION")),red(_("database does not exist or is badly broken")),)
@@ -372,7 +376,7 @@ def database(options):
         print_info(red("  %s." % (_("Database resurrected successfully"),)))
 
         print_info(red("  %s..." % (_("Now generating depends caching table"),)))
-        Equo.clientDbconn.regenerateDependsTable()
+        Equo.clientDbconn.regenerateReverseDependenciesMetadata()
         print_info(red("  %s..." % (_("Now indexing tables"),)))
         Equo.clientDbconn.indexing = True
         Equo.clientDbconn.createAllIndexes()
@@ -388,7 +392,7 @@ def database(options):
             return rc
 
         print_info(red("  %s..." % (_("Regenerating depends caching table"),) ))
-        Equo.clientDbconn.regenerateDependsTable()
+        Equo.clientDbconn.regenerateReverseDependenciesMetadata()
         print_info(red("  %s." % (_("Depends caching table regenerated successfully"),) ))
         return 0
 
@@ -403,7 +407,7 @@ def database(options):
             return rc
 
         print_info(red("  %s..." % (_("Regenerating counters table"),) ))
-        Equo.clientDbconn.regenerateCountersTable(Spm.get_vdb_path(), output = True)
+        Equo.clientDbconn.regenerateSpmUidTable(verbose = True)
         print_info(red("  %s" % (_("Counters table regenerated. Look above for errors."),) ))
         return 0
 
@@ -606,8 +610,8 @@ def database(options):
                     mydata['revision'] = 9999 # can't do much more
 
                 idpk, rev, xx = Equo.clientDbconn.handlePackage(mydata, forcedRevision = mydata['revision'])
-                Equo.clientDbconn.removePackageFromInstalledTable(idpk)
-                Equo.clientDbconn.addPackageToInstalledTable(idpk,"gentoo-db")
+                Equo.clientDbconn.dropInstalledPackageFromStore(idpk)
+                Equo.clientDbconn.storeInstalledPackage(idpk,"gentoo-db")
                 os.remove(temptbz2)
 
             print_info(brown(" @@ ")+blue("%s." % (_("Database update completed"),)))

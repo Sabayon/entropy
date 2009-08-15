@@ -1022,8 +1022,8 @@ class Package:
         self.Entropy.clientDbconn.setCreationDate(idpackage, str(ctime))
 
         # add idpk to the installedtable
-        self.Entropy.clientDbconn.removePackageFromInstalledTable(idpackage)
-        self.Entropy.clientDbconn.addPackageToInstalledTable(idpackage,
+        self.Entropy.clientDbconn.dropInstalledPackageFromStore(idpackage)
+        self.Entropy.clientDbconn.storeInstalledPackage(idpackage,
             self.infoDict['repository'], self.infoDict['install_source'])
 
         automerge_data = self.infoDict.get('configprotect_data')
@@ -1033,7 +1033,7 @@ class Package:
 
         # clear depends table, this will make clientdb dependstable to be
         # regenerated during the next request (retrieveReverseDependencies)
-        self.Entropy.clientDbconn.clearDependsTable()
+        self.Entropy.clientDbconn.taintReverseDependenciesMetadata()
         return idpackage
 
     def __fill_image_dir(self, mergeFrom, imageDir):
@@ -1094,7 +1094,6 @@ class Package:
     def __move_image_to_system(self, already_protected_config_files):
 
         # load CONFIG_PROTECT and its mask
-        repoid = self.infoDict['repository']
         protect = self.Entropy.get_package_match_config_protect(
             self.matched_atom)
         mask = self.Entropy.get_package_match_config_protect(

@@ -157,7 +157,7 @@ class CacheMixin:
             except (RepositoryError):
                 continue # repo not available
             try:
-                sum_hashes += dbconn.database_checksum()
+                sum_hashes += dbconn.checksum()
             except self.dbapi2.OperationalError:
                 pass
         return sum_hashes

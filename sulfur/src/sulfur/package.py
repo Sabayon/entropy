@@ -238,7 +238,10 @@ class EntropyPackage:
             return ' '.join([x for x in sorted(self.set_from)])
 
         if self.matched_atom[1] == 0:
-            return self.dbconn.retrievePackageFromInstalledTable(self.matched_id)
+            repoid = self.dbconn.getInstalledPackageRepository(
+                self.matched_id)
+            if repoid is None:
+                repoid = _("Not available")
         else: return self.matched_repo
 
     def get_idpackage(self):

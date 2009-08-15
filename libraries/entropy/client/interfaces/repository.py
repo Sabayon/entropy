@@ -893,7 +893,7 @@ class Repository:
         mydbconn.clearCache()
         # now verify if both checksums match
         result = False
-        mychecksum = mydbconn.database_checksum(do_order = True,
+        mychecksum = mydbconn.checksum(do_order = True,
             strict = False, strings = True)
         if checksum == mychecksum:
             result = True
@@ -1051,7 +1051,7 @@ class Repository:
                 if (do_db_update_transfer is not None) and not \
                     do_db_update_transfer:
 
-                    if os.access(dbfile, os.R_OK | os.R_OK | os.F_OK):
+                    if os.access(dbfile, os.R_OK | os.W_OK | os.F_OK):
                         try:
                             os.rename(dbfile, dbfile_old)
                             do_db_update_transfer = True

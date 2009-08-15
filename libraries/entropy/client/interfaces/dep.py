@@ -195,7 +195,7 @@ class CalculatorsMixin:
         return dbconn
 
     def atom_match(self, atom, caseSensitive = True, matchSlot = None,
-            matchBranches = (), matchTag = None, packagesFilter = True,
+            matchTag = None, packagesFilter = True,
             multiMatch = False, multiRepo = False, matchRevision = None,
             matchRepo = None, server_repos = [], serverInstance = None,
             extendedResults = False, useCache = True):
@@ -207,23 +207,25 @@ class CalculatorsMixin:
             matchRepo = repos
 
         u_hash = ""
-        m_hash = ""
         k_ms = "//"
         k_mt = "@#@"
         k_mr = "-1"
-        if isinstance(matchRepo,(list,tuple,set,)): u_hash = hash(frozenset(matchRepo))
-        if isinstance(matchBranches,(list,tuple,set,)): m_hash = hash(frozenset(matchBranches))
-        if isinstance(matchSlot,basestring): k_ms = matchSlot
-        if isinstance(matchTag,basestring): k_mt = matchTag
-        if isinstance(matchRevision,basestring): k_mr = matchRevision
+        if isinstance(matchRepo,(list,tuple,set,)):
+            u_hash = hash(frozenset(matchRepo))
+        if isinstance(matchSlot,basestring):
+            k_ms = matchSlot
+        if isinstance(matchTag,basestring):
+            k_mt = matchTag
+        if isinstance(matchRevision,basestring):
+            k_mr = matchRevision
 
-        c_hash = "|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
+        c_hash = "|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
             atom,k_ms,k_mt,hash(packagesFilter),
             hash(frozenset(self.validRepositories)),
             hash(frozenset(self.SystemSettings['repositories']['available'])),
             hash(multiMatch),hash(multiRepo),hash(caseSensitive),
             k_mr,hash(extendedResults),
-            u_hash, m_hash
+            u_hash,
         )
         c_hash = "%s%s" % (self.atomMatchCacheKey,hash(c_hash),)
 
@@ -259,7 +261,6 @@ class CalculatorsMixin:
                         atom,
                         caseSensitive = caseSensitive,
                         matchSlot = matchSlot,
-                        matchBranches = matchBranches,
                         matchTag = matchTag,
                         packagesFilter = packagesFilter,
                         matchRevision = matchRevision,
@@ -315,7 +316,6 @@ class CalculatorsMixin:
                             atom,
                             caseSensitive = caseSensitive,
                             matchSlot = matchSlot,
-                            matchBranches = matchBranches,
                             matchTag = matchTag,
                             packagesFilter = packagesFilter,
                             multiMatch = True,
@@ -330,15 +330,14 @@ class CalculatorsMixin:
                 else:
                     dbconn = self.__atom_match_open_db(dbpkginfo[1], serverInstance)
                     query_data, query_rc = dbconn.atomMatch(
-                                                atom,
-                                                caseSensitive = caseSensitive,
-                                                matchSlot = matchSlot,
-                                                matchBranches = matchBranches,
-                                                matchTag = matchTag,
-                                                packagesFilter = packagesFilter,
-                                                multiMatch = True,
-                                                extendedResults = extendedResults
-                                               )
+                        atom,
+                        caseSensitive = caseSensitive,
+                        matchSlot = matchSlot,
+                        matchTag = matchTag,
+                        packagesFilter = packagesFilter,
+                        multiMatch = True,
+                        extendedResults = extendedResults
+                    )
                     if extendedResults:
                         dbpkginfo = (set([((x[0],x[2],x[3],x[4]),dbpkginfo[1]) for x in query_data]),0)
                     else:
@@ -490,7 +489,7 @@ class CalculatorsMixin:
 
         if self.xcache:
             c_data = sorted(dependencies)
-            client_checksum = self.clientDbconn.database_checksum()
+            client_checksum = self.clientDbconn.checksum()
             c_hash = hash("%s|%s|%s" % (c_data,deep_deps,client_checksum,))
             c_hash = "%s%s" % (etpCache['filter_satisfied_deps'],c_hash,)
             cached = self.Cacher.pop(c_hash)
@@ -1236,7 +1235,7 @@ class CalculatorsMixin:
                 hash(frozenset(sorted(matched_atoms))),
                 empty_deps,
                 deep_deps,
-                self.clientDbconn.database_checksum(),
+                self.clientDbconn.checksum(),
                 # needed when users do bogus things like editing config files
                 # manually (branch setting)
                 self.SystemSettings['repositories']['branch'],

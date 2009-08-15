@@ -72,11 +72,6 @@ class UGCErrorReportInterface(ErrorReportInterface):
         @return submission status -- bool
         """
 
-        def convert_to_str(el):
-            if not isinstance(el, basestring):
-                el = str(el)
-            return el
-
         if self.generated:
             done, err_msg = self.entropy.UGC.report_error(self.__repository_id,
                 self.params)

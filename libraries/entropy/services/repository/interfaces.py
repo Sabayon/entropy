@@ -204,7 +204,7 @@ class Server(SocketHost):
                 mydb = self.open_db(mydbpath, docache = False)
                 mydb.createAllIndexes()
                 self.updateProgress(
-                    darkgreen(str(mydb.database_checksum(do_order = True, strict = False, strings = True))),
+                    darkgreen(str(mydb.checksum(do_order = True, strict = False, strings = True))),
                     importance = 1,
                     type = "info"
                 )

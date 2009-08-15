@@ -326,7 +326,7 @@ class UpdatesDaemon(dbus.service.Object):
                         _("updates available."),),
                     urgency = 'critical'
                 )
-                self.__system_db_hash = entropy.clientDbconn.database_checksum(
+                self.__system_db_hash = entropy.clientDbconn.checksum(
                     do_order = True, strict = False)
                 self.__updates = update[:]
                 del self.__updates_atoms[:]
@@ -384,7 +384,7 @@ class UpdatesDaemon(dbus.service.Object):
     def get_updates(self):
 
         entropy = Entropy()
-        curr_hash = entropy.clientDbconn.database_checksum(
+        curr_hash = entropy.clientDbconn.checksum(
             do_order = True, strict = False)
         if curr_hash == self.__system_db_hash:
             return self.__updates

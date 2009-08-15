@@ -404,7 +404,6 @@ class RepositoryMixin:
     def add_tbz2_to_repos(self, tbz2file):
         atoms_contained = []
         basefile = os.path.basename(tbz2file)
-        cut_idx = -1*(len(etpConst['packagesext']))
         db_dir = tempfile.mkdtemp()
         dbfile = self.entropyTools.extract_edb(tbz2file,
             dbpath = db_dir+"/packages.db")
@@ -727,8 +726,6 @@ class RepositoryMixin:
                 "run_repositories_post_branch_switch_hooks: clientdb not avail")
             return hooks_ran, True
 
-        from datetime import datetime
-        place_status_file = set()
         errors = False
         repo_data = self.SystemSettings['repositories']['available']
         repo_data_excl = self.SystemSettings['repositories']['available']
@@ -991,7 +988,7 @@ class MiscMixin:
         # check if another instance is running
         etpConst['applicationlock'] = False
         const_setup_entropy_pid(just_read = True)
-        locked = self.entropyTools.application_lock_check(option = None, gentle = True)
+        locked = self.entropyTools.application_lock_check(gentle = True)
         if locked:
             if not silent:
                 self.updateProgress(
@@ -1066,10 +1063,10 @@ class MiscMixin:
         return const_set_nice_level(low)
 
     def reload_repositories_config(self, repositories = None):
-        if repositories == None:
+        if repositories is None:
             repositories = self.validRepositories
         for repoid in repositories:
-            dbconn = self.open_repository(repoid)
+            self.open_repository(repoid)
 
     def switch_chroot(self, chroot = ""):
         # clean caches
@@ -1269,19 +1266,23 @@ class MiscMixin:
             self.Cacher.start()
 
     def get_meant_packages(self, search_term, from_installed = False,
-        valid_repos = []):
+        valid_repos = None):
+
+        if valid_repos is None:
+            valid_repos = []
 
         pkg_data = []
         atom_srch = False
         if "/" in search_term:
             atom_srch = True
 
-        if not valid_repos:
-            valid_repos = self.validRepositories
         if from_installed:
-            valid_repos = []
-            if hasattr(self,'clientDbconn'):
-                valid_repos.append(self.clientDbconn)
+            if hasattr(self, 'clientDbconn'):
+                if self.clientDbconn is not None:
+                    valid_repos.append(self.clientDbconn)
+
+        elif not valid_repos:
+            valid_repos.extend(self.validRepositories[:])
 
         for repo in valid_repos:
             if isinstance(repo, basestring):
@@ -1425,7 +1426,6 @@ class MiscMixin:
     def quickpkg_handler(self, pkgdata, dirpath, edb = True,
            portdbPath = None, fake = False, compression = "bz2", shiftpath = ""):
 
-        import stat
         import tarfile
 
         if compression not in ("bz2","","gz"):

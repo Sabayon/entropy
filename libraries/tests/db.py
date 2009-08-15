@@ -39,8 +39,8 @@ class EntropyRepositoryTest(unittest.TestCase):
     def test_db_creation(self):
         self.assert_(isinstance(self.test_db, EntropyRepository))
         self.assertEqual(self.test_db_name,self.test_db.dbname)
-        self.assert_(self.test_db.doesTableExist('baseinfo'))
-        self.assert_(self.test_db.doesTableExist('extrainfo'))
+        self.assert_(self.test_db._doesTableExist('baseinfo'))
+        self.assert_(self.test_db._doesTableExist('extrainfo'))
 
     def test_db_contentdiff(self):
 

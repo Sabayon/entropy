@@ -475,6 +475,11 @@ class EntropyRepository:
                     PRIMARY KEY (repository, from_branch, to_branch)
                 );
 
+                CREATE TABLE xpakdata (
+                    idpackage INTEGER PRIMARY KEY,
+                    data BLOB
+                );
+
             """
 
     import entropy.tools as entropyTools
@@ -582,8 +587,8 @@ class EntropyRepository:
         if not self.skipChecks:
             try:
                 if os.access(self.dbFile, os.W_OK) and \
-                    self.doesTableExist('baseinfo') and \
-                    self.doesTableExist('extrainfo'):
+                    self._doesTableExist('baseinfo') and \
+                    self._doesTableExist('extrainfo'):
 
                     if self.entropyTools.islive(): # this works
                         if etpConst['systemroot']:
@@ -1304,7 +1309,7 @@ class EntropyRepository:
 
         idpackage = self.getIDPackage(pkgatom)
         curRevision = forcedRevision
-        if forcedRevision is -1:
+        if forcedRevision == -1:
             curRevision = 0
             if idpackage != -1:
                 curRevision = self.retrieveRevision(idpackage)
@@ -1313,7 +1318,7 @@ class EntropyRepository:
         if idpackage != -1:
             # injected packages wouldn't be removed by addPackages
             self.removePackage(idpackage)
-            if forcedRevision is -1:
+            if forcedRevision == -1:
                 curRevision += 1
 
         # add the new one
@@ -1419,7 +1424,7 @@ class EntropyRepository:
             - pkg_data: new Entropy package metadata dict
         @rtype: tuple
         """
-        if revision is -1:
+        if revision == -1:
             try:
                 revision = int(pkg_data['revision'])
             except (KeyError, ValueError):
@@ -1430,25 +1435,28 @@ class EntropyRepository:
 
         # create new category if it doesn't exist
         catid = self.isCategoryAvailable(pkg_data['category'])
-        if catid is -1: catid = self.addCategory(pkg_data['category'])
+        if catid == -1:
+            catid = self.addCategory(pkg_data['category'])
 
         # create new license if it doesn't exist
         licid = self.isLicenseAvailable(pkg_data['license'])
-        if licid is -1: licid = self.addLicense(pkg_data['license'])
+        if licid == -1:
+            licid = self.addLicense(pkg_data['license'])
 
         idprotect = self.isProtectAvailable(pkg_data['config_protect'])
-        if idprotect is -1: idprotect = self.addProtect(
-            pkg_data['config_protect'])
+        if idprotect == -1:
+            idprotect = self.addProtect(pkg_data['config_protect'])
 
         idprotect_mask = self.isProtectAvailable(
             pkg_data['config_protect_mask'])
-        if idprotect_mask is -1: idprotect_mask = self.addProtect(
-            pkg_data['config_protect_mask'])
+        if idprotect_mask == -1:
+            idprotect_mask = self.addProtect(pkg_data['config_protect_mask'])
 
-        idflags = self.areCompileFlagsAvailable(
-            pkg_data['chost'],pkg_data['cflags'],pkg_data['cxxflags'])
-        if idflags is -1: idflags = self.addCompileFlags(
-            pkg_data['chost'],pkg_data['cflags'],pkg_data['cxxflags'])
+        idflags = self.areCompileFlagsAvailable(pkg_data['chost'],
+            pkg_data['cflags'], pkg_data['cxxflags'])
+        if idflags == -1:
+            idflags = self.addCompileFlags(pkg_data['chost'],
+                pkg_data['cflags'], pkg_data['cxxflags'])
 
         trigger = 0
         if pkg_data['trigger']:
@@ -1545,7 +1553,7 @@ class EntropyRepository:
 
         # handle SPM UID<->idpackage binding
         pkg_data['counter'] = int(pkg_data['counter'])
-        if not pkg_data['injected'] and (pkg_data['counter'] is not -1):
+        if not pkg_data['injected'] and (pkg_data['counter'] != -1):
             pkg_data['counter'] = self.bindSpmPackageUid(
                 idpackage, pkg_data['counter'], pkg_data['branch'])
 
@@ -1753,7 +1761,7 @@ class EntropyRepository:
             pass
 
         # Remove from dependstable if exists
-        self.removePackageFromDependsTable(idpackage)
+        self._removePackageFromDependsTable(idpackage)
 
         if do_cleanup:
             # Cleanups if at least one package has been removed
@@ -2071,7 +2079,7 @@ class EntropyRepository:
         """
         # create new category if it doesn't exist
         catid = self.isCategoryAvailable(category)
-        if catid is -1:
+        if catid == -1:
             # create category
             catid = self.addCategory(category)
 
@@ -2213,7 +2221,7 @@ class EntropyRepository:
             if dep in dcache:
                 return 0
             iddep = is_dep_avail(dep)
-            if iddep is -1:
+            if iddep == -1:
                 iddep = add_dep(dep)
 
             deptype = 0
@@ -2336,7 +2344,7 @@ class EntropyRepository:
         """
         Remove extra package file hashes (SHA1, SHA256, SHA512) for package.
         Entropy package files metadata contains up to 4 hashes:
-            md5, sha1, sha256, sha512
+        md5, sha1, sha256, sha512
         While md5 is here for historical reasons (being the first supported)
         sha1, sha256, sha512 have been added recently and located into a
         separate database table called "packagesignatures". Such hashes
@@ -2498,7 +2506,7 @@ class EntropyRepository:
 
         def mymf(key):
             idkeyword = self.isKeywordAvailable(key)
-            if idkeyword is -1:
+            if idkeyword == -1:
                 # create category
                 idkeyword = self.addKeyword(key)
             return (idpackage, idkeyword,)
@@ -2520,7 +2528,7 @@ class EntropyRepository:
 
         def mymf(flag):
             iduseflag = self.isUseflagAvailable(flag)
-            if iduseflag is -1:
+            if iduseflag == -1:
                 # create category
                 iduseflag = self.addUseflag(flag)
             return (idpackage, iduseflag,)
@@ -2581,7 +2589,7 @@ class EntropyRepository:
                 return 0
 
             idsource = self.isSourceAvailable(source)
-            if idsource is -1:
+            if idsource == -1:
                 idsource = self.addSource(source)
 
             return (idpackage, idsource,)
@@ -2589,7 +2597,7 @@ class EntropyRepository:
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into sources VALUES (?,?)
-            """, [x for x in map(mymf, sources) if x is not 0])
+            """, [x for x in map(mymf, sources) if x != 0])
 
     def insertConflicts(self, idpackage, conflicts):
         """
@@ -2653,7 +2661,7 @@ class EntropyRepository:
         def mymf(needed_data):
             needed, elfclass = needed_data
             idneeded = self.isNeededAvailable(needed)
-            if idneeded is -1:
+            if idneeded == -1:
                 # create eclass
                 idneeded = self.addNeeded(needed)
             return (idpackage, idneeded, elfclass,)
@@ -2676,7 +2684,7 @@ class EntropyRepository:
 
         def mymf(eclass):
             idclass = self.isEclassAvailable(eclass)
-            if idclass is -1:
+            if idclass == -1:
                 idclass = self.addEclass(eclass)
             return (idpackage, idclass,)
 
@@ -2809,7 +2817,7 @@ class EntropyRepository:
             except:
                 if self.dbname == etpConst['clientdbid']:
                     # force only for client database
-                    if self.doesTableExist("counters"):
+                    if self._doesTableExist("counters"):
                         raise
                     self.cursor.execute(
                     'INSERT into counters VALUES (?,?,?)',
@@ -2919,7 +2927,7 @@ class EntropyRepository:
 
         # setup random table name
         randomtable = "cdiff%s" % (self.entropyTools.get_random_number(),)
-        while self.doesTableExist(randomtable):
+        while self._doesTableExist(randomtable):
             randomtable = "cdiff%s" % (self.entropyTools.get_random_number(),)
 
         # create random table
@@ -3815,7 +3823,7 @@ class EntropyRepository:
         @rtype: dict
         """
         # FIXME backward compatibility
-        if not self.doesTableExist('packagesets'):
+        if not self._doesTableExist('packagesets'):
             return {}
 
         cur = self.cursor.execute("SELECT setname, dependency FROM packagesets")
@@ -4050,7 +4058,7 @@ class EntropyRepository:
         @rtype: tuple
         """
         # FIXME backward compatibility
-        if not self.doesTableExist('packagesignatures'):
+        if not self._doesTableExist('packagesignatures'):
             return None, None, None
 
         cur = self.cursor.execute("""
@@ -4241,7 +4249,7 @@ class EntropyRepository:
         @rtype: string or None
         """
         # FIXME backward compatibility
-        if not self.doesTableExist('packagespmphases'):
+        if not self._doesTableExist('packagespmphases'):
             return None
 
         cur = self.cursor.execute("""
@@ -4319,7 +4327,7 @@ class EntropyRepository:
         @rtype: dict
         """
         # FIXME backward compatibility
-        if not self.doesTableExist('neededlibrarypaths'):
+        if not self._doesTableExist('neededlibrarypaths'):
             return set()
 
         cur = self.cursor.execute("""
@@ -4351,7 +4359,7 @@ class EntropyRepository:
         """
 
         # FIXME backward compatibility
-        if not self.doesTableExist('neededlibrarypaths'):
+        if not self._doesTableExist('neededlibrarypaths'):
             return set()
 
         cur = self.cursor.execute("""
@@ -4377,7 +4385,7 @@ class EntropyRepository:
         @rtype: list
         """
         # FIXME backward compatibility
-        if not self.doesTableExist('neededlibraryidpackages'):
+        if not self._doesTableExist('neededlibraryidpackages'):
             return []
 
         cur = self.cursor.execute("""
@@ -4391,7 +4399,7 @@ class EntropyRepository:
         See retrieveNeededLibraryIdpackages() for more information.
         """
         # FIXME backward compatibility
-        if not self.doesTableExist('neededlibraryidpackages'):
+        if not self._doesTableExist('neededlibraryidpackages'):
             return
 
         self.cursor.execute('DELETE FROM neededlibraryidpackages')
@@ -4406,7 +4414,7 @@ class EntropyRepository:
         @type library_map: list
         """
         # FIXME backward compatibility
-        if not self.doesTableExist('neededlibraryidpackages'):
+        if not self._doesTableExist('neededlibraryidpackages'):
             return
 
         self.cursor.executemany("""
@@ -4676,7 +4684,7 @@ class EntropyRepository:
         @rtype: list or set
         """
         # FIXME backward compatibility
-        if not self.doesTableExist('automergefiles'):
+        if not self._doesTableExist('automergefiles'):
             self._createAutomergefilesTable()
 
         # like portage does
@@ -4786,7 +4794,7 @@ class EntropyRepository:
         @rtype: string or None
         """
         # FIXME backward compatibility
-        if not self.doesTableExist('packagechangelogs'):
+        if not self._doesTableExist('packagechangelogs'):
             return None
 
         cur = self.cursor.execute("""
@@ -4817,7 +4825,7 @@ class EntropyRepository:
         @rtype: string or None
         """
         # FIXME backward compatibility
-        if not self.doesTableExist('packagechangelogs'):
+        if not self._doesTableExist('packagechangelogs'):
             return None
 
         self.connection.text_factory = lambda x: \
@@ -5065,8 +5073,8 @@ class EntropyRepository:
         # WARNING: never remove this, otherwise equo.db
         # (client database) dependstable will be always broken (trust me)
         # sanity check on the table
-        if not self.isDependsTableSane(): # is empty, need generation
-            self.regenerateDependsTable(output = False)
+        if not self._isDependsTableSane(): # is empty, need generation
+            self.regenerateReverseDependenciesMetadata(verbose = False)
 
         excluded_deptypes_query = ""
         if exclude_deptypes != None:
@@ -5114,8 +5122,8 @@ class EntropyRepository:
         # WARNING: never remove this, otherwise equo.db (client database)
         # dependstable will be always broken (trust me)
         # sanity check on the table
-        if not self.isDependsTableSane(): # is empty, need generation
-            self.regenerateDependsTable(output = False)
+        if not self._isDependsTableSane(): # is empty, need generation
+            self.regenerateReverseDependenciesMetadata(verbose = False)
 
         cur = self.cursor.execute("""
         SELECT idpackage FROM baseinfo 
@@ -5890,8 +5898,7 @@ class EntropyRepository:
             return self._fetchall2list(cur.fetchall())
         return cur.fetchall()
 
-    def searchProvide(self, keyword, slot = None, tag = None, branch = None,
-        justid = False):
+    def searchProvide(self, keyword, slot = None, tag = None, justid = False):
         """
         Search in old-style Portage PROVIDE metadata.
         WARNING: this method is deprecated and will be removed someday.
@@ -5902,8 +5909,6 @@ class EntropyRepository:
         @type slot: string
         @keyword tag: match given package tag
         @type tag: string
-        @keyword branch: match given package branch
-        @type branch: string
         @keyword justid: return list of package identifiers (set())
         @type justid: bool
         @return: found PROVIDE metadata
@@ -5921,11 +5926,6 @@ class EntropyRepository:
             searchkeywords.append(tag)
             tagstring = ' and baseinfo.versiontag = (?)'
 
-        branchstring = ''
-        if branch:
-            searchkeywords.append(branch)
-            branchstring = ' and baseinfo.branch = (?)'
-
         atomstring = ''
         if not justid:
             atomstring = 'baseinfo.atom,'
@@ -5933,8 +5933,8 @@ class EntropyRepository:
         cur = self.cursor.execute("""
         SELECT %s baseinfo.idpackage FROM baseinfo,provide 
         WHERE provide.atom = (?) AND 
-        provide.idpackage = baseinfo.idpackage %s %s %s""" % (
-            atomstring,slotstring,tagstring,branchstring,),
+        provide.idpackage = baseinfo.idpackage %s %s""" % (
+            atomstring,slotstring,tagstring,),
             searchkeywords
         )
 
@@ -5959,8 +5959,7 @@ class EntropyRepository:
         """, ("%"+keyword.lower()+"%",))
         return cur.fetchall()
 
-    def searchPackagesByName(self, keyword, sensitive = False, branch = None,
-        justid = False):
+    def searchPackagesByName(self, keyword, sensitive = False, justid = False):
         """
         Search packages by package name.
 
@@ -5968,8 +5967,6 @@ class EntropyRepository:
         @type keyword: string
         @keyword sensitive: case sensitive?
         @type sensitive: bool
-        @keyword branch: search in given package branch
-        @type branch: string
         @keyword justid: return list of package identifiers (set()) otherwise
             return a list of tuples of length 2 containing atom and idpackage
             values
@@ -5978,30 +5975,20 @@ class EntropyRepository:
         @rtype: list or set
         """
 
-        if sensitive:
-            searchkeywords = [keyword]
-        else:
-            searchkeywords = [keyword.lower()]
-
         atomstring = ''
         if not justid:
             atomstring = 'atom,'
 
-        branchstring = ''
-        if branch:
-            searchkeywords.append(branch)
-            branchstring = ' and branch = (?)'
-
         if sensitive:
             cur = self.cursor.execute("""
             SELECT %s idpackage FROM baseinfo
-            WHERE name = (?) %s
-            """ % (atomstring, branchstring,), searchkeywords)
+            WHERE name = (?)
+            """ % (atomstring,), (keyword,))
         else:
             cur = self.cursor.execute("""
             SELECT %s idpackage FROM baseinfo
-            WHERE LOWER(name) = (?) %s
-            """ % (atomstring, branchstring,), searchkeywords)
+            WHERE LOWER(name) = (?)
+            """ % (atomstring,), (keyword.lower(),))
 
         if justid:
             return self._fetchall2list(cur.fetchall())
@@ -6044,7 +6031,7 @@ class EntropyRepository:
         return cur.fetchall()
 
     def searchPackagesByNameAndCategory(self, name, category, sensitive = False,
-        branch = None, justid = False):
+        justid = False):
         """
         Search packages matching given name and category strings.
 
@@ -6054,8 +6041,6 @@ class EntropyRepository:
         @type category: string
         @keyword sensitive: case sensitive?
         @type sensitive: bool
-        @keyword branch: search in given package branch
-        @type branch: string
         @keyword justid: return list of package identifiers (set()) otherwise
             return a list of tuples of length 2 containing atom and idpackage
             values
@@ -6064,17 +6049,6 @@ class EntropyRepository:
         @rtype: list or set
         """
 
-        myname = name
-        mycat = category
-        if not sensitive:
-            myname = name.lower()
-            mycat = category.lower()
-
-        searchkeywords = [myname, mycat]
-        branchstring = ''
-        if branch:
-            searchkeywords.append(branch)
-            branchstring = ' and branch = (?)'
         atomstring = ''
         if not justid:
             atomstring = 'atom,'
@@ -6086,7 +6060,7 @@ class EntropyRepository:
             idcategory IN (
                 SELECT idcategory FROM categories
                 WHERE category = (?)
-            ) %s""" % (atomstring, branchstring,), searchkeywords)
+            )""" % (atomstring,), (name, category,))
         else:
             cur = self.cursor.execute("""
             SELECT %s idpackage FROM baseinfo
@@ -6094,7 +6068,7 @@ class EntropyRepository:
             idcategory IN (
                 SELECT idcategory FROM categories
                 WHERE LOWER(category) = (?)
-            ) %s""" % (atomstring, branchstring,), searchkeywords)
+            )""" % (atomstring,), (name.lower(), category.lower(),))
 
         if justid:
             return self._fetchall2list(cur.fetchall())
@@ -6388,41 +6362,42 @@ class EntropyRepository:
         old_readonly = self.readOnly
         self.readOnly = False
 
-        if not self.doesTableExist("licenses_accepted"):
+        if not self._doesTableExist("licenses_accepted"):
             self._createLicensesAcceptedTable()
 
-        if not self.doesColumnInTableExist("installedtable", "source"):
+        if not self._doesColumnInTableExist("installedtable", "source"):
             self._createInstalledTableSource()
 
-        if not self.doesTableExist('packagesets'):
+        if not self._doesTableExist('packagesets'):
             self._createPackagesetsTable()
 
-        if not self.doesTableExist('packagechangelogs'):
+        if not self._doesTableExist('packagechangelogs'):
             self._createPackagechangelogsTable()
 
-        if not self.doesTableExist('automergefiles'):
+        if not self._doesTableExist('automergefiles'):
             self._createAutomergefilesTable()
 
-        if not self.doesTableExist('packagesignatures'):
+        if not self._doesTableExist('packagesignatures'):
             self._createPackagesignaturesTable()
 
-        if not self.doesTableExist('packagespmphases'):
+        if not self._doesTableExist('packagespmphases'):
             self._createPackagespmphases()
 
-        if not self.doesTableExist('entropy_branch_migration'):
+        if not self._doesTableExist('entropy_branch_migration'):
             self._createEntropyBranchMigrationTable()
 
-        if not self.doesTableExist('neededlibrarypaths'):
+        if not self._doesTableExist('neededlibrarypaths'):
             self._createNeededlibrarypathsTable()
-        if not self.doesColumnInTableExist("neededlibrarypaths", "elfclass"):
+        if not self._doesColumnInTableExist("neededlibrarypaths", "elfclass"):
             self._createNeededlibrarypathsTable()
 
-        if not self.doesTableExist('neededlibraryidpackages'):
+        if not self._doesTableExist('neededlibraryidpackages'):
             self._createNeededlibraryidpackagesTable()
-        elif not self.doesColumnInTableExist("neededlibraryidpackages", "elfclass"):
+        elif not self._doesColumnInTableExist("neededlibraryidpackages",
+            "elfclass"):
             self._createNeededlibraryidpackagesTable()
 
-        if not self.doesTableExist('dependstable'):
+        if not self._doesTableExist('dependstable'):
             self._createDependsTable()
 
         self.readOnly = old_readonly
@@ -6452,13 +6427,14 @@ class EntropyRepository:
 
     def getIdpackagesDifferences(self, foreign_idpackages):
         """
-        docstring_title
+        Return differences between in-repository package identifiers and
+        list provided.
 
-        @param foreign_idpackages:
-        @type foreign_idpackages:
-        @return:
-        @rtype:
-
+        @param foreign_idpackages: list of foreign idpackages
+        @type foreign_idpackages: iterable
+        @return: tuple composed by idpackages that would be added and idpackages
+            that would be removed
+        @rtype: tuple
         """
         myids = self.listAllIdpackages()
         if isinstance(foreign_idpackages, (list, tuple,)):
@@ -6471,37 +6447,38 @@ class EntropyRepository:
 
     def uniformBranch(self, branch):
         """
-        docstring_title
+        Enforce given branch string to all currently available packages.
 
-        @param branch:
-        @type branch:
-        @return:
-        @rtype:
-
+        @param branch: branch string to enforce
+        @type branch: string
         """
         with self.__write_mutex:
             self.cursor.execute('UPDATE baseinfo SET branch = (?)', (branch,))
             self.commitChanges()
             self.clearCache()
 
-    def alignDatabases(self, dbconn, force = False, output_header = "  ", align_limit = 300):
+    def alignDatabases(self, dbconn, force = False, output_header = "  ",
+        align_limit = 300):
         """
-        docstring_title
+        Align packages contained in foreign repository "dbconn" and this
+        instance.
 
-        @param dbconn:
-        @type dbconn:
-        @keyword force:
-        @type force:
-        @keyword output_header:
-        @type output_header:
-        @keyword align_limit:
-        @type align_limit:
-        @return:
-        @rtype:
-
+        @param dbconn: foreign repository instance
+        @type dbconn: entropy.db.EntropyRepository
+        @keyword force: force alignment even if align_limit threshold is
+            exceeded
+        @type force: bool
+        @keyword output_header: output header for printing purposes
+        @type output_header: string
+        @keyword align_limit: threshold within alignment is done if force is
+            False
+        @type align_limit: int
+        @return: alignment status (0 = all good; 1 = dbs checksum not matching;
+            -1 = nothing to do)
+        @rtype: int
         """
-
-        added_ids, removed_ids = self.getIdpackagesDifferences(dbconn.listAllIdpackages())
+        added_ids, removed_ids = self.getIdpackagesDifferences(
+            dbconn.listAllIdpackages())
 
         if not force:
             if len(added_ids) > align_limit: # too much hassle
@@ -6512,7 +6489,10 @@ class EntropyRepository:
         if not added_ids and not removed_ids:
             return -1
 
-        mytxt = red("%s, %s ...") % (_("Syncing current database"), _("please wait"),)
+        mytxt = red("%s, %s ...") % (
+            _("Syncing current database"),
+            _("please wait"),
+        )
         self.updateProgress(
             mytxt,
             importance = 1,
@@ -6520,11 +6500,15 @@ class EntropyRepository:
             header = output_header,
             back = True
         )
+
         maxcount = len(removed_ids)
         mycount = 0
         for idpackage in removed_ids:
             mycount += 1
-            mytxt = "%s: %s" % (red(_("Removing entry")), blue(str(self.retrieveAtom(idpackage))),)
+            mytxt = "%s: %s" % (
+                red(_("Removing entry")),
+                blue(str(self.retrieveAtom(idpackage))),
+            )
             self.updateProgress(
                 mytxt,
                 importance = 0,
@@ -6533,13 +6517,17 @@ class EntropyRepository:
                 back = True,
                 count = (mycount, maxcount)
             )
+
             self.removePackage(idpackage, do_cleanup = False, do_commit = False)
 
         maxcount = len(added_ids)
         mycount = 0
         for idpackage in added_ids:
             mycount += 1
-            mytxt = "%s: %s" % (red(_("Adding entry")), blue(str(dbconn.retrieveAtom(idpackage))),)
+            mytxt = "%s: %s" % (
+                red(_("Adding entry")),
+                blue(str(dbconn.retrieveAtom(idpackage))),
+            )
             self.updateProgress(
                 mytxt,
                 importance = 0,
@@ -6548,7 +6536,8 @@ class EntropyRepository:
                 back = True,
                 count = (mycount, maxcount)
             )
-            mydata = dbconn.getPackageData(idpackage, get_content = True, content_insert_formatted = True)
+            mydata = dbconn.getPackageData(idpackage, get_content = True,
+                content_insert_formatted = True)
             self.addPackage(
                 mydata,
                 revision = mydata['revision'],
@@ -6562,29 +6551,32 @@ class EntropyRepository:
         # clear caches
         self.clearCache()
         self.commitChanges()
-        self.regenerateDependsTable(output = False)
+        self.regenerateReverseDependenciesMetadata(verbose = False)
         dbconn.clearCache()
 
         # verify both checksums, if they don't match, bomb out
-        mycheck = self.database_checksum(do_order = True, strict = False)
-        outcheck = dbconn.database_checksum(do_order = True, strict = False)
+        mycheck = self.checksum(do_order = True, strict = False)
+        outcheck = dbconn.checksum(do_order = True, strict = False)
         if mycheck == outcheck:
             return 1
         return 0
 
     def checkDatabaseApi(self):
         """
-        docstring_title
-
-        @return:
-        @rtype:
-
+        Check if repository EAPI (Entropy API) is not greater than the one
+        that entropy.const ships.
         """
 
         dbapi = self.getApi()
         if int(dbapi) > int(etpConst['etpapi']):
             self.updateProgress(
-                red(_("Repository EAPI > Entropy EAPI. Please update Equo/Entropy as soon as possible !")),
+                red(_("Repository EAPI > Entropy EAPI.")),
+                importance = 1,
+                type = "warning",
+                header = " * ! * ! * ! * "
+            )
+            self.updateProgress(
+                red(_("Please update Equo/Entropy as soon as possible !")),
                 importance = 1,
                 type = "warning",
                 header = " * ! * ! * ! * "
@@ -6592,15 +6584,15 @@ class EntropyRepository:
 
     def doDatabaseImport(self, dumpfile, dbfile):
         """
-        docstring_title
+        Import SQLite3 dump file to this database.
 
-        @param dumpfile:
-        @type dumpfile:
-        @param dbfile:
-        @type dbfile:
-        @return:
-        @rtype:
-
+        @param dumpfile: SQLite3 dump file to read
+        @type dumpfile: string
+        @param dbfile: database file to write to
+        @type dbfile: string
+        @return: sqlite3 import return code
+        @rtype: int
+        @todo: remove /usr/bin/sqlite3 dependency
         """
         import subprocess
         sqlite3_exec = "/usr/bin/sqlite3 %s < %s" % (dbfile, dumpfile,)
@@ -6609,20 +6601,30 @@ class EntropyRepository:
 
     def doDatabaseExport(self, dumpfile, gentle_with_tables = True,
         exclude_tables = None):
-
         """
-        
-        """
+        Export running SQLite3 database to file.
 
+        @param dumpfile: dump file object to write to
+        @type dumpfile: file object (hint: open())
+        @keyword gentle_with_tables: append "IF NOT EXISTS" to "CREATE TABLE"
+            statements
+        @type gentle_with_tables: bool
+        @todo: when Python 2.6, look ad Connection.iterdump and replace this :)
+        """
         if not exclude_tables:
             exclude_tables = []
 
         dumpfile.write("BEGIN TRANSACTION;\n")
-        self.cursor.execute("SELECT name, type, sql FROM sqlite_master WHERE sql NOT NULL AND type=='table'")
+        self.cursor.execute("""
+        SELECT name, type, sql FROM sqlite_master
+        WHERE sql NOT NULL AND type=='table'
+        """)
         for name, x, sql in self.cursor.fetchall():
 
             self.updateProgress(
-                red("%s " % (_("Exporting database table"),) )+"["+blue(str(name))+"]",
+                red("%s " % (
+                    _("Exporting database table"),
+                ) ) + "["+blue(str(name))+"]",
                 importance = 0,
                 type = "info",
                 back = True,
@@ -6650,11 +6652,16 @@ class EntropyRepository:
             q += ", ".join(["'||quote(" + x + ")||'" for x in cols])
             q += ")' FROM '%(tbl_name)s'"
             self.cursor.execute(q % {'tbl_name': name})
-            self.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+            self.connection.text_factory = lambda x: \
+                unicode(x, "raw_unicode_escape")
             for row in self.cursor:
-                dumpfile.write("%s;\n" % str(row[0].encode('raw_unicode_escape')))
+                dumpfile.write(
+                    "%s;\n" % str(row[0].encode('raw_unicode_escape')))
 
-        self.cursor.execute("SELECT name, type, sql FROM sqlite_master WHERE sql NOT NULL AND type!='table' AND type!='meta'")
+        self.cursor.execute("""
+        SELECT name, type, sql FROM sqlite_master
+        WHERE sql NOT NULL AND type!='table' AND type!='meta'
+        """)
         for name, x, sql in self.cursor.fetchall():
             dumpfile.write("%s;\n" % sql)
 
@@ -6673,65 +6680,52 @@ class EntropyRepository:
 
     def listAllTables(self):
         """
-        
+        List all available tables in this repository database.
+
+        @return: available tables
+        @rtype: list
         """
-        self.cursor.execute("""
+        cur = self.cursor.execute("""
         SELECT name FROM SQLITE_MASTER WHERE type = "table"
         """)
-        return self._fetchall2list(self.cursor.fetchall())
+        return self._fetchall2list(cur.fetchall())
 
-    def doesTableExist(self, table):
-        """
-        docstring_title
-
-        @param table:
-        @type table:
-        @return:
-        @rtype:
-
-        """
-        self.cursor.execute('select name from SQLITE_MASTER where type = "table" and name = (?)', (table,))
-        rslt = self.cursor.fetchone()
+    def _doesTableExist(self, table):
+        cur = self.cursor.execute("""
+        select name from SQLITE_MASTER where type = "table" and name = (?)
+        """, (table,))
+        rslt = cur.fetchone()
         if rslt is None:
             return False
         return True
 
-    def doesColumnInTableExist(self, table, column):
-        """
-        docstring_title
-
-        @param table:
-        @type table:
-        @param column:
-        @type column:
-        @return:
-        @rtype:
-
-        """
-        self.cursor.execute('PRAGMA table_info( %s )' % (table,))
-        rslt = (x[1] for x in self.cursor.fetchall())
+    def _doesColumnInTableExist(self, table, column):
+        cur = self.cursor.execute('PRAGMA table_info( %s )' % (table,))
+        rslt = (x[1] for x in cur.fetchall())
         if column in rslt:
             return True
         return False
 
-    def database_checksum(self, do_order = False, strict = True, strings = False):
+    def checksum(self, do_order = False, strict = True,
+        strings = False):
         """
-        docstring_title
+        Get Repository metadata checksum, useful for integrity verification.
+        Note: result is cached in EntropyRepository.live_cache (dict).
 
-        @keyword do_order:
-        @type do_order:
-        @keyword strict:
-        @type strict:
-        @keyword strings:
-        @type strings:
-        @return:
-        @rtype:
-
+        @keyword do_order: order metadata collection alphabetically
+        @type do_order: bool
+        @keyword strict: improve checksum accuracy
+        @type strict: bool
+        @keyword strings: return checksum in md5 hex form
+        @type strings: bool
+        @return: repository checksum
+        @rtype: string
         """
 
-        c_tup = ("database_checksum", do_order, strict, strings,)
+        c_tup = ("checksum", do_order, strict, strings,)
         cache = self.live_cache.get(c_tup)
-        if cache != None: return cache
+        if cache is not None:
+            return cache
 
         idpackage_order = ''
         category_order = ''
@@ -6744,17 +6738,6 @@ class EntropyRepository:
             flags_order = 'order by chost'
 
         def do_update_md5(m, cursor):
-            """
-            docstring_title
-
-            @param m:
-            @type m:
-            @param cursor:
-            @type cursor:
-            @return:
-            @rtype:
-
-            """
             mydata = cursor.fetchall()
             for record in mydata:
                 for item in record:
@@ -6764,45 +6747,57 @@ class EntropyRepository:
             import hashlib
             m = hashlib.md5()
 
-        self.cursor.execute("""
+
+        cur = self.cursor.execute("""
         SELECT idpackage,atom,name,version,versiontag,
         revision,branch,slot,etpapi,trigger FROM 
         baseinfo %s""" % (idpackage_order,))
         if strings:
-            do_update_md5(m, self.cursor)
+            do_update_md5(m, cur)
         else:
-            a_hash = hash(tuple(self.cursor.fetchall()))
-        self.cursor.execute("""
-        SELECT idpackage,description,homepage,
-        download,size,digest,datecreation FROM 
+            a_hash = hash(tuple(cur.fetchall()))
+
+
+        cur = self.cursor.execute("""
+        SELECT idpackage, description, homepage,
+        download, size, digest, datecreation FROM
         extrainfo %s""" % (idpackage_order,))
         if strings:
-            do_update_md5(m, self.cursor)
+            do_update_md5(m, cur)
         else:
-            b_hash = hash(tuple(self.cursor.fetchall()))
-        self.cursor.execute('select category from categories %s' % (category_order,))
+            b_hash = hash(tuple(cur.fetchall()))
+
+
+        cur = self.cursor.execute("""
+        SELECT category FROM categories %s
+        """ % (category_order,))
         if strings:
-            do_update_md5(m, self.cursor)
+            do_update_md5(m, cur)
         else:
-            c_hash = hash(tuple(self.cursor.fetchall()))
+            c_hash = hash(tuple(cur.fetchall()))
+
+
         d_hash = '0'
         e_hash = '0'
         if strict:
-            self.cursor.execute('select * from licenses %s' % (license_order,))
+            cur = self.cursor.execute("""
+            SELECT * FROM licenses %s""" % (license_order,))
             if strings:
-                do_update_md5(m, self.cursor)
+                do_update_md5(m, cur)
             else:
-                d_hash = hash(tuple(self.cursor.fetchall()))
-            self.cursor.execute('select * from flags %s' % (flags_order,))
+                d_hash = hash(tuple(cur.fetchall()))
+
+            cur = self.cursor.execute('select * from flags %s' % (flags_order,))
             if strings:
-                do_update_md5(m, self.cursor)
+                do_update_md5(m, cur)
             else:
-                e_hash = hash(tuple(self.cursor.fetchall()))
+                e_hash = hash(tuple(cur.fetchall()))
 
         if strings:
             result = m.hexdigest()
         else:
-            result = "%s:%s:%s:%s:%s" % (a_hash, b_hash, c_hash, d_hash, e_hash,)
+            result = "%s:%s:%s:%s:%s" % (a_hash, b_hash, c_hash, d_hash,
+                e_hash,)
 
         self.live_cache[c_tup] = result[:]
         return result
@@ -6813,188 +6808,151 @@ class EntropyRepository:
 ##   Client Database API / but also used by server part
 #
 
-    def updateInstalledTableSource(self, idpackage, source):
+    def storeInstalledPackage(self, idpackage, repoid, source = 0):
         """
-        docstring_title
+        Note: this is used by installed packages repository (also known as
+        client db).
+        Add package identifier to the "installed packages table",
+        which contains repository identifier from where package has been
+        installed and its install request source (user, pulled in
+        dependency, etc).
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @param source:
-        @type source:
-        @return:
-        @rtype:
-
-        """
-        with self.__write_mutex:
-            self.cursor.execute("""
-            UPDATE installedtable SET source = (?) WHERE idpackage = (?)
-            """, (source, idpackage,))
-
-    def addPackageToInstalledTable(self, idpackage, repoid, source = 0):
-        """
-        docstring_title
-
-        @param idpackage: package indentifier
-        @type idpackage: int
-        @param repoid:
-        @type repoid:
-        @keyword source:
-        @type source:
-        @return:
-        @rtype:
-
+        @param repoid: repository identifier
+        @type repoid: string
+        @param source: source identifier (pleas see:
+            etpConst['install_sources'])
+        @type source: int
         """
         with self.__write_mutex:
             self.cursor.execute('INSERT into installedtable VALUES (?,?,?)',
                 (idpackage, repoid, source,))
-            # self.commitChanges()
 
-    def retrievePackageFromInstalledTable(self, idpackage):
+    def getInstalledPackageRepository(self, idpackage):
         """
-        docstring_title
+        Note: this is used by installed packages repository (also known as
+        client db).
+        Return repository identifier stored inside the "installed packages
+        table".
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
-
+        @return: repository identifier
+        @rtype: string or None
         """
         with self.__write_mutex:
             try:
-                self.cursor.execute("""
+                cur = self.cursor.execute("""
                 SELECT repositoryname FROM installedtable 
                 WHERE idpackage = (?)""", (idpackage,))
-                return self.cursor.fetchone()[0]
-            except (self.dbapi2.OperationalError,TypeError,):
-                return 'Not available'
+                return cur.fetchone()[0]
+            except (self.dbapi2.OperationalError, TypeError,):
+                return None
 
-    def removePackageFromInstalledTable(self, idpackage):
+    def dropInstalledPackageFromStore(self, idpackage):
         """
-        docstring_title
+        Note: this is used by installed packages repository (also known as
+        client db).
+        Remove installed package metadata from "installed packages table".
+        Note: this just removes extra metadata information such as repository
+        identifier from where package has been installed and its install
+        request source (user, pulled in dependency, etc).
+        This method DOES NOT remove package from repository (see
+        removePackage() instead).
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
-
         """
         with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM installedtable
             WHERE idpackage = (?)""", (idpackage,))
 
-    def removePackageFromDependsTable(self, idpackage):
-        """
-        docstring_title
-
-        @param idpackage: package indentifier
-        @type idpackage: int
-        @return:
-        @rtype:
-
-        """
+    def _removePackageFromDependsTable(self, idpackage):
         with self.__write_mutex:
             try:
-                self.cursor.execute('DELETE FROM dependstable WHERE idpackage = (?)', (idpackage,))
+                self.cursor.execute("""
+                DELETE FROM dependstable WHERE idpackage = (?)
+                """, (idpackage,))
                 return 0
             except (self.dbapi2.OperationalError,):
                 return 1 # need reinit
 
     def _createDependsTable(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
         with self.__write_mutex:
             self.cursor.executescript("""
-                CREATE TABLE IF NOT EXISTS dependstable ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );
-                INSERT INTO dependstable VALUES (-1,-1);
+            CREATE TABLE IF NOT EXISTS dependstable
+            ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );
+            INSERT INTO dependstable VALUES (-1,-1);
             """)
             if self.indexing:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS dependsindex_idpackage ON dependstable ( idpackage )')
+                self.cursor.execute("""
+                CREATE INDEX IF NOT EXISTS dependsindex_idpackage
+                ON dependstable ( idpackage )
+                """)
             self.commitChanges()
 
-    def sanitizeDependsTable(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
+    def _sanitizeDependsTable(self):
         with self.__write_mutex:
-            self.cursor.execute('DELETE FROM dependstable where iddependency = -1')
+            self.cursor.execute("""
+            DELETE FROM dependstable where iddependency = -1
+            """)
             self.commitChanges()
 
-    def isDependsTableSane(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
+    def _isDependsTableSane(self):
         try:
-            self.cursor.execute('SELECT iddependency FROM dependstable WHERE iddependency = -1')
+            cur = self.cursor.execute("""
+            SELECT iddependency FROM dependstable WHERE iddependency = -1
+            """)
         except (self.dbapi2.OperationalError,):
             return False # table does not exist, please regenerate and re-run
-        status = self.cursor.fetchone()
-        if status: return False
 
-        self.cursor.execute('select count(*) from dependstable')
-        dependstable_count = self.cursor.fetchone()
+        status = cur.fetchone()
+        if status:
+            return False
+
+        cur = self.cursor.execute("SELECT count(*) FROM dependstable")
+        dependstable_count = cur.fetchone()
         if dependstable_count < 2:
             return False
         return True
 
-    def createXpakTable(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        with self.__write_mutex:
-            self.cursor.execute('CREATE TABLE xpakdata ( idpackage INTEGER PRIMARY KEY, data BLOB );')
-            self.commitChanges()
-
     def storeXpakMetadata(self, idpackage, blob):
         """
-        docstring_title
+        Xpak metadata is Source Package Manager package metadata.
+        This method stores such metadata inside repository.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @param blob:
-        @type blob:
-        @return:
-        @rtype:
-
+        @param blob: metadata blob
+        @type blob: string or buffer
         """
         with self.__write_mutex:
-            self.cursor.execute('INSERT into xpakdata VALUES (?,?)', (int(idpackage), buffer(blob),))
+            self.cursor.execute('INSERT into xpakdata VALUES (?,?)',
+                (int(idpackage), buffer(blob),)
+            )
             self.commitChanges()
 
     def retrieveXpakMetadata(self, idpackage):
         """
-        docstring_title
+        Xpak metadata is Source Package Manager package metadata.
+        This method returns such stored metadata inside repository.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @return:
-        @rtype:
-
+        @return: stored metadata
+        @rtype: buffer
         """
         try:
-            self.cursor.execute('SELECT data from xpakdata where idpackage = (?)', (idpackage,))
-            mydata = self.cursor.fetchone()
+            cur = self.cursor.execute("""
+            SELECT data from xpakdata where idpackage = (?)
+            """, (idpackage,))
+            mydata = cur.fetchone()
             if not mydata:
                 return ""
             return mydata[0]
-        except:
+        except (self.dbapi2.Error, TypeError, IndexError,):
             return ""
 
     def retrieveBranchMigration(self, to_branch):
@@ -7008,15 +6966,15 @@ class EntropyRepository:
         @return: branch migration metadata contained in database
         @rtype: dict
         """
-        if not self.doesTableExist('entropy_branch_migration'):
+        if not self._doesTableExist('entropy_branch_migration'):
             return None
 
-        self.cursor.execute("""
+        cur = self.cursor.execute("""
         SELECT repository, from_branch, post_migration_md5sum,
         post_upgrade_md5sum FROM entropy_branch_migration WHERE to_branch = (?)
         """, (to_branch,))
 
-        data = self.cursor.fetchall()
+        data = cur.fetchall()
         meta = {}
         for repo, from_branch, post_migration_md5, post_upgrade_md5 in data:
             obj = meta.setdefault(repo, {})
@@ -7025,106 +6983,81 @@ class EntropyRepository:
 
     def dropContent(self):
         """
-        docstring_title
-
-        @return:
-        @rtype:
-
+        Drop all "content" metadata from repository, usually a memory hog.
+        Content metadata contains files and directories owned by packages.
         """
         with self.__write_mutex:
             self.cursor.execute('DELETE FROM content')
 
     def dropAllIndexes(self):
         """
-        docstring_title
-
-        @return:
-        @rtype:
-
+        Drop all repository metadata indexes.
         """
-        self.cursor.execute('SELECT name FROM SQLITE_MASTER WHERE type = "index"')
-        indexes = self._fetchall2set(self.cursor.fetchall())
+        cur = self.cursor.execute("""
+        SELECT name FROM SQLITE_MASTER WHERE type = "index"
+        """)
+        indexes = self._fetchall2set(cur.fetchall())
         with self.__write_mutex:
             for index in indexes:
-                if not index.startswith("sqlite"):
+                try:
                     self.cursor.execute('DROP INDEX IF EXISTS %s' % (index,))
+                except self.dbapi2.Error:
+                    continue
 
     def listAllIndexes(self, only_entropy = True):
         """
-        docstring_title
+        List all the available repository metadata index names.
 
-        @keyword only_entropy:
-        @type only_entropy:
-        @return:
-        @rtype:
-
+        @keyword only_entropy: if True, return only entropy related indexes
+        @type only_entropy: bool
+        @return: list (set) of index names
+        @rtype: set
         """
-        self.cursor.execute('SELECT name FROM SQLITE_MASTER WHERE type = "index"')
-        indexes = self._fetchall2set(self.cursor.fetchall())
+        cur = self.cursor.execute("""
+        SELECT name FROM SQLITE_MASTER WHERE type = "index"
+        """)
+        indexes = self._fetchall2set(cur.fetchall())
+
         if not only_entropy:
             return indexes
-        myindexes = set()
-        for index in indexes:
-            if index.startswith("sqlite"):
-                continue
-            myindexes.add(index)
-        return myindexes
-
+        return set([x for x in indexes if not x.startswith("sqlite")])
 
     def createAllIndexes(self):
         """
-        docstring_title
-
-        @return:
-        @rtype:
-
+        Create all the repository metadata indexes internally available.
         """
-        self.createMirrorlinksIndex()
-        self.createContentIndex()
-        self.createBaseinfoIndex()
-        self.createKeywordsIndex()
-        self.createDependenciesIndex()
-        self.createProvideIndex()
-        self.createConflictsIndex()
-        self.createExtrainfoIndex()
-        self.createNeededIndex()
-        self.createUseflagsIndex()
-        self.createLicensedataIndex()
-        self.createLicensesIndex()
-        self.createConfigProtectReferenceIndex()
-        self.createMessagesIndex()
-        self.createSourcesIndex()
-        self.createCountersIndex()
-        self.createEclassesIndex()
-        self.createCategoriesIndex()
-        self.createCompileFlagsIndex()
-        self.createPackagesetsIndex()
-        self.createAutomergefilesIndex()
-        self.createNeededlibrarypathsIndex()
-        self.createNeededlibraryidpackagesIndex()
+        self._createMirrorlinksIndex()
+        self._createContentIndex()
+        self._createBaseinfoIndex()
+        self._createKeywordsIndex()
+        self._createDependenciesIndex()
+        self._createProvideIndex()
+        self._createConflictsIndex()
+        self._createExtrainfoIndex()
+        self._createNeededIndex()
+        self._createUseflagsIndex()
+        self._createLicensedataIndex()
+        self._createLicensesIndex()
+        self._createConfigProtectReferenceIndex()
+        self._createMessagesIndex()
+        self._createSourcesIndex()
+        self._createCountersIndex()
+        self._createEclassesIndex()
+        self._createCategoriesIndex()
+        self._createCompileFlagsIndex()
+        self._createPackagesetsIndex()
+        self._createAutomergefilesIndex()
+        self._createNeededlibrarypathsIndex()
+        self._createNeededlibraryidpackagesIndex()
 
-    def createMirrorlinksIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
+    def _createMirrorlinksIndex(self):
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.execute("""
                 CREATE INDEX IF NOT EXISTS mirrorlinks_mirrorname
                 ON mirrorlinks ( mirrorname )""")
 
-    def createPackagesetsIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
+    def _createPackagesetsIndex(self):
         if self.indexing:
             with self.__write_mutex:
                 try:
@@ -7134,14 +7067,7 @@ class EntropyRepository:
                 except self.dbapi2.OperationalError:
                     pass
 
-    def createNeededlibraryidpackagesIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
+    def _createNeededlibraryidpackagesIndex(self):
         if self.indexing:
             with self.__write_mutex:
                 try:
@@ -7156,14 +7082,7 @@ class EntropyRepository:
                 except self.dbapi2.OperationalError:
                     pass
 
-    def createNeededlibrarypathsIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
+    def _createNeededlibrarypathsIndex(self):
         if self.indexing:
             with self.__write_mutex:
                 try:
@@ -7180,14 +7099,7 @@ class EntropyRepository:
                 except self.dbapi2.OperationalError:
                     pass
 
-    def createAutomergefilesIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
+    def _createAutomergefilesIndex(self):
         if self.indexing:
             with self.__write_mutex:
                 try:
@@ -7200,314 +7112,254 @@ class EntropyRepository:
                 except self.dbapi2.OperationalError:
                     pass
 
-    def createNeededIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
+    def _createNeededIndex(self):
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.executescript("""
-                    CREATE INDEX IF NOT EXISTS neededindex ON neededreference ( library );
-                    CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed ( idneeded );
-                    CREATE INDEX IF NOT EXISTS neededindex_idpackage ON needed ( idpackage );
-                    CREATE INDEX IF NOT EXISTS neededindex_elfclass ON needed ( elfclass );
+                    CREATE INDEX IF NOT EXISTS neededindex ON neededreference
+                        ( library );
+                    CREATE INDEX IF NOT EXISTS neededindex_idneeded ON needed
+                        ( idneeded );
+                    CREATE INDEX IF NOT EXISTS neededindex_idpackage ON needed
+                        ( idpackage );
+                    CREATE INDEX IF NOT EXISTS neededindex_elfclass ON needed
+                        ( elfclass );
                 """)
 
-    def createMessagesIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
+    def _createMessagesIndex(self):
         if self.indexing:
             with self.__write_mutex:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS messagesindex ON messages ( idpackage )')
+                self.cursor.execute("""
+                CREATE INDEX IF NOT EXISTS messagesindex ON messages
+                    ( idpackage )
+                """)
 
-    def createCompileFlagsIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
+    def _createCompileFlagsIndex(self):
         if self.indexing:
             with self.__write_mutex:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS flagsindex ON flags ( chost,cflags,cxxflags )')
+                self.cursor.execute("""
+                CREATE INDEX IF NOT EXISTS flagsindex ON flags
+                    ( chost, cflags, cxxflags )
+                """)
 
-    def createUseflagsIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
+    def _createUseflagsIndex(self):
         if self.indexing:
             with self.__write_mutex:
                 self.cursor.executescript("""
-                    CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idpackage ON useflags ( idpackage );
-                    CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idflag ON useflags ( idflag );
-                    CREATE INDEX IF NOT EXISTS useflagsindex ON useflagsreference ( flagname );
+                CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idpackage
+                    ON useflags ( idpackage );
+                CREATE INDEX IF NOT EXISTS useflagsindex_useflags_idflag
+                    ON useflags ( idflag );
+                CREATE INDEX IF NOT EXISTS useflagsindex
+                    ON useflagsreference ( flagname );
+                """)
+
+    def _createContentIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                if self._doesTableExist("content"):
+                    self.cursor.executescript("""
+                        CREATE INDEX IF NOT EXISTS contentindex_couple
+                            ON content ( idpackage );
+                        CREATE INDEX IF NOT EXISTS contentindex_file
+                            ON content ( file );
+                    """)
+
+    def _createConfigProtectReferenceIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.execute("""
+                CREATE INDEX IF NOT EXISTS configprotectreferenceindex
+                    ON configprotectreference ( protect )
+                """)
+
+    def _createBaseinfoIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.executescript("""
+                CREATE INDEX IF NOT EXISTS baseindex_atom
+                    ON baseinfo ( atom );
+                CREATE INDEX IF NOT EXISTS baseindex_branch_name
+                    ON baseinfo ( name,branch );
+                CREATE INDEX IF NOT EXISTS baseindex_branch_name_idcategory
+                    ON baseinfo ( name,idcategory,branch );
+                CREATE INDEX IF NOT EXISTS baseindex_idcategory
+                    ON baseinfo ( idcategory );
+                """)
+
+    def _createLicensedataIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.execute("""
+                CREATE INDEX IF NOT EXISTS licensedataindex
+                    ON licensedata ( licensename )
+                """)
+
+    def _createLicensesIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.execute("""
+                CREATE INDEX IF NOT EXISTS licensesindex ON licenses ( license )
+                """)
+
+    def _createCategoriesIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.execute("""
+                CREATE INDEX IF NOT EXISTS categoriesindex_category
+                    ON categories ( category )
+                """)
+
+    def _createKeywordsIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.executescript("""
+                CREATE INDEX IF NOT EXISTS keywordsreferenceindex
+                    ON keywordsreference ( keywordname );
+                CREATE INDEX IF NOT EXISTS keywordsindex_idpackage
+                    ON keywords ( idpackage );
+                CREATE INDEX IF NOT EXISTS keywordsindex_idkeyword
+                    ON keywords ( idkeyword );
+                """)
+
+    def _createDependenciesIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.executescript("""
+                CREATE INDEX IF NOT EXISTS dependenciesindex_idpackage
+                    ON dependencies ( idpackage );
+                CREATE INDEX IF NOT EXISTS dependenciesindex_iddependency
+                    ON dependencies ( iddependency );
+                CREATE INDEX IF NOT EXISTS dependenciesreferenceindex_dependency
+                    ON dependenciesreference ( dependency );
+                """)
+
+    def _createCountersIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.executescript("""
+                CREATE INDEX IF NOT EXISTS countersindex_idpackage
+                    ON counters ( idpackage );
+                CREATE INDEX IF NOT EXISTS countersindex_counter
+                    ON counters ( counter );
+                """)
+
+    def _createSourcesIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.executescript("""
+                CREATE INDEX IF NOT EXISTS sourcesindex_idpackage
+                    ON sources ( idpackage );
+                CREATE INDEX IF NOT EXISTS sourcesindex_idsource
+                    ON sources ( idsource );
+                CREATE INDEX IF NOT EXISTS sourcesreferenceindex_source
+                    ON sourcesreference ( source );
+                """)
+
+    def _createProvideIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.executescript("""
+                CREATE INDEX IF NOT EXISTS provideindex_idpackage
+                    ON provide ( idpackage );
+                CREATE INDEX IF NOT EXISTS provideindex_atom
+                    ON provide ( atom );
+                """)
+
+    def _createConflictsIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.executescript("""
+                CREATE INDEX IF NOT EXISTS conflictsindex_idpackage
+                    ON conflicts ( idpackage );
+                CREATE INDEX IF NOT EXISTS conflictsindex_atom
+                    ON conflicts ( conflict );
+                """)
+
+    def _createExtrainfoIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.executescript("""
+                CREATE INDEX IF NOT EXISTS extrainfoindex
+                    ON extrainfo ( description );
+                CREATE INDEX IF NOT EXISTS extrainfoindex_pkgindex
+                    ON extrainfo ( idpackage );
+                """)
+
+    def _createEclassesIndex(self):
+        if self.indexing:
+            with self.__write_mutex:
+                self.cursor.executescript("""
+                CREATE INDEX IF NOT EXISTS eclassesindex_idpackage
+                    ON eclasses ( idpackage );
+                CREATE INDEX IF NOT EXISTS eclassesindex_idclass
+                    ON eclasses ( idclass );
+                CREATE INDEX IF NOT EXISTS eclassesreferenceindex_classname
+                    ON eclassesreference ( classname );
                 """)
 
     def dropContentIndex(self, only_file = False):
         """
-        docstring_title
+        Drop "content" metadata index.
 
-        @keyword only_file:
-        @type only_file:
-        @return:
-        @rtype:
-
+        @keyword only_file: drop only "file" index
+        @type only_file: bool
         """
         with self.__write_mutex:
             self.cursor.execute("DROP INDEX IF EXISTS contentindex_file")
             if not only_file:
-                self.cursor.executescript("DROP INDEX IF EXISTS contentindex_couple;")
-
-    def createContentIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        if self.indexing:
-            with self.__write_mutex:
-                if self.doesTableExist("content"):
-                    self.cursor.executescript("""
-                        CREATE INDEX IF NOT EXISTS contentindex_couple ON content ( idpackage );
-                        CREATE INDEX IF NOT EXISTS contentindex_file ON content ( file );
-                    """)
-
-    def createConfigProtectReferenceIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        if self.indexing:
-            with self.__write_mutex:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS configprotectreferenceindex ON configprotectreference ( protect )')
-
-    def createBaseinfoIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        if self.indexing:
-            with self.__write_mutex:
                 self.cursor.executescript("""
-                    CREATE INDEX IF NOT EXISTS baseindex_atom ON baseinfo ( atom );
-                    CREATE INDEX IF NOT EXISTS baseindex_branch_name ON baseinfo ( name,branch );
-                    CREATE INDEX IF NOT EXISTS baseindex_branch_name_idcategory ON baseinfo ( name,idcategory,branch );
-                    CREATE INDEX IF NOT EXISTS baseindex_idcategory ON baseinfo ( idcategory );
+                DROP INDEX IF EXISTS contentindex_couple;
                 """)
 
-    def createLicensedataIndex(self):
+    def regenerateSpmUidTable(self, verbose = False):
         """
-        docstring_title
+        Regenerate Source Package Manager package identifiers table.
+        This method will use the Source Package Manger interface.
 
-        @return:
-        @rtype:
-
+        @keyword verbose: run in verbose mode
+        @type verbose: bool
         """
-        if self.indexing:
-            with self.__write_mutex:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS licensedataindex ON licensedata ( licensename )')
 
-    def createLicensesIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        if self.indexing:
-            with self.__write_mutex:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS licensesindex ON licenses ( license )')
-
-    def createCategoriesIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        if self.indexing:
-            with self.__write_mutex:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS categoriesindex_category ON categories ( category )')
-
-    def createKeywordsIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        if self.indexing:
-            with self.__write_mutex:
-                self.cursor.executescript("""
-                    CREATE INDEX IF NOT EXISTS keywordsreferenceindex ON keywordsreference ( keywordname );
-                    CREATE INDEX IF NOT EXISTS keywordsindex_idpackage ON keywords ( idpackage );
-                    CREATE INDEX IF NOT EXISTS keywordsindex_idkeyword ON keywords ( idkeyword );
-                """)
-
-    def createDependenciesIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        if self.indexing:
-            with self.__write_mutex:
-                self.cursor.executescript("""
-                    CREATE INDEX IF NOT EXISTS dependenciesindex_idpackage ON dependencies ( idpackage );
-                    CREATE INDEX IF NOT EXISTS dependenciesindex_iddependency ON dependencies ( iddependency );
-                    CREATE INDEX IF NOT EXISTS dependenciesreferenceindex_dependency ON dependenciesreference ( dependency );
-                """)
-
-    def createCountersIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        if self.indexing:
-            with self.__write_mutex:
-                self.cursor.executescript("""
-                    CREATE INDEX IF NOT EXISTS countersindex_idpackage ON counters ( idpackage );
-                    CREATE INDEX IF NOT EXISTS countersindex_counter ON counters ( counter );
-                """)
-
-    def createSourcesIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        if self.indexing:
-            with self.__write_mutex:
-                self.cursor.executescript("""
-                    CREATE INDEX IF NOT EXISTS sourcesindex_idpackage ON sources ( idpackage );
-                    CREATE INDEX IF NOT EXISTS sourcesindex_idsource ON sources ( idsource );
-                    CREATE INDEX IF NOT EXISTS sourcesreferenceindex_source ON sourcesreference ( source );
-                """)
-
-    def createProvideIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        if self.indexing:
-            with self.__write_mutex:
-                self.cursor.executescript("""
-                    CREATE INDEX IF NOT EXISTS provideindex_idpackage ON provide ( idpackage );
-                    CREATE INDEX IF NOT EXISTS provideindex_atom ON provide ( atom );
-                """)
-
-    def createConflictsIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        if self.indexing:
-            with self.__write_mutex:
-                self.cursor.executescript("""
-                    CREATE INDEX IF NOT EXISTS conflictsindex_idpackage ON conflicts ( idpackage );
-                    CREATE INDEX IF NOT EXISTS conflictsindex_atom ON conflicts ( conflict );
-                """)
-
-    def createExtrainfoIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        if self.indexing:
-            with self.__write_mutex:
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex ON extrainfo ( description )')
-                self.cursor.execute('CREATE INDEX IF NOT EXISTS extrainfoindex_pkgindex ON extrainfo ( idpackage )')
-
-    def createEclassesIndex(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        if self.indexing:
-            with self.__write_mutex:
-                self.cursor.executescript("""
-                    CREATE INDEX IF NOT EXISTS eclassesindex_idpackage ON eclasses ( idpackage );
-                    CREATE INDEX IF NOT EXISTS eclassesindex_idclass ON eclasses ( idclass );
-                    CREATE INDEX IF NOT EXISTS eclassesreferenceindex_classname ON eclassesreference ( classname );
-                """)
-
-    def regenerateCountersTable(self, vdb_path, output = False):
-        """
-        docstring_title
-
-        @param vdb_path:
-        @type vdb_path:
-        @keyword output:
-        @type output:
-        @return:
-        @rtype:
-
-        """
+        # Poll SPM, load variables
+        spm = get_spm(self)
+        vdb_path = spm.get_vdb_path()
 
         # this is necessary now, counters table should be empty
-        self.cursor.execute("DELETE FROM counters;")
-        # assign a counter to an idpackage
-        myids = self.listAllIdpackages()
-        counter_path = etpConst['spm']['xpak_entries']['counter']
-        for myid in myids:
-            # get atom
-            myatom = self.retrieveAtom(myid)
-            mybranch = self.retrieveBranch(myid)
-            myatom = self.entropyTools.remove_tag(myatom)
-            myatomcounterpath = "%s%s/%s" % (vdb_path, myatom, counter_path,)
-            if os.path.isfile(myatomcounterpath):
+        with self.__write_mutex:
+
+            self.cursor.executescript("""
+            DROP TABLE IF EXISTS counters_regen;
+            CREATE TEMPORARY TABLE counters_regen (
+                counter INTEGER,
+                idpackage INTEGER,
+                branch VARCHAR,
+                PRIMARY KEY(idpackage, branch)
+            );
+            """)
+            # assign a counter to an idpackage
+            counter_path = etpConst['spm']['xpak_entries']['counter']
+            for myid in self.listAllIdpackages():
+
+                # get atom
+                myatom = self.retrieveAtom(myid)
+                mybranch = self.retrieveBranch(myid)
+                myatom = self.entropyTools.remove_tag(myatom)
+                myatomcounterpath = "%s%s/%s" % (vdb_path, myatom,
+                    counter_path,)
+
+                if not os.access(myatomcounterpath, os.F_OK | os.R_OK):
+                    continue
+
                 try:
                     with open(myatomcounterpath, "r") as f:
                         counter = int(f.readline().strip())
-                except:
-                    if output:
+                except ValueError:
+                    # counter is not int, and fucked up
+                    if verbose:
                         mytxt = "%s: %s: %s" % (
                             bold(_("ATTENTION")),
-                            red(_("cannot open Spm counter file for")),
+                            red(_("Spm id is not valid for")),
                             bold(myatom),
                         )
                         self.updateProgress(
@@ -7516,67 +7368,70 @@ class EntropyRepository:
                             type = "warning"
                         )
                     continue
-                # insert id+counter
-                with self.__write_mutex:
-                    try:
-                        self.cursor.execute(
-                                'INSERT into counters VALUES '
-                                '(?,?,?)', ( counter, myid, mybranch )
+                except Exception, e:
+                    if verbose:
+                        mytxt = "%s: %s: %s [%s]" % (
+                            bold(_("ATTENTION")),
+                            red(_("cannot open Spm id file for")),
+                            bold(myatom),
+                            e,
                         )
-                    except self.dbapi2.IntegrityError:
-                        if output:
-                            mytxt = "%s: %s: %s" % (
-                                bold(_("ATTENTION")),
-                                red(_("counter for atom is duplicated, ignoring")),
-                                bold(myatom),
-                            )
-                            self.updateProgress(
-                                mytxt,
-                                importance = 1,
-                                type = "warning"
-                            )
-                        continue
-                        # don't trust counters, they might not be unique
+                        self.updateProgress(
+                            mytxt,
+                            importance = 1,
+                            type = "warning"
+                        )
+                    continue
+                # insert id+counter
+                try:
+                    self.cursor.execute("""
+                    INSERT into counters_regen VALUES (?,?,?)
+                    """, (counter, myid, mybranch,))
+                except self.dbapi2.IntegrityError:
+                    if verbose:
+                        mytxt = "%s: %s: %s" % (
+                            bold(_("ATTENTION")),
+                            red(_("id for atom is duplicated, ignoring")),
+                            bold(myatom),
+                        )
+                        self.updateProgress(
+                            mytxt,
+                            importance = 1,
+                            type = "warning"
+                        )
+                    continue
+                    # don't trust counters, they might not be unique
+
+            self.cursor.executescript("""
+            DELETE FROM counters;
+            INSERT INTO counters (counter, idpackage, branch)
+                SELECT counter, idpackage, branch FROM counters_regen;
+            """)
 
         self.commitChanges()
 
     def clearTreeupdatesEntries(self, repository):
         """
-        docstring_title
+        This method should be considered internal and not suited for general
+        audience. Clear "treeupdates" metadata for given repository identifier.
 
-        @param repository:
-        @type repository:
-        @return:
-        @rtype:
-
+        @param repository: repository identifier
+        @type repository: string
         """
-        # treeupdates
         with self.__write_mutex:
-            self.cursor.execute("DELETE FROM treeupdates WHERE repository = (?)", (repository,))
+            self.cursor.execute("""
+            DELETE FROM treeupdates WHERE repository = (?)
+            """, (repository,))
             self.commitChanges()
 
     def resetTreeupdatesDigests(self):
         """
-        docstring_title
-
-        @return:
-        @rtype:
-
+        This method should be considered internal and not suited for general
+        audience. Reset "treeupdates" digest metadata.
         """
         with self.__write_mutex:
             self.cursor.execute('UPDATE treeupdates SET digest = "-1"')
             self.commitChanges()
-
-    def migrateCountersTable(self):
-        """
-        docstring_title
-
-        @return:
-        @rtype:
-
-        """
-        with self.__write_mutex:
-            self._migrateCountersTable()
 
     def _migrateCountersTable(self):
         self.cursor.executescript("""
@@ -7626,11 +7481,17 @@ class EntropyRepository:
 
     def _createPackagechangelogsTable(self):
         with self.__write_mutex:
-            self.cursor.execute('CREATE TABLE packagechangelogs ( category VARCHAR, name VARCHAR, changelog BLOB, PRIMARY KEY (category, name));')
+            self.cursor.execute("""
+            CREATE TABLE packagechangelogs ( category VARCHAR,
+                name VARCHAR, changelog BLOB, PRIMARY KEY (category, name));
+            """)
 
     def _createAutomergefilesTable(self):
         with self.__write_mutex:
-            self.cursor.execute('CREATE TABLE automergefiles ( idpackage INTEGER, configfile VARCHAR, md5 VARCHAR );')
+            self.cursor.execute("""
+            CREATE TABLE automergefiles ( idpackage INTEGER,
+                configfile VARCHAR, md5 VARCHAR );
+            """)
 
     def _createPackagesignaturesTable(self):
         with self.__write_mutex:
@@ -7666,15 +7527,23 @@ class EntropyRepository:
 
     def _createPackagesetsTable(self):
         with self.__write_mutex:
-            self.cursor.execute('CREATE TABLE packagesets ( setname VARCHAR, dependency VARCHAR );')
+            self.cursor.execute("""
+            CREATE TABLE packagesets ( setname VARCHAR, dependency VARCHAR );
+            """)
 
     def createCategoriesdescriptionTable(self):
         with self.__write_mutex:
-            self.cursor.execute('CREATE TABLE categoriesdescription ( category VARCHAR, locale VARCHAR, description VARCHAR );')
+            self.cursor.execute("""
+            CREATE TABLE categoriesdescription ( category VARCHAR,
+                locale VARCHAR, description VARCHAR );
+            """)
 
     def createLicensedataTable(self):
         with self.__write_mutex:
-            self.cursor.execute('CREATE TABLE licensedata ( licensename VARCHAR UNIQUE, text BLOB, compressed INTEGER );')
+            self.cursor.execute("""
+            CREATE TABLE licensedata ( licensename VARCHAR UNIQUE,
+                text BLOB, compressed INTEGER );
+            """)
 
     def _createLicensesAcceptedTable(self):
         with self.__write_mutex:
@@ -7682,96 +7551,82 @@ class EntropyRepository:
             CREATE TABLE licenses_accepted ( licensename VARCHAR UNIQUE );
             """)
 
-    def addDependsRelationToDependsTable(self, iterable):
-        """
-        docstring_title
-
-        @param iterable:
-        @type iterable:
-        @return:
-        @rtype:
-
-        """
+    def _addDependsRelationToDependsTable(self, iterable):
         with self.__write_mutex:
-            self.cursor.executemany('INSERT into dependstable VALUES (?,?)', iterable)
+            self.cursor.executemany('INSERT into dependstable VALUES (?,?)',
+                iterable)
             if (self.entropyTools.is_user_in_entropy_group()) and \
                 (self.dbname.startswith(etpConst['serverdbid'])):
-                    # force commit even if readonly, this will allow to automagically fix dependstable server side
-                    self.connection.commit() # we don't care much about syncing the database since it's quite trivial
+                    # force commit even if readonly, this will allow
+                    # to automagically fix dependstable server side
+                    # we don't care much about syncing the
+                    # database since it's quite trivial
+                    self.connection.commit()
 
-    def clearDependsTable(self):
+    def taintReverseDependenciesMetadata(self):
         """
-        docstring_title
-
-        @return:
-        @rtype:
-
+        Taint reverse (or inverse) dependencies metadata so that will be
+        generated during the next request.
         """
-        if not self.doesTableExist("dependstable"):
+        # FIXME: backward compatibility
+        if not self._doesTableExist("dependstable"):
             return
         self.cursor.executescript("""
             DELETE FROM dependstable;
             INSERT INTO dependstable VALUES (-1,-1);
         """)
 
-    def regenerateDependsTable(self, output = True):
+    def regenerateReverseDependenciesMetadata(self, verbose = True):
         """
-        docstring_title
+        Regenerate reverse (or inverse) dependencies metadata.
 
-        @keyword output:
-        @type output:
-        @return:
-        @rtype:
-
+        @keyword verbose: enable verbosity
+        @type verbose: bool
         """
-
         depends = self.listAllDependencies()
         count = 0
         total = len(depends)
         mydata = set()
         am = self.atomMatch
         up = self.updateProgress
-        self.clearDependsTable()
+        self.taintReverseDependenciesMetadata()
         for iddep, atom in depends:
             count += 1
 
-            if output and ((count == 0) or (count % 150 == 0) or \
+            if verbose and ((count == 0) or (count % 150 == 0) or \
                 (count == total)):
                 up( red("Resolving %s") % (atom,), importance = 0,
                     type = "info", back = True, count = (count, total)
                 )
 
             idpackage, rc = am(atom)
-            if idpackage is -1:
+            if idpackage == -1:
                 continue
-            if iddep is -1:
+            if iddep == -1:
                 continue
-            mydata.add((iddep, idpackage))
+            mydata.add((iddep, idpackage,))
 
         if mydata:
             try:
-                self.addDependsRelationToDependsTable(mydata)
+                self._addDependsRelationToDependsTable(mydata)
             except self.dbapi2.IntegrityError:
                 # try to cope for the last time
-                self.clearDependsTable()
+                self.taintReverseDependenciesMetadata()
                 self.commitChanges()
-                self.addDependsRelationToDependsTable(mydata)
+                self._addDependsRelationToDependsTable(mydata)
 
         # now validate dependstable
-        self.sanitizeDependsTable()
+        self._sanitizeDependsTable()
 
-    def regenerateLibrarypathsidpackageTable(self, output = True):
+    def regenerateLibrarypathsidpackageTable(self, verbose = True):
         """
-        docstring_title
+        Note: this is not intended for general audience.
+        Regenerate ELF object linker paths table.
 
-        @keyword output:
-        @type output:
-        @return:
-        @rtype:
-
+        @keyword verbose: enable verbosity
+        @type verbose: bool
         """
-
-        if output:
+        if verbose:
             self.updateProgress(
                 "%s ..." % (
                     purple(_("Resolving libraries, please wait")),
@@ -7786,7 +7641,8 @@ class EntropyRepository:
                     neededreference.library as library,
                     neededlibrarypaths.elfclass as elfclass
                 FROM
-                    baseinfo, neededlibrarypaths, needed, neededreference, content
+                    baseinfo, neededlibrarypaths, needed,
+                    neededreference, content
                 WHERE
                     neededreference.idneeded = needed.idneeded AND
                     needed.idpackage = content.idpackage AND
@@ -7797,7 +7653,7 @@ class EntropyRepository:
                 GROUP BY idpackage, library;
 
         """)
-        if output:
+        if verbose:
             self.updateProgress(
                 "%s" % (
                     purple(_("Libraries solved, all fine")),
@@ -7805,9 +7661,12 @@ class EntropyRepository:
                 importance = 0, type = "info"
             )
 
-    def moveCountersToBranch(self, to_branch, from_branch = None):
+    def moveSpmUidsToBranch(self, to_branch, from_branch = None):
         """
-        docstring_title
+        Note: this is not intended for general audience.
+        Move "branch" metadata contained in Source Package Manager package
+        identifiers binding metadata to new value given by "from_branch"
+        argument.
 
         @param to_branch:
         @type to_branch:
@@ -7819,58 +7678,30 @@ class EntropyRepository:
         """
         with self.__write_mutex:
             if from_branch is not None:
-                self.cursor.execute('UPDATE counters SET branch = (?) WHERE branch = (?)', (to_branch, from_branch,))
+                self.cursor.execute("""
+                UPDATE counters SET branch = (?) WHERE branch = (?)
+                """, (to_branch, from_branch,))
             else:
-                self.cursor.execute('UPDATE counters SET branch = (?)', (to_branch,))
+                self.cursor.execute("""
+                UPDATE counters SET branch = (?)
+                """, (to_branch,))
             self.commitChanges()
             self.clearCache()
 
-    def atomMatchFetchCache(self, *args):
-        """
-        docstring_title
-
-        @param *args:
-        @type *args:
-        @return:
-        @rtype:
-
-        """
+    def __atomMatchFetchCache(self, *args):
         if self.xcache:
-            cached = self.dumpTools.loadobj("%s/%s/%s" % (self.dbMatchCacheKey, self.dbname, hash(tuple(args)),))
+            cached = self.dumpTools.loadobj("%s/%s/%s" % (
+                self.dbMatchCacheKey, self.dbname, hash(tuple(args)),))
             if cached != None: return cached
 
-    def atomMatchStoreCache(self, *args, **kwargs):
-        """
-        docstring_title
-
-        @param *args:
-        @type *args:
-        @param **kwargs:
-        @type **kwargs:
-        @return:
-        @rtype:
-
-        """
+    def __atomMatchStoreCache(self, *args, **kwargs):
         if self.xcache:
             self.Cacher.push("%s/%s/%s" % (
-                self.dbMatchCacheKey,self.dbname,hash(tuple(args)),),
+                self.dbMatchCacheKey, self.dbname, hash(tuple(args)),),
                 kwargs.get('result')
             )
 
-    def atomMatchValidateCache(self, cached_obj, multiMatch, extendedResults):
-        """
-        docstring_title
-
-        @param cached_obj:
-        @type cached_obj:
-        @param multiMatch:
-        @type multiMatch:
-        @param extendedResults:
-        @type extendedResults:
-        @return:
-        @rtype:
-
-        """
+    def __atomMatchValidateCache(self, cached_obj, multiMatch, extendedResults):
 
         # time wasted for a reason
         data, rc = cached_obj
@@ -7879,15 +7710,16 @@ class EntropyRepository:
         if (not extendedResults) and (not multiMatch):
             if not self.isIdpackageAvailable(data):
                 return None
+
         elif extendedResults and (not multiMatch):
-            # ((idpackage,0,version,versiontag,revision,),0)
             if not self.isIdpackageAvailable(data[0]):
                 return None
+
         elif extendedResults and multiMatch:
-            # (set([(idpackage,0,version,version_tag,revision) for x in dbpkginfo]),0)
             idpackages = set([x[0] for x in data])
             if not self.areIdpackagesAvailable(idpackages):
                 return None
+
         elif (not extendedResults) and multiMatch:
             # (set([x[0] for x in dbpkginfo]),0)
             idpackages = set(data)
@@ -7897,335 +7729,384 @@ class EntropyRepository:
         return cached_obj
 
     def _idpackageValidator_live(self, idpackage, reponame):
-        """
-        docstring_title
 
-        @param idpackage: package indentifier
-        @type idpackage: int
-        @param reponame:
-        @type reponame:
-        @return:
-        @rtype:
+        ref = self.SystemSettings['pkg_masking_reference']
+        if (idpackage, reponame) in \
+            self.SystemSettings['live_packagemasking']['mask_matches']:
 
-        """
-        if (idpackage, reponame) in self.SystemSettings['live_packagemasking']['mask_matches']:
             # do not cache this
-            return -1, self.SystemSettings['pkg_masking_reference']['user_live_mask']
-        elif (idpackage, reponame) in self.SystemSettings['live_packagemasking']['unmask_matches']:
-            return idpackage, self.SystemSettings['pkg_masking_reference']['user_live_unmask']
+            return -1, ref['user_live_mask']
+
+        elif (idpackage, reponame) in \
+            self.SystemSettings['live_packagemasking']['unmask_matches']:
+
+            return idpackage, ref['user_live_unmask']
 
     def _idpackageValidator_user_package_mask(self, idpackage, reponame, live):
-        """
-        docstring_title
-
-        @param idpackage: package indentifier
-        @type idpackage: int
-        @param reponame:
-        @type reponame:
-        @param live:
-        @type live:
-        @return:
-        @rtype:
-
-        """
-        # check if user package.mask needs it masked
 
         mykw = "%smask_ids" % (reponame,)
         user_package_mask_ids = self.SystemSettings.get(mykw)
+
         if not isinstance(user_package_mask_ids, (list, set,)):
             user_package_mask_ids = set()
+
             for atom in self.SystemSettings['mask']:
-                matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+                matches, r = self.atomMatch(atom, multiMatch = True,
+                    packagesFilter = False)
                 if r != 0:
                     continue
                 user_package_mask_ids |= set(matches)
+
             self.SystemSettings[mykw] = user_package_mask_ids
+
         if idpackage in user_package_mask_ids:
             # sorry, masked
-            myr = self.SystemSettings['pkg_masking_reference']['user_package_mask']
+            ref = self.SystemSettings['pkg_masking_reference']
+            myr = ref['user_package_mask']
+
             try:
-                validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
+
+                cl_data = self.SystemSettings[self.client_settings_plugin_id]
+                validator_cache = cl_data['masking_validation']['cache']
                 validator_cache[(idpackage, reponame, live)] = -1, myr
+
             except KeyError: # system settings client plugin not found
                 pass
+
             return -1, myr
 
-    def _idpackageValidator_user_package_unmask(self, idpackage, reponame, live):
-        """
-        docstring_title
+    def _idpackageValidator_user_package_unmask(self, idpackage, reponame,
+        live):
 
-        @param idpackage: package indentifier
-        @type idpackage: int
-        @param reponame:
-        @type reponame:
-        @param live:
-        @type live:
-        @return:
-        @rtype:
-
-        """
-        # see if we can unmask by just lookin into user package.unmask stuff -> self.SystemSettings['unmask']
+        # see if we can unmask by just lookin into user
+        # package.unmask stuff -> self.SystemSettings['unmask']
         mykw = "%sunmask_ids" % (reponame,)
         user_package_unmask_ids = self.SystemSettings.get(mykw)
+
         if not isinstance(user_package_unmask_ids, (list, set,)):
+
             user_package_unmask_ids = set()
             for atom in self.SystemSettings['unmask']:
-                matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+                matches, r = self.atomMatch(atom, multiMatch = True,
+                    packagesFilter = False)
                 if r != 0:
                     continue
                 user_package_unmask_ids |= set(matches)
+
             self.SystemSettings[mykw] = user_package_unmask_ids
+
         if idpackage in user_package_unmask_ids:
-            myr = self.SystemSettings['pkg_masking_reference']['user_package_unmask']
+
+            ref = self.SystemSettings['pkg_masking_reference']
+            myr = ref['user_package_unmask']
             try:
-                validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
+
+                cl_data = self.SystemSettings[self.client_settings_plugin_id]
+                validator_cache = cl_data['masking_validation']['cache']
                 validator_cache[(idpackage, reponame, live)] = idpackage, myr
+
             except KeyError: # system settings client plugin not found
                 pass
+
             return idpackage, myr
 
     def _idpackageValidator_packages_db_mask(self, idpackage, reponame, live):
-        """
-        docstring_title
 
-        @param idpackage: package indentifier
-        @type idpackage: int
-        @param reponame:
-        @type reponame:
-        @param live:
-        @type live:
-        @return:
-        @rtype:
-
-        """
         # check if repository packages.db.mask needs it masked
         repos_mask = {}
         client_plg_id = etpConst['system_settings_plugins_ids']['client_plugin']
         client_settings = self.SystemSettings.get(client_plg_id, {})
         if client_settings:
             repos_mask = client_settings['repositories']['mask']
+
         repomask = repos_mask.get(reponame)
         if isinstance(repomask, (list, set,)):
+
             # first, seek into generic masking, all branches
-            mask_repo_id = "%s_ids@@:of:%s" % (reponame, reponame,) # avoid issues with repository names
+            # (below) avoid issues with repository names
+            mask_repo_id = "%s_ids@@:of:%s" % (reponame, reponame,)
             repomask_ids = repos_mask.get(mask_repo_id)
+
             if not isinstance(repomask_ids, set):
                 repomask_ids = set()
                 for atom in repomask:
-                    matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+                    matches, r = self.atomMatch(atom, multiMatch = True,
+                        packagesFilter = False)
                     if r != 0:
                         continue
                     repomask_ids |= set(matches)
                 repos_mask[mask_repo_id] = repomask_ids
+
             if idpackage in repomask_ids:
-                myr = self.SystemSettings['pkg_masking_reference']['repository_packages_db_mask']
+
+                ref = self.SystemSettings['pkg_masking_reference']
+                myr = ref['repository_packages_db_mask']
+
                 try:
-                    validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
+
+                    plg_id = self.client_settings_plugin_id
+                    cl_data = self.SystemSettings[plg_id]
+                    validator_cache = cl_data['masking_validation']['cache']
                     validator_cache[(idpackage, reponame, live)] = -1, myr
+
                 except KeyError: # system settings client plugin not found
                     pass
+
                 return -1, myr
 
-    def _idpackageValidator_package_license_mask(self, idpackage, reponame, live):
-        """
-        docstring_title
+    def _idpackageValidator_package_license_mask(self, idpackage, reponame,
+        live):
 
-        @param idpackage: package indentifier
-        @type idpackage: int
-        @param reponame:
-        @type reponame:
-        @param live:
-        @type live:
-        @return:
-        @rtype:
+        if not self.SystemSettings['license_mask']:
+            return
 
-        """
-        if self.SystemSettings['license_mask']:
-            mylicenses = self.retrieveLicense(idpackage)
-            mylicenses = mylicenses.strip().split()
-            lic_mask = self.SystemSettings['license_mask']
-            for mylicense in mylicenses:
-                if mylicense not in lic_mask: continue
-                myr = self.SystemSettings['pkg_masking_reference']['user_license_mask']
-                try:
-                    validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
-                    validator_cache[(idpackage, reponame, live)] = -1, myr
-                except KeyError: # system settings client plugin not found
-                    pass
-                return -1, myr
+        mylicenses = self.retrieveLicense(idpackage)
+        mylicenses = mylicenses.strip().split()
+        lic_mask = self.SystemSettings['license_mask']
+        for mylicense in mylicenses:
+
+            if mylicense not in lic_mask:
+                continue
+
+            ref = self.SystemSettings['pkg_masking_reference']
+            myr = ref['user_license_mask']
+            try:
+
+                cl_data = self.SystemSettings[self.client_settings_plugin_id]
+                validator_cache = cl_data['masking_validation']['cache']
+                validator_cache[(idpackage, reponame, live)] = -1, myr
+
+            except KeyError: # system settings client plugin not found
+                pass
+
+            return -1, myr
 
     def _idpackageValidator_keyword_mask(self, idpackage, reponame, live):
-        """
-        docstring_title
-
-        @param idpackage: package indentifier
-        @type idpackage: int
-        @param reponame:
-        @type reponame:
-        @param live:
-        @type live:
-        @return:
-        @rtype:
-
-        """
 
         mykeywords = self.retrieveKeywords(idpackage)
         # WORKAROUND for buggy entries
-        if not mykeywords: mykeywords = [''] # ** is fine then
+        if not mykeywords:
+            mykeywords = [''] # ** is fine then
+
+        mask_ref = self.SystemSettings['pkg_masking_reference']
+
         # firstly, check if package keywords are in etpConst['keywords']
         # (universal keywords have been merged from package.mask)
         for key in etpConst['keywords']:
-            if key not in mykeywords: continue
-            myr = self.SystemSettings['pkg_masking_reference']['system_keyword']
+
+            if key not in mykeywords:
+                continue
+
+            myr = mask_ref['system_keyword']
             try:
-                validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
+
+                cl_data = self.SystemSettings[self.client_settings_plugin_id]
+                validator_cache = cl_data['masking_validation']['cache']
                 validator_cache[(idpackage, reponame, live)] = idpackage, myr
+
             except KeyError: # system settings client plugin not found
                 pass
+
             return idpackage, myr
 
-        # if we get here, it means we didn't find mykeywords in etpConst['keywords']
+        # if we get here, it means we didn't find mykeywords
+        # in etpConst['keywords']
         # we need to seek self.SystemSettings['keywords']
         # seek in repository first
-        if reponame in self.SystemSettings['keywords']['repositories']:
-            for keyword in self.SystemSettings['keywords']['repositories'][reponame]:
-                if keyword not in mykeywords: continue
-                keyword_data = self.SystemSettings['keywords']['repositories'][reponame].get(keyword)
-                if not keyword_data: continue
-                if "*" in keyword_data: # all packages in this repo with keyword "keyword" are ok
-                    myr = self.SystemSettings['pkg_masking_reference']['user_repo_package_keywords_all']
-                    try:
-                        validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
-                        validator_cache[(idpackage, reponame, live)] = idpackage, myr
-                    except KeyError: # system settings client plugin not found
-                        pass
-                    return idpackage, myr
-                kwd_key = "%s_ids" % (keyword,)
-                keyword_data_ids = self.SystemSettings['keywords']['repositories'][reponame].get(kwd_key)
-                if not isinstance(keyword_data_ids, set):
-                    keyword_data_ids = set()
-                    for atom in keyword_data:
-                        matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
-                        if r != 0:
-                            continue
-                        keyword_data_ids |= matches
-                    self.SystemSettings['keywords']['repositories'][reponame][kwd_key] = keyword_data_ids
-                if idpackage in keyword_data_ids:
-                    myr = self.SystemSettings['pkg_masking_reference']['user_repo_package_keywords']
-                    try:
-                        validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
-                        validator_cache[(idpackage, reponame, live)] = idpackage, myr
-                    except KeyError: # system settings client plugin not found
-                        pass
-                    return idpackage, myr
+        keyword_repo = self.SystemSettings['keywords']['repositories']
 
-        # if we get here, it means we didn't find a match in repositories
-        # so we scan packages, last chance
-        for keyword in self.SystemSettings['keywords']['packages']:
-            # first of all check if keyword is in mykeywords
-            if keyword not in mykeywords: continue
-            keyword_data = self.SystemSettings['keywords']['packages'].get(keyword)
-            if not keyword_data: continue
+        for keyword in keyword_repo.get(reponame, []):
+
+            if keyword not in mykeywords:
+                continue
+
+            keyword_data = keyword_repo[reponame].get(keyword)
+            if not keyword_data:
+                continue
+
+            if "*" in keyword_data:
+                # all packages in this repo with keyword "keyword" are ok
+                myr = mask_ref['user_repo_package_keywords_all']
+                try:
+
+                    plg_id = self.client_settings_plugin_id
+                    cl_data = self.SystemSettings[plg_id]
+                    validator_cache = cl_data['masking_validation']['cache']
+                    validator_cache[(idpackage, reponame, live)] = \
+                        idpackage, myr
+
+                except KeyError: # system settings client plugin not found
+                    pass
+
+                return idpackage, myr
+
             kwd_key = "%s_ids" % (keyword,)
-            keyword_data_ids = self.SystemSettings['keywords']['packages'].get(reponame+kwd_key)
-            if not isinstance(keyword_data_ids, (list, set,)):
+            keyword_data_ids = keyword_repo[reponame].get(kwd_key)
+            if not isinstance(keyword_data_ids, set):
+
                 keyword_data_ids = set()
                 for atom in keyword_data:
-                    # match atom
-                    matches, r = self.atomMatch(atom, multiMatch = True, packagesFilter = False)
+                    matches, r = self.atomMatch(atom, multiMatch = True,
+                        packagesFilter = False)
                     if r != 0:
                         continue
                     keyword_data_ids |= matches
-                self.SystemSettings['keywords']['packages'][reponame+kwd_key] = keyword_data_ids
+
+                keyword_repo[reponame][kwd_key] = keyword_data_ids
+
             if idpackage in keyword_data_ids:
-                # valid!
-                myr = self.SystemSettings['pkg_masking_reference']['user_package_keywords']
+
+                myr = mask_ref['user_repo_package_keywords']
                 try:
-                    validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
-                    validator_cache[(idpackage, reponame, live)] = idpackage, myr
+
+                    plg_id = self.client_settings_plugin_id
+                    cl_data = self.SystemSettings[plg_id]
+                    validator_cache = cl_data['masking_validation']['cache']
+                    validator_cache[(idpackage, reponame, live)] = \
+                        idpackage, myr
+
                 except KeyError: # system settings client plugin not found
                     pass
                 return idpackage, myr
 
+        keyword_pkg = self.SystemSettings['keywords']['packages']
+
+        # if we get here, it means we didn't find a match in repositories
+        # so we scan packages, last chance
+        for keyword in keyword_pkg:
+
+            # first of all check if keyword is in mykeywords
+            if keyword not in mykeywords:
+                continue
+
+            keyword_data = keyword_pkg.get(keyword)
+            if not keyword_data:
+                continue
+
+            kwd_key = "%s_ids" % (keyword,)
+            keyword_data_ids = keyword_pkg.get(reponame+kwd_key)
+
+            if not isinstance(keyword_data_ids, (list, set,)):
+                keyword_data_ids = set()
+                for atom in keyword_data:
+                    # match atom
+                    matches, r = self.atomMatch(atom, multiMatch = True,
+                        packagesFilter = False)
+                    if r != 0:
+                        continue
+                    keyword_data_ids |= matches
+
+                keyword_pkg[reponame+kwd_key] = keyword_data_ids
+
+            if idpackage in keyword_data_ids:
+
+                # valid!
+                myr = mask_ref['user_package_keywords']
+                try:
+
+                    plg_id = self.client_settings_plugin_id
+                    cl_data = self.SystemSettings[plg_id]
+                    validator_cache = cl_data['masking_validation']['cache']
+                    validator_cache[(idpackage, reponame, live)] = \
+                        idpackage, myr
+
+                except KeyError: # system settings client plugin not found
+                    pass
+
+                return idpackage, myr
 
 
-    # function that validate one atom by reading keywords settings
-    # validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
     def idpackageValidator(self, idpackage, live = True):
         """
-        docstring_title
+        Return whether given package identifier is available to user or not,
+        reading package masking metadata stored in SystemSettings.
 
         @param idpackage: package indentifier
         @type idpackage: int
-        @keyword live:
-        @type live:
-        @return:
-        @rtype:
-
+        @keyword live: use live masking feature
+        @type live: bool
+        @return: tuple composed by idpackage and masking reason. If idpackage
+            returned idpackage value == -1, it means that package is masked
+            and a valid masking reason identifier is returned as second
+            value of the tuple (see SystemSettings['pkg_masking_reasons'])
+        @rtype: tuple
         """
 
         if self.dbname == etpConst['clientdbid']:
             return idpackage, 0
+
         elif self.dbname.startswith(etpConst['serverdbid']):
             return idpackage, 0
 
         reponame = self.dbname[len(etpConst['dbnamerepoprefix']):]
         try:
-            validator_cache = self.SystemSettings[self.client_settings_plugin_id]['masking_validation']['cache']
+            cl_data = self.SystemSettings[self.client_settings_plugin_id]
+            validator_cache = cl_data['masking_validation']['cache']
+
             cached = validator_cache.get((idpackage, reponame, live))
             if cached != None:
                 return cached
+
             # avoid memleaks
             if len(validator_cache) > 10000:
                 validator_cache.clear()
+
         except KeyError: # plugin does not exist
             pass
 
         if live:
             data = self._idpackageValidator_live(idpackage, reponame)
-            if data: return data
+            if data:
+                return data
 
-        data = self._idpackageValidator_user_package_mask(idpackage, reponame, live)
-        if data: return data
+        data = self._idpackageValidator_user_package_mask(idpackage,
+            reponame, live)
+        if data:
+            return data
 
-        data = self._idpackageValidator_user_package_unmask(idpackage, reponame, live)
-        if data: return data
+        data = self._idpackageValidator_user_package_unmask(idpackage,
+            reponame, live)
+        if data:
+            return data
 
-        data = self._idpackageValidator_packages_db_mask(idpackage, reponame, live)
-        if data: return data
+        data = self._idpackageValidator_packages_db_mask(idpackage, reponame,
+            live)
+        if data:
+            return data
 
-        data = self._idpackageValidator_package_license_mask(idpackage, reponame, live)
-        if data: return data
+        data = self._idpackageValidator_package_license_mask(idpackage,
+            reponame, live)
+        if data:
+            return data
 
         data = self._idpackageValidator_keyword_mask(idpackage, reponame, live)
-        if data: return data
+        if data:
+            return data
 
         # holy crap, can't validate
         myr = self.SystemSettings['pkg_masking_reference']['completely_masked']
         validator_cache[(idpackage, reponame, live)] = -1, myr
         return -1, myr
 
-    # packages filter used by atomMatch, input must me foundIDs, a list like this:
-    # [608,1867]
-    def packagesFilter(self, results):
-        """
-        docstring_title
 
-        @param results:
-        @type results:
-        @return:
-        @rtype:
+    def _packagesFilter(self, results):
+        """
+        Packages filter used by atomMatch, input must me foundIDs,
+        a list like this: [608, 1867].
 
         """
+
         # keywordsFilter ONLY FILTERS results if
-        # self.dbname.startswith(etpConst['dbnamerepoprefix']) => repository database is open
+        # self.dbname.startswith(etpConst['dbnamerepoprefix'])
+        # => repository database is open
         if not self.dbname.startswith(etpConst['dbnamerepoprefix']):
             return results
 
         newresults = set()
         for idpackage in results:
             idpackage, reason = self.idpackageValidator(idpackage)
-            if idpackage is -1: continue
+            if idpackage == -1:
+                continue
             newresults.add(idpackage)
         return newresults
 
@@ -8264,7 +8145,7 @@ class EntropyRepository:
         return idpackage
 
     def __do_operator_compare(self, token, operators, compare):
-        if operators == ">" and compare is -1:
+        if operators == ">" and compare == -1:
             return token
         elif operators == ">=" and compare < 1:
             return token
@@ -8293,40 +8174,63 @@ class EntropyRepository:
 
         return set(filter(myfilter, foundIDs))
 
-    def atomMatch(self, atom, caseSensitive = True, matchSlot = None, multiMatch = False,
-            matchBranches = (), matchTag = None, matchUse = (), packagesFilter = True,
-            matchRevision = None, extendedResults = False, useCache = True ):
+    def atomMatch(self, atom, caseSensitive = True, matchSlot = None,
+        multiMatch = False, matchTag = None, matchUse = (),
+        packagesFilter = True, matchRevision = None, extendedResults = False,
+        useCache = True):
 
         """
+        Match given atom (or dependency) in repository and return its package
+        identifer and execution status.
 
-        @description: matches the user chosen package name+ver, if possibile, in a single repository
-        @input atom: string, atom to match
-        @input caseSensitive: bool, should the atom be parsed case sensitive?
-        @input matchSlot: string, match atoms with the provided slot
-        @input multiMatch: bool, return all the available atoms
-        @input matchBranches: tuple or list, match packages only in the specified branches
-        @input matchTag: match packages only for the specified tag
-        @input matchUse: match packages only if it owns the specified use flags
-        @input packagesFilter: enable/disable package.mask/.keywords/.unmask filter
-        @output: the package id, if found, otherwise -1 plus the status, 0 = ok, 1 = error
-
+        @param atom: atom or dependency to match in repository
+        @type atom: string
+        @keyword caseSensitive: match in case sensitive mode
+        @type caseSensitive: bool
+        @keyword matchSlot: match packages with given slot
+        @type matchSlot: string
+        @keyword multiMatch: match all the available packages, not just the
+            best one
+        @type multiMatch: bool
+        @keyword matchTag: match packages with given tag
+        @type matchTag: string
+        @keyword matchUse: match packages with given use flags
+        @type matchUse: list or tuple or set
+        @keyword packagesFilter: enable package masking filter
+        @type packagesFilter: bool
+        @keyword matchRevision: match packages with given entropy revision
+        @type matchRevision: int
+        @keyword extendedResults: return extended results
+        @type extendedResults: bool
+        @keyword useCache: use on-disk cache
+        @type useCache: bool
+        @return: tuple of length 2 composed by (idpackage or -1, command status
+            (0 means found, 1 means error)) or, if extendedResults is True,
+            also add versioning information to tuple.
+            If multiMatch is True, a tuple composed by a set (containing package
+            identifiers) and command status is returned.
+        @rtype: tuple or set
+        @todo: improve documentation here
         """
 
         if not atom:
             return -1, 1
 
         if useCache:
-            cached = self.atomMatchFetchCache(
+            cached = self.__atomMatchFetchCache(
                 atom, caseSensitive, matchSlot,
-                multiMatch, matchBranches, matchTag,
+                multiMatch, matchTag,
                 matchUse, packagesFilter, matchRevision,
                 extendedResults
             )
             if isinstance(cached, tuple):
+
                 try:
-                    cached = self.atomMatchValidateCache(cached, multiMatch, extendedResults)
+                    cached = self.__atomMatchValidateCache(cached,
+                        multiMatch, extendedResults)
                 except (TypeError, ValueError, IndexError, KeyError,):
                     cached = None
+
             if isinstance(cached, tuple):
                 return cached
 
@@ -8360,7 +8264,6 @@ class EntropyRepository:
         if (matchRevision is None) and (atomRev != None):
             matchRevision = atomRev
 
-        branch_list = ()
         direction = ''
         justname = True
         pkgkey = ''
@@ -8383,7 +8286,8 @@ class EntropyRepository:
                 if justname == 0:
                     # get version
                     data = self.entropyTools.catpkgsplit(strippedAtom)
-                    if data is None: break # badly formatted
+                    if data is None:
+                        break # badly formatted
                     pkgversion = data[2]+"-"+data[3]
                     pkgkey = self.entropyTools.dep_getkey(strippedAtom)
 
@@ -8395,27 +8299,25 @@ class EntropyRepository:
                     pkgname = splitkey[0]
                     pkgcat = "null"
 
-                branch_list = (self.db_branch,)
-                if matchBranches:
-                    # force to tuple for security
-                    branch_list = tuple(matchBranches)
                 break
 
 
-        if branch_list:
-            # IDs found in the database that match our search
-            foundIDs = self.__generate_found_ids_match(branch_list, pkgkey, pkgname, pkgcat, caseSensitive, multiMatch)
+        # IDs found in the database that match our search
+        foundIDs = self.__generate_found_ids_match(pkgkey, pkgname, pkgcat,
+            caseSensitive, multiMatch)
 
         ### FILTERING
         # filter slot and tag
         if foundIDs:
-            foundIDs = self.__filterSlotTagUse(foundIDs, matchSlot, matchTag, matchUse, direction)
+            foundIDs = self.__filterSlotTagUse(foundIDs, matchSlot,
+                matchTag, matchUse, direction)
             if packagesFilter:
-                foundIDs = self.packagesFilter(foundIDs)
+                foundIDs = self._packagesFilter(foundIDs)
         ### END FILTERING
 
         if foundIDs:
-            dbpkginfo = self.__handle_found_ids_match(foundIDs, direction, matchTag, matchRevision, justname, strippedAtom, pkgversion)
+            dbpkginfo = self.__handle_found_ids_match(foundIDs, direction,
+                matchTag, matchRevision, justname, strippedAtom, pkgversion)
 
         if not dbpkginfo:
             if extendedResults:
@@ -8423,9 +8325,9 @@ class EntropyRepository:
                     x = set()
                 else:
                     x = (-1, 1, None, None, None,)
-                self.atomMatchStoreCache(
+                self.__atomMatchStoreCache(
                     atom, caseSensitive, matchSlot,
-                    multiMatch, matchBranches, matchTag,
+                    multiMatch, matchTag,
                     matchUse, packagesFilter, matchRevision,
                     extendedResults, result = (x, 1)
                 )
@@ -8435,9 +8337,9 @@ class EntropyRepository:
                     x = set()
                 else:
                     x = -1
-                self.atomMatchStoreCache(
+                self.__atomMatchStoreCache(
                     atom, caseSensitive, matchSlot,
-                    multiMatch, matchBranches, matchTag,
+                    multiMatch, matchTag,
                     matchUse, packagesFilter, matchRevision,
                     extendedResults, result = (x, 1)
                 )
@@ -8445,19 +8347,20 @@ class EntropyRepository:
 
         if multiMatch:
             if extendedResults:
-                x = set([(x[0], 0, x[1], self.retrieveVersionTag(x[0]), self.retrieveRevision(x[0])) for x in dbpkginfo])
-                self.atomMatchStoreCache(
+                x = set([(x[0], 0, x[1], self.retrieveVersionTag(x[0]), \
+                    self.retrieveRevision(x[0])) for x in dbpkginfo])
+                self.__atomMatchStoreCache(
                     atom, caseSensitive, matchSlot,
-                    multiMatch, matchBranches, matchTag,
+                    multiMatch, matchTag,
                     matchUse, packagesFilter, matchRevision,
                     extendedResults, result = (x, 0)
                 )
                 return x, 0
             else:
                 x = set([x[0] for x in dbpkginfo])
-                self.atomMatchStoreCache(
+                self.__atomMatchStoreCache(
                     atom, caseSensitive, matchSlot,
-                    multiMatch, matchBranches, matchTag,
+                    multiMatch, matchTag,
                     matchUse, packagesFilter, matchRevision,
                     extendedResults, result = (x, 0)
                 )
@@ -8466,18 +8369,20 @@ class EntropyRepository:
         if len(dbpkginfo) == 1:
             x = dbpkginfo.pop()
             if extendedResults:
-                x = (x[0], 0, x[1], self.retrieveVersionTag(x[0]), self.retrieveRevision(x[0]))
-                self.atomMatchStoreCache(
+                x = (x[0], 0, x[1], self.retrieveVersionTag(x[0]),
+                    self.retrieveRevision(x[0]),)
+
+                self.__atomMatchStoreCache(
                     atom, caseSensitive, matchSlot,
-                    multiMatch, matchBranches, matchTag,
+                    multiMatch, matchTag,
                     matchUse, packagesFilter, matchRevision,
                     extendedResults, result = (x, 0)
                 )
                 return x, 0
             else:
-                self.atomMatchStoreCache(
+                self.__atomMatchStoreCache(
                     atom, caseSensitive, matchSlot,
-                    multiMatch, matchBranches, matchTag,
+                    multiMatch, matchTag,
                     matchUse, packagesFilter, matchRevision,
                     extendedResults, result = (x[0], 0)
                 )
@@ -8486,131 +8391,136 @@ class EntropyRepository:
         dbpkginfo = list(dbpkginfo)
         pkgdata = {}
         versions = set()
+
         for x in dbpkginfo:
-            info_tuple = (x[1], self.retrieveVersionTag(x[0]), self.retrieveRevision(x[0]))
+            info_tuple = (x[1], self.retrieveVersionTag(x[0]), \
+                self.retrieveRevision(x[0]))
             versions.add(info_tuple)
             pkgdata[info_tuple] = x[0]
+
         newer = self.entropyTools.get_entropy_newer_version(list(versions))[0]
         x = pkgdata[newer]
         if extendedResults:
             x = (x, 0, newer[0], newer[1], newer[2])
-            self.atomMatchStoreCache(
+            self.__atomMatchStoreCache(
                 atom, caseSensitive, matchSlot,
-                multiMatch, matchBranches, matchTag,
+                multiMatch, matchTag,
                 matchUse, packagesFilter, matchRevision,
                 extendedResults, result = (x, 0)
             )
             return x, 0
         else:
-            self.atomMatchStoreCache(
+            self.__atomMatchStoreCache(
                 atom, caseSensitive, matchSlot,
-                multiMatch, matchBranches, matchTag,
+                multiMatch, matchTag,
                 matchUse, packagesFilter, matchRevision,
                 extendedResults, result = (x, 0)
             )
             return x, 0
 
-    def __generate_found_ids_match(self, branch_list, pkgkey, pkgname, pkgcat, caseSensitive, multiMatch):
-        foundIDs = set()
-        for idx in branch_list:
+    def __generate_found_ids_match(self, pkgkey, pkgname, pkgcat, caseSensitive,
+        multiMatch):
 
-            if pkgcat == "null":
-                results = self.searchPackagesByName(
-                    pkgname, sensitive = caseSensitive,
-                    branch = idx, justid = True
-                )
-            else:
+        if pkgcat == "null":
+            results = self.searchPackagesByName(pkgname,
+                sensitive = caseSensitive, justid = True)
+        else:
+            results = self.searchPackagesByNameAndCategory(name = pkgname,
+                category = pkgcat, sensitive = caseSensitive, justid = True
+            )
+
+        mypkgcat = pkgcat
+        mypkgname = pkgname
+        virtual = False
+        # if it's a PROVIDE, search with searchProvide
+        # there's no package with that name
+        if (not results) and (mypkgcat == "virtual"):
+            virtuals = self.searchProvide(pkgkey, justid = True)
+            if virtuals:
+                virtual = True
+                mypkgname = self.retrieveName(virtuals[0])
+                mypkgcat = self.retrieveCategory(virtuals[0])
+                results = virtuals
+
+
+        if not results: # nothing found
+            return set()
+
+        if len(results) > 1: # need to choose
+
+            # if it's because category differs, it's a problem
+            foundCat = None
+            cats = set()
+            for idpackage in results:
+                cat = self.retrieveCategory(idpackage)
+                cats.add(cat)
+                if (cat == mypkgcat) or ((not virtual) and \
+                    (mypkgcat == "virtual") and (cat == mypkgcat)):
+                    # in case of virtual packages only
+                    # (that they're not stored as provide)
+                    foundCat = cat
+
+            # if we found something at least...
+            if (not foundCat) and (len(cats) == 1) and \
+                (mypkgcat in ("virtual", "null")):
+
+                foundCat = sorted(cats)[0]
+
+            if not foundCat:
+                # got the issue
+                return set()
+
+            # we can use foundCat
+            mypkgcat = foundCat
+
+            # we need to search using the category
+            if (not multiMatch) and (pkgcat == "null" or virtual):
+                # we searched by name, we need to search using category
                 results = self.searchPackagesByNameAndCategory(
-                    name = pkgname, category = pkgcat, branch = idx,
+                    name = mypkgname, category = mypkgcat,
                     sensitive = caseSensitive, justid = True
                 )
 
-            mypkgcat = pkgcat
-            mypkgname = pkgname
-            virtual = False
-            # if it's a PROVIDE, search with searchProvide
-            # there's no package with that name
-            if (not results) and (mypkgcat == "virtual"):
-                virtuals = self.searchProvide(pkgkey, branch = idx, justid = True)
-                if virtuals:
-                    virtual = True
-                    mypkgname = self.retrieveName(virtuals[0])
-                    mypkgcat = self.retrieveCategory(virtuals[0])
-                    results = virtuals
+            # if we get here, we have found the needed IDs
+            return set(results)
 
-            # now validate
-            if not results:
-                continue # search into a stabler branch
+        ###
+        ### just found one result
+        ###
 
-            elif (len(results) > 1):
+        idpackage = results[0]
+        # if mypkgcat is virtual, it can be forced
+        if (mypkgcat == "virtual") and (not virtual):
+            # in case of virtual packages only
+            # (that they're not stored as provide)
+            mypkgcat = self.retrieveCategory(idpackage)
 
-                # if it's because category differs, it's a problem
-                foundCat = None
-                cats = set()
-                for idpackage in results:
-                    cat = self.retrieveCategory(idpackage)
-                    cats.add(cat)
-                    if (cat == mypkgcat) or ((not virtual) and (mypkgcat == "virtual") and (cat == mypkgcat)):
-                        # in case of virtual packages only (that they're not stored as provide)
-                        foundCat = cat
+        # check if category matches
+        if mypkgcat != "null":
+            foundCat = self.retrieveCategory(idpackage)
+            if mypkgcat == foundCat:
+                return set([idpackage])
+            return set() # nope nope
 
-                # if we found something at least...
-                if (not foundCat) and (len(cats) == 1) and (mypkgcat in ("virtual", "null")):
-                    foundCat = sorted(cats)[0]
-
-                if not foundCat:
-                    # got the issue
-                    continue
-
-                # we can use foundCat
-                mypkgcat = foundCat
-
-                # we need to search using the category
-                if (not multiMatch) and (pkgcat == "null" or virtual):
-                    # we searched by name, we need to search using category
-                    results = self.searchPackagesByNameAndCategory(
-                        name = mypkgname, category = mypkgcat,
-                        branch = idx, sensitive = caseSensitive, justid = True
-                    )
-
-                # validate again
-                if not results:
-                    continue  # search into another branch
-
-                # if we get here, we have found the needed IDs
-                foundIDs |= set(results)
-                break
-
-            else:
-
-                idpackage = results[0]
-                # if mypkgcat is virtual, we can force
-                if (mypkgcat == "virtual") and (not virtual):
-                    # in case of virtual packages only (that they're not stored as provide)
-                    mypkgcat = self.retrieveCategory(idpackage)
-
-                # check if category matches
-                if mypkgcat != "null":
-                    foundCat = self.retrieveCategory(idpackage)
-                    if mypkgcat == foundCat:
-                        foundIDs.add(idpackage)
-                    continue
-                foundIDs.add(idpackage)
-                break
-
-        return foundIDs
+        # very good, here it is
+        return set([idpackage])
 
 
-    def __handle_found_ids_match(self, foundIDs, direction, matchTag, matchRevision, justname, strippedAtom, pkgversion):
+    def __handle_found_ids_match(self, foundIDs, direction, matchTag,
+            matchRevision, justname, strippedAtom, pkgversion):
 
         dbpkginfo = set()
         # now we have to handle direction
-        if ((direction) or ((not direction) and (not justname)) or ((not direction) and (not justname) and strippedAtom.endswith("*"))) and foundIDs:
+        if ((direction) or ((not direction) and (not justname)) or \
+            ((not direction) and (not justname) \
+                and strippedAtom.endswith("*"))) and foundIDs:
 
             if (not justname) and \
                 ((direction == "~") or (direction == "=") or \
-                (direction == '' and not justname) or (direction == '' and not justname and strippedAtom.endswith("*"))):
-                # any revision within the version specified OR the specified version
+                (direction == '' and not justname) or (direction == '' and \
+                    not justname and strippedAtom.endswith("*"))):
+                # any revision within the version specified
+                # OR the specified version
 
                 if (direction == '' and not justname):
                     direction = "="
@@ -8618,16 +8528,20 @@ class EntropyRepository:
                 # remove gentoo revision (-r0 if none)
                 if (direction == "="):
                     if (pkgversion.split("-")[-1] == "r0"):
-                        pkgversion = self.entropyTools.remove_revision(pkgversion)
+                        pkgversion = self.entropyTools.remove_revision(
+                            pkgversion)
+
                 if (direction == "~"):
-                    pkgrevision = self.entropyTools.dep_get_portage_revision(pkgversion)
+                    pkgrevision = self.entropyTools.dep_get_portage_revision(
+                        pkgversion)
                     pkgversion = self.entropyTools.remove_revision(pkgversion)
 
                 for idpackage in foundIDs:
 
                     dbver = self.retrieveVersion(idpackage)
                     if (direction == "~"):
-                        myrev = self.entropyTools.dep_get_portage_revision(dbver)
+                        myrev = self.entropyTools.dep_get_portage_revision(
+                            dbver)
                         myver = self.entropyTools.remove_revision(dbver)
                         if myver == pkgversion and pkgrevision <= myrev:
                             # found
@@ -8660,30 +8574,47 @@ class EntropyRepository:
                         if matchRevision != None:
                             dbrev = self.retrieveRevision(idpackage)
                             revcmp = cmp(matchRevision, dbrev)
+
                         if matchTag != None:
                             dbtag = self.retrieveVersionTag(idpackage)
                             tagcmp = cmp(matchTag, dbtag)
+
                         dbver = self.retrieveVersion(idpackage)
-                        pkgcmp = self.entropyTools.compare_versions(pkgversion, dbver)
+                        pkgcmp = self.entropyTools.compare_versions(
+                            pkgversion, dbver)
+
                         if pkgcmp is None:
                             import warnings
-                            warnings.warn("WARNING, invalid version string stored in %s: %s <-> %s" % (self.dbname, pkgversion, dbver,))
+                            warnings.warn("WARNING, invalid version string " + \
+                            "stored in %s: %s <-> %s" % (
+                                self.dbname, pkgversion, dbver,)
+                            )
                             continue
+
                         if direction == ">":
+
                             if pkgcmp < 0:
                                 dbpkginfo.add((idpackage, dbver))
-                            elif (matchRevision != None) and pkgcmp <= 0 and revcmp < 0:
+                            elif (matchRevision != None) and pkgcmp <= 0 \
+                                and revcmp < 0:
                                 dbpkginfo.add((idpackage, dbver))
+
                             elif (matchTag != None) and tagcmp < 0:
                                 dbpkginfo.add((idpackage, dbver))
+
                         elif direction == "<":
+
                             if pkgcmp > 0:
                                 dbpkginfo.add((idpackage, dbver))
-                            elif (matchRevision != None) and pkgcmp >= 0 and revcmp > 0:
+                            elif (matchRevision != None) and pkgcmp >= 0 \
+                                and revcmp > 0:
                                 dbpkginfo.add((idpackage, dbver))
+
                             elif (matchTag != None) and tagcmp > 0:
                                 dbpkginfo.add((idpackage, dbver))
+
                         elif direction == ">=":
+
                             if (matchRevision != None) and pkgcmp <= 0:
                                 if pkgcmp == 0:
                                     if revcmp <= 0:
@@ -8694,7 +8625,9 @@ class EntropyRepository:
                                 dbpkginfo.add((idpackage, dbver))
                             elif (matchTag != None) and tagcmp <= 0:
                                 dbpkginfo.add((idpackage, dbver))
+
                         elif direction == "<=":
+
                             if (matchRevision != None) and pkgcmp >= 0:
                                 if pkgcmp == 0:
                                     if revcmp >= 0:

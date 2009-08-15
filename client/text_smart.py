@@ -310,7 +310,6 @@ def smartpackagegenerator(matchedPackages):
     dbfile = unpackdir+"/db/merged.db"
     mergeDbconn = Equo.open_generic_database(dbfile, dbname = "client")
     mergeDbconn.initializeDatabase()
-    mergeDbconn.createXpakTable()
     tmpdbfile = dbfile+"--readingdata"
     for package in matchedPackages:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red(_("collecting Entropy metadata")))
@@ -329,7 +328,7 @@ def smartpackagegenerator(matchedPackages):
             # add
             idpk, rev, y = mergeDbconn.handlePackage(data, forcedRevision = matchedAtoms[package]['revision']) # get the original rev
             del y
-            mergeDbconn.storeXpakMetadata(idpk,xpakdata)
+            mergeDbconn.storeXpakMetadata(idpk, xpakdata)
         mydbconn.closeDB()
         os.remove(tmpdbfile)
 

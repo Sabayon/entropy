@@ -705,8 +705,10 @@ def search_removal_dependencies(atoms, deep = False, Equo = None):
                 print_generic(rematom)
                 continue
 
-            installedfrom = clientDbconn.retrievePackageFromInstalledTable(
+            installedfrom = clientDbconn.getInstalledPackageRepository(
                 idpackage)
+            if installedfrom is None:
+                installedfrom = _("Not available")
             repo_info = bold("[") + red("%s: " % (_("from"),)) + \
                 brown(installedfrom)+bold("]")
             stratomscounter = str(atomscounter)
