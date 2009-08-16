@@ -28,7 +28,7 @@ if _LOCALE_FULL:
 
 try:
     import gettext
-    gettext.bindtextdomain('entropy', '/usr/share/locale')
+    gettext.bindtextdomain('entropy')
     gettext.textdomain('entropy')
     gettext.install('entropy', unicode=True)
 
