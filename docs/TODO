@@ -4,7 +4,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   0.98.4:
 
-    - entropy.db API docs in place
     - entropy.i18n test
 
   0.99:
