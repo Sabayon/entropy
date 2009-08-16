@@ -50,3 +50,21 @@ except (ImportError, OSError,):
         @rtype: string
         """
         return raw_string
+
+def change_language(lang):
+    """
+    Change gettext language on the fly.
+
+    @param lang: new language string (see `locale -a` for a list of
+        supported ones)
+    @type lang: string
+    """
+    global _
+    # change in environ
+    for var in ("LANGUAGE", "LC_ALL", "LANG",):
+        os.environ[var] = lang
+    # reinstall gettext
+    # remove _ from global scope so that gettext will readd it
+    del _
+    gettext.install('entropy', localedir = envdir, unicode = True)
+    _ = _
