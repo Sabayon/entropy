@@ -1278,7 +1278,7 @@ def __const_handle_exception(etype, value, t_back):
     """
     try:
         const_kill_threads()
-    except (AttributeError, ImportError,):
+    except (AttributeError, ImportError, TypeError,):
         pass
     return sys.__excepthook__(etype, value, t_back)
 
