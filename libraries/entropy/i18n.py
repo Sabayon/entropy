@@ -28,14 +28,12 @@ if _LOCALE_FULL:
 
 try:
     import gettext
-    gettext.bindtextdomain('entropy')
     gettext.textdomain('entropy')
-    gettext.install('entropy', unicode=True)
-
+    gettext.install('entropy', unicode = True)
     # do not use gettext.gettext because it returns str instead of unicode
     _ = _
 
-except (ImportError,OSError,):
+except (ImportError, OSError,):
     def _(raw_string):
         """
         Fallback in case gettext is not available, same syntax
