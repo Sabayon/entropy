@@ -13,6 +13,7 @@
 
 """
 
+import sys
 import os
 _LOCALE = None
 _LOCALE_FULL = os.getenv('LC_ALL')
@@ -65,6 +66,15 @@ def change_language(lang):
         os.environ[var] = lang
     # reinstall gettext
     # remove _ from global scope so that gettext will readd it
+    old_ = _
     del _
     gettext.install('entropy', localedir = envdir, unicode = True)
     _ = _
+    # redeclare "_" in all loaded modules
+    for module in sys.modules.values():
+        if not hasattr(module, "__dict__"):
+            continue
+        t_func = module.__dict__.get("_")
+        if t_func is not old_:
+            continue
+        module._ = _
