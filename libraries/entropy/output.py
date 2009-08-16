@@ -634,16 +634,13 @@ def print_generic(msg):
 
     @param msg: text message to print
     @type msg: string
-    @keyword back: move text cursor back to the beginning of the line
-    @type back: bool
-    @keyword flush: flush stdout and stderr
-    @type flush: bool
     @return: None
     @rtype: None
     """
     if etpUi['mute']:
         return
-    writechar("\r")
+    # disabled, because it causes quite a mess when writing to files
+    # writechar("\r")
     try:
         print msg
     except UnicodeEncodeError:
