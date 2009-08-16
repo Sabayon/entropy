@@ -452,7 +452,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def packages_install(self):
 
-        packages_install = os.getenv("SULFUR_PACKAGES")
+        packages_install = os.environ.get("SULFUR_PACKAGES", '').split(";")
         atoms_install = []
         do_fetch = False
         if "--fetch" in sys.argv:
@@ -462,12 +462,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if "--install" in sys.argv:
             atoms_install.extend(sys.argv[sys.argv.index("--install")+1:])
 
-        if packages_install:
-            packages_install = [x for x in packages_install.split(";") \
-                if os.path.isfile(x)]
+        packages_install = [x for x in packages_install if \
+            os.access(x, os.R_OK | os.F_OK)]
 
         for arg in sys.argv:
-            if arg.endswith(etpConst['packagesext']) and os.path.isfile(arg):
+            if arg.endswith(etpConst['packagesext']) and \
+                os.access(arg, os.R_OK | os.F_OK):
+
                 arg = os.path.realpath(arg)
                 packages_install.append(arg)
 
