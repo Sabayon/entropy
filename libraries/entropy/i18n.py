@@ -28,8 +28,12 @@ if _LOCALE_FULL:
 
 try:
     import gettext
-    gettext.textdomain('entropy')
-    gettext.install('entropy', unicode = True)
+    localedir = "/usr/share/locale"
+    # support for ENV TEXTDOMAINDIR
+    envdir = os.getenv('TEXTDOMAINDIR')
+    if envdir is not None:
+        localedir = envdir
+    gettext.install('entropy', localedir = envdir, unicode = True)
     # do not use gettext.gettext because it returns str instead of unicode
     _ = _
 
