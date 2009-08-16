@@ -2,10 +2,6 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
-  0.98.4:
-
-    - entropy.i18n test
-
   0.99:
 
     - entropy.client + entropy.spm API docs in place
