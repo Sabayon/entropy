@@ -42,7 +42,7 @@ class Repository:
             "dbdumplight", "dbdumplightck", "dbdumpck", "lic_whitelist",
             "make.conf", "package.mask", "package.unmask", "package.keywords",
             "profile.link", "package.use", "server.cert", "ca.cert",
-            "meta_file", "notice_board"
+            "meta_file", "notice_board", "critical_updates"
         )
         self.big_socket_timeout = 25
         self.Entropy = EquoInstance
@@ -178,6 +178,7 @@ class Repository:
         ec_maskfile = etpConst['etpdatabasemaskfile']
         ec_sysmaskfile = etpConst['etpdatabasesytemmaskfile']
         ec_confl_taged = etpConst['etpdatabaseconflictingtaggedfile']
+        ec_crit_updates = etpConst['etpdatabasecriticalfile']
         make_conf_file = os.path.basename(etpConst['spm']['global_make_conf'])
         pkg_mask_file = os.path.basename(etpConst['spm']['global_package_mask'])
         pkg_unmask_file = os.path.basename(etpConst['spm']['global_package_unmask'])
@@ -221,6 +222,7 @@ class Repository:
             'mask': ("%s/%s" % (repo_db,ec_maskfile,),"%s/%s" % (repo_dbpath,ec_maskfile,),),
             'system_mask': ("%s/%s" % (repo_db,ec_sysmaskfile,),"%s/%s" % (repo_dbpath,ec_sysmaskfile,),),
             'conflicting_tagged': ("%s/%s" % (repo_db,ec_confl_taged,),"%s/%s" % (repo_dbpath,ec_confl_taged,),),
+            'critical_updates': ("%s/%s" % (repo_db,ec_crit_updates,),"%s/%s" % (repo_dbpath,ec_crit_updates,),),
             'make.conf': ("%s/%s" % (repo_db,make_conf_file,),"%s/%s" % (repo_dbpath,make_conf_file,),),
             'package.mask': ("%s/%s" % (repo_db,pkg_mask_file,),"%s/%s" % (repo_dbpath,pkg_mask_file,),),
             'package.unmask': ("%s/%s" % (repo_db,pkg_unmask_file,),"%s/%s" % (repo_dbpath,pkg_unmask_file,),),
@@ -1667,6 +1669,16 @@ class Repository:
                 "%s %s %s" % (
                     red(_("Downloading conflicting tagged packages file")),
                     darkgreen(etpConst['etpdatabaseconflictingtaggedfile']),
+                    red("..."),
+                )
+            ),
+            (
+                "critical_updates",
+                etpConst['etpdatabasecriticalfile'],
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading critical updates file")),
+                    darkgreen(etpConst['etpdatabasecriticalfile']),
                     red("..."),
                 )
             ),
