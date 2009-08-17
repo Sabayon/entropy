@@ -545,7 +545,12 @@ def search_orphaned_files(Equo = None):
                     print_info(red(" @@ ")+blue("%s: " % (_("Analyzing"),)) + \
                         bold(unicode(filename[:50],'raw_unicode_escape')+"..."),
                         back = True)
-                foundFiles[filename] = "obj"
+                try:
+                    foundFiles[unicode(filename, 'raw_unicode_escape')] = u"obj"
+                except (UnicodeDecodeError, UnicodeEncodeError,), e:
+                    if etpUi['quiet']:
+                        continue
+                    print "!!! error on", filename, "skipping:", e
 
             if foundFiles:
                 tdbconn.insertContent(1, foundFiles)
