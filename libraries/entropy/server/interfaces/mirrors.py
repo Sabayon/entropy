@@ -1219,6 +1219,14 @@ class Server:
         if not download:
             critical.append(data['pkglist_file'])
 
+        critical_updates_file = self.Entropy.get_local_critical_updates_file(
+            repo)
+        if os.path.isfile(critical_updates_file) or download:
+            data['critical_updates_file'] = critical_updates_file
+            extra_text_files.append(data['critical_updates_file'])
+            if not download:
+                critical.append(data['critical_updates_file'])
+
         # EAPI 2,3
         if not download: # we don't need to get the dump
 
