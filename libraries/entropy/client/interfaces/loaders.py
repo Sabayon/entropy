@@ -62,13 +62,14 @@ class LoadersMixin:
             fetchSecurity = fetchSecurity)
 
     def Spm(self):
-        from entropy.spm import Spm
+        from entropy.spm import Spm, get_spm
         myroot = etpConst['systemroot']
         cached = self.__spm_cache.get(myroot)
-        if cached != None: return cached
-        conn = Spm(self)
-        self.__spm_cache[myroot] = conn.intf
-        return conn.intf
+        if cached != None:
+            return cached
+        spm = get_spm(self)
+        self.__spm_cache[myroot] = spm
+        return spm
 
     def Package(self):
         return self.__PackageLoader(self)
