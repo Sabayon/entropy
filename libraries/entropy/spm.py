@@ -1577,7 +1577,11 @@ class PortagePlugin(SpmPlugin):
         return newcounter
 
 
-    def spm_doebuild(self, myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = [], fork = False):
+    def spm_doebuild(self, myebuild, mydo, tree, cpv, portage_tmpdir = None,
+        licenses = None, fork = False):
+
+        if licenses is None:
+            licenses = []
         if fork:
             # memory leak: some versions of portage were memleaking here
             return self.entropyTools.spawn_function(
@@ -1587,12 +1591,16 @@ class PortagePlugin(SpmPlugin):
             )
         return self._portage_doebuild(myebuild, mydo, tree, cpv, portage_tmpdir, licenses)
 
-    def _portage_doebuild(self, myebuild, mydo, tree, cpv, portage_tmpdir = None, licenses = []):
+    def _portage_doebuild(self, myebuild, mydo, tree, cpv,
+        portage_tmpdir = None, licenses = None):
         # myebuild = path/to/ebuild.ebuild with a valid unpacked xpak metadata
         # tree = "bintree"
         # cpv = atom
         # mydbapi = portage.fakedbapi(settings=portage.settings)
         # vartree = portage.vartree(root=myroot)
+
+        if licenses is None:
+            licenses = []
 
         oldsystderr = sys.stderr
         dev_null = open("/dev/null","w")
