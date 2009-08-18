@@ -47,7 +47,7 @@ class Singleton(object):
     __is_singleton = True
     def __new__(cls, *args, **kwds):
         instance = cls.__dict__.get("__it__")
-        if instance != None:
+        if instance is not None:
             if not instance.is_destroyed():
                 return instance
         cls.__it__ = instance = object.__new__(cls)
