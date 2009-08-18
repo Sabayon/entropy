@@ -3563,7 +3563,7 @@ class EntropyRepository:
     def _fetchall2list(self, item):
         content = []
         for x in item:
-            content += list(x)
+            content += x
         return content
 
     def clearCache(self, depends = False):
