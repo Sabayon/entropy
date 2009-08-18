@@ -1469,9 +1469,11 @@ class EntropyRepository:
         # add atom metadatum
         pkg_data['atom'] = pkgatom
 
-        mybaseinfo_data = (pkgatom, catid, pkg_data['name'], pkg_data['version'],
-            pkg_data['versiontag'], revision, pkg_data['branch'], pkg_data['slot'],
-            licid, pkg_data['etpapi'], trigger,)
+        mybaseinfo_data = (pkgatom, catid, pkg_data['name'],
+            pkg_data['version'], pkg_data['versiontag'], revision,
+            pkg_data['branch'], pkg_data['slot'],
+            licid, pkg_data['etpapi'], trigger,
+        )
 
         myidpackage_string = 'NULL'
         if isinstance(idpackage, (int, long,)):
@@ -1517,70 +1519,71 @@ class EntropyRepository:
                     pkg_data['datecreation'],
                 )
             )
-        ### other information iserted below are not as critical as these above
+            ### other information iserted below are not as
+            ### critical as these above
 
-        # tables using a select
-        self.insertEclasses(idpackage, pkg_data['eclasses'])
-        self.insertNeeded(idpackage, pkg_data['needed'])
-        self.insertDependencies(idpackage, pkg_data['dependencies'])
-        self.insertSources(idpackage, pkg_data['sources'])
-        self.insertUseflags(idpackage, pkg_data['useflags'])
-        self.insertKeywords(idpackage, pkg_data['keywords'])
-        self.insertLicenses(pkg_data['licensedata'])
-        self.insertMirrors(pkg_data['mirrorlinks'])
-        # package ChangeLog
-        if pkg_data.get('changelog'):
-            self.insertChangelog(pkg_data['category'], pkg_data['name'],
-                pkg_data['changelog'])
-        # package signatures
-        if pkg_data.get('signatures'):
-            signatures = pkg_data['signatures']
-            sha1, sha256, sha512 = signatures['sha1'], signatures['sha256'], \
-                signatures['sha512']
-            self.insertSignatures(idpackage, sha1, sha256, sha512)
-        # needed libraries paths
-        if pkg_data.get('needed_paths'):
-            for lib in sorted(pkg_data['needed_paths']):
-                self.insertNeededPaths(lib, pkg_data['needed_paths'][lib])
+            # tables using a select
+            self.insertEclasses(idpackage, pkg_data['eclasses'])
+            self.insertNeeded(idpackage, pkg_data['needed'])
+            self.insertDependencies(idpackage, pkg_data['dependencies'])
+            self.insertSources(idpackage, pkg_data['sources'])
+            self.insertUseflags(idpackage, pkg_data['useflags'])
+            self.insertKeywords(idpackage, pkg_data['keywords'])
+            self.insertLicenses(pkg_data['licensedata'])
+            self.insertMirrors(pkg_data['mirrorlinks'])
+            # package ChangeLog
+            if pkg_data.get('changelog'):
+                self.insertChangelog(pkg_data['category'], pkg_data['name'],
+                    pkg_data['changelog'])
+            # package signatures
+            if pkg_data.get('signatures'):
+                signatures = pkg_data['signatures']
+                sha1, sha256, sha512 = signatures['sha1'], \
+                    signatures['sha256'], signatures['sha512']
+                self.insertSignatures(idpackage, sha1, sha256, sha512)
+            # needed libraries paths
+            if pkg_data.get('needed_paths'):
+                for lib in sorted(pkg_data['needed_paths']):
+                    self.insertNeededPaths(lib, pkg_data['needed_paths'][lib])
 
-        # spm phases
-        if pkg_data.get('spm_phases') != None:
-            self.insertSpmPhases(idpackage, pkg_data['spm_phases'])
+            # spm phases
+            if pkg_data.get('spm_phases') != None:
+                self.insertSpmPhases(idpackage, pkg_data['spm_phases'])
 
-        # not depending on other tables == no select done
-        self.insertContent(idpackage, pkg_data['content'],
-            already_formatted = formatted_content)
+            # not depending on other tables == no select done
+            self.insertContent(idpackage, pkg_data['content'],
+                already_formatted = formatted_content)
 
-        # handle SPM UID<->idpackage binding
-        pkg_data['counter'] = int(pkg_data['counter'])
-        if not pkg_data['injected'] and (pkg_data['counter'] != -1):
-            pkg_data['counter'] = self.bindSpmPackageUid(
-                idpackage, pkg_data['counter'], pkg_data['branch'])
+            # handle SPM UID<->idpackage binding
+            pkg_data['counter'] = int(pkg_data['counter'])
+            if not pkg_data['injected'] and (pkg_data['counter'] != -1):
+                pkg_data['counter'] = self.bindSpmPackageUid(
+                    idpackage, pkg_data['counter'], pkg_data['branch'])
 
-        self.insertOnDiskSize(idpackage, pkg_data['disksize'])
-        if pkg_data['trigger']:
-            self.insertTrigger(idpackage, pkg_data['trigger'])
-        self.insertConflicts(idpackage, pkg_data['conflicts'])
-        self.insertProvide(idpackage, pkg_data['provide'])
-        self.insertMessages(idpackage, pkg_data['messages'])
-        self.insertConfigProtect(idpackage, idprotect)
-        self.insertConfigProtect(idpackage, idprotect_mask, mask = True)
-        # injected?
-        if pkg_data.get('injected'):
-            self.setInjected(idpackage, do_commit = False)
-        # is it a system package?
-        if pkg_data.get('systempackage'):
-            self.setSystemPackage(idpackage, do_commit = False)
+            self.insertOnDiskSize(idpackage, pkg_data['disksize'])
+            if pkg_data['trigger']:
+                self.insertTrigger(idpackage, pkg_data['trigger'])
+            self.insertConflicts(idpackage, pkg_data['conflicts'])
+            self.insertProvide(idpackage, pkg_data['provide'])
+            self.insertMessages(idpackage, pkg_data['messages'])
+            self.insertConfigProtect(idpackage, idprotect)
+            self.insertConfigProtect(idpackage, idprotect_mask, mask = True)
+            # injected?
+            if pkg_data.get('injected'):
+                self.setInjected(idpackage, do_commit = False)
+            # is it a system package?
+            if pkg_data.get('systempackage'):
+                self.setSystemPackage(idpackage, do_commit = False)
 
-        self.clearCache() # we do live_cache.clear() here too
-        if do_commit:
-            self.commitChanges()
+            self.clearCache() # we do live_cache.clear() here too
+            if do_commit:
+                self.commitChanges()
 
         ### RSS Atom support
         ### dictionary will be elaborated by activator
         if self.SystemSettings.has_key(self.srv_sys_settings_plugin):
-            if self.SystemSettings[self.srv_sys_settings_plugin]['server']['rss']['enabled'] and \
-                not self.clientDatabase:
+            srv_data = self.SystemSettings[self.srv_sys_settings_plugin]
+            if srv_data['server']['rss']['enabled'] and not self.clientDatabase:
 
                 self._write_rss_for_added_package(pkgatom, revision,
                     pkg_data['description'], pkg_data['homepage'])
