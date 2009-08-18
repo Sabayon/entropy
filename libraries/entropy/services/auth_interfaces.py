@@ -165,7 +165,9 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
         if exists: return False,'Email already in use'
 
         # now cross fingers
-        user_id = self.__register(username, username_clean, password, email, activate)
+        status, user_id = self.__register(username, username_clean, password, email, activate)
+        if not status:
+            return False, 'Invalid username (duplicated)'
 
         return True, user_id
 
@@ -243,7 +245,11 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
             'user_pending': 0,
         }
         sql = self._generate_sql('insert', self.TABLE_PREFIX+'user_group', group_data)
-        self.cursor.execute(sql)
+        try:
+            self.cursor.execute(sql)
+        except self.mysql_exceptions.IntegrityError, e:
+            # for sure it's about duplicated entry
+            return False, 1062
 
         # set some misc config shit
         self._set_config_value('newest_user_id',user_id)
@@ -257,7 +263,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
                 gcolor = data['group_colour']
         if gcolor: self._set_config_value('newest_user_colour',gcolor)
 
-        return user_id
+        return True, user_id
 
 
     def login(self):
