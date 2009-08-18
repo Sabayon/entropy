@@ -1432,15 +1432,15 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False,
             print_error(red("%s." % (_("Nothing to do"),) ))
             return 126,-1
 
-        if (deps):
+        if deps:
             question = "     %s" % (
-                _("Would you like to look for packages that can be removed along with the selected above ?"),
+                _("Would you like to calculate dependencies ?"),
             )
         else:
             question = "     %s" % (_("Would you like to remove them now ?"),)
             lookForOrphanedPackages = False
 
-        if (etpUi['ask']):
+        if etpUi['ask']:
             rc = Equo.askQuestion(question)
             if rc == "No":
                 lookForOrphanedPackages = False
@@ -1479,7 +1479,7 @@ def removePackages(packages = [], atomsdata = [], deps = True, deep = False,
             else:
                 writechar("\n")
 
-        if (etpUi['ask']) or human:
+        if etpUi['ask'] or human:
             question = "     %s" % (_("Would you like to proceed ?"),)
             if human:
                 question = "     %s" % (_("Would you like to proceed with a selective removal ?"),)
