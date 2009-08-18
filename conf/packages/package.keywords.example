@@ -1,10 +1,14 @@
 # package.keywords example file
 #
-# Keywords mean architectures whose mean which ones are available to entropy to try solving package dependencies.
-# System keywords are stored internally and are the ones releated to the running architecture.
-# For example, if you are running 64bit Sabayon, you'll have by default: amd64 and ~amd64.
+# Keywords mean architectures whose mean which ones are available to entropy
+# to try solving package dependencies.
+# System keywords are stored internally and are the ones releated to
+# the running architecture.
+# For example, if you are running 64bit Sabayon, you'll have by default:
+#     amd64 and ~amd64.
 # Experimental packages are usually tagged with "-*" and/or "" (**) keywords.
-# There are multiple ways to "unmask" these packages and will be explained below.
+# There are multiple ways to "unmask" these packages and will be
+# explained below.
 
 # LINE CONSTRUCTION:
 # <keyword> <atom||repo=repository id> <atom||repo=repository id>
