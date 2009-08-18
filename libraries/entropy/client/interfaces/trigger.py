@@ -35,11 +35,9 @@ class Trigger:
         self.prepared = False
         self.triggers = []
         self._trigger_data = {}
-	self.package_action = package_action
+        self.package_action = package_action
 
-        '''
-        @ description: Gentoo toolchain variables
-        '''
+        # Portage/Gentoo specific
         self.MODULEDB_DIR="/var/lib/module-rebuild/"
         self.INITSERVICES_DIR="/var/lib/init.d/"
 
@@ -50,7 +48,7 @@ class Trigger:
         except Exception, e:
             self.entropyTools.print_traceback()
             mytxt = darkred("%s, %s: %s, %s !") % (
-                _("Portage interface can't be loaded"),
+                _("Source Package Manager interface can't be loaded"),
                 _("Error"),
                 e,
                 _("please fix"),
@@ -91,7 +89,6 @@ class Trigger:
     def postinstall(self):
 
         functions = []
-        # Gentoo hook
         if self.spm_support:
             while 1:
                 if self.pkgdata['spm_phases'] != None:
@@ -571,9 +568,10 @@ class Trigger:
 
         if myebuild:
             myebuild = myebuild[0]
-            portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
+            portage_atom = self.pkgdata['category'] + "/" + \
+                self.pkgdata['name'] + "-" + self.pkgdata['version']
             self.Entropy.updateProgress(
-                brown("Ebuild: pkg_postinst()"),
+                "SPM: %s" % (brown(_("post-install phase")),),
                 importance = 0,
                 header = red("   ## ")
             )
@@ -597,7 +595,7 @@ class Trigger:
                     self.Entropy.clientLog.log(
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
-                        "[POST] ATTENTION Cannot properly run Gentoo postinstall (pkg_postinst()) trigger for " + \
+                        "[POST] ATTENTION Cannot properly run Source Package Manager post-install (pkg_postinst()) trigger for " + \
                         str(portage_atom) + ". Something bad happened."
                         )
 
@@ -607,11 +605,11 @@ class Trigger:
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
-                    "[POST] ATTENTION Cannot run Portage trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e)
+                    "[POST] ATTENTION Cannot run Source Package Manager trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e)
                 )
                 mytxt = "%s: %s %s. %s. %s: %s" % (
                     bold(_("QA")),
-                    brown(_("Cannot run Portage trigger for")),
+                    brown(_("Cannot run Source Package Manager trigger for")),
                     bold(str(portage_atom)),
                     brown(_("Please report it")),
                     bold(_("Attach this")),
@@ -644,7 +642,7 @@ class Trigger:
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
-                    "[POST] ATTENTION Cannot properly run Portage pkg_setup()"
+                    "[POST] ATTENTION Cannot properly run Source Package Manager pkg_setup()"
                     " phase for "+str(portage_atom)+". Something bad happened."
                 )
         return rc
@@ -666,11 +664,12 @@ class Trigger:
 
         if myebuild:
             myebuild = myebuild[0]
-            portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
+            portage_atom = self.pkgdata['category'] + "/" + \
+                self.pkgdata['name'] + "-" + self.pkgdata['version']
             self.Entropy.updateProgress(
-                brown(" Ebuild: pkg_preinst()"),
+                "SPM: %s" % (brown(_("pre-install phase")),),
                 importance = 0,
-                header = red("   ##")
+                header = red("   ## ")
             )
             try:
 
@@ -692,7 +691,7 @@ class Trigger:
                     self.Entropy.clientLog.log(
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
-                        "[PRE] ATTENTION Cannot properly run Gentoo preinstall (pkg_preinst()) trigger for " + \
+                        "[PRE] ATTENTION Cannot properly run Source Package Manager pre-install (pkg_preinst()) trigger for " + \
                         str(portage_atom)+". Something bad happened."
                     )
             except Exception, e:
@@ -701,11 +700,11 @@ class Trigger:
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
-                    "[PRE] ATTENTION Cannot run Gentoo preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e)
+                    "[PRE] ATTENTION Cannot run Source Package Manager preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e)
                 )
                 mytxt = "%s: %s %s. %s. %s: %s" % (
                     bold(_("QA")),
-                    brown(_("Cannot run Portage trigger for")),
+                    brown(_("Cannot run Source Package Manager trigger for")),
                     bold(str(portage_atom)),
                     brown(_("Please report it")),
                     bold(_("Attach this")),
@@ -726,9 +725,12 @@ class Trigger:
         oldstderr = sys.stderr
         sys.stderr = stdfile
 
-        portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
+        portage_atom = self.pkgdata['category'] + "/" + self.pkgdata['name'] + \
+            "-" + self.pkgdata['version']
         try:
-            myebuild = self.Spm.get_vdb_path()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+etpConst['spm']['source_build_ext']
+            myebuild = self.Spm.get_vdb_path() + portage_atom + "/" + \
+                self.pkgdata['name'] + "-" + self.pkgdata['version'] + \
+                etpConst['spm']['source_build_ext']
         except:
             myebuild = ''
 
@@ -762,10 +764,10 @@ class Trigger:
         if os.path.isfile(myebuild):
 
             self.Entropy.updateProgress(
-                                    brown(" Ebuild: pkg_prerm()"),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                "SPM: %s" % (brown(_("pre-remove phase")),),
+                importance = 0,
+                header = red("   ## ")
+            )
             try:
                 rc = self.Spm.spm_doebuild(
                     myebuild,
@@ -778,7 +780,7 @@ class Trigger:
                     self.Entropy.clientLog.log(
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
-                        "[PRE] ATTENTION Cannot properly run Portage trigger for " + \
+                        "[PRE] ATTENTION Cannot properly run Source Package Manager trigger for " + \
                         str(portage_atom)+". Something bad happened."
                     )
             except Exception, e:
@@ -788,11 +790,13 @@ class Trigger:
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
-                    "[PRE] ATTENTION Cannot run Portage preremove trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e)
+                    "[PRE] ATTENTION Cannot run Source Package Manager " + \
+                        "pre-remove trigger for " + portage_atom + "!! " + \
+                        str(Exception)+": "+str(e)
                 )
                 mytxt = "%s: %s %s. %s. %s: %s" % (
                     bold(_("QA")),
-                    brown(_("Cannot run Portage trigger for")),
+                    brown(_("Cannot run Source Package Manager trigger for")),
                     bold(str(portage_atom)),
                     brown(_("Please report it")),
                     bold(_("Attach this")),
@@ -815,9 +819,12 @@ class Trigger:
         oldstderr = sys.stderr
         sys.stderr = stdfile
 
-        portage_atom = self.pkgdata['category']+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']
+        portage_atom = self.pkgdata['category'] + "/" + self.pkgdata['name'] + \
+            "-" + self.pkgdata['version']
         try:
-            myebuild = self.Spm.get_vdb_path()+portage_atom+"/"+self.pkgdata['name']+"-"+self.pkgdata['version']+etpConst['spm']['source_build_ext']
+            myebuild = self.Spm.get_vdb_path() + portage_atom + "/" + \
+                self.pkgdata['name'] + "-" + self.pkgdata['version'] + \
+                etpConst['spm']['source_build_ext']
         except:
             myebuild = ''
 
@@ -850,10 +857,10 @@ class Trigger:
 
         if os.path.isfile(myebuild):
             self.Entropy.updateProgress(
-                                    brown(" Ebuild: pkg_postrm()"),
-                                    importance = 0,
-                                    header = red("   ##")
-                                )
+                "SPM: %s" % (brown(_("post-remove phase")),),
+                importance = 0,
+                header = red("   ## ")
+            )
             try:
                 rc = self.Spm.spm_doebuild(
                     myebuild,
@@ -866,7 +873,7 @@ class Trigger:
                     self.Entropy.clientLog.log(
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
-                        "[PRE] ATTENTION Cannot properly run Gentoo postremove trigger for " + \
+                        "[PRE] ATTENTION Cannot properly run Source Package Manager postremove trigger for " + \
                         str(portage_atom)+". Something bad happened."
                     )
             except Exception, e:
@@ -876,12 +883,12 @@ class Trigger:
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
-                    "[PRE] ATTENTION Cannot run Gentoo postremove trigger for " + \
+                    "[PRE] ATTENTION Cannot run Source Package Manager postremove trigger for " + \
                     portage_atom+"!! "+str(Exception)+": "+str(e)
                 )
                 mytxt = "%s: %s %s. %s. %s: %s" % (
                     bold(_("QA")),
-                    brown(_("Cannot run Portage trigger for")),
+                    brown(_("Cannot run Source Package Manager trigger for")),
                     bold(str(portage_atom)),
                     brown(_("Please report it")),
                     bold(_("Attach this")),
