@@ -4,16 +4,14 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   0.99:
 
-    - entropy.client + entropy.spm API docs in place
+    - entropy.client + entropy.tools API docs in place
     - packages.db.keywords support
     - package categories map
     - repo notice stfu
-    - "Would you like to look for packages that can be removed along with the selected above ?"
-    - Collision found during removal of /usr/share/ati/amdcccle/amdcccle_ja.qm - cannot overwrite
 
   1.0_beta1:
 
-    - Documentation + code style cleanup (NLnet Milestone 7)
+    - Complete API
     - Transform Sulfur into Entropy Store:
         - UGC for more coolness
         - title change
