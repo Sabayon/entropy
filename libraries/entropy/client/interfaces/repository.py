@@ -42,7 +42,7 @@ class Repository:
             "dbdumplight", "dbdumplightck", "dbdumpck", "lic_whitelist",
             "make.conf", "package.mask", "package.unmask", "package.keywords",
             "profile.link", "package.use", "server.cert", "ca.cert",
-            "meta_file", "notice_board", "critical_updates"
+            "meta_file", "notice_board", "critical_updates", "keywords"
         )
         self.big_socket_timeout = 25
         self.Entropy = EquoInstance
@@ -177,6 +177,7 @@ class Repository:
         ec_hash = etpConst['etpdatabasehashfile']
         ec_maskfile = etpConst['etpdatabasemaskfile']
         ec_sysmaskfile = etpConst['etpdatabasesytemmaskfile']
+        ec_keywords = etpConst['etpdatabasekeywordsfile']
         ec_confl_taged = etpConst['etpdatabaseconflictingtaggedfile']
         ec_crit_updates = etpConst['etpdatabasecriticalfile']
         make_conf_file = os.path.basename(etpConst['spm']['global_make_conf'])
@@ -220,6 +221,7 @@ class Repository:
             'dbdumpck': ("%s/%s" % (repo_db,ec_cm4,),"%s/%s" % (repo_dbpath,ec_cm4,),),
             'dbdumplightck': ("%s/%s" % (repo_db,ec_cm6,),"%s/%s" % (repo_dbpath,ec_cm6,),),
             'mask': ("%s/%s" % (repo_db,ec_maskfile,),"%s/%s" % (repo_dbpath,ec_maskfile,),),
+            'keywords': ("%s/%s" % (repo_db,ec_keywords,),"%s/%s" % (repo_dbpath,ec_keywords,),),
             'system_mask': ("%s/%s" % (repo_db,ec_sysmaskfile,),"%s/%s" % (repo_dbpath,ec_sysmaskfile,),),
             'conflicting_tagged': ("%s/%s" % (repo_db,ec_confl_taged,),"%s/%s" % (repo_dbpath,ec_confl_taged,),),
             'critical_updates': ("%s/%s" % (repo_db,ec_crit_updates,),"%s/%s" % (repo_dbpath,ec_crit_updates,),),
@@ -1659,6 +1661,16 @@ class Repository:
                 "%s %s %s" % (
                     red(_("Downloading packages system mask")),
                     darkgreen(etpConst['etpdatabasesytemmaskfile']),
+                    red("..."),
+                )
+            ),
+            (
+                "keywords",
+                etpConst['etpdatabasekeywordsfile'],
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading repository provided package keywords")),
+                    darkgreen(etpConst['etpdatabasekeywordsfile']),
                     red("..."),
                 )
             ),
