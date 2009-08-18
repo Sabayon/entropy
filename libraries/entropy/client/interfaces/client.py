@@ -53,6 +53,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'repos_mask': {},
             'repos_system_mask': {},
             'repos_critical_updates': {},
+            'repos_keywords': {},
         }
         self.__repos_files = {
             'repos_license_whitelist': {},
@@ -60,6 +61,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'repos_system_mask': {},
             'conflicting_tagged_packages': {},
             'repos_critical_updates': {},
+            'repos_keywords': {},
         }
 
         dmp_dir = etpConst['dumpstoragedir']
@@ -75,6 +77,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             confl_tagged = {}
             repos_critical_updates_setting = {}
             repos_critical_updates_mtime = {}
+            repos_keywords_setting = {}
+            repos_keywords_mtime = {}
 
             maskpath = os.path.join(repo_data['dbpath'],
                 etpConst['etpdatabasemaskfile'])
@@ -86,6 +90,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 etpConst['etpdatabaseconflictingtaggedfile'])
             critical_path = os.path.join(repo_data['dbpath'],
                 etpConst['etpdatabasecriticalfile'])
+            keywords_path = os.path.join(repo_data['dbpath'],
+                etpConst['etpdatabasekeywordsfile'])
 
             if os.access(maskpath, os.R_OK | os.F_OK):
                 repos_mask_setting[repoid] = maskpath
@@ -112,6 +118,12 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                     repoid + "_" + etpConst['etpdatabasecriticalfile'] + \
                     ".mtime"
 
+            if os.access(keywords_path, os.R_OK | os.F_OK):
+                repos_keywords_setting[repoid] = keywords_path
+                repos_keywords_mtime[repoid] = dmp_dir + "/repo_" + \
+                    repoid + "_" + etpConst['etpdatabasekeywordsfile'] + \
+                    ".mtime"
+
             self.__repos_files['repos_mask'].update(repos_mask_setting)
             self.__repos_mtime['repos_mask'].update(repos_mask_mtime)
 
@@ -132,6 +144,9 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 repos_critical_updates_setting)
             self.__repos_mtime['repos_critical_updates'].update(
                 repos_critical_updates_mtime)
+
+            self.__repos_files['repos_keywords'].update(repos_keywords_setting)
+            self.__repos_mtime['repos_keywords'].update(repos_keywords_mtime)
 
     def __run_post_branch_migration_hooks(self, sys_settings_instance):
 
@@ -230,6 +245,42 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         }
         return data
 
+    def __repositories_repos_keywords(self, repo_keywords_path):
+        """
+        Parser returning system packages mask metadata read from
+        packages.db.keywords file inside the repository directory.
+        This file contains maintainer supplied per-repository extra
+        package keywords.
+        """
+        data = {
+            # universal keywords: keywords added repository-wide to all
+            # the available packages (in repo).
+            'universal': set(),
+            # per-package keywording, keys are atoms/dep (first line argument)
+            # values are provided keywords
+            'packages': {},
+        }
+
+        entries = self.entropyTools.generic_file_content_parser(
+            repo_keywords_path)
+
+        # iterate over config file data
+        for entry in entries:
+            entry = entry.split()
+            if len(entry) == 1:
+                # universal keyword
+                data['universal'].add(entry[0])
+
+            elif len(entry) > 1:
+                # per package keyword
+                pkg = entry[0]
+                keywords = entry[1:]
+                obj = data['packages'].setdefault(pkg, set())
+                obj.update(keywords)
+
+        return data
+
+
     def __repositories_system_mask(self, sys_settings_instance):
         """
         Parser returning system packages mask metadata read from
@@ -269,6 +320,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'system_mask': [],
             'critical_updates': {},
             'conflicting_tagged_packages': {},
+            'repos_keywords': {},
         }
 
         # parse license whitelist
@@ -299,6 +351,20 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             data['mask'][repoid] = \
                 self.entropyTools.generic_file_content_parser(
                     self.__repos_files['repos_mask'][repoid])
+
+        # keywords masking
+        """
+        Parser returning packages masked at repository level read from
+        packages.db.keywords inside the repository database directory.
+        """
+        for repoid in self.__repos_files['repos_keywords']:
+            sys_settings_instance.validate_entropy_cache(
+                self.__repos_files['repos_keywords'][repoid],
+                self.__repos_mtime['repos_keywords'][repoid], repoid = repoid)
+
+            data['repos_keywords'][repoid] = \
+                self.__repositories_repos_keywords(
+                    self.__repos_files['repos_keywords'][repoid])
 
         # system masking
         data['system_mask'] = self.__repositories_system_mask(
@@ -345,7 +411,6 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                     data['conflicting_tagged_packages'][mydata[0]] = mydata[1:]
 
         return data
-
 
     def misc_parser(self, sys_settings_instance):
 

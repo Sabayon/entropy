@@ -263,6 +263,7 @@ def const_default_settings(rootdir):
         # required by the repository, thus forced
         'etpdatabasesytemmaskfile': default_etp_dbfile+".system_mask",
         'etpdatabasemaskfile': default_etp_dbfile+".mask",
+        'etpdatabasekeywordsfile': default_etp_dbfile+".keywords",
         'etpdatabaseupdatefile': default_etp_dbfile+".repo_updates",
         'etpdatabaselicwhitelistfile': default_etp_dbfile+".lic_whitelist",
         'etpdatabasecriticalfile': default_etp_dbfile+".critical",
