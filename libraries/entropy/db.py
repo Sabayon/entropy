@@ -7892,20 +7892,16 @@ class EntropyRepository:
 
     def _idpackageValidator_keyword_mask(self, idpackage, reponame, live):
 
-        mykeywords = self.retrieveKeywords(idpackage)
         # WORKAROUND for buggy entries
-        if not mykeywords:
-            mykeywords = [''] # ** is fine then
+        # ** is fine then
+        mykeywords = self.retrieveKeywords(idpackage) or set([''])
 
         mask_ref = self.SystemSettings['pkg_masking_reference']
 
         # firstly, check if package keywords are in etpConst['keywords']
-        # (universal keywords have been merged from package.mask)
-        for key in etpConst['keywords']:
-
-            if key not in mykeywords:
-                continue
-
+        # (universal keywords have been merged from package.keywords)
+        same_keywords = etpConst['keywords'] & mykeywords
+        if same_keywords:
             myr = mask_ref['system_keyword']
             try:
 
@@ -8023,6 +8019,67 @@ class EntropyRepository:
                     pass
 
                 return idpackage, myr
+
+
+        ## if we get here, it means that pkg it keyword masked
+        ## and we should look at the very last resort, per-repository
+        ## package keywords
+        # check if repository contains keyword unmasking data
+
+        plg_id = self.client_settings_plugin_id
+        cl_data = self.SystemSettings.get(plg_id)
+        if cl_data is None:
+            # SystemSettings Entropy Client plugin not available
+            return
+        # let's see if something is available in repository config
+        repo_keywords = cl_data['repositories']['repos_keywords'].get(reponame)
+        if repo_keywords is None:
+            # nopers, sorry!
+            return
+
+        # check universal keywords
+        same_keywords = repo_keywords.get('universal') & mykeywords
+        if same_keywords:
+            # universal keyword matches!
+            myr = mask_ref['repository_packages_db_keywords']
+            validator_cache = cl_data['masking_validation']['cache']
+            validator_cache[(idpackage, reponame, live)] = \
+                idpackage, myr
+            return idpackage, myr
+
+        ## if we get here, it means that even universal masking failed
+        ## and we need to look at per-package settings
+        repo_settings = repo_keywords.get('packages')
+        if not repo_settings:
+            # it's empty, not worth checking
+            return
+
+        cached_key = "packages_ids"
+        keyword_data_ids = repo_keywords.get(cached_key)
+        if not isinstance(keyword_data_ids, dict):
+            # create cache
+
+            keyword_data_ids = {}
+            for atom, values in repo_settings.items():
+                matches, r = self.atomMatch(atom, multiMatch = True,
+                    packagesFilter = False)
+                if r != 0:
+                    continue
+                for match in matches:
+                    obj = keyword_data_ids.setdefault(match, set())
+                    obj.update(values)
+
+            repo_keywords[cached_key] = keyword_data_ids
+
+        same_keywords = keyword_data_ids.get(idpackage, set()) & \
+            etpConst['keywords']
+        if same_keywords:
+            # found! this pkg is not masked, yay!
+            myr = mask_ref['repository_packages_db_keywords']
+            validator_cache = cl_data['masking_validation']['cache']
+            validator_cache[(idpackage, reponame, live)] = \
+                idpackage, myr
+            return idpackage, myr
 
 
     def idpackageValidator(self, idpackage, live = True):
