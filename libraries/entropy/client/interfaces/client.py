@@ -259,6 +259,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             # per-package keywording, keys are atoms/dep (first line argument)
             # values are provided keywords
             'packages': {},
+            'packages_ids': None, # reserved for entropy.db package validation
         }
 
         entries = self.entropyTools.generic_file_content_parser(
@@ -269,7 +270,10 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             entry = entry.split()
             if len(entry) == 1:
                 # universal keyword
-                data['universal'].add(entry[0])
+                item = entry[0]
+                if item == "**":
+                    item = ''
+                data['universal'].add(item)
 
             elif len(entry) > 1:
                 # per package keyword
