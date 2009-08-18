@@ -640,7 +640,7 @@ def const_default_settings(rootdir):
             4: _('user repo package.keywords (all packages)'),
             5: _('user repo package.keywords'),
             6: _('user package.keywords'),
-            7: _('completely masked'),
+            7: _('completely masked (by keyword?)'),
             8: _('repository general packages.db.mask'),
             10: _('user license.mask'),
             11: _('user live unmask'),
