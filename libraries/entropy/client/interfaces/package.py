@@ -458,6 +458,7 @@ class Package:
         # remove files from system
         directories = set()
         not_removed_due_to_collisions = set()
+        colliding_path_messages = set()
         remove_content = sorted(self.infoDict['removecontent'], reverse = True)
         for item in remove_content:
             sys_root_item = sys_root+item
@@ -466,19 +467,7 @@ class Package:
 
                 if self.Entropy.clientDbconn.isFileAvailable(item) and os.path.isfile(sys_root_item):
                     # in this way we filter out directories
-                    mytxt = red(_("Collision found during removal of")) + " " + sys_root_item + " - "
-                    mytxt += red(_("cannot overwrite"))
-                    self.Entropy.updateProgress(
-                        mytxt,
-                        importance = 1,
-                        type = "warning",
-                        header = red("   ## ")
-                    )
-                    self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO,
-                        ETP_LOGLEVEL_NORMAL,
-                        "Collision found during remove of "+sys_root_item+" - cannot overwrite"
-                    )
+                    colliding_path_messages.add(sys_root_item)
                     not_removed_due_to_collisions.add(item)
                     continue
 
@@ -569,6 +558,26 @@ class Package:
                             directories.add((dirfile,"dir"))
                     except OSError:
                         pass
+
+        if colliding_path_messages:
+            self.Entropy.updateProgress(
+                "%s:" % (_("Collision found during removal of"),),
+                importance = 1,
+                type = "warning",
+                header = red("   ## ")
+            )
+
+        for path in sorted(colliding_path_messages):
+            self.Entropy.updateProgress(
+                purple(path),
+                importance = 0,
+                type = "warning",
+                header = red("   ## ")
+            )
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL,
+                "Collision found during removal of %s - cannot overwrite" % (
+                    path,)
+            )
 
         # removing files not removed from removecontent.
         # it happened that boot services not removed due to
