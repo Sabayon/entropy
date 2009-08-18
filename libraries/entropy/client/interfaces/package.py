@@ -2151,6 +2151,7 @@ class Package:
         self.infoDict['removecontent'] = self.Entropy.clientDbconn.retrieveContent(idpackage)
         self.infoDict['triggers']['remove'] = self.Entropy.clientDbconn.getTriggerInfo(idpackage)
         self.infoDict['triggers']['remove']['removecontent'] = self.infoDict['removecontent']
+        self.infoDict['triggers']['remove']['accept_license'] = self.Entropy.clientDbconn.retrieveLicensedataKeys(idpackage)
         self.infoDict['steps'] = []
         self.infoDict['steps'].append("preremove")
         self.infoDict['steps'].append("remove")
@@ -2306,6 +2307,8 @@ class Package:
                         self.infoDict['removeidpackage']
                 )
                 self.infoDict['triggers']['remove']['removecontent'] = self.infoDict['removecontent']
+                self.infoDict['triggers']['remove']['accept_license'] = \
+                    self.Entropy.clientDbconn.retrieveLicensedataKeys(self.infoDict['removeidpackage'])
 
         # set steps
         self.infoDict['steps'] = []

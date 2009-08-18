@@ -774,7 +774,8 @@ class Trigger:
                     mydo = "prerm",
                     tree = "bintree",
                     cpv = portage_atom,
-                    portage_tmpdir = etpConst['entropyunpackdir'] + "/" + portage_atom
+                    portage_tmpdir = etpConst['entropyunpackdir'] + "/" + portage_atom,
+                    licenses = self.pkgdata['accept_license']
                 )
                 if rc == 1:
                     self.Entropy.clientLog.log(
@@ -867,7 +868,8 @@ class Trigger:
                     mydo = "postrm",
                     tree = "bintree",
                     cpv = portage_atom,
-                    portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom
+                    portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom,
+                    licenses = self.pkgdata['accept_license']
                 )
                 if rc == 1:
                     self.Entropy.clientLog.log(
