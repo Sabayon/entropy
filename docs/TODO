@@ -8,6 +8,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - packages.db.keywords support
     - package categories map
     - repo notice stfu
+    - reagent spm compile categories + --nooldslots
 
   1.0_beta1:
 
@@ -16,6 +17,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
         - UGC for more coolness
         - title change
         - more sexy UI
+    - entropy.db atom/dep validation through plugins?
 
   1.0_beta2:
 
