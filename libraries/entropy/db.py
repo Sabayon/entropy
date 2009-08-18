@@ -2956,7 +2956,7 @@ class EntropyRepository:
                 (idpackage,))
 
             # suck back
-            return self._fetchall2set(cur.fetchall())
+            return self._cur2set(cur)
 
         finally:
             self.cursor.execute('DROP TABLE IF EXISTS %s' % (randomtable,))
@@ -3852,7 +3852,7 @@ class EntropyRepository:
         cur = self.cursor.execute("""
         SELECT dependency FROM packagesets WHERE setname = (?)""",
             (setname,))
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def retrieveSystemPackages(self):
         """
@@ -3863,7 +3863,7 @@ class EntropyRepository:
         @rtype: set
         """
         cur = self.cursor.execute('SELECT idpackage FROM systempackages')
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def retrieveAtom(self, idpackage):
         """
@@ -4224,7 +4224,7 @@ class EntropyRepository:
         SELECT flagname FROM useflags,useflagsreference 
         WHERE useflags.idpackage = (?) AND 
         useflags.idflag = useflagsreference.idflag""", (idpackage,))
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def retrieveEclasses(self, idpackage):
         """
@@ -4239,7 +4239,7 @@ class EntropyRepository:
         SELECT classname FROM eclasses,eclassesreference
         WHERE eclasses.idpackage = (?) AND
         eclasses.idclass = eclassesreference.idclass""", (idpackage,))
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def retrieveSpmPhases(self, idpackage):
         """
@@ -4278,7 +4278,7 @@ class EntropyRepository:
         SELECT library FROM needed,neededreference
         WHERE needed.idpackage = (?) AND 
         needed.idneeded = neededreference.idneeded""", (idpackage,))
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def retrieveNeeded(self, idpackage, extended = False, format = False):
         """
@@ -4374,7 +4374,7 @@ class EntropyRepository:
             needed.idneeded = neededreference.idneeded
         """, (needed_library_name, elfclass,))
 
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def retrieveNeededLibraryIdpackages(self):
         """
@@ -4437,7 +4437,7 @@ class EntropyRepository:
         cur = self.cursor.execute("""
         SELECT conflict FROM conflicts WHERE idpackage = (?)
         """, (idpackage,))
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def retrieveProvide(self, idpackage):
         """
@@ -4452,7 +4452,7 @@ class EntropyRepository:
         cur = self.cursor.execute("""
         SELECT atom FROM provide WHERE idpackage = (?)
         """, (idpackage,))
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def retrieveDependenciesList(self, idpackage):
         """
@@ -4471,7 +4471,7 @@ class EntropyRepository:
         dependencies.iddependency = dependenciesreference.iddependency
         UNION SELECT "!" || conflict FROM conflicts
         WHERE idpackage = (?)""", (idpackage, idpackage,))
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def retrievePostDependencies(self, idpackage, extended = False):
         """
@@ -4554,7 +4554,7 @@ class EntropyRepository:
             dependencies.iddependency =
             dependenciesreference.iddependency %s %s""" % (
                 depstring,excluded_deptypes_query,), searchdata)
-            return self._fetchall2set(cur.fetchall())
+            return self._cur2set(cur)
 
     def retrieveIdDependencies(self, idpackage):
         """
@@ -4568,7 +4568,7 @@ class EntropyRepository:
         cur = self.cursor.execute("""
         SELECT iddependency FROM dependencies WHERE idpackage = (?)
         """, (idpackage,))
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def retrieveKeywords(self, idpackage):
         """
@@ -4583,7 +4583,7 @@ class EntropyRepository:
         SELECT keywordname FROM keywords,keywordsreference
         WHERE keywords.idpackage = (?) AND
         keywords.idkeyword = keywordsreference.idkeyword""", (idpackage,))
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def retrieveProtect(self, idpackage):
         """
@@ -4648,7 +4648,7 @@ class EntropyRepository:
         WHERE idpackage = (?) AND
         sources.idsource = sourcesreference.idsource
         """, (idpackage,))
-        sources = self._fetchall2set(cur.fetchall())
+        sources = self._cur2set(cur)
         if not extended:
             return sources
 
@@ -4769,7 +4769,7 @@ class EntropyRepository:
                     if order_by:
                         fl = self._fetchall2list(cur.fetchall())
                     else:
-                        fl = self._fetchall2set(cur.fetchall())
+                        fl = self._cur2set(cur)
 
                 break
 
@@ -4889,7 +4889,7 @@ class EntropyRepository:
         cur = self.cursor.execute("""
         SELECT mirrorlink FROM mirrorlinks WHERE mirrorname = (?)
         """, (mirrorname,))
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def retrieveCategory(self, idpackage):
         """
@@ -5092,7 +5092,7 @@ class EntropyRepository:
             dependstable.iddependency = dependencies.iddependency AND 
             baseinfo.idpackage = dependencies.idpackage %s""" % (
                 excluded_deptypes_query,), (idpackage,))
-            result = self._fetchall2set(cur.fetchall())
+            result = self._cur2set(cur)
         elif key_slot:
             cur = self.cursor.execute("""
             SELECT categories.category || "/" || baseinfo.name,baseinfo.slot 
@@ -5109,7 +5109,7 @@ class EntropyRepository:
             WHERE dependstable.idpackage = (?) AND 
             dependstable.iddependency = dependencies.iddependency %s""" % (
                 excluded_deptypes_query,), (idpackage,))
-            result = self._fetchall2set(cur.fetchall())
+            result = self._cur2set(cur)
 
         return result
 
@@ -5285,7 +5285,7 @@ class EntropyRepository:
             SELECT idpackage FROM neededlibraryidpackages
             WHERE library = (?)
         """ + elfclass_txt, args)
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def isSourceAvailable(self, source):
         """
@@ -5596,7 +5596,7 @@ class EntropyRepository:
             FROM content, baseinfo WHERE file = (?)
             AND content.idpackage = baseinfo.idpackage""", (file,))
 
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def searchEclassedPackages(self, eclass, atoms = False): # atoms = return atoms directly
         """
@@ -5621,7 +5621,7 @@ class EntropyRepository:
 
         cur = self.cursor.execute("""
         SELECT idpackage FROM baseinfo WHERE versiontag = (?)""", (eclass,))
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def searchTaggedPackages(self, tag, atoms = False):
         """
@@ -5643,7 +5643,7 @@ class EntropyRepository:
         cur = self.cursor.execute("""
         SELECT idpackage FROM baseinfo WHERE versiontag = (?)
         """, (tag,))
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def searchLicenses(self, mylicense, caseSensitive = False, atoms = False):
         """
@@ -5681,7 +5681,7 @@ class EntropyRepository:
 
         if atoms:
             return cur.fetchall()
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def searchSlottedPackages(self, slot, atoms = False):
         """
@@ -5702,7 +5702,7 @@ class EntropyRepository:
 
         cur = self.cursor.execute("""
         SELECT idpackage FROM baseinfo WHERE slot = (?)""", (slot,))
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def searchKeySlot(self, key, slot):
         """
@@ -5747,7 +5747,7 @@ class EntropyRepository:
             WHERE library = (?) AND
             needed.idneeded = neededreference.idneeded""", (needed,))
 
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def searchDependency(self, dep, like = False, multi = False,
         strings = False):
@@ -5782,7 +5782,7 @@ class EntropyRepository:
         """ % (item, sign,), (dep,))
 
         if multi:
-            return self._fetchall2set(cur.fetchall())
+            return self._cur2set(cur)
         iddep = cur.fetchone()
 
         if iddep:
@@ -5803,7 +5803,7 @@ class EntropyRepository:
         cur = self.cursor.execute("""
         SELECT idpackage FROM dependencies WHERE iddependency = (?)
         """, (iddep,))
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def searchSets(self, keyword):
         """
@@ -5819,7 +5819,7 @@ class EntropyRepository:
         SELECT DISTINCT(setname) FROM packagesets WHERE setname LIKE (?)
         """, ("%"+keyword+"%",))
 
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def searchSimilarPackages(self, mystring, atom = False):
         """
@@ -6165,7 +6165,7 @@ class EntropyRepository:
         @rtype: set
         """
         cur = self.cursor.execute('SELECT idpackage FROM injected')
-        injecteds = self._fetchall2set(cur.fetchall())
+        injecteds = self._cur2set(cur)
         results = set()
 
         for injected in injecteds:
@@ -6207,7 +6207,7 @@ class EntropyRepository:
         try:
             if order_by:
                 return self._fetchall2list(cur.fetchall())
-            return self._fetchall2set(cur.fetchall())
+            return self._cur2set(cur)
         except self.dbapi2.OperationalError:
             if order_by:
                 return []
@@ -6244,7 +6244,7 @@ class EntropyRepository:
         SELECT idpackage FROM baseinfo where idcategory = (?)
         """ + order_by_string, (idcategory,))
 
-        return self._fetchall2set(cur.fetchall())
+        return self._cur2set(cur)
 
     def listAllDownloads(self, do_sort = True, full_path = False):
         """
@@ -6270,7 +6270,7 @@ class EntropyRepository:
         if do_sort:
             results = self._fetchall2list(cur.fetchall())
         else:
-            results = self._fetchall2set(cur.fetchall())
+            results = self._cur2set(cur)
 
         if not full_path:
             results = [os.path.basename(x) for x in results]
@@ -6299,7 +6299,7 @@ class EntropyRepository:
         if count:
             return cur.fetchone()[0]
         if clean:
-            return self._fetchall2set(cur.fetchall())
+            return self._cur2set(cur)
         return self._fetchall2list(cur.fetchall())
 
     def listAllCategories(self, order_by = ''):
@@ -6337,7 +6337,7 @@ class EntropyRepository:
         idprotect <= (SELECT max(idprotect) FROM configprotect%s) 
         ORDER BY protect""" % (mask_t,))
 
-        results = self._fetchall2set(cur.fetchall())
+        results = self._cur2set(cur)
         dirs = set()
         for mystr in results:
             dirs |= set(map(unicode, mystr.split()))
@@ -6999,7 +6999,7 @@ class EntropyRepository:
         cur = self.cursor.execute("""
         SELECT name FROM SQLITE_MASTER WHERE type = "index"
         """)
-        indexes = self._fetchall2set(cur.fetchall())
+        indexes = self._cur2set(cur)
         with self.__write_mutex:
             for index in indexes:
                 try:
@@ -7019,7 +7019,7 @@ class EntropyRepository:
         cur = self.cursor.execute("""
         SELECT name FROM SQLITE_MASTER WHERE type = "index"
         """)
-        indexes = self._fetchall2set(cur.fetchall())
+        indexes = self._cur2set(cur)
 
         if not only_entropy:
             return indexes
