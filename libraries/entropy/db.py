@@ -3186,7 +3186,7 @@ class EntropyRepository:
         cur = self.cursor.execute("""
         SELECT idpackage FROM content WHERE file = (?)
         """, (file,))
-        return self._fetchall2list(cur.fetchall())
+        return self._cur2list(cur)
 
     def getIDCategory(self, category):
         """
@@ -3563,6 +3563,12 @@ class EntropyRepository:
     def _fetchall2list(self, item):
         content = []
         for x in item:
+            content += x
+        return content
+
+    def _cur2list(self, cur):
+        content = []
+        for x in cur:
             content += x
         return content
 
@@ -3993,7 +3999,7 @@ class EntropyRepository:
         """
         cur = self.cursor.execute("""
         SELECT message FROM messages WHERE idpackage = (?)""", (idpackage,))
-        return self._fetchall2list(cur.fetchall())
+        return self._cur2list(cur)
 
     def retrieveSize(self, idpackage):
         """
@@ -4311,7 +4317,7 @@ class EntropyRepository:
             WHERE needed.idpackage = (?) AND
             needed.idneeded = neededreference.idneeded ORDER BY library
             """, (idpackage,))
-            needed = self._fetchall2list(cur.fetchall())
+            needed = self._cur2list(cur)
 
         if extended and format:
             return dict((lib, elfclass,) for lib, elfclass in needed)
@@ -4767,7 +4773,7 @@ class EntropyRepository:
 
                 else:
                     if order_by:
-                        fl = self._fetchall2list(cur.fetchall())
+                        fl = self._cur2list(cur)
                     else:
                         fl = self._cur2set(cur)
 
@@ -5133,7 +5139,7 @@ class EntropyRepository:
         WHERE idpackage NOT IN (SELECT idpackage FROM dependstable)
         ORDER BY atom
         """)
-        return self._fetchall2list(cur.fetchall())
+        return self._cur2list(cur)
 
     def isAtomAvailable(self, atom):
         """
@@ -5841,7 +5847,7 @@ class EntropyRepository:
         WHERE soundex(%s) = soundex((?)) ORDER BY %s
         """ % (s_item, s_item,), (mystring,))
 
-        return self._fetchall2list(cur.fetchall())
+        return self._cur2list(cur)
 
     def searchPackages(self, keyword, sensitive = False, slot = None,
             tag = None, order_by = 'atom', just_id = False):
@@ -5898,7 +5904,7 @@ class EntropyRepository:
             )
 
         if just_id:
-            return self._fetchall2list(cur.fetchall())
+            return self._cur2list(cur)
         return cur.fetchall()
 
     def searchProvide(self, keyword, slot = None, tag = None, justid = False):
@@ -5942,7 +5948,7 @@ class EntropyRepository:
         )
 
         if justid:
-            return self._fetchall2list(cur.fetchall())
+            return self._cur2list(cur)
         return cur.fetchall()
 
     def searchPackagesByDescription(self, keyword):
@@ -5994,7 +6000,7 @@ class EntropyRepository:
             """ % (atomstring,), (keyword.lower(),))
 
         if justid:
-            return self._fetchall2list(cur.fetchall())
+            return self._cur2list(cur)
         return cur.fetchall()
 
 
@@ -6074,7 +6080,7 @@ class EntropyRepository:
             )""" % (atomstring,), (name.lower(), category.lower(),))
 
         if justid:
-            return self._fetchall2list(cur.fetchall())
+            return self._cur2list(cur)
         return cur.fetchall()
 
     def isPackageScopeAvailable(self, atom, slot, revision):
@@ -6206,7 +6212,7 @@ class EntropyRepository:
 
         try:
             if order_by:
-                return self._fetchall2list(cur.fetchall())
+                return self._cur2list(cur)
             return self._cur2set(cur)
         except self.dbapi2.OperationalError:
             if order_by:
@@ -6268,7 +6274,7 @@ class EntropyRepository:
         """ % (order_string,))
 
         if do_sort:
-            results = self._fetchall2list(cur.fetchall())
+            results = self._cur2list(cur)
         else:
             results = self._cur2set(cur)
 
@@ -6300,7 +6306,7 @@ class EntropyRepository:
             return cur.fetchone()[0]
         if clean:
             return self._cur2set(cur)
-        return self._fetchall2list(cur.fetchall())
+        return self._cur2list(cur)
 
     def listAllCategories(self, order_by = ''):
         """
@@ -6691,7 +6697,7 @@ class EntropyRepository:
         cur = self.cursor.execute("""
         SELECT name FROM SQLITE_MASTER WHERE type = "table"
         """)
-        return self._fetchall2list(cur.fetchall())
+        return self._cur2list(cur)
 
     def _doesTableExist(self, table):
         cur = self.cursor.execute("""
