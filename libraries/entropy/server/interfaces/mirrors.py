@@ -1227,6 +1227,14 @@ class Server:
             if not download:
                 critical.append(data['critical_updates_file'])
 
+        keywords_file = self.Entropy.get_local_database_keywords_file(
+            repo)
+        if os.path.isfile(keywords_file) or download:
+            data['keywords_file'] = keywords_file
+            extra_text_files.append(data['keywords_file'])
+            if not download:
+                critical.append(data['keywords_file'])
+
         # EAPI 2,3
         if not download: # we don't need to get the dump
 
