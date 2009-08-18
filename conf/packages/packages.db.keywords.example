@@ -1,0 +1,30 @@
+# Server side packages.db.keywords example file
+#
+# Keywords mean architectures whose mean which ones are available to entropy
+# to try solving package dependencies.
+# System keywords are stored internally and are the ones releated to
+# the running architecture.
+# For example, if you are running 64bit Sabayon, you'll have by default:
+#     amd64 and ~amd64.
+# Experimental packages are usually tagged with "-*" and/or "" (**) keywords.
+# There are multiple ways to "unmask" these packages and will be
+# explained below.
+#
+# PLEASE NOTE: syntax is different from package.keywords due to different
+# set of supported features, designed for server-side purposes.
+
+# LINE CONSTRUCTION:
+# <atom/dep/mask> [keywords]
+# See examples below
+
+# UNIVERSAL UNMASKING:
+# Unmasking all packages with -* keyword means writing a like like this
+# (without the # marker):
+# -*
+# or unmasking all packages with no keywords ("" specified here as "**"):
+# **
+# Note: specifying just one space separated item makes string to be treaten
+# as keyword (and not atom/dep!).
+
+# PACKAGES UNMASKING:
+# >=media-libs/foo-1.2.3 amd64 ppc ~amd64 ~ppc **
