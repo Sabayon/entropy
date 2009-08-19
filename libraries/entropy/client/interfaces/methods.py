@@ -1296,6 +1296,30 @@ class MiscMixin:
 
         return pkg_data
 
+    def get_package_groups(self):
+        """
+        Return Entropy Package Groups metadata. The returned dictionary
+        contains information to make Entropy Client users to group packages
+        into "macro" categories.
+
+        @return: Entropy Package Groups metadata
+        @rtype: dict
+        """
+        from entropy.spm.plugins.factory import get_default_class
+        spm = get_default_class()
+        groups = spm.get_package_groups().copy()
+
+        # expand metadata
+        categories = self.list_repo_categories()
+        for data in groups.values():
+
+            exp_cats = set()
+            for g_cat in data['categories']:
+                exp_cats.update([x for x in categories if x.startswith(g_cat)])
+            data['categories'] = sorted(exp_cats)
+
+        return groups
+
     def list_repo_categories(self):
         categories = set()
         for repo in self.validRepositories:
