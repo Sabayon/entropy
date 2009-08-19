@@ -1,3 +1,9 @@
+../libraries/entropy/spm/__init__.py
+../libraries/entropy/spm/plugins/factory.py
+../libraries/entropy/spm/plugins/__init__.py
+../libraries/entropy/spm/plugins/skel.py
+../libraries/entropy/spm/plugins/interfaces/__init__.py
+../libraries/entropy/spm/plugins/interfaces/portage_plugin.py
 ../libraries/entropy/services/system/commands.py
 ../libraries/entropy/services/system/executors.py
 ../libraries/entropy/services/system/__init__.py
@@ -52,7 +58,6 @@
 ../libraries/entropy/output.py
 ../libraries/entropy/qa.py
 ../libraries/entropy/security.py
-../libraries/entropy/spm.py
 ../libraries/entropy/tools.py
 ../libraries/entropy/transceivers.py
 ../libraries/entropy/xpak.py
