@@ -5,7 +5,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   0.99:
 
     - entropy.client + entropy.tools API docs in place
-    - package categories map
     - repo notice stfu
     - reagent spm compile categories + --nooldslots
 
