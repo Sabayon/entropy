@@ -149,7 +149,8 @@ class EntropyPackage:
                 self.dbconn.closeDB()
 
     def __str__(self):
-        if self.pkgset: return self.matched_atom
+        if self.pkgset:
+            return self.matched_atom
         return str(self.dbconn.retrieveAtom(self.matched_id) + "~" + \
             str(self.dbconn.retrieveRevision(self.matched_id)))
 
@@ -162,12 +163,14 @@ class EntropyPackage:
         return self.matched_atom
 
     def get_tag(self):
-        if self.pkgset: return ''
+        if self.pkgset:
+            return ''
 
         return self.dbconn.retrieveVersionTag(self.matched_id)
 
     def get_name(self):
-        if self.pkgset: return self.matched_atom
+        if self.pkgset:
+            return self.matched_atom
         return self.dbconn.retrieveAtom(self.matched_id)
 
     def is_masked(self):
@@ -184,7 +187,8 @@ class EntropyPackage:
         if self.from_installed:
             key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
             m_id, m_r = EquoIntf.atom_match(key, matchSlot = slot)
-            if m_id == -1: return False
+            if m_id == -1:
+                return False
             return EquoIntf.is_match_masked_by_user((m_id, m_r,))
         return EquoIntf.is_match_masked_by_user(self.matched_atom)
 
@@ -192,7 +196,8 @@ class EntropyPackage:
         if self.from_installed:
             key, slot = self.dbconn.retrieveKeySlot(self.matched_id)
             m_id, m_r = EquoIntf.atom_match(key, matchSlot = slot)
-            if m_id == -1: return False
+            if m_id == -1:
+                return False
             return EquoIntf.is_match_unmasked_by_user((m_id, m_r,))
         return EquoIntf.is_match_unmasked_by_user(self.matched_atom)
 
@@ -251,12 +256,14 @@ class EntropyPackage:
         return self.matched_id
 
     def get_revision(self):
-        if self.pkgset: return 0
+        if self.pkgset:
+            return 0
 
         return self.dbconn.retrieveRevision(self.matched_id)
 
     def is_sys_pkg(self):
-        if self.pkgset: return False
+        if self.pkgset:
+            return False
 
         match = self.matched_atom
         if (not self.from_installed) and (not self.installed_match):
