@@ -27,6 +27,7 @@ class DummyEntropyPackage:
         self.namedesc = namedesc
         self.queued = None
         self.repoid = ''
+        self.repoid_clean = ''
         self.name = ''
         self.vote = -1
         self.voted = 0.0
@@ -213,9 +214,10 @@ class EntropyPackage:
         ugc_string = ''
         atom = self.get_name()
         repo = self.get_repository()
+        repo_clean = self.get_repository_clean()
 
         key = self.entropyTools.dep_getkey(atom)
-        downloads = EquoIntf.UGC.UGCCache.get_package_downloads(repo, key)
+        downloads = EquoIntf.UGC.UGCCache.get_package_downloads(repo_clean, key)
         ugc_string = "<small>[%s]</small> " % (downloads,)
 
         t = ugc_string+'/'.join(atom.split("/")[1:])
@@ -236,7 +238,7 @@ class EntropyPackage:
             return self.set_name
         return self.dbconn.retrieveName(self.matched_id)
 
-    def get_repository(self):
+    def get_repository(self, clean = False):
         if self.pkgset:
             if etpConst['userpackagesetsid'] in self.set_from:
                 return _("User")
@@ -246,12 +248,20 @@ class EntropyPackage:
             repoid = self.dbconn.getInstalledPackageRepository(
                 self.matched_id)
             if repoid is None:
-                repoid = _("Not available")
+                if clean:
+                    repoid = '--na--'
+                else:
+                    repoid = _("Not available")
             return repoid
         elif self.matched_repo:
             return self.matched_repo
 
+        if clean:
+            return '--na--'
         return _("Not available")
+
+    def get_repository_clean(self):
+        return self.get_repository(clean = True)
 
     def get_idpackage(self):
         return self.matched_id
@@ -489,8 +499,8 @@ class EntropyPackage:
         atom = self.get_name()
         if not atom:
             return None
-        return EquoIntf.UGC.UGCCache.get_package_vote(self.get_repository(),
-            self.entropyTools.dep_getkey(atom))
+        return EquoIntf.UGC.UGCCache.get_package_vote(
+            self.get_repository_clean(), self.entropyTools.dep_getkey(atom))
 
     def get_ugc_package_vote_int(self):
         if self.pkgset:
@@ -498,8 +508,8 @@ class EntropyPackage:
         atom = self.get_name()
         if not atom:
             return 0
-        vote = EquoIntf.UGC.UGCCache.get_package_vote(self.get_repository(),
-            self.entropyTools.dep_getkey(atom))
+        vote = EquoIntf.UGC.UGCCache.get_package_vote(
+            self.get_repository_clean(), self.entropyTools.dep_getkey(atom))
         if not isinstance(vote, float):
             return 0
         return int(vote)
@@ -510,8 +520,8 @@ class EntropyPackage:
         atom = self.get_name()
         if not atom:
             return 0.0
-        vote = EquoIntf.UGC.UGCCache.get_package_vote(self.get_repository(),
-            self.entropyTools.dep_getkey(atom))
+        vote = EquoIntf.UGC.UGCCache.get_package_vote(
+            self.get_repository_clean(), self.entropyTools.dep_getkey(atom))
         if not isinstance(vote, float):
             return 0.0
         return vote
@@ -527,7 +537,7 @@ class EntropyPackage:
             return 0
         key = self.entropyTools.dep_getkey(atom)
         return EquoIntf.UGC.UGCCache.get_package_downloads(
-            self.get_repository(), key)
+            self.get_repository_clean(), key)
 
     def get_attribute(self,attr):
         x = None
@@ -585,6 +595,7 @@ class EntropyPackage:
     onlyname = property(fget=get_only_name)
     cat = property(fget=get_category)
     repoid =  property(fget=get_repository)
+    repoid_clean =  property(fget=get_repository_clean)
     ver =  property(fget=get_version)
     binurl = property(fget=get_download_url)
     onlyver = property(fget=get_only_version)
