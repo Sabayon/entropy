@@ -1016,10 +1016,12 @@ class SystemSettings(Singleton):
         @rtype: dict
         """
 
-        data = {}
-        data['proxy'] = etpConst['proxy'].copy()
-        data['name'] = etpConst['systemname']
-        data['log_level'] = etpConst['entropyloglevel']
+        data = {
+            'proxy': etpConst['proxy'].copy(),
+            'name': etpConst['systemname'],
+            'log_level': etpConst['entropyloglevel'],
+            'spm_backend': etpConst['spm']['backend'],
+        }
 
         etp_conf = self.__setting_files['system']
         if not os.path.isfile(etp_conf) and \
@@ -1080,6 +1082,11 @@ class SystemSettings(Singleton):
                 (split_line_len == 2):
 
                 data['name'] = split_line[1].strip()
+
+            elif line.startswith("spm-backend|") and \
+                (split_line_len == 2):
+
+                data['spm_backend'] = split_line[1].strip()
 
             elif line.startswith("nice-level|") and \
                 (split_line_len == 2):

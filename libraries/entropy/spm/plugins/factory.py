@@ -12,6 +12,8 @@
 import os
 import sys
 from entropy.const import etpConst
+from entropy.core import SystemSettings
+from entropy.i18n import _
 from entropy.spm.plugins.skel import SpmPlugin
 PLUGIN_SUFFIX = "_plugin"
 _AVAILABLE_CACHE = None
@@ -70,9 +72,17 @@ def get_default_class():
     """
     Return currently configured Entropy Source Package Manager plugin class.
     """
-    backend = etpConst['spm']['backend']
+    settings = SystemSettings()
+    backend = settings['system'].get('spm_backend', etpConst['spm']['backend'])
     available = get_available_plugins()
+    klass = available.get(backend)
+    if klass is None:
+        import warnings
+        warnings.warn("%s: %s" % (
+            _("selected SPM backend not available"), backend,))
+        klass = available.get(etpConst['spm']['backend'])
     return available[backend]
+
 
 def get_default_instance(output_interface):
     """
