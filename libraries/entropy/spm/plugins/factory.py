@@ -23,8 +23,11 @@ def get_available_plugins():
     Return currently available Source Package Manager plugin classes.
     Note: SPM plugins can either be Python packages or modules and
     their name MUST end with "_plugin".
-    """
 
+    @return: dictionary composed by SPM plugin id as key and SPM Python
+        module as value
+    @rtype: dict
+    """
     global _AVAILABLE_CACHE
 
     if _AVAILABLE_CACHE is not None:
@@ -71,6 +74,9 @@ def get_available_plugins():
 def get_default_class():
     """
     Return currently configured Entropy Source Package Manager plugin class.
+
+    @return: Entropy Source Package Manager plugin class
+    @rtype: entropy.spm.plugins.skel.SpmPlugin
     """
     settings = SystemSettings()
     backend = settings['system'].get('spm_backend', etpConst['spm']['backend'])
@@ -81,7 +87,7 @@ def get_default_class():
         warnings.warn("%s: %s" % (
             _("selected SPM backend not available"), backend,))
         klass = available.get(etpConst['spm']['backend'])
-    return available[backend]
+    return klass
 
 
 def get_default_instance(output_interface):
