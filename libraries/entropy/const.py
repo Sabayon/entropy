@@ -525,8 +525,7 @@ def const_default_settings(rootdir):
             'pretend_cmd': "--pretend",
             'verbose_cmd': "--verbose",
             'nocolor_cmd': "--color=n",
-            'backend': "portage",
-            'available_backends': ["portage"],
+            'backend': "portage", # default one
             'cache': {},
             'xpak_entries': {
                 'description': "DESCRIPTION",

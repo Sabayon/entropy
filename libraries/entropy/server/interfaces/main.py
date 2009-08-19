@@ -25,7 +25,7 @@ from entropy.i18n import _
 from entropy.core import SystemSettings, SystemSettingsPlugin
 from entropy.transceivers import FtpInterface
 from entropy.db import EntropyRepository
-from entropy.spm import get_spm
+from entropy.spm.plugins.factory import get_default_instance as get_spm
 
 class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
@@ -468,7 +468,7 @@ class Server(Singleton, TextInterface):
         Get Source Package Manager interface instance.
 
         @return: Source Package Manager interface instance
-        @rtype: entropy.spm.SpmPlugin based instance
+        @rtype: entropy.spm.plugins.skel.SpmPlugin based instance
         """
         return get_spm(self)
 

@@ -6,8 +6,7 @@
     @copyright: Fabio Erculiani
     @license: GPL-2
 
-    B{Entropy Source Package Manager module}.
-    @todo: define real API for SpmPlugin.
+    B{Entropy Source Package Manager "Portage" Plugin}.
 
 """
 import os
@@ -15,111 +14,30 @@ import sys
 import shutil
 import tempfile
 from entropy.const import etpConst, etpUi
-from entropy.exceptions import *
+from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
+    InvalidData
 from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, \
     bold
 from entropy.i18n import _
-from entropy.core import SystemSettings, Singleton
-
-class Spm:
-
-    def __init__(self, OutputInterface):
-
-        if not hasattr(OutputInterface,'updateProgress'):
-            mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
-        elif not callable(OutputInterface.updateProgress):
-            mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
-
-        self.spm_backend = etpConst['spm']['backend']
-        self.valid_backends = etpConst['spm']['available_backends']
-        if self.spm_backend not in self.valid_backends:
-            mytxt = "%s: %s" % (_("Invalid backend"),self.spm_backend,)
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-
-        if self.spm_backend == "portage":
-            self.intf = PortagePlugin(OutputInterface)
-
-    @staticmethod
-    def get_spm_interface():
-        backend = etpConst['spm']['backend']
-        if backend == "portage":
-            return PortagePlugin
-
-class SpmPlugin(Singleton):
-    """Base class for Source Package Manager plugins"""
-
-    class paren_normalize(list):
-        """Take a dependency structure as returned by paren_reduce or use_reduce
-        and generate an equivalent structure that has no redundant lists."""
-        def __init__(self, src):
-            list.__init__(self)
-            self._zap_parens(src, self)
-
-        def _zap_parens(self, src, dest, disjunction=False):
-            if not src:
-                return dest
-            i = iter(src)
-            for x in i:
-                if isinstance(x, basestring):
-                    if x == '||':
-                        x = self._zap_parens(i.next(), [], disjunction=True)
-                        if len(x) == 1:
-                            dest.append(x[0])
-                        else:
-                            dest.append("||")
-                            dest.append(x)
-                    elif x.endswith("?"):
-                        dest.append(x)
-                        dest.append(self._zap_parens(i.next(), []))
-                    else:
-                        dest.append(x)
-                else:
-                    if disjunction:
-                        x = self._zap_parens(x, [])
-                        if len(x) == 1:
-                            dest.append(x[0])
-                        else:
-                            dest.append(x)
-                    else:
-                        self._zap_parens(x, dest)
-            return dest
-
-    def init_singleton(self, output_interface):
-        """
-        Source Package Manager Plugin singleton method.
-        This method must be reimplemented by subclasses.
-
-        @param output_interface: Entropy output interface
-        @type output_interface: entropy.output.TextInterface based instances
-        @raise NotImplementedError: when method is not reimplemented
-        """
-        raise NotImplementedError
-
-def get_spm(output_interface):
-    """
-    Service function that returns an Entropy SPM interface instance.
-
-    @param output_interface: Entropy Output Interface instance
-    @type output_interface: entropy.output.TextInterface based instance
-    @return: currently selected SPM interface
-    @rtype: entropy.spm.SpmPlugin instance
-    """
-    spmintf = Spm.get_spm_interface()
-    return spmintf(output_interface)
+from entropy.core import SystemSettings
+from entropy.spm.plugins.skel import SpmPlugin
 
 class PortagePlugin(SpmPlugin):
+
+    builtin_pkg_sets = [
+        "system","world","installed","module-rebuild",
+        "security","preserved-rebuild","live-rebuild",
+        "downgrade","unavailable"
+    ]
 
     import entropy.tools as entropyTools
     def init_singleton(self, OutputInterface):
 
+        mytxt = _("OutputInterface does not have an updateProgress method")
         if not hasattr(OutputInterface,'updateProgress'):
-            mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
+            raise AttributeError(mytxt)
         elif not callable(OutputInterface.updateProgress):
-            mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
+            raise AttributeError(mytxt)
 
         # interface only needed OutputInterface functions
         self.updateProgress = OutputInterface.updateProgress
@@ -137,7 +55,7 @@ class PortagePlugin(SpmPlugin):
             import portage.const as portage_const
         except ImportError:
             import portage_const
-        if hasattr(portage_const,"EAPI"):
+        if hasattr(portage_const, "EAPI"):
             self.EAPI = portage_const.EAPI
         self.portage_const = portage_const
 
@@ -167,11 +85,6 @@ class PortagePlugin(SpmPlugin):
         else: # portage <2.2 workaround
             self.portage_exception = Exception
 
-        self.builtin_pkg_sets = [
-            "system","world","installed","module-rebuild",
-            "security","preserved-rebuild","live-rebuild",
-            "downgrade","unavailable"
-        ]
 
     def write_to_log(self, message):
         spmLog = self.LogFile(
@@ -196,7 +109,8 @@ class PortagePlugin(SpmPlugin):
     def list_glsa_packages(self, command = "affected"):
 
         if not self.glsa: return
-        if command not in ['new','all','affected']: return
+        if command not in ['new','all','affected']:
+            return
 
         glsaconfig = self.glsa.checkconfig(self.portage.config(clone=self.portage.settings))
         completelist = self.glsa.get_glsa_list(glsaconfig["GLSA_DIR"], glsaconfig)
@@ -415,7 +329,9 @@ class PortagePlugin(SpmPlugin):
             doc = minidom.parse(myfile)
             longdescs = doc.getElementsByTagName("longdescription")
             for longdesc in longdescs:
-                data[longdesc.getAttribute("lang").strip()] = ' '.join([x.strip() for x in longdesc.firstChild.data.strip().split("\n")])
+                data[longdesc.getAttribute("lang").strip()] = \
+                    ' '.join([x.strip() for x in \
+                        longdesc.firstChild.data.strip().split("\n")])
         return data
 
     def get_atom_category(self, atom):
@@ -440,7 +356,8 @@ class PortagePlugin(SpmPlugin):
         mypath = etpConst['systemroot']+"/"
         mytree = self._get_portage_vartree(mypath)
         rc = mytree.dep_match(str(atom))
-        if rc: return rc[-1]
+        if rc:
+            return rc[-1]
 
     def get_package_description(self, atom):
         if atom.startswith("="): atom = atom[1:]
@@ -477,7 +394,8 @@ class PortagePlugin(SpmPlugin):
         mytree = self._get_portage_vartree(mypath)
         if atom.startswith("="): atom = atom[1:]
         rc = mytree.getslot(atom)
-        if rc: return rc
+        if rc:
+            return rc
 
     def get_installed_atoms(self, atom):
         mypath = etpConst['systemroot']+"/"
@@ -511,7 +429,8 @@ class PortagePlugin(SpmPlugin):
         import stat
         trees = self.portage.db["/"]
         vartree = trees["vartree"]
-        dblnk = self.portage.dblink(pkgcat, pkgname, "/", vartree.settings, treetype="vartree", vartree=vartree)
+        dblnk = self.portage.dblink(pkgcat, pkgname, "/", vartree.settings,
+            treetype="vartree", vartree=vartree)
         dblnk.lockdb()
         tar = tarfile.open(dirpath,"w:bz2")
 
@@ -1503,27 +1422,42 @@ class PortagePlugin(SpmPlugin):
         )
 
     def get_sets(self, builtin_sets):
+
         config = self.get_set_config()
-        if config == None: return {}
+        if config == None:
+            return {}
+
         mysets = config.getSets()
         if not builtin_sets:
-            builtin_pkg_sets = [x for x in self.builtin_pkg_sets if x in mysets]
-            for pkg_set in builtin_pkg_sets: mysets.pop(pkg_set)
+            builtin_pkg_sets = [x for x in PortagePlugin.builtin_pkg_sets if \
+                x in mysets]
+            for pkg_set in builtin_pkg_sets:
+                mysets.pop(pkg_set)
         return mysets
 
     def get_set_atoms(self, pkgset_obj):
+
         config = self.get_set_config()
-        if config == None: return []
+        if config == None:
+            return []
+
         return config.getSetAtoms(pkgset_obj).copy()
 
     def get_sets_expanded(self, builtin_sets = True):
+
         config = self.get_set_config()
-        if config == None: return {}
+        if config == None:
+            return {}
+
         mysets = {}
         sets = config.getSets()
+
         if not builtin_sets:
-            builtin_pkg_sets = [x for x in self.builtin_pkg_sets if x in sets]
-            for pkg_set in builtin_pkg_sets: sets.pop(pkg_set)
+            builtin_pkg_sets = [x for x in PortagePlugin.builtin_pkg_sets if \
+                x in sets]
+            for pkg_set in builtin_pkg_sets:
+                sets.pop(pkg_set)
+
         for myset in sorted(sets):
             try: atoms = config.getSetAtoms(myset).copy()
             except: continue
@@ -2275,5 +2209,3 @@ class PortagePlugin(SpmPlugin):
             data['rdepend']
 
         return data
-
-

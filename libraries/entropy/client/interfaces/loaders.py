@@ -10,6 +10,7 @@
 
 """
 from __future__ import with_statement
+from entropy.spm.plugins.factory import get_default_instance as get_spm
 from entropy.const import *
 from entropy.exceptions import *
 
@@ -62,10 +63,9 @@ class LoadersMixin:
             fetchSecurity = fetchSecurity)
 
     def Spm(self):
-        from entropy.spm import Spm, get_spm
         myroot = etpConst['systemroot']
         cached = self.__spm_cache.get(myroot)
-        if cached != None:
+        if cached is not None:
             return cached
         spm = get_spm(self)
         self.__spm_cache[myroot] = spm

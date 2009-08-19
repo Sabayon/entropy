@@ -45,7 +45,7 @@ from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen, \
     TextInterface
 from entropy.cache import EntropyCacher
 from entropy.core import Singleton, SystemSettings
-from entropy.spm import get_spm
+from entropy.spm.plugins.factory import get_default_instance as get_spm
 
 try: # try with sqlite3 from >=python 2.5
     from sqlite3 import dbapi2
