@@ -22,6 +22,87 @@ from entropy.i18n import _
 from entropy.core import SystemSettings
 from entropy.spm.plugins.skel import SpmPlugin
 
+class PortagePackageGroups(dict):
+    """
+    Entropy Package categories group representation
+    """
+    def __init__(self):
+        dict.__init__(self)
+
+        data = {
+            'office': {
+                'name': _("Office"),
+                'description': _("Applications used in office environments"),
+                'categories': [u'app-office', u'app-pda', u'app-mobilephone',
+                    u'app-cdr', u'app-antivirus', u'app-laptop', u'mail-',
+                ],
+            },
+            'development': {
+                'name': _("Development"),
+                'description': _("Applications or system libraries"),
+                'categories': [u'dev-', u'sys-devel'],
+            },
+            'system': {
+                'name': _("System"),
+                'description': _("System applications or libraries"),
+                'categories': [u'sys-'],
+            },
+            'games': {
+                'name': _("Games"),
+                'description': _("Games, enjoy your spare time"),
+                'categories': [u'games-'],
+            },
+            'gnome': {
+                'name': _("GNOME Desktop"),
+                'description': \
+                    _("Applications and libraries for the GNOME Desktop"),
+                'categories': [u'gnome-'],
+            },
+            'kde': {
+                'name': _("KDE Desktop"),
+                'description': \
+                    _("Applications and libraries for the KDE Desktop"),
+                'categories': [u'kde-'],
+            },
+            'xfce': {
+                'name': _("XFCE Desktop"),
+                'description': \
+                    _("Applications and libraries for the XFCE Desktop"),
+                'categories': [u'xfce-'],
+            },
+            'lxde': {
+                'name': _("LXDE Desktop"),
+                'description': \
+                    _("Applications and libraries for the LXDE Desktop"),
+                'categories': [u'lxde-'],
+            },
+            'multimedia': {
+                'name': _("Multimedia"),
+                'description': \
+                    _("Applications and libraries for Multimedia"),
+                'categories': [u'media-'],
+            },
+            'networking': {
+                'name': _("Networking"),
+                'description': \
+                    _("Applications and libraries for Networking"),
+                'categories': [u'net-', u'www-'],
+            },
+            'science': {
+                'name': _("Science"),
+                'description': \
+                    _("Scientific applications and libraries"),
+                'categories': [u'sci-'],
+            },
+            'x11': {
+                'name': _("X11"),
+                'description': \
+                    _("Applications and libraries for X11"),
+                'categories': [u'x11-'],
+            },
+        }
+        self.update(data)
+
 class PortagePlugin(SpmPlugin):
 
     builtin_pkg_sets = [
@@ -105,6 +186,14 @@ class PortagePlugin(SpmPlugin):
         self.entropyTools.print_traceback(f = spmLog)
         spmLog.flush()
         spmLog.close()
+
+    @staticmethod
+    def get_package_groups():
+        """
+        Return package groups available metadata (Spm categories are grouped
+        into macro categories called "groups").
+        """
+        return PortagePackageGroups()
 
     def list_glsa_packages(self, command = "affected"):
 
