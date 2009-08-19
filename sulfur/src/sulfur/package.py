@@ -207,10 +207,10 @@ class EntropyPackage:
 
         ugc_string = ''
         atom = self.get_name()
-        if self.from_installed: repo = self.get_repository()
-        else: repo = self.matched_repo
+        repo = self.get_repository()
+
         key = self.entropyTools.dep_getkey(atom)
-        downloads = EquoIntf.UGC.UGCCache.get_package_downloads(repo,key)
+        downloads = EquoIntf.UGC.UGCCache.get_package_downloads(repo, key)
         ugc_string = "<small>[%s]</small> " % (downloads,)
 
         t = ugc_string+'/'.join(atom.split("/")[1:])
@@ -242,7 +242,10 @@ class EntropyPackage:
                 self.matched_id)
             if repoid is None:
                 repoid = _("Not available")
-        else: return self.matched_repo
+        elif self.matched_repo:
+            return self.matched_repo
+
+        return _("Not available")
 
     def get_idpackage(self):
         return self.matched_id
