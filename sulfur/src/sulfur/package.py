@@ -50,6 +50,7 @@ class DummyEntropyPackage:
         self.set_install_incomplete = False
         self.set_remove_incomplete = False
         self.is_downgrade = False
+        self.is_group = False
 
 class EntropyPackage:
 
@@ -77,6 +78,7 @@ class EntropyPackage:
         self.set_install_incomplete = False
         self.set_remove_incomplete = False
         self.is_downgrade = False
+        self.is_group = False
 
         if self.pkgset:
 

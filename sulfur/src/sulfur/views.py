@@ -46,6 +46,7 @@ class EntropyPackageViewModelInjector:
         self.entropy = entropy
         self.etpbase = etpbase
         self.dummy_cats = dummy_cats
+        self.expand = True
 
     def pkgset_inject(self, packages):
         raise NotImplementedError
@@ -371,6 +372,66 @@ class LicenseSortPackageViewModelInjector(EntropyPackageViewModelInjector):
             for po in licenses[lic]:
                 self.model.append( parent, (po,) )
 
+class GroupSortPackageViewModelInjector(EntropyPackageViewModelInjector):
+
+    def __init__(self, *args, **kwargs):
+        EntropyPackageViewModelInjector.__init__(self, *args, **kwargs)
+        self.expand = False
+
+    def packages_inject(self, packages):
+
+        groups = self.entropy.get_package_groups()
+        group_data = dict((tuple(val['categories']), key,) for key, val \
+            in groups.items())
+
+        nocat = _("No category")
+        groups['no_category'] = {
+            'name': nocat,
+            'description': _("Applications without a group"),
+            'categories': [],
+        }
+
+        metadata = {}
+        no_category = []
+        for po in packages:
+            try:
+                cat = po.cat
+            except dbapi2.Error:
+                continue
+            found = False
+            for cats in group_data:
+                if cat in cats:
+                    obj = metadata.setdefault(group_data[cats], [])
+                    obj.append(po)
+                    found = True
+                    break
+            if not found:
+                no_category.append(po)
+
+        # "No category" must go at the very bottom
+        cats = sorted(metadata)
+        if no_category:
+            metadata['no_category'] = no_category
+            cats.append('no_category')
+
+        for cat in cats:
+
+            if not metadata[cat]:
+                continue
+
+            cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (
+                cleanMarkupString(groups[cat]['name']),
+                groups[cat]['description'],
+            )
+            mydummy = DummyEntropyPackage(namedesc = cat_text,
+                dummy_type = SulfurConf.dummy_category, onlyname = cat)
+            mydummy.is_group = True
+            mydummy.color = SulfurConf.color_package_category
+            self.dummy_cats[cat] = mydummy
+            parent = self.model.append( None, (mydummy,) )
+            for po in metadata[cat]:
+                self.model.append( parent, (po,) )
+
 class EntropyPackageView:
 
     def __init__( self, treeview, qview, ui, etpbase, main_window,
@@ -652,11 +713,27 @@ class EntropyPackageView:
 
     def collect_selected_items(self, widget = None):
         myiters, model = self.collect_view_iters(widget)
-        if model == None: return []
+        if model == None:
+            return []
+
         items = []
         for myiter in myiters:
             obj = model.get_value(myiter, 0)
             items.append(obj)
+        return items
+
+    def collect_selected_children_items(self, widget = None):
+        iters, model = self.collect_view_iters(widget = widget)
+        items = []
+        for myiter in iters:
+            if not model.iter_has_child(myiter):
+                continue
+            myiter = model.iter_children(myiter)
+            while myiter:
+                obj = model.get_value(myiter, 0)
+                items.append(obj)
+                myiter = model.iter_next(myiter)
+
         return items
 
     def on_view_button_press(self, widget, event):
@@ -1436,10 +1513,17 @@ class EntropyPackageView:
 
     def on_selection_column_clicked(self, widget):
         if self.view_expanded:
-            self.view.collapse_all()
+            self.expand()
         else:
-            self.view.expand_all()
-        self.view_expanded = not self.view_expanded
+            self.collapse()
+
+    def expand(self):
+        self.view.expand_all()
+        self.view_expanded = True
+
+    def collapse(self):
+        self.view.collapse_all()
+        self.view_expanded = True
 
     def setupView( self ):
 
@@ -1557,11 +1641,12 @@ class EntropyPackageView:
         self.__install_statuses.clear()
         self.store.clear()
 
-    def set_filtering_string(self, filter_string):
+    def set_filtering_string(self, filter_string, run_it = True):
         if not hasattr(self.ui, "pkgFilter"):
             return False
         self.ui.pkgFilter.set_text(filter_string)
-        self.ui.pkgSearch.clicked()
+        if run_it:
+            self.ui.pkgSearch.clicked()
         return True
 
     def get_installed_pkg_objs_for_selected(self):
@@ -1578,6 +1663,7 @@ class EntropyPackageView:
         return selected_objs
 
     def populate(self, pkgs, widget = None, empty = False, pkgsets = False):
+
         self.dummyCats.clear()
         self.clear()
         search_col = 0
@@ -1609,8 +1695,17 @@ class EntropyPackageView:
             widget.set_property('headers-visible',True)
             widget.set_property('enable-search',True)
 
-        self.view.expand_all()
-        self.view_expanded = True
+        if self.Injector.expand:
+            widget.expand_all()
+            self.view_expanded = True
+        else:
+            widget.collapse_all()
+            self.view_expanded = False
+
+
+        # scroll back to top if possible
+        if hasattr(self.ui, "swPkg"):
+            self.ui.swPkg.set_placement(gtk.CORNER_TOP_LEFT)
 
 
     def atom_search(self, model, column, key, iterator):

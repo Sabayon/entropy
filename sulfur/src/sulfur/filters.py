@@ -66,31 +66,56 @@ class KeywordFilter(BaseFilter):
     def __init__(self):
         BaseFilter.__init__(self)
         self.keywordList = []
-        self.fields = ['name']#, 'description']
+        self.fields = ['name']
+        self.pkgGroups = {}
+        self.groupCats = set()
 
-    def setKeys(self,criteria):
-        self.keywordList = criteria[:]
+    def setKeys(self, criteria, pkg_groups):
+
+        del self.fields[:]
+        self.fields.extend(['name'])
+        del self.keywordList[:]
+
+        self.groupCats.clear()
+        self.pkgGroups.clear()
+        self.keywordList.extend([x.lower() for x in criteria])
+        self.pkgGroups.update(pkg_groups)
+        for crit in self.keywordList:
+            if crit in self.pkgGroups:
+                self.groupCats.update(self.pkgGroups[crit]['categories'])
 
     def get_name(self):
         return "KeywordFilter"
 
-    def process(self,pkg):
-        if pkg.dummy_type != None: return False
-        if self._state: # is filter enabled ?
-            for crit in self.keywordList:
-                found = False
-                for field in self.fields:
-                    value = getattr(pkg,field)
-                    if not value: continue
-                    if value.lower().find(crit.lower()) != -1:
-                        found = True
-                if found:    # This search criteria was found
-                    continue # Check the next one
-                else:
-                    return False # This criteria was not found, bail out
-            return True # All search criterias was found
-        else:
+    def process(self, pkg):
+
+        if pkg.dummy_type is not None:
+            return False
+
+        if not self._state:
+            # is filter disabled ?
             return True
+
+        for crit in self.keywordList:
+
+            if crit in self.pkgGroups:
+
+                cat = pkg.cat
+                if cat in self.groupCats:
+                    return True
+                return False
+
+            else:
+
+                for field in self.fields:
+                    value = getattr(pkg, field)
+                    if not value:
+                        continue
+                    if value.lower().find(crit) != -1:
+                        return True
+                    return False
+
+        return False
 
 Filter = Filtering()
 Filter.registerFilter(KeywordFilter())

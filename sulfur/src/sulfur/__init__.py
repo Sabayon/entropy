@@ -363,6 +363,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             'date': DateSortPackageViewModelInjector,
             'date_grouped': DateGroupedSortPackageViewModelInjector,
             'license': LicenseSortPackageViewModelInjector,
+            'groups': GroupSortPackageViewModelInjector,
         }
         self.pkg_sorters_desc = {
             'default': _("Default packages sorting"),
@@ -374,6 +375,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             'date': _("Sort by date (simple)"),
             'date_grouped': _("Sort by date (grouped)"),
             'license': _("Sort by license (grouped)"),
+            'groups': _("Sort by Groups"),
         }
         self.pkg_sorters_id = {
             0: 'default',
@@ -385,18 +387,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             6: 'date',
             7: 'date_grouped',
             8: 'license',
+            9: 'groups',
         }
-        self.pkg_sorters_id_inverse = {
-            'default': 0,
-            'name_az': 1,
-            'name_za': 2,
-            'downloads': 3,
-            'votes': 4,
-            'repository': 5,
-            'date': 6,
-            'date_grouped': 7,
-            'license': 8,
-        }
+        self.pkg_sorters_id_inverse = dict((y, x,) for x, y in \
+            self.pkg_sorters_id.items())
+
         self.pkg_sorters_img_ids = {
             0: gtk.STOCK_PRINT_PREVIEW,
             1: gtk.STOCK_SORT_DESCENDING,
@@ -407,6 +402,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             6: gtk.STOCK_MEDIA_PLAY,
             7: gtk.STOCK_MEDIA_PLAY,
             8: gtk.STOCK_EDIT,
+            9: gtk.STOCK_CDROM,
         }
 
         # setup package sorter
