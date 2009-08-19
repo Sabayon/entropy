@@ -247,6 +247,7 @@ class EntropyPackage:
                 self.matched_id)
             if repoid is None:
                 repoid = _("Not available")
+            return repoid
         elif self.matched_repo:
             return self.matched_repo
 
