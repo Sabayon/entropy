@@ -7599,6 +7599,7 @@ class EntropyRepository:
         am = self.atomMatch
         up = self.updateProgress
         self.taintReverseDependenciesMetadata()
+        self.commitChanges()
         for iddep, atom in depends:
             count += 1
 
