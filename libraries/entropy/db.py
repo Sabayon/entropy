@@ -8346,6 +8346,9 @@ class EntropyRepository:
         direction = ''
         justname = True
         pkgkey = ''
+        pkgname = ''
+        pkgcat = ''
+        pkgversion = ''
         strippedAtom = ''
         foundIDs = []
         dbpkginfo = set()
@@ -8353,12 +8356,11 @@ class EntropyRepository:
         if scan_atom:
 
             while 1:
-                pkgversion = ''
                 # check for direction
                 strippedAtom = self.entropyTools.dep_getcpv(scan_atom)
                 if scan_atom[-1] == "*":
                     strippedAtom += "*"
-                direction = scan_atom[0:len(scan_atom)-len(strippedAtom)]
+                direction = scan_atom[0:-len(strippedAtom)]
 
                 justname = self.entropyTools.isjustname(strippedAtom)
                 pkgkey = strippedAtom
@@ -8372,18 +8374,16 @@ class EntropyRepository:
 
                 splitkey = pkgkey.split("/")
                 if (len(splitkey) == 2):
-                    pkgname = splitkey[1]
-                    pkgcat = splitkey[0]
+                    pkgcat, pkgname = splitkey
                 else:
-                    pkgname = splitkey[0]
-                    pkgcat = "null"
+                    pkgcat, pkgname = "null", splitkey[0]
 
                 break
 
 
-        # IDs found in the database that match our search
-        foundIDs = self.__generate_found_ids_match(pkgkey, pkgname, pkgcat,
-            caseSensitive, multiMatch)
+            # IDs found in the database that match our search
+            foundIDs = self.__generate_found_ids_match(pkgkey, pkgname, pkgcat,
+                caseSensitive, multiMatch)
 
         ### FILTERING
         # filter slot and tag
