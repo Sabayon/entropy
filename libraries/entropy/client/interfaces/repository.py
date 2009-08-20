@@ -1932,10 +1932,10 @@ class Repository:
         self.Entropy.resources_create_lock()
         try:
             rc = self.run_sync()
-        except:
+        finally:
             self.Entropy.resources_remove_lock()
-            raise
-        if rc: return rc
+        if rc:
+            return rc
 
         # remove lock
         self.Entropy.resources_remove_lock()

@@ -2069,12 +2069,10 @@ class Package:
 
         # lock
         self.Entropy.resources_create_lock()
-
         try:
             rc = self.run_stepper(xterm_header)
-        except:
+        finally:
             self.Entropy.resources_remove_lock()
-            raise
 
         # remove lock
         self.Entropy.resources_remove_lock()
