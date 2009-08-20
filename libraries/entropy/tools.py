@@ -133,11 +133,10 @@ def print_exception(returndata = False):
 # Get the content of an online page
 # @returns content: if the file exists
 # @returns False: if the file is not found
-def get_remote_data(url):
+def get_remote_data(url, timeout = 60):
 
     import socket
     import urllib2
-    socket.setdefaulttimeout(60)
     # now pray the server
     from entropy.core import SystemSettings
     sys_settings = SystemSettings()
@@ -155,7 +154,11 @@ def get_remote_data(url):
         else:
             # unset
             urllib2._opener = None
-        item = urllib2.urlopen(url)
+        try:
+            item = urllib2.urlopen(url, timeout = timeout)
+        except TypeError: # Python 2.5 support
+            socket.setdefaulttimeout(timeout)
+            item = urllib2.urlopen(url)
         result = item.readlines()
         item.close()
         del item
