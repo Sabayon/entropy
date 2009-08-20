@@ -652,8 +652,13 @@ def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps):
 
     return False, runQueue, removalQueue
 
-def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = [],
+def downloadSources(packages = None, deps = True, deepdeps = False, tbz2 = None,
     savecwd = False):
+
+    if packages is None:
+        packages = []
+    if tbz2 is None:
+        tbz2 = []
 
     foundAtoms = _scanPackages(packages, tbz2)
     # are there packages in foundAtoms?
@@ -696,10 +701,17 @@ def downloadSources(packages = [], deps = True, deepdeps = False, tbz2 = [],
 
     return 0,0
 
-def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = False,
-    onlyfetch = False, deepdeps = False, config_files = False, tbz2 = [],
-    resume = False, skipfirst = False, dochecksum = True, multifetch = 1,
-    check_critical_updates = False):
+def installPackages(packages = None, atomsdata = None, deps = True,
+    emptydeps = False, onlyfetch = False, deepdeps = False,
+    config_files = False, tbz2 = None, resume = False, skipfirst = False,
+    dochecksum = True, multifetch = 1, check_critical_updates = False):
+
+    if packages is None:
+        packages = []
+    if atomsdata is None:
+        atomsdata = []
+    if tbz2 is None:
+        tbz2 = []
 
     # check if I am root
     if (not Equo.entropyTools.is_root()):
@@ -1232,7 +1244,10 @@ def installPackages(packages = [], atomsdata = [], deps = True, emptydeps = Fals
     dirscleanup()
     return 0,0
 
-def configurePackages(packages = []):
+def configurePackages(packages = None):
+
+    if packages is None:
+        packages = []
 
     # check if I am root
     if (not Equo.entropyTools.is_root()):
@@ -1314,9 +1329,14 @@ def configurePackages(packages = []):
 
     return 0,0
 
-def removePackages(packages = [], atomsdata = [], deps = True, deep = False,
+def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
     systemPackagesCheck = True, configFiles = False, resume = False,
     human = False):
+
+    if packages is None:
+        packages = []
+    if atomsdata is None:
+        atomsdata = []
 
     # check if I am root
     if (not Equo.entropyTools.is_root()):
