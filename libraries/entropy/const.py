@@ -30,7 +30,10 @@
 
 
 from __future__ import with_statement
-import sys, os, stat
+import sys
+import os
+import stat
+import errno
 from entropy.i18n import _
 import gzip
 import bz2
@@ -845,6 +848,20 @@ def const_read_entropy_release():
             myrev = rev_f.readline().strip()
             etpConst['entropyversion'] = myrev
 
+def const_pid_exists(pid):
+    """
+    Determine whether given pid exists.
+
+    @param pid: process id
+    @type pid: int
+    @return: pid exists? 1; pid does not exist? 0
+    @rtype: int
+    """
+    try:
+        os.kill(pid, 0)
+        return 1
+    except OSError, err:
+        return err.errno == errno.EPERM
 
 def const_setup_entropy_pid(just_read = False):
 
@@ -877,28 +894,29 @@ def const_setup_entropy_pid(just_read = False):
         except (IOError, OSError, UnicodeEncodeError, UnicodeDecodeError,):
             found_pid = "0000" # which is always invalid
 
-        if found_pid != str(pid):
+        try:
+            found_pid = int(found_pid)
+        except ValueError:
+            found_pid = 0
+
+        if found_pid != pid:
             # is found_pid still running ?
-            pid_path = "%s/proc/%s" % (etpConst['systemroot'], found_pid,)
-            if os.path.isdir(pid_path) and found_pid:
+            if (found_pid != 0) and const_pid_exists(found_pid):
                 etpConst['applicationlock'] = True
-            elif not just_read:
-                # if root, write new pid
-                #if etpConst['uid'] == 0:
-                if os.access(pid_file, os.W_OK):
-                    try:
-                        with open(pid_file,"w") as pid_f:
-                            pid_f.write(str(pid))
-                            pid_f.flush()
-                    except IOError, err:
-                        if err.errno == 30: # readonly filesystem
-                            pass
-                        else:
-                            raise
-                    try:
-                        const_chmod_entropy_pid()
-                    except OSError:
+            elif (not just_read) and os.access(pid_file, os.W_OK):
+                try:
+                    with open(pid_file,"w") as pid_f:
+                        pid_f.write(str(pid))
+                        pid_f.flush()
+                except IOError, err:
+                    if err.errno == 30: # readonly filesystem
                         pass
+                    else:
+                        raise
+                try:
+                    const_chmod_entropy_pid()
+                except OSError:
+                    pass
 
     elif not just_read:
 
