@@ -44,7 +44,7 @@ class Repository:
             "profile.link", "package.use", "server.cert", "ca.cert",
             "meta_file", "notice_board", "critical_updates", "keywords"
         )
-        self.big_socket_timeout = 25
+        self.big_socket_timeout = 10
         self.Entropy = EquoInstance
         from entropy.cache import EntropyCacher
         self.Cacher = EntropyCacher()
@@ -88,8 +88,8 @@ class Repository:
         try:
             from entropy.services.ugc.interfaces import Client
             from entropy.client.services.ugc.commands import Client as CommandsClient
-            eapi3_socket = Client(self.Entropy, CommandsClient, output_header = "\t")
-            eapi3_socket.socket_timeout = self.big_socket_timeout
+            eapi3_socket = Client(self.Entropy, CommandsClient,
+                output_header = "\t", socket_timeout = self.big_socket_timeout)
             eapi3_socket.connect(dburl, port)
             return eapi3_socket
         except (ConnectionError,self.socket.error,):
@@ -358,8 +358,9 @@ class Repository:
         self.__validate_repository_id(repo)
 
         url = self.Entropy.SystemSettings['repositories']['available'][repo]['database']+"/"+etpConst['etpdatabaserevisionfile']
-        status = self.entropyTools.get_remote_data(url)
-        if (status):
+        status = self.entropyTools.get_remote_data(url,
+            timeout = self.big_socket_timeout)
+        if status:
             status = status[0].strip()
             try:
                 status = int(status)
