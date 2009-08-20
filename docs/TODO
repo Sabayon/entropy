@@ -4,19 +4,20 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   0.99:
 
-    - entropy.client + entropy.tools API docs in place
+    - entropy.tools + entropy.transceivers API docs in place
     - repo notice stfu
     - reagent spm compile categories + --nooldslots
+    - entropy.spm SpmPlugin API
 
   1.0_beta1:
 
-    - Complete API
+    - entropy.server API
+    - entropy.db hookable plugins support (atom/dep validation, db taint,
+        pkg add, pkg rm)
     - Transform Sulfur into Entropy Store:
         - UGC for more coolness
         - title change
         - more sexy UI
-    - entropy.db hookable plugins support? (atom/dep validation, db taint,
-        pkg add, pkg rm)
 
   1.0_beta2:
 
