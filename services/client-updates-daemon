@@ -279,12 +279,12 @@ class UpdatesDaemon(dbus.service.Object):
 
             rc_fetch = 0
             entropy = Entropy()
-            entropy.SystemSettings.clear()
             # entropy resources locked?
             locked = entropy.resources_check_lock()
             if locked:
                 if DAEMON_DEBUG:
                     write_output("__run_fetcher: resources locked, skipping")
+                entropy.destroy()
                 return rc_fetch
 
             if DAEMON_DEBUG:
@@ -304,6 +304,7 @@ class UpdatesDaemon(dbus.service.Object):
                 repos = repos_to_up.keys()
                 rc_fetch = self.__run_sync(repos, entropy)
                 if rc_fetch != 0:
+                    entropy.destroy()
                     return rc_fetch
                 if DAEMON_DEBUG:
                     write_output("__run_fetcher: sync closed, rc: %s" % (
@@ -316,6 +317,7 @@ class UpdatesDaemon(dbus.service.Object):
                 entropyTools.print_traceback(f = DAEMON_LOG)
                 msg = "%s: %s" % (_("Updates: error"), err,)
                 self.do_alert(_("Updates: error"), msg)
+                entropy.destroy()
                 return 1
 
             if update:
@@ -339,40 +341,55 @@ class UpdatesDaemon(dbus.service.Object):
                 )
                 gobject.timeout_add(0, self.signal_updates)
 
+            entropy.destroy()
             return 0
 
     # compare repos status for updates
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = 'a{si}')
-    def get_repo_status(self, entropy):
+    def get_repo_status(self, entropy = None):
 
-        repos = {}
+        destroy = False
+        if entropy is None:
+            destroy = True
+            entropy = Entropy()
+
         try:
-            repo_conn = entropy.Repositories(
-                noEquoCheck = True, fetchSecurity = False)
-        except MissingParameter:
-            return repos
-        except Exception, e:
+
+            repos = {}
+            try:
+                repo_conn = entropy.Repositories(
+                    noEquoCheck = True, fetchSecurity = False)
+            except MissingParameter:
+                return repos
+            except Exception, e:
+                return repos
+
+            # now get remote
+            for repoid in entropy.SystemSettings['repositories']['available']:
+
+                if repo_conn.is_repository_updatable(repoid):
+
+                    if DAEMON_DEBUG:
+                        write_output(
+                            "get_repo_status: repo needs to be updated: %s" % (
+                                repoid,))
+
+                    entropy.repository_move_clear_cache(repoid)
+                    repo_rev = entropy.get_repository_revision(repoid)
+                    online_rev = repo_conn.get_online_repository_revision(
+                        repoid)
+                    repos[repoid] = {
+                        'local': repo_rev,
+                        'remote': online_rev,
+                    }
+
+            del repo_conn
             return repos
 
-        # now get remote
-        for repoid in entropy.SystemSettings['repositories']['available']:
-            #entropy.update_repository_revision(repoid)
-            if repo_conn.is_repository_updatable(repoid):
-                if DAEMON_DEBUG:
-                    write_output(
-                        "get_repo_status: repo needs to be updated: %s" % (
-                            repoid,))
-                entropy.repository_move_clear_cache(repoid)
-                repo_rev = entropy.get_repository_revision(repoid)
-                online_rev = repo_conn.get_online_repository_revision(repoid)
-                repos[repoid] = {
-                    'local': repo_rev,
-                    'remote': online_rev,
-                }
-
-        del repo_conn
-        return repos
+        finally:
+            if destroy:
+                entropy.destroy()
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = '')
@@ -384,22 +401,28 @@ class UpdatesDaemon(dbus.service.Object):
     def get_updates(self):
 
         entropy = Entropy()
-        curr_hash = entropy.clientDbconn.checksum(
-            do_order = True, strict = False)
-        if curr_hash == self.__system_db_hash:
-            return self.__updates
-
         try:
-            update, remove, fine, spm_fine = entropy.calculate_world_updates()
-        except Exception, err:
-            entropyTools.print_traceback(f = DAEMON_LOG)
-            msg = "get_updates: %s: %s" % (_("Updates: error"), err,)
-            self.do_alert(_("Updates: error"), msg)
+
+            curr_hash = entropy.clientDbconn.checksum(
+                do_order = True, strict = False)
+            if curr_hash == self.__system_db_hash:
+                return self.__updates
+
+            try:
+                update, remove, fine, spm_fine = \
+                    entropy.calculate_world_updates()
+            except Exception, err:
+                entropyTools.print_traceback(f = DAEMON_LOG)
+                msg = "get_updates: %s: %s" % (_("Updates: error"), err,)
+                self.do_alert(_("Updates: error"), msg)
+                return self.__updates
+
+            self.__updates = update[:]
+            self.__system_db_hash = curr_hash
             return self.__updates
 
-        self.__updates = update[:]
-        self.__system_db_hash = curr_hash
-        return self.__updates
+        finally:
+            entropy.destroy()
 
     def _is_system_changed(self):
         with self.__is_working_mutex:
@@ -408,6 +431,7 @@ class UpdatesDaemon(dbus.service.Object):
             if locked:
                 if DAEMON_DEBUG:
                     write_output("_is_system_changed: resources locked!")
+                entropy.destroy()
                 return False # resources are locked, nothing changed yet :P
 
             last_mtime = self.__last_system_db_mtime
@@ -416,10 +440,13 @@ class UpdatesDaemon(dbus.service.Object):
                 cur_mtime = os.path.getmtime(dbfile)
             except OSError:
                 cur_mtime = 0.0
+
             changed = last_mtime != cur_mtime
             if DAEMON_DEBUG and changed:
                 write_output("_is_system_changed: system db mtime changed!")
             self.__last_system_db_mtime = cur_mtime
+
+            entropy.destroy()
             return changed
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
@@ -446,6 +473,7 @@ class UpdatesDaemon(dbus.service.Object):
                     continue
 
             self.__updates_atoms.extend(atoms)
+            entropy.destroy()
             return self.__updates_atoms
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
