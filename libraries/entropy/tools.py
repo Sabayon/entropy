@@ -133,7 +133,7 @@ def print_exception(returndata = False):
 # Get the content of an online page
 # @returns content: if the file exists
 # @returns False: if the file is not found
-def get_remote_data(url, timeout = 60):
+def get_remote_data(url, timeout = 5):
 
     import socket
     import urllib2
