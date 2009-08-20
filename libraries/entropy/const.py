@@ -30,13 +30,17 @@
 
 
 from __future__ import with_statement
+
 import sys
 import os
 import stat
 import errno
-from entropy.i18n import _
+import signal
 import gzip
 import bz2
+
+from entropy.i18n import _
+
 
 # ETP_ARCH_CONST setup
 # add more arches here
@@ -858,7 +862,7 @@ def const_pid_exists(pid):
     @rtype: int
     """
     try:
-        os.kill(pid, 0)
+        os.kill(pid, signal.SIG_DFL)
         return 1
     except OSError, err:
         return err.errno == errno.EPERM
