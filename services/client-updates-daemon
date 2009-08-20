@@ -311,7 +311,8 @@ class UpdatesDaemon(dbus.service.Object):
                         rc_fetch,))
 
             try:
-                update, remove, fine, spm_fine = entropy.calculate_world_updates()
+                update, remove, fine, spm_fine = \
+                    entropy.calculate_world_updates()
                 del fine, remove
             except Exception, err:
                 entropyTools.print_traceback(f = DAEMON_LOG)
@@ -321,6 +322,7 @@ class UpdatesDaemon(dbus.service.Object):
                 return 1
 
             if update:
+
                 self.do_alert(
                     _("Updates available"),
                     "%s %d %s" % (
@@ -333,7 +335,9 @@ class UpdatesDaemon(dbus.service.Object):
                 self.__updates = update[:]
                 del self.__updates_atoms[:]
                 gobject.timeout_add(0, self.signal_updates)
+
             else:
+
                 self.do_alert(
                     _("No updates"),
                     "%s" % (update,),
