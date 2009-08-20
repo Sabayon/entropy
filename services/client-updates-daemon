@@ -118,6 +118,9 @@ class Entropy(Client):
         Client.init_singleton(self, load_ugc = False,
             url_fetcher = DaemonUrlFetcher, repo_validation = False,
             xcache = False)
+        # validate currently available repos
+        # manually, to not taint logs
+        self.validate_repositories(quiet = True)
         self.updateProgress(
             "Loading Entropy Updates daemon: check every %ss, logfile: %s" % (
                 CHECK_DELAY_SECS, DAEMON_LOGFILE,)
@@ -287,66 +290,73 @@ class UpdatesDaemon(dbus.service.Object):
                 entropy.destroy()
                 return rc_fetch
 
-            if DAEMON_DEBUG:
-                write_output("__run_fetcher: called %s" % (time.time(),))
-
-            repos_to_up = self.get_repo_status(entropy)
-
-            if repos_to_up:
-
-                self.do_alert(
-                    _("Repositories to update"),
-                    unicode(repos_to_up),
-                    urgency = 'critical'
-                )
-
-                gobject.timeout_add(0, self.signal_updating)
-                repos = repos_to_up.keys()
-                rc_fetch = self.__run_sync(repos, entropy)
-                if rc_fetch != 0:
-                    entropy.destroy()
-                    return rc_fetch
-                if DAEMON_DEBUG:
-                    write_output("__run_fetcher: sync closed, rc: %s" % (
-                        rc_fetch,))
-
+            # lock
+            entropy.resources_create_lock()
             try:
-                update, remove, fine, spm_fine = \
-                    entropy.calculate_world_updates()
-                del fine, remove
-            except Exception, err:
-                entropyTools.print_traceback(f = DAEMON_LOG)
-                msg = "%s: %s" % (_("Updates: error"), err,)
-                self.do_alert(_("Updates: error"), msg)
+
+                if DAEMON_DEBUG:
+                    write_output("__run_fetcher: called %s" % (time.time(),))
+
+                repos_to_up = self.get_repo_status(entropy)
+
+                if repos_to_up:
+
+                    self.do_alert(
+                        _("Repositories to update"),
+                        unicode(repos_to_up),
+                        urgency = 'critical'
+                    )
+
+                    gobject.timeout_add(0, self.signal_updating)
+                    repos = repos_to_up.keys()
+                    rc_fetch = self.__run_sync(repos, entropy)
+                    if rc_fetch != 0:
+                        return rc_fetch
+                    if DAEMON_DEBUG:
+                        write_output("__run_fetcher: sync closed, rc: %s" % (
+                            rc_fetch,))
+
+                try:
+                    update, remove, fine, spm_fine = \
+                        entropy.calculate_world_updates()
+                    del fine, remove
+                except Exception, err:
+                    entropyTools.print_traceback(f = DAEMON_LOG)
+                    msg = "%s: %s" % (_("Updates: error"), err,)
+                    self.do_alert(_("Updates: error"), msg)
+                    return 1
+
+                if update:
+
+                    self.do_alert(
+                        _("Updates available"),
+                        "%s %d %s" % (
+                            _("There are"), len(update),
+                            _("updates available."),),
+                        urgency = 'critical'
+                    )
+                    self.__system_db_hash = entropy.clientDbconn.checksum(
+                        do_order = True, strict = False)
+                    self.__updates = update[:]
+                    del self.__updates_atoms[:]
+                    gobject.timeout_add(0, self.signal_updates)
+
+                else:
+
+                    self.do_alert(
+                        _("No updates"),
+                        "%s" % (update,),
+                        urgency = 'critical'
+                    )
+                    gobject.timeout_add(0, self.signal_updates)
+
+                return 0
+
+            finally:
+                # unlock resources
+                entropy.resources_remove_lock()
+                # say goodbye
                 entropy.destroy()
-                return 1
-
-            if update:
-
-                self.do_alert(
-                    _("Updates available"),
-                    "%s %d %s" % (
-                        _("There are"), len(update),
-                        _("updates available."),),
-                    urgency = 'critical'
-                )
-                self.__system_db_hash = entropy.clientDbconn.checksum(
-                    do_order = True, strict = False)
-                self.__updates = update[:]
-                del self.__updates_atoms[:]
-                gobject.timeout_add(0, self.signal_updates)
-
-            else:
-
-                self.do_alert(
-                    _("No updates"),
-                    "%s" % (update,),
-                    urgency = 'critical'
-                )
-                gobject.timeout_add(0, self.signal_updates)
-
-            entropy.destroy()
-            return 0
 
     # compare repos status for updates
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
@@ -372,7 +382,9 @@ class UpdatesDaemon(dbus.service.Object):
             # now get remote
             for repoid in entropy.SystemSettings['repositories']['available']:
 
-                if repo_conn.is_repository_updatable(repoid):
+                repo_rev = entropy.get_repository_revision(repoid)
+                online_rev = repo_conn.get_online_repository_revision(repoid)
+                if (online_rev == -1) or (repo_rev != online_rev):
 
                     if DAEMON_DEBUG:
                         write_output(
@@ -380,9 +392,6 @@ class UpdatesDaemon(dbus.service.Object):
                                 repoid,))
 
                     entropy.repository_move_clear_cache(repoid)
-                    repo_rev = entropy.get_repository_revision(repoid)
-                    online_rev = repo_conn.get_online_repository_revision(
-                        repoid)
                     repos[repoid] = {
                         'local': repo_rev,
                         'remote': online_rev,
@@ -438,20 +447,28 @@ class UpdatesDaemon(dbus.service.Object):
                 entropy.destroy()
                 return False # resources are locked, nothing changed yet :P
 
-            last_mtime = self.__last_system_db_mtime
-            dbfile = entropy.clientDbconn.dbFile
+            # lock
+            entropy.resources_create_lock()
             try:
-                cur_mtime = os.path.getmtime(dbfile)
-            except OSError:
-                cur_mtime = 0.0
 
-            changed = last_mtime != cur_mtime
-            if DAEMON_DEBUG and changed:
-                write_output("_is_system_changed: system db mtime changed!")
-            self.__last_system_db_mtime = cur_mtime
+                last_mtime = self.__last_system_db_mtime
+                dbfile = entropy.clientDbconn.dbFile
+                try:
+                    cur_mtime = os.path.getmtime(dbfile)
+                except OSError:
+                    cur_mtime = 0.0
 
-            entropy.destroy()
-            return changed
+                changed = last_mtime != cur_mtime
+                if DAEMON_DEBUG and changed:
+                    write_output("_is_system_changed: system db mtime changed!")
+                self.__last_system_db_mtime = cur_mtime
+                return changed
+
+            finally:
+                # unlock resources
+                entropy.resources_remove_lock()
+                # say goodbye
+                entropy.destroy()
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = 'b')
@@ -468,17 +485,20 @@ class UpdatesDaemon(dbus.service.Object):
         with self.__is_working_mutex:
             atoms = []
             entropy = Entropy()
+            try:
 
-            for idpackage, repoid in self.__updates:
-                try:
-                    dbc = entropy.open_repository(repoid)
-                    atoms.append(dbc.retrieveAtom(idpackage))
-                except RepositoryError:
-                    continue
+                for idpackage, repoid in self.__updates:
+                    try:
+                        dbc = entropy.open_repository(repoid)
+                        atoms.append(dbc.retrieveAtom(idpackage))
+                    except RepositoryError:
+                        continue
+                self.__updates_atoms.extend(atoms)
+                return self.__updates_atoms
 
-            self.__updates_atoms.extend(atoms)
-            entropy.destroy()
-            return self.__updates_atoms
+            finally:
+                entropy.destroy()
+
 
     @dbus.service.method ( "org.entropy.Client", in_signature = '',
         out_signature = '')
