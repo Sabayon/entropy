@@ -12,6 +12,7 @@
 from __future__ import with_statement
 import os
 import stat
+import fcntl
 import sys
 import shutil
 import time
@@ -948,7 +949,12 @@ class MiscMixin:
         self.create_pid_file_lock(etpConst['locks']['using_resources'])
 
     def resources_remove_lock(self):
-        if os.path.isfile(etpConst['locks']['using_resources']):
+        if hasattr(self, "_resources_lock_fd"):
+            if self._resources_lock_fd is not None:
+                fcntl.flock(self._resources_lock_fd, fcntl.LOCK_UN)
+                os.close(self._resources_lock_fd)
+                self._resources_lock_fd = None
+        if os.access(etpConst['locks']['using_resources'], os.F_OK | os.W_OK):
             os.remove(etpConst['locks']['using_resources'])
 
     def resources_check_lock(self):
@@ -966,8 +972,9 @@ class MiscMixin:
         except ValueError:
             return False # not locked
         # is it our pid?
+
         mypid = os.getpid()
-        if (s_pid != mypid) and os.path.isdir("%s/proc/%s" % (etpConst['systemroot'],s_pid,)):
+        if (s_pid != mypid) and const_pid_exists(s_pid):
             # is it running
             return True # locked
         return False
@@ -979,10 +986,13 @@ class MiscMixin:
         const_setup_perms(lockdir,etpConst['entropygid'])
         if mypid == None:
             mypid = os.getpid()
-        f = open(pidfile,"w")
+
+        f = open(pidfile, "w")
+        fd = f.fileno()
+        fcntl.flock(fd, fcntl.LOCK_EX)
         f.write(str(mypid))
         f.flush()
-        f.close()
+        self._resources_lock_fd = fd
 
     def application_lock_check(self, silent = False):
         # check if another instance is running
