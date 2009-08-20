@@ -823,11 +823,16 @@ class EntropyRepository:
                 to_slot = doaction[3]
                 atom_key = self.entropyTools.dep_getkey(atom)
                 category = atom_key.split("/")[0]
-                matches = self.atomMatch(atom, matchSlot = from_slot,
+                matches, sm_rc = self.atomMatch(atom, matchSlot = from_slot,
                     multiMatch = True)
+                if sm_rc == 1:
+                    # nothing found in repo that matches atom
+                    # this means that no packages can effectively
+                    # reference to it
+                    continue
                 found = False
                 # found atoms, check category
-                for idpackage in matches[0]:
+                for idpackage in matches:
                     myslot = self.retrieveSlot(idpackage)
                     mycategory = self.retrieveCategory(idpackage)
                     if mycategory == category:
@@ -848,12 +853,18 @@ class EntropyRepository:
                     new_actions.append(action)
 
             elif doaction[0] == "move":
+
                 atom = doaction[1] # usually a key
                 atom_key = self.entropyTools.dep_getkey(atom)
                 category = atom_key.split("/")[0]
-                matches = self.atomMatch(atom, multiMatch = True)
+                matches, m_rc = self.atomMatch(atom, multiMatch = True)
+                if m_rc == 1:
+                    # nothing found in repo that matches atom
+                    # this means that no packages can effectively
+                    # reference to it
+                    continue
                 found = False
-                for idpackage in matches[0]:
+                for idpackage in matches:
                     mycategory = self.retrieveCategory(idpackage)
                     if (mycategory == category) and (action \
                         not in new_actions):
@@ -870,6 +881,7 @@ class EntropyRepository:
                     self.entropyTools.dep_getkey(x) == atom_key]
                 if dep_atoms:
                     new_actions.append(action)
+
         return new_actions
 
     def runTreeUpdatesActions(self, actions):
