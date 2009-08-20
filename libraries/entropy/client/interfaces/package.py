@@ -2064,7 +2064,6 @@ class Package:
 
         locked = self.Entropy.application_lock_check()
         if locked:
-            self.Entropy.resources_remove_lock()
             return 21
 
         # lock
