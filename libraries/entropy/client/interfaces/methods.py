@@ -816,7 +816,7 @@ class RepositoryMixin:
 
         return hooks_ran, errors
 
-    def run_repository_post_branch_upgrade_hooks(self):
+    def run_repository_post_branch_upgrade_hooks(self, pretend = False):
         """
         This method is called whenever branch is successfully switched by user
         and all the updates have been installed (also look at:
@@ -824,8 +824,12 @@ class RepositoryMixin:
         Any repository can be shipped with a sh script which if available,
         handles system configuration to ease the migration.
 
-        @return: list of repositories whose script has been run
-        @rtype: set
+        @param pretend: do not run hooks but just return list of repos whose
+            scripts should be run
+        @type pretend: bool
+        @return: tuple of length 2 composed by list of repositories whose
+            scripts have been run and errors boolean)
+        @rtype: tuple
         """
 
         const_debug_write(__name__,
@@ -897,6 +901,17 @@ class RepositoryMixin:
                     const_debug_write(__name__,
                         "run_repository_post_branch_upgrade_hooks: %s: %s" % (
                             "already run for from_branch", from_branch,)
+                    )
+                    continue
+
+                hooks_ran.add(repoid)
+
+                if pretend:
+                    const_debug_write(__name__,
+                        "run_repository_post_branch_upgrade_hooks: %s: %s => %s" % (
+                            "pretend enabled, not actually running",
+                            repoid, from_branch,
+                        )
                     )
                     continue
 
