@@ -965,10 +965,19 @@ class MiscMixin:
 
     def resources_remove_lock(self):
         if hasattr(self, "_resources_lock_fd"):
+
             if self._resources_lock_fd is not None:
-                fcntl.flock(self._resources_lock_fd, fcntl.LOCK_UN)
+                try:
+                    fcntl.flock(self._resources_lock_fd, fcntl.LOCK_UN)
+                except IOError, err:
+                    if err.errno == errno.EBADF:
+                        self._resources_lock_fd = None
+                    else:
+                        raise
+            if self._resources_lock_fd is not None:
                 os.close(self._resources_lock_fd)
                 self._resources_lock_fd = None
+
         if os.access(etpConst['locks']['using_resources'], os.F_OK | os.W_OK):
             os.remove(etpConst['locks']['using_resources'])
 
