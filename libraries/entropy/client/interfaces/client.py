@@ -185,6 +185,12 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         if os.getuid() != 0:
             return
 
+        repos, errors = self._helper.run_repository_post_branch_upgrade_hooks(
+            pretend = True)
+        if not repos:
+            # no scripts to run
+            return
+
         # look for updates
         # critical_updates = False is needed to avoid
         # issues with metadata not being available
