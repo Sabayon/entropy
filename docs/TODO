@@ -8,8 +8,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - repo notice stfu
     - reagent spm compile categories + --nooldslots
     - entropy.spm SpmPlugin API
-    - world updates calculation only when really needed?
-      (branch migration & friends)
 
   1.0_beta1:
 
