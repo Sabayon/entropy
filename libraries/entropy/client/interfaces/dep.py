@@ -278,6 +278,9 @@ class CalculatorsMixin:
                         raise
                     use_cache = False
                     continue
+                except dbconn.dbapi2.OperationalError:
+                    # repository fooked, skip!
+                    break
                 break
 
         dbpkginfo = (-1,1)
