@@ -125,6 +125,8 @@ class Entropy(Client):
             "Loading Entropy Updates daemon: check every %ss, logfile: %s" % (
                 CHECK_DELAY_SECS, DAEMON_LOGFILE,)
             )
+        # reset application lock status
+        self.application_lock_check(silent = True)
 
     def updateProgress(self, *args, **kwargs):
         return write_output(*args, **kwargs)
@@ -282,6 +284,14 @@ class UpdatesDaemon(dbus.service.Object):
 
             rc_fetch = 0
             entropy = Entropy()
+            # check if other apps are using entropy
+            app_locked = entropy.application_lock_check()
+            if app_locked:
+                if DAEMON_DEBUG:
+                    write_output("__run_fetcher: app. locked, skipping")
+                entropy.destroy()
+                return rc_fetch
+
             # entropy resources locked?
             locked = entropy.resources_check_lock()
             if locked:
@@ -290,8 +300,14 @@ class UpdatesDaemon(dbus.service.Object):
                 entropy.destroy()
                 return rc_fetch
 
-            # lock
-            entropy.resources_create_lock()
+            # acquire resources lock
+            acquired = entropy.resources_create_lock()
+            if not acquired:
+                if DAEMON_DEBUG:
+                    write_output("__run_fetcher: resources locked during acquire")
+                entropy.destroy()
+                return rc_fetch
+
             try:
 
                 if DAEMON_DEBUG:
@@ -447,8 +463,14 @@ class UpdatesDaemon(dbus.service.Object):
                 entropy.destroy()
                 return False # resources are locked, nothing changed yet :P
 
-            # lock
-            entropy.resources_create_lock()
+            # acquire resources lock
+            acquired = entropy.resources_create_lock()
+            if not acquired:
+                if DAEMON_DEBUG:
+                    write_output("__run_fetcher: resources locked during acquire")
+                entropy.destroy()
+                return False
+
             try:
 
                 last_mtime = self.__last_system_db_mtime
