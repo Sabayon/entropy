@@ -38,7 +38,7 @@ class MagnetoCoreUI:
         """
         raise NotImplementedError
 
-    def show_alert(self, title, text, urgency = None):
+    def show_alert(self, title, text, urgency = None, force = False):
         """
         This method is used for calling the popup notification widget.
 
@@ -48,6 +48,8 @@ class MagnetoCoreUI:
         @type text: string
         @param urgency: urgency identifier (can be "critical" or "low")
         @type urgency: string
+        @param force: force user notification
+        @type force: bool
         """
         raise NotImplementedError
 
@@ -106,6 +108,8 @@ class MagnetoCore(MagnetoCoreUI):
         self.last_trigger_check_t = 0.0
         # Applet current state
         self.current_state = None
+        # Applet manual check selected
+        self.manual_check_triggered = False
 
         self.icons = icon_loader_class()
         self.icons.add_file("okay", "applet-okay.png")
@@ -220,15 +224,19 @@ class MagnetoCore(MagnetoCoreUI):
                     "<b>%s</b>" % (upd_len,),
                     _("updates available"),
                 ),
-                urgency = "critical"
+                urgency = "critical",
+                force = self.manual_check_triggered
             )
         else:
             # all fine, no updates
             self.update_tooltip(_("Your Sabayon is up-to-date"))
             self.set_state("OKAY")
             self.show_alert(_("Your Sabayon is up-to-date"),
-                _("No updates available at this time, cool!")
+                _("No updates available at this time, cool!"),
+                force = self.manual_check_triggered
             )
+
+        self.manual_check_triggered = False
 
     def updating_signal(self):
         if not config.settings['APPLET_ENABLED']:
@@ -273,6 +281,7 @@ class MagnetoCore(MagnetoCoreUI):
             iface = dbus.Interface(
                 self._entropy_dbus_object, dbus_interface="org.entropy.Client")
             iface.trigger_check()
+            self.manual_check_triggered = True
 
     def set_state(self, new_state, use_busy_icon = 0):
 

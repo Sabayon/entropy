@@ -126,10 +126,10 @@ class Magneto(MagnetoCore):
     def applet_doubleclick(self, widget):
         return MagnetoCore.applet_doubleclick(self)
 
-    def show_alert(self, title, text, urgency = None):
+    def show_alert(self, title, text, urgency = None, force = False):
 
         def do_show():
-            if (title,text) == self.last_alert:
+            if ((title,text) == self.last_alert) and not force:
                 return False
             pynotify.init("XY")
             n = pynotify.Notification(title, text)

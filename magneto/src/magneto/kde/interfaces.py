@@ -146,9 +146,9 @@ class Magneto(MagnetoCore):
             self._menu_items['enable_applet'].setEnabled(False)
 
 
-    def show_alert(self, title, text, urgency = None):
+    def show_alert(self, title, text, urgency = None, force = False):
 
-        if (title, text) == self.last_alert:
+        if ((title, text) == self.last_alert) and not force:
             return
 
         def do_show():
