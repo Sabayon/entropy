@@ -159,7 +159,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
         def write_current_branch(branch):
             old_brf = open(old_branch_path, "w")
-            old_brf.write(current_branch+"\n")
+            old_brf.write(branch+"\n")
             old_brf.flush()
             old_brf.close()
 
