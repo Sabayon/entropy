@@ -54,7 +54,8 @@ from entropy.exceptions import PermissionDenied, RepositoryError, \
 import entropy.tools as entropyTools
 from entropy.client.interfaces import Client
 from entropy.transceivers import UrlFetcher
-from entropy.const import etpConst
+from entropy.const import etpConst, const_setup_entropy_pid, \
+    const_remove_entropy_pid
 from entropy.core import SystemSettings as SysSet
 from entropy.misc import ParallelTask
 from entropy.output import TextInterface, nocolor
@@ -291,6 +292,12 @@ class UpdatesDaemon(dbus.service.Object):
                     write_output("__run_fetcher: app. locked, skipping")
                 entropy.destroy()
                 return rc_fetch
+            acquired = const_setup_entropy_pid(force_handling = True)
+            if not acquired:
+                if DAEMON_DEBUG:
+                    write_output("__run_fetcher: app. locked during acquire")
+                entropy.destroy()
+                return rc_fetch
 
             # entropy resources locked?
             locked = entropy.resources_check_lock()
@@ -371,6 +378,8 @@ class UpdatesDaemon(dbus.service.Object):
             finally:
                 # unlock resources
                 entropy.resources_remove_lock()
+                # remove application lock
+                const_remove_entropy_pid()
                 # say goodbye
                 entropy.destroy()
 
