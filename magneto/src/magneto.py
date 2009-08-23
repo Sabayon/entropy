@@ -23,16 +23,21 @@ sys.argv.append('--no-pid-handling')
 
 kde_env = os.getenv("KDE_FULL_SESSION")
 
-if (kde_env is not None) and ("--gtk" not in sys.argv):
-    # this is KDE!
-    try:
-        from magneto.kde.interfaces import Magneto
-    except ImportError:
-        # try GTK
-        from magneto.gtk.interfaces import Magneto
-else:
-    # load GTK
+if "--kde" in sys.argv:
+    from magneto.kde.interfaces import Magneto
+elif "--gtk" in sys.argv:
     from magneto.gtk.interfaces import Magneto
+else:
+    if kde_env is not None:
+        # this is KDE!
+        try:
+            from magneto.kde.interfaces import Magneto
+        except ImportError:
+            # try GTK
+            from magneto.gtk.interfaces import Magneto
+    else:
+        # load GTK
+        from magneto.gtk.interfaces import Magneto
 
 if __name__ == "__main__":
     magneto = Magneto()
