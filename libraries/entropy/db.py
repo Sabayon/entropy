@@ -6988,7 +6988,7 @@ class EntropyRepository:
         @rtype: dict
         """
         if not self._doesTableExist('entropy_branch_migration'):
-            return None
+            return {}
 
         cur = self.cursor.execute("""
         SELECT repository, from_branch, post_migration_md5sum,
