@@ -740,7 +740,9 @@ class SecurityInterface:
             return 4
 
         # lock
-        self.Entropy.resources_create_lock()
+        acquired = self.Entropy.resources_create_lock()
+        if not acquired:
+            return 4 # app locked during lock acquire
         try:
             rc_lock = self.__run_fetch()
         except:

@@ -504,7 +504,10 @@ def database(options):
         if rc == "No":
             return 0
 
-        Equo.resources_create_lock()
+        acquired = Equo.resources_create_lock()
+        if not acquired:
+            print_info(red(" %s." % (_("Entropy locked during lock acquire"),)))
+            return 2
 
         if toBeRemoved:
             mytxt = blue("%s. %s:") % (

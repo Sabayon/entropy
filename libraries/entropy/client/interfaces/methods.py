@@ -13,6 +13,7 @@ from __future__ import with_statement
 import os
 import stat
 import fcntl
+import errno
 import sys
 import shutil
 import time
@@ -950,6 +951,9 @@ class RepositoryMixin:
 
 class MiscMixin:
 
+    # resources lock file object container
+    RESOURCES_LOCK_F_REF = None
+
     def reload_constants(self):
         initconfig_entropy_constants(etpSys['rootdir'])
         self.SystemSettings.clear()
@@ -961,29 +965,22 @@ class MiscMixin:
             os.chown(filepath,-1,etpConst['entropygid'])
 
     def resources_create_lock(self):
-        self.create_pid_file_lock(etpConst['locks']['using_resources'])
+        return self.create_pid_file_lock(etpConst['locks']['using_resources'])
 
     def resources_remove_lock(self):
-        if hasattr(self, "_resources_lock_fd"):
+        f_obj = MiscMixin.RESOURCES_LOCK_F_REF
+        if f_obj is not None:
+            fcntl.flock(f_obj.fileno(), fcntl.LOCK_UN)
 
-            if self._resources_lock_fd is not None:
-                try:
-                    fcntl.flock(self._resources_lock_fd, fcntl.LOCK_UN)
-                except IOError, err:
-                    if err.errno == errno.EBADF:
-                        self._resources_lock_fd = None
-                    else:
-                        raise
-            if self._resources_lock_fd is not None:
-                os.close(self._resources_lock_fd)
-                self._resources_lock_fd = None
+            if f_obj is not None:
+                f_obj.close()
+            MiscMixin.RESOURCES_LOCK_F_REF = None
 
-        if os.access(etpConst['locks']['using_resources'], os.F_OK | os.W_OK):
+        if os.access(etpConst['locks']['using_resources'], os.F_OK):
             os.remove(etpConst['locks']['using_resources'])
 
     def resources_check_lock(self):
-        rc = self.check_pid_file_lock(etpConst['locks']['using_resources'])
-        return rc
+        return self.check_pid_file_lock(etpConst['locks']['using_resources'])
 
     def check_pid_file_lock(self, pidfile):
         if not os.path.isfile(pidfile):
@@ -1004,6 +1001,11 @@ class MiscMixin:
         return False
 
     def create_pid_file_lock(self, pidfile, mypid = None):
+
+        if MiscMixin.RESOURCES_LOCK_F_REF is not None:
+            # already locked, reentrant lock
+            return
+
         lockdir = os.path.dirname(pidfile)
         if not os.path.isdir(lockdir):
             os.makedirs(lockdir,0775)
@@ -1011,12 +1013,20 @@ class MiscMixin:
         if mypid == None:
             mypid = os.getpid()
 
-        f = open(pidfile, "w")
-        fd = f.fileno()
-        fcntl.flock(fd, fcntl.LOCK_EX)
-        f.write(str(mypid))
-        f.flush()
-        self._resources_lock_fd = fd
+        pid_f = open(pidfile, "w")
+        try:
+            fcntl.flock(pid_f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except IOError, err:
+            if err.errno not in (errno.EACCES, errno.EAGAIN,):
+                # ouch, wtf?
+                raise
+            pid_f.close()
+            return False # lock already acquired
+
+        pid_f.write(str(mypid))
+        pid_f.flush()
+        MiscMixin.RESOURCES_LOCK_F_REF = pid_f
+        return True
 
     def application_lock_check(self, silent = False):
         # check if another instance is running
