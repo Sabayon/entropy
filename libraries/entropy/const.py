@@ -885,12 +885,14 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
         given
     @type force_handling: bool
     @rtype: bool
-    @return: None
+    @return: if pid lock file has been acquired
     """
 
     if (("--no-pid-handling" in sys.argv) and not force_handling) \
         and not just_read:
-        return
+        return False
+
+    setup_done = False
 
     # PID creation
     pid = os.getpid()
@@ -924,6 +926,7 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
                     const_chmod_entropy_pid()
                 except OSError:
                     pass
+                setup_done = True
 
     elif not just_read:
 
@@ -938,6 +941,7 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
                     shutil.rmtree(pid_file)
 
             with open(pid_file, "w") as pid_fw:
+
                 try:
                     fcntl.flock(pid_fw.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
                     pid_fw.write(str(pid))
@@ -948,12 +952,15 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
                         raise
                     # lock is being acquired by somebody else
                     # cannot write
-                    return
+                    return False
 
             try:
                 const_chmod_entropy_pid()
             except OSError:
                 pass
+            setup_done = True
+
+    return setup_done
 
 def const_remove_entropy_pid():
     """
