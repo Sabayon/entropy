@@ -35,6 +35,7 @@ import sys
 import os
 import stat
 import errno
+import fcntl
 import signal
 import gzip
 import bz2
@@ -867,7 +868,7 @@ def const_pid_exists(pid):
     except OSError, err:
         return err.errno == errno.EPERM
 
-def const_setup_entropy_pid(just_read = False):
+def const_setup_entropy_pid(just_read = False, force_handling = False):
 
     """
     Setup Entropy pid file, if possible and if UID = 0 (root).
@@ -880,11 +881,15 @@ def const_setup_entropy_pid(just_read = False):
 
     @param just_read: only read the current pid file, if any and if possible
     @type just_read: bool
-    @rtype: None
+    @param force_handling: force pid handling even if "--no-pid-handling" is
+        given
+    @type force_handling: bool
+    @rtype: bool
     @return: None
     """
 
-    if ("--no-pid-handling" in sys.argv) and (not just_read):
+    if (("--no-pid-handling" in sys.argv) and not force_handling) \
+        and not just_read:
         return
 
     # PID creation
@@ -913,9 +918,7 @@ def const_setup_entropy_pid(just_read = False):
                         pid_f.write(str(pid))
                         pid_f.flush()
                 except IOError, err:
-                    if err.errno == 30: # readonly filesystem
-                        pass
-                    else:
+                    if err.errno != 30: # readonly filesystem
                         raise
                 try:
                     const_chmod_entropy_pid()
@@ -934,14 +937,64 @@ def const_setup_entropy_pid(just_read = False):
                     import shutil
                     shutil.rmtree(pid_file)
 
-            with open(pid_file,"w") as pid_fw:
-                pid_fw.write(str(pid))
-                pid_fw.flush()
+            with open(pid_file, "w") as pid_fw:
+                try:
+                    fcntl.flock(pid_fw.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+                    pid_fw.write(str(pid))
+                    pid_fw.flush()
+                except IOError, err:
+                    # already locked?
+                    if err.errno not in (errno.EACCES, errno.EAGAIN,):
+                        raise
+                    # lock is being acquired by somebody else
+                    # cannot write
+                    return
 
             try:
                 const_chmod_entropy_pid()
             except OSError:
                 pass
+
+def const_remove_entropy_pid():
+    """
+    Remove Entropy pid if function calling pid matches the one stored.
+    """
+    pid = os.getpid()
+    pid_file = etpConst['pidfile']
+    if not os.access(pid_file, os.F_OK):
+        return True # not found, so removed
+
+    # open file
+    try:
+        with open(pid_file,"r") as pid_f:
+            found_pid = str(pid_f.readline().strip())
+    except (IOError, OSError, UnicodeEncodeError, UnicodeDecodeError,):
+        found_pid = "0000" # which is always invalid
+
+    try:
+        found_pid = int(found_pid)
+    except ValueError:
+        found_pid = 0
+
+    if (pid != found_pid) and (found_pid != 0):
+        # cannot remove, i'm not the owner
+        return False
+
+    removed = False
+    try:
+        # using os.remove for atomicity
+        os.remove(pid_file)
+        removed = True
+    except OSError, err:
+        if err.errno not in (errno.ENOENT, errno.EACCES,):
+            raise
+
+        if err.errno == errno.EACCES:
+            removed = False
+        else:
+            removed = True
+
+    return removed
 
 def const_secure_config_file(config_file):
     """
