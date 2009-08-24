@@ -22,6 +22,7 @@ from entropy.client.interfaces.dep import CalculatorsMixin
 from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
     MatchMixin
 from entropy.client.interfaces.fetch import FetchersMixin
+from entropy.client.interfaces.noticeboard import NoticeBoardMixin
 from entropy.const import etpConst, etpCache, etpUi, const_debug_write
 from entropy.core import SystemSettings, SystemSettingsPlugin
 from entropy.misc import LogFile
@@ -510,6 +511,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         """
         Reimplemented from SystemSettingsPlugin.
         """
+
         if self._helper._can_run_sys_set_hooks:
             # run post-branch migration scripts if branch setting got changed
             self.__run_post_branch_migration_hooks(system_settings_instance)
@@ -519,7 +521,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
 
 class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixin, \
-        RepositoryMixin, MiscMixin, MatchMixin, FetchersMixin):
+        RepositoryMixin, MiscMixin, MatchMixin, FetchersMixin, NoticeBoardMixin):
 
     def init_singleton(self, indexing = True, noclientdb = 0,
             xcache = True, user_xcache = False, repo_validation = True,

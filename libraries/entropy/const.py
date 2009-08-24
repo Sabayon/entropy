@@ -370,6 +370,8 @@ def const_default_settings(rootdir):
         'rss-managing-editor': "lxnay@sabayonlinux.org", # updates submitter
         # repository RSS-based notice board content
         'rss-notice-board': "notice.rss",
+        # File containing user data related to repository notice board
+        'rss-notice-board-userdata': "notice.rss.userdata",
 
         'packagesetprefix': "@",
         'userpackagesetsid': "__user__",
@@ -801,6 +803,9 @@ def const_extract_cli_repo_params(repostring, branch = None, product = None):
 
     mydata['local_notice_board'] = mydata['dbpath'] + "/" + \
         etpConst['rss-notice-board']
+
+    mydata['local_notice_board_userdata'] = mydata['dbpath'] + "/" + \
+        etpConst['rss-notice-board-userdata']
 
     mydata['dbrevision'] = "0"
     dbrevision_file = os.path.join(mydata['dbpath'],
