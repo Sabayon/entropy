@@ -29,7 +29,6 @@ from entropy.const import *
 from entropy.output import *
 from entropy.exceptions import *
 from entropy.client.interfaces import Client
-from entropy.misc import RSS
 Equo = Client(noclientdb = True)
 from entropy.i18n import _
 
@@ -189,22 +188,11 @@ def check_notice_board_availability(reponame):
     def show_err():
         print_error(darkred(" @@ ")+blue("%s" % (_("Notice board not available"),) ))
 
-    board_file = Equo.SystemSettings['repositories']['available'][reponame]['local_notice_board']
-    if not (os.path.isfile(board_file) and os.access(board_file,os.R_OK)):
-        show_err()
-        return
-    if Equo.entropyTools.get_file_size(board_file) < 10:
+    data = Equo.get_notice_board(reponame)
+    if not data:
         show_err()
         return
 
-    try:
-        myrss = RSS(board_file,'','')
-    except:
-        show_err()
-        return None
-    data = myrss.get_entries()
-    if data == None:
-        show_err()
     return data
 
 def show_notice(key, mydict):
@@ -269,15 +257,16 @@ def show_notice_selector(title, mydict):
 def noticeBoardReader(reponame):
 
     data = check_notice_board_availability(reponame)
-    if data == None: return
-    items, counter = data
+    if not data:
+        return
+    counter = len(data)
     while 1:
         try:
-            sel = show_notice_selector('', items)
+            sel = show_notice_selector('', data)
         except KeyboardInterrupt:
             return 0
         if (sel >= 0) and (sel < counter):
-            show_notice(sel, items.get(sel))
+            show_notice(sel, data.get(sel))
         elif sel == -1:
             return 0
 
@@ -287,12 +276,11 @@ def showNoticeBoardSummary(reponame):
     mytxt = "%s %s: %s" % (darkgreen(" @@ "),brown(_("Notice board")),bold(reponame),)
     print_info(mytxt)
 
-    data = check_notice_board_availability(reponame)
-    if data == None: return
+    mydict = check_notice_board_availability(reponame)
+    if not mydict:
+        return
 
-    mydict, mylen = data
-    mykeys = sorted(mydict.keys())
-    for key in mykeys:
+    for key in sorted(mydict):
         mydata = mydict.get(key)
         mytxt = "    [%s] [%s] %s: %s" % (
             blue(str(key)),
