@@ -22,7 +22,7 @@ class NoticeBoardMixin:
     such as notice board items status, metadata retrieval, etc.
     """
 
-    def get_notice_board(self, repoid):
+    def get_noticeboard(self, repoid):
         """
         Return noticeboard RSS metadata (dict form) for given repository
         identifier.
@@ -50,7 +50,7 @@ class NoticeBoardMixin:
             return {}
         return data
 
-    def get_notice_board_userdata(self, repoid):
+    def get_noticeboard_userdata(self, repoid):
         """
         Return noticeboard user metadata dict for given repository identifier.
         This dictionary contains misc noticeboard information for given
@@ -72,7 +72,7 @@ class NoticeBoardMixin:
         data = dump_loadobj(nb_path, complete_path = True) or {}
         return data
 
-    def store_notice_board_userdata(self, repoid, metadata):
+    def store_noticeboard_userdata(self, repoid, metadata):
         """
         Store given noticeboard metadata for given repository to disk.
 
@@ -108,14 +108,14 @@ class NoticeBoardMixin:
         @type read_status: bool
         @raise KeyError: if given repository identifier is not valid
         """
-        data = self.get_notice_board_userdata(repoid)
+        data = self.get_noticeboard_userdata(repoid)
         obj = data.setdefault('read_items', set())
         if read_status:
             obj.add(item_id)
         else:
             obj.discard(item_id)
 
-        return self.store_notice_board_userdata(repoid, data)
+        return self.store_noticeboard_userdata(repoid, data)
 
     def get_noticeboard_item_read_status(self, repoid):
         """
@@ -126,6 +126,78 @@ class NoticeBoardMixin:
         @return: item identifiers marked as "read"
         @rtype: set
         """
-        data = self.get_notice_board_userdata(repoid)
+        data = self.get_noticeboard_userdata(repoid)
         return data.get('read_items', set())
 
+    def _get_noticeboard_hash(self, repoid):
+        """
+        Return noticeboard hash data.
+
+        @param repoid: repository identifier
+        @type repoid: string
+        """
+        nb_data = self.get_noticeboard(repoid)
+
+        mystr = ''
+        for key in ("description", "pubDate", "title", "link", "id",):
+            if key not in nb_data:
+                continue
+            elem = nb_data[key]
+            if not isinstance(elem, basestring):
+                continue
+            mystr += elem
+
+        return self.entropyTools.md5string(mystr)
+
+    def mark_noticeboard_items_as_read(self, repoid):
+        """
+        Mark noticeboard items for given repository as "read". "read" status
+        will be automatically tainted when noticeboard changes.
+
+        @param repoid: repository identifier
+        @type repoid: string
+        """
+        data = self.get_noticeboard_userdata(repoid)
+        data['as_read'] = self._get_noticeboard_hash(repoid)
+
+        return self.store_noticeboard_userdata(repoid, data)
+
+    def unmark_noticeboard_items_as_read(self, repoid):
+        """
+        Unmark noticeboard items for given repository as "read". "read" status
+        will be automatically tainted when noticeboard changes.
+
+        @param repoid: repository identifier
+        @type repoid: string
+        """
+        data = self.get_noticeboard_userdata(repoid)
+        data['as_read'] = "0000"
+
+        return self.store_noticeboard_userdata(repoid, data)
+
+    def is_noticeboard_marked_as_read(self, repoid):
+        """
+        Return whether noticeboard for given repository has been marked as
+        "read" by user.
+
+        @param repoid: repository identifier
+        @type repoid: string
+        """
+        data = self.get_noticeboard_userdata(repoid)
+        if not data.has_key('as_read'):
+            return False
+        nb_hash = self._get_noticeboard_hash(repoid)
+        return nb_hash == data['as_read']
+
+    def are_noticeboards_marked_as_read(self):
+        """
+        Return whether all available repository noticeboards are marked as
+        read.
+
+        @return: read status
+        @rtype: bool
+        """
+        for repoid in self.validRepositories:
+            if not self.is_noticeboard_marked_as_read(repoid):
+                return False
+        return True

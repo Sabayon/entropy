@@ -188,7 +188,7 @@ def check_notice_board_availability(reponame):
     def show_err():
         print_error(darkred(" @@ ")+blue("%s" % (_("Notice board not available"),) ))
 
-    data = Equo.get_notice_board(reponame)
+    data = Equo.get_noticeboard(reponame)
     if not data:
         show_err()
         return

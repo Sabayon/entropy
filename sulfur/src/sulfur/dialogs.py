@@ -267,8 +267,6 @@ class NoticeBoardWindow(MenuSkel):
 
     def __init__( self, window, entropy ):
 
-        from entropy.misc import RSS
-        self.RSS = RSS
         self.Entropy = entropy
         self.window = window
 
@@ -285,17 +283,29 @@ class NoticeBoardWindow(MenuSkel):
         self.view = self.nb_ui.noticeView
         self.model = self.setup_view()
 
-
     def load(self, repoids):
         self.repoids = repoids
         self.show_data()
         self.view.expand_all()
-        self.nb_ui.noticeBoardWindow.show_all()
+        self.nb_ui.noticeBoardStfu.set_active(
+            self.Entropy.are_noticeboards_marked_as_read())
+        self.nb_ui.noticeBoardWindow.show()
 
     def setup_view(self):
         model = gtk.TreeStore( gobject.TYPE_PYOBJECT )
         self.view.set_model( model )
-        self.create_text_column( _( "Notice" ), size = 200, expand = True, set_height = 40 )
+
+        self.create_text_column( _( "Notice" ), size = 200, expand = True,
+            set_height = 40 )
+
+        # Create read status pixmap
+        cell = gtk.CellRendererPixbuf()
+        column = gtk.TreeViewColumn( _("Status"), cell )
+        column.set_cell_data_func( cell, self.status_pixbuf )
+        column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
+        column.set_fixed_width( 40 )
+        self.view.append_column( column )
+
         return model
 
     def text_data_func( self, column, cell, model, iterator ):
@@ -312,6 +322,16 @@ class NoticeBoardWindow(MenuSkel):
                 cell.set_property('markup',mytxt)
             cell.set_property('cell-background',obj['color'])
 
+    def status_pixbuf( self, column, cell, model, myiter ):
+        obj = model.get_value( myiter, 0 ) or {}
+        if obj.get('is_repo'):
+            cell.set_property('stock-id', None)
+        elif obj['read']:
+            cell.set_property('stock-id', 'gtk-apply')
+        else:
+            cell.set_property('stock-id', 'gtk-cancel')
+        cell.set_property('cell-background',obj['color'])
+
     def create_text_column( self, hdr, size = None, expand = False, set_height = 0 ):
         cell = gtk.CellRendererText()
         if set_height: cell.set_property('height', set_height)
@@ -324,7 +344,24 @@ class NoticeBoardWindow(MenuSkel):
         column.set_expand( expand )
         self.view.append_column( column )
 
+    def on_noticeBoardStfu_toggled(self, widget):
+        for repoid in self.repoids:
+            if widget.get_active():
+                self.Entropy.mark_noticeboard_items_as_read(repoid)
+            else:
+                self.Entropy.unmark_noticeboard_items_as_read(repoid)
+
     def on_noticeBoardWindow_delete_event(self, *myargs):
+
+        # store noticeboard items read status back to hd
+        for mod_obj in self.model:
+            for children in mod_obj.iterchildren():
+                for obj in children:
+                    if not obj:
+                        continue
+                    self.Entropy.set_noticeboard_item_read_status(
+                        obj['repoid'], obj['id'], obj['read'])
+
         self.model.clear()
         self.nb_ui.noticeBoardWindow.destroy()
         del self.nb_ui
@@ -351,22 +388,20 @@ class NoticeBoardWindow(MenuSkel):
                 'name': repoid,
                 'desc': avail_repos[repoid].get('description'),
                 'path': self.repoids[repoid],
-                'color': colors[0]
+                'color': colors[0],
+                'read': False,
+                'repoid': repoid,
             }
             parent = self.model.append( None, (master_dict,) )
-            try:
-                myrss = self.RSS(self.repoids[repoid],'','')
-            except:
-                entropyTools.print_traceback()
-                continue
-            items, entries_len = myrss.get_entries()
-            items = items.copy()
-            items_keys = sorted(items.keys())
-            for key in items_keys:
+            items = self.Entropy.get_noticeboard(repoid).copy()
+            read_items = self.Entropy.get_noticeboard_item_read_status(repoid)
+            for key in sorted(items):
                 counter += 1
                 mydict = items[key].copy()
                 mydict['color'] = colors[counter%len(colors)]
                 mydict['id'] = key
+                mydict['read'] = key in read_items
+                mydict['repoid'] = repoid
                 self.model.append( parent, (mydict,) )
 
 class RemoteConnectionMenu(MenuSkel):
@@ -1630,7 +1665,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         with self.BufferLock:
             try:
-                status, queue_id = self.Service.Methods.get_notice_board(repoid)
+                status, queue_id = self.Service.Methods.get_noticeboard(repoid)
             except Exception, e:
                 self.service_status_message(e)
                 return
@@ -3744,6 +3779,7 @@ class RmNoticeBoardMenu(MenuSkel):
         self.rm_ui.rmNoticeBoardInfo.set_transient_for(self.window)
         self.rm_ui.rmNoticeBoardInfo.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.url = None
+        self.item = None
         gtk.link_button_set_uri_hook(self.load_url, data=self.url)
 
     def load_url(self, widget, url, extra):
@@ -3755,6 +3791,10 @@ class RmNoticeBoardMenu(MenuSkel):
     def on_rmNoticeBoardCloseButton_clicked(self, widget):
         self.rm_ui.rmNoticeBoardInfo.hide()
         self.rm_ui.rmNoticeBoardInfo.destroy()
+
+    def on_rmNoticeBoardMarkRead_clicked(self, widget):
+        if self.item:
+            self.item['read'] = True
 
     def destroy(self):
         self.rm_ui.rmNoticeBoardInfo.destroy()
@@ -3781,15 +3821,16 @@ class RmNoticeBoardMenu(MenuSkel):
             self.rm_ui.rmNoticeBoardDateLabel,
             self.rm_ui.rmNoticeBoardTitleLabel,
         ]
-        for item in bold_items:
-            t = item.get_text()
-            item.set_markup("<span foreground='%s'><small><b>%s</b></small></span>" % (SulfurConf.color_title,t,))
-        for item in small_items:
-            t = item.get_text()
-            item.set_markup("<span foreground='%s'><small>%s</small></span>" % (SulfurConf.color_pkgsubtitle,t,))
+        for xitem in bold_items:
+            t = xitem.get_text()
+            xitem.set_markup("<span foreground='%s'><small><b>%s</b></small></span>" % (SulfurConf.color_title,t,))
+        for xitem in small_items:
+            t = xitem.get_text()
+            xitem.set_markup("<span foreground='%s'><small>%s</small></span>" % (SulfurConf.color_pkgsubtitle,t,))
         t = self.rm_ui.rmNoticeBoardTextLabel.get_text()
         self.rm_ui.rmNoticeBoardTextLabel.set_markup("<span foreground='%s'><small>%s</small></span>" % (SulfurConf.color_subdesc,t,))
         self.rm_ui.rmNoticeBoardInfo.show_all()
+        self.item = item
 
 class SmQueueMenu(MenuSkel):
 
@@ -6453,5 +6494,4 @@ class ExceptionDialog:
                 okDialog(None,_("Your report has been submitted successfully! Thanks a lot."))
             else:
                 okDialog(None,_("Cannot submit your report. Not connected to Internet?"))
-        #gtkEventThread.doQuit()
         raise SystemExit(1)
