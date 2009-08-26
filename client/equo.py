@@ -320,6 +320,7 @@ myopts_extended = [
             (3,'compile',2,_('compilation function')),
                 (4,'categories',1,_('compile packages belonging to the provided categories')),
                     (5,'--list',1,_('just list packages')),
+                    (5,'--nooldslots',1,_('do not pull old package slots')),
                 (4,'pkgset',2,_('compile packages in provided package set names')),
                     (5,'--list',1,_('just list packages')),
                     (5,'--rebuild',1,_('rebuild everything')),

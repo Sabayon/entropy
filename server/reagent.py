@@ -100,6 +100,7 @@ myopts = [
         (2,'compile',4,_('compilation function')),
             (3,'categories',2,_('compile packages belonging to the provided categories')),
                 (4,'--list',2,_('just list packages')),
+                (4,'--nooldslots',1,_('do not pull old package slots')),
             (3,'pkgset',3,_('compile packages in provided package set names')),
                 (4,'--list',2,_('just list packages')),
                 (4,'--rebuild',1,_('rebuild everything')),

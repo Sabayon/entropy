@@ -25,6 +25,7 @@ from entropy.const import *
 from entropy.output import *
 from entropy.server.interfaces import Server
 from entropy.i18n import _
+import entropy.tools
 Entropy = Server(community_repo = etpConst['community']['mode'])
 
 def inject(options):
@@ -173,7 +174,7 @@ def repositories(options):
         dbconn = Entropy.open_server_repository(repo = repo, just_reading = True)
 
         def dep_check_cb(s):
-            return Entropy.entropyTools.isvalidatom(s)
+            return entropy.tools.isvalidatom(s)
 
         for idpackage in idpackages:
             atom = dbconn.retrieveAtom(idpackage)
@@ -410,7 +411,7 @@ def update(options):
             try:
                 Entropy.quickpkg(x[0],Entropy.get_local_store_directory())
             except OSError:
-                Entropy.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 print_info(brown("    !!! ")+bold("%s..." % (_("Ignoring broken Spm entry, please recompile it"),) ))
 
     tbz2files = os.listdir(Entropy.get_local_store_directory())
@@ -647,8 +648,8 @@ def database(options):
         mydblist = []
         db_data = []
         for mydb in dblist:
-            ts = Entropy.entropyTools.get_file_unix_mtime(mydb)
-            mytime = Entropy.entropyTools.convert_unix_time_to_human_time(ts)
+            ts = entropy.tools.get_file_unix_mtime(mydb)
+            mytime = entropy.tools.convert_unix_time_to_human_time(ts)
             mydblist.append("[%s] %s" % (mytime,mydb,))
             db_data.append(mydb)
 
@@ -697,8 +698,6 @@ def spm(options):
             do_dbsync = True
         elif opt == "--dbupdate":
             do_dbupdate = True
-        elif opt.startswith("--"):
-            continue
         else:
             opts.append(opt)
     options = opts[:]
@@ -726,9 +725,32 @@ def spm(options):
 
 def spm_compile_categories(options, do_list = False):
 
+    # --nooldslots support
+    oldslots = "--nooldslots" not in options
+    if not oldslots:
+        while 1:
+            try:
+                options.remove("--nooldslots")
+            except ValueError:
+                break
+
     categories = sorted(set(options))
     packages = Entropy.Spm().get_available_packages(categories)
     packages = sorted(packages)
+
+    # remove older packages from list (through slot)
+    if not oldslots:
+        oldslots_meta = {}
+        for package in packages:
+            pkg_slot = Entropy.Spm().get_package_setting(package, "SLOT")
+            pkg_key = entropy.tools.dep_getkey(package)
+            obj = oldslots_meta.setdefault(pkg_key, set())
+            obj.add((pkg_slot, package,))
+        del packages[:]
+        for pkg_key in sorted(oldslots_meta):
+            slots_data = sorted(oldslots_meta[pkg_key])
+            packages.append(slots_data[-1][1])
+
     if do_list:
         print ' '.join(["="+x for x in packages])
     else:
