@@ -953,6 +953,7 @@ class MiscMixin:
 
     # resources lock file object container
     RESOURCES_LOCK_F_REF = None
+    RESOURCES_LOCK_F_COUNT = 0
 
     def reload_constants(self):
         initconfig_entropy_constants(etpSys['rootdir'])
@@ -965,9 +966,23 @@ class MiscMixin:
             os.chown(filepath,-1,etpConst['entropygid'])
 
     def resources_create_lock(self):
-        return self.create_pid_file_lock(etpConst['locks']['using_resources'])
+        acquired = self.create_pid_file_lock(
+            etpConst['locks']['using_resources'])
+        if acquired:
+            MiscMixin.RESOURCES_LOCK_F_COUNT += 1
+        return acquired
 
     def resources_remove_lock(self):
+
+        # decrement lock counter
+        if MiscMixin.RESOURCES_LOCK_F_COUNT > 0:
+            MiscMixin.RESOURCES_LOCK_F_COUNT -= 1
+
+        # if lock counter > 0, still locked
+        # waiting for other upper-level calls
+        if MiscMixin.RESOURCES_LOCK_F_COUNT > 0:
+            return
+
         f_obj = MiscMixin.RESOURCES_LOCK_F_REF
         if f_obj is not None:
             fcntl.flock(f_obj.fileno(), fcntl.LOCK_UN)
