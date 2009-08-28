@@ -12,6 +12,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - entropy.server API
     - entropy.db hookable plugins support (atom/dep validation, db taint,
         pkg add, pkg rm)
+    - entropy.client hookable plugin support for SPM
     - Transform Sulfur into Entropy Store:
         - UGC for more coolness
         - title change
