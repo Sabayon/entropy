@@ -1004,7 +1004,7 @@ class MiscMixin:
 
         if MiscMixin.RESOURCES_LOCK_F_REF is not None:
             # already locked, reentrant lock
-            return
+            return True
 
         lockdir = os.path.dirname(pidfile)
         if not os.path.isdir(lockdir):

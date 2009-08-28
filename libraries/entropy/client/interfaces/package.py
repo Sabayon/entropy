@@ -2069,6 +2069,12 @@ class Package:
         # lock
         acquired = self.Entropy.resources_create_lock()
         if not acquired:
+            self.Entropy.updateProgress(
+                blue(_("Cannot acquire Entropy resources lock.")),
+                importance = 2,
+                type = "error",
+                header = darkred("   ## ")
+            )
             return 4 # app locked during lock acquire
         try:
             rc = self.run_stepper(xterm_header)
