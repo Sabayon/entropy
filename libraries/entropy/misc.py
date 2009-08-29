@@ -137,7 +137,7 @@ class Lifo:
             raise ValueError("Lifo is empty")
         try:
             return self.__buf.pop(idx)
-        except (KeyError,):
+        except (KeyError, TypeError,):
             raise ValueError("Lifo is empty")
 
 class TimeScheduled(threading.Thread):
