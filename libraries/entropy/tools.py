@@ -830,7 +830,8 @@ def append_xpak(tbz2file, atom):
     from entropy.spm.plugins.factory import get_default_instance
     text = TextInterface()
     spm = get_default_instance(text)
-    dbdir = spm.get_vdb_path()+"/"+atom+"/"
+    dbbuild = spm.get_installed_package_build_script_path(atom)
+    dbdir = os.path.dirname(dbbuild)
     if os.path.isdir(dbdir):
         tbz2 = xpak.tbz2(tbz2file)
         tbz2.recompose(dbdir)

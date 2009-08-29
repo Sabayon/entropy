@@ -299,7 +299,6 @@ def update(options):
 
         if repackageItems:
 
-            appdb = Entropy.Spm().get_vdb_path()
             packages = []
             dbconn = Entropy.open_server_repository(read_only = True, no_upload = True)
 
@@ -311,8 +310,11 @@ def update(options):
                     cat = dbconn.retrieveCategory(match[0])
                     name = dbconn.retrieveName(match[0])
                     version = dbconn.retrieveVersion(match[0])
-                    if os.path.isdir(appdb+"/"+cat+"/"+name+"-"+version):
-                        packages.append((cat+"/"+name+"-"+version,0))
+                    spm_pkg = os.path.join(cat, name + "-" + version)
+                    spm_build = Entropy.Spm().get_installed_package_build_script_path(spm_pkg)
+                    spm_pkg_dir = os.path.dirname(spm_build)
+                    if os.path.isdir(spm_pkg_dir):
+                        packages.append((spm_pkg, 0))
 
             if packages:
                 toBeAdded |= set(packages)
@@ -334,7 +336,7 @@ def update(options):
                 if myatom in tba:
                     tb_added_new.add(tba.get(myatom))
                     continue
-                inst_myatom = Entropy.Spm().get_installed_atom(myatom)
+                inst_myatom = Entropy.Spm().match_installed_package(myatom)
                 if inst_myatom in tba:
                     tb_added_new.add(tba.get(inst_myatom))
             toBeAdded = tb_added_new
@@ -735,14 +737,14 @@ def spm_compile_categories(options, do_list = False):
                 break
 
     categories = sorted(set(options))
-    packages = Entropy.Spm().get_available_packages(categories)
+    packages = Entropy.Spm().get_packages(categories)
     packages = sorted(packages)
 
     # remove older packages from list (through slot)
     if not oldslots:
         oldslots_meta = {}
         for package in packages:
-            pkg_slot = Entropy.Spm().get_package_setting(package, "SLOT")
+            pkg_slot = Entropy.Spm().get_package_metadata(package, "SLOT")
             pkg_key = entropy.tools.dep_getkey(package)
             obj = oldslots_meta.setdefault(pkg_key, set())
             obj.add((pkg_slot, package,))
@@ -769,9 +771,7 @@ def spm_compile_pkgset(pkgsets, do_rebuild = False, do_dbupdate = False,
         return 1
 
     # filter available sets
-    avail_sets = Entropy.Spm().get_sets(False)
-    avail_pkgsets = dict(((x,avail_sets.get(x),) for x in pkgsets \
-        if x in avail_sets))
+    avail_sets = Entropy.Spm().get_package_sets(False)
     for pkgset in pkgsets:
         if pkgset not in avail_sets:
             print_error(bold(" !!! ")+darkred("%s: %s" % (
@@ -791,13 +791,12 @@ def spm_compile_pkgset(pkgsets, do_rebuild = False, do_dbupdate = False,
     # expand package sets
     for pkgset in pkgsets:
 
-        set_pkgs = [str(x) for x in Entropy.Spm().get_set_atoms(pkgset)]
-        set_atoms = [Entropy.Spm().get_best_atom(x) for x in set_pkgs]
-        set_atoms = [x for x in set_atoms if x != None]
+        set_atoms = [Entropy.Spm().match_package(x) for x in avail_sets[pkgset]]
+        set_atoms = [x for x in set_atoms if x]
 
         if not do_rebuild:
             set_atoms = [x for x in set_atoms if not \
-                Entropy.Spm().get_installed_atom(x)]
+                Entropy.Spm().match_installed_package(x)]
         set_atoms = ["="+x for x in set_atoms]
         if not set_atoms:
             continue
@@ -808,7 +807,7 @@ def spm_compile_pkgset(pkgsets, do_rebuild = False, do_dbupdate = False,
         rc = subprocess.call(args)
         if rc != 0:
             return rc
-        done_atoms |= set(set_atoms)
+        done_atoms.update(set_atoms)
 
     if not done_atoms:
         print_warning(red(" @@ ")+blue("%s." % (

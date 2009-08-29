@@ -78,7 +78,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         dbconn = self.Client.init_generic_memory_repository(
             self.mem_repoid, self.mem_repo_desc)
         test_pkg = _misc.get_test_package()
-        data = self.Spm.extract_pkg_metadata(test_pkg, silent = True)
+        data = self.Spm.extract_package_metadata(test_pkg)
         idpackage, rev, new_data = dbconn.handlePackage(data)
         self.assertEqual(data, new_data)
         self.Client.remove_repository(self.mem_repoid)

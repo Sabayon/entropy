@@ -1520,7 +1520,6 @@ class MiscMixin:
         if pkgdata['versiontag']: pkgtag = "#"+pkgdata['versiontag']
         pkgname = pkgdata['name']+"-"+pkgdata['version']+pkgrev+pkgtag # + version + tag
         pkgcat = pkgdata['category']
-        #pkgfile = pkgname+etpConst['packagesext']
         dirpath += "/"+pkgname+etpConst['packagesext']
         if os.path.isfile(dirpath):
             os.remove(dirpath)
@@ -1569,12 +1568,15 @@ class MiscMixin:
         import entropy.xpak as xpak
         Spm = self.Spm()
 
-        gentoo_name = self.entropyTools.remove_tag(pkgname)
-        gentoo_name = self.entropyTools.remove_entropy_revision(gentoo_name)
-        if portdbPath == None:
-            dbdir = Spm.get_vdb_path()+"/"+pkgcat+"/"+gentoo_name+"/"
+        spm_name = self.entropyTools.remove_tag(pkgname)
+        spm_name = self.entropyTools.remove_entropy_revision(spm_name)
+        if portdbPath is None:
+            spm_pkg = os.path.join(pkgcat, spm_name)
+            dbbuild = Spm.get_installed_package_build_script_path(spm_pkg)
+            dbdir = os.path.dirname(dbbuild)
         else:
-            dbdir = portdbPath+"/"+pkgcat+"/"+gentoo_name+"/"
+            dbdir = os.path.join(portdbPath, pkgcat, spm_name)
+
         if os.path.isdir(dbdir):
             tbz2 = xpak.tbz2(dirpath)
             tbz2.recompose(dbdir)

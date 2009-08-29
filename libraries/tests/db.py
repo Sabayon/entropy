@@ -50,13 +50,13 @@ class EntropyRepositoryTest(unittest.TestCase):
         }
 
         test_pkg = _misc.get_test_package()
-        data = self.Spm.extract_pkg_metadata(test_pkg, silent = True)
+        data = self.Spm.extract_package_metadata(test_pkg)
         data['content'].update(test_entry.copy())
         idpackage, rev, new_data = self.test_db.handlePackage(data)
         db_data = self.test_db.getPackageData(idpackage)
 
         test_pkg2 = _misc.get_test_package2()
-        data2 = self.Spm.extract_pkg_metadata(test_pkg2, silent = True)
+        data2 = self.Spm.extract_package_metadata(test_pkg2)
         data2['content'].update(test_entry.copy())
         idpackage2, rev2, new_data2 = self.test_db2.handlePackage(data2)
         db_data2 = self.test_db2.getPackageData(idpackage2)
@@ -94,7 +94,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         # insert/compare
         test_pkg = _misc.get_test_package()
-        data = self.Spm.extract_pkg_metadata(test_pkg, silent = True)
+        data = self.Spm.extract_package_metadata(test_pkg)
         idpackage, rev, new_data = self.test_db.handlePackage(data)
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
@@ -143,7 +143,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         # insert/compare
         test_pkg = _misc.get_test_package2()
-        data = self.Spm.extract_pkg_metadata(test_pkg, silent = True)
+        data = self.Spm.extract_package_metadata(test_pkg)
         # Portage stores them this way
         data['changelog'] = u"#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"
         data['license'] = u'GPL-2'
@@ -186,7 +186,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         # insert/compare
         test_pkg = _misc.get_test_package3()
-        data = self.Spm.extract_pkg_metadata(test_pkg, silent = True)
+        data = self.Spm.extract_package_metadata(test_pkg)
         idpackage, rev, new_data = self.test_db.handlePackage(data)
         db_data = self.test_db.getPackageData(idpackage)
         self.assertEqual(new_data, db_data)
@@ -222,7 +222,7 @@ class EntropyRepositoryTest(unittest.TestCase):
     def test_db_import_export(self):
 
         test_pkg = _misc.get_test_package2()
-        data = self.Spm.extract_pkg_metadata(test_pkg, silent = True)
+        data = self.Spm.extract_package_metadata(test_pkg)
         # Portage stores them this way
         data['changelog'] = u"#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"
         data['license'] = u'GPL-2'

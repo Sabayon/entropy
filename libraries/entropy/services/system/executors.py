@@ -246,13 +246,13 @@ class Base:
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
         for atom in atoms:
             try:
-                status = spm.enable_package_useflags(atom, useflags)
+                status = spm.enable_package_compile_options(atom, useflags)
             except:
                 continue
             if status:
                 use_data[atom] = {}
-                matched_atom = spm.get_best_atom(atom)
-                use_data[atom] = spm.get_package_useflags(matched_atom)
+                matched_atom = spm.match_package(atom)
+                use_data[atom] = spm.get_package_compile_options(matched_atom)
 
         return True, use_data
 
@@ -266,13 +266,13 @@ class Base:
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
         for atom in atoms:
             try:
-                status = spm.disable_package_useflags(atom, useflags)
+                status = spm.disable_package_compile_options(atom, useflags)
             except:
                 continue
             if status:
                 use_data[atom] = {}
-                matched_atom = spm.get_best_atom(atom)
-                use_data[atom] = spm.get_package_useflags(matched_atom)
+                matched_atom = spm.match_package(atom)
+                use_data[atom] = spm.get_package_compile_options(matched_atom)
 
         return True, use_data
 
@@ -291,8 +291,9 @@ class Base:
                 category = key.split("/")[0]
             except:
                 continue
-            matched_atom = spm.get_best_atom(atom)
-            if not matched_atom: continue
+            matched_atom = spm.match_package(atom)
+            if not matched_atom:
+                continue
 
             if not atoms_data.has_key(category):
                 atoms_data[category] = {}
@@ -308,7 +309,7 @@ class Base:
             return False,'no item in queue'
 
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
-        packages = spm.get_available_packages(categories)
+        packages = spm.get_packages(categories)
         package_data = {}
         for package in packages:
             try:
@@ -329,7 +330,7 @@ class Base:
             return False,'no item in queue'
 
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
-        packages, pkg_len = spm.get_installed_packages(categories = categories)
+        packages = spm.get_installed_packages(categories = categories)
         package_data = {}
         for package in packages:
             try:
@@ -968,10 +969,11 @@ class Base:
 
         data = {}
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
-        glsa_ids = spm.list_glsa_packages(list_type)
-        if not glsa_ids: return False,data
+        glsa_ids = spm.get_security_packages(list_type)
+        if not glsa_ids:
+            return False, data
         for myid in glsa_ids:
-            data[myid] = spm.get_glsa_id_information(myid)
+            data[myid] = spm.get_security_advisory_metadata(myid)
         return True,data
 
     def get_notice_board(self, queue_id, repoid):
@@ -1148,21 +1150,21 @@ class Base:
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
         try:
             if from_installed:
-                data['slot'] = spm.get_installed_package_slot(matched_atom)
-                portage_matched_atom = spm.get_best_atom("%s:%s" % (data['key'],data['slot'],))
+                data['slot'] = spm.get_installed_package_metadata(matched_atom, "SLOT")
+                portage_matched_atom = spm.match_package("%s:%s" % (data['key'], data['slot'],))
                 # get installed package description
                 data['available_atom'] = portage_matched_atom
                 if portage_matched_atom:
-                    data['use'] = spm.get_package_useflags(portage_matched_atom)
+                    data['use'] = spm.get_package_compile_options(portage_matched_atom)
                 else:
                     # get use flags of the installed package
                     data['use'] = spm.get_installed_package_useflags(matched_atom)
-                data['description'] = spm.get_installed_package_description(matched_atom)
+                data['description'] = spm.get_installed_package_metadata(matched_atom, "DESCRIPTION")
             else:
-                data['slot'] = spm.get_package_slot(matched_atom)
-                data['use'] = spm.get_package_useflags(matched_atom)
-                data['installed_atom'] = spm.get_installed_atom("%s:%s" % (data['key'],data['slot'],))
-                data['description'] = spm.get_package_description(matched_atom)
+                data['slot'] = spm.get_package_metadata(matched_atom, "SLOT")
+                data['use'] = spm.get_package_compile_options(matched_atom)
+                data['installed_atom'] = spm.match_installed_package("%s:%s" % (data['key'],data['slot'],))
+                data['description'] = spm.get_package_metadata(matched_atom, "DESCRIPTION")
         except KeyError:
             pass
 

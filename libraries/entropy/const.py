@@ -191,7 +191,6 @@ def const_default_settings(rootdir):
     default_etp_ugc_confdir = default_etp_confdir+"/ugc"
     default_etp_syslogdir = rootdir+"/var/log/entropy/"
     default_etp_vardir = rootdir+"/var/tmp/entropy"
-    edb_counter = rootdir+"/var/cache/edb/counter"
 
     cmdline = []
     cmdline_file = "/proc/cmdline"
@@ -449,7 +448,6 @@ def const_default_settings(rootdir):
         # this makes possible to have multiple versions of packages
         # and handle the removal through expiration (using creation date)
         'expiration_based_scope': False,
-        'edbcounter': edb_counter,
         # our official repository name
         'officialserverrepositoryid': "sabayonlinux.org",
         # our official repository name

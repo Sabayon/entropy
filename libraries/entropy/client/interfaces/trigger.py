@@ -583,13 +583,10 @@ class Trigger:
                 if not etpUi['debug']:
                     sys.stdout = oldstdout
 
-                rc = self.Spm.spm_doebuild(
-                    myebuild,
-                    mydo = "postinst",
-                    tree = "bintree",
-                    cpv = portage_atom,
-                    portage_tmpdir = self.pkgdata['unpackdir'],
-                    licenses = self.pkgdata['accept_license']
+                rc = self.Spm.execute_package_phase(portage_atom, myebuild,
+                    "postinstall",
+                    work_dir = self.pkgdata['unpackdir'],
+                    licenses_accepted = self.pkgdata['accept_license']
                 )
                 if rc == 1:
                     self.Entropy.clientLog.log(
@@ -628,16 +625,12 @@ class Trigger:
     def __ebuild_setup_phase(self, ebuild, portage_atom):
         rc = 0
         env_file = self.pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"
-        if not os.path.isfile(env_file):
-            # if environment is not yet created, we need to run pkg_setup()
-            rc = self.Spm.spm_doebuild(
-                ebuild,
-                mydo = "setup",
-                tree = "bintree",
-                cpv = portage_atom,
-                portage_tmpdir = self.pkgdata['unpackdir'],
-                licenses = self.pkgdata['accept_license']
-            ) # create mysettings["T"]+"/environment"
+        if not os.access(env_file, os.R_OK | os.F_OK):
+            rc = self.Spm.execute_package_phase(portage_atom, ebuild,
+                "setup",
+                work_dir = self.pkgdata['unpackdir'],
+                licenses_accepted = self.pkgdata['accept_license']
+            )
             if rc == 1:
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
@@ -679,13 +672,10 @@ class Trigger:
                 if not etpUi['debug']:
                     sys.stdout = oldstdout
 
-                rc = self.Spm.spm_doebuild(
-                    myebuild,
-                    mydo = "preinst",
-                    tree = "bintree",
-                    cpv = portage_atom,
-                    portage_tmpdir = self.pkgdata['unpackdir'],
-                    licenses = self.pkgdata['accept_license']
+                rc = self.Spm.execute_package_phase(portage_atom, myebuild,
+                    "preinstall",
+                    work_dir = self.pkgdata['unpackdir'],
+                    licenses_accepted = self.pkgdata['accept_license']
                 )
                 if rc == 1:
                     self.Entropy.clientLog.log(
@@ -727,12 +717,9 @@ class Trigger:
 
         portage_atom = self.pkgdata['category'] + "/" + self.pkgdata['name'] + \
             "-" + self.pkgdata['version']
-        try:
-            myebuild = self.Spm.get_vdb_path() + portage_atom + "/" + \
-                self.pkgdata['name'] + "-" + self.pkgdata['version'] + \
-                etpConst['spm']['source_build_ext']
-        except:
-            myebuild = ''
+
+        myebuild = self.Spm.get_installed_package_build_script_path(
+            portage_atom)
 
         self.myebuild_moved = None
         if os.path.isfile(myebuild):
@@ -769,13 +756,10 @@ class Trigger:
                 header = red("   ## ")
             )
             try:
-                rc = self.Spm.spm_doebuild(
-                    myebuild,
-                    mydo = "prerm",
-                    tree = "bintree",
-                    cpv = portage_atom,
-                    portage_tmpdir = etpConst['entropyunpackdir'] + "/" + portage_atom,
-                    licenses = self.pkgdata['accept_license']
+                rc = self.Spm.execute_package_phase(portage_atom, myebuild,
+                    "preremove",
+                    work_dir = etpConst['entropyunpackdir']+"/"+portage_atom,
+                    licenses_accepted = self.pkgdata['accept_license']
                 )
                 if rc == 1:
                     self.Entropy.clientLog.log(
@@ -822,12 +806,9 @@ class Trigger:
 
         portage_atom = self.pkgdata['category'] + "/" + self.pkgdata['name'] + \
             "-" + self.pkgdata['version']
-        try:
-            myebuild = self.Spm.get_vdb_path() + portage_atom + "/" + \
-                self.pkgdata['name'] + "-" + self.pkgdata['version'] + \
-                etpConst['spm']['source_build_ext']
-        except:
-            myebuild = ''
+
+        myebuild = self.Spm.get_installed_package_build_script_path(
+            portage_atom)
 
         self.myebuild_moved = None
         if os.path.isfile(myebuild):
@@ -863,13 +844,10 @@ class Trigger:
                 header = red("   ## ")
             )
             try:
-                rc = self.Spm.spm_doebuild(
-                    myebuild,
-                    mydo = "postrm",
-                    tree = "bintree",
-                    cpv = portage_atom,
-                    portage_tmpdir = etpConst['entropyunpackdir']+"/"+portage_atom,
-                    licenses = self.pkgdata['accept_license']
+                rc = self.Spm.execute_package_phase(portage_atom, myebuild,
+                    "postremove",
+                    work_dir = etpConst['entropyunpackdir']+"/"+portage_atom,
+                    licenses_accepted = self.pkgdata['accept_license']
                 )
                 if rc == 1:
                     self.Entropy.clientLog.log(

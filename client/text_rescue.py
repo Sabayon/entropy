@@ -123,9 +123,6 @@ def database(options):
         print_info(red("  %s..." % (_("Transductingactioningintactering databases"),) ))
 
         portagePackages = Spm.get_installed_packages()
-        portagePackages = portagePackages[0]
-
-        Spm = Equo.Spm()
 
         # do for each database
         maxcount = str(len(portagePackages))
@@ -146,7 +143,7 @@ def database(options):
             Equo.entropyTools.append_xpak(temptbz2,portagePackage)
             # now extract info
             try:
-                mydata = Spm.extract_pkg_metadata(temptbz2, silent = True)
+                mydata = Spm.extract_package_metadata(temptbz2)
             except Exception, e:
                 Equo.entropyTools.print_traceback()
                 Equo.clientLog.log(
@@ -443,7 +440,11 @@ def database(options):
 
         import shutil
         print_info(red(" %s..." % (_("Collecting Portage counters"),) ), back = True)
-        installed_packages = Spm.get_installed_packages_counter()
+        installed_packages = Spm.get_installed_packages()
+        get_meta = Spm.get_installed_package_metadata
+        installed_packages = [(x, get_meta(x, "COUNTER"),) for x in \
+            installed_packages]
+
         print_info(red(" %s..." % (_("Collecting Entropy packages"),) ), back = True)
         installedCounters = set()
         toBeAdded = set()
@@ -473,7 +474,7 @@ def database(options):
                         add = True
                         for pkgdata in toBeAdded:
                             try:
-                                addslot = Spm.get_installed_package_slot(pkgdata[0])
+                                addslot = Spm.get_installed_package_metadata(pkgdata[0], "SLOT")
                             except KeyError:
                                 continue
                             addkey = Equo.entropyTools.dep_getkey(pkgdata[0])
@@ -586,7 +587,7 @@ def database(options):
                 Equo.entropyTools.append_xpak(temptbz2, atom)
                 # now extract info
                 try:
-                    mydata = Spm.extract_pkg_metadata(temptbz2, silent = True)
+                    mydata = Spm.extract_package_metadata(temptbz2)
                 except Exception, e:
                     Equo.clientLog.log(
                         ETP_LOGPRI_INFO,

@@ -34,6 +34,7 @@ def get_available_plugins():
         return _AVAILABLE_CACHE.copy()
 
     available = {}
+    base_api = SpmPlugin.SPM_PLUGIN_API_VERSION
     import imp
     import entropy.spm.plugins.interfaces as plugs
     modpath = plugs.__file__
@@ -64,6 +65,14 @@ def get_available_plugins():
                     continue
             except (TypeError, AttributeError,):
                 continue
+
+            if not hasattr(obj, "PLUGIN_API_VERSION"):
+                sys.stderr.write("!!! Entropy SPM plugin warning: " \
+                    "no PLUGIN_API_VERSION !!!\n")
+            else:
+                if obj.PLUGIN_API_VERSION != base_api:
+                    sys.stderr.write("!!! Entropy SPM plugin warning: " \
+                        "PLUGIN_API_VERSION mismatch !!!\n")
 
             available[modname_clean] = obj
 

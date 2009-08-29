@@ -185,7 +185,22 @@ def InflateHandler(mytbz2s, savedir):
         etptbz2path = savedir+"/"+os.path.basename(tbz2)
         if os.path.realpath(tbz2) != os.path.realpath(etptbz2path): # can convert a file without copying
             shutil.copy2(tbz2,etptbz2path)
-        mydata = Spm.extract_pkg_metadata(etptbz2path)
+        info_package = bold(os.path.basename(etptbz2path)) + ": "
+        Equo.updateProgress(
+            red(info_package + _("Extracting package metadata") + " ..."),
+            importance = 0,
+            type = "info",
+            header = brown(" * "),
+            back = True
+        )
+        mydata = Spm.extract_package_metadata(etptbz2path)
+        Equo.updateProgress(
+            red(info_package + _("Package extraction complete")),
+            importance = 0,
+            type = "info",
+            header = brown(" * "),
+            back = True
+        )
         # append arbitrary revision
         mydata['revision'] = 9999
         mydata['download'] = mydata['download'][:-5]+"~9999.tbz2"

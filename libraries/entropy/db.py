@@ -910,7 +910,7 @@ class EntropyRepository:
         )
         try:
             spm = get_spm(self)
-            spm.run_fixpackages()
+            spm.packages_repositories_metadata_update()
         except:
             self.entropyTools.print_traceback()
             pass
@@ -1170,22 +1170,29 @@ class EntropyRepository:
             command = action.split()
             if len(command) < 2:
                 continue
+
             key = command[1]
-            name = key.split("/")[1]
+            category, name = key.split("/", 1)
+            dep_key = self.entropyTools.dep_getkey(key)
+
             try:
                 spm = get_spm(self)
             except:
                 self.entropyTools.print_traceback()
                 continue
 
-            vdb_path = spm.get_vdb_path()
-            pkg_path = os.path.join(vdb_path, key.split("/")[0])
-            try:
-                mydirs = [os.path.join(pkg_path, x) for x in \
-                    os.listdir(pkg_path) if x.startswith(name)]
-            except OSError: # no dir, no party!
+            script_path = spm.get_installed_package_build_script_path(dep_key)
+            pkg_path = os.path.dirname(os.path.dirname(script_path))
+            if not os.path.isdir(pkg_path):
+                # no dir,  no party!
                 continue
+
+            mydirs = [os.path.join(pkg_path, x) for x in \
+                os.listdir(pkg_path) if \
+                self.entropyTools.dep_getkey(os.path.join(category, x)) \
+                    == dep_key]
             mydirs = [x for x in mydirs if os.path.isdir(x)]
+
             # now move these dirs
             for mydir in mydirs:
                 to_path = os.path.join(etpConst['packagestmpdir'],
@@ -3133,7 +3140,7 @@ class EntropyRepository:
         @return: category description
         @rtype: string
         """
-        return get_spm(self).get_category_description_data(category)
+        return get_spm(self).get_package_category_description_metadata(category)
 
     def getIDPackage(self, atom):
         """
@@ -7344,7 +7351,6 @@ class EntropyRepository:
 
         # Poll SPM, load variables
         spm = get_spm(self)
-        vdb_path = spm.get_vdb_path()
 
         # this is necessary now, counters table should be empty
         with self.__write_mutex:
@@ -7366,10 +7372,22 @@ class EntropyRepository:
                 myatom = self.retrieveAtom(myid)
                 mybranch = self.retrieveBranch(myid)
                 myatom = self.entropyTools.remove_tag(myatom)
-                myatomcounterpath = "%s%s/%s" % (vdb_path, myatom,
-                    counter_path,)
+                build_path = spm.get_installed_package_build_script_path(myatom)
+                myatomcounterpath = os.path.join(os.path.dirname(build_path),
+                    counter_path)
 
                 if not os.access(myatomcounterpath, os.F_OK | os.R_OK):
+                    if verbose:
+                        mytxt = "%s: %s: %s" % (
+                            bold(_("ATTENTION")),
+                            red(_("Spm counter path not found in")),
+                            bold(myatomcounterpath),
+                        )
+                        self.updateProgress(
+                            mytxt,
+                            importance = 1,
+                            type = "warning"
+                        )
                     continue
 
                 try:

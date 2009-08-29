@@ -5,7 +5,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   0.99:
 
     - entropy.tools + entropy.transceivers API docs in place
-    - entropy.spm SpmPlugin API
 
   1.0_beta1:
 
@@ -25,6 +24,8 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   1.0 - deprecations:
 
     - _databaseStructureUpdates (missing tables creation)
+    - type argument in updateProgress
+    - clientDbconn => clientdb
 
   2.0:
 

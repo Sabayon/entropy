@@ -356,16 +356,19 @@ class Package:
 
     def __configure_package(self):
 
-        try: Spm = self.Entropy.Spm()
-        except: return 1
+        try:
+            Spm = self.Entropy.Spm()
+        except:
+            return 1
 
-        spm_atom = self.infoDict['key']+"-"+self.infoDict['version']
-        myebuild = Spm.get_vdb_path()+spm_atom+"/"+self.infoDict['key'].split("/")[1]+"-"+self.infoDict['version']+etpConst['spm']['source_build_ext']
+        spm_atom = self.infoDict['key'] + "-" + self.infoDict['version']
+        myebuild = Spm.get_installed_package_build_script_path(spm_atom)
+
         if not os.path.isfile(myebuild):
             return 2
 
         self.Entropy.updateProgress(
-            brown(" Ebuild: pkg_config()"),
+            "SPM: %s" % (brown(_("configuration phase")),),
             importance = 0,
             header = red("   ##")
         )
@@ -634,16 +637,16 @@ class Package:
         except:
             return -1 # no Spm support ??
 
-        portdb_dir = Spm.get_vdb_path()
-        remove_path = portdb_dir+atom
+        remove_build = Spm.get_installed_package_build_script_path(atom)
+        remove_path = os.path.dirname(remove_build)
         key = self.entropyTools.dep_getkey(atom)
-        others_installed = [x for x in Spm.search_keys(key) if \
-            self.entropyTools.dep_getkey(x) == key]
+        others_installed = Spm.match_installed_package(key, match_all = True)
         if atom in others_installed:
             others_installed.remove(atom)
         slot = self.infoDict['slot']
         tag = self.infoDict['versiontag']
-        if (tag == slot) and tag: slot = "0"
+        if (tag == slot) and tag:
+            slot = "0"
 
         def do_rm_path_atomic(xpath):
             for my_el in os.listdir(xpath):
@@ -663,17 +666,18 @@ class Package:
         if others_installed:
 
             for myatom in others_installed:
-                myslot = Spm.get_installed_package_slot(myatom)
+                myslot = Spm.get_installed_package_metadata(myatom, "SLOT")
                 if myslot != slot:
                     continue
-                mydir = portdb_dir+myatom
+                mybuild = Spm.get_installed_package_build_script_path(myatom)
+                mydir = os.path.dirname(mybuild)
                 if not os.path.isdir(mydir):
                     continue
                 do_rm_path_atomic(mydir)
 
         else:
 
-            world_file = Spm.get_world_file()
+            world_file = Spm.get_user_installed_packages_file()
             world_file_tmp = world_file+".entropy.tmp"
             if os.access(world_file,os.W_OK) and os.path.isfile(world_file):
                 new = open(world_file_tmp,"w")
@@ -794,10 +798,6 @@ class Package:
 
         return rc
 
-    '''
-    @description: inject the database information into the Gentoo database
-    @output: 0 = all fine, !=0 = error!
-    '''
     def _install_package_into_spm_database(self, newidpackage):
 
         # handle spm support
@@ -806,68 +806,64 @@ class Package:
         except:
             return -1 # no Spm support
 
-        portdb_dir = Spm.get_vdb_path()
-        if not os.path.isdir(portdb_dir):
-            os.makedirs(portdb_dir)
-
         category = self.infoDict['category']
-        name = self.infoDict['name']
-        key = category + "/" + name
+        key = category + "/" + self.infoDict['name']
+        spm_package = key + "-" + self.infoDict['version']
+        build = Spm.get_installed_package_build_script_path(spm_package)
+        pkg_dir = os.path.dirname(build)
+        cat_dir = os.path.dirname(pkg_dir)
 
         atomsfound = set()
-        dbdirs = os.listdir(portdb_dir)
-        if category in dbdirs:
-            catdirs = os.listdir(portdb_dir + "/" + category)
-            dirsfound = set([category + "/" + x for x in catdirs if \
-                key == self.entropyTools.dep_getkey(category + "/" + x)])
-            atomsfound.update(dirsfound)
 
-        ### REMOVE
-        # parse slot and match and remove
-        if atomsfound:
-            pkg_to_remove = None
-            for atom in atomsfound:
-                atomslot = Spm.get_installed_package_slot(atom)
-                # get slot from spm db
-                if atomslot == self.infoDict['slot']:
-                    pkg_to_remove = atom
-                    break
-            if pkg_to_remove:
-                remove_path = portdb_dir + pkg_to_remove
-                shutil.rmtree(remove_path, True)
-                try:
-                    os.rmdir(remove_path)
-                except OSError:
-                    pass
-        del atomsfound
+        if os.path.isdir(cat_dir):
+            my_findings = (os.path.join(category, x) for x in \
+                os.listdir(cat_dir))
+            # filter by key
+            my_findings = (x for x in my_findings if \
+                key == self.entropyTools.dep_getkey(x))
+            atomsfound.update(my_findings)
+
+        myslot = self.infoDict['slot']
+        for xatom in atomsfound:
+
+            if Spm.get_installed_package_metadata(xatom, "SLOT") != myslot:
+                continue
+
+            mybuild = Spm.get_installed_package_build_script_path(xatom)
+            remove_path = os.path.dirname(mybuild)
+            shutil.rmtree(remove_path, True)
+
+            try:
+                os.rmdir(remove_path)
+            except OSError:
+                pass
+
 
         # we now install it
         xpak_rel_path = etpConst['entropyxpakdatarelativepath']
-        if ((self.infoDict['xpakstatus'] != None) and \
-                os.path.isdir( self.infoDict['xpakpath'] + "/" + xpak_rel_path)) or \
-                self.infoDict['merge_from']:
+        proposed_xpak_dir = os.path.join(self.infoDict['xpakpath'],
+            xpak_rel_path)
 
+        if (self.infoDict['xpakstatus'] != None) and \
+            os.path.isdir(proposed_xpak_dir) or self.infoDict['merge_from']:
+
+            copypath = proposed_xpak_dir
             if self.infoDict['merge_from']:
                 copypath = self.infoDict['xpakdir']
                 if not os.path.isdir(copypath):
                     return 0
-            else:
-                copypath = self.infoDict['xpakpath'] + "/" + xpak_rel_path
 
-            if not os.path.isdir(portdb_dir + category):
-                os.makedirs(portdb_dir + category, 0755)
-            destination = portdb_dir + category + "/" + name + "-" + \
-                self.infoDict['version']
-
-            if os.path.isdir(destination):
-                shutil.rmtree(destination)
+            if not os.path.isdir(cat_dir):
+                os.makedirs(cat_dir, 0755)
+            if os.path.isdir(pkg_dir):
+                shutil.rmtree(pkg_dir)
 
             try:
-                shutil.copytree(copypath, destination)
+                shutil.copytree(copypath, pkg_dir)
             except (IOError,), e:
                 mytxt = "%s: %s: %s: %s" % (red(_("QA")),
                     brown(_("Cannot update Portage database to destination")),
-                    purple(destination),e,)
+                    purple(pkg_dir),e,)
                 self.Entropy.updateProgress(
                     mytxt,
                     importance = 1,
@@ -875,94 +871,74 @@ class Package:
                     header = darkred("   ## ")
                 )
 
-            # test if /var/cache/edb/counter is fine
-            if os.path.isfile(etpConst['edbcounter']):
-                try:
-                    f = open(etpConst['edbcounter'],"r")
-                    counter = int(f.readline().strip())
-                    f.close()
-                except:
-                    # need file recreation, parse spm tree
-                    counter = Spm.refill_counter()
-            else:
-                counter = Spm.refill_counter()
-
-            # write new counter to file
-            if os.path.isdir(destination):
-                counter += 1
-                f = open(destination+"/"+etpConst['spm']['xpak_entries']['counter'],"w")
-                f.write(str(counter))
-                f.flush()
-                f.close()
-                f = open(etpConst['edbcounter'],"w")
-                f.write(str(counter))
-                f.flush()
-                f.close()
-                # update counter inside clientDatabase
-                self.Entropy.clientDbconn.insertSpmUid(newidpackage, counter)
-            else:
-                mytxt = brown(_("Cannot update Portage counter, destination %s does not exist.") % (destination,))
+            try:
+                counter = Spm.assign_uid_to_installed_package(spm_package)
+            except SPMError, err:
+                mytxt = "%s: %s [%s]" % (
+                    brown(_("SPM uid update error")), pkg_dir, err,
+                )
                 self.Entropy.updateProgress(
-                    red("QA: ")+mytxt,
+                    red("QA: ") + mytxt,
                     importance = 1,
                     type = "warning",
                     header = darkred("   ## ")
                 )
+                counter = None
+            if counter is not None:
+                self.Entropy.clientDbconn.insertSpmUid(newidpackage, counter)
 
         user_inst_source = etpConst['install_sources']['user']
         if self.infoDict['install_source'] != user_inst_source:
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
-                "Not updating Portage world file for: %s" % (self.infoDict['atom'],)
+                "Not updating SPM user installed pkgs file for: %s" % (
+                    self.infoDict['atom'],)
             )
             # only user selected packages in Portage world file
             return 0
 
-        # add to Portage world
-        # key: key
-        # slot: self.infoDict['slot']
         myslot = self.infoDict['slot']
-        if (self.infoDict['versiontag'] == self.infoDict['slot']) and self.infoDict['versiontag']:
+        if (self.infoDict['versiontag'] == self.infoDict['slot']) \
+            and self.infoDict['versiontag']:
             # usually kernel packages
             myslot = "0"
+
         keyslot = key+":"+myslot
-        world_file = Spm.get_world_file()
+        world_file = Spm.get_user_installed_packages_file()
+        world_dir = os.path.dirname(world_file)
         world_atoms = set()
 
-        if os.access(world_file,os.R_OK) and os.path.isfile(world_file):
-            f = open(world_file,"r")
-            world_atoms = set([x.strip() for x in f.readlines() if x.strip()])
-            f.close()
-        else:
-            mytxt = brown(_("Cannot update Portage world file, destination %s does not exist.") % (world_file,))
-            self.Entropy.updateProgress(
-                red("QA: ")+mytxt,
-                importance = 1,
-                type = "warning",
-                header = darkred("   ## ")
-            )
-            return 0
+        if os.access(world_file, os.R_OK | os.F_OK):
+            with open(world_file, "r") as world_f:
+                world_atoms |= set((x.strip() for x in world_f.readlines() if \
+                    x.strip()))
 
         try:
+
             if keyslot not in world_atoms and \
-                os.access(os.path.dirname(world_file),os.W_OK) and \
+                os.access(world_dir, os.W_OK) and \
                 self.entropyTools.istextfile(world_file):
+
                     world_atoms.discard(key)
                     world_atoms.add(keyslot)
-                    world_atoms = sorted(list(world_atoms))
                     world_file_tmp = world_file+".entropy_inst"
-                    f = open(world_file_tmp,"w")
-                    for item in world_atoms:
-                        f.write(item+"\n")
-                    f.flush()
-                    f.close()
-                    shutil.move(world_file_tmp,world_file)
-        except (UnicodeDecodeError,UnicodeEncodeError), e:
+
+                    with open(world_file_tmp, "w") as world_f:
+                        for item in sorted(world_atoms):
+                            world_f.write(item + "\n")
+                        world_f.flush()
+
+                    os.rename(world_file_tmp, world_file)
+
+        except (UnicodeDecodeError, UnicodeEncodeError,), e:
+
             self.entropyTools.print_traceback(f = self.Entropy.clientLog)
-            mytxt = brown(_("Cannot update Portage world file, destination %s is corrupted.") % (world_file,))
+            mytxt = "%s: %s" % (
+                brown(_("Cannot update SPM installed pkgs file")), world_file,
+            )
             self.Entropy.updateProgress(
-                red("QA: ")+mytxt+": "+unicode(e),
+                red("QA: ") + mytxt + ": " + unicode(e),
                 importance = 1,
                 type = "warning",
                 header = darkred("   ## ")
@@ -970,10 +946,6 @@ class Package:
 
         return 0
 
-    '''
-    @description: injects package info into the installed packages database
-    @output: 0 = all fine, >0 = error!
-    '''
     def _install_package_into_database(self):
 
         # fetch info
