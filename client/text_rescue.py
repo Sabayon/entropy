@@ -440,10 +440,16 @@ def database(options):
 
         import shutil
         print_info(red(" %s..." % (_("Collecting Portage counters"),) ), back = True)
-        installed_packages = Spm.get_installed_packages()
-        get_meta = Spm.get_installed_package_metadata
-        installed_packages = [(x, get_meta(x, "COUNTER"),) for x in \
-            installed_packages]
+        spm_packages = Spm.get_installed_packages()
+        installed_packages = []
+        for spm_package in spm_packages:
+            pkg_counter = Spm.get_installed_package_metadata(spm_package,
+                "COUNTER")
+            try:
+                pkg_counter = int(pkg_counter)
+            except ValueError:
+                continue
+            installed_packages.append((spm_package, pkg_counter,))
 
         print_info(red(" %s..." % (_("Collecting Entropy packages"),) ), back = True)
         installedCounters = set()

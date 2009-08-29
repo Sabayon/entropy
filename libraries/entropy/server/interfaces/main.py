@@ -2785,10 +2785,18 @@ class Server(Singleton, TextInterface):
     def scan_package_changes(self):
 
         spm = self.Spm()
-        installed_packages = spm.get_installed_packages()
-        get_meta = spm.get_installed_package_metadata
-        installed_packages = [(x, get_meta(x, "COUNTER"),) for x in \
-            installed_packages]
+
+        spm_packages = spm.get_installed_packages()
+        installed_packages = []
+        for spm_package in spm_packages:
+            pkg_counter = spm.get_installed_package_metadata(spm_package,
+                "COUNTER")
+            try:
+                pkg_counter = int(pkg_counter)
+            except ValueError:
+                continue
+            installed_packages.append((spm_package, pkg_counter,))
+
         installed_counters = set()
         to_be_added = set()
         to_be_removed = set()
