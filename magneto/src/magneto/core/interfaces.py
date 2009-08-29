@@ -36,7 +36,7 @@ class MagnetoCoreUI:
         Graphical Interface startup method.
         Must be reimplemented.
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def show_alert(self, title, text, urgency = None, force = False):
         """
@@ -51,7 +51,7 @@ class MagnetoCoreUI:
         @param force: force user notification
         @type force: bool
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def update_tooltip(self, tip):
         """
@@ -60,31 +60,31 @@ class MagnetoCoreUI:
         @param tip: new tooltip text
         @type tip: string
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def change_icon(self, image):
         """
         Update applet icon
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def applet_context_menu(self):
         """
         When context menu action is triggered
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def show_notice_window(self):
         """
         Show the Updates Notification window
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
     def hide_notice_window(self):
         """
         Hide the Updates Notification window
         """
-        raise NotImplementedError
+        raise NotImplementedError()
 
 
 class MagnetoCore(MagnetoCoreUI):
