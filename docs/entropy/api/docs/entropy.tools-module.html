@@ -55,21 +55,7 @@
 </table>
 <!-- ==================== MODULE DESCRIPTION ==================== -->
 <h1 class="epydoc">Module tools</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.tools-pysrc.html">source&nbsp;code</a></span></p>
-<hr />
-<div class="fields">      <p><strong>Author:</strong>
-        Fabio Erculiani &lt;lxnay@sabayonlinux.org&gt;
-      </p>
-      <p><strong>Contact:</strong>
-        lxnay@sabayonlinux.org
-      </p>
-      <p><strong>Copyright:</strong>
-        Fabio Erculiani
-      </p>
-      <p><strong>License:</strong>
-        GPL-2
-        <p><b>Entropy miscellaneous tools module</b>.</p>
-      </p>
-</div><!-- ==================== FUNCTIONS ==================== -->
+<!-- ==================== FUNCTIONS ==================== -->
 <a name="section-Functions"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
@@ -79,11 +65,12 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="is_root"></a><span class="summary-sig-name">is_root</span>()</span></td>
+          <td><span class="summary-sig"><a href="entropy.tools-module.html#is_root" class="summary-sig-name">is_root</a>()</span><br />
+      Return whether running process has root priviledges.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#is_root">source&nbsp;code</a></span>
             
@@ -243,7 +230,8 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_remote_data"></a><span class="summary-sig-name">get_remote_data</span>(<span class="summary-sig-arg">url</span>)</span></td>
+          <td><span class="summary-sig"><a name="get_remote_data"></a><span class="summary-sig-name">get_remote_data</span>(<span class="summary-sig-arg">url</span>,
+        <span class="summary-sig-arg">timeout</span>=<span class="summary-sig-default">5</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#get_remote_data">source&nbsp;code</a></span>
             
@@ -2667,30 +2655,6 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
         <a name="ldd_avail_check"></a><span class="summary-name">ldd_avail_check</span> = <code title="False">False</code>
     </td>
   </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="entropy.tools-module.html#ETP_ARCH_MAP" class="summary-name">ETP_ARCH_MAP</a> = <code title="{('i386', 'i486', 'i586', 'i686'): 'x86',
- ('ppc'): None,
- ('sun4u'): None,
- ('x86_64'): 'amd64'}"><code class="variable-group">{</code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">i386</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i486</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i586</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i686</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">x86</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">ppc</code><code class="variable-ellipsis">...</code></code>
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a name="arch"></a><span class="summary-name">arch</span> = <code title="'x86'"><code class="variable-quote">'</code><code class="variable-string">x86</code><code class="variable-quote">'</code></code>
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a name="arches"></a><span class="summary-name">arches</span> = <code title="('i386', 'i486', 'i586', 'i686')"><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">i386</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i486</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i586</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i686</code><code class="variable-quote">'</code><code class="variable-group">)</code></code>
-    </td>
-  </tr>
 </table>
 <!-- ==================== FUNCTION DETAILS ==================== -->
 <a name="section-FunctionDetails"></a>
@@ -2701,6 +2665,27 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     <span class="table-header">Function Details</span></td>
 </tr>
 </table>
+<a name="is_root"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_root</span>()</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.tools-pysrc.html#is_root">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return whether running process has root priviledges.</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>root priviledges</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="isvalidatom"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -2986,7 +2971,7 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
   <p>Example usage:</p>
 <pre class="py-doctest">
 <span class="py-prompt">&gt;&gt;&gt; </span>dep_getusedeps(<span class="py-string">'app-misc/test:3[foo,-bar]'</span>)
-<span class="py-output">('foo','-bar')</span></pre>
+<span class="py-output">('foo', '-bar')</span></pre>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -3125,27 +3110,6 @@ d<code class="re-op">*</code><code class="re-group">)</code><code class="re-op">
   </dl>
 </td></tr></table>
 </div>
-<a name="ETP_ARCH_MAP"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <h3 class="epydoc">ETP_ARCH_MAP</h3>
-  
-  <dl class="fields">
-  </dl>
-  <dl class="fields">
-    <dt>Value:</dt>
-      <dd><table><tr><td><pre class="variable">
-<code class="variable-group">{</code><code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">i386</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i486</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i586</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">i686</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">x86</code><code class="variable-quote">'</code><code class="variable-op">,</code>
- <code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">ppc</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
- <code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">sun4u</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code>None<code class="variable-op">,</code>
- <code class="variable-group">(</code><code class="variable-quote">'</code><code class="variable-string">x86_64</code><code class="variable-quote">'</code><code class="variable-group">)</code><code class="variable-op">: </code><code class="variable-quote">'</code><code class="variable-string">amd64</code><code class="variable-quote">'</code><code class="variable-group">}</code>
-</pre></td></tr></table>
-</dd>
-  </dl>
-</td></tr></table>
-</div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
@@ -3178,7 +3142,7 @@ d<code class="re-op">*</code><code class="re-group">)</code><code class="re-op">
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sat Aug 15 22:40:46 2009
+    Generated by Epydoc 3.0.1 on Sun Aug 30 13:19:03 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

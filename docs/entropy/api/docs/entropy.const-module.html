@@ -185,14 +185,49 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">None</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.const-module.html#const_setup_entropy_pid" class="summary-sig-name">const_setup_entropy_pid</a>(<span class="summary-sig-arg">just_read</span>=<span class="summary-sig-default">False</span>)</span><br />
+          <td><span class="summary-sig"><a href="entropy.const-module.html#const_pid_exists" class="summary-sig-name">const_pid_exists</a>(<span class="summary-sig-arg">pid</span>)</span><br />
+      Determine whether given pid exists.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.const-pysrc.html#const_pid_exists">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.const-module.html#const_setup_entropy_pid" class="summary-sig-name">const_setup_entropy_pid</a>(<span class="summary-sig-arg">just_read</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">force_handling</span>=<span class="summary-sig-default">False</span>)</span><br />
       Setup Entropy pid file, if possible and if UID = 0 (root).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.const-pysrc.html#const_setup_entropy_pid">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="const_remove_entropy_pid"></a><span class="summary-sig-name">const_remove_entropy_pid</span>()</span><br />
+      Remove Entropy pid if function calling pid matches the one stored.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.const-pysrc.html#const_remove_entropy_pid">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -724,6 +759,31 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="const_pid_exists"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">const_pid_exists</span>(<span class="sig-arg">pid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.const-pysrc.html#const_pid_exists">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Determine whether given pid exists.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pid</code></strong> (int) - process id</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>pid exists? 1; pid does not exist? 0</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="const_setup_entropy_pid"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -731,7 +791,8 @@
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">const_setup_entropy_pid</span>(<span class="sig-arg">just_read</span>=<span class="sig-default">False</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">const_setup_entropy_pid</span>(<span class="sig-arg">just_read</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">force_handling</span>=<span class="sig-default">False</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.const-pysrc.html#const_setup_entropy_pid">source&nbsp;code</a></span>&nbsp;
@@ -748,9 +809,10 @@
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>just_read</code></strong> (bool) - only read the current pid file, if any and if possible</li>
+        <li><strong class="pname"><code>force_handling</code></strong> (bool) - force pid handling even if &quot;--no-pid-handling&quot; is given</li>
     </ul></dd>
-    <dt>Returns: None</dt>
-        <dd>None</dd>
+    <dt>Returns: bool</dt>
+        <dd>if pid lock file has been acquired</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1281,7 +1343,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sat Aug 15 22:40:46 2009
+    Generated by Epydoc 3.0.1 on Sun Aug 30 13:19:03 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -3,7 +3,7 @@
           "DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-  <title>entropy.spm.SpmPlugin</title>
+  <title>entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups</title>
   <link rel="stylesheet" href="epydoc.css" type="text/css" />
   <script type="text/javascript" src="epydoc.js"></script>
 </head>
@@ -43,8 +43,11 @@
     <td width="100%">
       <span class="breadcrumbs">
         <a href="entropy-module.html">Package&nbsp;entropy</a> ::
-        <a href="entropy.spm-module.html">Module&nbsp;spm</a> ::
-        Class&nbsp;SpmPlugin
+        <a href="entropy.spm-module.html">Package&nbsp;spm</a> ::
+        <a href="entropy.spm.plugins-module.html">Package&nbsp;plugins</a> ::
+        <a href="entropy.spm.plugins.interfaces-module.html">Package&nbsp;interfaces</a> ::
+        <a href="entropy.spm.plugins.interfaces.portage_plugin-module.html">Module&nbsp;portage_plugin</a> ::
+        Class&nbsp;PortagePackageGroups
       </span>
     </td>
     <td>
@@ -55,43 +58,33 @@
   </tr>
 </table>
 <!-- ==================== CLASS DESCRIPTION ==================== -->
-<h1 class="epydoc">Class SpmPlugin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.spm-pysrc.html#SpmPlugin">source&nbsp;code</a></span></p>
+<h1 class="epydoc">Class PortagePackageGroups</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePackageGroups">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_entropy__87" name="uml_class_diagram_for_entropy__87">
-<area shape="rect" href="entropy.spm.SpmPlugin.paren_normalize-class.html" title="Take a dependency structure as returned by paren_reduce or use_reduce and &#160;generate an equivalent structure that has no redundant lists." alt="" coords="17,140,228,159"/>
-<area shape="rect" href="entropy.spm.SpmPlugin-class.html#init_singleton" title="Source Package Manager Plugin singleton method." alt="" coords="17,161,228,180"/>
-<area shape="rect" href="entropy.spm.SpmPlugin-class.html" title="Base class for Source Package Manager plugins" alt="" coords="16,123,229,181"/>
-<area shape="rect" href="entropy.spm.PortagePlugin-class.html" title="entropy.spm.PortagePlugin" alt="" coords="75,211,171,237"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="39,36,207,55"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#is_destroyed" title="In our world, Singleton instances may be destroyed, this is done by setting a private bool var __is_destroyed" alt="" coords="39,55,207,73"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#is_singleton" title="Return if the instance is a singleton" alt="" coords="39,73,207,92"/>
-<area shape="rect" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton" alt="" coords="37,11,208,93"/>
+<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups-class.html#__init__" title="x.__init__(...) initializes x; see x.__class__.__doc__ for signature" alt="" coords="17,372,156,391"/>
+<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups-class.html" title="Entropy Package categories group representation" alt="" coords="16,347,157,392"/>
+<area shape="rect" href="javascript:void(0);" title="cmp(x,y)" alt="" coords="27,36,147,55"/>
+<area shape="rect" href="javascript:void(0);" title="dict.__contains__" alt="" coords="27,55,147,73"/>
+<area shape="rect" href="javascript:void(0);" title="del x[y]" alt="" coords="27,73,147,92"/>
+<area shape="rect" href="javascript:void(0);" title="x==y" alt="" coords="27,92,147,111"/>
+<area shape="rect" href="javascript:void(0);" title="x&gt;=y" alt="" coords="27,111,147,129"/>
+<area shape="rect" href="javascript:void(0);" title="x.__getattribute__(&#39;name&#39;) &lt;==&gt; x.name" alt="" coords="27,129,147,148"/>
+<area shape="rect" href="javascript:void(0);" title="x[y]" alt="" coords="27,148,147,167"/>
+<area shape="rect" href="javascript:void(0);" title="x&gt;y" alt="" coords="27,167,147,185"/>
+<area shape="rect" href="javascript:void(0);" title="hash(x)" alt="" coords="27,185,147,204"/>
+<area shape="rect" href="javascript:void(0);" title="iter(x)" alt="" coords="27,204,147,223"/>
+<area shape="rect" href="javascript:void(0);" title="x&lt;=y" alt="" coords="27,223,147,241"/>
+<area shape="rect" href="javascript:void(0);" title="len(x)" alt="" coords="27,241,147,260"/>
+<area shape="rect" href="javascript:void(0);" title="x&lt;y" alt="" coords="27,260,147,279"/>
+<area shape="rect" href="javascript:void(0);" title="dict.values" alt="" coords="27,297,147,316"/>
+<area shape="rect" href="javascript:void(0);" title="dict() &#45;&gt; new empty dictionary." alt="" coords="25,11,148,317"/>
 </map>
   <img src="uml_class_diagram_for_entropy__87.gif" alt='' usemap="#uml_class_diagram_for_entropy__87" ismap="ismap" class="graph-without-title" />
 </center>
 </center>
 <hr />
-<p>Base class for Source Package Manager plugins</p>
+<p>Entropy Package categories group representation</p>
 
-<!-- ==================== NESTED CLASSES ==================== -->
-<a name="section-NestedClasses"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Nested Classes</span></td>
-</tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="entropy.spm.SpmPlugin.paren_normalize-class.html" class="summary-name">paren_normalize</a><br />
-      Take a dependency structure as returned by paren_reduce or 
-        use_reduce and generate an equivalent structure that has no 
-        redundant lists.
-    </td>
-  </tr>
-</table>
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -102,15 +95,17 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type"><pre class="literalblock">
+new empty dictionary
+
+</pre></span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.SpmPlugin-class.html#init_singleton" class="summary-sig-name">init_singleton</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">output_interface</span>)</span><br />
-      Source Package Manager Plugin singleton method.</td>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      x.__init__(...) initializes x; see x.__class__.__doc__ for signature</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm-pysrc.html#SpmPlugin.init_singleton">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePackageGroups.__init__">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -120,36 +115,46 @@
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
-      <code><a href="entropy.core.Singleton-class.html#is_destroyed">is_destroyed</a></code>,
-      <code><a href="entropy.core.Singleton-class.html#is_singleton">is_singleton</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>dict</code></b>:
+      <code>__cmp__</code>,
+      <code>__contains__</code>,
+      <code>__delitem__</code>,
+      <code>__eq__</code>,
+      <code>__ge__</code>,
+      <code>__getattribute__</code>,
+      <code>__getitem__</code>,
+      <code>__gt__</code>,
+      <code>__hash__</code>,
+      <code>__iter__</code>,
+      <code>__le__</code>,
+      <code>__len__</code>,
+      <code>__lt__</code>,
+      <code>__ne__</code>,
+      <code>__new__</code>,
+      <code>__repr__</code>,
+      <code>__setitem__</code>,
+      <code>clear</code>,
+      <code>copy</code>,
+      <code>fromkeys</code>,
+      <code>get</code>,
+      <code>has_key</code>,
+      <code>items</code>,
+      <code>iteritems</code>,
+      <code>iterkeys</code>,
+      <code>itervalues</code>,
+      <code>keys</code>,
+      <code>pop</code>,
+      <code>popitem</code>,
+      <code>setdefault</code>,
+      <code>update</code>,
+      <code>values</code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
-      <code>__getattribute__</code>,
-      <code>__hash__</code>,
-      <code>__init__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
-      <code>__repr__</code>,
       <code>__setattr__</code>,
       <code>__str__</code>
-      </p>
-    </td>
-  </tr>
-</table>
-<!-- ==================== STATIC METHODS ==================== -->
-<a name="section-StaticMethods"></a>
-<table class="summary" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr bgcolor="#70b0f0" class="table-header">
-  <td align="left" colspan="2" class="table-header">
-    <span class="table-header">Static Methods</span></td>
-</tr>
-  <tr>
-    <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
-      <code><a href="entropy.core.Singleton-class.html#__new__">__new__</a></code>
       </p>
     </td>
   </tr>
@@ -179,32 +184,32 @@
     <span class="table-header">Method Details</span></td>
 </tr>
 </table>
-<a name="init_singleton"></a>
+<a name="__init__"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">init_singleton</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">output_interface</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm-pysrc.html#SpmPlugin.init_singleton">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePackageGroups.__init__">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Source Package Manager Plugin singleton method. This method must be 
-  reimplemented by subclasses.</p>
+  <p>x.__init__(...) initializes x; see x.__class__.__doc__ for 
+  signature</p>
   <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>output_interface</code></strong> (entropy.output.TextInterface based instances) - Entropy output interface</li>
-    </ul></dd>
-    <dt>Raises:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code><strong class='fraise'>NotImplementedError</strong></code> - when method is not reimplemented</li>
-    </ul></dd>
+    <dt>Returns: <pre class="literalblock">
+new empty dictionary
+
+</pre></dt>
+    <dt>Overrides:
+        object.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
   </dl>
 </td></tr></table>
 </div>
@@ -240,7 +245,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sat Aug 15 22:40:53 2009
+    Generated by Epydoc 3.0.1 on Sun Aug 30 13:19:12 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
