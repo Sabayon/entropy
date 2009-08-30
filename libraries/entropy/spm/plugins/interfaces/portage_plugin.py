@@ -20,7 +20,7 @@ from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
 from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, \
     bold
 from entropy.i18n import _
-from entropy.core import SystemSettings
+from entropy.core.settings.base import SystemSettings
 from entropy.misc import LogFile
 from entropy.spm.plugins.skel import SpmPlugin
 

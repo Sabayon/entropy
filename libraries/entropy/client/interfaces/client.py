@@ -24,7 +24,8 @@ from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
 from entropy.client.interfaces.fetch import FetchersMixin
 from entropy.client.interfaces.noticeboard import NoticeBoardMixin
 from entropy.const import etpConst, etpCache, etpUi, const_debug_write
-from entropy.core import SystemSettings, SystemSettingsPlugin
+from entropy.core.settings.base import SystemSettings
+from entropy.core.settings.skel import SystemSettingsPlugin
 from entropy.misc import LogFile
 from entropy.exceptions import SystemDatabaseError, RepositoryError
 from entropy.i18n import _

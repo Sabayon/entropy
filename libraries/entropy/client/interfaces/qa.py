@@ -11,7 +11,7 @@
 """
 from entropy.qa import ErrorReportInterface
 from entropy.client.interfaces import Client
-from entropy.core import SystemSettings
+from entropy.core.settings.base import SystemSettings
 from entropy.const import etpConst
 from entropy.exceptions import IncorrectParameter, OnlineMirrorError, \
     PermissionDenied

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# Entropy miscellaneous tools module
 from __future__ import with_statement
 """
 
@@ -12,9 +13,7 @@ from __future__ import with_statement
     used arount the Entropy codebase.
 
 """
-"""
-Entropy miscellaneous tools module
-"""
+
 import stat
 import errno
 import re
@@ -43,6 +42,14 @@ def is_root():
     return not etpConst['uid']
 
 def is_user_in_entropy_group(uid = None):
+    """
+    docstring_title
+
+    @keyword uid: 
+    @type uid: 
+    @return: 
+    @rtype: 
+    """
 
     if uid == None:
         uid = os.getuid()
@@ -59,7 +66,6 @@ def is_user_in_entropy_group(uid = None):
     except KeyError:
         return False
 
-    #etp_gid = data[2]
     etp_group_users = data[3]
 
     if not etp_group_users or \
@@ -69,37 +75,89 @@ def is_user_in_entropy_group(uid = None):
     return True
 
 def get_uid_from_user(username):
+    """
+    docstring_title
+
+    @param username: 
+    @type username: 
+    @return: 
+    @rtype: 
+    """
     try:
         return pwd.getpwnam(username)[2]
     except (KeyError, IndexError,):
         return -1
 
 def get_gid_from_group(groupname):
+    """
+    docstring_title
+
+    @param groupname: 
+    @type groupname: 
+    @return: 
+    @rtype: 
+    """
     try:
         return grp.getgrnam(groupname)[2]
     except (KeyError, IndexError,):
         return -1
 
 def get_user_from_uid(uid):
+    """
+    docstring_title
+
+    @param uid: 
+    @type uid: 
+    @return: 
+    @rtype: 
+    """
     try:
         return pwd.getpwuid(uid)[0]
     except KeyError:
         return None
 
 def get_group_from_gid(gid):
+    """
+    docstring_title
+
+    @param gid: 
+    @type gid: 
+    @return: 
+    @rtype: 
+    """
     try:
         return grp.getgrgid(gid)[0]
     except (KeyError, IndexError,):
         return -1
 
 def kill_threads():
+    """
+    docstring_title
+
+    @return: 
+    @rtype: 
+    """
     const_kill_threads()
 
 def print_traceback(f = None):
+    """
+    docstring_title
+
+    @keyword f: 
+    @type f: 
+    @return: 
+    @rtype: 
+    """
     import traceback
     traceback.print_exc(file = f)
 
 def get_traceback():
+    """
+    docstring_title
+
+    @return: 
+    @rtype: 
+    """
     import traceback
     from cStringIO import StringIO
     buf = StringIO()
@@ -107,6 +165,14 @@ def get_traceback():
     return buf.getvalue()
 
 def print_exception(returndata = False):
+    """
+    docstring_title
+
+    @keyword returndata: 
+    @type returndata: 
+    @return: 
+    @rtype: 
+    """
     import traceback
     if not returndata:
         traceback.print_exc()
@@ -147,11 +213,21 @@ def print_exception(returndata = False):
 # @returns content: if the file exists
 # @returns False: if the file is not found
 def get_remote_data(url, timeout = 5):
+    """
+    docstring_title
+
+    @param url: 
+    @type url: 
+    @keyword timeout: 
+    @type timeout: 
+    @return: 
+    @rtype: 
+    """
 
     import socket
     import urllib2
     # now pray the server
-    from entropy.core import SystemSettings
+    from entropy.core.settings.base import SystemSettings
     sys_settings = SystemSettings()
     proxy_settings = sys_settings['system']['proxy']
     try:
@@ -185,6 +261,14 @@ def get_remote_data(url, timeout = 5):
         return False
 
 def is_png_file(path):
+    """
+    docstring_title
+
+    @param path: 
+    @type path: 
+    @return: 
+    @rtype: 
+    """
     f = open(path, "r")
     x = f.read(4)
     if x == '\x89PNG':
@@ -192,6 +276,14 @@ def is_png_file(path):
     return False
 
 def is_jpeg_file(path):
+    """
+    docstring_title
+
+    @param path: 
+    @type path: 
+    @return: 
+    @rtype: 
+    """
     f = open(path, "r")
     x = f.read(10)
     if x == '\xff\xd8\xff\xe0\x00\x10JFIF':
@@ -199,6 +291,14 @@ def is_jpeg_file(path):
     return False
 
 def is_bmp_file(path):
+    """
+    docstring_title
+
+    @param path: 
+    @type path: 
+    @return: 
+    @rtype: 
+    """
     f = open(path, "r")
     x = f.read(2)
     if x == 'BM':
@@ -206,6 +306,14 @@ def is_bmp_file(path):
     return False
 
 def is_gif_file(path):
+    """
+    docstring_title
+
+    @param path: 
+    @type path: 
+    @return: 
+    @rtype: 
+    """
     f = open(path, "r")
     x = f.read(5)
     if x == 'GIF89':
@@ -213,6 +321,14 @@ def is_gif_file(path):
     return False
 
 def is_supported_image_file(path):
+    """
+    docstring_title
+
+    @param path: 
+    @type path: 
+    @return: 
+    @rtype: 
+    """
     calls = [is_png_file, is_jpeg_file, is_bmp_file, is_gif_file]
     for mycall in calls:
         if mycall(path):
@@ -220,6 +336,12 @@ def is_supported_image_file(path):
     return False
 
 def is_april_first():
+    """
+    docstring_title
+
+    @return: 
+    @rtype: 
+    """
     april_first = "01-04"
     cur_time = time.strftime("%d-%m")
     if april_first == cur_time:
@@ -227,6 +349,16 @@ def is_april_first():
     return False
 
 def add_proxy_opener(module, data):
+    """
+    docstring_title
+
+    @param module: 
+    @type module: 
+    @param data: 
+    @type data: 
+    @return: 
+    @rtype: 
+    """
     import types
     if type(module) != types.ModuleType: # FIXME: check if it's urllib2
         InvalidDataType("InvalidDataType: not a module")
@@ -259,6 +391,14 @@ def add_proxy_opener(module, data):
     module.install_opener(opener)
 
 def is_valid_ascii(string):
+    """
+    docstring_title
+
+    @param string: 
+    @type string: 
+    @return: 
+    @rtype: 
+    """
     try:
         mystring = str(string)
         del mystring
@@ -267,6 +407,14 @@ def is_valid_ascii(string):
     return True
 
 def is_valid_unicode(string):
+    """
+    docstring_title
+
+    @param string: 
+    @type string: 
+    @return: 
+    @rtype: 
+    """
     try:
         unicode(string)
     except:
@@ -274,6 +422,14 @@ def is_valid_unicode(string):
     return True
 
 def is_valid_email(email):
+    """
+    docstring_title
+
+    @param email: 
+    @type email: 
+    @return: 
+    @rtype: 
+    """
     monster = "(?:[a-z0-9!#$%&'*+/=?^_{|}~-]+(?:.[a-z0-9!#$%" + \
         "&'*+/=?^_{|}~-]+)*|\"(?:" + \
         "[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]" + \
@@ -290,9 +446,23 @@ def is_valid_email(email):
     return False
 
 def islive():
+    """
+    docstring_title
+
+    @return: 
+    @rtype: 
+    """
     return const_islive()
 
 def get_file_size(file_path):
+    """
+    docstring_title
+
+    @param file_path: 
+    @type file_path: 
+    @return: 
+    @rtype: 
+    """
     my = file_path[:]
     if isinstance(my, unicode):
         my = my.encode("utf-8")
@@ -300,6 +470,14 @@ def get_file_size(file_path):
     return int(mystat.st_size)
 
 def sum_file_sizes(file_list):
+    """
+    docstring_title
+
+    @param file_list: 
+    @type file_list: 
+    @return: 
+    @rtype: 
+    """
     size = 0
     for myfile in file_list:
         try:
@@ -309,6 +487,16 @@ def sum_file_sizes(file_list):
     return size
 
 def check_required_space(mountpoint, bytes_required):
+    """
+    docstring_title
+
+    @param mountpoint: 
+    @type mountpoint: 
+    @param bytes_required: 
+    @type bytes_required: 
+    @return: 
+    @rtype: 
+    """
     import statvfs
     st = os.statvfs(mountpoint)
     freeblocks = st[statvfs.F_BFREE]
@@ -335,6 +523,18 @@ def getstatusoutput(cmd):
 # $Id: __init__.py 12159 2008-12-05 00:08:58Z zmedico $
 # atomic file move function
 def movefile(src, dest, src_basedir = None):
+    """
+    docstring_title
+
+    @param src: 
+    @type src: 
+    @param dest: 
+    @type dest: 
+    @keyword src_basedir: 
+    @type src_basedir: 
+    @return: 
+    @rtype: 
+    """
 
     sstat = os.lstat(src)
     destexists = 1
@@ -442,12 +642,28 @@ def movefile(src, dest, src_basedir = None):
     return True
 
 def ebeep(count = 5):
+    """
+    docstring_title
+
+    @keyword count: 
+    @type count: 
+    @return: 
+    @rtype: 
+    """
     mycount = count
     while mycount > 0:
         os.system("sleep 0.35; echo -ne \"\a\"; sleep 0.35")
         mycount -= 1
 
 def application_lock_check(gentle = False):
+    """
+    docstring_title
+
+    @keyword gentle: 
+    @type gentle: 
+    @return: 
+    @rtype: 
+    """
     if etpConst['applicationlock']:
         if not gentle:
             SystemExit(10)
@@ -455,6 +671,12 @@ def application_lock_check(gentle = False):
     return False
 
 def get_random_number():
+    """
+    docstring_title
+
+    @return: 
+    @rtype: 
+    """
     try:
         return abs(hash(os.urandom(2)))%99999
     except NotImplementedError:
@@ -462,6 +684,16 @@ def get_random_number():
         return random.randint(10000, 99999)
 
 def split_indexable_into_chunks(mystr, chunk_len):
+    """
+    docstring_title
+
+    @param mystr: 
+    @type mystr: 
+    @param chunk_len: 
+    @type chunk_len: 
+    @return: 
+    @rtype: 
+    """
     chunks = []
     my = mystr[:]
     mylen = len(my)
@@ -474,6 +706,18 @@ def split_indexable_into_chunks(mystr, chunk_len):
     return chunks
 
 def countdown(secs = 5, what = "Counting...", back = False):
+    """
+    docstring_title
+
+    @keyword secs: 
+    @type secs: 
+    @keyword what: 
+    @type what: 
+    @keyword back: 
+    @type back: 
+    @return: 
+    @rtype: 
+    """
     if secs:
         if back:
             try:
@@ -491,6 +735,14 @@ def countdown(secs = 5, what = "Counting...", back = False):
             time.sleep(1)
 
 def md5sum(filepath):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @return: 
+    @rtype: 
+    """
     m = hashlib.md5()
     readfile = open(filepath)
     block = readfile.read(1024)
@@ -501,6 +753,14 @@ def md5sum(filepath):
     return m.hexdigest()
 
 def sha512(filepath):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @return: 
+    @rtype: 
+    """
     m = hashlib.sha512()
     readfile = open(filepath)
     block = readfile.read(1024)
@@ -511,6 +771,14 @@ def sha512(filepath):
     return m.hexdigest()
 
 def sha256(filepath):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @return: 
+    @rtype: 
+    """
     m = hashlib.sha256()
     readfile = open(filepath)
     block = readfile.read(1024)
@@ -521,6 +789,14 @@ def sha256(filepath):
     return m.hexdigest()
 
 def sha1(filepath):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @return: 
+    @rtype: 
+    """
     m = hashlib.sha1()
     readfile = open(filepath)
     block = readfile.read(1024)
@@ -531,6 +807,14 @@ def sha1(filepath):
     return m.hexdigest()
 
 def md5sum_directory(directory):
+    """
+    docstring_title
+
+    @param directory: 
+    @type directory: 
+    @return: 
+    @rtype: 
+    """
     if not os.path.isdir(directory):
         DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
     myfiles = os.listdir(directory)
@@ -550,6 +834,14 @@ def md5sum_directory(directory):
     return m.hexdigest()
 
 def md5obj_directory(directory):
+    """
+    docstring_title
+
+    @param directory: 
+    @type directory: 
+    @return: 
+    @rtype: 
+    """
     if not os.path.isdir(directory):
         DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
     myfiles = os.listdir(directory)
@@ -571,6 +863,16 @@ def md5obj_directory(directory):
 # kindly stolen from Anaconda
 # Copyright 1999-2008 Red Hat, Inc. <iutil.py>
 def getfd(filespec, readOnly = 0):
+    """
+    docstring_title
+
+    @param filespec: 
+    @type filespec: 
+    @keyword readOnly: 
+    @type readOnly: 
+    @return: 
+    @rtype: 
+    """
     import types
     if type(filespec) == types.IntType:
         return filespec
@@ -583,6 +885,18 @@ def getfd(filespec, readOnly = 0):
     return os.open(filespec, flags)
 
 def uncompress_file(file_path, destination_path, opener):
+    """
+    docstring_title
+
+    @param file_path: 
+    @type file_path: 
+    @param destination_path: 
+    @type destination_path: 
+    @param opener: 
+    @type opener: 
+    @return: 
+    @rtype: 
+    """
     f_out = open(destination_path, "wb")
     f_in = opener(file_path, "rb")
     data = f_in.read(8192)
@@ -594,6 +908,20 @@ def uncompress_file(file_path, destination_path, opener):
     f_in.close()
 
 def compress_file(file_path, destination_path, opener, compress_level = None):
+    """
+    docstring_title
+
+    @param file_path: 
+    @type file_path: 
+    @param destination_path: 
+    @type destination_path: 
+    @param opener: 
+    @type opener: 
+    @keyword compress_level: 
+    @type compress_level: 
+    @return: 
+    @rtype: 
+    """
     f_in = open(file_path, "rb")
     if compress_level != None:
         f_out = opener(destination_path, "wb", compresslevel = compress_level)
@@ -610,6 +938,18 @@ def compress_file(file_path, destination_path, opener, compress_level = None):
 
 # files_to_compress must be a list of valid file paths
 def compress_files(dest_file, files_to_compress, compressor = "bz2"):
+    """
+    docstring_title
+
+    @param dest_file: 
+    @type dest_file: 
+    @param files_to_compress: 
+    @type files_to_compress: 
+    @keyword compressor: 
+    @type compressor: 
+    @return: 
+    @rtype: 
+    """
 
     if compressor not in ("bz2", "gz",):
         AttributeError("invalid compressor specified")
@@ -630,6 +970,18 @@ def compress_files(dest_file, files_to_compress, compressor = "bz2"):
         tar.close()
 
 def universal_uncompress(compressed_file, dest_path, catch_empty = False):
+    """
+    docstring_title
+
+    @param compressed_file: 
+    @type compressed_file: 
+    @param dest_path: 
+    @type dest_path: 
+    @keyword catch_empty: 
+    @type catch_empty: 
+    @return: 
+    @rtype: 
+    """
 
     try:
         tar = tarfile.open(compressed_file, "r")
@@ -644,6 +996,14 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
 
         dest_path = dest_path.encode('utf-8')
         def mymf(tarinfo):
+            """
+            docstring_title
+
+            @param tarinfo: 
+            @type tarinfo: 
+            @return: 
+            @rtype: 
+            """
             if tarinfo.isdir():
                 # Extract directory with a safe mode, so that
                 # all files below can be extracted as well.
@@ -657,12 +1017,30 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
             return tarinfo
 
         def mycmp(a, b):
+            """
+            docstring_title
+
+            @param a: 
+            @type a: 
+            @param b: 
+            @type b: 
+            @return: 
+            @rtype: 
+            """
             return cmp(a.name, b.name)
 
         directories = sorted(map(mymf, tar), mycmp, reverse = True)
 
         # Set correct owner, mtime and filemode on directories.
         def mymf2(tarinfo):
+            """
+            docstring_title
+
+            @param tarinfo: 
+            @type tarinfo: 
+            @return: 
+            @rtype: 
+            """
             epath = os.path.join(dest_path, tarinfo.name)
             try:
                 tar.chown(tarinfo, epath)
@@ -705,6 +1083,14 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
     return True
 
 def unpack_gzip(gzipfilepath):
+    """
+    docstring_title
+
+    @param gzipfilepath: 
+    @type gzipfilepath: 
+    @return: 
+    @rtype: 
+    """
     import gzip
     filepath = gzipfilepath[:-3] # remove .gz
     item = open(filepath, "wb")
@@ -719,6 +1105,14 @@ def unpack_gzip(gzipfilepath):
     return filepath
 
 def unpack_bzip2(bzip2filepath):
+    """
+    docstring_title
+
+    @param bzip2filepath: 
+    @type bzip2filepath: 
+    @return: 
+    @rtype: 
+    """
     import bz2
     filepath = bzip2filepath[:-4] # remove .bz2
     item = open(filepath, "wb")
@@ -733,6 +1127,12 @@ def unpack_bzip2(bzip2filepath):
     return filepath
 
 def backup_client_repository():
+    """
+    docstring_title
+
+    @return: 
+    @rtype: 
+    """
     if os.path.isfile(etpConst['etpdatabaseclientfilepath']):
         rnd = get_random_number()
         source = etpConst['etpdatabaseclientfilepath']
@@ -746,11 +1146,29 @@ def backup_client_repository():
     return ""
 
 def extract_xpak(tbz2file, tmpdir = None):
+    """
+    docstring_title
+
+    @param tbz2file: 
+    @type tbz2file: 
+    @keyword tmpdir: 
+    @type tmpdir: 
+    @return: 
+    @rtype: 
+    """
     # extract xpak content
     xpakpath = suck_xpak(tbz2file, etpConst['packagestmpdir'])
     return unpack_xpak(xpakpath, tmpdir)
 
 def read_xpak(tbz2file):
+    """
+    docstring_title
+
+    @param tbz2file: 
+    @type tbz2file: 
+    @return: 
+    @rtype: 
+    """
     xpakpath = suck_xpak(tbz2file, etpConst['entropyunpackdir'])
     f = open(xpakpath, "rb")
     data = f.read()
@@ -759,6 +1177,16 @@ def read_xpak(tbz2file):
     return data
 
 def unpack_xpak(xpakfile, tmpdir = None):
+    """
+    docstring_title
+
+    @param xpakfile: 
+    @type xpakfile: 
+    @keyword tmpdir: 
+    @type tmpdir: 
+    @return: 
+    @rtype: 
+    """
     try:
         import entropy.xpak as xpak
         if tmpdir is None:
@@ -778,6 +1206,16 @@ def unpack_xpak(xpakfile, tmpdir = None):
     return tmpdir
 
 def suck_xpak(tbz2file, outputpath):
+    """
+    docstring_title
+
+    @param tbz2file: 
+    @type tbz2file: 
+    @param outputpath: 
+    @type outputpath: 
+    @return: 
+    @rtype: 
+    """
 
     dest_filename = os.path.basename(tbz2file)[:-5]+".xpak"
     xpakpath = os.path.join(outputpath, dest_filename)
@@ -842,6 +1280,16 @@ def suck_xpak(tbz2file, outputpath):
     return xpakpath
 
 def append_xpak(tbz2file, atom):
+    """
+    docstring_title
+
+    @param tbz2file: 
+    @type tbz2file: 
+    @param atom: 
+    @type atom: 
+    @return: 
+    @rtype: 
+    """
     import entropy.xpak as xpak
     from entropy.spm.plugins.factory import get_default_instance
     text = TextInterface()
@@ -854,6 +1302,16 @@ def append_xpak(tbz2file, atom):
     return tbz2file
 
 def aggregate_edb(tbz2file, dbfile):
+    """
+    docstring_title
+
+    @param tbz2file: 
+    @type tbz2file: 
+    @param dbfile: 
+    @type dbfile: 
+    @return: 
+    @rtype: 
+    """
     f = open(tbz2file, "abw")
     f.write(etpConst['databasestarttag'])
     g = open(dbfile, "rb")
@@ -866,6 +1324,16 @@ def aggregate_edb(tbz2file, dbfile):
     f.close()
 
 def extract_edb(tbz2file, dbpath = None):
+    """
+    docstring_title
+
+    @param tbz2file: 
+    @type tbz2file: 
+    @keyword dbpath: 
+    @type dbpath: 
+    @return: 
+    @rtype: 
+    """
 
     old = open(tbz2file, "rb")
     if not dbpath:
@@ -891,6 +1359,14 @@ def extract_edb(tbz2file, dbpath = None):
     return dbpath
 
 def locate_edb(fileobj):
+    """
+    docstring_title
+
+    @param fileobj: 
+    @type fileobj: 
+    @return: 
+    @rtype: 
+    """
 
     # position old to the end
     fileobj.seek(0, os.SEEK_END)
@@ -926,6 +1402,16 @@ def locate_edb(fileobj):
     return start_position
 
 def remove_edb(tbz2file, savedir):
+    """
+    docstring_title
+
+    @param tbz2file: 
+    @type tbz2file: 
+    @param savedir: 
+    @type savedir: 
+    @return: 
+    @rtype: 
+    """
     old = open(tbz2file, "rb")
 
     start_position = locate_edb(old)
@@ -959,6 +1445,14 @@ def remove_edb(tbz2file, savedir):
 
 # This function creates the .md5 file related to the given package file
 def create_md5_file(filepath):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @return: 
+    @rtype: 
+    """
     md5hash = md5sum(filepath)
     hashfile = filepath+etpConst['packagesmd5fileext']
     f = open(hashfile, "w")
@@ -969,6 +1463,14 @@ def create_md5_file(filepath):
     return hashfile
 
 def create_sha512_file(filepath):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @return: 
+    @rtype: 
+    """
     sha512hash = sha512(filepath)
     hashfile = filepath+etpConst['packagessha512fileext']
     f = open(hashfile, "w")
@@ -979,6 +1481,14 @@ def create_sha512_file(filepath):
     return hashfile
 
 def create_sha256_file(filepath):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @return: 
+    @rtype: 
+    """
     sha256hash = sha256(filepath)
     hashfile = filepath+etpConst['packagessha256fileext']
     f = open(hashfile, "w")
@@ -989,6 +1499,14 @@ def create_sha256_file(filepath):
     return hashfile
 
 def create_sha1_file(filepath):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @return: 
+    @rtype: 
+    """
     sha1hash = sha1(filepath)
     hashfile = filepath+etpConst['packagessha1fileext']
     f = open(hashfile, "w")
@@ -999,6 +1517,16 @@ def create_sha1_file(filepath):
     return hashfile
 
 def compare_md5(filepath, checksum):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @param checksum: 
+    @type checksum: 
+    @return: 
+    @rtype: 
+    """
     checksum = str(checksum)
     result = md5sum(filepath)
     result = str(result)
@@ -1007,6 +1535,16 @@ def compare_md5(filepath, checksum):
     return False
 
 def compare_sha512(filepath, checksum):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @param checksum: 
+    @type checksum: 
+    @return: 
+    @rtype: 
+    """
     checksum = str(checksum)
     result = sha512(filepath)
     result = str(result)
@@ -1015,6 +1553,16 @@ def compare_sha512(filepath, checksum):
     return False
 
 def compare_sha256(filepath, checksum):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @param checksum: 
+    @type checksum: 
+    @return: 
+    @rtype: 
+    """
     checksum = str(checksum)
     result = sha256(filepath)
     result = str(result)
@@ -1023,6 +1571,16 @@ def compare_sha256(filepath, checksum):
     return False
 
 def compare_sha1(filepath, checksum):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @param checksum: 
+    @type checksum: 
+    @return: 
+    @rtype: 
+    """
     checksum = str(checksum)
     result = sha1(filepath)
     result = str(result)
@@ -1031,12 +1589,28 @@ def compare_sha1(filepath, checksum):
     return False
 
 def md5string(string):
+    """
+    docstring_title
+
+    @param string: 
+    @type string: 
+    @return: 
+    @rtype: 
+    """
     m = hashlib.md5()
     m.update(string)
     return m.hexdigest()
 
 # used to properly sort /usr/portage/profiles/updates files
 def sort_update_files(update_list):
+    """
+    docstring_title
+
+    @param update_list: 
+    @type update_list: 
+    @return: 
+    @rtype: 
+    """
     sort_dict = {}
     # sort per year
     for item in update_list:
@@ -1057,6 +1631,14 @@ def sort_update_files(update_list):
     return new_list
 
 def generic_file_content_parser(filepath):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @return: 
+    @rtype: 
+    """
     data = []
     if os.access(filepath, os.R_OK | os.F_OK):
         gen_f = open(filepath, "r")
@@ -1073,6 +1655,16 @@ def generic_file_content_parser(filepath):
 
 # used by equo, this function retrieves the new safe Gentoo-aware file path
 def allocate_masked_file(file, fromfile):
+    """
+    docstring_title
+
+    @param file: 
+    @type file: 
+    @param fromfile: 
+    @type fromfile: 
+    @return: 
+    @rtype: 
+    """
 
     # check if file and tofile are equal
     if os.path.isfile(file) and os.path.isfile(fromfile):
@@ -1123,6 +1715,14 @@ def allocate_masked_file(file, fromfile):
     return newfile, True
 
 def extract_elog(file):
+    """
+    docstring_title
+
+    @param file: 
+    @type file: 
+    @return: 
+    @rtype: 
+    """
 
     logline = False
     logoutput = []
@@ -1154,6 +1754,14 @@ endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
 
 
 def isjustpkgname(mypkg):
+    """
+    docstring_title
+
+    @param mypkg: 
+    @type mypkg: 
+    @return: 
+    @rtype: 
+    """
     myparts = mypkg.split('-')
     for x in myparts:
         if ververify(x):
@@ -1161,6 +1769,16 @@ def isjustpkgname(mypkg):
     return 1
 
 def ververify(myverx, silent = 1):
+    """
+    docstring_title
+
+    @param myverx: 
+    @type myverx: 
+    @keyword silent: 
+    @type silent: 
+    @return: 
+    @rtype: 
+    """
 
     myver = myverx[:]
     if myver.endswith("*"):
@@ -1249,6 +1867,14 @@ def isvalidatom(myatom, allow_blockers = True):
     return 0
 
 def catsplit(mydep):
+    """
+    docstring_title
+
+    @param mydep: 
+    @type mydep: 
+    @return: 
+    @rtype: 
+    """
     return mydep.split("/", 1)
 
 def get_operator(mydep):
@@ -1369,6 +1995,16 @@ def catpkgsplit(mydata, silent = 1):
     return retval
 
 def pkgsplit(mypkg, silent=1):
+    """
+    docstring_title
+
+    @param mypkg: 
+    @type mypkg: 
+    @keyword silent=1: 
+    @type silent=1: 
+    @return: 
+    @rtype: 
+    """
     myparts = mypkg.split("-")
 
     if len(myparts) < 2:
@@ -1556,6 +2192,14 @@ def dep_getusedeps(depend):
     return tuple(use_list)
 
 def remove_usedeps(depend):
+    """
+    docstring_title
+
+    @param depend: 
+    @type depend: 
+    @return: 
+    @rtype: 
+    """
     mydepend = depend[:]
 
     close_bracket = mydepend.find(']')
@@ -1589,18 +2233,42 @@ def remove_slot(mydep):
 
 # input must be a valid package version or a full atom
 def remove_revision(ver):
+    """
+    docstring_title
+
+    @param ver: 
+    @type ver: 
+    @return: 
+    @rtype: 
+    """
     myver = ver.split("-")
     if myver[-1][0] == "r":
         return '-'.join(myver[:-1])
     return ver
 
 def remove_tag(mydep):
+    """
+    docstring_title
+
+    @param mydep: 
+    @type mydep: 
+    @return: 
+    @rtype: 
+    """
     colon = mydep.rfind("#")
     if colon == -1:
         return mydep
     return mydep[:colon]
 
 def remove_entropy_revision(mydep):
+    """
+    docstring_title
+
+    @param mydep: 
+    @type mydep: 
+    @return: 
+    @rtype: 
+    """
     dep = remove_package_operators(mydep)
     operators = mydep[:-len(dep)]
     colon = dep.rfind("~")
@@ -1609,6 +2277,14 @@ def remove_entropy_revision(mydep):
     return operators+dep[:colon]
 
 def dep_get_entropy_revision(mydep):
+    """
+    docstring_title
+
+    @param mydep: 
+    @type mydep: 
+    @return: 
+    @rtype: 
+    """
     #dep = remove_package_operators(mydep)
     colon = mydep.rfind("~")
     if colon != -1:
@@ -1623,6 +2299,14 @@ def dep_get_entropy_revision(mydep):
 
 dep_revmatch = re.compile('^r[0-9]')
 def dep_get_portage_revision(mydep):
+    """
+    docstring_title
+
+    @param mydep: 
+    @type mydep: 
+    @return: 
+    @rtype: 
+    """
     myver = mydep.split("-")
     myrev = myver[-1]
     if dep_revmatch.match(myrev):
@@ -1632,6 +2316,14 @@ def dep_get_portage_revision(mydep):
 
 
 def dep_get_match_in_repos(mydep):
+    """
+    docstring_title
+
+    @param mydep: 
+    @type mydep: 
+    @return: 
+    @rtype: 
+    """
     colon = mydep.rfind("@")
     if colon != -1:
         mydata = mydep[colon+1:]
@@ -1661,6 +2353,14 @@ def dep_gettag(dep):
     return None
 
 def remove_package_operators(atom):
+    """
+    docstring_title
+
+    @param atom: 
+    @type atom: 
+    @return: 
+    @rtype: 
+    """
     try:
         while atom:
             if atom[0] in ('>', '<', '=', '~',):
@@ -1675,6 +2375,16 @@ def remove_package_operators(atom):
 # portage_versions.py -- core Portage functionality
 # Copyright 1998-2006 Gentoo Foundation
 def compare_versions(ver1, ver2):
+    """
+    docstring_title
+
+    @param ver1: 
+    @type ver1: 
+    @param ver2: 
+    @type ver2: 
+    @return: 
+    @rtype: 
+    """
 
     if ver1 == ver2:
         return 0
@@ -1831,9 +2541,25 @@ def g_n_w_cmp(a, b):
         return 0
 
 def get_newer_version(versions):
+    """
+    docstring_title
+
+    @param versions: 
+    @type versions: 
+    @return: 
+    @rtype: 
+    """
     return sorted(versions, g_n_w_cmp, reverse = True)
 
 def get_newer_version_stable(versions):
+    """
+    docstring_title
+
+    @param versions: 
+    @type versions: 
+    @return: 
+    @rtype: 
+    """
 
     if len(versions) == 1:
         return versions
@@ -1872,6 +2598,14 @@ def g_e_n_w_cmp(a, b):
     else: return 0
 
 def get_entropy_newer_version(versions):
+    """
+    docstring_title
+
+    @param versions: 
+    @type versions: 
+    @return: 
+    @rtype: 
+    """
     return sorted(versions, g_e_n_w_cmp, reverse = True)
 
 def get_entropy_newer_version_stable(versions):
@@ -1906,6 +2640,14 @@ def get_entropy_newer_version_stable(versions):
 
 
 def isnumber(x):
+    """
+    docstring_title
+
+    @param x: 
+    @type x: 
+    @return: 
+    @rtype: 
+    """
     try:
         t = int(x)
         del t
@@ -1915,12 +2657,30 @@ def isnumber(x):
 
 
 def istextfile(filename, blocksize = 512):
+    """
+    docstring_title
+
+    @param filename: 
+    @type filename: 
+    @keyword blocksize: 
+    @type blocksize: 
+    @return: 
+    @rtype: 
+    """
     f = open(filename)
     r = istext(f.read(blocksize))
     f.close()
     return r
 
 def istext(s):
+    """
+    docstring_title
+
+    @param s: 
+    @type s: 
+    @return: 
+    @rtype: 
+    """
     import string
     _null_trans = string.maketrans("", "")
     text_characters = "".join(map(chr, range(32, 127)) + list("\n\r\t\b"))
@@ -1945,6 +2705,14 @@ def istext(s):
 # nameslist: a list that contains duplicated names
 # @returns filtered list
 def filter_duplicated_entries(alist):
+    """
+    docstring_title
+
+    @param alist: 
+    @type alist: 
+    @return: 
+    @rtype: 
+    """
     mydata = {}
     return [mydata.setdefault(e, e) for e in alist if e not in mydata]
 
@@ -1957,6 +2725,14 @@ mappings = {
 }
 
 def escape(*args):
+    """
+    docstring_title
+
+    @param *args: 
+    @type *args: 
+    @return: 
+    @rtype: 
+    """
     arg_lst = []
     if len(args)==1:
         return escape_single(args[0])
@@ -1965,6 +2741,14 @@ def escape(*args):
     return tuple(arg_lst)
 
 def escape_single(x):
+    """
+    docstring_title
+
+    @param x: 
+    @type x: 
+    @return: 
+    @rtype: 
+    """
     if type(x) == type(()) or type(x) == type([]):
         return escape(x)
     if type(x) == type(""):
@@ -1986,6 +2770,14 @@ def escape_single(x):
     return tmpstr
 
 def unescape(val):
+    """
+    docstring_title
+
+    @param val: 
+    @type val: 
+    @return: 
+    @rtype: 
+    """
     if type(val)==type(""):
         tmpstr = ''
         for key, item in mappings.items():
@@ -1996,27 +2788,73 @@ def unescape(val):
     return tmpstr
 
 def unescape_list(*args):
+    """
+    docstring_title
+
+    @param *args: 
+    @type *args: 
+    @return: 
+    @rtype: 
+    """
     arg_lst = []
     for x in args:
         arg_lst.append(unescape(x))
     return tuple(arg_lst)
 
 def extract_ftp_host_from_uri(uri):
+    """
+    docstring_title
+
+    @param uri: 
+    @type uri: 
+    @return: 
+    @rtype: 
+    """
     myuri = spliturl(uri)[1]
     # remove username:pass@
     myuri = myuri.split("@")[len(myuri.split("@"))-1]
     return myuri
 
 def spliturl(url):
+    """
+    docstring_title
+
+    @param url: 
+    @type url: 
+    @return: 
+    @rtype: 
+    """
     import urlparse
     return urlparse.urlsplit(url)
 
 def compress_tar_bz2(storepath, pathtocompress):
+    """
+    docstring_title
+
+    @param storepath: 
+    @type storepath: 
+    @param pathtocompress: 
+    @type pathtocompress: 
+    @return: 
+    @rtype: 
+    """
     cmd = "cd \""+pathtocompress+"\" && tar cjf \""+storepath+"\" " + \
         ". &> /dev/null"
     return subprocess.call(cmd, shell = True)
 
 def spawn_function(f, *args, **kwds):
+    """
+    docstring_title
+
+    @param f: 
+    @type f: 
+    @param *args: 
+    @type *args: 
+    @param **kwds: 
+    @type **kwds: 
+    @return: 
+    @rtype: 
+    """
 
     uid = kwds.get('spf_uid')
     if uid != None: kwds.pop('spf_uid')
@@ -2068,6 +2906,18 @@ def spawn_function(f, *args, **kwds):
 
 # tar* uncompress function...
 def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @keyword extractPath: 
+    @type extractPath: 
+    @keyword catchEmpty: 
+    @type catchEmpty: 
+    @return: 
+    @rtype: 
+    """
 
     if extractPath == None:
         extractPath = os.path.dirname(filepath)
@@ -2084,6 +2934,16 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
         return -1
 
     def fix_uid_gid(tarinfo, epath):
+        """
+        docstring_title
+
+        @param tarinfo: 
+        @type tarinfo: 
+        @param epath: 
+        @type epath: 
+        @return: 
+        @rtype: 
+        """
         # workaround for buggy tar files
         uname = tarinfo.uname
         gname = tarinfo.gname
@@ -2104,12 +2964,30 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
             pass
 
     def mycmp(a, b):
+        """
+        docstring_title
+
+        @param a: 
+        @type a: 
+        @param b: 
+        @type b: 
+        @return: 
+        @rtype: 
+        """
         return cmp(a[0].name, b[0].name)
 
     try:
 
         encoded_path = extractPath.encode('utf-8')
         def mymf(tarinfo):
+            """
+            docstring_title
+
+            @param tarinfo: 
+            @type tarinfo: 
+            @return: 
+            @rtype: 
+            """
             epath = os.path.join(encoded_path, tarinfo.name)
             if tarinfo.isdir():
                 # Extract directory with a safe mode, so that
@@ -2129,6 +3007,14 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
 
         # Set correct owner, mtime and filemode on directories.
         def mymf2(tardata):
+            """
+            docstring_title
+
+            @param tardata: 
+            @type tardata: 
+            @return: 
+            @rtype: 
+            """
             tarinfo, epath = tardata
             try:
 
@@ -2159,6 +3045,14 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
     return -1
 
 def bytes_into_human(bytes):
+    """
+    docstring_title
+
+    @param bytes: 
+    @type bytes: 
+    @return: 
+    @rtype: 
+    """
     size = str(round(float(bytes)/1024, 1))
     if bytes < 1024:
         size = str(round(float(bytes)))+"b"
@@ -2170,6 +3064,14 @@ def bytes_into_human(bytes):
     return size
 
 def hide_ftp_password(uri):
+    """
+    docstring_title
+
+    @param uri: 
+    @type uri: 
+    @return: 
+    @rtype: 
+    """
     ftppassword = uri.split("@")[:-1]
     if not ftppassword: return uri
     ftppassword = '@'.join(ftppassword)
@@ -2180,6 +3082,14 @@ def hide_ftp_password(uri):
     return newuri
 
 def extract_ftp_data(ftpuri):
+    """
+    docstring_title
+
+    @param ftpuri: 
+    @type ftpuri: 
+    @return: 
+    @rtype: 
+    """
     ftpuser = ftpuri.split("ftp://")[-1].split(":")[0]
     if (ftpuser == ""):
         ftpuser = "anonymous@"
@@ -2215,9 +3125,23 @@ def extract_ftp_data(ftpuri):
     return ftpuser, ftppassword, ftpport, ftpdir
 
 def get_file_unix_mtime(path):
+    """
+    docstring_title
+
+    @param path: 
+    @type path: 
+    @return: 
+    @rtype: 
+    """
     return os.path.getmtime(path)
 
 def get_random_temp_file():
+    """
+    docstring_title
+
+    @return: 
+    @rtype: 
+    """
     if not os.path.isdir(etpConst['packagestmpdir']):
         os.makedirs(etpConst['packagestmpdir'])
     path = os.path.join(etpConst['packagestmpdir'],
@@ -2228,6 +3152,14 @@ def get_random_temp_file():
     return path
 
 def get_file_timestamp(path):
+    """
+    docstring_title
+
+    @param path: 
+    @type path: 
+    @return: 
+    @rtype: 
+    """
     from datetime import datetime
     # used in this way for convenience
     unixtime = os.path.getmtime(path)
@@ -2241,21 +3173,57 @@ def get_file_timestamp(path):
     return outputtime
 
 def convert_unix_time_to_human_time(unixtime):
+    """
+    docstring_title
+
+    @param unixtime: 
+    @type unixtime: 
+    @return: 
+    @rtype: 
+    """
     from datetime import datetime
     humantime = str(datetime.fromtimestamp(unixtime))
     return humantime
 
 def convert_unix_time_to_datetime(unixtime):
+    """
+    docstring_title
+
+    @param unixtime: 
+    @type unixtime: 
+    @return: 
+    @rtype: 
+    """
     from datetime import datetime
     return datetime.fromtimestamp(unixtime)
 
 def get_current_unix_time():
+    """
+    docstring_title
+
+    @return: 
+    @rtype: 
+    """
     return time.time()
 
 def get_year():
+    """
+    docstring_title
+
+    @return: 
+    @rtype: 
+    """
     return time.strftime("%Y")
 
 def convert_seconds_to_fancy_output(seconds):
+    """
+    docstring_title
+
+    @param seconds: 
+    @type seconds: 
+    @return: 
+    @rtype: 
+    """
 
     mysecs = seconds
     myminutes = 0
@@ -2287,6 +3255,14 @@ def convert_seconds_to_fancy_output(seconds):
 
 # Temporary files cleaner
 def cleanup(toCleanDirs = []):
+    """
+    docstring_title
+
+    @keyword toCleanDirs: 
+    @type toCleanDirs: 
+    @return: 
+    @rtype: 
+    """
 
     if not toCleanDirs:
         toCleanDirs = [ etpConst['packagestmpdir'], etpConst['logdir'] ]
@@ -2305,19 +3281,37 @@ def cleanup(toCleanDirs = []):
     return 0
 
 def flatten(l, ltypes = (list, tuple)):
-  i = 0
-  while i < len(l):
-    while isinstance(l[i], ltypes):
-      if not l[i]:
-        l.pop(i)
-        if not len(l):
-          break
-      else:
-        l[i:i+1] = list(l[i])
-    i += 1
-  return l
+    """
+    docstring_title
+
+    @param l: 
+    @type l: 
+    @keyword ltypes: 
+    @type ltypes: 
+    @param tuple: 
+    @type tuple: 
+    @return: 
+    @rtype: 
+    """
+    i = 0
+    while i < len(l):
+        while isinstance(l[i], ltypes):
+            if not l[i]:
+                l.pop(i)
+                if not len(l):
+                    break
+            else:
+                l[i:i+1] = list(l[i])
+        i += 1
+    return l
 
 def read_repositories_conf():
+    """
+    docstring_title
+
+    @return: 
+    @rtype: 
+    """
     content = []
     if os.path.isfile(etpConst['repositoriesconf']):
         f = open(etpConst['repositoriesconf'])
@@ -2326,6 +3320,14 @@ def read_repositories_conf():
     return content
 
 def write_ordered_repositories_entries(ordered_repository_list):
+    """
+    docstring_title
+
+    @param ordered_repository_list: 
+    @type ordered_repository_list: 
+    @return: 
+    @rtype: 
+    """
     content = read_repositories_conf()
     content = [x.strip() for x in content]
     repolines = [x for x in content if x.startswith("repository|") and (len(x.split("|")) == 5)]
@@ -2339,6 +3341,20 @@ def write_ordered_repositories_entries(ordered_repository_list):
     _save_repositories_content(content)
 
 def save_repository_settings(repodata, remove = False, disable = False, enable = False):
+    """
+    docstring_title
+
+    @param repodata: 
+    @type repodata: 
+    @keyword remove: 
+    @type remove: 
+    @keyword disable: 
+    @type disable: 
+    @keyword enable: 
+    @type enable: 
+    @return: 
+    @rtype: 
+    """
 
     if repodata['repoid'].endswith(".tbz2"):
         return
@@ -2411,6 +3427,14 @@ def save_repository_settings(repodata, remove = False, disable = False, enable =
     return True
 
 def _save_repositories_content(content):
+    """
+    docstring_title
+
+    @param content: 
+    @type content: 
+    @return: 
+    @rtype: 
+    """
     if os.path.isfile(etpConst['repositoriesconf']):
         if os.path.isfile(etpConst['repositoriesconf']+".old"):
             os.remove(etpConst['repositoriesconf']+".old")
@@ -2422,6 +3446,18 @@ def _save_repositories_content(content):
     f.close()
 
 def write_parameter_to_file(config_file, name, data):
+    """
+    docstring_title
+
+    @param config_file: 
+    @type config_file: 
+    @param name: 
+    @type name: 
+    @param data: 
+    @type data: 
+    @return: 
+    @rtype: 
+    """
 
     # check write perms
     if not os.access(os.path.dirname(config_file), os.W_OK):
@@ -2464,10 +3500,26 @@ def write_parameter_to_file(config_file, name, data):
     return True
 
 def write_new_branch(branch):
+    """
+    docstring_title
+
+    @param branch: 
+    @type branch: 
+    @return: 
+    @rtype: 
+    """
     return write_parameter_to_file(etpConst['repositoriesconf'], "branch",
         branch)
 
 def is_entropy_package_file(tbz2file):
+    """
+    docstring_title
+
+    @param tbz2file: 
+    @type tbz2file: 
+    @return: 
+    @rtype: 
+    """
     if not os.path.exists(tbz2file):
         return False
     try:
@@ -2482,11 +3534,27 @@ def is_entropy_package_file(tbz2file):
         return False
 
 def is_valid_string(string):
+    """
+    docstring_title
+
+    @param string: 
+    @type string: 
+    @return: 
+    @rtype: 
+    """
     invalid = [ord(x) for x in string if ord(x) not in xrange(32, 127)]
     if invalid: return False
     return True
 
 def is_valid_path(path):
+    """
+    docstring_title
+
+    @param path: 
+    @type path: 
+    @return: 
+    @rtype: 
+    """
     try:
         os.stat(path)
     except OSError:
@@ -2494,11 +3562,25 @@ def is_valid_path(path):
     return True
 
 def is_valid_md5(myhash):
+    """
+    docstring_title
+
+    @param myhash: 
+    @type myhash: 
+    @return: 
+    @rtype: 
+    """
     if re.findall(r'(?i)(?<![a-z0-9])[a-f0-9]{32}(?![a-z0-9])', myhash):
         return True
     return False
 
 def open_buffer():
+    """
+    docstring_title
+
+    @return: 
+    @rtype: 
+    """
     try:
         import cStringIO as stringio
     except ImportError:
@@ -2506,6 +3588,14 @@ def open_buffer():
     return stringio.StringIO()
 
 def seek_till_newline(f):
+    """
+    docstring_title
+
+    @param f: 
+    @type f: 
+    @return: 
+    @rtype: 
+    """
     count = 0
     f.seek(count, os.SEEK_END)
     size = f.tell()
@@ -2520,6 +3610,14 @@ def seek_till_newline(f):
     f.truncate(pos)
 
 def read_elf_class(elf_file):
+    """
+    docstring_title
+
+    @param elf_file: 
+    @type elf_file: 
+    @return: 
+    @rtype: 
+    """
     import struct
     f = open(elf_file, "rb")
     f.seek(4)
@@ -2529,6 +3627,14 @@ def read_elf_class(elf_file):
     return elf_class
 
 def is_elf_file(elf_file):
+    """
+    docstring_title
+
+    @param elf_file: 
+    @type elf_file: 
+    @return: 
+    @rtype: 
+    """
     import struct
     f = open(elf_file, "rb")
     data = f.read(4)
@@ -2555,6 +3661,14 @@ def resolve_dynamic_library(library, requiring_executable):
     @rtype: string
     """
     def do_resolve(mypaths):
+        """
+        docstring_title
+
+        @param mypaths: 
+        @type mypaths: 
+        @return: 
+        @rtype: 
+        """
         found_path = None
         for mypath in mypaths:
             mypath = os.path.join(etpConst['systemroot']+mypath, library)
@@ -2580,6 +3694,14 @@ def resolve_dynamic_library(library, requiring_executable):
 readelf_avail_check = False
 ldd_avail_check = False
 def read_elf_dynamic_libraries(elf_file):
+    """
+    docstring_title
+
+    @param elf_file: 
+    @type elf_file: 
+    @return: 
+    @rtype: 
+    """
     global readelf_avail_check
     if not readelf_avail_check:
         if not os.access(etpConst['systemroot']+"/usr/bin/readelf", os.X_OK):
@@ -2588,6 +3710,14 @@ def read_elf_dynamic_libraries(elf_file):
     return set([x.strip().split()[-1][1:-1] for x in getstatusoutput('/usr/bin/readelf -d %s' % (elf_file,))[1].split("\n") if (x.find("(NEEDED)") != -1)])
 
 def read_elf_broken_symbols(elf_file):
+    """
+    docstring_title
+
+    @param elf_file: 
+    @type elf_file: 
+    @return: 
+    @rtype: 
+    """
     global ldd_avail_check
     if not ldd_avail_check:
         if not os.access(etpConst['systemroot']+"/usr/bin/ldd", os.X_OK):
@@ -2596,6 +3726,14 @@ def read_elf_broken_symbols(elf_file):
     return set([x.strip().split("\t")[0].split()[-1] for x in getstatusoutput('/usr/bin/ldd -r %s' % (elf_file,))[1].split("\n") if (x.find("undefined symbol:") != -1)])
 
 def read_elf_linker_paths(elf_file):
+    """
+    docstring_title
+
+    @param elf_file: 
+    @type elf_file: 
+    @return: 
+    @rtype: 
+    """
     global readelf_avail_check
     if not readelf_avail_check:
         if not os.access(etpConst['systemroot']+"/usr/bin/readelf", os.X_OK):
@@ -2610,6 +3748,14 @@ def read_elf_linker_paths(elf_file):
     return mypaths
 
 def xml_from_dict_extended(dictionary):
+    """
+    docstring_title
+
+    @param dictionary: 
+    @type dictionary: 
+    @return: 
+    @rtype: 
+    """
     from xml.dom import minidom
     doc = minidom.Document()
     ugc = doc.createElement("entropy")
@@ -2646,6 +3792,14 @@ def xml_from_dict_extended(dictionary):
     return doc.toxml()
 
 def dict_from_xml_extended(xml_string):
+    """
+    docstring_title
+
+    @param xml_string: 
+    @type xml_string: 
+    @return: 
+    @rtype: 
+    """
     from xml.dom import minidom
     doc = minidom.parseString(xml_string)
     entropies = doc.getElementsByTagName("entropy")
@@ -2690,6 +3844,14 @@ def dict_from_xml_extended(xml_string):
     return mydict
 
 def xml_from_dict(dictionary):
+    """
+    docstring_title
+
+    @param dictionary: 
+    @type dictionary: 
+    @return: 
+    @rtype: 
+    """
     from xml.dom import minidom
     doc = minidom.Document()
     ugc = doc.createElement("entropy")
@@ -2703,6 +3865,14 @@ def xml_from_dict(dictionary):
     return doc.toxml()
 
 def dict_from_xml(xml_string):
+    """
+    docstring_title
+
+    @param xml_string: 
+    @type xml_string: 
+    @return: 
+    @rtype: 
+    """
     from xml.dom import minidom
     doc = minidom.parseString(xml_string)
     entropies = doc.getElementsByTagName("entropy")
@@ -2723,6 +3893,20 @@ def dict_from_xml(xml_string):
     return mydict
 
 def create_package_filename(category, name, version, package_tag):
+    """
+    docstring_title
+
+    @param category: 
+    @type category: 
+    @param name: 
+    @type name: 
+    @param version: 
+    @type version: 
+    @param package_tag: 
+    @type package_tag: 
+    @return: 
+    @rtype: 
+    """
     if package_tag:
         package_tag = "#%s" % (package_tag,)
     else:
@@ -2734,6 +3918,20 @@ def create_package_filename(category, name, version, package_tag):
     return package_name
 
 def create_package_atom_string(category, name, version, package_tag):
+    """
+    docstring_title
+
+    @param category: 
+    @type category: 
+    @param name: 
+    @type name: 
+    @param version: 
+    @type version: 
+    @param package_tag: 
+    @type package_tag: 
+    @return: 
+    @rtype: 
+    """
     if package_tag:
         package_tag = "#%s" % (package_tag,)
     else:
@@ -2743,6 +3941,14 @@ def create_package_atom_string(category, name, version, package_tag):
     return package_name
 
 def extract_packages_from_set_file(filepath):
+    """
+    docstring_title
+
+    @param filepath: 
+    @type filepath: 
+    @return: 
+    @rtype: 
+    """
     f = open(filepath, "r")
     items = set()
     line = f.readline()
@@ -2755,6 +3961,12 @@ def extract_packages_from_set_file(filepath):
     return items
 
 def collect_linker_paths():
+    """
+    docstring_title
+
+    @return: 
+    @rtype: 
+    """
 
     ldpaths = []
     try:
@@ -2778,6 +3990,12 @@ def collect_linker_paths():
     return ldpaths
 
 def collect_paths():
+    """
+    docstring_title
+
+    @return: 
+    @rtype: 
+    """
     path = set()
     paths = os.getenv("PATH")
     if paths != None:
@@ -2786,6 +4004,14 @@ def collect_paths():
     return path
 
 def list_to_utf8(mylist):
+    """
+    docstring_title
+
+    @param mylist: 
+    @type mylist: 
+    @return: 
+    @rtype: 
+    """
     mynewlist = []
     for item in mylist:
         try:

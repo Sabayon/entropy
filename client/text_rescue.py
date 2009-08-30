@@ -791,7 +791,7 @@ def getinfo(dict = False):
     info['Architecture'] = osinfo[4]
     info['Entropy version'] = etpConst['entropyversion']
 
-    from entropy.core import SystemSettings
+    from entropy.core.settings.base import SystemSettings
     SysSettings = SystemSettings()
     sys_set_client_plg_id = \
         etpConst['system_settings_plugins_ids']['client_plugin']

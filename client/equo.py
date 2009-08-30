@@ -30,7 +30,7 @@ from entropy.exceptions import *
 from entropy.const import *
 from entropy.output import *
 import entropy.tools as entropyTools
-from entropy.core import SystemSettings
+from entropy.core.settings.base import SystemSettings
 SysSettings = SystemSettings()
 try:
     from entropy.i18n import _

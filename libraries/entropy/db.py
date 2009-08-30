@@ -44,7 +44,8 @@ from entropy.i18n import _
 from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen, \
     TextInterface
 from entropy.cache import EntropyCacher
-from entropy.core import Singleton, SystemSettings
+from entropy.core import Singleton
+from entropy.core.settings.base import SystemSettings
 from entropy.spm.plugins.factory import get_default_instance as get_spm
 
 try: # try with sqlite3 from >=python 2.5

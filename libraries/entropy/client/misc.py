@@ -29,7 +29,7 @@ class FileUpdates:
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
         from entropy.cache import EntropyCacher
-        from entropy.core import SystemSettings
+        from entropy.core.settings.base import SystemSettings
         self.Cacher = EntropyCacher()
         self.SystemSettings = SystemSettings()
         self.scandata = None

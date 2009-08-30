@@ -19,7 +19,7 @@ import time
 import urllib2
 import threading
 from entropy.const import etpConst, etpUi
-from entropy.core import SystemSettings
+from entropy.core.settings.base import SystemSettings
 
 class Lifo:
 

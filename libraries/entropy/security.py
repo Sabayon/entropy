@@ -59,7 +59,7 @@ class SecurityInterface:
         self.Entropy = entropy_client_instance
         from entropy.cache import EntropyCacher
         self.__cacher = EntropyCacher()
-        from entropy.core import SystemSettings
+        from entropy.core.settings.base import SystemSettings
         self.SystemSettings = SystemSettings()
         self.lastfetch = None
         self.previous_checksum = "0"

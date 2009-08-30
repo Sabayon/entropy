@@ -14,7 +14,7 @@ from entropy.const import etpConst
 etpConst['socket_service']['session_ttl'] = 300
 # listen on all the avail. interfaces
 etpConst['socket_service']['hostname'] = "*"
-from entropy.core import SystemSettings
+from entropy.core.settings.base import SystemSettings
 SysSettings = SystemSettings()
 from entropy.tools import get_year
 from entropy.output import print_menu, nocolor

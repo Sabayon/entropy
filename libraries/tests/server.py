@@ -7,7 +7,7 @@ import os
 import shutil
 from entropy.server.interfaces import Server
 from entropy.const import etpConst, const_extract_srv_repo_params
-from entropy.core import SystemSettings
+from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError
 import _misc

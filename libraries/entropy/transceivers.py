@@ -19,7 +19,7 @@ from entropy.output import TextInterface, darkblue, darkred, purple, blue, \
 from entropy.exceptions import *
 from entropy.i18n import _
 from entropy.misc import TimeScheduled, ParallelTask
-from entropy.core import SystemSettings
+from entropy.core.settings.base import SystemSettings
 
 class UrlFetcher:
 

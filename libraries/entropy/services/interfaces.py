@@ -1354,7 +1354,7 @@ class SocketHost:
 
         def docmd_hello(self, transmitter):
             from entropy.tools import getstatusoutput
-            from entropy.core import SystemSettings
+            from entropy.core.settings.base import SystemSettings
             sys_settings = SystemSettings()
             uname = os.uname()
             kern_string = uname[2]
@@ -1472,7 +1472,7 @@ class SocketHost:
         )
 
         # settings
-        from entropy.core import SystemSettings
+        from entropy.core.settings.base import SystemSettings
         import copy
         """
         SystemSettings is a singleton, and we just need to read

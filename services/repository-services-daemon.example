@@ -16,7 +16,7 @@ if "--nostdout" in sys.argv:
 from entropy.output import print_menu, nocolor
 from entropy.tools import get_year
 from entropy.misc import ParallelTask
-from entropy.core import SystemSettings
+from entropy.core.settings.base import SystemSettings
 SysSettings = SystemSettings()
 
 myopts = [

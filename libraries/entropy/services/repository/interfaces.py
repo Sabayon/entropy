@@ -47,7 +47,7 @@ class Server(SocketHost):
         }
 
         # setup System Settings
-        from entropy.core import SystemSettings
+        from entropy.core.settings.base import SystemSettings
         self.SystemSettings = SystemSettings()
         self.SystemSettings['socket_service']['max_connections'] = 5000
 

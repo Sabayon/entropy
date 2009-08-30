@@ -6,12 +6,7 @@
     @copyright: Fabio Erculiani
     @license: GPL-2
 
-    B{Entropy Framework core module}.
-
-    This module contains base classes used by entropy.client,
-    entropy.server and entropy.services.
-
-    "Singleton" is a class that is inherited from singleton objects.
+    B{Entropy Framework SystemSettings module}.
 
     SystemSettings is a singleton, pluggable interface which contains
     all the runtime settings (mostly parsed from configuration files
@@ -21,181 +16,17 @@
     multiple inherittance when using the Singleton class, SystemSettings
     ONLY mimics a I{dict} AND it's not a subclass of it.
 
-    SystemSettingsPlugin is the base class for building valid SystemSettings
-    plugin modules (see entropy.client.interfaces.client or
-    entropy.server.interfaces for working examples).
-
 """
 from __future__ import with_statement
 import os
 import sys
-from entropy.exceptions import IncorrectParameter, SystemDatabaseError
+from threading import RLock
+
 from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, \
     const_extract_cli_repo_params, etpCache
-from entropy.i18n import _
-from threading import RLock
-
-class Singleton(object):
-
-    """
-    If your class wants to become a sexy Singleton,
-    subclass this and replace __init__ with init_singleton
-    """
-
-    __is_destroyed = False
-    __is_singleton = True
-    def __new__(cls, *args, **kwds):
-        instance = cls.__dict__.get("__it__")
-        if instance is not None:
-            if not instance.is_destroyed():
-                return instance
-        cls.__it__ = instance = object.__new__(cls)
-        instance.init_singleton(*args, **kwds)
-        return instance
-
-    def is_destroyed(self):
-        """
-        In our world, Singleton instances may be destroyed,
-        this is done by setting a private bool var __is_destroyed
-
-        @rtype: bool
-        @return: instance status, if destroyed or not
-        """
-        return self.__is_destroyed
-
-    def is_singleton(self):
-        """
-        Return if the instance is a singleton
-
-        @rtype: bool
-        @return: class singleton property, if singleton or not
-        """
-        return self.__is_singleton
-
-class SystemSettingsPlugin:
-
-    """
-
-    This is a plugin base class for all SystemSettings plugins.
-    It allows to add extra parsers (though metadata) to
-    SystemSettings.
-    Just inherit from this class and call add_parser to add
-    your custom parsers.
-    SystemSettings will call the parse method, as explained below.
-
-    Sample code:
-
-        >>> # load SystemSettings
-        >>> from entropy.core import SystemSettings, SystemSettingsPlugin
-        >>> system_settings = SystemSettings()
-        >>> class MyPlugin(SystemSettingsPlugin):
-        >>>      pass
-        >>> my_plugin = MyPlugin('mystuff', None)
-        >>> def myparsing_function():
-        >>>     return {'abc': 1 }
-        >>> my_plugin.add_parser('parser_no_1', myparsing_function)
-        >>> system_settings.add_plugin(my_plugin)
-        >>> print(system_settings['mystuff']['parser_no_1'])
-        {'abc': 1 }
-        >>> # let's remove it
-        >>> system_settings.remove_plugin('mystuff') # through its plugin_id
-        >>> print(system_settings.get('mystuff'))
-        None
-
-    """
-
-    def __init__(self, plugin_id, helper_interface):
-        """
-        SystemSettingsPlugin constructor.
-
-        @param plugin_id: plugin identifier, must be unique
-        @type plugin_id: string
-        @param helper_interface: any Python object that could
-            be of help to your parsers
-        @type handler_instance: Python object
-        @rtype: None
-        @return: None
-        """
-        self.__parsers = []
-        self.__plugin_id = plugin_id
-        self._helper = helper_interface
-        parser_postfix = "_parser"
-        for method in sorted(dir(self)):
-            if method == "add_parser":
-                continue
-            elif method.endswith(parser_postfix) and (method != parser_postfix):
-                parser_id = method[:len(parser_postfix)*-1]
-                self.__parsers.append((parser_id, getattr(self, method),))
-
-    def get_id(self):
-        """
-        Returns the unique plugin id passed at construction time.
-
-        @return: plugin identifier
-        @rtype: string
-        """
-        return self.__plugin_id
-
-    def add_parser(self, parser_id, parser_callable):
-        """
-        You must call this method in order to add your custom
-        parsers to the plugin.
-        Please note, if your parser method ends with "_parser"
-        it will be automatically added this way:
-
-        method: foo_parser
-            parser_id => foo
-        method: another_fabulous_parser
-            parser_id => another_fabulous
-
-        @param parser_id: parser identifier, must be unique
-        @type parser_id: string
-        @param parser_callable: any callable function which has
-            the following signature: callable(system_settings_instance)
-            can return True to stop further parsers calls
-        @type parser_callable: callable
-        @return: None
-        @rtype: None
-        """
-        self.__parsers.append((parser_id, parser_callable,))
-
-    def parse(self, system_settings_instance):
-        """
-        This method is called by SystemSettings instance
-        when building its settings metadata.
-
-        Returned data from parser will be put into the SystemSettings
-        dict using plugin_id and parser_id keys.
-        If returned data is None, SystemSettings dict won't be changed.
-
-        @param system_settings_instance: SystemSettings instance
-        @type system_settings_instance: SystemSettings instance
-        @return: None
-        @rtype: None
-        """
-        plugin_id = self.get_id()
-        for parser_id, parser in self.__parsers:
-            data = parser(system_settings_instance)
-            if data == None:
-                continue
-            if not system_settings_instance.has_key(plugin_id):
-                system_settings_instance[plugin_id] = {}
-            system_settings_instance[plugin_id][parser_id] = data
-
-    def post_setup(self, system_settings_instance):
-        """
-        This method is called by SystemSettings instance
-        after having built all the SystemSettings metadata.
-        You can reimplement this and hook your refinement code
-        into this method.
-
-        @param system_settings_instance: SystemSettings instance
-        @type system_settings_instance: SystemSettings instance
-        @return: None
-        @rtype: None
-        """
-        pass
+from entropy.core import Singleton
+from entropy.core.settings.skel import SystemSettingsPlugin
 
 class SystemSettings(Singleton):
 
@@ -209,7 +40,7 @@ class SystemSettings(Singleton):
 
     Sample code:
 
-        >>> from entropy.core import SystemSettings
+        >>> from entropy.core.settings.base import SystemSettings
         >>> system_settings = SystemSettings()
         >>> system_settings.clear()
         >>> system_settings.destroy()
@@ -279,7 +110,7 @@ class SystemSettings(Singleton):
         @rtype: None
         """
         inst = system_settings_plugin_instance
-        if not isinstance(inst,SystemSettingsPlugin):
+        if not isinstance(inst, SystemSettingsPlugin):
             raise AttributeError("SystemSettings: expected valid " + \
                     "SystemSettingsPlugin instance")
         with self.__mutex:

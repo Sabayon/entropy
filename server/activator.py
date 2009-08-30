@@ -31,7 +31,7 @@ from entropy.i18n import _
 import entropy.tools as entropyTools
 from entropy.output import *
 from entropy.const import *
-from entropy.core import SystemSettings
+from entropy.core.settings.base import SystemSettings
 SysSettings = SystemSettings()
 
 myopts = [

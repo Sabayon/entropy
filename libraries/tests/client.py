@@ -6,7 +6,7 @@ import unittest
 import os
 from entropy.client.interfaces import Client
 from entropy.const import etpConst, etpUi
-from entropy.core import SystemSettings
+from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError
 import _misc

@@ -18,10 +18,10 @@ from entropy.misc import LogFile
 class SpmPlugin(Singleton):
     """Base class for Source Package Manager plugins"""
 
-    SPM_PLUGIN_API_VERSION = 0
+    BASE_PLUGIN_API_VERSION = 0
 
     # this must be reimplemented by subclasses and value
-    # must match SPM_PLUGIN_API_VERSION
+    # must match BASE_PLUGIN_API_VERSION
     PLUGIN_API_VERSION = -1
 
     # match_package and match_installed_package supported match_type

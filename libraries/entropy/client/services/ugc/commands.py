@@ -16,7 +16,7 @@ from entropy.exceptions import *
 from entropy.const import etpConst
 from entropy.output import darkblue, bold, blue, darkgreen, darkred, brown
 from entropy.i18n import _
-from entropy.core import SystemSettings
+from entropy.core.settings.base import SystemSettings
 
 class Base:
 
