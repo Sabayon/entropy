@@ -16,6 +16,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
         - UGC for more coolness
         - title change
         - more sexy UI
+    - Sulfur: when window is maximized, pkgs description must be longer
 
   1.0_beta2:
 
