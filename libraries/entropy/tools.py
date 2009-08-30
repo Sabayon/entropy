@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from __future__ import with_statement
 """
 
     @author: Fabio Erculiani <lxnay@sabayonlinux.org>
@@ -11,12 +12,9 @@
     used arount the Entropy codebase.
 
 """
-
 """
 Entropy miscellaneous tools module
 """
-
-from __future__ import with_statement
 import stat
 import errno
 import re
