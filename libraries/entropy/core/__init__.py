@@ -85,6 +85,12 @@ class EntropyPluginFactory:
               above otherwise plugin won't be loaded and a warning will be
               printed.
 
+        Moreover, plugin classes must be "Python new-style classes", otherwise
+        __subclasses__ method won't be available and class won't be considered
+        at all (see: http://www.python.org/doc/newstyle).
+
+        If plugin class features a "PLUGIN_DISABLED" class attribute with
+        a value of True, such plugin will be ignored.
 
         @param base_plugin_class: Base EntropyPlugin-based class that valid
             plugin classes must inherit from.
@@ -172,6 +178,11 @@ class EntropyPluginFactory:
                     sys.stderr.write("!!! Entropy Plugin warning: " \
                         "PLUGIN_API_VERSION mismatch !!!\n")
                     continue
+
+                if hasattr(obj, 'PLUGIN_DISABLED'):
+                    if obj.PLUGIN_DISABLED:
+                        # this plugin has been disabled
+                        continue
 
                 available[modname_clean] = obj
 
