@@ -396,9 +396,14 @@ class QAInterface:
             broken_syms_list_regexp.append(reg_sym)
 
         broken_libs_mask_regexp = []
+        broken_libs_paths_mask_regexp = []
         for broken_lib in broken_libs_mask:
             reg_lib = re.compile(broken_lib)
-            broken_libs_mask_regexp.append(reg_lib)
+            if os.path.sep in broken_lib:
+                # it's a path, not a lib name
+                broken_libs_paths_mask_regexp.append(reg_lib)
+            else:
+                broken_libs_mask_regexp.append(reg_lib)
 
         ldpaths = set(self.entropyTools.collect_linker_paths())
         ldpaths |= self.entropyTools.collect_paths()
@@ -504,16 +509,28 @@ class QAInterface:
                     header = "  "
                 )
 
+            # filter broken paths
+            # there are paths known to be broken and must be
+            # excluded to avoid noisy false positives
+            exec_match = False
+            for reg_path in broken_libs_paths_mask_regexp:
+                if reg_path.match(executable):
+                    exec_match = True
+                    break
+            if exec_match:
+                continue
+
             real_exec_path = etpConst['systemroot'] + executable
 
             myelfs = self.entropyTools.read_elf_dynamic_libraries(
                 real_exec_path)
 
-            def mymf2(mylib):
-                return not self.entropyTools.resolve_dynamic_library(mylib,
+            mylibs = set()
+            for mylib in myelfs:
+                lib_path = self.entropyTools.resolve_dynamic_library(mylib,
                     executable)
-
-            mylibs = set(filter(mymf2, myelfs))
+                if not lib_path:
+                    mylibs.add(mylib)
 
             # filter broken libraries
             if mylibs:
@@ -542,7 +559,6 @@ class QAInterface:
                                 mylib_filter.add(mylib)
 
                 mylibs -= mylib_filter
-
 
             broken_sym_found = set()
             if broken_symbols and not mylibs:
