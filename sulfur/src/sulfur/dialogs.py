@@ -4123,7 +4123,16 @@ class PkgInfoMenu(MenuSkel):
         if not force:
             docs_cache = self.Entropy.UGC.UGCCache.get_alldocs_cache(self.pkgkey, self.repository)
         if docs_cache == None:
-            docs_data, err_msg = self.Entropy.UGC.get_docs(self.repository, self.pkgkey)
+
+            try:
+                docs_data, err_msg = self.Entropy.UGC.get_docs(self.repository,
+                    self.pkgkey)
+            except TimeoutError:
+                dialog_title = _("Timeout Error")
+                err_msg = _("Connection timed out, sorry!")
+                docs_data = None
+                okDialog(self.window, err_msg, title = dialog_title)
+
             if not isinstance(docs_data, (list, tuple,)):
                 self.ugc_data = {}
             else:
