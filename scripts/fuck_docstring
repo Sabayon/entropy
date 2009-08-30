@@ -4,7 +4,6 @@ import os
 import re
 
 """
-@todo: fix .find('"\"\"')
 @todo: string trailing "#"
 @todo: support function args split into multiple lines
 """
@@ -71,7 +70,8 @@ for path in args:
                 # extract arguments
                 my_args = args_reg.findall(extr_str)
                 if my_args:
-                    my_args = my_args[0][1:-1].split(",")
+                    my_args = [x for x in my_args[0][1:-1].split(",") \
+                        if x.strip()]
                     if "self" in my_args:
                         my_args.remove("self")
 
@@ -81,21 +81,21 @@ for path in args:
                         if "=" in myarg:
                             myarg = myarg.strip().split()[0]
                             # keyword arg
-                            args_string += '%s@keyword %s:\n' % (
+                            args_string += '%s@keyword %s: \n' % (
                                 " "*my_indent_level, myarg,)
                         else:
                             myarg = myarg.strip()
                             # arg
-                            args_string += '%s@param %s:\n' % (
+                            args_string += '%s@param %s: \n' % (
                                 " "*my_indent_level, myarg,)
 
-                        args_string += '%s@type %s:\n' % (
+                        args_string += '%s@type %s: \n' % (
                             " "*my_indent_level, myarg,)
 
                     if do_write_return_docstring:
-                        args_string += '%s@return:\n' % (
+                        args_string += '%s@return: \n' % (
                             " "*my_indent_level,)
-                        args_string += '%s@rtype:\n' % (
+                        args_string += '%s@rtype: ' % (
                             " "*my_indent_level,)
 
 
@@ -108,7 +108,8 @@ for path in args:
                         # line empty
                         grab_lines.append(line)
                         continue
-                    elif line.find('"""') == -1:
+                    elif not (line.strip().startswith('"""') or \
+                        line.strip().startswith("'''")):
                         # line is not empty and does not contain
                         # a docstring
                         dowrite = True
