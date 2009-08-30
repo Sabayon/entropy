@@ -1,0 +1,107 @@
+# -*- coding: utf-8 -*-
+"""
+
+    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
+    @contact: lxnay@sabayonlinux.org
+    @copyright: Fabio Erculiani
+    @license: GPL-2
+
+    B{Entropy SystemSettings External Testing Plugin module}.
+    This is a stubby implementation of external SystemSettings plugins.
+    You can use this for reference.
+
+    This plugin is called "test" ("_plugin" suffix is removed) and will
+    be accessible from SystemSettings instance this way:
+
+        >>> from entropy.core.settings.base import SystemSettings
+        >>> settings = SystemSettings()
+        >>> print settings['test|BlahPluginOne']
+        { ... }
+
+    You can have as many SystemSettingsPlugin classes as you want, there
+    is no limit. Every class must inherit SystemSettingsPlugin and provide
+    a unique plugin identifier name (string) that will be available under
+    "settings['test']" containing metadata returned by *_parser methods
+    in your classes. Please also look at SystemSettingPlugin documentation
+    for more info on the actual SystemSettingPlugin based class implementation.
+
+    NOTE: to enabled this testing plugin you need to:
+        - rename this file and remove .example extension
+        - enable the plugin classes below (removing PLUGIN_DISABLED)
+
+"""
+from entropy.core.settings.plugins.skel import SystemSettingsPlugin
+
+class helper_interface:
+
+    """
+    SystemSettings external Test plugin helper interface.
+    """
+
+    def get_moo(self):
+        """ROTFLMAO"""
+        return "moo!"
+
+    def get_tweet(self):
+        """ROTFLMAO"""
+        return "buuurp!"
+
+class BlahPluginOne(SystemSettingsPlugin):
+
+    # this must be reimplemented by subclasses and value
+    # must match BASE_PLUGIN_API_VERSION
+    PLUGIN_API_VERSION = 1 # current Entropy SystemSettings API version
+    # remove this attribute to enable this plugin
+    PLUGIN_DISABLED = True
+
+    def __init__(self):
+        plugin_id = "test|BlahPluginOne" # this must be UNIQUE!
+        SystemSettingsPlugin.__init__(self, plugin_id, helper_interface())
+
+    def animals_parser(self, system_settings_instance):
+        """
+        The returned metadata will be available inside
+        SystemSettings['test|BlahPluginOne']['animals']
+        """
+        data = {
+            'moo': self._helper.get_moo(),
+            'tweet': self._helper.get_tweet(),
+        }
+        return data
+
+    def post_setup(self, system_settings_instance):
+        """
+        Here you can add extra stuff that is called by SystemSettings when
+        all the SystemSetting plugins are loaded.
+        """
+        pass
+
+class BlahPluginTwo(SystemSettingsPlugin):
+
+    # this must be reimplemented by subclasses and value
+    # must match BASE_PLUGIN_API_VERSION
+    PLUGIN_API_VERSION = 1 # current Entropy SystemSettings API version
+    # remove this attribute to enable this plugin
+    PLUGIN_DISABLED = True
+
+    def __init__(self):
+        plugin_id = "test|BlahPluginTwo" # this must be UNIQUE!
+        SystemSettingsPlugin.__init__(self, plugin_id, helper_interface())
+
+    def animals2_parser(self, system_settings_instance):
+        """
+        The returned metadata will be available inside
+        SystemSettings['test|BlahPluginTwo']['animals']
+        """
+        data = {
+            'moo': self._helper.get_moo(),
+            'tweet': self._helper.get_tweet(),
+        }
+        return data
+
+    def post_setup(self, system_settings_instance):
+        """
+        Here you can add extra stuff that is called by SystemSettings when
+        all the SystemSetting plugins are loaded.
+        """
+        pass

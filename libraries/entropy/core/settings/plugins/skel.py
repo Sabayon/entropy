@@ -14,7 +14,9 @@
 
 """
 
-class SystemSettingsPlugin:
+class SystemSettingsPlugin(object):
+
+    BASE_PLUGIN_API_VERSION = 1
 
     """
 
@@ -29,7 +31,7 @@ class SystemSettingsPlugin:
 
         >>> # load SystemSettings
         >>> from entropy.core.settings.base import SystemSettings
-        >>> from entropy.core.settings.skel import SystemSettingsPlugin
+        >>> from entropy.core.settings.plugins.skel import SystemSettingsPlugin
         >>> system_settings = SystemSettings()
         >>> class MyPlugin(SystemSettingsPlugin):
         >>>      pass
@@ -119,11 +121,10 @@ class SystemSettingsPlugin:
         plugin_id = self.get_id()
         for parser_id, parser in self.__parsers:
             data = parser(system_settings_instance)
-            if data == None:
+            if data is None:
                 continue
-            if not system_settings_instance.has_key(plugin_id):
-                system_settings_instance[plugin_id] = {}
-            system_settings_instance[plugin_id][parser_id] = data
+            obj = system_settings_instance.setdefault(plugin_id, {})
+            obj[parser_id] = data
 
     def post_setup(self, system_settings_instance):
         """

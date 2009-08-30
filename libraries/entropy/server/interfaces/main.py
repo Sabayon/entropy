@@ -23,7 +23,7 @@ from entropy.output import TextInterface, purple, red, darkgreen, \
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
-from entropy.core.settings.skel import SystemSettingsPlugin
+from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 from entropy.transceivers import FtpInterface
 from entropy.db import EntropyRepository
 from entropy.spm.plugins.factory import get_default_instance as get_spm

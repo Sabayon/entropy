@@ -26,7 +26,7 @@ from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, \
     const_extract_cli_repo_params, etpCache
 from entropy.core import Singleton
-from entropy.core.settings.skel import SystemSettingsPlugin
+from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 
 class SystemSettings(Singleton):
 
@@ -56,6 +56,9 @@ class SystemSettings(Singleton):
 
         """
 
+        from entropy.core.settings.plugins.factory import get_available_plugins
+        self.__get_external_plugins = get_available_plugins
+
         from entropy.cache import EntropyCacher
         self.__cacher = EntropyCacher()
         self.__data = {}
@@ -63,6 +66,7 @@ class SystemSettings(Singleton):
         self.__mutex = RLock() # reentrant lock on purpose
 
         self.__plugins = {}
+        self.__external_plugins = {}
         self.__setting_files_order = []
         self.__setting_files_pre_run = []
         self.__setting_files = {}
@@ -212,11 +216,22 @@ class SystemSettings(Singleton):
         for plugin_id in sorted(self.__plugins):
             self.__plugins[plugin_id].parse(self)
 
+        # external plugins support
+        external_plugins = self.__get_external_plugins()
+        for external_plugin_id in sorted(external_plugins):
+            external_plugin = external_plugins[external_plugin_id]()
+            external_plugin.parse(self)
+            self.__external_plugins[external_plugin_id] = external_plugin
+
         enforce_persistent()
 
         # run post-SystemSettings setup, plugins hook
         for plugin_id in sorted(self.__plugins):
             self.__plugins[plugin_id].post_setup(self)
+
+        # run post-SystemSettings setup for external plugins too
+        for external_plugin_id in sorted(self.__external_plugins):
+            self.__external_plugins[external_plugin_id].post_setup(self)
 
     def __setitem__(self, mykey, myvalue):
         """
