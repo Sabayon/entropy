@@ -7,14 +7,20 @@
     @license: GPL-2
 
     B{Entropy miscellaneous tools module}.
+    In this module are enclosed all the miscellaneous functions
+    used arount the Entropy codebase.
 
 """
 
+"""
+Entropy miscellaneous tools module
+"""
+
 from __future__ import with_statement
-import random
 import stat
 import errno
 import re
+import sys
 import os
 import time
 import shutil
@@ -23,11 +29,19 @@ import subprocess
 import grp
 import pwd
 import hashlib
-from entropy.output import * # there is also TextInterface
-from entropy.const import *
-from entropy.exceptions import *
+import random
+from entropy.output import TextInterface, print_info, red, darkgreen, green
+from entropy.const import etpConst, const_kill_threads, const_islive
+from entropy.exceptions import FileNotFound, InvalidAtom, InvalidDataType, \
+    DirectoryNotFound
 
 def is_root():
+    """
+    Return whether running process has root priviledges.
+
+    @return: root priviledges
+    @rtype: bool
+    """
     return not etpConst['uid']
 
 def is_user_in_entropy_group(uid = None):
@@ -96,7 +110,8 @@ def get_traceback():
 
 def print_exception(returndata = False):
     import traceback
-    if not returndata: traceback.print_exc()
+    if not returndata:
+        traceback.print_exc()
     data = []
     tb = sys.exc_info()[2]
     while 1:
@@ -172,28 +187,28 @@ def get_remote_data(url, timeout = 5):
         return False
 
 def is_png_file(path):
-    f = open(path,"r")
+    f = open(path, "r")
     x = f.read(4)
     if x == '\x89PNG':
         return True
     return False
 
 def is_jpeg_file(path):
-    f = open(path,"r")
+    f = open(path, "r")
     x = f.read(10)
     if x == '\xff\xd8\xff\xe0\x00\x10JFIF':
         return True
     return False
 
 def is_bmp_file(path):
-    f = open(path,"r")
+    f = open(path, "r")
     x = f.read(2)
     if x == 'BM':
         return True
     return False
 
 def is_gif_file(path):
-    f = open(path,"r")
+    f = open(path, "r")
     x = f.read(5)
     if x == 'GIF89':
         return True
@@ -202,7 +217,8 @@ def is_gif_file(path):
 def is_supported_image_file(path):
     calls = [is_png_file, is_jpeg_file, is_bmp_file, is_gif_file]
     for mycall in calls:
-        if mycall(path): return True
+        if mycall(path):
+            return True
     return False
 
 def is_april_first():
@@ -215,7 +231,7 @@ def is_april_first():
 def add_proxy_opener(module, data):
     import types
     if type(module) != types.ModuleType: # FIXME: check if it's urllib2
-        raise InvalidDataType("InvalidDataType: not a module")
+        InvalidDataType("InvalidDataType: not a module")
     if not data:
         return
 
@@ -290,7 +306,7 @@ def sum_file_sizes(file_list):
     for myfile in file_list:
         try:
             size += get_file_size(myfile)
-        except (OSError,IOError,):
+        except (OSError, IOError,):
             continue
     return size
 
@@ -311,7 +327,8 @@ def getstatusoutput(cmd):
     text = pipe.read()
     sts = pipe.close()
     if sts is None: sts = 0
-    if text[-1:] == '\n': text = text[:-1]
+    if text[-1:] == '\n':
+        text = text[:-1]
     return sts, text
 
 # Copyright 1998-2004 Gentoo Foundation
@@ -345,27 +362,27 @@ def movefile(src, dest, src_basedir = None):
                     target = target[len(src_basedir):]
             if destexists and not stat.S_ISDIR(dstat[stat.ST_MODE]):
                 os.unlink(dest)
-            os.symlink(target,dest)
-            os.lchown(dest,sstat[stat.ST_UID],sstat[stat.ST_GID])
+            os.symlink(target, dest)
+            os.lchown(dest, sstat[stat.ST_UID], sstat[stat.ST_GID])
             return True
         except SystemExit:
             raise
         except Exception, e:
             print "!!! failed to properly create symlink:"
-            print "!!!",dest,"->",target
-            print "!!!",e
+            print "!!!", dest, "->", target
+            print "!!!", e
             return False
 
     renamefailed = True
     if sstat.st_dev == dstat.st_dev:
         try:
-            os.rename(src,dest)
+            os.rename(src, dest)
             renamefailed = False
         except Exception, e:
             if e[0] != errno.EXDEV:
                 # Some random error.
-                print "!!! Failed to move",src,"to",dest
-                print "!!!",e
+                print "!!! Failed to move", src, "to", dest
+                print "!!!", e
                 return False
             # Invalid cross-device-link 'bind' mounted or actually Cross-Device
 
@@ -374,39 +391,40 @@ def movefile(src, dest, src_basedir = None):
         if stat.S_ISREG(sstat[stat.ST_MODE]):
             try: # For safety copy then move it over.
                 while 1:
-                    tmp_dest = "%s#entropy_new_%s" % (dest,get_random_number(),)
-                    if not os.path.lexists(tmp_dest): break
-                shutil.copyfile(src,tmp_dest)
-                os.rename(tmp_dest,dest)
+                    tmp_dest = "%s#entropy_new_%s" % (dest, get_random_number(),)
+                    if not os.path.lexists(tmp_dest):
+                        break
+                shutil.copyfile(src, tmp_dest)
+                os.rename(tmp_dest, dest)
                 didcopy = True
             except SystemExit, e:
                 raise
             except Exception, e:
-                print '!!! copy',src,'->',dest,'failed.'
-                print "!!!",e
+                print '!!! copy', src, '->', dest, 'failed.'
+                print "!!!", e
                 return False
         else:
             #we don't yet handle special, so we need to fall back to /bin/mv
-            a = getstatusoutput("mv -f '%s' '%s'" % (src,dest,))
-            if a[0]!=0:
+            a = getstatusoutput("mv -f '%s' '%s'" % (src, dest,))
+            if a[0] != 0:
                 print "!!! Failed to move special file:"
-                print "!!! '"+src+"' to '"+dest+"'"
-                print "!!!",a
+                print "!!! '" + src + "' to '" + dest + "'"
+                print "!!!", a
                 return False
         try:
             if didcopy:
                 if stat.S_ISLNK(sstat[stat.ST_MODE]):
-                    os.lchown(dest,sstat[stat.ST_UID],sstat[stat.ST_GID])
+                    os.lchown(dest, sstat[stat.ST_UID], sstat[stat.ST_GID])
                 else:
-                    os.chown(dest,sstat[stat.ST_UID],sstat[stat.ST_GID])
+                    os.chown(dest, sstat[stat.ST_UID], sstat[stat.ST_GID])
                 os.chmod(dest, stat.S_IMODE(sstat[stat.ST_MODE])) # Sticky is reset on chown
                 os.unlink(src)
         except SystemExit, e:
             raise
         except Exception, e:
             print "!!! Failed to chown/chmod/unlink in movefile()"
-            print "!!!",dest
-            print "!!!",e
+            print "!!!", dest
+            print "!!!", e
             return False
 
     try:
@@ -434,7 +452,7 @@ def ebeep(count = 5):
 def application_lock_check(gentle = False):
     if etpConst['applicationlock']:
         if not gentle:
-            raise SystemExit(10)
+            SystemExit(10)
         return True
     return False
 
@@ -443,7 +461,7 @@ def get_random_number():
         return abs(hash(os.urandom(2)))%99999
     except NotImplementedError:
         random.seed()
-        return random.randint(10000,99999)
+        return random.randint(10000, 99999)
 
 def split_indexable_into_chunks(mystr, chunk_len):
     chunks = []
@@ -457,13 +475,13 @@ def split_indexable_into_chunks(mystr, chunk_len):
         mylen -= my_chunk_len
     return chunks
 
-def countdown(secs=5, what="Counting...", back = False):
+def countdown(secs = 5, what = "Counting...", back = False):
     if secs:
         if back:
             try:
                 print red(">>"), what,
             except UnicodeEncodeError:
-                print red(">>"),what.encode('utf-8'),
+                print red(">>"), what.encode('utf-8'),
         else:
             try:
                 print what
@@ -516,15 +534,15 @@ def sha1(filepath):
 
 def md5sum_directory(directory):
     if not os.path.isdir(directory):
-        raise DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
+        DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
     myfiles = os.listdir(directory)
     m = hashlib.md5()
     if not myfiles:
         return "0" # no files means 0
 
-    for currentdir,subdirs,files in os.walk(directory):
+    for currentdir, subdirs, files in os.walk(directory):
         for myfile in files:
-            myfile = os.path.join(currentdir,myfile)
+            myfile = os.path.join(currentdir, myfile)
             readfile = open(myfile)
             block = readfile.read(1024)
             while block:
@@ -535,15 +553,15 @@ def md5sum_directory(directory):
 
 def md5obj_directory(directory):
     if not os.path.isdir(directory):
-        raise DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
+        DirectoryNotFound("DirectoryNotFound: directory just does not exist.")
     myfiles = os.listdir(directory)
     m = hashlib.md5()
     if not myfiles:
         return m
 
-    for currentdir,subdirs,files in os.walk(directory):
+    for currentdir, subdirs, files in os.walk(directory):
         for myfile in files:
-            myfile = os.path.join(currentdir,myfile)
+            myfile = os.path.join(currentdir, myfile)
             readfile = open(myfile)
             block = readfile.read(1024)
             while block:
@@ -567,8 +585,8 @@ def getfd(filespec, readOnly = 0):
     return os.open(filespec, flags)
 
 def uncompress_file(file_path, destination_path, opener):
-    f_out = open(destination_path,"wb")
-    f_in = opener(file_path,"rb")
+    f_out = open(destination_path, "wb")
+    f_in = opener(file_path, "rb")
     data = f_in.read(8192)
     while data:
         f_out.write(data)
@@ -578,16 +596,16 @@ def uncompress_file(file_path, destination_path, opener):
     f_in.close()
 
 def compress_file(file_path, destination_path, opener, compress_level = None):
-    f_in = open(file_path,"rb")
+    f_in = open(file_path, "rb")
     if compress_level != None:
-        f_out = opener(destination_path,"wb",compresslevel = compress_level)
+        f_out = opener(destination_path, "wb", compresslevel = compress_level)
     else:
-        f_out = opener(destination_path,"wb")
+        f_out = opener(destination_path, "wb")
     data = f_in.read(8192)
     while data:
         f_out.write(data)
         data = f_in.read(8192)
-    if hasattr(f_out,'flush'):
+    if hasattr(f_out, 'flush'):
         f_out.flush()
     f_out.close()
     f_in.close()
@@ -595,11 +613,11 @@ def compress_file(file_path, destination_path, opener, compress_level = None):
 # files_to_compress must be a list of valid file paths
 def compress_files(dest_file, files_to_compress, compressor = "bz2"):
 
-    if compressor not in ("bz2","gz",):
-        raise AttributeError("invalid compressor specified")
+    if compressor not in ("bz2", "gz",):
+        AttributeError("invalid compressor specified")
 
     id_strings = {}
-    tar = tarfile.open(dest_file,"w:%s" % (compressor,))
+    tar = tarfile.open(dest_file, "w:%s" % (compressor,))
     try:
         for path in files_to_compress:
             exist = os.lstat(path)
@@ -616,7 +634,7 @@ def compress_files(dest_file, files_to_compress, compressor = "bz2"):
 def universal_uncompress(compressed_file, dest_path, catch_empty = False):
 
     try:
-        tar = tarfile.open(compressed_file,"r")
+        tar = tarfile.open(compressed_file, "r")
     except tarfile.ReadError:
         if catch_empty:
             return True
@@ -640,7 +658,7 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
             del tar.members[:]
             return tarinfo
 
-        def mycmp(a,b):
+        def mycmp(a, b):
             return cmp(a.name, b.name)
 
         directories = sorted(map(mymf, tar), mycmp, reverse = True)
@@ -691,8 +709,8 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
 def unpack_gzip(gzipfilepath):
     import gzip
     filepath = gzipfilepath[:-3] # remove .gz
-    item = open(filepath,"wb")
-    filegz = gzip.GzipFile(gzipfilepath,"rb")
+    item = open(filepath, "wb")
+    filegz = gzip.GzipFile(gzipfilepath, "rb")
     chunk = filegz.read(8192)
     while chunk:
         item.write(chunk)
@@ -705,8 +723,8 @@ def unpack_gzip(gzipfilepath):
 def unpack_bzip2(bzip2filepath):
     import bz2
     filepath = bzip2filepath[:-4] # remove .bz2
-    item = open(filepath,"wb")
-    filebz2 = bz2.BZ2File(bzip2filepath,"rb")
+    item = open(filepath, "wb")
+    filebz2 = bz2.BZ2File(bzip2filepath, "rb")
     chunk = filebz2.read(8192)
     while chunk:
         item.write(chunk)
@@ -721,22 +739,22 @@ def backup_client_repository():
         rnd = get_random_number()
         source = etpConst['etpdatabaseclientfilepath']
         dest = etpConst['etpdatabaseclientfilepath']+".backup."+str(rnd)
-        shutil.copy2(source,dest)
+        shutil.copy2(source, dest)
         user = os.stat(source)[4]
         group = os.stat(source)[5]
-        os.chown(dest,user,group)
-        shutil.copystat(source,dest)
+        os.chown(dest, user, group)
+        shutil.copystat(source, dest)
         return dest
     return ""
 
-def extract_xpak(tbz2file,tmpdir = None):
+def extract_xpak(tbz2file, tmpdir = None):
     # extract xpak content
     xpakpath = suck_xpak(tbz2file, etpConst['packagestmpdir'])
-    return unpack_xpak(xpakpath,tmpdir)
+    return unpack_xpak(xpakpath, tmpdir)
 
 def read_xpak(tbz2file):
     xpakpath = suck_xpak(tbz2file, etpConst['entropyunpackdir'])
-    f = open(xpakpath,"rb")
+    f = open(xpakpath, "rb")
     data = f.read()
     f.close()
     os.remove(xpakpath)
@@ -748,10 +766,10 @@ def unpack_xpak(xpakfile, tmpdir = None):
         if tmpdir is None:
             tmpdir = etpConst['packagestmpdir']+"/"+os.path.basename(xpakfile)[:-5]+"/"
         if os.path.isdir(tmpdir):
-            shutil.rmtree(tmpdir,True)
+            shutil.rmtree(tmpdir, True)
         os.makedirs(tmpdir)
         xpakdata = xpak.getboth(xpakfile)
-        xpak.xpand(xpakdata,tmpdir)
+        xpak.xpand(xpakdata, tmpdir)
         del xpakdata
         try:
             os.remove(xpakfile)
@@ -765,7 +783,7 @@ def suck_xpak(tbz2file, outputpath):
 
     dest_filename = os.path.basename(tbz2file)[:-5]+".xpak"
     xpakpath = os.path.join(outputpath, dest_filename)
-    old = open(tbz2file,"rb")
+    old = open(tbz2file, "rb")
 
     # position old to the end
     old.seek(0, os.SEEK_END)
@@ -812,7 +830,7 @@ def suck_xpak(tbz2file, outputpath):
     # now write to found metadata to file
     # starting from data_start_position
     # ending to data_end_position
-    db = open(xpakpath,"wb")
+    db = open(xpakpath, "wb")
     old.seek(data_start_position)
     to_read = data_end_position - data_start_position
     while to_read > 0:
@@ -837,10 +855,10 @@ def append_xpak(tbz2file, atom):
         tbz2.recompose(dbdir)
     return tbz2file
 
-def aggregate_edb(tbz2file,dbfile):
-    f = open(tbz2file,"abw")
+def aggregate_edb(tbz2file, dbfile):
+    f = open(tbz2file, "abw")
     f.write(etpConst['databasestarttag'])
-    g = open(dbfile,"rb")
+    g = open(dbfile, "rb")
     chunk = g.read(8192)
     while chunk:
         f.write(chunk)
@@ -945,7 +963,7 @@ def remove_edb(tbz2file, savedir):
 def create_md5_file(filepath):
     md5hash = md5sum(filepath)
     hashfile = filepath+etpConst['packagesmd5fileext']
-    f = open(hashfile,"w")
+    f = open(hashfile, "w")
     name = os.path.basename(filepath)
     f.write(md5hash+"  "+name+"\n")
     f.flush()
@@ -955,7 +973,7 @@ def create_md5_file(filepath):
 def create_sha512_file(filepath):
     sha512hash = sha512(filepath)
     hashfile = filepath+etpConst['packagessha512fileext']
-    f = open(hashfile,"w")
+    f = open(hashfile, "w")
     tbz2name = os.path.basename(filepath)
     f.write(sha512hash+"  "+tbz2name+"\n")
     f.flush()
@@ -965,7 +983,7 @@ def create_sha512_file(filepath):
 def create_sha256_file(filepath):
     sha256hash = sha256(filepath)
     hashfile = filepath+etpConst['packagessha256fileext']
-    f = open(hashfile,"w")
+    f = open(hashfile, "w")
     tbz2name = os.path.basename(filepath)
     f.write(sha256hash+"  "+tbz2name+"\n")
     f.flush()
@@ -975,14 +993,14 @@ def create_sha256_file(filepath):
 def create_sha1_file(filepath):
     sha1hash = sha1(filepath)
     hashfile = filepath+etpConst['packagessha1fileext']
-    f = open(hashfile,"w")
+    f = open(hashfile, "w")
     tbz2name = os.path.basename(filepath)
     f.write(sha1hash+"  "+tbz2name+"\n")
     f.flush()
     f.close()
     return hashfile
 
-def compare_md5(filepath,checksum):
+def compare_md5(filepath, checksum):
     checksum = str(checksum)
     result = md5sum(filepath)
     result = str(result)
@@ -1043,7 +1061,7 @@ def sort_update_files(update_list):
 def generic_file_content_parser(filepath):
     data = []
     if os.access(filepath, os.R_OK | os.F_OK):
-        gen_f = open(filepath,"r")
+        gen_f = open(filepath, "r")
         content = gen_f.readlines()
         gen_f.close()
         # filter comments and white lines
@@ -1110,7 +1128,7 @@ def extract_elog(file):
 
     logline = False
     logoutput = []
-    f = open(file,"r")
+    f = open(file, "r")
     reallog = f.readlines()
     f.close()
 
@@ -1144,7 +1162,7 @@ def isjustpkgname(mypkg):
             return 0
     return 1
 
-def ververify(myverx, silent=1):
+def ververify(myverx, silent = 1):
 
     myver = myverx[:]
     if myver.endswith("*"):
@@ -1321,7 +1339,7 @@ def isspecific(mypkg):
     return 0
 
 
-def catpkgsplit(mydata,silent=1):
+def catpkgsplit(mydata, silent = 1):
     """
     Takes a Category/Package-Version-Rev and returns a list of each.
 
@@ -1339,40 +1357,40 @@ def catpkgsplit(mydata,silent=1):
     """
 
     # Categories may contain a-zA-z0-9+_- but cannot start with -
-    mysplit=mydata.split("/")
-    p_split=None
-    if len(mysplit)==1:
-        retval=["null"]
-        p_split=pkgsplit(mydata,silent=silent)
-    elif len(mysplit)==2:
-        retval=[mysplit[0]]
-        p_split=pkgsplit(mysplit[1],silent=silent)
+    mysplit = mydata.split("/")
+    p_split = None
+    if len(mysplit) == 1:
+        retval = ["null"]
+        p_split = pkgsplit(mydata, silent=silent)
+    elif len(mysplit) == 2:
+        retval = [mysplit[0]]
+        p_split = pkgsplit(mysplit[1], silent=silent)
     if not p_split:
         return None
     retval.extend(p_split)
     return retval
 
-def pkgsplit(mypkg,silent=1):
-    myparts=mypkg.split("-")
+def pkgsplit(mypkg, silent=1):
+    myparts = mypkg.split("-")
 
-    if len(myparts)<2:
+    if len(myparts) < 2:
         if not silent:
-            print "!!! Name error in",mypkg+": missing a version or name part."
+            print "!!! Name error in", mypkg+": missing a version or name part."
             return None
     for x in myparts:
-        if len(x)==0:
+        if len(x) == 0:
             if not silent:
-                print "!!! Name error in",mypkg+": empty \"-\" part."
+                print "!!! Name error in", mypkg+": empty \"-\" part."
                 return None
 
     #verify rev
-    revok=0
-    myrev=myparts[-1]
+    revok = 0
+    myrev = myparts[-1]
 
-    if len(myrev) and myrev[0]=="r":
+    if len(myrev) and myrev[0] == "r":
         try:
             int(myrev[1:])
-            revok=1
+            revok = 1
         except ValueError: # from int()
             pass
     if revok:
@@ -1383,14 +1401,14 @@ def pkgsplit(mypkg,silent=1):
         revision = "r0"
 
     if ververify(myparts[verPos]):
-        if len(myparts)== (-1*verPos):
+        if len(myparts) == (-1*verPos):
             return None
         else:
             for x in myparts[:verPos]:
                 if ververify(x):
                     return None
                     #names can't have versiony looking parts
-            myval=["-".join(myparts[:verPos]),myparts[verPos],revision]
+            myval = ["-".join(myparts[:verPos]), myparts[verPos], revision]
             return myval
     else:
         return None
@@ -1408,7 +1426,8 @@ def dep_getkey(mydepx):
     @rtype: String
     @return: The package category/package-version
     """
-    if not mydepx: return mydepx
+    if not mydepx:
+        return mydepx
     mydep = mydepx[:]
     mydep = remove_tag(mydep)
     mydep = remove_usedeps(mydep)
@@ -1490,7 +1509,7 @@ def dep_getusedeps(depend):
 
     Example usage:
             >>> dep_getusedeps('app-misc/test:3[foo,-bar]')
-            ('foo','-bar')
+            ('foo', '-bar')
 
     @param depend: The depstring to process
     @type depend: String
@@ -1506,21 +1525,21 @@ def dep_getusedeps(depend):
     while( open_bracket != -1 ):
         bracket_count += 1
         if bracket_count > 1:
-            raise InvalidAtom("USE Dependency with more " + \
+            InvalidAtom("USE Dependency with more " + \
                 "than one set of brackets: %s" % (depend,))
         close_bracket = depend.find(']', open_bracket )
         if close_bracket == -1:
-            raise InvalidAtom("USE Dependency with no closing bracket: %s" % depend )
+            InvalidAtom("USE Dependency with no closing bracket: %s" % depend )
         use = depend[open_bracket + 1: close_bracket]
         # foo[1:1] may return '' instead of None, we don't want '' in the result
         if not use:
-            raise InvalidAtom("USE Dependency with " + \
+            InvalidAtom("USE Dependency with " + \
                 "no use flag ([]): %s" % depend )
         if not comma_separated:
             comma_separated = "," in use
 
         if comma_separated and bracket_count > 1:
-            raise InvalidAtom("USE Dependency contains a mixture of " + \
+            InvalidAtom("USE Dependency contains a mixture of " + \
                 "comma and bracket separators: %s" % depend )
 
         if comma_separated:
@@ -1528,7 +1547,7 @@ def dep_getusedeps(depend):
                 if x:
                     use_list.append(x)
                 else:
-                    raise InvalidAtom("USE Dependency with no use " + \
+                    InvalidAtom("USE Dependency with no use " + \
                             "flag next to comma: %s" % depend )
         else:
             use_list.append(use)
@@ -1621,9 +1640,9 @@ def dep_get_match_in_repos(mydep):
         mydata = mydata.split(",")
         if not mydata:
             mydata = None
-        return mydep[:colon],mydata
+        return mydep[:colon], mydata
     else:
-        return mydep,None
+        return mydep, None
 
 def dep_gettag(dep):
 
@@ -1646,7 +1665,7 @@ def dep_gettag(dep):
 def remove_package_operators(atom):
     try:
         while atom:
-            if atom[0] in ('>','<','=','~',):
+            if atom[0] in ('>', '<', '=', '~',):
                 atom = atom[1:]
                 continue
             break
@@ -1732,11 +1751,11 @@ def compare_versions(ver1, ver2):
 
     for i in range(0, max(len(list1), len(list2))):
         if len(list1) <= i:
-            s1 = ("p","0")
+            s1 = ("p", "0")
         else:
             s1 = suffix_regexp.match(list1[i]).groups()
         if len(list2) <= i:
-            s2 = ("p","0")
+            s2 = ("p", "0")
         else:
             s2 = suffix_regexp.match(list2[i]).groups()
         if s1[0] != s2[0]:
@@ -1765,9 +1784,10 @@ def compare_versions(ver1, ver2):
         r2 = 0
     return r1 - r2
 
-def entropy_compare_versions(listA,listB):
+def entropy_compare_versions(listA, listB):
     '''
-    @description: compare two lists composed by [version,tag,revision] and [version,tag,revision]
+    @description: compare two lists composed by
+        [version,tag,revision] and [version,tag,revision]
         if listA > listB --> positive number
         if listA == listB --> 0
         if listA < listB --> negative number	
@@ -1778,9 +1798,9 @@ def entropy_compare_versions(listA,listB):
     # if both are tagged, check tag first
     rc = 0
     if listA[1] and listB[1]:
-        rc = cmp(listA[1],listB[1])
+        rc = cmp(listA[1], listB[1])
     if rc == 0:
-        rc = compare_versions(listA[0],listB[0])
+        rc = compare_versions(listA[0], listB[0])
 
     if rc == 0:
         # check tag
@@ -1798,18 +1818,22 @@ def entropy_compare_versions(listA,listB):
                 return 0
     return rc
 
-def g_n_w_cmp(a,b):
+def g_n_w_cmp(a, b):
     '''
     @description: reorder a version list
     @input versionlist: a list
     @output: the ordered list
     '''
-    rc = compare_versions(a,b)
-    if rc < 0: return -1
-    elif rc > 0: return 1
-    else: return 0
+    rc = compare_versions(a, b)
+    if rc < 0:
+        return -1
+    elif rc > 0:
+        return 1
+    else:
+        return 0
+
 def get_newer_version(versions):
-    return sorted(versions,g_n_w_cmp,reverse = True)
+    return sorted(versions, g_n_w_cmp, reverse = True)
 
 def get_newer_version_stable(versions):
 
@@ -1827,7 +1851,7 @@ def get_newer_version_stable(versions):
                 pkgB = versionlist[x+1]
             except:
                 pkgB = "0"
-            result = compare_versions(pkgA,pkgB)
+            result = compare_versions(pkgA, pkgB)
             if result < 0:
                 versionlist[x] = pkgB
                 versionlist[x+1] = pkgA
@@ -1838,19 +1862,19 @@ def get_newer_version_stable(versions):
     return versionlist
 
 
-def g_e_n_w_cmp(a,b):
+def g_e_n_w_cmp(a, b):
     '''
     @description: reorder a version list
     @input versionlist: a list
     @output: the ordered list
     '''
-    rc = entropy_compare_versions(a,b)
+    rc = entropy_compare_versions(a, b)
     if rc < 0: return -1
     elif rc > 0: return 1
     else: return 0
 
 def get_entropy_newer_version(versions):
-    return sorted(versions,g_e_n_w_cmp,reverse = True)
+    return sorted(versions, g_e_n_w_cmp, reverse = True)
 
 def get_entropy_newer_version_stable(versions):
     '''
@@ -1871,8 +1895,8 @@ def get_entropy_newer_version_stable(versions):
             try:
                 pkgB = myversions[x+1]
             except:
-                pkgB = ("0","",0)
-            result = entropy_compare_versions(pkgA,pkgB)
+                pkgB = ("0", "", 0)
+            result = entropy_compare_versions(pkgA, pkgB)
             if result < 0:
                 myversions[x] = pkgB
                 myversions[x+1] = pkgA
@@ -1924,7 +1948,7 @@ def istext(s):
 # @returns filtered list
 def filter_duplicated_entries(alist):
     mydata = {}
-    return [mydata.setdefault(e,e) for e in alist if e not in mydata]
+    return [mydata.setdefault(e, e) for e in alist if e not in mydata]
 
 
 # Escapeing functions
@@ -1943,34 +1967,34 @@ def escape(*args):
     return tuple(arg_lst)
 
 def escape_single(x):
-    if type(x)==type(()) or type(x)==type([]):
+    if type(x) == type(()) or type(x) == type([]):
         return escape(x)
-    if type(x)==type(""):
-        tmpstr=''
+    if type(x) == type(""):
+        tmpstr = ''
         for d in range(len(x)):
             if x[d] in mappings.keys():
                 if x[d] in ("'", '"'):
-                    if d+1<len(x):
-                        if x[d+1]!=x[d]:
-                            tmpstr+=mappings[x[d]]
+                    if d+1 < len(x):
+                        if x[d+1] != x[d]:
+                            tmpstr += mappings[x[d]]
                     else:
-                        tmpstr+=mappings[x[d]]
+                        tmpstr += mappings[x[d]]
                 else:
-                   tmpstr+=mappings[x[d]]
+                   tmpstr += mappings[x[d]]
             else:
-                tmpstr+=x[d]
+                tmpstr += x[d]
     else:
-        tmpstr=x
+        tmpstr = x
     return tmpstr
 
 def unescape(val):
     if type(val)==type(""):
-        tmpstr=''
-        for key,item in mappings.items():
-            val=val.replace(item,key)
+        tmpstr = ''
+        for key, item in mappings.items():
+            val = val.replace(item, key)
         tmpstr = val
     else:
-        tmpstr=val
+        tmpstr = val
     return tmpstr
 
 def unescape_list(*args):
@@ -2023,7 +2047,7 @@ def spawn_function(f, *args, **kwds):
         if status == 0:
             return result
         else:
-            raise result
+            result
     else:
         os.close(pread)
         if gid != None:
@@ -2038,9 +2062,9 @@ def spawn_function(f, *args, **kwds):
             status = 1
         f = os.fdopen(pwrite, 'wb')
         try:
-            pickle.dump((status,result), f, pickle.HIGHEST_PROTOCOL)
+            pickle.dump((status, result), f, pickle.HIGHEST_PROTOCOL)
         except pickle.PicklingError, exc:
-            pickle.dump((2,exc), f, pickle.HIGHEST_PROTOCOL)
+            pickle.dump((2, exc), f, pickle.HIGHEST_PROTOCOL)
         f.close()
         os._exit(0)
 
@@ -2050,10 +2074,10 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
     if extractPath == None:
         extractPath = os.path.dirname(filepath)
     if not os.path.isfile(filepath):
-        raise FileNotFound('FileNotFound: archive does not exist')
+        FileNotFound('FileNotFound: archive does not exist')
 
     try:
-        tar = tarfile.open(filepath,"r")
+        tar = tarfile.open(filepath, "r")
     except tarfile.ReadError:
         if catchEmpty:
             return 0
@@ -2081,7 +2105,7 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
         except OSError:
             pass
 
-    def mycmp(a,b):
+    def mycmp(a, b):
         return cmp(a[0].name, b[0].name)
 
     try:
@@ -2137,13 +2161,13 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
     return -1
 
 def bytes_into_human(bytes):
-    size = str(round(float(bytes)/1024,1))
+    size = str(round(float(bytes)/1024, 1))
     if bytes < 1024:
         size = str(round(float(bytes)))+"b"
     elif bytes < 1023999:
         size += "kB"
     elif bytes > 1023999:
-        size = str(round(float(size)/1024,1))
+        size = str(round(float(size)/1024, 1))
         size += "MB"
     return size
 
@@ -2154,7 +2178,7 @@ def hide_ftp_password(uri):
     ftppassword = ftppassword.split(":")[-1]
     if not ftppassword:
         return uri
-    newuri = uri.replace(ftppassword,"xxxxxxxx")
+    newuri = uri.replace(ftppassword, "xxxxxxxx")
     return newuri
 
 def extract_ftp_data(ftpuri):
@@ -2198,9 +2222,11 @@ def get_file_unix_mtime(path):
 def get_random_temp_file():
     if not os.path.isdir(etpConst['packagestmpdir']):
         os.makedirs(etpConst['packagestmpdir'])
-    path = os.path.join(etpConst['packagestmpdir'],"temp_"+str(get_random_number()))
+    path = os.path.join(etpConst['packagestmpdir'],
+        "temp_"+str(get_random_number()))
     while os.path.lexists(path):
-        path = os.path.join(etpConst['packagestmpdir'],"temp_"+str(get_random_number()))
+        path = os.path.join(etpConst['packagestmpdir'],
+            "temp_"+str(get_random_number()))
     return path
 
 def get_file_timestamp(path):
@@ -2274,13 +2300,13 @@ def cleanup(toCleanDirs = []):
             dircontent = os.listdir(xdir)
             if dircontent != []:
                 for data in dircontent:
-                    subprocess.call(["rm","-rf",os.path.join(xdir,data)])
+                    subprocess.call(["rm", "-rf", os.path.join(xdir, data)])
                     counter += 1
 
     print_info(green(" * ")+"Cleaned: "+str(counter)+" files and directories")
     return 0
 
-def flatten(l, ltypes=(list, tuple)):
+def flatten(l, ltypes = (list, tuple)):
   i = 0
   while i < len(l):
     while isinstance(l[i], ltypes):
@@ -2390,8 +2416,8 @@ def _save_repositories_content(content):
     if os.path.isfile(etpConst['repositoriesconf']):
         if os.path.isfile(etpConst['repositoriesconf']+".old"):
             os.remove(etpConst['repositoriesconf']+".old")
-        shutil.copy2(etpConst['repositoriesconf'],etpConst['repositoriesconf']+".old")
-    f = open(etpConst['repositoriesconf'],"w")
+        shutil.copy2(etpConst['repositoriesconf'], etpConst['repositoriesconf']+".old")
+    f = open(etpConst['repositoriesconf'], "w")
     for x in content:
         f.write(x+"\n")
     f.flush()
@@ -2400,21 +2426,21 @@ def _save_repositories_content(content):
 def write_parameter_to_file(config_file, name, data):
 
     # check write perms
-    if not os.access(os.path.dirname(config_file),os.W_OK):
+    if not os.access(os.path.dirname(config_file), os.W_OK):
         return False
 
     content = []
     if os.path.isfile(config_file):
-        f = open(config_file,"r")
+        f = open(config_file, "r")
         content = [x.strip() for x in f.readlines()]
         f.close()
 
     # write new
     config_file_tmp = config_file+".tmp"
-    f = open(config_file_tmp,"w")
+    f = open(config_file_tmp, "w")
     param_found = False
     if data:
-        proposed_line = "%s|%s" % (name,data,)
+        proposed_line = "%s|%s" % (name, data,)
         myreg = re.compile('^(%s)?[|].*$' % (name,))
     else:
         proposed_line = "# %s|" % (name,)
@@ -2436,11 +2462,12 @@ def write_parameter_to_file(config_file, name, data):
         f.write(proposed_line+"\n")
     f.flush()
     f.close()
-    shutil.move(config_file_tmp,config_file)
+    shutil.move(config_file_tmp, config_file)
     return True
 
 def write_new_branch(branch):
-    return write_parameter_to_file(etpConst['repositoriesconf'],"branch",branch)
+    return write_parameter_to_file(etpConst['repositoriesconf'], "branch",
+        branch)
 
 def is_entropy_package_file(tbz2file):
     if not os.path.exists(tbz2file):
@@ -2457,7 +2484,7 @@ def is_entropy_package_file(tbz2file):
         return False
 
 def is_valid_string(string):
-    invalid = [ord(x) for x in string if ord(x) not in xrange(32,127)]
+    invalid = [ord(x) for x in string if ord(x) not in xrange(32, 127)]
     if invalid: return False
     return True
 
@@ -2496,20 +2523,20 @@ def seek_till_newline(f):
 
 def read_elf_class(elf_file):
     import struct
-    f = open(elf_file,"rb")
+    f = open(elf_file, "rb")
     f.seek(4)
     elf_class = f.read(1)
     f.close()
-    elf_class = struct.unpack('B',elf_class)[0]
+    elf_class = struct.unpack('B', elf_class)[0]
     return elf_class
 
 def is_elf_file(elf_file):
     import struct
-    f = open(elf_file,"rb")
+    f = open(elf_file, "rb")
     data = f.read(4)
     f.close()
     try:
-        data = struct.unpack('BBBB',data)
+        data = struct.unpack('BBBB', data)
     except struct.error:
         return False
     if data == (127, 69, 76, 70):
@@ -2557,30 +2584,30 @@ ldd_avail_check = False
 def read_elf_dynamic_libraries(elf_file):
     global readelf_avail_check
     if not readelf_avail_check:
-        if not os.access(etpConst['systemroot']+"/usr/bin/readelf",os.X_OK):
-            raise FileNotFound('FileNotFound: no readelf')
+        if not os.access(etpConst['systemroot']+"/usr/bin/readelf", os.X_OK):
+            FileNotFound('FileNotFound: no readelf')
         readelf_avail_check = True
     return set([x.strip().split()[-1][1:-1] for x in getstatusoutput('/usr/bin/readelf -d %s' % (elf_file,))[1].split("\n") if (x.find("(NEEDED)") != -1)])
 
 def read_elf_broken_symbols(elf_file):
     global ldd_avail_check
     if not ldd_avail_check:
-        if not os.access(etpConst['systemroot']+"/usr/bin/ldd",os.X_OK):
-            raise FileNotFound('FileNotFound: no ldd')
+        if not os.access(etpConst['systemroot']+"/usr/bin/ldd", os.X_OK):
+            FileNotFound('FileNotFound: no ldd')
         ldd_avail_check = True
     return set([x.strip().split("\t")[0].split()[-1] for x in getstatusoutput('/usr/bin/ldd -r %s' % (elf_file,))[1].split("\n") if (x.find("undefined symbol:") != -1)])
 
 def read_elf_linker_paths(elf_file):
     global readelf_avail_check
     if not readelf_avail_check:
-        if not os.access(etpConst['systemroot']+"/usr/bin/readelf",os.X_OK):
-            raise FileNotFound('FileNotFound: no readelf')
+        if not os.access(etpConst['systemroot']+"/usr/bin/readelf", os.X_OK):
+            FileNotFound('FileNotFound: no readelf')
         readelf_avail_check = True
     data = [x.strip().split()[-1][1:-1].split(":") for x in getstatusoutput('readelf -d %s' % (elf_file,))[1].split("\n") if not ((x.find("(RPATH)") == -1) and (x.find("(RUNPATH)") == -1))]
     mypaths = []
     for mypath in data:
         for xpath in mypath:
-            xpath = xpath.replace("$ORIGIN",os.path.dirname(elf_file))
+            xpath = xpath.replace("$ORIGIN", os.path.dirname(elf_file))
             mypaths.append(xpath)
     return mypaths
 
@@ -2590,30 +2617,30 @@ def xml_from_dict_extended(dictionary):
     ugc = doc.createElement("entropy")
     for key, value in dictionary.items():
         item = doc.createElement('item')
-        item.setAttribute('value',key)
-        if isinstance(value,str):
+        item.setAttribute('value', key)
+        if isinstance(value, str):
             mytype = "str"
-        elif isinstance(value,unicode):
+        elif isinstance(value, unicode):
             mytype = "unicode"
-        elif isinstance(value,list):
+        elif isinstance(value, list):
             mytype = "list"
-        elif isinstance(value,set):
+        elif isinstance(value, set):
             mytype = "set"
-        elif isinstance(value,frozenset):
+        elif isinstance(value, frozenset):
             mytype = "frozenset"
-        elif isinstance(value,dict):
+        elif isinstance(value, dict):
             mytype = "dict"
-        elif isinstance(value,tuple):
+        elif isinstance(value, tuple):
             mytype = "tuple"
-        elif isinstance(value,int):
+        elif isinstance(value, int):
             mytype = "int"
-        elif isinstance(value,float):
+        elif isinstance(value, float):
             mytype = "float"
         elif value == None:
             mytype = "None"
             value = "None"
-        else: raise TypeError
-        item.setAttribute('type',mytype)
+        else: TypeError
+        item.setAttribute('type', mytype)
         item_value = doc.createTextNode("%s" % (value,))
         item.appendChild(item_value)
         ugc.appendChild(item)
@@ -2624,7 +2651,8 @@ def dict_from_xml_extended(xml_string):
     from xml.dom import minidom
     doc = minidom.parseString(xml_string)
     entropies = doc.getElementsByTagName("entropy")
-    if not entropies: return {}
+    if not entropies:
+        return {}
     entropy = entropies[0]
     items = entropy.getElementsByTagName('item')
 
@@ -2647,14 +2675,15 @@ def dict_from_xml_extended(xml_string):
         if not key: continue
         mytype = item.getAttribute('type')
         mytype_m = my_map.get(mytype)
-        if mytype_m == None: raise TypeError
+        if mytype_m == None: TypeError
         try:
             data = item.firstChild.data
         except AttributeError:
             data = ''
-        if mytype in ("list","set","frozenset","dict","tuple",):
+        if mytype in ("list", "set", "frozenset", "dict", "tuple",):
             if data:
-                if data[0] not in ("(","[","s","{",): data = ''
+                if data[0] not in ("(", "[", "s", "{",):
+                    data = ''
             mydict[key] = eval(data)
         elif mytype == "None":
             mydict[key] = None
@@ -2668,7 +2697,7 @@ def xml_from_dict(dictionary):
     ugc = doc.createElement("entropy")
     for key, value in dictionary.items():
         item = doc.createElement('item')
-        item.setAttribute('value',key)
+        item.setAttribute('value', key)
         item_value = doc.createTextNode(value)
         item.appendChild(item_value)
         ugc.appendChild(item)
@@ -2686,7 +2715,8 @@ def dict_from_xml(xml_string):
     mydict = {}
     for item in items:
         key = item.getAttribute('value')
-        if not key: continue
+        if not key:
+            continue
         try:
             data = item.firstChild.data
         except AttributeError:
@@ -2710,16 +2740,16 @@ def create_package_atom_string(category, name, version, package_tag):
         package_tag = "#%s" % (package_tag,)
     else:
         package_tag = ''
-    package_name = "%s/%s-%s" % (category,name,version,)
+    package_name = "%s/%s-%s" % (category, name, version,)
     package_name += package_tag
     return package_name
 
 def extract_packages_from_set_file(filepath):
-    f = open(filepath,"r")
+    f = open(filepath, "r")
     items = set()
     line = f.readline()
     while line:
-        x = line.strip().rsplit("#",1)[0]
+        x = line.strip().rsplit("#", 1)[0]
         if x and (not x.startswith('#')):
             items.add(x)
         line = f.readline()
@@ -2730,7 +2760,7 @@ def collect_linker_paths():
 
     ldpaths = []
     try:
-        f = open(etpConst['systemroot']+"/etc/ld.so.conf","r")
+        f = open(etpConst['systemroot']+"/etc/ld.so.conf", "r")
         paths = f.readlines()
         for path in paths:
             path = path.strip()
@@ -2738,7 +2768,7 @@ def collect_linker_paths():
                 if path[0] == "/":
                     ldpaths.append(os.path.normpath(path))
         f.close()
-    except (IOError,OSError,TypeError,ValueError,IndexError,):
+    except (IOError, OSError, TypeError, ValueError, IndexError,):
         pass
 
     # can happen that /lib /usr/lib are not in LDPATH
