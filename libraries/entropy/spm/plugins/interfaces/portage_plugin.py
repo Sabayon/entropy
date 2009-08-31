@@ -119,6 +119,7 @@ class PortagePlugin(SpmPlugin):
         'postinstall': 'postinst',
         'preremove': 'prerm',
         'postremove': 'postrm',
+        'configure': 'config',
     }
 
     PLUGIN_API_VERSION = 0
@@ -1271,6 +1272,10 @@ class PortagePlugin(SpmPlugin):
         cpv = str(cpv)
         mysettings.setcpv(cpv)
         portage_tmpdir_created = False # for pkg_postrm, pkg_prerm
+
+        if portage_tmpdir is None:
+            portage_tmpdir = self.entropyTools.get_random_temp_file()
+
         if portage_tmpdir:
             if not os.path.isdir(portage_tmpdir):
                 os.makedirs(portage_tmpdir)
@@ -1330,7 +1335,7 @@ class PortagePlugin(SpmPlugin):
         dev_null.close()
 
         if portage_tmpdir_created:
-            shutil.rmtree(portage_tmpdir,True)
+            shutil.rmtree(portage_tmpdir, True)
 
         # reset PORTDIR back to its old path
         # for security !
