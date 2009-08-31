@@ -1359,6 +1359,262 @@ class PortagePlugin(SpmPlugin):
         return self._portage_doebuild(build_script_path, portage_phase,
             "bintree", package, work_dir, licenses_accepted)
 
+    def add_installed_package(self, package_metadata):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        atomsfound = set()
+        category = package_metadata['category']
+        key = category + "/" + package_metadata['name']
+        spm_package = key + "-" + package_metadata['version']
+
+        build = self.get_installed_package_build_script_path(spm_package)
+        pkg_dir = os.path.dirname(build)
+        cat_dir = os.path.dirname(pkg_dir)
+
+        if os.path.isdir(cat_dir):
+            my_findings = [os.path.join(category, x) for x in \
+                os.listdir(cat_dir)]
+            # filter by key
+            real_findings = [x for x in my_findings if \
+                key == self.entropyTools.dep_getkey(x)]
+            atomsfound.update(real_findings)
+
+        myslot = package_metadata['slot']
+        for xatom in atomsfound:
+
+            if self.get_installed_package_metadata(xatom, "SLOT") != myslot:
+                continue
+
+            mybuild = self.get_installed_package_build_script_path(xatom)
+            remove_path = os.path.dirname(mybuild)
+            shutil.rmtree(remove_path, True)
+
+        # we now install it
+        xpak_rel_path = etpConst['entropyxpakdatarelativepath']
+        proposed_xpak_dir = os.path.join(package_metadata['xpakpath'],
+            xpak_rel_path)
+
+        counter = -1
+        if (package_metadata['xpakstatus'] != None) and \
+            os.path.isdir(proposed_xpak_dir) or package_metadata['merge_from']:
+
+            copypath = proposed_xpak_dir
+            if package_metadata['merge_from']:
+                copypath = package_metadata['xpakdir']
+                if not os.path.isdir(copypath):
+                    return 0
+
+            if not os.path.isdir(cat_dir):
+                os.makedirs(cat_dir, 0755)
+            if os.path.isdir(pkg_dir):
+                shutil.rmtree(pkg_dir)
+
+            try:
+                shutil.copytree(copypath, pkg_dir)
+            except (IOError,), e:
+                mytxt = "%s: %s: %s: %s" % (red(_("QA")),
+                    brown(_("Cannot update Portage database to destination")),
+                    purple(pkg_dir),e,)
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = darkred("   ## ")
+                )
+
+            try:
+                counter = self.assign_uid_to_installed_package(spm_package)
+            except SPMError, err:
+                mytxt = "%s: %s [%s]" % (
+                    brown(_("SPM uid update error")), pkg_dir, err,
+                )
+                self.updateProgress(
+                    red("QA: ") + mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = darkred("   ## ")
+                )
+                counter = -1
+
+        user_inst_source = etpConst['install_sources']['user']
+        if package_metadata['install_source'] != user_inst_source:
+            # only user selected packages in Portage world file
+            return counter
+
+        myslot = package_metadata['slot'][:]
+        if (package_metadata['versiontag'] == package_metadata['slot']) \
+            and package_metadata['versiontag']:
+            # usually kernel packages
+            myslot = "0"
+
+        keyslot = key+":"+myslot
+        world_file = self.get_user_installed_packages_file()
+        world_dir = os.path.dirname(world_file)
+        world_atoms = set()
+
+        if os.access(world_file, os.R_OK | os.F_OK):
+            with open(world_file, "r") as world_f:
+                world_atoms |= set((x.strip() for x in world_f.readlines() if \
+                    x.strip()))
+
+        try:
+
+            if keyslot not in world_atoms and \
+                os.access(world_dir, os.W_OK) and \
+                self.entropyTools.istextfile(world_file):
+
+                    world_atoms.discard(key)
+                    world_atoms.add(keyslot)
+                    world_file_tmp = world_file+".entropy_inst"
+
+                    with open(world_file_tmp, "w") as world_f:
+                        for item in sorted(world_atoms):
+                            world_f.write(item + "\n")
+                        world_f.flush()
+
+                    os.rename(world_file_tmp, world_file)
+
+        except (UnicodeDecodeError, UnicodeEncodeError,), e:
+
+            mytxt = "%s: %s" % (
+                brown(_("Cannot update SPM installed pkgs file")), world_file,
+            )
+            self.updateProgress(
+                red("QA: ") + mytxt + ": " + unicode(e),
+                importance = 1,
+                type = "warning",
+                header = darkred("   ## ")
+            )
+
+        return counter
+
+    def remove_installed_package(self, package_metadata):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        atom = self.entropyTools.remove_tag(package_metadata['removeatom'])
+        remove_build = self.get_installed_package_build_script_path(atom)
+        remove_path = os.path.dirname(remove_build)
+        key = self.entropyTools.dep_getkey(atom)
+
+        others_installed = self.match_installed_package(key, match_all = True)
+        if atom in others_installed:
+            others_installed.remove(atom)
+
+        # Support for tagged packages
+        slot = package_metadata['slot']
+        tag = package_metadata['versiontag']
+        if (tag == slot) and tag:
+            slot = "0"
+
+        def do_rm_path_atomic(xpath):
+            for my_el in os.listdir(xpath):
+                my_el = os.path.join(xpath, my_el)
+                try:
+                    os.remove(my_el)
+                except OSError:
+                    pass
+            try:
+                os.rmdir(xpath)
+            except OSError:
+                pass
+
+        if os.path.isdir(remove_path):
+            do_rm_path_atomic(remove_path)
+
+        # also remove parent directory if empty
+        category_path = os.path.dirname(remove_path)
+        if os.path.isdir(category_path):
+            if not os.listdir(category_path):
+                try:
+                    os.rmdir(category_path)
+                except OSError:
+                    pass
+
+        if others_installed:
+
+            for myatom in others_installed:
+                myslot = self.get_installed_package_metadata(myatom, "SLOT")
+                if myslot != slot:
+                    continue
+                mybuild = self.get_installed_package_build_script_path(myatom)
+                mydir = os.path.dirname(mybuild)
+                if not os.path.isdir(mydir):
+                    continue
+                do_rm_path_atomic(mydir)
+
+            return 0
+
+        # otherwise update Portage world file
+        world_file = self.get_user_installed_packages_file()
+        world_file_tmp = world_file + ".entropy.tmp"
+        if os.access(world_file, os.W_OK | os.F_OK):
+
+            new = open(world_file_tmp,"w")
+            old = open(world_file,"r")
+            line = old.readline()
+
+            while line:
+
+                if line.find(key) != -1:
+                    line = old.readline()
+                    continue
+                if line.find(key+":"+slot) != -1:
+                    line = old.readline()
+                    continue
+                new.write(line)
+                line = old.readline()
+
+            new.flush()
+            new.close()
+            old.close()
+            os.rename(world_file_tmp, world_file)
+
+        return 0
+
+    def configure_installed_package(self, package_metadata):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        atom = package_metadata['key'] + "-" + package_metadata['version']
+        myebuild = self.get_installed_package_build_script_path(atom)
+
+        if not os.access(myebuild, os.R_OK | os.F_OK):
+            # cannot find ebuild ! ouch!
+            return 2
+
+        try:
+            rc = self.execute_package_phase(atom, myebuild,
+                "configure",
+                licenses_accepted = package_metadata['accept_license']
+            )
+            if rc == 1:
+                return 3
+
+        except Exception, err:
+
+            self.entropyTools.print_traceback()
+            mytxt = "%s: %s %s." % (
+                bold(_("QA")),
+                brown(_("Cannot run SPM configure phase for")),
+                bold(str(atom)),
+            )
+            mytxt2 = "%s: %s, %s" % (
+                bold(_("Error")),
+                type(Exception),
+                err,
+            )
+            for txt in (mytxt, mytxt2,):
+                self.updateProgress(
+                    txt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
+            return 1
+
+        return 0
+
     def _get_portage_vartree(self, root = None):
 
         if root is None:
