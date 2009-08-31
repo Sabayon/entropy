@@ -14,8 +14,9 @@
     "Singleton" is a class that is inherited from singleton objects.
 
 """
-import os
 import sys
+import os
+import inspect
 from entropy.const import etpConst
 
 class Singleton(object):
@@ -74,8 +75,8 @@ class EntropyPluginFactory:
 
         Base plugin classes must have the following class attributes set:
 
-            - BASE_PLUGIN_API_VERSION: integer describing API revision of
-              parent class
+            - BASE_PLUGIN_API_VERSION: integer describing API revision in use
+              in class
 
         Subclasses of Base plugin class must have the following class
         attributes set:
@@ -86,11 +87,18 @@ class EntropyPluginFactory:
               printed.
 
         Moreover, plugin classes must be "Python new-style classes", otherwise
-        __subclasses__ method won't be available and class won't be considered
-        at all (see: http://www.python.org/doc/newstyle).
+        parser won't be able to determine if classes have subclasses and thus
+        pick the proper object (one with no subclasses!!).
+        See: http://www.python.org/doc/newstyle -- in other words, you have
+        to inherit the built-in "object" class (yeah, it's called object).
+        So, even if using normal classes could work, if you start doing nasty
+        things (nested inherittance of plugin classes), behaviour cannot
+        be guaranteed.
+        If it's not clear, let me repeat once again, valid plugin classes
+        must not have subclasses around! Think about it, it's an obvious thing.
 
         If plugin class features a "PLUGIN_DISABLED" class attribute with
-        a value of True, such plugin will be ignored.
+        a boolean value of True, such plugin will be ignored.
 
         @param base_plugin_class: Base EntropyPlugin-based class that valid
             plugin classes must inherit from.
@@ -161,22 +169,33 @@ class EntropyPluginFactory:
 
             for obj in sys.modules[modpath].__dict__.values():
 
-                try:
-                    if not issubclass(obj, self.__base_class):
-                        continue
+                if not inspect.isclass(obj):
+                    continue
+
+                if not issubclass(obj, self.__base_class):
+                    continue
+
+                if hasattr(obj, '__subclasses__'):
+                    # new style class
                     if obj.__subclasses__(): # only lower classes taken
                         continue
-                except (TypeError, AttributeError,):
+                else:
+                    sys.stderr.write("!!! Entropy Plugin warning: " \
+                        "%s is not a new style class !!!\n" % (obj,))
+
+                if obj is self.__base_class:
+                    # in this case, obj is our base class,
+                    # so we are very sure that obj is not valid
                     continue
 
                 if not hasattr(obj, "PLUGIN_API_VERSION"):
                     sys.stderr.write("!!! Entropy Plugin warning: " \
-                        "no PLUGIN_API_VERSION !!!\n")
+                        "no PLUGIN_API_VERSION in %s !!!\n" % (obj,))
                     continue
 
                 if obj.PLUGIN_API_VERSION != base_api:
                     sys.stderr.write("!!! Entropy Plugin warning: " \
-                        "PLUGIN_API_VERSION mismatch !!!\n")
+                        "PLUGIN_API_VERSION mismatch in %s !!!\n" % (obj,))
                     continue
 
                 if hasattr(obj, 'PLUGIN_DISABLED'):
