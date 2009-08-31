@@ -370,46 +370,47 @@ class Package:
         self.Entropy.updateProgress(
             "SPM: %s" % (brown(_("configuration phase")),),
             importance = 0,
-            header = red("   ##")
+            header = red("   ## ")
         )
 
         try:
-            rc = Spm.spm_doebuild(
-                myebuild,
-                mydo = "config",
-                tree = "bintree",
-                cpv = spm_atom,
-                licenses = self.infoDict['accept_license']
+            rc = Spm.execute_package_phase(spm_atom, myebuild,
+                "configure", licenses_accepted = self.infoDict['accept_license']
             )
             if rc == 1:
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
-                    "[PRE] ATTENTION Cannot properly run Spm pkg_config() for " + \
-                    str(spm_atom)+". Something bad happened."
+                    "[PRE] ATTENTION Cannot properly run SPM config phase " \
+                    "for %s. Something bad happened." % (spm_atom,)
                 )
                 return 3
-        except Exception, e:
+
+        except Exception, err:
             self.entropyTools.print_traceback()
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
-                "[PRE] ATTENTION Cannot run Spm pkg_config() for "+spm_atom+"!! "+str(type(Exception))+": "+str(e)
+                "[PRE] ATTENTION Cannot properly run SPM config phase " \
+                "for %s. Exception: %s | %s." % (
+                    spm_atom, type(Exception), err,)
             )
-            mytxt = "%s: %s %s. %s. %s: %s, %s" % (
+            mytxt = "%s: %s %s." % (
                 bold(_("QA")),
-                brown(_("Cannot run Spm pkg_config() for")),
+                brown(_("Cannot run SPM configure phase for")),
                 bold(str(spm_atom)),
-                brown(_("Please report it")),
+            )
+            mytxt2 = "%s: %s, %s" % (
                 bold(_("Error")),
                 type(Exception),
-                e,
+                err,
             )
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                header = red("   ## ")
-            )
+            for txt in (mytxt, mytxt2,):
+                self.Entropy.updateProgress(
+                    txt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
             return 1
 
         return 0
@@ -417,104 +418,144 @@ class Package:
 
     def __remove_package(self):
 
-        # clear on-disk cache
         self.__clear_cache()
 
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing package: %s" % (self.infoDict['removeatom'],))
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL,
+            "Removing package: %s" % (self.infoDict['removeatom'],))
 
-        protected_removable_config_files = {}
-        # remove from database
-        if self.infoDict['removeidpackage'] != -1:
-            mytxt = "%s: " % (_("Removing from Entropy"),)
-            self.Entropy.updateProgress(
-                blue(mytxt) + red(self.infoDict['removeatom']),
-                importance = 1,
-                type = "info",
-                header = red("   ## ")
-            )
-            protected_removable_config_files = self.Entropy.clientDbconn.retrieveAutomergefiles(
+        mytxt = "%s: %s" % (
+            blue(_("Removing from Entropy")),
+            red(self.infoDict['removeatom']),
+        )
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = red("   ## ")
+        )
+        automerge_metadata = \
+            self.Entropy.clientDbconn.retrieveAutomergefiles(
                 self.infoDict['removeidpackage'], get_dict = True
             )
-            self.__remove_package_from_database()
+        self.remove_installed_package(self.infoDict['removeidpackage'])
 
         # Handle spm database
         spm_atom = self.entropyTools.remove_tag(self.infoDict['removeatom'])
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Removing from Spm: "+str(spm_atom))
+        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL, "Removing from SPM: %s" % (spm_atom,))
         self.__remove_package_from_spm_database(spm_atom)
 
-        self.__remove_content_from_system(protected_removable_config_files)
+        self.remove_content_from_system(self.infoDict['removeidpackage'],
+            automerge_metadata)
+
         return 0
 
-    def __remove_content_from_system(self, protected_removable_config_files):
+    def remove_installed_package(self, idpackage):
+        """
+        Remove installed package from Entropy installed packages repository.
+
+        @param idpackage: Entropy Repository package identifier
+        @type idpackage: int
+        """
+        self.Entropy.clientDbconn.removePackage(idpackage, do_commit = False,
+            do_cleanup = False)
+
+    def remove_content_from_system(self, idpackage, automerge_metadata = None):
+        """
+        Remove installed package content (files/directories) from live system.
+
+        @param idpackage: Entropy Repository package identifier
+        @type idpackage: int
+        @keyword automerge_metadata: Entropy "automerge metadata"
+        @type automerge_metadata: dict
+        """
+        if automerge_metadata is None:
+            automerge_metadata = {}
 
         sys_root = etpConst['systemroot']
         # load CONFIG_PROTECT and CONFIG_PROTECT_MASK
         sys_settings = self.Entropy.SystemSettings
-        protect = self.Entropy.get_installed_package_config_protect(
-            self.infoDict['idpackage'])
-        mask = self.Entropy.get_installed_package_config_protect(
-            self.infoDict['idpackage'], mask = True)
+        protect = self.Entropy.get_installed_package_config_protect(idpackage)
+        mask = self.Entropy.get_installed_package_config_protect(idpackage,
+            mask = True)
+
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         col_protect = sys_settings[sys_set_plg_id]['misc']['collisionprotect']
 
         # remove files from system
         directories = set()
+        directories_cache = set()
         not_removed_due_to_collisions = set()
         colliding_path_messages = set()
+
         remove_content = sorted(self.infoDict['removecontent'], reverse = True)
         for item in remove_content:
-            sys_root_item = sys_root+item
+
+            sys_root_item = sys_root + item
             # collision check
             if col_protect > 0:
 
-                if self.Entropy.clientDbconn.isFileAvailable(item) and os.path.isfile(sys_root_item):
+                if self.Entropy.clientDbconn.isFileAvailable(item) \
+                    and os.path.isfile(sys_root_item):
+
                     # in this way we filter out directories
                     colliding_path_messages.add(sys_root_item)
                     not_removed_due_to_collisions.add(item)
                     continue
 
             protected = False
-            if (not self.infoDict['removeconfig']) and (not self.infoDict['diffremoval']):
+            in_mask = False
+
+            if (not self.infoDict['removeconfig']) and \
+                (not self.infoDict['diffremoval']):
 
                 protected_item_test = sys_root_item
-                if isinstance(protected_item_test,unicode):
+                if isinstance(protected_item_test, unicode):
                     protected_item_test = protected_item_test.encode('utf-8')
 
-                in_mask, protected, x, do_continue = self._handle_config_protect(
-                    protect, mask, None, protected_item_test,
-                    do_allocation_check = False, do_quiet = True)
+                in_mask, protected, x, do_continue = \
+                    self._handle_config_protect(
+                        protect, mask, None, protected_item_test,
+                        do_allocation_check = False, do_quiet = True
+                    )
 
-                if do_continue: protected = True
+                if do_continue:
+                    protected = True
 
-                # when files have not been modified by the user
-                # and they are inside a config protect directory
-                # we could even remove them directly
-                if in_mask:
+            # when files have not been modified by the user
+            # and they are inside a config protect directory
+            # we could even remove them directly
+            if in_mask:
 
-                    oldprot_md5 = protected_removable_config_files.get(item)
-                    if oldprot_md5 and os.path.exists(protected_item_test) and \
-                        os.access(protected_item_test, os.R_OK):
+                oldprot_md5 = automerge_metadata.get(item)
+                if oldprot_md5 and os.path.exists(protected_item_test) and \
+                    os.access(protected_item_test, os.R_OK):
 
-                        in_system_md5 = self.entropyTools.md5sum(protected_item_test)
-                        if oldprot_md5 == in_system_md5:
-                            mytxt = "%s: %s" % (
-                                darkgreen(_("Removing config file, never modified")),
-                                blue(item),)
-                            self.Entropy.updateProgress(
-                                mytxt,
-                                importance = 1,
-                                type = "info",
-                                header = red("   ## ")
-                            )
-                            protected = False
-                            do_continue = False
+                    in_system_md5 = self.entropyTools.md5sum(
+                        protected_item_test)
 
+                    if oldprot_md5 == in_system_md5:
+                        prot_msg = _("Removing config file, never modified")
+                        mytxt = "%s: %s" % (
+                            darkgreen(prot_msg),
+                            blue(item),
+                        )
+                        self.Entropy.updateProgress(
+                            mytxt,
+                            importance = 1,
+                            type = "info",
+                            header = red("   ## ")
+                        )
+                        protected = False
+                        do_continue = False
+
+            # Is file or directory a protected item?
             if protected:
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_VERBOSE,
-                    "[remove] Protecting config file: "+sys_root_item
+                    "[remove] Protecting config file: %s" % (sys_root_item,)
                 )
                 mytxt = "[%s] %s: %s" % (
                     red(_("remove")),
@@ -527,40 +568,67 @@ class Package:
                     type = "warning",
                     header = red("   ## ")
                 )
-            else:
-                try:
-                    os.lstat(sys_root_item)
-                except OSError:
-                    continue # skip file, does not exist
-                except UnicodeEncodeError:
-                    mytxt = brown(_("This package contains a badly encoded file !!!"))
-                    self.Entropy.updateProgress(
-                        red("QA: ")+mytxt,
-                        importance = 1,
-                        type = "warning",
-                        header = darkred("   ## ")
-                    )
-                    continue # file has a really bad encoding
+                continue
 
-                if os.path.isdir(sys_root_item) and os.path.islink(sys_root_item):
-                    # S_ISDIR returns False for directory symlinks, so using os.path.isdir
-                    # valid directory symlink
-                    directories.add((sys_root_item,"link"))
-                elif os.path.isdir(sys_root_item):
-                    # plain directory
-                    directories.add((sys_root_item,"dir"))
-                else: # files, symlinks or not
-                    # just a file or symlink or broken directory symlink (remove now)
-                    try:
-                        os.remove(sys_root_item)
-                        # add its parent directory
-                        dirfile = os.path.dirname(sys_root_item)
-                        if os.path.isdir(dirfile) and os.path.islink(dirfile):
-                            directories.add((dirfile,"link"))
-                        elif os.path.isdir(dirfile):
-                            directories.add((dirfile,"dir"))
-                    except OSError:
-                        pass
+
+            try:
+                os.lstat(sys_root_item)
+
+            except OSError:
+                continue # skip file, does not exist
+
+            except UnicodeEncodeError:
+                msg = _("This package contains a badly encoded file !!!")
+                mytxt = brown(msg)
+                self.Entropy.updateProgress(
+                    red("QA: ")+mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = darkred("   ## ")
+                )
+                continue # file has a really bad encoding
+
+            if os.path.isdir(sys_root_item) and \
+                os.path.islink(sys_root_item):
+                # S_ISDIR returns False for directory symlinks,
+                # so using os.path.isdir valid directory symlink
+                if sys_root_item not in directories_cache:
+                    directories.add((sys_root_item, "link"))
+                    directories_cache.add(sys_root_item)
+                continue
+
+            if os.path.isdir(sys_root_item):
+                # plain directory
+                if sys_root_item not in directories_cache:
+                    directories.add((sys_root_item, "dir"))
+                    directories_cache.add(sys_root_item)
+                continue
+
+            # files, symlinks or not
+            # just a file or symlink or broken
+            # directory symlink (remove now)
+
+            try:
+                os.remove(sys_root_item)
+            except OSError, err:
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "[remove] Unable to remove %s, error: %s" % (
+                        sys_root_item, err,)
+                )
+                continue
+
+            # add its parent directory
+            dirobj = os.path.dirname(sys_root_item)
+            if dirobj not in directories_cache:
+                if os.path.isdir(dirobj) and os.path.islink(dirobj):
+                    directories.add((dirobj, "link"))
+                elif os.path.isdir(dirobj):
+                    directories.add((dirobj, "dir"))
+
+                directories_cache.add(dirobj)
+
 
         if colliding_path_messages:
             self.Entropy.updateProgress(
@@ -595,7 +663,7 @@ class Package:
         while 1:
             taint = False
             for directory, dirtype in directories:
-                mydir = "%s%s" % (sys_root,directory,)
+                mydir = "%s%s" % (sys_root, directory,)
                 if dirtype == "link":
                     try:
                         mylist = os.listdir(mydir)
@@ -621,14 +689,10 @@ class Package:
 
             if not taint:
                 break
+
+        del directories_cache
         del directories
 
-
-    '''
-    @description: remove package entry from Spm database
-    @input spm package atom (cat/name+ver):
-    @output: 0 = all fine, <0 = error!
-    '''
     def __remove_package_from_spm_database(self, atom):
 
         # handle spm support
@@ -699,21 +763,11 @@ class Package:
 
         return 0
 
-    '''
-    @description: function that runs at the end of the package installation process, just removes data left by other steps
-    @output: 0 = all fine, >0 = error!
-    '''
     def _cleanup_package(self, unpack_dir):
         # remove unpack dir
         shutil.rmtree(unpack_dir,True)
         try: os.rmdir(unpack_dir)
         except OSError: pass
-        return 0
-
-    def __remove_package_from_database(self, do_commit = False, do_cleanup = False):
-        self.error_on_not_prepared()
-        self.Entropy.clientDbconn.removePackage(self.infoDict['removeidpackage'],
-            do_commit = do_commit, do_cleanup = do_cleanup)
         return 0
 
     def __clear_cache(self):
@@ -743,62 +797,68 @@ class Package:
 
         already_protected_config_files = {}
         if self.infoDict['removeidpackage'] != -1:
-            already_protected_config_files = self.Entropy.clientDbconn.retrieveAutomergefiles(
-                self.infoDict['removeidpackage'], get_dict = True
-            )
+            already_protected_config_files = \
+                self.Entropy.clientDbconn.retrieveAutomergefiles(
+                    self.infoDict['removeidpackage'], get_dict = True
+                )
 
         # copy files over - install
-        # use fork? (in this case all the changed structures need to be pushed back)
+        # use fork? (in this case all the changed structures
+        # need to be pushed back)
         rc = self.__move_image_to_system(already_protected_config_files)
         if rc != 0:
             return rc
-        del already_protected_config_files
 
         # inject into database
-        mytxt = "%s: %s" % (blue(_("Updating database")),red(self.infoDict['atom']),)
+        mytxt = "%s: %s" % (
+            blue(_("Updating database")),
+            red(self.infoDict['atom']),
+        )
         self.Entropy.updateProgress(
             mytxt,
             importance = 1,
             type = "info",
             header = red("   ## ")
         )
-        newidpackage = self._install_package_into_database()
+        idpackage = self.add_installed_package()
 
         # remove old files and spm stuff
         if self.infoDict['removeidpackage'] != -1:
+
             # doing a diff removal
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
                 "Remove old package: %s" % (self.infoDict['removeatom'],)
             )
-            self.infoDict['removeidpackage'] = -1 # disabling database removal
-
-            self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
-                "Removing Entropy and Spm database entry for %s" % (
-                    self.infoDict['removeatom'],)
-            )
 
             self.Entropy.updateProgress(
-                                    blue(_("Cleaning old package files...")),
-                                    importance = 1,
-                                    type = "info",
-                                    header = red("   ## ")
-                                )
-            self.__remove_package()
+                blue(_("Removing previously installed version...")),
+                importance = 1,
+                type = "info",
+                header = red("   ## ")
+            )
+
+            # Handle spm database
+            spm_atom = self.entropyTools.remove_tag(self.infoDict['removeatom'])
+            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL, "Removing from SPM: %s" % (spm_atom,))
+            self.__remove_package_from_spm_database(spm_atom)
+
+            self.remove_content_from_system(self.infoDict['removeidpackage'],
+                automerge_metadata = already_protected_config_files)
+
+        rc = self._install_package_into_spm_database(idpackage)
+
+        return rc
+
+    def _install_package_into_spm_database(self, newidpackage):
 
         self.Entropy.clientLog.log(
             ETP_LOGPRI_INFO,
             ETP_LOGLEVEL_NORMAL,
             "Installing new Spm database entry: %s" % (self.infoDict['atom'],)
         )
-        rc = self._install_package_into_spm_database(newidpackage)
-
-        return rc
-
-    def _install_package_into_spm_database(self, newidpackage):
 
         # handle spm support
         try:
@@ -816,12 +876,12 @@ class Package:
         atomsfound = set()
 
         if os.path.isdir(cat_dir):
-            my_findings = (os.path.join(category, x) for x in \
-                os.listdir(cat_dir))
+            my_findings = [os.path.join(category, x) for x in \
+                os.listdir(cat_dir)]
             # filter by key
-            my_findings = (x for x in my_findings if \
-                key == self.entropyTools.dep_getkey(x))
-            atomsfound.update(my_findings)
+            real_findings = [x for x in my_findings if \
+                key == self.entropyTools.dep_getkey(x)]
+            atomsfound.update(real_findings)
 
         myslot = self.infoDict['slot']
         for xatom in atomsfound:
@@ -946,7 +1006,7 @@ class Package:
 
         return 0
 
-    def _install_package_into_database(self):
+    def add_installed_package(self):
 
         # fetch info
         smart_pkg = self.infoDict['smartpackage']
@@ -1721,13 +1781,17 @@ class Package:
 
     def remove_step(self):
         self.error_on_not_prepared()
-        mytxt = "%s: %s" % (blue(_("Removing data")),red(self.infoDict['removeatom']),)
+        mytxt = "%s: %s" % (
+            blue(_("Removing data")),
+            red(self.infoDict['removeatom']),
+        )
         self.Entropy.updateProgress(
             mytxt,
             importance = 1,
             type = "info",
             header = red("   ## ")
         )
+
         rc = self.__remove_package()
         if rc != 0:
             mytxt = "%s. %s. %s: %s" % (
@@ -1954,12 +2018,18 @@ class Package:
             return self.removeconflict_step()
 
         def do_install():
-            self.xterm_title += ' %s: %s' % (_("Installing"),self.infoDict['atom'],)
+            self.xterm_title += ' %s: %s' % (
+                _("Installing"),
+                self.infoDict['atom'],
+            )
             self.Entropy.setTitle(self.xterm_title)
             return self.install_step()
 
         def do_remove():
-            self.xterm_title += ' %s: %s' % (_("Removing"),self.infoDict['removeatom'],)
+            self.xterm_title += ' %s: %s' % (
+                _("Removing"),
+                self.infoDict['removeatom'],
+            )
             self.Entropy.setTitle(self.xterm_title)
             return self.remove_step()
 
@@ -1967,32 +2037,50 @@ class Package:
             return self.logmessages_step()
 
         def do_cleanup():
-            self.xterm_title += ' %s: %s' % (_("Cleaning"),self.infoDict['atom'],)
+            self.xterm_title += ' %s: %s' % (
+                _("Cleaning"),
+                self.infoDict['atom'],
+            )
             self.Entropy.setTitle(self.xterm_title)
             return self.cleanup_step()
 
         def do_postinstall():
-            self.xterm_title += ' %s: %s' % (_("Postinstall"),self.infoDict['atom'],)
+            self.xterm_title += ' %s: %s' % (
+                _("Postinstall"),
+                self.infoDict['atom'],
+            )
             self.Entropy.setTitle(self.xterm_title)
             return self.postinstall_step()
 
         def do_preinstall():
-            self.xterm_title += ' %s: %s' % (_("Preinstall"),self.infoDict['atom'],)
+            self.xterm_title += ' %s: %s' % (
+                _("Preinstall"),
+                self.infoDict['atom'],
+            )
             self.Entropy.setTitle(self.xterm_title)
             return self.preinstall_step()
 
         def do_preremove():
-            self.xterm_title += ' %s: %s' % (_("Preremove"),self.infoDict['removeatom'],)
+            self.xterm_title += ' %s: %s' % (
+                _("Preremove"),
+                self.infoDict['removeatom'],
+            )
             self.Entropy.setTitle(self.xterm_title)
             return self.preremove_step()
 
         def do_postremove():
-            self.xterm_title += ' %s: %s' % (_("Postremove"),self.infoDict['removeatom'],)
+            self.xterm_title += ' %s: %s' % (
+                _("Postremove"),
+                self.infoDict['removeatom'],
+            )
             self.Entropy.setTitle(self.xterm_title)
             return self.postremove_step()
 
         def do_config():
-            self.xterm_title += ' %s: %s' % (_("Configuring"),self.infoDict['atom'],)
+            self.xterm_title += ' %s: %s' % (
+                _("Configuring"),
+                self.infoDict['atom'],
+            )
             self.Entropy.setTitle(self.xterm_title)
             return self.config_step()
 
@@ -2019,14 +2107,11 @@ class Package:
         for step in self.infoDict['steps']:
             self.xterm_title = xterm_header
             rc = steps_data.get(step)()
-            if rc != 0: break
+            if rc != 0:
+                break
         return rc
 
 
-    '''
-        @description: execute the requested steps
-        @input xterm_header: purely optional
-    '''
     def run(self, xterm_header = None):
         self.error_on_not_prepared()
 
@@ -2106,6 +2191,7 @@ class Package:
         self.prepared = True
 
     def __generate_remove_metadata(self):
+
         self.infoDict.clear()
         idpackage = self.matched_atom[0]
 
@@ -2114,25 +2200,34 @@ class Package:
             return 0
 
         self.infoDict['idpackage'] = idpackage
+        self.infoDict['removeidpackage'] = idpackage
         self.infoDict['configprotect_data'] = []
         self.infoDict['triggers'] = {}
-        self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(idpackage)
-        self.infoDict['slot'] = self.Entropy.clientDbconn.retrieveSlot(idpackage)
-        self.infoDict['versiontag'] = self.Entropy.clientDbconn.retrieveVersionTag(idpackage)
-        self.infoDict['removeidpackage'] = idpackage
+        self.infoDict['removeatom'] = \
+            self.Entropy.clientDbconn.retrieveAtom(idpackage)
+        self.infoDict['slot'] = \
+            self.Entropy.clientDbconn.retrieveSlot(idpackage)
+        self.infoDict['versiontag'] = \
+            self.Entropy.clientDbconn.retrieveVersionTag(idpackage)
         self.infoDict['diffremoval'] = False
-        removeConfig = False
+
+        remove_config = False
         if self.metaopts.has_key('removeconfig'):
-            removeConfig = self.metaopts.get('removeconfig')
-        self.infoDict['removeconfig'] = removeConfig
-        self.infoDict['removecontent'] = self.Entropy.clientDbconn.retrieveContent(idpackage)
-        self.infoDict['triggers']['remove'] = self.Entropy.clientDbconn.getTriggerInfo(idpackage)
-        self.infoDict['triggers']['remove']['removecontent'] = self.infoDict['removecontent']
-        self.infoDict['triggers']['remove']['accept_license'] = self.Entropy.clientDbconn.retrieveLicensedataKeys(idpackage)
-        self.infoDict['steps'] = []
-        self.infoDict['steps'].append("preremove")
-        self.infoDict['steps'].append("remove")
-        self.infoDict['steps'].append("postremove")
+            remove_config = self.metaopts.get('removeconfig')
+        self.infoDict['removeconfig'] = remove_config
+
+        self.infoDict['removecontent'] = \
+            self.Entropy.clientDbconn.retrieveContent(idpackage)
+        self.infoDict['triggers']['remove'] = \
+            self.Entropy.clientDbconn.getTriggerInfo(idpackage)
+        self.infoDict['triggers']['remove']['removecontent'] = \
+            self.infoDict['removecontent']
+        self.infoDict['triggers']['remove']['accept_license'] = \
+            self.Entropy.clientDbconn.retrieveLicensedataKeys(idpackage)
+
+        self.infoDict['steps'] = [
+            "preremove", "remove", "postremove"
+        ]
 
         return 0
 
@@ -2264,28 +2359,42 @@ class Package:
 
         # compare both versions and if they match, disable removeidpackage
         if self.infoDict['removeidpackage'] != -1:
-            installedVer, installedTag, installedRev = self.Entropy.clientDbconn.getVersioningData(self.infoDict['removeidpackage'])
+
+            installedVer, installedTag, installedRev = \
+                self.Entropy.clientDbconn.getVersioningData(
+                    self.infoDict['removeidpackage'])
+
+            repo_pkg_cmp = (self.infoDict['version'],
+                self.infoDict['versiontag'], self.infoDict['revision'],)
+            inst_pkg_cmp = (installedVer, installedTag, installedRev,)
+
             pkgcmp = self.entropyTools.entropy_compare_versions(
-                (self.infoDict['version'], self.infoDict['versiontag'], self.infoDict['revision'],),
-                (installedVer, installedTag, installedRev,)
-            )
+                repo_pkg_cmp, inst_pkg_cmp)
+
             if pkgcmp == 0:
                 self.infoDict['removeidpackage'] = -1
             else:
                 # differential remove list
                 self.infoDict['diffremoval'] = True
-                self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(self.infoDict['removeidpackage'])
-                self.infoDict['removecontent'] = self.Entropy.clientDbconn.contentDiff(
+                self.infoDict['removeatom'] = \
+                    self.Entropy.clientDbconn.retrieveAtom(
+                        self.infoDict['removeidpackage'])
+
+                self.infoDict['removecontent'] = \
+                    self.Entropy.clientDbconn.contentDiff(
                         self.infoDict['removeidpackage'],
                         dbconn,
                         idpackage
-                )
-                self.infoDict['triggers']['remove'] = self.Entropy.clientDbconn.getTriggerInfo(
+                    )
+                self.infoDict['triggers']['remove'] = \
+                    self.Entropy.clientDbconn.getTriggerInfo(
                         self.infoDict['removeidpackage']
-                )
-                self.infoDict['triggers']['remove']['removecontent'] = self.infoDict['removecontent']
+                    )
+                self.infoDict['triggers']['remove']['removecontent'] = \
+                    self.infoDict['removecontent']
                 self.infoDict['triggers']['remove']['accept_license'] = \
-                    self.Entropy.clientDbconn.retrieveLicensedataKeys(self.infoDict['removeidpackage'])
+                    self.Entropy.clientDbconn.retrieveLicensedataKeys(
+                        self.infoDict['removeidpackage'])
 
         # set steps
         self.infoDict['steps'] = []
