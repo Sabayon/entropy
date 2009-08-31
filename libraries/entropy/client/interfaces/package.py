@@ -30,7 +30,7 @@ class Package:
     import entropy.dump as dumpTools
     def __init__(self, EquoInstance):
 
-        if not isinstance(EquoInstance,Client):
+        if not isinstance(EquoInstance, Client):
             mytxt = _("A valid Client instance or subclass is needed")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
@@ -39,8 +39,8 @@ class Package:
         self.infoDict = {}
         self.prepared = False
         self.matched_atom = ()
-        self.valid_actions = ("source","fetch","multi_fetch","remove",
-            "remove_conflict","install","config"
+        self.valid_actions = ("source", "fetch", "multi_fetch", "remove",
+            "remove_conflict", "install", "config"
         )
         self.action = None
         self.fetch_abort_function = None
@@ -87,7 +87,7 @@ class Package:
 
         def do_signatures_validation(signatures):
             # check signatures, if available
-            if isinstance(signatures,dict):
+            if isinstance(signatures, dict):
                 for hash_type in sorted(signatures):
                     hash_val = signatures[hash_type]
                     # XXX workaround bug on unreleased
@@ -170,15 +170,20 @@ class Package:
 
             if dlcheck != 0:
                 dlcount += 1
+                mytxt = _("Checksum does not match. Download attempt #%s") % (
+                    dlcount,
+                )
                 self.Entropy.updateProgress(
-                    darkred(_("Package checksum does not match. Redownloading... attempt #%s") % (dlcount,)),
+                    darkred(mytxt),
                     importance = 0,
                     type = "warning",
                     header = darkred("   ## ")
                 )
+                myrelative_uri = \
+                    self.Entropy.get_branch_from_download_relative_uri(download)
                 fetch = self.Entropy.fetch_file_on_mirrors(
                     repository,
-                    self.Entropy.get_branch_from_download_relative_uri(download),
+                    myrelative_uri,
                     download,
                     checksum,
                     fetch_abort_function = self.fetch_abort_function
@@ -197,13 +202,15 @@ class Package:
                 continue
 
         if not match:
-            mytxt = _("Cannot properly fetch package or checksum does not match. Try download latest repositories.")
-            self.Entropy.updateProgress(
-                blue(mytxt),
-                importance = 0,
-                type = "info",
-                header = red("   ## ")
-            )
+            mytxt = _("Cannot fetch package or checksum does not match")
+            mytxt2 = _("Try to download latest repositories")
+            for txt in (mytxt, mytxt2,):
+                self.Entropy.updateProgress(
+                    "%s." % (blue(txt),),
+                    importance = 0,
+                    type = "info",
+                    header = red("   ## ")
+                )
             return 1
 
         return 0
@@ -222,17 +229,30 @@ class Package:
     def __unpack_package(self):
 
         if not self.infoDict['merge_from']:
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Unpacking package: "+str(self.infoDict['atom']))
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "Unpacking package: %s" % (self.infoDict['atom'],)
+            )
         else:
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,"Merging package: "+str(self.infoDict['atom']))
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "Merging package: %s" % (self.infoDict['atom'],)
+            )
 
-        if os.path.isdir(self.infoDict['unpackdir']):
-            shutil.rmtree(self.infoDict['unpackdir'].encode('raw_unicode_escape'))
-        elif os.path.isfile(self.infoDict['unpackdir']):
-            os.remove(self.infoDict['unpackdir'].encode('raw_unicode_escape'))
+        unpack_dir = self.infoDict['unpackdir']
+        unpack_dir_raw = self.infoDict['unpackdir'].encode('raw_unicode_escape')
+
+        if os.path.isdir(unpack_dir):
+            shutil.rmtree(unpack_dir_raw)
+        elif os.path.isfile(unpack_dir):
+            os.remove(unpack_dir_raw)
         os.makedirs(self.infoDict['imagedir'])
 
-        if not os.path.isfile(self.infoDict['pkgpath']) and not self.infoDict['merge_from']:
+        if not os.path.isfile(self.infoDict['pkgpath']) and \
+            not self.infoDict['merge_from']:
+
             if os.path.isdir(self.infoDict['pkgpath']):
                 shutil.rmtree(self.infoDict['pkgpath'])
             if os.path.islink(self.infoDict['pkgpath']):
@@ -251,6 +271,7 @@ class Package:
             pkg_dbdir = os.path.dirname(self.infoDict['pkgdbpath'])
             if not os.path.isdir(pkg_dbdir):
                 os.makedirs(pkg_dbdir, 0755)
+
             # extract edb
             self.entropyTools.extract_edb(self.infoDict['pkgpath'],
                 self.infoDict['pkgdbpath'])
@@ -281,11 +302,13 @@ class Package:
                             self.infoDict['pkgpath']
                     )
                     rc = self.entropyTools.uncompress_tar_bz2(
-                        self.infoDict['pkgpath'],self.infoDict['imagedir'],
+                        self.infoDict['pkgpath'],
+                        self.infoDict['imagedir'],
                         catchEmpty = True
                     )
                 if rc == 0:
                     break
+
                 if unpack_tries <= 0:
                     return rc
                 # otherwise, try to download it again
@@ -304,60 +327,71 @@ class Package:
                     self.infoDict['imagedir'])
                 os._exit(0)
 
+        # FIXME: add new entropy.spm plugin method
+
         # unpack xpak ?
         if os.path.isdir(self.infoDict['xpakpath']):
-            shutil.rmtree(self.infoDict['xpakpath'])
-        try:
-            os.rmdir(self.infoDict['xpakpath'])
-        except OSError:
-            pass
+            shutil.rmtree(self.infoDict['xpakpath'], True)
 
-            # create data dir where we'll unpack the xpak
-            os.makedirs(self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'],0755)
-            #os.mkdir(self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath'])
-            xpakPath = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakfilename']
+        # create data dir where we'll unpack the xpak
+        xpak_dir = self.infoDict['xpakpath'] + os.path.sep + \
+            etpConst['entropyxpakdatarelativepath']
 
-            if not self.infoDict['merge_from']:
-                if (self.infoDict['smartpackage']):
-                    # we need to get the .xpak from database
-                    xdbconn = self.Entropy.open_repository(self.infoDict['repository'])
-                    xpakdata = xdbconn.retrieveXpakMetadata(self.infoDict['idpackage'])
-                    if xpakdata:
-                        # save into a file
-                        f = open(xpakPath,"wb")
-                        f.write(xpakdata)
-                        f.flush()
-                        f.close()
-                        self.infoDict['xpakstatus'] = self.entropyTools.unpack_xpak(
-                            xpakPath,
-                            self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
-                        )
-                    else:
-                        self.infoDict['xpakstatus'] = None
-                    del xpakdata
-                else:
-                    self.infoDict['xpakstatus'] = self.entropyTools.extract_xpak(
-                        self.infoDict['pkgpath'],
-                        self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
+        os.makedirs(xpak_dir, 0755)
+
+        xpak_path = self.infoDict['xpakpath'] + os.path.sep + \
+            etpConst['entropyxpakfilename']
+
+        if not self.infoDict['merge_from']:
+
+            if self.infoDict['smartpackage']:
+
+                # we need to get the .xpak from database
+                xdbconn = self.Entropy.open_repository(
+                    self.infoDict['repository'])
+                xpakdata = xdbconn.retrieveXpakMetadata(
+                    self.infoDict['idpackage'])
+                if xpakdata:
+                    # save into a file
+                    f = open(xpak_path, "wb")
+                    f.write(xpakdata)
+                    f.flush()
+                    f.close()
+                    self.infoDict['xpakstatus'] = self.entropyTools.unpack_xpak(
+                        xpak_path,
+                        xpak_dir
                     )
+                else:
+                    self.infoDict['xpakstatus'] = None
+                del xpakdata
+
             else:
-                # link xpakdir to self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
-                tolink_dir = self.infoDict['xpakpath']+"/"+etpConst['entropyxpakdatarelativepath']
-                if os.path.isdir(tolink_dir):
-                    shutil.rmtree(tolink_dir,True)
-                # now link
-                os.symlink(self.infoDict['xpakdir'],tolink_dir)
+                self.infoDict['xpakstatus'] = self.entropyTools.extract_xpak(
+                    self.infoDict['pkgpath'],
+                    xpak_dir
+                )
 
-            # create fake portage ${D} linking it to imagedir
-            portage_db_fakedir = os.path.join(
-                self.infoDict['unpackdir'],
-                "portage/"+self.infoDict['category'] + "/" + self.infoDict['name'] + "-" + self.infoDict['version']
-            )
+        else: # merge_from
 
-            os.makedirs(portage_db_fakedir,0755)
-            # now link it to self.infoDict['imagedir']
-            os.symlink(self.infoDict['imagedir'],
-                os.path.join(portage_db_fakedir,"image"))
+            tolink_dir = xpak_dir
+            if os.path.isdir(tolink_dir):
+                shutil.rmtree(tolink_dir, True)
+            # now link
+            os.symlink(self.infoDict['xpakdir'], tolink_dir)
+
+        # create fake portage ${D} linking it to imagedir
+        portage_cpv = self.infoDict['category'] + "/" + \
+            self.infoDict['name'] + "-" + self.infoDict['version']
+
+        portage_db_fakedir = os.path.join(
+            self.infoDict['unpackdir'],
+            "portage/" + portage_cpv
+        )
+
+        os.makedirs(portage_db_fakedir, 0755)
+        # now link it to self.infoDict['imagedir']
+        os.symlink(self.infoDict['imagedir'],
+            os.path.join(portage_db_fakedir, "image"))
 
         return 0
 
@@ -660,7 +694,7 @@ class Package:
 
     def _cleanup_package(self, unpack_dir):
         # remove unpack dir
-        shutil.rmtree(unpack_dir,True)
+        shutil.rmtree(unpack_dir, True)
         try: 
             os.rmdir(unpack_dir)
         except OSError:
@@ -673,8 +707,10 @@ class Package:
         self.Entropy.clear_dump_cache(etpCache['depends_tree'])
         self.Entropy.clear_dump_cache(etpCache['check_package_update'])
         self.Entropy.clear_dump_cache(etpCache['dep_tree'])
-        self.Entropy.clear_dump_cache(etpCache['dbMatch']+etpConst['clientdbid']+"/")
-        self.Entropy.clear_dump_cache(etpCache['dbSearch']+etpConst['clientdbid']+"/")
+        self.Entropy.clear_dump_cache(etpCache['dbMatch'] + \
+            etpConst['clientdbid']+"/")
+        self.Entropy.clear_dump_cache(etpCache['dbSearch'] + \
+            etpConst['clientdbid']+"/")
 
         # clear caches, the bad way
         self.Entropy.clear_dump_cache(etpCache['world_available'])
@@ -883,7 +919,7 @@ class Package:
         self.Entropy.clientDbconn.taintReverseDependenciesMetadata()
         return idpackage
 
-    def __fill_image_dir(self, mergeFrom, imageDir):
+    def __fill_image_dir(self, mergeFrom, image_dir):
 
         dbconn = self.Entropy.open_repository(self.infoDict['repository'])
         # this is triggered by merge_from infoDict metadata
@@ -897,8 +933,8 @@ class Package:
         for path in contents:
             # convert back to filesystem str
             encoded_path = path
-            path = os.path.join(mergeFrom,encoded_path[1:])
-            topath = os.path.join(imageDir,encoded_path[1:])
+            path = os.path.join(mergeFrom, encoded_path[1:])
+            topath = os.path.join(image_dir, encoded_path[1:])
             path = path.encode('raw_unicode_escape')
             topath = topath.encode('raw_unicode_escape')
 
@@ -920,7 +956,7 @@ class Package:
                 tolink = os.readlink(path)
                 if os.path.islink(topath):
                     os.remove(topath)
-                os.symlink(tolink,topath)
+                os.symlink(tolink, topath)
             elif os.path.isdir(path):
                 if not os.path.isdir(topath):
                     os.makedirs(topath)
@@ -928,14 +964,14 @@ class Package:
             elif os.path.isfile(path):
                 if os.path.isfile(topath):
                     os.remove(topath) # should never happen
-                shutil.copy2(path,topath)
+                shutil.copy2(path, topath)
                 copystat = True
 
             if copystat:
                 user = os.stat(path)[stat.ST_UID]
                 group = os.stat(path)[stat.ST_GID]
-                os.chown(topath,user,group)
-                shutil.copystat(path,topath)
+                os.chown(topath, user, group)
+                shutil.copystat(path, topath)
 
 
     def __move_image_to_system(self, already_protected_config_files):
@@ -948,21 +984,22 @@ class Package:
         sys_root = etpConst['systemroot']
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
-        col_protect = self.Entropy.SystemSettings[sys_set_plg_id]['misc']['collisionprotect']
+        misc_data = self.Entropy.SystemSettings[sys_set_plg_id]['misc']
+        col_protect = misc_data['collisionprotect']
         items_installed = set()
 
-        # setup imageDir properly
-        imageDir = self.infoDict['imagedir']
-        encoded_imageDir = imageDir.encode('utf-8')
+        # setup image_dir properly
+        image_dir = self.infoDict['imagedir']
+        encoded_image_dir = image_dir.encode('utf-8')
         movefile = self.entropyTools.movefile
 
         # merge data into system
-        for currentdir,subdirs,files in os.walk(encoded_imageDir):
+        for currentdir, subdirs, files in os.walk(encoded_image_dir):
             # create subdirs
             for subdir in subdirs:
 
-                imagepathDir = "%s/%s" % (currentdir,subdir,)
-                rootdir = "%s%s" % (sys_root,imagepathDir[len(imageDir):],)
+                imagepath_dir = "%s/%s" % (currentdir, subdir,)
+                rootdir = "%s%s" % (sys_root, imagepath_dir[len(image_dir):],)
 
                 # handle broken symlinks
                 if os.path.islink(rootdir) and not os.path.exists(rootdir):# broken symlink
@@ -986,7 +1023,7 @@ class Package:
                     os.remove(rootdir)
 
                 # if our directory is a symlink instead, then copy the symlink
-                if os.path.islink(imagepathDir):
+                if os.path.islink(imagepath_dir):
 
                     # if our live system features a directory instead of
                     # a symlink, we should consider removing the directory
@@ -1016,7 +1053,7 @@ class Package:
                         except OSError:
                             pass
 
-                    tolink = os.readlink(imagepathDir)
+                    tolink = os.readlink(imagepath_dir)
                     live_tolink = None
                     if os.path.islink(rootdir):
                         live_tolink = os.readlink(rootdir)
@@ -1026,7 +1063,7 @@ class Package:
                             os.remove(rootdir)
                         os.symlink(tolink, rootdir)
 
-                elif (not os.path.isdir(rootdir)) and (not os.access(rootdir,os.R_OK)):
+                elif (not os.path.isdir(rootdir)) and (not os.access(rootdir, os.R_OK)):
                     try:
                         # we should really force a simple mkdir first of all
                         os.mkdir(rootdir)
@@ -1034,24 +1071,24 @@ class Package:
                         os.makedirs(rootdir)
 
 
-                if not os.path.islink(rootdir) and os.access(rootdir,os.W_OK):
+                if not os.path.islink(rootdir) and os.access(rootdir, os.W_OK):
                     # symlink doesn't need permissions, also until os.walk ends they might be broken
                     # XXX also, added os.access() check because there might be directories/files unwritable
                     # what to do otherwise?
-                    user = os.stat(imagepathDir)[stat.ST_UID]
-                    group = os.stat(imagepathDir)[stat.ST_GID]
-                    os.chown(rootdir,user,group)
-                    shutil.copystat(imagepathDir,rootdir)
+                    user = os.stat(imagepath_dir)[stat.ST_UID]
+                    group = os.stat(imagepath_dir)[stat.ST_GID]
+                    os.chown(rootdir, user, group)
+                    shutil.copystat(imagepath_dir, rootdir)
 
-                items_installed.add(os.path.join(os.path.realpath(os.path.dirname(rootdir)),os.path.basename(rootdir)))
+                items_installed.add(os.path.join(os.path.realpath(os.path.dirname(rootdir)), os.path.basename(rootdir)))
 
             for item in files:
 
-                fromfile = "%s/%s" % (currentdir,item,)
-                tofile = "%s%s" % (sys_root,fromfile[len(imageDir):],)
+                fromfile = "%s/%s" % (currentdir, item,)
+                tofile = "%s%s" % (sys_root, fromfile[len(image_dir):],)
 
                 if col_protect > 1:
-                    todbfile = fromfile[len(imageDir):]
+                    todbfile = fromfile[len(image_dir):]
                     myrc = self._handle_install_collision_protect(tofile, todbfile)
                     if not myrc:
                         continue
@@ -1066,7 +1103,7 @@ class Package:
                     try:
                         prot_md5 = self.entropyTools.md5sum(fromfile)
                         self.infoDict['configprotect_data'].append(
-                            (prot_old_tofile,prot_md5,))
+                            (prot_old_tofile, prot_md5,))
                     except (IOError,):
                         pass
 
@@ -1141,17 +1178,16 @@ class Package:
                         except OSError:
                             pass
 
-                    # XXX
-                    # XXX moving file using the raw format like portage does
-                    # XXX
-                    done = movefile(fromfile, tofile, src_basedir = encoded_imageDir)
+                    # moving file using the raw format
+                    done = movefile(fromfile, tofile,
+                        src_basedir = encoded_image_dir)
                     if not done:
                         self.Entropy.clientLog.log(
                             ETP_LOGPRI_INFO,
                             ETP_LOGLEVEL_NORMAL,
-                            "WARNING!!! Error during file move to system: %s => %s" % (fromfile,tofile,)
+                            "WARNING!!! Error during file move to system: %s => %s" % (fromfile, tofile,)
                         )
-                        mytxt = "%s: %s => %s, %s" % (_("File move error"),fromfile,tofile,_("please report"),)
+                        mytxt = "%s: %s => %s, %s" % (_("File move error"), fromfile, tofile, _("please report"),)
                         self.Entropy.updateProgress(
                             red("QA: ")+darkred(mytxt),
                             importance = 1,
@@ -1163,9 +1199,10 @@ class Package:
                 except IOError, e:
                     # try to move forward, sometimes packages might be
                     # fucked up and contain broken things
-                    if e.errno != 2: raise
+                    if e.errno != 2:
+                        raise
 
-                items_installed.add(os.path.join(os.path.realpath(os.path.dirname(tofile)),os.path.basename(tofile)))
+                items_installed.add(os.path.join(os.path.realpath(os.path.dirname(tofile)), os.path.basename(tofile)))
                 if protected:
                     # add to disk cache
                     self.Entropy.FileUpdates.add_to_cache(tofile, quiet = True)
@@ -1177,7 +1214,7 @@ class Package:
         if self.infoDict.get('removecontent'):
             my_remove_content = set([x for x in self.infoDict['removecontent'] \
                 if os.path.join(os.path.realpath(
-                    os.path.dirname("%s%s" % (sys_root,x,))),os.path.basename(x)
+                    os.path.dirname("%s%s" % (sys_root, x,))), os.path.basename(x)
                 ) in items_installed])
             self.infoDict['removecontent'] -= my_remove_content
 
@@ -1185,112 +1222,136 @@ class Package:
 
     def _handle_config_protect(self, protect, mask, fromfile, tofile,
         do_allocation_check = True, do_quiet = False):
+        """
+        Handle configuration file protection. This method contains the logic
+        for determining if a file should be protected from overwrite.
+        """
 
         protected = False
         tofile_before_protect = tofile
         do_continue = False
         in_mask = False
+        encoded_protect = [x.encode('raw_unicode_escape') for x in protect]
 
-        try:
-            encoded_protect = [x.encode('raw_unicode_escape') for x in protect]
-            if tofile in encoded_protect:
-                protected = True
-                in_mask = True
-            elif os.path.dirname(tofile) in encoded_protect:
-                protected = True
-                in_mask = True
+        if tofile in encoded_protect:
+            protected = True
+            in_mask = True
+
+        elif os.path.dirname(tofile) in encoded_protect:
+            protected = True
+            in_mask = True
+
+        else:
+            tofile_testdir = os.path.dirname(tofile)
+            old_tofile_testdir = None
+            while tofile_testdir != old_tofile_testdir:
+                if tofile_testdir in encoded_protect:
+                    protected = True
+                    in_mask = True
+                    break
+                old_tofile_testdir = tofile_testdir
+                tofile_testdir = os.path.dirname(tofile_testdir)
+
+        if protected: # check if perhaps, file is masked, so unprotected
+            newmask = [x.encode('raw_unicode_escape') for x in mask]
+
+            if tofile in newmask:
+                protected = False
+                in_mask = False
+
+            elif os.path.dirname(tofile) in newmask:
+                protected = False
+                in_mask = False
+
             else:
                 tofile_testdir = os.path.dirname(tofile)
                 old_tofile_testdir = None
                 while tofile_testdir != old_tofile_testdir:
-                    if tofile_testdir in encoded_protect:
-                        protected = True
-                        in_mask = True
+                    if tofile_testdir in newmask:
+                        protected = False
+                        in_mask = False
                         break
                     old_tofile_testdir = tofile_testdir
                     tofile_testdir = os.path.dirname(tofile_testdir)
 
-            if protected: # check if perhaps, file is masked, so unprotected
-                newmask = [x.encode('raw_unicode_escape') for x in mask]
-                if tofile in newmask:
-                    protected = False
-                    in_mask = False
-                elif os.path.dirname(tofile) in newmask:
-                    protected = False
-                    in_mask = False
-                else:
-                    tofile_testdir = os.path.dirname(tofile)
-                    old_tofile_testdir = None
-                    while tofile_testdir != old_tofile_testdir:
-                        if tofile_testdir in newmask:
-                            protected = False
-                            in_mask = False
-                            break
-                        old_tofile_testdir = tofile_testdir
-                        tofile_testdir = os.path.dirname(tofile_testdir)
+        if not os.path.lexists(tofile):
+            protected = False # file doesn't exist
 
-            if not os.path.lexists(tofile):
-                protected = False # file doesn't exist
+        # check if it's a text file
+        if protected and os.access(tofile, os.F_OK | os.R_OK):
+            protected = self.entropyTools.istextfile(tofile)
+            in_mask = protected
+        else:
+            protected = False # it's not a file
 
-            # check if it's a text file
-            if (protected) and os.path.isfile(tofile):
-                protected = self.entropyTools.istextfile(tofile)
-                in_mask = protected
-            else:
-                protected = False # it's not a file
+        if not protected:
+            return in_mask, protected, tofile, do_continue
 
-            # request new tofile then
-            if protected:
-                sys_set_plg_id = \
-                    etpConst['system_settings_plugins_ids']['client_plugin']
-                client_settings = self.Entropy.SystemSettings[sys_set_plg_id]['misc']
-                if tofile not in client_settings['configprotectskip']:
-                    prot_status = True
-                    if do_allocation_check:
-                        tofile, prot_status = self.entropyTools.allocate_masked_file(tofile, fromfile)
-                    if not prot_status:
-                        protected = False
-                    else:
-                        oldtofile = tofile
-                        if oldtofile.find("._cfg") != -1:
-                            oldtofile = os.path.join(os.path.dirname(oldtofile),
-                                os.path.basename(oldtofile)[10:])
-                        if not do_quiet:
-                            self.Entropy.clientLog.log(
-                                ETP_LOGPRI_INFO,
-                                ETP_LOGLEVEL_NORMAL,
-                                "Protecting config file: %s" % (oldtofile,)
-                            )
-                            mytxt = red("%s: %s") % (_("Protecting config file"),oldtofile,)
-                            self.Entropy.updateProgress(
-                                mytxt,
-                                importance = 1,
-                                type = "warning",
-                                header = darkred("   ## ")
-                            )
-                else:
-                    if not do_quiet:
-                        self.Entropy.clientLog.log(
-                            ETP_LOGPRI_INFO,
-                            ETP_LOGLEVEL_NORMAL,
-                            "Skipping config file installation/removal, as stated in client.conf: %s" % (tofile,)
-                        )
-                        mytxt = "%s: %s" % (_("Skipping file installation/removal"),tofile,)
-                        self.Entropy.updateProgress(
-                            mytxt,
-                            importance = 1,
-                            type = "warning",
-                            header = darkred("   ## ")
-                        )
-                    do_continue = True
+        ##                  ##
+        # file is protected  #
+        ##__________________##
 
-        except Exception, e:
-            self.entropyTools.print_traceback()
-            protected = False # safely revert to false
-            tofile = tofile_before_protect
-            mytxt = darkred("%s: %s") % (_("Cannot check CONFIG PROTECTION. Error"),e,)
+        sys_set_plg_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
+        client_settings = self.Entropy.SystemSettings[sys_set_plg_id]
+        misc_settings = client_settings['misc']
+
+        # check if protection is disabled for this element
+        if tofile in misc_settings['configprotectskip']:
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "Skipping config file installation/removal, " \
+                "as stated in client.conf: %s" % (tofile,)
+            )
+            if not do_quiet:
+                mytxt = "%s: %s" % (
+                    _("Skipping file installation/removal"),
+                    tofile,
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = darkred("   ## ")
+                )
+            do_continue = True
+            return in_mask, protected, tofile, do_continue
+
+        ##                      ##
+        # file is protected (2)  #
+        ##______________________##
+
+        prot_status = True
+        if do_allocation_check:
+            tofile, prot_status = self.entropyTools.allocate_masked_file(
+                tofile, fromfile)
+
+        if not prot_status:
+            # a protected file with the same content
+            # is already in place, so not going to protect
+            # the same file twice
+            protected = False
+            return in_mask, protected, tofile, do_continue
+
+        ##                      ##
+        # file is protected (3)  #
+        ##______________________##
+
+        oldtofile = tofile
+        if oldtofile.find("._cfg") != -1:
+            oldtofile = os.path.join(os.path.dirname(oldtofile),
+                os.path.basename(oldtofile)[10:])
+
+        if not do_quiet:
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "Protecting config file: %s" % (oldtofile,)
+            )
+            mytxt = red("%s: %s") % (_("Protecting config file"), oldtofile,)
             self.Entropy.updateProgress(
-                red("QA: ")+mytxt,
+                mytxt,
                 importance = 1,
                 type = "warning",
                 header = darkred("   ## ")
@@ -1300,10 +1361,16 @@ class Package:
 
 
     def _handle_install_collision_protect(self, tofile, todbfile):
-        avail = self.Entropy.clientDbconn.isFileAvailable(todbfile, get_id = True)
+
+        avail = self.Entropy.clientDbconn.isFileAvailable(todbfile,
+            get_id = True)
+
         if (self.infoDict['removeidpackage'] not in avail) and avail:
             mytxt = darkred(_("Collision found during install for"))
-            mytxt += " %s - %s" % (blue(tofile),darkred(_("cannot overwrite")),)
+            mytxt += " %s - %s" % (
+                blue(tofile),
+                darkred(_("cannot overwrite")),
+            )
             self.Entropy.updateProgress(
                 red("QA: ")+mytxt,
                 importance = 1,
@@ -1313,23 +1380,30 @@ class Package:
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
-                "WARNING!!! Collision found during install for %s - cannot overwrite" % (tofile,)
+                "WARNING!!! Collision found during install " \
+                "for %s - cannot overwrite" % (tofile,)
             )
             return False
+
         return True
 
     def sources_fetch_step(self):
         self.error_on_not_prepared()
+
         down_data = self.infoDict['download']
         down_keys = down_data.keys()
         d_cache = set()
         rc = 0
         key_cache = [os.path.basename(x) for x in down_keys]
+
         for key in sorted(down_keys):
+
             key_name = os.path.basename(key)
             if key_name in d_cache: continue
             # first fine wins
+
             for url in down_data[key]:
+
                 file_name = os.path.basename(url)
                 if self.infoDict.get('fetch_path'):
                     dest_file = os.path.join(self.infoDict['fetch_path'],
@@ -1337,13 +1411,16 @@ class Package:
                 else:
                     dest_file = os.path.join(self.infoDict['unpackdir'],
                         file_name)
+
                 rc = self._fetch_source(url, dest_file)
                 if rc == 0:
                     d_cache.add(key_name)
                     break
+
             key_cache.remove(key_name)
             if rc != 0 and key_name not in key_cache:
                 break
+
             rc = 0
 
         return rc
@@ -1351,7 +1428,8 @@ class Package:
     def _fetch_source(self, url, dest_file):
         rc = 1
         try:
-            mytxt = "%s: %s" % (blue(_("Downloading")),brown(url),)
+
+            mytxt = "%s: %s" % (blue(_("Downloading")), brown(url),)
             # now fetch the new one
             self.Entropy.updateProgress(
                 mytxt,
@@ -1371,7 +1449,8 @@ class Package:
             if rc == 0:
                 mytxt = blue("%s: ") % (_("Successfully downloaded from"),)
                 mytxt += red(self.entropyTools.spliturl(url)[1])
-                mytxt += " %s %s/%s" % (_("at"),self.entropyTools.bytes_into_human(data_transfer),_("second"),)
+                human_bytes = self.entropyTools.bytes_into_human(data_transfer)
+                mytxt += " %s %s/%s" % (_("at"), human_bytes, _("second"),)
                 self.Entropy.updateProgress(
                     mytxt,
                     importance = 1,
@@ -1379,7 +1458,7 @@ class Package:
                     header = red("   ## ")
                 )
                 self.Entropy.updateProgress(
-                    "%s: %s" % (blue(_("Local path")),brown(dest_file),),
+                    "%s: %s" % (blue(_("Local path")), brown(dest_file),),
                     importance = 1,
                     type = "info",
                     header = red("      # ")
@@ -1391,25 +1470,30 @@ class Package:
                 )
                 # something bad happened
                 if rc == -1:
-                    error_message += " - %s." % (_("file not available on this mirror"),)
+                    error_message += " - %s." % (
+                        _("file not available on this mirror"),
+                    )
                 elif rc == -3:
                     error_message += " - not found."
                 elif rc == -100:
                     error_message += " - %s." % (_("discarded download"),)
                 else:
-                    error_message += " - %s: %s" % (_("unknown reason"),rc,)
+                    error_message += " - %s: %s" % (_("unknown reason"), rc,)
                 self.Entropy.updateProgress(
-                                    error_message,
-                                    importance = 1,
-                                    type = "warning",
-                                    header = red("   ## ")
-                                )
+                    error_message,
+                    importance = 1,
+                    type = "warning",
+                    header = red("   ## ")
+                )
+
         except KeyboardInterrupt:
             pass
+
         return rc
 
     def fetch_step(self):
         self.error_on_not_prepared()
+
         mytxt = "%s: %s" % (blue(_("Downloading archive")),
             red(os.path.basename(self.infoDict['download'])),)
         self.Entropy.updateProgress(
@@ -1421,63 +1505,78 @@ class Package:
 
         rc = 0
         if not self.infoDict['verified']:
+
+            branch = self.Entropy.get_branch_from_download_relative_uri(
+                self.infoDict['download'])
             rc = self.Entropy.fetch_file_on_mirrors(
                 self.infoDict['repository'],
-                self.Entropy.get_branch_from_download_relative_uri(self.infoDict['download']),
+                branch,
                 self.infoDict['download'],
                 self.infoDict['checksum'],
                 fetch_abort_function = self.fetch_abort_function
             )
-        if rc != 0:
-            mytxt = "%s. %s: %s" % (
-                red(_("Package cannot be fetched. Try to update repositories and retry")),
-                blue(_("Error")),
-                rc,
-            )
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 1,
-                type = "error",
-                header = darkred("   ## ")
-            )
+
+        if rc == 0:
+            return 0
+
+        mytxt = "%s. %s: %s" % (
+            red(_("Package cannot be fetched. Try to update repositories")),
+            blue(_("Error")),
+            rc,
+        )
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 1,
+            type = "error",
+            header = darkred("   ## ")
+        )
+
         return rc
 
     def multi_fetch_step(self):
         self.error_on_not_prepared()
+
         m_fetch_len = len(self.infoDict['multi_fetch_list'])
-        mytxt = "%s: %s %s" % (blue(_("Downloading")),darkred(str(m_fetch_len)),_("archives"),)
+        mytxt = "%s: %s %s" % (
+            blue(_("Downloading")),
+            darkred(str(m_fetch_len)),
+            _("archives"),
+        )
+
         self.Entropy.updateProgress(
             mytxt,
             importance = 1,
             type = "info",
             header = red("   ## ")
         )
-        # fetch_files_on_mirrors(self, download_list, checksum = False, fetch_abort_function = None)
         rc, err_list = self.Entropy.fetch_files_on_mirrors(
             self.infoDict['multi_fetch_list'],
             self.infoDict['checksum'],
             fetch_abort_function = self.fetch_abort_function
         )
-        if rc != 0:
-            mytxt = "%s. %s: %s" % (
-                red(_("Some packages cannot be fetched. Try to update repositories and retry")),
-                blue(_("Error")),
-                rc,
-            )
+
+        if rc == 0:
+            return 0
+
+        mytxt = "%s. %s: %s" % (
+            red(_("Some packages cannot be fetched. Try to update repositories and retry")),
+            blue(_("Error")),
+            rc,
+        )
+        self.Entropy.updateProgress(
+            mytxt,
+            importance = 1,
+            type = "error",
+            header = darkred("   ## ")
+        )
+        for repo, branch, fname, cksum, signatures in err_list:
             self.Entropy.updateProgress(
-                mytxt,
+                "[%s:%s|%s] %s" % (blue(repo), brown(branch),
+                    darkgreen(cksum), darkred(fname),),
                 importance = 1,
                 type = "error",
-                header = darkred("   ## ")
+                header = darkred("    # ")
             )
-            for repo, branch, fname, cksum, signatures in err_list:
-                self.Entropy.updateProgress(
-                    "[%s:%s|%s] %s" % (blue(repo),brown(branch),
-                        darkgreen(cksum),darkred(fname),),
-                    importance = 1,
-                    type = "error",
-                    header = darkred("    # ")
-                )
         return rc
 
     def fetch_not_available_step(self):
@@ -1510,7 +1609,10 @@ class Package:
         self.error_on_not_prepared()
 
         if not self.infoDict['merge_from']:
-            mytxt = "%s: %s" % (blue(_("Unpacking package")),red(os.path.basename(self.infoDict['download'])),)
+            mytxt = "%s: %s" % (
+                blue(_("Unpacking package")),
+                red(os.path.basename(self.infoDict['download'])),
+            )
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 1,
@@ -1518,7 +1620,10 @@ class Package:
                 header = red("   ## ")
         )
         else:
-            mytxt = "%s: %s" % (blue(_("Merging package")),red(os.path.basename(self.infoDict['atom'])),)
+            mytxt = "%s: %s" % (
+                blue(_("Merging package")),
+                red(os.path.basename(self.infoDict['atom'])),
+            )
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 1,
@@ -1616,7 +1721,10 @@ class Package:
 
     def cleanup_step(self):
         self.error_on_not_prepared()
-        mytxt = "%s: %s" % (blue(_("Cleaning")),red(self.infoDict['atom']),)
+        mytxt = "%s: %s" % (
+            blue(_("Cleaning")),
+            red(self.infoDict['atom']),
+        )
         self.Entropy.updateProgress(
             mytxt,
             importance = 1,
@@ -1636,7 +1744,7 @@ class Package:
         self.error_on_not_prepared()
         pkgdata = self.infoDict['triggers'].get('install')
         if pkgdata:
-            trigger = self.Entropy.Triggers('postinstall',pkgdata, self.action)
+            trigger = self.Entropy.Triggers('postinstall', pkgdata, self.action)
             do = trigger.prepare()
             if do:
                 trigger.run()
@@ -1649,16 +1757,18 @@ class Package:
         pkgdata = self.infoDict['triggers'].get('install')
         if pkgdata:
 
-            trigger = self.Entropy.Triggers('preinstall',pkgdata, self.action)
+            trigger = self.Entropy.Triggers('preinstall', pkgdata, self.action)
             do = trigger.prepare()
             if self.infoDict.get("diffremoval") and do:
                 # diffremoval is true only when the
                 # removal is triggered by a package install
                 remdata = self.infoDict['triggers'].get('remove')
                 if remdata:
-                    r_trigger = self.Entropy.Triggers('preremove',remdata, self.action)
+                    r_trigger = self.Entropy.Triggers('preremove', remdata,
+                        self.action)
                     r_trigger.prepare()
-                    r_trigger.triggers = [x for x in trigger.triggers if x not in r_trigger.triggers]
+                    r_trigger.triggers = [x for x in trigger.triggers if x \
+                        not in r_trigger.triggers]
                     r_trigger.kill()
                 del remdata
             if do:
@@ -1672,7 +1782,7 @@ class Package:
         self.error_on_not_prepared()
         remdata = self.infoDict['triggers'].get('remove')
         if remdata:
-            trigger = self.Entropy.Triggers('preremove',remdata, self.action)
+            trigger = self.Entropy.Triggers('preremove', remdata, self.action)
             do = trigger.prepare()
             if do:
                 trigger.run()
@@ -1685,15 +1795,19 @@ class Package:
         remdata = self.infoDict['triggers'].get('remove')
         if remdata:
 
-            trigger = self.Entropy.Triggers('postremove',remdata, self.action)
+            trigger = self.Entropy.Triggers('postremove', remdata, self.action)
             do = trigger.prepare()
-            if self.infoDict['diffremoval'] and (self.infoDict.get("atom") != None) and do:
-                # diffremoval is true only when the remove action is triggered by installPackages()
+            if self.infoDict['diffremoval'] and \
+                (self.infoDict.get("atom") is not None) and do:
+                # diffremoval is true only when the remove
+                # action is triggered by installPackages()
                 pkgdata = self.infoDict['triggers'].get('install')
                 if pkgdata:
-                    i_trigger = self.Entropy.Triggers('postinstall',pkgdata, self.action)
+                    i_trigger = self.Entropy.Triggers('postinstall', pkgdata,
+                        self.action)
                     i_trigger.prepare()
-                    i_trigger.triggers = [x for x in trigger.triggers if x not in i_trigger.triggers]
+                    i_trigger.triggers = [x for x in trigger.triggers if x \
+                        not in i_trigger.triggers]
                     i_trigger.kill()
                 del pkgdata
             if do:
@@ -1705,11 +1819,15 @@ class Package:
 
     def removeconflict_step(self):
         self.error_on_not_prepared()
+
         for idpackage in self.infoDict['conflicts']:
             if not self.Entropy.clientDbconn.isIdpackageAvailable(idpackage):
                 continue
+
             pkg = self.Entropy.Package()
-            pkg.prepare((idpackage,),"remove_conflict", self.infoDict['remove_metaopts'])
+            pkg.prepare((idpackage,), "remove_conflict",
+                self.infoDict['remove_metaopts'])
+
             rc = pkg.run(xterm_header = self.xterm_title)
             pkg.kill()
             if rc != 0:
@@ -1719,7 +1837,10 @@ class Package:
 
     def config_step(self):
         self.error_on_not_prepared()
-        mytxt = "%s: %s" % (blue(_("Configuring package")),red(self.infoDict['atom']),)
+        mytxt = "%s: %s" % (
+            blue(_("Configuring package")),
+            red(self.infoDict['atom']),
+        )
         self.Entropy.updateProgress(
             mytxt,
             importance = 1,
@@ -1781,7 +1902,7 @@ class Package:
 
         def do_multi_fetch():
             self.xterm_title += ' %s: %s %s' % (_("Multi Fetching"),
-                len(self.infoDict['multi_fetch_list']),_("packages"),)
+                len(self.infoDict['multi_fetch_list']), _("packages"),)
             self.Entropy.setTitle(self.xterm_title)
             return self.multi_fetch_step()
 
@@ -1800,7 +1921,7 @@ class Package:
 
         def do_multi_checksum():
             self.xterm_title += ' %s: %s %s' % (_("Multi Verification"),
-                len(self.infoDict['multi_checksum_list']),_("packages"),)
+                len(self.infoDict['multi_checksum_list']), _("packages"),)
             self.Entropy.setTitle(self.xterm_title)
             return self.multi_checksum_step()
 
@@ -1956,19 +2077,7 @@ class Package:
             )
         return rc
 
-    '''
-       Install/Removal process preparation function
-       - will generate all the metadata needed to run the action steps, creating infoDict automatically
-       @input matched_atom(tuple): is what is returned by EquoInstance.atom_match:
-            (idpackage,repoid):
-            (2000,u'sabayonlinux.org')
-            NOTE: in case of remove action, matched_atom must be:
-            (idpackage,)
-            NOTE: in case of multi_fetch, matched_atom can be a list of matches
-        @input action(string): is an action to take, which must be one in self.valid_actions
-    '''
     def prepare(self, matched_atom, action, metaopts = {}):
-
         self.error_on_prepared()
         self.check_action_validity(action)
 
@@ -1986,7 +2095,7 @@ class Package:
             self.__generate_fetch_metadata()
         elif self.action == "multi_fetch":
             self.__generate_multi_fetch_metadata()
-        elif self.action in ("remove","remove_conflict"):
+        elif self.action in ("remove", "remove_conflict"):
             self.__generate_remove_metadata()
         elif self.action == "install":
             self.__generate_install_metadata()
@@ -2041,11 +2150,14 @@ class Package:
         self.infoDict.clear()
         idpackage = self.matched_atom[0]
 
-        self.infoDict['atom'] = self.Entropy.clientDbconn.retrieveAtom(idpackage)
+        self.infoDict['atom'] = \
+            self.Entropy.clientDbconn.retrieveAtom(idpackage)
         key, slot = self.Entropy.clientDbconn.retrieveKeySlot(idpackage)
         self.infoDict['key'], self.infoDict['slot'] = key, slot
-        self.infoDict['version'] = self.Entropy.clientDbconn.retrieveVersion(idpackage)
-        self.infoDict['accept_license'] = self.Entropy.clientDbconn.retrieveLicensedataKeys(idpackage)
+        self.infoDict['version'] = \
+            self.Entropy.clientDbconn.retrieveVersion(idpackage)
+        self.infoDict['accept_license'] = \
+            self.Entropy.clientDbconn.retrieveLicensedataKeys(idpackage)
         self.infoDict['steps'] = []
         self.infoDict['steps'].append("config")
 
@@ -2221,10 +2333,14 @@ class Package:
         self.infoDict['steps'].append("cleanup")
 
         self.infoDict['triggers']['install'] = dbconn.getTriggerInfo(idpackage)
-        self.infoDict['triggers']['install']['accept_license'] = self.infoDict['accept_license']
-        self.infoDict['triggers']['install']['unpackdir'] = self.infoDict['unpackdir']
-        self.infoDict['triggers']['install']['imagedir'] = self.infoDict['imagedir']
-        self.infoDict['triggers']['install']['xpakdir'] = self.infoDict['xpakdir']
+        self.infoDict['triggers']['install']['accept_license'] = \
+            self.infoDict['accept_license']
+        self.infoDict['triggers']['install']['unpackdir'] = \
+            self.infoDict['unpackdir']
+        self.infoDict['triggers']['install']['imagedir'] = \
+            self.infoDict['imagedir']
+        self.infoDict['triggers']['install']['xpakdir'] = \
+            self.infoDict['xpakdir']
 
         return 0
 
@@ -2236,7 +2352,8 @@ class Package:
 
         # fetch abort function
         if self.metaopts.has_key('fetch_abort_function'):
-            self.fetch_abort_function = self.metaopts.pop('fetch_abort_function')
+            self.fetch_abort_function = \
+                self.metaopts.pop('fetch_abort_function')
 
         if self.metaopts.has_key('dochecksum'):
             dochecksum = self.metaopts.get('dochecksum')
@@ -2253,7 +2370,8 @@ class Package:
         dbconn = self.Entropy.open_repository(repository)
         self.infoDict['atom'] = dbconn.retrieveAtom(idpackage)
         if sources:
-            self.infoDict['download'] = dbconn.retrieveSources(idpackage, extended = True)
+            self.infoDict['download'] = dbconn.retrieveSources(idpackage,
+                extended = True)
         else:
             self.infoDict['checksum'] = dbconn.retrieveDigest(idpackage)
             sha1, sha256, sha512 = dbconn.retrieveSignatures(idpackage)
@@ -2272,46 +2390,58 @@ class Package:
         self.infoDict['verified'] = False
         self.infoDict['steps'] = []
         if not repository.endswith(etpConst['packagesext']) and not sources:
-            if self.Entropy.check_needed_package_download(self.infoDict['download'], None) < 0:
+            dl_check = self.Entropy.check_needed_package_download(
+                self.infoDict['download'], None)
+
+            if dl_check < 0:
                 self.infoDict['steps'].append("fetch")
             if dochecksum:
                 self.infoDict['steps'].append("checksum")
+
         elif sources:
             self.infoDict['steps'].append("sources_fetch")
 
         if sources:
             # create sources destination directory
-            unpack_dir = etpConst['entropyunpackdir']+"/sources/"+self.infoDict['atom']
+            unpack_dir = os.path.join(etpConst['entropyunpackdir'],
+                "sources", self.infoDict['atom'])
             self.infoDict['unpackdir'] = unpack_dir
+
             if not self.infoDict.get('fetch_path'):
                 if os.path.lexists(unpack_dir):
                     if os.path.isfile(unpack_dir):
                         os.remove(unpack_dir)
                     elif os.path.isdir(unpack_dir):
-                        shutil.rmtree(unpack_dir,True)
+                        shutil.rmtree(unpack_dir, True)
                 if not os.path.lexists(unpack_dir):
-                    os.makedirs(unpack_dir,0775)
-                const_setup_perms(unpack_dir,etpConst['entropygid'])
+                    os.makedirs(unpack_dir, 0775)
+                const_setup_perms(unpack_dir, etpConst['entropygid'])
+            return 0
 
-        else:
-            # if file exists, first checksum then fetch
-            if os.path.isfile(os.path.join(etpConst['entropyworkdir'],self.infoDict['download'])):
-                # check size first
-                repo_size = dbconn.retrieveSize(idpackage)
-                f = open(os.path.join(etpConst['entropyworkdir'],self.infoDict['download']),"r")
-                f.seek(0,os.SEEK_END)
-                disk_size = f.tell()
-                f.close()
-                if repo_size == disk_size:
-                    self.infoDict['steps'].reverse()
+        # downloading binary package
+        # if file exists, first checksum then fetch
+        down_path = os.path.join(etpConst['entropyworkdir'],
+            self.infoDict['download'])
+        if os.access(down_path, os.R_OK | os.F_OK):
+            # check size first
+            repo_size = dbconn.retrieveSize(idpackage)
+            f = open(down_path, "r")
+            f.seek(0, os.SEEK_END)
+            disk_size = f.tell()
+            f.close()
+            if repo_size == disk_size:
+                self.infoDict['steps'].reverse()
+
         return 0
 
     def __generate_multi_fetch_metadata(self):
         self.infoDict.clear()
 
-        if not isinstance(self.matched_atom,list):
+        if not isinstance(self.matched_atom, list):
             raise IncorrectParameter("IncorrectParameter: "
-                "matched_atom must be a list of tuples, not %s" % (type(self.matched_atom,))
+                "matched_atom must be a list of tuples, not %s" % (
+                    type(self.matched_atom,)
+                )
             )
 
         dochecksum = True
@@ -2360,10 +2490,10 @@ class Package:
                 continue
             elif dochecksum:
                 temp_checksum_list.append((repository, orig_branch, download, digest, signatures,))
-            down_path = os.path.join(etp_workdir,download)
+            down_path = os.path.join(etp_workdir, download)
             if os.path.isfile(down_path):
-                with open(down_path,"r") as f:
-                    f.seek(0,os.SEEK_END)
+                with open(down_path, "r") as f:
+                    f.seek(0, os.SEEK_END)
                     disk_size = f.tell()
                 if repo_size == disk_size:
                     temp_already_downloaded_count += 1
