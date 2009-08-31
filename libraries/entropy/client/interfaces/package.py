@@ -67,7 +67,9 @@ class Package:
     def check_action_validity(self, action):
         if action not in self.valid_actions:
             mytxt = _("Action must be in")
-            raise InvalidData("InvalidData: %s %s" % (mytxt,self.valid_actions,))
+            raise InvalidData("InvalidData: %s %s" % (mytxt,
+                self.valid_actions,)
+            )
 
     def match_checksum(self, repository = None, checksum = None,
         download = None, signatures = None):
@@ -208,9 +210,13 @@ class Package:
 
     def multi_match_checksum(self):
         rc = 0
-        for repository, branch, download, digest, signatures in self.infoDict['multi_checksum_list']:
+        for repository, branch, download, digest, signatures in \
+            self.infoDict['multi_checksum_list']:
+
             rc = self.match_checksum(repository, digest, download, signatures)
-            if rc != 0: break
+            if rc != 0:
+                break
+
         return rc
 
     def __unpack_package(self):
@@ -350,7 +356,8 @@ class Package:
 
             os.makedirs(portage_db_fakedir,0755)
             # now link it to self.infoDict['imagedir']
-            os.symlink(self.infoDict['imagedir'],os.path.join(portage_db_fakedir,"image"))
+            os.symlink(self.infoDict['imagedir'],
+                os.path.join(portage_db_fakedir,"image"))
 
         return 0
 
@@ -358,62 +365,22 @@ class Package:
 
         try:
             Spm = self.Entropy.Spm()
-        except:
+        except Exception, err:
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "Source Package Manager not available: %s | %s" % (
+                    type(Exception), err,
+                )
+            )
             return 1
-
-        spm_atom = self.infoDict['key'] + "-" + self.infoDict['version']
-        myebuild = Spm.get_installed_package_build_script_path(spm_atom)
-
-        if not os.path.isfile(myebuild):
-            return 2
 
         self.Entropy.updateProgress(
             "SPM: %s" % (brown(_("configuration phase")),),
             importance = 0,
             header = red("   ## ")
         )
-
-        try:
-            rc = Spm.execute_package_phase(spm_atom, myebuild,
-                "configure", licenses_accepted = self.infoDict['accept_license']
-            )
-            if rc == 1:
-                self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
-                    "[PRE] ATTENTION Cannot properly run SPM config phase " \
-                    "for %s. Something bad happened." % (spm_atom,)
-                )
-                return 3
-
-        except Exception, err:
-            self.entropyTools.print_traceback()
-            self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
-                "[PRE] ATTENTION Cannot properly run SPM config phase " \
-                "for %s. Exception: %s | %s." % (
-                    spm_atom, type(Exception), err,)
-            )
-            mytxt = "%s: %s %s." % (
-                bold(_("QA")),
-                brown(_("Cannot run SPM configure phase for")),
-                bold(str(spm_atom)),
-            )
-            mytxt2 = "%s: %s, %s" % (
-                bold(_("Error")),
-                type(Exception),
-                err,
-            )
-            for txt in (mytxt, mytxt2,):
-                self.Entropy.updateProgress(
-                    txt,
-                    importance = 0,
-                    header = red("   ## ")
-                )
-            return 1
-
-        return 0
+        return Spm.configure_installed_package(self.infoDict)
 
 
     def __remove_package(self):
@@ -439,11 +406,9 @@ class Package:
             )
         self.remove_installed_package(self.infoDict['removeidpackage'])
 
-        # Handle spm database
-        spm_atom = self.entropyTools.remove_tag(self.infoDict['removeatom'])
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO,
-            ETP_LOGLEVEL_NORMAL, "Removing from SPM: %s" % (spm_atom,))
-        self.__remove_package_from_spm_database(spm_atom)
+        spm_rc = self.spm_remove_package()
+        if spm_rc != 0:
+            return spm_rc
 
         self.remove_content_from_system(self.infoDict['removeidpackage'],
             automerge_metadata)
@@ -693,81 +658,13 @@ class Package:
         del directories_cache
         del directories
 
-    def __remove_package_from_spm_database(self, atom):
-
-        # handle spm support
-        try:
-            Spm = self.Entropy.Spm()
-        except:
-            return -1 # no Spm support ??
-
-        remove_build = Spm.get_installed_package_build_script_path(atom)
-        remove_path = os.path.dirname(remove_build)
-        key = self.entropyTools.dep_getkey(atom)
-        others_installed = Spm.match_installed_package(key, match_all = True)
-        if atom in others_installed:
-            others_installed.remove(atom)
-        slot = self.infoDict['slot']
-        tag = self.infoDict['versiontag']
-        if (tag == slot) and tag:
-            slot = "0"
-
-        def do_rm_path_atomic(xpath):
-            for my_el in os.listdir(xpath):
-                my_el = os.path.join(xpath, my_el)
-                try:
-                    os.remove(my_el)
-                except OSError:
-                    pass
-            try:
-                os.rmdir(xpath)
-            except OSError:
-                pass
-
-        if os.path.isdir(remove_path):
-            do_rm_path_atomic(remove_path)
-
-        if others_installed:
-
-            for myatom in others_installed:
-                myslot = Spm.get_installed_package_metadata(myatom, "SLOT")
-                if myslot != slot:
-                    continue
-                mybuild = Spm.get_installed_package_build_script_path(myatom)
-                mydir = os.path.dirname(mybuild)
-                if not os.path.isdir(mydir):
-                    continue
-                do_rm_path_atomic(mydir)
-
-        else:
-
-            world_file = Spm.get_user_installed_packages_file()
-            world_file_tmp = world_file+".entropy.tmp"
-            if os.access(world_file,os.W_OK) and os.path.isfile(world_file):
-                new = open(world_file_tmp,"w")
-                old = open(world_file,"r")
-                line = old.readline()
-                while line:
-                    if line.find(key) != -1:
-                        line = old.readline()
-                        continue
-                    if line.find(key+":"+slot) != -1:
-                        line = old.readline()
-                        continue
-                    new.write(line)
-                    line = old.readline()
-                new.flush()
-                new.close()
-                old.close()
-                os.rename(world_file_tmp,world_file)
-
-        return 0
-
     def _cleanup_package(self, unpack_dir):
         # remove unpack dir
         shutil.rmtree(unpack_dir,True)
-        try: os.rmdir(unpack_dir)
-        except OSError: pass
+        try: 
+            os.rmdir(unpack_dir)
+        except OSError:
+            pass
         return 0
 
     def __clear_cache(self):
@@ -833,180 +730,89 @@ class Package:
             )
 
             self.Entropy.updateProgress(
-                blue(_("Removing previously installed version...")),
+                blue(_("Cleaning previously installed information...")),
                 importance = 1,
                 type = "info",
                 header = red("   ## ")
             )
 
-            # Handle spm database
-            spm_atom = self.entropyTools.remove_tag(self.infoDict['removeatom'])
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL, "Removing from SPM: %s" % (spm_atom,))
-            self.__remove_package_from_spm_database(spm_atom)
+            spm_rc = self.spm_remove_package()
+            if spm_rc != 0:
+                return spm_rc
 
             self.remove_content_from_system(self.infoDict['removeidpackage'],
                 automerge_metadata = already_protected_config_files)
 
-        rc = self._install_package_into_spm_database(idpackage)
+        return self.spm_install_package(idpackage)
 
-        return rc
+    def spm_install_package(self, idpackage):
+        """
+        Call Source Package Manager interface and tell it to register our
+        newly installed package.
 
-    def _install_package_into_spm_database(self, newidpackage):
+        @param idpackage: Entropy repository package identifier
+        @type idpackage: int
+        @return: execution status
+        @rtype: int
+        """
+        try:
+            Spm = self.Entropy.Spm()
+        except Exception, err:
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "Source Package Manager not available: %s | %s" % (
+                    type(Exception), err,
+                )
+            )
+            return -1
 
         self.Entropy.clientLog.log(
             ETP_LOGPRI_INFO,
             ETP_LOGLEVEL_NORMAL,
-            "Installing new Spm database entry: %s" % (self.infoDict['atom'],)
+            "Installing new SPM entry: %s" % (self.infoDict['atom'],)
         )
 
-        # handle spm support
-        try:
-            Spm = self.Entropy.Spm()
-        except:
-            return -1 # no Spm support
-
-        category = self.infoDict['category']
-        key = category + "/" + self.infoDict['name']
-        spm_package = key + "-" + self.infoDict['version']
-        build = Spm.get_installed_package_build_script_path(spm_package)
-        pkg_dir = os.path.dirname(build)
-        cat_dir = os.path.dirname(pkg_dir)
-
-        atomsfound = set()
-
-        if os.path.isdir(cat_dir):
-            my_findings = [os.path.join(category, x) for x in \
-                os.listdir(cat_dir)]
-            # filter by key
-            real_findings = [x for x in my_findings if \
-                key == self.entropyTools.dep_getkey(x)]
-            atomsfound.update(real_findings)
-
-        myslot = self.infoDict['slot']
-        for xatom in atomsfound:
-
-            if Spm.get_installed_package_metadata(xatom, "SLOT") != myslot:
-                continue
-
-            mybuild = Spm.get_installed_package_build_script_path(xatom)
-            remove_path = os.path.dirname(mybuild)
-            shutil.rmtree(remove_path, True)
-
-            try:
-                os.rmdir(remove_path)
-            except OSError:
-                pass
-
-
-        # we now install it
-        xpak_rel_path = etpConst['entropyxpakdatarelativepath']
-        proposed_xpak_dir = os.path.join(self.infoDict['xpakpath'],
-            xpak_rel_path)
-
-        if (self.infoDict['xpakstatus'] != None) and \
-            os.path.isdir(proposed_xpak_dir) or self.infoDict['merge_from']:
-
-            copypath = proposed_xpak_dir
-            if self.infoDict['merge_from']:
-                copypath = self.infoDict['xpakdir']
-                if not os.path.isdir(copypath):
-                    return 0
-
-            if not os.path.isdir(cat_dir):
-                os.makedirs(cat_dir, 0755)
-            if os.path.isdir(pkg_dir):
-                shutil.rmtree(pkg_dir)
-
-            try:
-                shutil.copytree(copypath, pkg_dir)
-            except (IOError,), e:
-                mytxt = "%s: %s: %s: %s" % (red(_("QA")),
-                    brown(_("Cannot update Portage database to destination")),
-                    purple(pkg_dir),e,)
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "warning",
-                    header = darkred("   ## ")
-                )
-
-            try:
-                counter = Spm.assign_uid_to_installed_package(spm_package)
-            except SPMError, err:
-                mytxt = "%s: %s [%s]" % (
-                    brown(_("SPM uid update error")), pkg_dir, err,
-                )
-                self.Entropy.updateProgress(
-                    red("QA: ") + mytxt,
-                    importance = 1,
-                    type = "warning",
-                    header = darkred("   ## ")
-                )
-                counter = None
-            if counter is not None:
-                self.Entropy.clientDbconn.insertSpmUid(newidpackage, counter)
-
-        user_inst_source = etpConst['install_sources']['user']
-        if self.infoDict['install_source'] != user_inst_source:
-            self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
-                "Not updating SPM user installed pkgs file for: %s" % (
-                    self.infoDict['atom'],)
-            )
-            # only user selected packages in Portage world file
-            return 0
-
-        myslot = self.infoDict['slot']
-        if (self.infoDict['versiontag'] == self.infoDict['slot']) \
-            and self.infoDict['versiontag']:
-            # usually kernel packages
-            myslot = "0"
-
-        keyslot = key+":"+myslot
-        world_file = Spm.get_user_installed_packages_file()
-        world_dir = os.path.dirname(world_file)
-        world_atoms = set()
-
-        if os.access(world_file, os.R_OK | os.F_OK):
-            with open(world_file, "r") as world_f:
-                world_atoms |= set((x.strip() for x in world_f.readlines() if \
-                    x.strip()))
-
-        try:
-
-            if keyslot not in world_atoms and \
-                os.access(world_dir, os.W_OK) and \
-                self.entropyTools.istextfile(world_file):
-
-                    world_atoms.discard(key)
-                    world_atoms.add(keyslot)
-                    world_file_tmp = world_file+".entropy_inst"
-
-                    with open(world_file_tmp, "w") as world_f:
-                        for item in sorted(world_atoms):
-                            world_f.write(item + "\n")
-                        world_f.flush()
-
-                    os.rename(world_file_tmp, world_file)
-
-        except (UnicodeDecodeError, UnicodeEncodeError,), e:
-
-            self.entropyTools.print_traceback(f = self.Entropy.clientLog)
-            mytxt = "%s: %s" % (
-                brown(_("Cannot update SPM installed pkgs file")), world_file,
-            )
-            self.Entropy.updateProgress(
-                red("QA: ") + mytxt + ": " + unicode(e),
-                importance = 1,
-                type = "warning",
-                header = darkred("   ## ")
-            )
+        spm_uid = Spm.add_installed_package(self.infoDict)
+        if spm_uid != -1:
+            self.Entropy.clientDbconn.insertSpmUid(idpackage, spm_uid)
 
         return 0
 
+    def spm_remove_package(self):
+        """
+        Call Source Package Manager interface and tell it to remove our
+        just removed package.
+
+        @return: execution status
+        @rtype: int
+        """
+        try:
+            Spm = self.Entropy.Spm()
+        except Exception, err:
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "Source Package Manager not available: %s | %s" % (
+                    type(Exception), err,
+                )
+            )
+            return -1
+
+        self.Entropy.clientLog.log(
+            ETP_LOGPRI_INFO,
+            ETP_LOGLEVEL_NORMAL,
+            "Removing from SPM: %s" % (self.infoDict['removeatom'],)
+        )
+
+        return Spm.remove_installed_package(self.infoDict)
+
+
     def add_installed_package(self):
+        """
+        For internal use only.
+        Copy package from repository to installed packages one.
+        """
 
         # fetch info
         smart_pkg = self.infoDict['smartpackage']
