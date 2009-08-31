@@ -68,7 +68,7 @@ class SpmPlugin(Singleton):
         @rtype: list
         """
         return ["setup", "preinstall", "postinstall", "preremove",
-            "postremove"]
+            "postremove", "configure"]
 
     def get_cache_directory(self, root = None):
         """
