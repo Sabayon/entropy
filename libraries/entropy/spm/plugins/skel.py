@@ -528,3 +528,57 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
+    def add_installed_package(self, package_metadata):
+        """
+        Add package installed by Entropy to SPM database too.
+        "package_metadata" is a dictionary featuring the following (relevant)
+        keys:
+            ['accept_license', 'imagedir', 'xpakpath', 'slot', 'pkgdbpath',
+             'versiontag', 'version', 'xpakstatus', 'unpackdir', 'revision',
+             'category', 'repository', 'xpakdir', 'name', 'install_source',
+            ]
+
+        @param package_metadata: Entropy package metadata
+        @type package_metadata: dict
+        @return: SPM installed package UID or -1
+        @rtype: int
+        """
+        raise NotImplementedError()
+
+    def remove_installed_package(self, package_metadata):
+        """
+        Remove installed package from SPM database.
+        "package_metadata" is a dictionary featuring the following (relevant)
+        keys:
+            ['accept_license', 'imagedir', 'xpakpath', 'slot', 'pkgdbpath',
+             'versiontag', 'version', 'xpakstatus', 'unpackdir', 'revision',
+             'category', 'repository', 'xpakdir', 'name', 'install_source',
+             'removeatom'
+            ]
+
+        @param package_metadata: Entropy package metadata
+        @type package_metadata: dict
+        @return: execution status
+        @rtype: int
+        """
+        raise NotImplementedError()
+
+    def configure_installed_package(self, package_metadata):
+        """
+        Configure installed package. Some SPM require users to do manual
+        stuff on packages.
+        "package_metadata" is a dictionary featuring the following (relevant)
+        keys:
+            ['accept_license', 'imagedir', 'xpakpath', 'slot', 'pkgdbpath',
+             'versiontag', 'version', 'xpakstatus', 'unpackdir', 'revision',
+             'category', 'repository', 'xpakdir', 'name', 'install_source',
+             'removeatom'
+            ]
+
+        @param package_metadata: Entropy package metadata
+        @type package_metadata: dict
+        @return: execution status
+        @rtype: int
+        """
+        raise NotImplementedError()
+
