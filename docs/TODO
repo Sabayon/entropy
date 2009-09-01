@@ -8,6 +8,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
+    - entropy.db, add arch metadata on extrainfo
     - entropy.server API
     - entropy.db hookable plugins support (atom/dep validation, db taint,
         pkg add, pkg rm)
