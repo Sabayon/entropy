@@ -398,9 +398,11 @@ def const_default_settings(rootdir):
         'etp_post_branch_hop_script': default_etp_dbfile+".post_branch.sh",
         # entropy client post branch upgrade script
         'etp_post_branch_upgrade_script': default_etp_dbfile+".post_upgrade.sh",
-        # proxy configuration constants, used system wide
+        # previous branch file container
         'etp_previous_branch_file': default_etp_confdir+"/.previous_branch",
+        'etp_in_branch_upgrade_file': default_etp_confdir+"/.in_branch_upgrade",
 
+        # proxy configuration constants, used system wide
         'proxy': {
             'ftp': None,
             'http': None,

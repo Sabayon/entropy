@@ -1502,13 +1502,9 @@ class CalculatorsMixin:
 
         # check if we are branch migrating
         # in this case, critical pkgs feature is disabled
-        old_branch_path = etpConst['etp_previous_branch_file']
-        current_branch = self.SystemSettings['repositories']['branch']
-        if os.access(old_branch_path, os.R_OK | os.F_OK):
-            with open(old_branch_path, "r") as old_br_f:
-                old_branch = old_br_f.readline().strip()
-            if old_branch != current_branch:
-                return set(), []
+        in_branch_upgrade = etpConst['etp_in_branch_upgrade_file']
+        if os.access(in_branch_upgrade, os.R_OK | os.F_OK):
+            return set(), []
 
         db_digest = self.all_repositories_checksum()
         if use_cache and self.xcache:

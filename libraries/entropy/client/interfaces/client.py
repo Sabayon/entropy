@@ -157,13 +157,20 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             return
 
         old_branch_path = etpConst['etp_previous_branch_file']
+        in_branch_upgrade_path = etpConst['etp_in_branch_upgrade_file']
         current_branch = sys_settings_instance['repositories']['branch']
 
         def write_current_branch(branch):
             old_brf = open(old_branch_path, "w")
-            old_brf.write(branch+"\n")
+            old_brf.write(branch)
             old_brf.flush()
             old_brf.close()
+
+        def write_in_branch_upgrade(branch):
+            brf = open(in_branch_upgrade_path, "w")
+            brf.write("in branch upgrade: %s" % (branch,))
+            brf.flush()
+            brf.close()
 
         if not os.access(old_branch_path, os.F_OK | os.R_OK):
             write_current_branch(current_branch)
@@ -179,6 +186,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         repos, err = self._helper.run_repositories_post_branch_switch_hooks(
             old_branch, current_branch)
         if not err:
+            write_in_branch_upgrade(current_branch)
             write_current_branch(current_branch)
 
     def __run_post_branch_upgrade_hooks(self, sys_settings_instance):
@@ -205,10 +213,16 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             # ValueError is triggered when repos are broken
             update = 1 # foo!
 
+        def delete_in_branch_upgrade():
+            br_path = etpConst['etp_in_branch_upgrade_file']
+            if os.access(br_path, os.W_OK | os.F_OK):
+                os.remove(br_path)
+
         # actually execute this only if
         # there are no updates left
         if not update:
             self._helper.run_repository_post_branch_upgrade_hooks()
+            delete_in_branch_upgrade()
 
     def system_mask_parser(self, system_settings_instance):
 
