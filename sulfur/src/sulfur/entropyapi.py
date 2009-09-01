@@ -153,14 +153,14 @@ class QueueExecutor:
             metaopts['fetch_abort_function'] = self.Sulfur.mirror_bombing
             Package.prepare(packageInfo,fetch_action,metaopts)
 
-            myrepo = Package.infoDict['repository']
+            myrepo = Package.pkgmeta['repository']
             if not mykeys.has_key(myrepo):
                 mykeys[myrepo] = set()
             mykeys[myrepo].add(self.Entropy.entropyTools.dep_getkey(
-                Package.infoDict['atom']))
+                Package.pkgmeta['atom']))
 
             self.Entropy.updateProgress(
-                fetch_string+Package.infoDict['atom'],
+                fetch_string+Package.pkgmeta['atom'],
                 importance = 2,
                 count = (fetchqueue,totalqueue)
             )
@@ -209,9 +209,9 @@ class QueueExecutor:
             Package = self.Entropy.Package()
             Package.prepare((idpackage,),"remove", metaopts)
 
-            if not Package.infoDict.has_key('remove_installed_vanished'):
+            if not Package.pkgmeta.has_key('remove_installed_vanished'):
                 self.Entropy.updateProgress(
-                    "Removing: "+Package.infoDict['removeatom'],
+                    "Removing: "+Package.pkgmeta['removeatom'],
                     importance = 2,
                     count = (currentremovalqueue,totalremovalqueue)
                 )
@@ -254,7 +254,7 @@ class QueueExecutor:
             Package.prepare(packageInfo,"install", metaopts)
 
             self.Entropy.updateProgress(
-                "Installing: "+Package.infoDict['atom'],
+                "Installing: "+Package.pkgmeta['atom'],
                 importance = 2,
                 count = (currentqueue,totalqueue)
             )

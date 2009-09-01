@@ -37,7 +37,7 @@ class Package:
         self.Entropy = EquoInstance
 
         self.Cacher = EntropyCacher()
-        self.infoDict = {}
+        self.pkgmeta = {}
         self.__prepared = False
         self.matched_atom = ()
         self.valid_actions = ("source", "fetch", "multi_fetch", "remove",
@@ -48,7 +48,7 @@ class Package:
         self.xterm_title = ''
 
     def kill(self):
-        self.infoDict.clear()
+        self.pkgmeta.clear()
 
         self.matched_atom = ()
         self.valid_actions = ()
@@ -79,13 +79,13 @@ class Package:
         self.error_on_not_prepared()
 
         if repository is None:
-            repository = self.infoDict['repository']
+            repository = self.pkgmeta['repository']
         if checksum is None:
-            checksum = self.infoDict['checksum']
+            checksum = self.pkgmeta['checksum']
         if download is None:
-            download = self.infoDict['download']
+            download = self.pkgmeta['download']
         if signatures is None:
-            signatures = self.infoDict['signatures']
+            signatures = self.pkgmeta['signatures']
 
         def do_signatures_validation(signatures):
             # check signatures, if available
@@ -166,7 +166,7 @@ class Package:
 
                 dlcheck = do_signatures_validation(signatures)
                 if dlcheck == 0:
-                    self.infoDict['verified'] = True
+                    self.pkgmeta['verified'] = True
                     match = True
                     break # file downloaded successfully
 
@@ -220,7 +220,7 @@ class Package:
     def multi_match_checksum(self):
         rc = 0
         for repository, branch, download, digest, signatures in \
-            self.infoDict['multi_checksum_list']:
+            self.pkgmeta['multi_checksum_list']:
 
             rc = self.match_checksum(repository, digest, download, signatures)
             if rc != 0:
@@ -230,53 +230,53 @@ class Package:
 
     def __unpack_package(self):
 
-        if not self.infoDict['merge_from']:
+        if not self.pkgmeta['merge_from']:
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
-                "Unpacking package: %s" % (self.infoDict['atom'],)
+                "Unpacking package: %s" % (self.pkgmeta['atom'],)
             )
         else:
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
-                "Merging package: %s" % (self.infoDict['atom'],)
+                "Merging package: %s" % (self.pkgmeta['atom'],)
             )
 
-        unpack_dir = self.infoDict['unpackdir']
-        unpack_dir_raw = self.infoDict['unpackdir'].encode('raw_unicode_escape')
+        unpack_dir = self.pkgmeta['unpackdir']
+        unpack_dir_raw = self.pkgmeta['unpackdir'].encode('raw_unicode_escape')
 
         if os.path.isdir(unpack_dir):
             shutil.rmtree(unpack_dir_raw)
         elif os.path.isfile(unpack_dir):
             os.remove(unpack_dir_raw)
-        os.makedirs(self.infoDict['imagedir'])
+        os.makedirs(self.pkgmeta['imagedir'])
 
-        if not os.path.isfile(self.infoDict['pkgpath']) and \
-            not self.infoDict['merge_from']:
+        if not os.path.isfile(self.pkgmeta['pkgpath']) and \
+            not self.pkgmeta['merge_from']:
 
-            if os.path.isdir(self.infoDict['pkgpath']):
-                shutil.rmtree(self.infoDict['pkgpath'])
-            if os.path.islink(self.infoDict['pkgpath']):
-                os.remove(self.infoDict['pkgpath'])
-            self.infoDict['verified'] = False
+            if os.path.isdir(self.pkgmeta['pkgpath']):
+                shutil.rmtree(self.pkgmeta['pkgpath'])
+            if os.path.islink(self.pkgmeta['pkgpath']):
+                os.remove(self.pkgmeta['pkgpath'])
+            self.pkgmeta['verified'] = False
             rc = self.fetch_step()
             if rc != 0:
                 return rc
 
-        if not self.infoDict['merge_from']:
+        if not self.pkgmeta['merge_from']:
 
             # extract entropy database from package file
             # in order to avoid having to read content data
             # from the repository database, which, in future
             # is allowed to not provide such info.
-            pkg_dbdir = os.path.dirname(self.infoDict['pkgdbpath'])
+            pkg_dbdir = os.path.dirname(self.pkgmeta['pkgdbpath'])
             if not os.path.isdir(pkg_dbdir):
                 os.makedirs(pkg_dbdir, 0755)
 
             # extract edb
-            self.entropyTools.extract_edb(self.infoDict['pkgpath'],
-                self.infoDict['pkgdbpath'])
+            self.entropyTools.extract_edb(self.pkgmeta['pkgpath'],
+                self.pkgmeta['pkgdbpath'])
 
             unpack_tries = 3
             while 1:
@@ -284,14 +284,14 @@ class Package:
                 try:
                     rc = self.entropyTools.spawn_function(
                         self.entropyTools.uncompress_tar_bz2,
-                        self.infoDict['pkgpath'],
-                        self.infoDict['imagedir'],
+                        self.pkgmeta['pkgpath'],
+                        self.pkgmeta['imagedir'],
                         catchEmpty = True
                     )
                 except EOFError:
                     self.Entropy.clientLog.log(
                         ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL, 
-                        "EOFError on " + self.infoDict['pkgpath']
+                        "EOFError on " + self.pkgmeta['pkgpath']
                     )
                     rc = 1
                 except:
@@ -301,11 +301,11 @@ class Package:
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
                         "Raising Unicode/Pickling Error for " + \
-                            self.infoDict['pkgpath']
+                            self.pkgmeta['pkgpath']
                     )
                     rc = self.entropyTools.uncompress_tar_bz2(
-                        self.infoDict['pkgpath'],
-                        self.infoDict['imagedir'],
+                        self.pkgmeta['pkgpath'],
+                        self.pkgmeta['imagedir'],
                         catchEmpty = True
                     )
                 if rc == 0:
@@ -314,7 +314,7 @@ class Package:
                 if unpack_tries <= 0:
                     return rc
                 # otherwise, try to download it again
-                self.infoDict['verified'] = False
+                self.pkgmeta['verified'] = False
                 f_rc = self.fetch_step()
                 if f_rc != 0:
                     return f_rc
@@ -325,51 +325,51 @@ class Package:
             if pid > 0:
                 os.waitpid(pid, 0)
             else:
-                self.__fill_image_dir(self.infoDict['merge_from'],
-                    self.infoDict['imagedir'])
+                self.__fill_image_dir(self.pkgmeta['merge_from'],
+                    self.pkgmeta['imagedir'])
                 os._exit(0)
 
         # FIXME: add new entropy.spm plugin method
 
         # unpack xpak ?
-        if os.path.isdir(self.infoDict['xpakpath']):
-            shutil.rmtree(self.infoDict['xpakpath'], True)
+        if os.path.isdir(self.pkgmeta['xpakpath']):
+            shutil.rmtree(self.pkgmeta['xpakpath'], True)
 
         # create data dir where we'll unpack the xpak
-        xpak_dir = self.infoDict['xpakpath'] + os.path.sep + \
+        xpak_dir = self.pkgmeta['xpakpath'] + os.path.sep + \
             etpConst['entropyxpakdatarelativepath']
 
         os.makedirs(xpak_dir, 0755)
 
-        xpak_path = self.infoDict['xpakpath'] + os.path.sep + \
+        xpak_path = self.pkgmeta['xpakpath'] + os.path.sep + \
             etpConst['entropyxpakfilename']
 
-        if not self.infoDict['merge_from']:
+        if not self.pkgmeta['merge_from']:
 
-            if self.infoDict['smartpackage']:
+            if self.pkgmeta['smartpackage']:
 
                 # we need to get the .xpak from database
                 xdbconn = self.Entropy.open_repository(
-                    self.infoDict['repository'])
+                    self.pkgmeta['repository'])
                 xpakdata = xdbconn.retrieveXpakMetadata(
-                    self.infoDict['idpackage'])
+                    self.pkgmeta['idpackage'])
                 if xpakdata:
                     # save into a file
                     f = open(xpak_path, "wb")
                     f.write(xpakdata)
                     f.flush()
                     f.close()
-                    self.infoDict['xpakstatus'] = self.entropyTools.unpack_xpak(
+                    self.pkgmeta['xpakstatus'] = self.entropyTools.unpack_xpak(
                         xpak_path,
                         xpak_dir
                     )
                 else:
-                    self.infoDict['xpakstatus'] = None
+                    self.pkgmeta['xpakstatus'] = None
                 del xpakdata
 
             else:
-                self.infoDict['xpakstatus'] = self.entropyTools.extract_xpak(
-                    self.infoDict['pkgpath'],
+                self.pkgmeta['xpakstatus'] = self.entropyTools.extract_xpak(
+                    self.pkgmeta['pkgpath'],
                     xpak_dir
                 )
 
@@ -379,20 +379,20 @@ class Package:
             if os.path.isdir(tolink_dir):
                 shutil.rmtree(tolink_dir, True)
             # now link
-            os.symlink(self.infoDict['xpakdir'], tolink_dir)
+            os.symlink(self.pkgmeta['xpakdir'], tolink_dir)
 
         # create fake portage ${D} linking it to imagedir
-        portage_cpv = self.infoDict['category'] + "/" + \
-            self.infoDict['name'] + "-" + self.infoDict['version']
+        portage_cpv = self.pkgmeta['category'] + "/" + \
+            self.pkgmeta['name'] + "-" + self.pkgmeta['version']
 
         portage_db_fakedir = os.path.join(
-            self.infoDict['unpackdir'],
+            self.pkgmeta['unpackdir'],
             "portage/" + portage_cpv
         )
 
         os.makedirs(portage_db_fakedir, 0755)
-        # now link it to self.infoDict['imagedir']
-        os.symlink(self.infoDict['imagedir'],
+        # now link it to self.pkgmeta['imagedir']
+        os.symlink(self.pkgmeta['imagedir'],
             os.path.join(portage_db_fakedir, "image"))
 
         return 0
@@ -416,7 +416,7 @@ class Package:
             importance = 0,
             header = red("   ## ")
         )
-        return Spm.configure_installed_package(self.infoDict)
+        return Spm.configure_installed_package(self.pkgmeta)
 
 
     def __remove_package(self):
@@ -424,11 +424,11 @@ class Package:
         self.__clear_cache()
 
         self.Entropy.clientLog.log(ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL,
-            "Removing package: %s" % (self.infoDict['removeatom'],))
+            "Removing package: %s" % (self.pkgmeta['removeatom'],))
 
         mytxt = "%s: %s" % (
             blue(_("Removing from Entropy")),
-            red(self.infoDict['removeatom']),
+            red(self.pkgmeta['removeatom']),
         )
         self.Entropy.updateProgress(
             mytxt,
@@ -438,15 +438,15 @@ class Package:
         )
         automerge_metadata = \
             self.Entropy.clientDbconn.retrieveAutomergefiles(
-                self.infoDict['removeidpackage'], get_dict = True
+                self.pkgmeta['removeidpackage'], get_dict = True
             )
-        self.remove_installed_package(self.infoDict['removeidpackage'])
+        self.remove_installed_package(self.pkgmeta['removeidpackage'])
 
         spm_rc = self.spm_remove_package()
         if spm_rc != 0:
             return spm_rc
 
-        self.remove_content_from_system(self.infoDict['removeidpackage'],
+        self.remove_content_from_system(self.pkgmeta['removeidpackage'],
             automerge_metadata)
 
         return 0
@@ -490,7 +490,7 @@ class Package:
         not_removed_due_to_collisions = set()
         colliding_path_messages = set()
 
-        remove_content = sorted(self.infoDict['removecontent'], reverse = True)
+        remove_content = sorted(self.pkgmeta['removecontent'], reverse = True)
         for item in remove_content:
 
             sys_root_item = sys_root + item
@@ -508,8 +508,8 @@ class Package:
             protected = False
             in_mask = False
 
-            if (not self.infoDict['removeconfig']) and \
-                (not self.infoDict['diffremoval']):
+            if (not self.pkgmeta['removeconfig']) and \
+                (not self.pkgmeta['diffremoval']):
 
                 protected_item_test = sys_root_item
                 if isinstance(protected_item_test, unicode):
@@ -657,7 +657,7 @@ class Package:
         # by postremove step.
         # since this is a set, it is a mapped type, so every
         # other instance around will feature this update
-        self.infoDict['removecontent'] -= not_removed_due_to_collisions
+        self.pkgmeta['removecontent'] -= not_removed_due_to_collisions
 
         # now handle directories
         directories = sorted(directories, reverse = True)
@@ -727,14 +727,14 @@ class Package:
         self.Entropy.clientLog.log(
             ETP_LOGPRI_INFO,
             ETP_LOGLEVEL_NORMAL,
-            "Installing package: %s" % (self.infoDict['atom'],)
+            "Installing package: %s" % (self.pkgmeta['atom'],)
         )
 
         already_protected_config_files = {}
-        if self.infoDict['removeidpackage'] != -1:
+        if self.pkgmeta['removeidpackage'] != -1:
             already_protected_config_files = \
                 self.Entropy.clientDbconn.retrieveAutomergefiles(
-                    self.infoDict['removeidpackage'], get_dict = True
+                    self.pkgmeta['removeidpackage'], get_dict = True
                 )
 
         # copy files over - install
@@ -747,7 +747,7 @@ class Package:
         # inject into database
         mytxt = "%s: %s" % (
             blue(_("Updating database")),
-            red(self.infoDict['atom']),
+            red(self.pkgmeta['atom']),
         )
         self.Entropy.updateProgress(
             mytxt,
@@ -758,13 +758,13 @@ class Package:
         idpackage = self.add_installed_package()
 
         # remove old files and spm stuff
-        if self.infoDict['removeidpackage'] != -1:
+        if self.pkgmeta['removeidpackage'] != -1:
 
             # doing a diff removal
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
-                "Remove old package: %s" % (self.infoDict['removeatom'],)
+                "Remove old package: %s" % (self.pkgmeta['removeatom'],)
             )
 
             self.Entropy.updateProgress(
@@ -778,7 +778,7 @@ class Package:
             if spm_rc != 0:
                 return spm_rc
 
-            self.remove_content_from_system(self.infoDict['removeidpackage'],
+            self.remove_content_from_system(self.pkgmeta['removeidpackage'],
                 automerge_metadata = already_protected_config_files)
 
         return self.spm_install_package(idpackage)
@@ -808,10 +808,10 @@ class Package:
         self.Entropy.clientLog.log(
             ETP_LOGPRI_INFO,
             ETP_LOGLEVEL_NORMAL,
-            "Installing new SPM entry: %s" % (self.infoDict['atom'],)
+            "Installing new SPM entry: %s" % (self.pkgmeta['atom'],)
         )
 
-        spm_uid = Spm.add_installed_package(self.infoDict)
+        spm_uid = Spm.add_installed_package(self.pkgmeta)
         if spm_uid != -1:
             self.Entropy.clientDbconn.insertSpmUid(idpackage, spm_uid)
 
@@ -840,10 +840,10 @@ class Package:
         self.Entropy.clientLog.log(
             ETP_LOGPRI_INFO,
             ETP_LOGLEVEL_NORMAL,
-            "Removing from SPM: %s" % (self.infoDict['removeatom'],)
+            "Removing from SPM: %s" % (self.pkgmeta['removeatom'],)
         )
 
-        return Spm.remove_installed_package(self.infoDict)
+        return Spm.remove_installed_package(self.pkgmeta)
 
 
     def add_installed_package(self):
@@ -853,21 +853,21 @@ class Package:
         """
 
         # fetch info
-        smart_pkg = self.infoDict['smartpackage']
-        dbconn = self.Entropy.open_repository(self.infoDict['repository'])
+        smart_pkg = self.pkgmeta['smartpackage']
+        dbconn = self.Entropy.open_repository(self.pkgmeta['repository'])
 
-        if smart_pkg or self.infoDict['merge_from']:
+        if smart_pkg or self.pkgmeta['merge_from']:
 
-            data = dbconn.getPackageData(self.infoDict['idpackage'],
+            data = dbconn.getPackageData(self.pkgmeta['idpackage'],
                 content_insert_formatted = True)
 
         else:
 
             # normal repositories
-            data = dbconn.getPackageData(self.infoDict['idpackage'],
+            data = dbconn.getPackageData(self.pkgmeta['idpackage'],
                 get_content = False)
             pkg_dbconn = self.Entropy.open_generic_database(
-                self.infoDict['pkgdbpath'])
+                self.pkgmeta['pkgdbpath'])
             # it is safe to consider that package dbs coming from repos
             # contain only one entry
             content = []
@@ -876,14 +876,14 @@ class Package:
                     pkg_idpackage, extended = True,
                     formatted = True, insert_formatted = True
                 )
-            real_idpk = self.infoDict['idpackage']
+            real_idpk = self.pkgmeta['idpackage']
             content = [(real_idpk, x, y,) for orig_idpk, x, y in content]
             data['content'] = content
             pkg_dbconn.closeDB()
 
         # this is needed to make postinstall trigger to work properly
         trigger_content = set((x[1] for x in data['content']))
-        self.infoDict['triggers']['install']['content'] = trigger_content
+        self.pkgmeta['triggers']['install']['content'] = trigger_content
 
         # open client db
         # always set data['injected'] to False
@@ -909,9 +909,9 @@ class Package:
         # add idpk to the installedtable
         self.Entropy.clientDbconn.dropInstalledPackageFromStore(idpackage)
         self.Entropy.clientDbconn.storeInstalledPackage(idpackage,
-            self.infoDict['repository'], self.infoDict['install_source'])
+            self.pkgmeta['repository'], self.pkgmeta['install_source'])
 
-        automerge_data = self.infoDict.get('configprotect_data')
+        automerge_data = self.pkgmeta.get('configprotect_data')
         if automerge_data:
             self.Entropy.clientDbconn.insertAutomergefiles(idpackage,
                 automerge_data)
@@ -923,12 +923,12 @@ class Package:
 
     def __fill_image_dir(self, mergeFrom, image_dir):
 
-        dbconn = self.Entropy.open_repository(self.infoDict['repository'])
-        # this is triggered by merge_from infoDict metadata
+        dbconn = self.Entropy.open_repository(self.pkgmeta['repository'])
+        # this is triggered by merge_from pkgmeta metadata
         # even if repositories are allowed to not have content
         # metadata, in this particular case, it is mandatory
         package_content = dbconn.retrieveContent(
-            self.infoDict['idpackage'], extended = True, formatted = True)
+            self.pkgmeta['idpackage'], extended = True, formatted = True)
         contents = sorted(package_content)
 
         # collect files
@@ -991,7 +991,7 @@ class Package:
         items_installed = set()
 
         # setup image_dir properly
-        image_dir = self.infoDict['imagedir']
+        image_dir = self.pkgmeta['imagedir']
         encoded_image_dir = image_dir.encode('utf-8')
         movefile = self.entropyTools.movefile
 
@@ -1129,7 +1129,7 @@ class Package:
             if in_mask and os.path.exists(fromfile):
                 try:
                     prot_md5 = self.entropyTools.md5sum(fromfile)
-                    self.infoDict['configprotect_data'].append(
+                    self.pkgmeta['configprotect_data'].append(
                         (prot_old_tofile, prot_md5,))
                 except (IOError,), err:
                     self.Entropy.clientLog.log(
@@ -1303,9 +1303,9 @@ class Package:
         # EntropyRepository.contentDiff for obvious reasons
         # (think about stuff in /usr/lib and /usr/lib64,
         # where the latter is just a symlink to the former)
-        if self.infoDict.get('removecontent'):
+        if self.pkgmeta.get('removecontent'):
             my_remove_content = set()
-            for mypath in self.infoDict['removecontent']:
+            for mypath in self.pkgmeta['removecontent']:
 
                 item_dir = os.path.dirname("%s%s" % (sys_root, mypath,))
                 item = os.path.join(os.path.realpath(item_dir),
@@ -1314,7 +1314,7 @@ class Package:
                 if item in items_installed:
                     my_remove_content.add(item)
 
-            self.infoDict['removecontent'] -= my_remove_content
+            self.pkgmeta['removecontent'] -= my_remove_content
 
         return 0
 
@@ -1463,7 +1463,7 @@ class Package:
         avail = self.Entropy.clientDbconn.isFileAvailable(todbfile,
             get_id = True)
 
-        if (self.infoDict['removeidpackage'] not in avail) and avail:
+        if (self.pkgmeta['removeidpackage'] not in avail) and avail:
             mytxt = darkred(_("Collision found during install for"))
             mytxt += " %s - %s" % (
                 blue(tofile),
@@ -1488,7 +1488,7 @@ class Package:
     def sources_fetch_step(self):
         self.error_on_not_prepared()
 
-        down_data = self.infoDict['download']
+        down_data = self.pkgmeta['download']
         down_keys = down_data.keys()
         d_cache = set()
         rc = 0
@@ -1503,11 +1503,11 @@ class Package:
             for url in down_data[key]:
 
                 file_name = os.path.basename(url)
-                if self.infoDict.get('fetch_path'):
-                    dest_file = os.path.join(self.infoDict['fetch_path'],
+                if self.pkgmeta.get('fetch_path'):
+                    dest_file = os.path.join(self.pkgmeta['fetch_path'],
                         file_name)
                 else:
-                    dest_file = os.path.join(self.infoDict['unpackdir'],
+                    dest_file = os.path.join(self.pkgmeta['unpackdir'],
                         file_name)
 
                 rc = self._fetch_source(url, dest_file)
@@ -1593,7 +1593,7 @@ class Package:
         self.error_on_not_prepared()
 
         mytxt = "%s: %s" % (blue(_("Downloading archive")),
-            red(os.path.basename(self.infoDict['download'])),)
+            red(os.path.basename(self.pkgmeta['download'])),)
         self.Entropy.updateProgress(
             mytxt,
             importance = 1,
@@ -1602,15 +1602,15 @@ class Package:
         )
 
         rc = 0
-        if not self.infoDict['verified']:
+        if not self.pkgmeta['verified']:
 
             branch = self.Entropy.get_branch_from_download_relative_uri(
-                self.infoDict['download'])
+                self.pkgmeta['download'])
             rc = self.Entropy.fetch_file_on_mirrors(
-                self.infoDict['repository'],
+                self.pkgmeta['repository'],
                 branch,
-                self.infoDict['download'],
-                self.infoDict['checksum'],
+                self.pkgmeta['download'],
+                self.pkgmeta['checksum'],
                 fetch_abort_function = self.fetch_abort_function
             )
 
@@ -1634,7 +1634,7 @@ class Package:
     def multi_fetch_step(self):
         self.error_on_not_prepared()
 
-        m_fetch_len = len(self.infoDict['multi_fetch_list'])
+        m_fetch_len = len(self.pkgmeta['multi_fetch_list'])
         mytxt = "%s: %s %s" % (
             blue(_("Downloading")),
             darkred(str(m_fetch_len)),
@@ -1648,8 +1648,8 @@ class Package:
             header = red("   ## ")
         )
         rc, err_list = self.Entropy.fetch_files_on_mirrors(
-            self.infoDict['multi_fetch_list'],
-            self.infoDict['checksum'],
+            self.pkgmeta['multi_fetch_list'],
+            self.pkgmeta['checksum'],
             fetch_abort_function = self.fetch_abort_function
         )
 
@@ -1713,10 +1713,10 @@ class Package:
     def unpack_step(self):
         self.error_on_not_prepared()
 
-        if not self.infoDict['merge_from']:
+        if not self.pkgmeta['merge_from']:
             mytxt = "%s: %s" % (
                 blue(_("Unpacking package")),
-                red(os.path.basename(self.infoDict['download'])),
+                red(os.path.basename(self.pkgmeta['download'])),
             )
             self.Entropy.updateProgress(
                 mytxt,
@@ -1727,7 +1727,7 @@ class Package:
         else:
             mytxt = "%s: %s" % (
                 blue(_("Merging package")),
-                red(os.path.basename(self.infoDict['atom'])),
+                red(os.path.basename(self.pkgmeta['atom'])),
             )
             self.Entropy.updateProgress(
                 mytxt,
@@ -1763,7 +1763,7 @@ class Package:
         self.error_on_not_prepared()
         mytxt = "%s: %s" % (
             blue(_("Installing package")),
-            red(self.infoDict['atom']),
+            red(self.pkgmeta['atom']),
         )
         self.Entropy.updateProgress(
             mytxt,
@@ -1771,8 +1771,8 @@ class Package:
             type = "info",
             header = red("   ## ")
         )
-        if self.infoDict.get('description'):
-            mytxt = "[%s]" % (purple(self.infoDict.get('description')),)
+        if self.pkgmeta.get('description'):
+            mytxt = "[%s]" % (purple(self.pkgmeta.get('description')),)
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 1,
@@ -1800,7 +1800,7 @@ class Package:
         self.error_on_not_prepared()
         mytxt = "%s: %s" % (
             blue(_("Removing data")),
-            red(self.infoDict['removeatom']),
+            red(self.pkgmeta['removeatom']),
         )
         self.Entropy.updateProgress(
             mytxt,
@@ -1829,7 +1829,7 @@ class Package:
         self.error_on_not_prepared()
         mytxt = "%s: %s" % (
             blue(_("Cleaning")),
-            red(self.infoDict['atom']),
+            red(self.pkgmeta['atom']),
         )
         self.Entropy.updateProgress(
             mytxt,
@@ -1837,18 +1837,18 @@ class Package:
             type = "info",
             header = red("   ## ")
         )
-        self._cleanup_package(self.infoDict['unpackdir'])
+        self._cleanup_package(self.pkgmeta['unpackdir'])
         # we don't care if cleanupPackage fails since it's not critical
         return 0
 
     def logmessages_step(self):
-        for msg in self.infoDict['messages']:
+        for msg in self.pkgmeta['messages']:
             self.Entropy.clientLog.write(">>>  "+msg)
         return 0
 
     def postinstall_step(self):
         self.error_on_not_prepared()
-        pkgdata = self.infoDict['triggers'].get('install')
+        pkgdata = self.pkgmeta['triggers'].get('install')
         if pkgdata:
             trigger = self.Entropy.Triggers('postinstall', pkgdata, self.action)
             do = trigger.prepare()
@@ -1860,15 +1860,15 @@ class Package:
 
     def preinstall_step(self):
         self.error_on_not_prepared()
-        pkgdata = self.infoDict['triggers'].get('install')
+        pkgdata = self.pkgmeta['triggers'].get('install')
         if pkgdata:
 
             trigger = self.Entropy.Triggers('preinstall', pkgdata, self.action)
             do = trigger.prepare()
-            if self.infoDict.get("diffremoval") and do:
+            if self.pkgmeta.get("diffremoval") and do:
                 # diffremoval is true only when the
                 # removal is triggered by a package install
-                remdata = self.infoDict['triggers'].get('remove')
+                remdata = self.pkgmeta['triggers'].get('remove')
                 if remdata:
                     r_trigger = self.Entropy.Triggers('preremove', remdata,
                         self.action)
@@ -1886,7 +1886,7 @@ class Package:
 
     def preremove_step(self):
         self.error_on_not_prepared()
-        remdata = self.infoDict['triggers'].get('remove')
+        remdata = self.pkgmeta['triggers'].get('remove')
         if remdata:
             trigger = self.Entropy.Triggers('preremove', remdata, self.action)
             do = trigger.prepare()
@@ -1898,16 +1898,16 @@ class Package:
 
     def postremove_step(self):
         self.error_on_not_prepared()
-        remdata = self.infoDict['triggers'].get('remove')
+        remdata = self.pkgmeta['triggers'].get('remove')
         if remdata:
 
             trigger = self.Entropy.Triggers('postremove', remdata, self.action)
             do = trigger.prepare()
-            if self.infoDict['diffremoval'] and \
-                (self.infoDict.get("atom") is not None) and do:
+            if self.pkgmeta['diffremoval'] and \
+                (self.pkgmeta.get("atom") is not None) and do:
                 # diffremoval is true only when the remove
                 # action is triggered by installPackages()
-                pkgdata = self.infoDict['triggers'].get('install')
+                pkgdata = self.pkgmeta['triggers'].get('install')
                 if pkgdata:
                     i_trigger = self.Entropy.Triggers('postinstall', pkgdata,
                         self.action)
@@ -1926,13 +1926,13 @@ class Package:
     def removeconflict_step(self):
         self.error_on_not_prepared()
 
-        for idpackage in self.infoDict['conflicts']:
+        for idpackage in self.pkgmeta['conflicts']:
             if not self.Entropy.clientDbconn.isIdpackageAvailable(idpackage):
                 continue
 
             pkg = self.Entropy.Package()
             pkg.prepare((idpackage,), "remove_conflict",
-                self.infoDict['remove_metaopts'])
+                self.pkgmeta['remove_metaopts'])
 
             rc = pkg.run(xterm_header = self.xterm_title)
             pkg.kill()
@@ -1946,7 +1946,7 @@ class Package:
 
         mytxt = "%s: %s" % (
             blue(_("Configuring package")),
-            red(self.infoDict['atom']),
+            red(self.pkgmeta['atom']),
         )
         self.Entropy.updateProgress(
             mytxt,
@@ -2002,13 +2002,13 @@ class Package:
         if xterm_header is None:
             xterm_header = ""
 
-        if self.infoDict.has_key('remove_installed_vanished'):
+        if self.pkgmeta.has_key('remove_installed_vanished'):
             self.xterm_title += ' %s' % (_("Installed package vanished"),)
             self.Entropy.setTitle(self.xterm_title)
             rc = self.vanished_step()
             return rc
 
-        if self.infoDict.has_key('fetch_not_available'):
+        if self.pkgmeta.has_key('fetch_not_available'):
             self.xterm_title += ' %s' % (_("Fetch not available"),)
             self.Entropy.setTitle(self.xterm_title)
             rc = self.fetch_not_available_step()
@@ -2017,48 +2017,48 @@ class Package:
         def do_fetch():
             self.xterm_title += ' %s: %s' % (
                 _("Fetching"),
-                os.path.basename(self.infoDict['download']),
+                os.path.basename(self.pkgmeta['download']),
             )
             self.Entropy.setTitle(self.xterm_title)
             return self.fetch_step()
 
         def do_multi_fetch():
             self.xterm_title += ' %s: %s %s' % (_("Multi Fetching"),
-                len(self.infoDict['multi_fetch_list']), _("packages"),)
+                len(self.pkgmeta['multi_fetch_list']), _("packages"),)
             self.Entropy.setTitle(self.xterm_title)
             return self.multi_fetch_step()
 
         def do_sources_fetch():
             self.xterm_title += ' %s: %s' % (
                 _("Fetching sources"),
-                os.path.basename(self.infoDict['atom']),)
+                os.path.basename(self.pkgmeta['atom']),)
             self.Entropy.setTitle(self.xterm_title)
             return self.sources_fetch_step()
 
         def do_checksum():
             self.xterm_title += ' %s: %s' % (_("Verifying"),
-                os.path.basename(self.infoDict['download']),)
+                os.path.basename(self.pkgmeta['download']),)
             self.Entropy.setTitle(self.xterm_title)
             return self.checksum_step()
 
         def do_multi_checksum():
             self.xterm_title += ' %s: %s %s' % (_("Multi Verification"),
-                len(self.infoDict['multi_checksum_list']), _("packages"),)
+                len(self.pkgmeta['multi_checksum_list']), _("packages"),)
             self.Entropy.setTitle(self.xterm_title)
             return self.multi_checksum_step()
 
         def do_unpack():
-            if not self.infoDict['merge_from']:
+            if not self.pkgmeta['merge_from']:
                 mytxt = _("Unpacking")
                 self.xterm_title += ' %s: %s' % (
                     mytxt,
-                    os.path.basename(self.infoDict['download']),
+                    os.path.basename(self.pkgmeta['download']),
                 )
             else:
                 mytxt = _("Merging")
                 self.xterm_title += ' %s: %s' % (
                     mytxt,
-                    os.path.basename(self.infoDict['atom']),
+                    os.path.basename(self.pkgmeta['atom']),
                 )
             self.Entropy.setTitle(self.xterm_title)
             return self.unpack_step()
@@ -2069,7 +2069,7 @@ class Package:
         def do_install():
             self.xterm_title += ' %s: %s' % (
                 _("Installing"),
-                self.infoDict['atom'],
+                self.pkgmeta['atom'],
             )
             self.Entropy.setTitle(self.xterm_title)
             return self.install_step()
@@ -2077,7 +2077,7 @@ class Package:
         def do_remove():
             self.xterm_title += ' %s: %s' % (
                 _("Removing"),
-                self.infoDict['removeatom'],
+                self.pkgmeta['removeatom'],
             )
             self.Entropy.setTitle(self.xterm_title)
             return self.remove_step()
@@ -2088,7 +2088,7 @@ class Package:
         def do_cleanup():
             self.xterm_title += ' %s: %s' % (
                 _("Cleaning"),
-                self.infoDict['atom'],
+                self.pkgmeta['atom'],
             )
             self.Entropy.setTitle(self.xterm_title)
             return self.cleanup_step()
@@ -2096,7 +2096,7 @@ class Package:
         def do_postinstall():
             self.xterm_title += ' %s: %s' % (
                 _("Postinstall"),
-                self.infoDict['atom'],
+                self.pkgmeta['atom'],
             )
             self.Entropy.setTitle(self.xterm_title)
             return self.postinstall_step()
@@ -2104,7 +2104,7 @@ class Package:
         def do_preinstall():
             self.xterm_title += ' %s: %s' % (
                 _("Preinstall"),
-                self.infoDict['atom'],
+                self.pkgmeta['atom'],
             )
             self.Entropy.setTitle(self.xterm_title)
             return self.preinstall_step()
@@ -2112,7 +2112,7 @@ class Package:
         def do_preremove():
             self.xterm_title += ' %s: %s' % (
                 _("Preremove"),
-                self.infoDict['removeatom'],
+                self.pkgmeta['removeatom'],
             )
             self.Entropy.setTitle(self.xterm_title)
             return self.preremove_step()
@@ -2120,7 +2120,7 @@ class Package:
         def do_postremove():
             self.xterm_title += ' %s: %s' % (
                 _("Postremove"),
-                self.infoDict['removeatom'],
+                self.pkgmeta['removeatom'],
             )
             self.Entropy.setTitle(self.xterm_title)
             return self.postremove_step()
@@ -2128,7 +2128,7 @@ class Package:
         def do_config():
             self.xterm_title += ' %s: %s' % (
                 _("Configuring"),
-                self.infoDict['atom'],
+                self.pkgmeta['atom'],
             )
             self.Entropy.setTitle(self.xterm_title)
             return self.config_step()
@@ -2153,7 +2153,7 @@ class Package:
         }
 
         rc = 0
-        for step in self.infoDict['steps']:
+        for step in self.pkgmeta['steps']:
             self.xterm_title = xterm_header
             rc = steps_data.get(step)()
             if rc != 0:
@@ -2236,68 +2236,68 @@ class Package:
 
     def __generate_remove_metadata(self):
 
-        self.infoDict.clear()
+        self.pkgmeta.clear()
         idpackage = self.matched_atom[0]
 
         if not self.Entropy.clientDbconn.isIdpackageAvailable(idpackage):
-            self.infoDict['remove_installed_vanished'] = True
+            self.pkgmeta['remove_installed_vanished'] = True
             return 0
 
-        self.infoDict['idpackage'] = idpackage
-        self.infoDict['removeidpackage'] = idpackage
-        self.infoDict['configprotect_data'] = []
-        self.infoDict['triggers'] = {}
-        self.infoDict['removeatom'] = \
+        self.pkgmeta['idpackage'] = idpackage
+        self.pkgmeta['removeidpackage'] = idpackage
+        self.pkgmeta['configprotect_data'] = []
+        self.pkgmeta['triggers'] = {}
+        self.pkgmeta['removeatom'] = \
             self.Entropy.clientDbconn.retrieveAtom(idpackage)
-        self.infoDict['slot'] = \
+        self.pkgmeta['slot'] = \
             self.Entropy.clientDbconn.retrieveSlot(idpackage)
-        self.infoDict['versiontag'] = \
+        self.pkgmeta['versiontag'] = \
             self.Entropy.clientDbconn.retrieveVersionTag(idpackage)
-        self.infoDict['diffremoval'] = False
+        self.pkgmeta['diffremoval'] = False
 
         remove_config = False
         if self.metaopts.has_key('removeconfig'):
             remove_config = self.metaopts.get('removeconfig')
-        self.infoDict['removeconfig'] = remove_config
+        self.pkgmeta['removeconfig'] = remove_config
 
-        self.infoDict['removecontent'] = \
+        self.pkgmeta['removecontent'] = \
             self.Entropy.clientDbconn.retrieveContent(idpackage)
-        self.infoDict['triggers']['remove'] = \
+        self.pkgmeta['triggers']['remove'] = \
             self.Entropy.clientDbconn.getTriggerInfo(idpackage)
-        self.infoDict['triggers']['remove']['removecontent'] = \
-            self.infoDict['removecontent']
-        self.infoDict['triggers']['remove']['accept_license'] = \
+        self.pkgmeta['triggers']['remove']['removecontent'] = \
+            self.pkgmeta['removecontent']
+        self.pkgmeta['triggers']['remove']['accept_license'] = \
             self.Entropy.clientDbconn.retrieveLicensedataKeys(idpackage)
 
-        self.infoDict['steps'] = [
+        self.pkgmeta['steps'] = [
             "preremove", "remove", "postremove"
         ]
 
         return 0
 
     def __generate_config_metadata(self):
-        self.infoDict.clear()
+        self.pkgmeta.clear()
         idpackage = self.matched_atom[0]
 
-        self.infoDict['atom'] = \
+        self.pkgmeta['atom'] = \
             self.Entropy.clientDbconn.retrieveAtom(idpackage)
         key, slot = self.Entropy.clientDbconn.retrieveKeySlot(idpackage)
-        self.infoDict['key'], self.infoDict['slot'] = key, slot
-        self.infoDict['version'] = \
+        self.pkgmeta['key'], self.pkgmeta['slot'] = key, slot
+        self.pkgmeta['version'] = \
             self.Entropy.clientDbconn.retrieveVersion(idpackage)
-        self.infoDict['accept_license'] = \
+        self.pkgmeta['accept_license'] = \
             self.Entropy.clientDbconn.retrieveLicensedataKeys(idpackage)
-        self.infoDict['steps'] = []
-        self.infoDict['steps'].append("config")
+        self.pkgmeta['steps'] = []
+        self.pkgmeta['steps'].append("config")
 
         return 0
 
     def __generate_install_metadata(self):
-        self.infoDict.clear()
+        self.pkgmeta.clear()
 
         idpackage, repository = self.matched_atom
-        self.infoDict['idpackage'] = idpackage
-        self.infoDict['repository'] = repository
+        self.pkgmeta['idpackage'] = idpackage
+        self.pkgmeta['repository'] = repository
 
         # fetch abort function
         if self.metaopts.has_key('fetch_abort_function'):
@@ -2307,34 +2307,34 @@ class Package:
         meta_inst_source = self.metaopts.get('install_source', install_source)
         if meta_inst_source in etpConst['install_sources'].values():
             install_source = meta_inst_source
-        self.infoDict['install_source'] = install_source
+        self.pkgmeta['install_source'] = install_source
 
-        self.infoDict['configprotect_data'] = []
+        self.pkgmeta['configprotect_data'] = []
         dbconn = self.Entropy.open_repository(repository)
-        self.infoDict['triggers'] = {}
-        self.infoDict['atom'] = dbconn.retrieveAtom(idpackage)
-        self.infoDict['slot'] = dbconn.retrieveSlot(idpackage)
+        self.pkgmeta['triggers'] = {}
+        self.pkgmeta['atom'] = dbconn.retrieveAtom(idpackage)
+        self.pkgmeta['slot'] = dbconn.retrieveSlot(idpackage)
 
         ver, tag, rev = dbconn.getVersioningData(idpackage)
-        self.infoDict['version'] = ver
-        self.infoDict['versiontag'] = tag
-        self.infoDict['revision'] = rev
+        self.pkgmeta['version'] = ver
+        self.pkgmeta['versiontag'] = tag
+        self.pkgmeta['revision'] = rev
 
-        self.infoDict['category'] = dbconn.retrieveCategory(idpackage)
-        self.infoDict['download'] = dbconn.retrieveDownloadURL(idpackage)
-        self.infoDict['name'] = dbconn.retrieveName(idpackage)
-        self.infoDict['messages'] = dbconn.retrieveMessages(idpackage)
-        self.infoDict['checksum'] = dbconn.retrieveDigest(idpackage)
+        self.pkgmeta['category'] = dbconn.retrieveCategory(idpackage)
+        self.pkgmeta['download'] = dbconn.retrieveDownloadURL(idpackage)
+        self.pkgmeta['name'] = dbconn.retrieveName(idpackage)
+        self.pkgmeta['messages'] = dbconn.retrieveMessages(idpackage)
+        self.pkgmeta['checksum'] = dbconn.retrieveDigest(idpackage)
         sha1, sha256, sha512 = dbconn.retrieveSignatures(idpackage)
         signatures = {
             'sha1': sha1,
             'sha256': sha256,
             'sha512': sha512,
         }
-        self.infoDict['signatures'] = signatures
-        self.infoDict['accept_license'] = \
+        self.pkgmeta['signatures'] = signatures
+        self.pkgmeta['accept_license'] = \
             dbconn.retrieveLicensedataKeys(idpackage)
-        self.infoDict['conflicts'] = \
+        self.pkgmeta['conflicts'] = \
             self.Entropy.get_match_conflicts(self.matched_atom)
 
         description = dbconn.retrieveDescription(idpackage)
@@ -2342,170 +2342,170 @@ class Package:
             if len(description) > 74:
                 description = description[:74].strip()
                 description += "..."
-        self.infoDict['description'] = description
+        self.pkgmeta['description'] = description
 
         # fill action queue
-        self.infoDict['removeidpackage'] = -1
+        self.pkgmeta['removeidpackage'] = -1
         removeConfig = False
         if self.metaopts.has_key('removeconfig'):
             removeConfig = self.metaopts.get('removeconfig')
 
-        self.infoDict['remove_metaopts'] = {
+        self.pkgmeta['remove_metaopts'] = {
             'removeconfig': True,
         }
         if self.metaopts.has_key('remove_metaopts'):
-            self.infoDict['remove_metaopts'] = \
+            self.pkgmeta['remove_metaopts'] = \
                 self.metaopts.get('remove_metaopts')
 
-        self.infoDict['merge_from'] = None
+        self.pkgmeta['merge_from'] = None
         mf = self.metaopts.get('merge_from')
         if mf != None:
-            self.infoDict['merge_from'] = unicode(mf)
-        self.infoDict['removeconfig'] = removeConfig
+            self.pkgmeta['merge_from'] = unicode(mf)
+        self.pkgmeta['removeconfig'] = removeConfig
 
-        pkgkey = self.entropyTools.dep_getkey(self.infoDict['atom'])
+        pkgkey = self.entropyTools.dep_getkey(self.pkgmeta['atom'])
         inst_match = self.Entropy.clientDbconn.atomMatch(pkgkey,
-            matchSlot = self.infoDict['slot'])
+            matchSlot = self.pkgmeta['slot'])
 
         inst_idpackage = -1
         if inst_match[1] == 0: inst_idpackage = inst_match[0]
-        self.infoDict['removeidpackage'] = inst_idpackage
+        self.pkgmeta['removeidpackage'] = inst_idpackage
 
-        if self.infoDict['removeidpackage'] != -1:
+        if self.pkgmeta['removeidpackage'] != -1:
             avail = self.Entropy.clientDbconn.isIdpackageAvailable(
-                self.infoDict['removeidpackage'])
+                self.pkgmeta['removeidpackage'])
             if avail:
                 inst_atom = self.Entropy.clientDbconn.retrieveAtom(
-                    self.infoDict['removeidpackage'])
-                self.infoDict['removeatom'] = inst_atom
+                    self.pkgmeta['removeidpackage'])
+                self.pkgmeta['removeatom'] = inst_atom
             else:
-                self.infoDict['removeidpackage'] = -1
+                self.pkgmeta['removeidpackage'] = -1
 
         # smartpackage ?
-        self.infoDict['smartpackage'] = False
+        self.pkgmeta['smartpackage'] = False
         # set unpack dir and image dir
-        if self.infoDict['repository'].endswith(etpConst['packagesext']):
+        if self.pkgmeta['repository'].endswith(etpConst['packagesext']):
 
             # do arch check
             compiled_arch = dbconn.retrieveDownloadURL(idpackage)
             if compiled_arch.find("/"+etpSys['arch']+"/") == -1:
-                self.infoDict.clear()
+                self.pkgmeta.clear()
                 self.__prepared = False
                 return -1
 
             repo_data = self.Entropy.SystemSettings['repositories']
-            repo_meta = repo_data['available'][self.infoDict['repository']]
-            self.infoDict['smartpackage'] = repo_meta['smartpackage']
-            self.infoDict['pkgpath'] = repo_meta['pkgpath']
+            repo_meta = repo_data['available'][self.pkgmeta['repository']]
+            self.pkgmeta['smartpackage'] = repo_meta['smartpackage']
+            self.pkgmeta['pkgpath'] = repo_meta['pkgpath']
 
         else:
-            self.infoDict['pkgpath'] = etpConst['entropyworkdir'] + \
-                os.path.sep + self.infoDict['download']
+            self.pkgmeta['pkgpath'] = etpConst['entropyworkdir'] + \
+                os.path.sep + self.pkgmeta['download']
 
-        self.infoDict['unpackdir'] = etpConst['entropyunpackdir'] + \
-            os.path.sep + self.infoDict['download']
+        self.pkgmeta['unpackdir'] = etpConst['entropyunpackdir'] + \
+            os.path.sep + self.pkgmeta['download']
 
-        self.infoDict['imagedir'] = etpConst['entropyunpackdir'] + \
-            os.path.sep + self.infoDict['download'] + os.path.sep + \
+        self.pkgmeta['imagedir'] = etpConst['entropyunpackdir'] + \
+            os.path.sep + self.pkgmeta['download'] + os.path.sep + \
             etpConst['entropyimagerelativepath']
 
-        self.infoDict['pkgdbpath'] = os.path.join(self.infoDict['unpackdir'],
+        self.pkgmeta['pkgdbpath'] = os.path.join(self.pkgmeta['unpackdir'],
             "edb/pkg.db")
 
         # compare both versions and if they match, disable removeidpackage
-        if self.infoDict['removeidpackage'] != -1:
+        if self.pkgmeta['removeidpackage'] != -1:
 
             installedVer, installedTag, installedRev = \
                 self.Entropy.clientDbconn.getVersioningData(
-                    self.infoDict['removeidpackage'])
+                    self.pkgmeta['removeidpackage'])
 
-            repo_pkg_cmp = (self.infoDict['version'],
-                self.infoDict['versiontag'], self.infoDict['revision'],)
+            repo_pkg_cmp = (self.pkgmeta['version'],
+                self.pkgmeta['versiontag'], self.pkgmeta['revision'],)
             inst_pkg_cmp = (installedVer, installedTag, installedRev,)
 
             pkgcmp = self.entropyTools.entropy_compare_versions(
                 repo_pkg_cmp, inst_pkg_cmp)
 
             if pkgcmp == 0:
-                self.infoDict['removeidpackage'] = -1
+                self.pkgmeta['removeidpackage'] = -1
             else:
                 # differential remove list
-                self.infoDict['diffremoval'] = True
-                self.infoDict['removeatom'] = \
+                self.pkgmeta['diffremoval'] = True
+                self.pkgmeta['removeatom'] = \
                     self.Entropy.clientDbconn.retrieveAtom(
-                        self.infoDict['removeidpackage'])
+                        self.pkgmeta['removeidpackage'])
 
-                self.infoDict['removecontent'] = \
+                self.pkgmeta['removecontent'] = \
                     self.Entropy.clientDbconn.contentDiff(
-                        self.infoDict['removeidpackage'],
+                        self.pkgmeta['removeidpackage'],
                         dbconn,
                         idpackage
                     )
-                self.infoDict['triggers']['remove'] = \
+                self.pkgmeta['triggers']['remove'] = \
                     self.Entropy.clientDbconn.getTriggerInfo(
-                        self.infoDict['removeidpackage']
+                        self.pkgmeta['removeidpackage']
                     )
-                self.infoDict['triggers']['remove']['removecontent'] = \
-                    self.infoDict['removecontent']
-                self.infoDict['triggers']['remove']['accept_license'] = \
+                self.pkgmeta['triggers']['remove']['removecontent'] = \
+                    self.pkgmeta['removecontent']
+                self.pkgmeta['triggers']['remove']['accept_license'] = \
                     self.Entropy.clientDbconn.retrieveLicensedataKeys(
-                        self.infoDict['removeidpackage'])
+                        self.pkgmeta['removeidpackage'])
 
         # set steps
-        self.infoDict['steps'] = []
-        if self.infoDict['conflicts']:
-            self.infoDict['steps'].append("remove_conflicts")
+        self.pkgmeta['steps'] = []
+        if self.pkgmeta['conflicts']:
+            self.pkgmeta['steps'].append("remove_conflicts")
         # install
-        self.infoDict['steps'].append("unpack")
+        self.pkgmeta['steps'].append("unpack")
         # preinstall placed before preremove in order
         # to respect Spm order
-        self.infoDict['steps'].append("preinstall")
-        if (self.infoDict['removeidpackage'] != -1):
-            self.infoDict['steps'].append("preremove")
-        self.infoDict['steps'].append("install")
-        if (self.infoDict['removeidpackage'] != -1):
-            self.infoDict['steps'].append("postremove")
-        self.infoDict['steps'].append("postinstall")
-        self.infoDict['steps'].append("logmessages")
-        self.infoDict['steps'].append("cleanup")
+        self.pkgmeta['steps'].append("preinstall")
+        if (self.pkgmeta['removeidpackage'] != -1):
+            self.pkgmeta['steps'].append("preremove")
+        self.pkgmeta['steps'].append("install")
+        if (self.pkgmeta['removeidpackage'] != -1):
+            self.pkgmeta['steps'].append("postremove")
+        self.pkgmeta['steps'].append("postinstall")
+        self.pkgmeta['steps'].append("logmessages")
+        self.pkgmeta['steps'].append("cleanup")
 
-        self.infoDict['triggers']['install'] = dbconn.getTriggerInfo(idpackage)
-        self.infoDict['triggers']['install']['accept_license'] = \
-            self.infoDict['accept_license']
-        self.infoDict['triggers']['install']['unpackdir'] = \
-            self.infoDict['unpackdir']
-        self.infoDict['triggers']['install']['imagedir'] = \
-            self.infoDict['imagedir']
+        self.pkgmeta['triggers']['install'] = dbconn.getTriggerInfo(idpackage)
+        self.pkgmeta['triggers']['install']['accept_license'] = \
+            self.pkgmeta['accept_license']
+        self.pkgmeta['triggers']['install']['unpackdir'] = \
+            self.pkgmeta['unpackdir']
+        self.pkgmeta['triggers']['install']['imagedir'] = \
+            self.pkgmeta['imagedir']
 
         # FIXME: move to entropy.spm
 
-        self.infoDict['xpakpath'] = etpConst['entropyunpackdir'] + \
-            os.path.sep + self.infoDict['download'] + os.path.sep + \
+        self.pkgmeta['xpakpath'] = etpConst['entropyunpackdir'] + \
+            os.path.sep + self.pkgmeta['download'] + os.path.sep + \
             etpConst['entropyxpakrelativepath']
 
-        if not self.infoDict['merge_from']:
-            self.infoDict['xpakstatus'] = None
-            self.infoDict['xpakdir'] = self.infoDict['xpakpath'] + \
+        if not self.pkgmeta['merge_from']:
+            self.pkgmeta['xpakstatus'] = None
+            self.pkgmeta['xpakdir'] = self.pkgmeta['xpakpath'] + \
                 os.path.sep + etpConst['entropyxpakdatarelativepath']
 
         else:
-            self.infoDict['xpakstatus'] = True
+            self.pkgmeta['xpakstatus'] = True
             portdbdir = 'var/db/pkg' # XXX hard coded ?
-            portdbdir = os.path.join(self.infoDict['merge_from'], portdbdir)
-            portdbdir = os.path.join(portdbdir, self.infoDict['category'])
-            portdbdir = os.path.join(portdbdir, self.infoDict['name'] + "-" + \
-                self.infoDict['version'])
+            portdbdir = os.path.join(self.pkgmeta['merge_from'], portdbdir)
+            portdbdir = os.path.join(portdbdir, self.pkgmeta['category'])
+            portdbdir = os.path.join(portdbdir, self.pkgmeta['name'] + "-" + \
+                self.pkgmeta['version'])
 
-            self.infoDict['xpakdir'] = portdbdir
+            self.pkgmeta['xpakdir'] = portdbdir
 
-        self.infoDict['triggers']['install']['xpakdir'] = \
-            self.infoDict['xpakdir']
+        self.pkgmeta['triggers']['install']['xpakdir'] = \
+            self.pkgmeta['xpakdir']
 
 
         return 0
 
     def __generate_fetch_metadata(self, sources = False):
-        self.infoDict.clear()
+        self.pkgmeta.clear()
 
         idpackage, repository = self.matched_atom
         dochecksum = True
@@ -2523,51 +2523,51 @@ class Package:
         if self.metaopts.has_key('fetch_path'):
             fetch_path = self.metaopts.get('fetch_path')
             if self.entropyTools.is_valid_path(fetch_path):
-                self.infoDict['fetch_path'] = fetch_path
+                self.pkgmeta['fetch_path'] = fetch_path
 
-        self.infoDict['repository'] = repository
-        self.infoDict['idpackage'] = idpackage
+        self.pkgmeta['repository'] = repository
+        self.pkgmeta['idpackage'] = idpackage
         dbconn = self.Entropy.open_repository(repository)
-        self.infoDict['atom'] = dbconn.retrieveAtom(idpackage)
+        self.pkgmeta['atom'] = dbconn.retrieveAtom(idpackage)
         if sources:
-            self.infoDict['download'] = dbconn.retrieveSources(idpackage,
+            self.pkgmeta['download'] = dbconn.retrieveSources(idpackage,
                 extended = True)
         else:
-            self.infoDict['checksum'] = dbconn.retrieveDigest(idpackage)
+            self.pkgmeta['checksum'] = dbconn.retrieveDigest(idpackage)
             sha1, sha256, sha512 = dbconn.retrieveSignatures(idpackage)
             signatures = {
                 'sha1': sha1,
                 'sha256': sha256,
                 'sha512': sha512,
             }
-            self.infoDict['signatures'] = signatures
-            self.infoDict['download'] = dbconn.retrieveDownloadURL(idpackage)
+            self.pkgmeta['signatures'] = signatures
+            self.pkgmeta['download'] = dbconn.retrieveDownloadURL(idpackage)
 
-        if not self.infoDict['download']:
-            self.infoDict['fetch_not_available'] = True
+        if not self.pkgmeta['download']:
+            self.pkgmeta['fetch_not_available'] = True
             return 0
 
-        self.infoDict['verified'] = False
-        self.infoDict['steps'] = []
+        self.pkgmeta['verified'] = False
+        self.pkgmeta['steps'] = []
         if not repository.endswith(etpConst['packagesext']) and not sources:
             dl_check = self.Entropy.check_needed_package_download(
-                self.infoDict['download'], None)
+                self.pkgmeta['download'], None)
 
             if dl_check < 0:
-                self.infoDict['steps'].append("fetch")
+                self.pkgmeta['steps'].append("fetch")
             if dochecksum:
-                self.infoDict['steps'].append("checksum")
+                self.pkgmeta['steps'].append("checksum")
 
         elif sources:
-            self.infoDict['steps'].append("sources_fetch")
+            self.pkgmeta['steps'].append("sources_fetch")
 
         if sources:
             # create sources destination directory
             unpack_dir = os.path.join(etpConst['entropyunpackdir'],
-                "sources", self.infoDict['atom'])
-            self.infoDict['unpackdir'] = unpack_dir
+                "sources", self.pkgmeta['atom'])
+            self.pkgmeta['unpackdir'] = unpack_dir
 
-            if not self.infoDict.get('fetch_path'):
+            if not self.pkgmeta.get('fetch_path'):
                 if os.path.lexists(unpack_dir):
                     if os.path.isfile(unpack_dir):
                         os.remove(unpack_dir)
@@ -2581,7 +2581,7 @@ class Package:
         # downloading binary package
         # if file exists, first checksum then fetch
         down_path = os.path.join(etpConst['entropyworkdir'],
-            self.infoDict['download'])
+            self.pkgmeta['download'])
         if os.access(down_path, os.R_OK | os.F_OK):
             # check size first
             repo_size = dbconn.retrieveSize(idpackage)
@@ -2590,12 +2590,12 @@ class Package:
             disk_size = f.tell()
             f.close()
             if repo_size == disk_size:
-                self.infoDict['steps'].reverse()
+                self.pkgmeta['steps'].reverse()
 
         return 0
 
     def __generate_multi_fetch_metadata(self):
-        self.infoDict.clear()
+        self.pkgmeta.clear()
 
         if not isinstance(self.matched_atom, list):
             raise IncorrectParameter("IncorrectParameter: "
@@ -2613,12 +2613,12 @@ class Package:
 
         if self.metaopts.has_key('dochecksum'):
             dochecksum = self.metaopts.get('dochecksum')
-        self.infoDict['checksum'] = dochecksum
+        self.pkgmeta['checksum'] = dochecksum
 
         matches = self.matched_atom
-        self.infoDict['matches'] = matches
-        self.infoDict['atoms'] = []
-        self.infoDict['repository_atoms'] = {}
+        self.pkgmeta['matches'] = matches
+        self.pkgmeta['atoms'] = []
+        self.pkgmeta['repository_atoms'] = {}
         temp_fetch_list = []
         temp_checksum_list = []
         temp_already_downloaded_count = 0
@@ -2632,10 +2632,10 @@ class Package:
             myatom = dbconn.retrieveAtom(idpackage)
 
             # general purpose metadata
-            self.infoDict['atoms'].append(myatom)
-            if not self.infoDict['repository_atoms'].has_key(repository):
-                self.infoDict['repository_atoms'][repository] = set()
-            self.infoDict['repository_atoms'][repository].add(myatom)
+            self.pkgmeta['atoms'].append(myatom)
+            if not self.pkgmeta['repository_atoms'].has_key(repository):
+                self.pkgmeta['repository_atoms'][repository] = set()
+            self.pkgmeta['repository_atoms'][repository].add(myatom)
 
             download = dbconn.retrieveDownloadURL(idpackage)
             digest = dbconn.retrieveDigest(idpackage)
@@ -2667,14 +2667,14 @@ class Package:
                 if repo_size == disk_size:
                     temp_already_downloaded_count += 1
 
-        self.infoDict['steps'] = []
-        self.infoDict['multi_fetch_list'] = temp_fetch_list
-        self.infoDict['multi_checksum_list'] = temp_checksum_list
-        if self.infoDict['multi_fetch_list']:
-            self.infoDict['steps'].append("multi_fetch")
-        if self.infoDict['multi_checksum_list']:
-            self.infoDict['steps'].append("multi_checksum")
+        self.pkgmeta['steps'] = []
+        self.pkgmeta['multi_fetch_list'] = temp_fetch_list
+        self.pkgmeta['multi_checksum_list'] = temp_checksum_list
+        if self.pkgmeta['multi_fetch_list']:
+            self.pkgmeta['steps'].append("multi_fetch")
+        if self.pkgmeta['multi_checksum_list']:
+            self.pkgmeta['steps'].append("multi_checksum")
         if temp_already_downloaded_count == len(temp_checksum_list):
-            self.infoDict['steps'].reverse()
+            self.pkgmeta['steps'].reverse()
 
         return 0

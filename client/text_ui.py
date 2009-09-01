@@ -690,7 +690,7 @@ def downloadSources(packages = None, deps = True, deepdeps = False, tbz2 = None,
         Package.prepare(match,"source", metaopts)
 
         xterm_header = "Equo ("+_("sources fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
-        print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['atom']))
+        print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.pkgmeta['atom']))
 
         rc = Package.run(xterm_header = xterm_header)
         if rc != 0:
@@ -1133,7 +1133,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 metaopts['dochecksum'] = dochecksum
                 Package = Equo.Package()
                 Package.prepare(matches, "multi_fetch", metaopts)
-                myrepo_data = Package.infoDict['repository_atoms']
+                myrepo_data = Package.pkgmeta['repository_atoms']
                 for myrepo in myrepo_data:
                     if not mykeys.has_key(myrepo):
                         mykeys[myrepo] = set()
@@ -1160,14 +1160,14 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 metaopts['dochecksum'] = dochecksum
                 Package = Equo.Package()
                 Package.prepare(match,"fetch", metaopts)
-                myrepo = Package.infoDict['repository']
+                myrepo = Package.pkgmeta['repository']
                 if not mykeys.has_key(myrepo):
                     mykeys[myrepo] = set()
-                mykeys[myrepo].add(Equo.entropyTools.dep_getkey(Package.infoDict['atom']))
+                mykeys[myrepo].add(Equo.entropyTools.dep_getkey(Package.pkgmeta['atom']))
 
                 xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
                 print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
-                    red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['atom']))
+                    red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.pkgmeta['atom']))
 
                 rc = Package.run(xterm_header = xterm_header)
                 if rc != 0:
@@ -1207,7 +1207,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
         Package.prepare(match,"install", metaopts)
 
         xterm_header = "Equo ("+_("install")+") :: "+str(currentqueue)+" of "+totalqueue+" ::"
-        print_info(red(" ++ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['atom']))
+        print_info(red(" ++ ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.pkgmeta['atom']))
 
         rc = Package.run(xterm_header = xterm_header)
         if rc != 0:
@@ -1215,11 +1215,11 @@ def installPackages(packages = None, atomsdata = None, deps = True,
             return -1,rc
 
         # there's a buffer inside, better remove otherwise cPickle will complain
-        del Package.infoDict['triggers']
+        del Package.pkgmeta['triggers']
 
         if etpUi['clean']: # remove downloaded package
-            if os.path.isfile(Package.infoDict['pkgpath']):
-                os.remove(Package.infoDict['pkgpath'])
+            if os.path.isfile(Package.pkgmeta['pkgpath']):
+                os.remove(Package.pkgmeta['pkgpath'])
 
         # update resume cache
         if not tbz2: # tbz2 caching not supported
@@ -1593,10 +1593,10 @@ def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
         metaopts['removeconfig'] = configFiles
         Package = Equo.Package()
         Package.prepare((idpackage,),"remove", metaopts)
-        if not Package.infoDict.has_key('remove_installed_vanished'):
+        if not Package.pkgmeta.has_key('remove_installed_vanished'):
 
             xterm_header = "Equo (remove) :: "+str(currentqueue)+" of "+totalqueue+" ::"
-            print_info(red(" -- ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.infoDict['removeatom']))
+            print_info(red(" -- ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.pkgmeta['removeatom']))
 
             rc = Package.run(xterm_header = xterm_header)
             if rc != 0:
