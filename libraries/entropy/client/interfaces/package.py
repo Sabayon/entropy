@@ -12,11 +12,11 @@
 from __future__ import with_statement
 import os
 import errno
-import subprocess
-import time
+import stat
 import shutil
-from entropy.const import *
-from entropy.exceptions import *
+from entropy.const import etpConst, etpSys, etpCache, const_setup_perms, \
+    ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL, ETP_LOGLEVEL_VERBOSE
+from entropy.exceptions import PermissionDenied, InvalidData, IncorrectParameter
 from entropy.i18n import _
 from entropy.output import TextInterface, brown, blue, bold, darkgreen, \
     darkblue, red, purple, darkred, print_info, print_error, print_warning
@@ -1961,7 +1961,7 @@ class Package:
             mytxt2 = "%s. %s: %s" % (
                 red(_("Make sure that your system is healthy")),
                 blue(_("Error")),
-                rc,
+                conf_rc,
             )
             self.Entropy.updateProgress(
                 darkred(mytxt),
@@ -1981,7 +1981,7 @@ class Package:
             mytxt2 = "%s. %s: %s" % (
                 red(_("It seems that Source Package Manager entry is missing")),
                 blue(_("Error")),
-                rc,
+                conf_rc,
             )
             self.Entropy.updateProgress(
                 darkred(mytxt),
@@ -2301,7 +2301,8 @@ class Package:
 
         # fetch abort function
         if self.metaopts.has_key('fetch_abort_function'):
-            self.fetch_abort_function = self.metaopts.pop('fetch_abort_function')
+            self.fetch_abort_function = \
+                self.metaopts.pop('fetch_abort_function')
 
         install_source = etpConst['install_sources']['unknown']
         meta_inst_source = self.metaopts.get('install_source', install_source)
@@ -2386,6 +2387,7 @@ class Package:
         # set unpack dir and image dir
         if self.pkgmeta['repository'].endswith(etpConst['packagesext']):
 
+            # FIXME: add repository arch metadata to entropy.db
             # do arch check
             compiled_arch = dbconn.retrieveDownloadURL(idpackage)
             if compiled_arch.find("/"+etpSys['arch']+"/") == -1:
