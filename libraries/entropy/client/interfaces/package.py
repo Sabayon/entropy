@@ -24,7 +24,7 @@ from entropy.misc import TimeScheduled
 from entropy.db import dbapi2, EntropyRepository
 from entropy.client.interfaces.client import Client
 from entropy.cache import EntropyCacher
-import entropy.tools as entropyTools
+import entropy.tools
 
 class Package:
 
@@ -97,7 +97,7 @@ class Package:
                         continue
                     elif hash_val is None:
                         continue
-                    elif not hasattr(entropyTools, 'compare_%s' % (hash_type,)):
+                    elif not hasattr(entropy.tools, 'compare_%s' % (hash_type,)):
                         continue
 
                     self.Entropy.updateProgress(
@@ -108,7 +108,7 @@ class Package:
                         header = red("   ## "),
                         back = True
                     )
-                    cmp_func = getattr(entropyTools,
+                    cmp_func = getattr(entropy.tools,
                         'compare_%s' % (hash_type,))
                     mydownload = os.path.join(etpConst['entropyworkdir'],
                         download)
@@ -273,15 +273,15 @@ class Package:
                 os.makedirs(pkg_dbdir, 0755)
 
             # extract edb
-            entropyTools.extract_edb(self.pkgmeta['pkgpath'],
+            entropy.tools.extract_edb(self.pkgmeta['pkgpath'],
                 self.pkgmeta['pkgdbpath'])
 
             unpack_tries = 3
             while 1:
                 unpack_tries -= 1
                 try:
-                    rc = entropyTools.spawn_function(
-                        entropyTools.uncompress_tar_bz2,
+                    rc = entropy.tools.spawn_function(
+                        entropy.tools.uncompress_tar_bz2,
                         self.pkgmeta['pkgpath'],
                         self.pkgmeta['imagedir'],
                         catchEmpty = True
@@ -301,7 +301,7 @@ class Package:
                         "Raising Unicode/Pickling Error for " + \
                             self.pkgmeta['pkgpath']
                     )
-                    rc = entropyTools.uncompress_tar_bz2(
+                    rc = entropy.tools.uncompress_tar_bz2(
                         self.pkgmeta['pkgpath'],
                         self.pkgmeta['imagedir'],
                         catchEmpty = True
@@ -357,7 +357,7 @@ class Package:
                     f.write(xpakdata)
                     f.flush()
                     f.close()
-                    self.pkgmeta['xpakstatus'] = entropyTools.unpack_xpak(
+                    self.pkgmeta['xpakstatus'] = entropy.tools.unpack_xpak(
                         xpak_path,
                         xpak_dir
                     )
@@ -366,7 +366,7 @@ class Package:
                 del xpakdata
 
             else:
-                self.pkgmeta['xpakstatus'] = entropyTools.extract_xpak(
+                self.pkgmeta['xpakstatus'] = entropy.tools.extract_xpak(
                     self.pkgmeta['pkgpath'],
                     xpak_dir
                 )
@@ -531,7 +531,7 @@ class Package:
                 if oldprot_md5 and os.path.exists(protected_item_test) and \
                     os.access(protected_item_test, os.R_OK):
 
-                    in_system_md5 = entropyTools.md5sum(
+                    in_system_md5 = entropy.tools.md5sum(
                         protected_item_test)
 
                     if oldprot_md5 == in_system_md5:
@@ -901,7 +901,7 @@ class Package:
             data, forcedRevision = data['revision'], formattedContent = True)
 
         # update datecreation
-        ctime = entropyTools.get_current_unix_time()
+        ctime = entropy.tools.get_current_unix_time()
         self.Entropy.clientDbconn.setCreationDate(idpackage, str(ctime))
 
         # add idpk to the installedtable
@@ -991,7 +991,7 @@ class Package:
         # setup image_dir properly
         image_dir = self.pkgmeta['imagedir']
         encoded_image_dir = image_dir.encode('utf-8')
-        movefile = entropyTools.movefile
+        movefile = entropy.tools.movefile
 
         def workout_subdir(currentdir, subdir):
 
@@ -1021,7 +1021,7 @@ class Package:
                     type = "warning",
                     header = red(" !!! ")
                 )
-                entropyTools.ebeep(20)
+                entropy.tools.ebeep(20)
                 os.remove(rootdir)
 
             # if our directory is a symlink instead, then copy the symlink
@@ -1050,7 +1050,7 @@ class Package:
                             header = red(" !!! ")
                         )
 
-                    entropyTools.ebeep(20)
+                    entropy.tools.ebeep(20)
                     # fucking kill it in any case!
                     # rootdir must die! die die die die!
                     # /me brings chainsaw
@@ -1126,7 +1126,7 @@ class Package:
             # collect new config automerge data
             if in_mask and os.path.exists(fromfile):
                 try:
-                    prot_md5 = entropyTools.md5sum(fromfile)
+                    prot_md5 = entropy.tools.md5sum(fromfile)
                     self.pkgmeta['configprotect_data'].append(
                         (prot_old_tofile, prot_md5,))
                 except (IOError,), err:
@@ -1150,7 +1150,7 @@ class Package:
                     os.access(pre_tofile, os.R_OK):
 
                     try:
-                        in_system_md5 = entropyTools.md5sum(pre_tofile)
+                        in_system_md5 = entropy.tools.md5sum(pre_tofile)
                     except (IOError,):
                         # which is a clearly invalid value
                         in_system_md5 = "0000"
@@ -1218,7 +1218,7 @@ class Package:
                         type = "warning",
                         header = red(" !!! ")
                     )
-                entropyTools.ebeep(20)
+                entropy.tools.ebeep(20)
 
                 try:
                     shutil.rmtree(tofile, True)
@@ -1375,7 +1375,7 @@ class Package:
 
         # check if it's a text file
         if protected and os.access(tofile, os.F_OK | os.R_OK):
-            protected = entropyTools.istextfile(tofile)
+            protected = entropy.tools.istextfile(tofile)
             in_mask = protected
         else:
             protected = False # it's not a file
@@ -1420,7 +1420,7 @@ class Package:
 
         prot_status = True
         if do_allocation_check:
-            tofile, prot_status = entropyTools.allocate_masked_file(
+            tofile, prot_status = entropy.tools.allocate_masked_file(
                 tofile, fromfile)
 
         if not prot_status:
@@ -1544,8 +1544,8 @@ class Package:
             )
             if rc == 0:
                 mytxt = blue("%s: ") % (_("Successfully downloaded from"),)
-                mytxt += red(entropyTools.spliturl(url)[1])
-                human_bytes = entropyTools.bytes_into_human(data_transfer)
+                mytxt += red(entropy.tools.spliturl(url)[1])
+                human_bytes = entropy.tools.bytes_into_human(data_transfer)
                 mytxt += " %s %s/%s" % (_("at"), human_bytes, _("second"),)
                 self.Entropy.updateProgress(
                     mytxt,
@@ -1562,7 +1562,7 @@ class Package:
             else:
                 error_message = blue("%s: %s") % (
                     _("Error downloading from"),
-                    red(entropyTools.spliturl(url)[1]),
+                    red(entropy.tools.spliturl(url)[1]),
                 )
                 # something bad happened
                 if rc == -1:
@@ -2362,7 +2362,7 @@ class Package:
             self.pkgmeta['merge_from'] = unicode(mf)
         self.pkgmeta['removeconfig'] = removeConfig
 
-        pkgkey = entropyTools.dep_getkey(self.pkgmeta['atom'])
+        pkgkey = entropy.tools.dep_getkey(self.pkgmeta['atom'])
         inst_match = self.Entropy.clientDbconn.atomMatch(pkgkey,
             matchSlot = self.pkgmeta['slot'])
 
@@ -2423,7 +2423,7 @@ class Package:
                 self.pkgmeta['versiontag'], self.pkgmeta['revision'],)
             inst_pkg_cmp = (installedVer, installedTag, installedRev,)
 
-            pkgcmp = entropyTools.entropy_compare_versions(
+            pkgcmp = entropy.tools.entropy_compare_versions(
                 repo_pkg_cmp, inst_pkg_cmp)
 
             if pkgcmp == 0:
@@ -2522,7 +2522,7 @@ class Package:
         # at the moment is implemented only for sources = True
         if self.metaopts.has_key('fetch_path'):
             fetch_path = self.metaopts.get('fetch_path')
-            if entropyTools.is_valid_path(fetch_path):
+            if entropy.tools.is_valid_path(fetch_path):
                 self.pkgmeta['fetch_path'] = fetch_path
 
         self.pkgmeta['repository'] = repository
