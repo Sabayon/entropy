@@ -11,6 +11,7 @@
 """
 from __future__ import with_statement
 import os
+import errno
 import subprocess
 import time
 import shutil
@@ -37,7 +38,7 @@ class Package:
 
         self.Cacher = EntropyCacher()
         self.infoDict = {}
-        self.prepared = False
+        self.__prepared = False
         self.matched_atom = ()
         self.valid_actions = ("source", "fetch", "multi_fetch", "remove",
             "remove_conflict", "install", "config"
@@ -48,19 +49,20 @@ class Package:
 
     def kill(self):
         self.infoDict.clear()
+
         self.matched_atom = ()
         self.valid_actions = ()
         self.action = None
-        self.prepared = False
+        self.__prepared = False
         self.fetch_abort_function = None
 
     def error_on_prepared(self):
-        if self.prepared:
+        if self.__prepared:
             mytxt = _("Already prepared")
             raise PermissionDenied("PermissionDenied: %s" % (mytxt,))
 
     def error_on_not_prepared(self):
-        if not self.prepared:
+        if not self.__prepared:
             mytxt = _("Not yet prepared")
             raise PermissionDenied("PermissionDenied: %s" % (mytxt,))
 
@@ -738,7 +740,7 @@ class Package:
         # copy files over - install
         # use fork? (in this case all the changed structures
         # need to be pushed back)
-        rc = self.__move_image_to_system(already_protected_config_files)
+        rc = self.move_image_to_system(already_protected_config_files)
         if rc != 0:
             return rc
 
@@ -974,7 +976,7 @@ class Package:
                 shutil.copystat(path, topath)
 
 
-    def __move_image_to_system(self, already_protected_config_files):
+    def move_image_to_system(self, already_protected_config_files):
 
         # load CONFIG_PROTECT and its mask
         protect = self.Entropy.get_package_match_config_protect(
@@ -993,229 +995,325 @@ class Package:
         encoded_image_dir = image_dir.encode('utf-8')
         movefile = self.entropyTools.movefile
 
-        # merge data into system
-        for currentdir, subdirs, files in os.walk(encoded_image_dir):
-            # create subdirs
-            for subdir in subdirs:
+        def workout_subdir(currentdir, subdir):
 
-                imagepath_dir = "%s/%s" % (currentdir, subdir,)
-                rootdir = "%s%s" % (sys_root, imagepath_dir[len(image_dir):],)
+            imagepath_dir = "%s/%s" % (currentdir, subdir,)
+            rootdir = "%s%s" % (sys_root, imagepath_dir[len(image_dir):],)
 
-                # handle broken symlinks
-                if os.path.islink(rootdir) and not os.path.exists(rootdir):# broken symlink
-                    os.remove(rootdir)
+            # handle broken symlinks
+            if os.path.islink(rootdir) and not os.path.exists(rootdir):
+                # broken symlink
+                os.remove(rootdir)
 
-                # if our directory is a file on the live system
-                elif os.path.isfile(rootdir): # really weird...!
+            # if our directory is a file on the live system
+            elif os.path.isfile(rootdir): # really weird...!
+
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "WARNING!!! %s is a file when it should be " \
+                    "a directory !! Removing in 20 seconds..." % (rootdir,)
+                )
+                mytxt = darkred(_("%s is a file when should be a " \
+                "directory !! Removing in 20 seconds...") % (rootdir,))
+
+                self.Entropy.updateProgress(
+                    red("QA: ")+mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = red(" !!! ")
+                )
+                self.entropyTools.ebeep(20)
+                os.remove(rootdir)
+
+            # if our directory is a symlink instead, then copy the symlink
+            if os.path.islink(imagepath_dir):
+
+                # if our live system features a directory instead of
+                # a symlink, we should consider removing the directory
+                if not os.path.islink(rootdir) and os.path.isdir(rootdir):
                     self.Entropy.clientLog.log(
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
-                        "WARNING!!! %s is a file when it should be a directory !! Removing in 20 seconds..." % (rootdir,)
+                        "WARNING!!! %s is a directory when it should be " \
+                        "a symlink !! Removing in 20 seconds..." % (
+                            rootdir,)
                     )
-                    mytxt = darkred(_("%s is a file when should be a directory !! Removing in 20 seconds...") % (rootdir,))
+                    mytxt = "%s: %s" % (
+                        _("directory expected, symlink found"),
+                        rootdir,
+                    )
+                    mytxt2 = _("Removing in 20 seconds !!")
+                    for txt in (mytxt, mytxt2,):
+                        self.Entropy.updateProgress(
+                            darkred("QA: ") + darkred(txt),
+                            importance = 1,
+                            type = "warning",
+                            header = red(" !!! ")
+                        )
+
+                    self.entropyTools.ebeep(20)
+                    # fucking kill it in any case!
+                    # rootdir must die! die die die die!
+                    # /me brings chainsaw
+                    try:
+                        shutil.rmtree(rootdir, True)
+                    except (shutil.Error, OSError,), err:
+                        self.Entropy.clientLog.log(
+                            ETP_LOGPRI_INFO,
+                            ETP_LOGLEVEL_NORMAL,
+                            "WARNING!!! Failed to rm %s " \
+                            "directory ! [workout_subdir/1]: %s" % (
+                                rootdir, err,
+                            )
+                        )
+
+                tolink = os.readlink(imagepath_dir)
+                live_tolink = None
+                if os.path.islink(rootdir):
+                    live_tolink = os.readlink(rootdir)
+
+                if tolink != live_tolink:
+                    if os.path.lexists(rootdir):
+                        # at this point, it must be a file
+                        os.remove(rootdir)
+                    os.symlink(tolink, rootdir)
+
+            elif not os.path.isdir(rootdir) and not \
+                os.access(rootdir, os.R_OK):
+                # directory not found, we need to create it
+
+                try:
+                    # really force a simple mkdir first of all
+                    os.mkdir(rootdir)
+                except OSError:
+                    os.makedirs(rootdir)
+
+
+            if not os.path.islink(rootdir) and os.access(rootdir, os.W_OK):
+
+                # symlink doesn't need permissions, also
+                # until os.walk ends they might be broken
+                # XXX also, added os.access() check because
+                # there might be directories/files unwritable
+                # what to do otherwise?
+                user = os.stat(imagepath_dir)[stat.ST_UID]
+                group = os.stat(imagepath_dir)[stat.ST_GID]
+                os.chown(rootdir, user, group)
+                shutil.copystat(imagepath_dir, rootdir)
+
+            item_dir, item_base = os.path.split(rootdir)
+            item_dir = os.path.realpath(item_dir)
+            item_inst = os.path.join(item_dir, item_base)
+            items_installed.add(item_inst)
+
+
+        def workout_file(currentdir, item):
+
+            fromfile = "%s/%s" % (currentdir, item,)
+            tofile = "%s%s" % (sys_root, fromfile[len(image_dir):],)
+
+            if col_protect > 1:
+                todbfile = fromfile[len(image_dir):]
+                myrc = self._handle_install_collision_protect(tofile,
+                    todbfile)
+                if not myrc:
+                    return
+
+            prot_old_tofile = tofile[len(sys_root):]
+            pre_tofile = tofile[:]
+            in_mask, protected, tofile, do_return = \
+                self._handle_config_protect(protect, mask, fromfile, tofile)
+
+            # collect new config automerge data
+            if in_mask and os.path.exists(fromfile):
+                try:
+                    prot_md5 = self.entropyTools.md5sum(fromfile)
+                    self.infoDict['configprotect_data'].append(
+                        (prot_old_tofile, prot_md5,))
+                except (IOError,), err:
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "WARNING!!! Failed to get md5 of %s " \
+                        "file ! [workout_file/1]: %s" % (
+                            fromfile, err,
+                        )
+                    )
+
+            # check if it's really necessary to protect file
+            if protected:
+
+                # second task
+                oldprot_md5 = already_protected_config_files.get(
+                    prot_old_tofile)
+
+                if oldprot_md5 and os.path.exists(pre_tofile) and \
+                    os.access(pre_tofile, os.R_OK):
+
+                    try:
+                        in_system_md5 = self.entropyTools.md5sum(pre_tofile)
+                    except (IOError,):
+                        # which is a clearly invalid value
+                        in_system_md5 = "0000"
+
+                    if oldprot_md5 == in_system_md5:
+                        # we can merge it, files, even if
+                        # contains changes have not been modified
+                        # by the user
+                        msg = _("Automerging config file, never modified")
+                        mytxt = "%s: %s" % (
+                            darkgreen(msg),
+                            blue(pre_tofile),
+                        )
+                        self.Entropy.updateProgress(
+                            mytxt,
+                            importance = 1,
+                            type = "info",
+                            header = red("   ## ")
+                        )
+                        protected = False
+                        do_return = False
+                        tofile = pre_tofile
+
+            if do_return:
+                return
+
+            if os.path.realpath(fromfile) == os.path.realpath(tofile) and \
+                os.path.islink(tofile):
+                # there is a serious issue here, better removing tofile,
+                # happened to someone.
+
+                try:
+                    # try to cope...
+                    os.remove(tofile)
+                except (OSError, IOError,), err:
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "WARNING!!! Failed to cope to oddity of %s " \
+                        "file ! [workout_file/2]: %s" % (
+                            tofile, err,
+                        )
+                    )
+
+            # if our file is a dir on the live system
+            if os.path.isdir(tofile) and not os.path.islink(tofile):
+
+                # really weird...!
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "WARNING!!! %s is a directory when it should " \
+                    "be a file !! Removing in 20 seconds..." % (tofile,)
+                )
+
+                mytxt = "%s: %s" % (
+                    _("file expected, directory found"),
+                    tofile,
+                )
+                mytxt2 = _("Removing in 20 seconds !!")
+                for txt in (mytxt, mytxt2,):
                     self.Entropy.updateProgress(
-                        red("QA: ")+mytxt,
+                        darkred("QA: ") + darkred(txt),
                         importance = 1,
                         type = "warning",
                         header = red(" !!! ")
                     )
-                    self.entropyTools.ebeep(20)
-                    os.remove(rootdir)
-
-                # if our directory is a symlink instead, then copy the symlink
-                if os.path.islink(imagepath_dir):
-
-                    # if our live system features a directory instead of
-                    # a symlink, we should consider removing the directory
-                    if (not os.path.islink(rootdir)) and os.path.isdir(rootdir):
-                        self.Entropy.clientLog.log(
-                            ETP_LOGPRI_INFO,
-                            ETP_LOGLEVEL_NORMAL,
-                            "WARNING!!! %s is a directory when it should be a symlink !! Removing in 20 seconds..." % (rootdir,)
-                        )
-                        mytxt = darkred(_("%s is a directory when should be a symlink !! Removing in 20 seconds...") % (rootdir,))
-                        self.Entropy.updateProgress(
-                            red("QA: ")+mytxt,
-                            importance = 1,
-                            type = "warning",
-                            header = red(" !!! ")
-                        )
-                        self.entropyTools.ebeep(20)
-                        # fucking kill it in any case!
-                        # rootdir must die! die die die die!
-                        # /me brings chainsaw
-                        try:
-                            shutil.rmtree(rootdir, True)
-                        except (shutil.Error, OSError,):
-                            pass
-                        try:
-                            os.rmdir(rootdir)
-                        except OSError:
-                            pass
-
-                    tolink = os.readlink(imagepath_dir)
-                    live_tolink = None
-                    if os.path.islink(rootdir):
-                        live_tolink = os.readlink(rootdir)
-                    if tolink != live_tolink:
-                        if os.path.lexists(rootdir):
-                            # at this point, it must be a file
-                            os.remove(rootdir)
-                        os.symlink(tolink, rootdir)
-
-                elif (not os.path.isdir(rootdir)) and (not os.access(rootdir, os.R_OK)):
-                    try:
-                        # we should really force a simple mkdir first of all
-                        os.mkdir(rootdir)
-                    except OSError:
-                        os.makedirs(rootdir)
-
-
-                if not os.path.islink(rootdir) and os.access(rootdir, os.W_OK):
-                    # symlink doesn't need permissions, also until os.walk ends they might be broken
-                    # XXX also, added os.access() check because there might be directories/files unwritable
-                    # what to do otherwise?
-                    user = os.stat(imagepath_dir)[stat.ST_UID]
-                    group = os.stat(imagepath_dir)[stat.ST_GID]
-                    os.chown(rootdir, user, group)
-                    shutil.copystat(imagepath_dir, rootdir)
-
-                items_installed.add(os.path.join(os.path.realpath(os.path.dirname(rootdir)), os.path.basename(rootdir)))
-
-            for item in files:
-
-                fromfile = "%s/%s" % (currentdir, item,)
-                tofile = "%s%s" % (sys_root, fromfile[len(image_dir):],)
-
-                if col_protect > 1:
-                    todbfile = fromfile[len(image_dir):]
-                    myrc = self._handle_install_collision_protect(tofile, todbfile)
-                    if not myrc:
-                        continue
-
-                prot_old_tofile = tofile[len(sys_root):]
-                pre_tofile = tofile[:]
-                in_mask, protected, tofile, do_continue = self._handle_config_protect(
-                    protect, mask, fromfile, tofile)
-
-                # collect new config automerge data
-                if in_mask and os.path.exists(fromfile):
-                    try:
-                        prot_md5 = self.entropyTools.md5sum(fromfile)
-                        self.infoDict['configprotect_data'].append(
-                            (prot_old_tofile, prot_md5,))
-                    except (IOError,):
-                        pass
-
-                # check if it's really necessary to protect file
-                if protected:
-
-                    try:
-
-                        # second task
-                        oldprot_md5 = already_protected_config_files.get(
-                            prot_old_tofile)
-
-                        if oldprot_md5 and os.path.exists(pre_tofile) and \
-                            os.access(pre_tofile, os.R_OK):
-
-                            in_system_md5 = self.entropyTools.md5sum(pre_tofile)
-                            if oldprot_md5 == in_system_md5:
-                                # we can merge it, files, even if
-                                # contains changes have not been modified
-                                # by the user
-                                mytxt = "%s: %s" % (
-                                    darkgreen(_("Automerging config file, never modified")),
-                                    blue(pre_tofile),)
-                                self.Entropy.updateProgress(
-                                    mytxt,
-                                    importance = 1,
-                                    type = "info",
-                                    header = red("   ## ")
-                                )
-                                protected = False
-                                do_continue = False
-                                tofile = pre_tofile
-
-                    except (IOError,):
-                        pass
-
-                if do_continue:
-                    continue
+                self.entropyTools.ebeep(20)
 
                 try:
-
-                    if os.path.realpath(fromfile) == os.path.realpath(tofile) and os.path.islink(tofile):
-                        # there is a serious issue here, better removing tofile, happened to someone:
-                        try: # try to cope...
-                            os.remove(tofile)
-                        except OSError:
-                            pass
-
-                    # if our file is a dir on the live system
-                    if os.path.isdir(tofile) and not os.path.islink(tofile): # really weird...!
-                        self.Entropy.clientLog.log(
-                            ETP_LOGPRI_INFO,
-                            ETP_LOGLEVEL_NORMAL,
-                            "WARNING!!! %s is a directory when it should be a file !! Removing in 20 seconds..." % (tofile,)
+                    shutil.rmtree(tofile, True)
+                except (shutil.Error, IOError,), err:
+                    self.Entropy.clientLog.log(
+                        ETP_LOGPRI_INFO,
+                        ETP_LOGLEVEL_NORMAL,
+                        "WARNING!!! Failed to cope to oddity of %s " \
+                        "file ! [workout_file/3]: %s" % (
+                            tofile, err,
                         )
-                        mytxt = _("%s is a directory when it should be a file !! Removing in 20 seconds...") % (tofile,)
-                        self.Entropy.updateProgress(
-                            red("QA: ")+darkred(mytxt),
-                            importance = 1,
-                            type = "warning",
-                            header = red(" !!! ")
-                        )
-                        self.entropyTools.ebeep(10)
-                        time.sleep(20)
-                        try:
-                            shutil.rmtree(tofile, True)
-                            os.rmdir(tofile)
-                        except:
-                            pass
-                        try: # if it was a link
-                            os.remove(tofile)
-                        except OSError:
-                            pass
+                    )
 
-                    # moving file using the raw format
-                    done = movefile(fromfile, tofile,
-                        src_basedir = encoded_image_dir)
-                    if not done:
-                        self.Entropy.clientLog.log(
-                            ETP_LOGPRI_INFO,
-                            ETP_LOGLEVEL_NORMAL,
-                            "WARNING!!! Error during file move to system: %s => %s" % (fromfile, tofile,)
-                        )
-                        mytxt = "%s: %s => %s, %s" % (_("File move error"), fromfile, tofile, _("please report"),)
-                        self.Entropy.updateProgress(
-                            red("QA: ")+darkred(mytxt),
-                            importance = 1,
-                            type = "warning",
-                            header = red(" !!! ")
-                        )
-                        return 4
+            # moving file using the raw format
+            try:
+                done = movefile(fromfile, tofile,
+                    src_basedir = encoded_image_dir)
+            except (IOError,), err:
+                # try to move forward, sometimes packages might be
+                # fucked up and contain broken things
+                if err.errno not in (errno.ENOENT, errno.EACCES,):
+                    raise
 
-                except IOError, e:
-                    # try to move forward, sometimes packages might be
-                    # fucked up and contain broken things
-                    if e.errno != 2:
-                        raise
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "WARNING!!! Error during file move" \
+                    " to system: %s => %s | IGNORED: %s" % (
+                        fromfile,
+                        tofile,
+                        err,
+                    )
+                )
+                done = True
 
-                items_installed.add(os.path.join(os.path.realpath(os.path.dirname(tofile)), os.path.basename(tofile)))
-                if protected:
-                    # add to disk cache
-                    self.Entropy.FileUpdates.add_to_cache(tofile, quiet = True)
+            if not done:
+                self.Entropy.clientLog.log(
+                    ETP_LOGPRI_INFO,
+                    ETP_LOGLEVEL_NORMAL,
+                    "WARNING!!! Error during file move" \
+                    " to system: %s => %s" % (fromfile, tofile,)
+                )
+                mytxt = "%s: %s => %s, %s" % (
+                    _("File move error"),
+                    fromfile,
+                    tofile,
+                    _("please report"),
+                )
+                self.Entropy.updateProgress(
+                    red("QA: ")+darkred(mytxt),
+                    importance = 1,
+                    type = "warning",
+                    header = red(" !!! ")
+                )
+                return 4
 
-        # this is useful to avoid the removal of installed files by __remove_package just because
-        # there's a difference in the directory path, perhaps, which is not handled correctly by
-        # EntropyRepository.contentDiff for obvious reasons (think about stuff in /usr/lib and /usr/lib64,
+            item_dir = os.path.realpath(os.path.dirname(tofile))
+            item_inst = os.path.join(item_dir, os.path.basename(tofile))
+            items_installed.add(item_inst)
+
+            if protected:
+                # add to disk cache
+                self.Entropy.FileUpdates.add_to_cache(tofile, quiet = True)
+
+
+        # merge data into system
+        for currentdir, subdirs, files in os.walk(encoded_image_dir):
+
+            # create subdirs
+            for subdir in subdirs:
+                workout_subdir(currentdir, subdir)
+
+            for item in files:
+                workout_file(currentdir, item)
+
+        # this is useful to avoid the removal of installed
+        # files by __remove_package just because
+        # there's a difference in the directory path, perhaps,
+        # which is not handled correctly by
+        # EntropyRepository.contentDiff for obvious reasons
+        # (think about stuff in /usr/lib and /usr/lib64,
         # where the latter is just a symlink to the former)
         if self.infoDict.get('removecontent'):
-            my_remove_content = set([x for x in self.infoDict['removecontent'] \
-                if os.path.join(os.path.realpath(
-                    os.path.dirname("%s%s" % (sys_root, x,))), os.path.basename(x)
-                ) in items_installed])
+            my_remove_content = set()
+            for mypath in self.infoDict['removecontent']:
+
+                item_dir = os.path.dirname("%s%s" % (sys_root, mypath,))
+                item = os.path.join(os.path.realpath(item_dir),
+                    os.path.basename(mypath))
+
+                if item in items_installed:
+                    my_remove_content.add(item)
+
             self.infoDict['removecontent'] -= my_remove_content
 
         return 0
@@ -1558,17 +1656,23 @@ class Package:
         if rc == 0:
             return 0
 
-        mytxt = "%s. %s: %s" % (
-            red(_("Some packages cannot be fetched. Try to update repositories and retry")),
-            blue(_("Error")),
-            rc,
-        )
+        mytxt = _("Some packages cannot be fetched")
+        mytxt2 = _("Try to update your repositories and retry")
+        mytxt3 = "%s: %s" % (brown(_("Error")), bold(str(rc)),)
+        for txt in (mytxt, mytxt2,):
+            self.Entropy.updateProgress(
+                "%s." % (darkred(txt),),
+                importance = 0,
+                type = "info",
+                header = red("   ## ")
+            )
         self.Entropy.updateProgress(
-            mytxt,
-            importance = 1,
-            type = "error",
-            header = darkred("   ## ")
+            mytxt3,
+            importance = 0,
+            type = "info",
+            header = red("   ## ")
         )
+
         for repo, branch, fname, cksum, signatures in err_list:
             self.Entropy.updateProgress(
                 "[%s:%s|%s] %s" % (blue(repo), brown(branch),
@@ -1577,11 +1681,12 @@ class Package:
                 type = "error",
                 header = darkred("    # ")
             )
+
         return rc
 
     def fetch_not_available_step(self):
         self.Entropy.updateProgress(
-            blue(_("Fetch for the chosen package is not available, unknown error.")),
+            blue(_("Package cannot be downloaded, unknown error.")),
             importance = 1,
             type = "info",
             header = red("   ## ")
@@ -1639,8 +1744,9 @@ class Package:
                     blue(_("Error")),
                 )
             else:
+                msg = _("An error occured while trying to unpack the package")
                 errormsg = "%s. %s. %s: %s" % (
-                    red(_("An error occured while trying to unpack the package")),
+                    red(msg),
                     red(_("Check if your system is healthy")),
                     blue(_("Error")),
                     rc,
@@ -1837,6 +1943,7 @@ class Package:
 
     def config_step(self):
         self.error_on_not_prepared()
+
         mytxt = "%s: %s" % (
             blue(_("Configuring package")),
             red(self.infoDict['atom']),
@@ -1847,34 +1954,49 @@ class Package:
             type = "info",
             header = red("   ## ")
         )
-        rc = self.__configure_package()
-        if rc == 1:
-            mytxt = "%s. %s. %s: %s" % (
-                red(_("An error occured while trying to configure the package")),
+
+        conf_rc = self.__configure_package()
+        if conf_rc == 1:
+            mytxt = _("An error occured while trying to configure the package")
+            mytxt2 = "%s. %s: %s" % (
                 red(_("Make sure that your system is healthy")),
                 blue(_("Error")),
                 rc,
             )
             self.Entropy.updateProgress(
-                mytxt,
+                darkred(mytxt),
                 importance = 1,
                 type = "error",
                 header = red("   ## ")
             )
-        elif rc == 2:
-            mytxt = "%s. %s. %s: %s" % (
-                red(_("An error occured while trying to configure the package")),
-                red(_("It seems that the Source Package Manager entry is missing")),
+            self.Entropy.updateProgress(
+                mytxt2,
+                importance = 1,
+                type = "error",
+                header = red("   ## ")
+            )
+
+        elif conf_rc == 2:
+            mytxt = _("An error occured while trying to configure the package")
+            mytxt2 = "%s. %s: %s" % (
+                red(_("It seems that Source Package Manager entry is missing")),
                 blue(_("Error")),
                 rc,
             )
             self.Entropy.updateProgress(
-                mytxt,
+                darkred(mytxt),
                 importance = 1,
                 type = "error",
                 header = red("   ## ")
             )
-        return rc
+            self.Entropy.updateProgress(
+                mytxt2,
+                importance = 1,
+                type = "error",
+                header = red("   ## ")
+            )
+
+        return conf_rc
 
     def run_stepper(self, xterm_header):
         if xterm_header is None:
@@ -2077,18 +2199,24 @@ class Package:
             )
         return rc
 
-    def prepare(self, matched_atom, action, metaopts = {}):
+    def prepare(self, matched_atom, action, metaopts = None):
         self.error_on_prepared()
+
         self.check_action_validity(action)
 
         self.action = action
         self.matched_atom = matched_atom
+
+        if metaopts is None:
+            metaopts = {}
         self.metaopts = metaopts
+
         # generate metadata dictionary
         self.generate_metadata()
 
     def generate_metadata(self):
         self.error_on_prepared()
+
         self.check_action_validity(self.action)
 
         if self.action == "fetch":
@@ -2103,7 +2231,8 @@ class Package:
             self.__generate_fetch_metadata(sources = True)
         elif self.action == "config":
             self.__generate_config_metadata()
-        self.prepared = True
+
+        self.__prepared = True
 
     def __generate_remove_metadata(self):
 
@@ -2185,7 +2314,12 @@ class Package:
         self.infoDict['triggers'] = {}
         self.infoDict['atom'] = dbconn.retrieveAtom(idpackage)
         self.infoDict['slot'] = dbconn.retrieveSlot(idpackage)
-        self.infoDict['version'], self.infoDict['versiontag'], self.infoDict['revision'] = dbconn.getVersioningData(idpackage)
+
+        ver, tag, rev = dbconn.getVersioningData(idpackage)
+        self.infoDict['version'] = ver
+        self.infoDict['versiontag'] = tag
+        self.infoDict['revision'] = rev
+
         self.infoDict['category'] = dbconn.retrieveCategory(idpackage)
         self.infoDict['download'] = dbconn.retrieveDownloadURL(idpackage)
         self.infoDict['name'] = dbconn.retrieveName(idpackage)
@@ -2198,8 +2332,11 @@ class Package:
             'sha512': sha512,
         }
         self.infoDict['signatures'] = signatures
-        self.infoDict['accept_license'] = dbconn.retrieveLicensedataKeys(idpackage)
-        self.infoDict['conflicts'] = self.Entropy.get_match_conflicts(self.matched_atom)
+        self.infoDict['accept_license'] = \
+            dbconn.retrieveLicensedataKeys(idpackage)
+        self.infoDict['conflicts'] = \
+            self.Entropy.get_match_conflicts(self.matched_atom)
+
         description = dbconn.retrieveDescription(idpackage)
         if description:
             if len(description) > 74:
@@ -2217,7 +2354,8 @@ class Package:
             'removeconfig': True,
         }
         if self.metaopts.has_key('remove_metaopts'):
-            self.infoDict['remove_metaopts'] = self.metaopts.get('remove_metaopts')
+            self.infoDict['remove_metaopts'] = \
+                self.metaopts.get('remove_metaopts')
 
         self.infoDict['merge_from'] = None
         mf = self.metaopts.get('merge_from')
@@ -2226,15 +2364,20 @@ class Package:
         self.infoDict['removeconfig'] = removeConfig
 
         pkgkey = self.entropyTools.dep_getkey(self.infoDict['atom'])
-        inst_match = self.Entropy.clientDbconn.atomMatch(pkgkey, matchSlot = self.infoDict['slot'])
+        inst_match = self.Entropy.clientDbconn.atomMatch(pkgkey,
+            matchSlot = self.infoDict['slot'])
+
         inst_idpackage = -1
         if inst_match[1] == 0: inst_idpackage = inst_match[0]
         self.infoDict['removeidpackage'] = inst_idpackage
 
         if self.infoDict['removeidpackage'] != -1:
-            avail = self.Entropy.clientDbconn.isIdpackageAvailable(self.infoDict['removeidpackage'])
+            avail = self.Entropy.clientDbconn.isIdpackageAvailable(
+                self.infoDict['removeidpackage'])
             if avail:
-                self.infoDict['removeatom'] = self.Entropy.clientDbconn.retrieveAtom(self.infoDict['removeidpackage'])
+                inst_atom = self.Entropy.clientDbconn.retrieveAtom(
+                    self.infoDict['removeidpackage'])
+                self.infoDict['removeatom'] = inst_atom
             else:
                 self.infoDict['removeidpackage'] = -1
 
@@ -2242,38 +2385,32 @@ class Package:
         self.infoDict['smartpackage'] = False
         # set unpack dir and image dir
         if self.infoDict['repository'].endswith(etpConst['packagesext']):
+
             # do arch check
             compiled_arch = dbconn.retrieveDownloadURL(idpackage)
             if compiled_arch.find("/"+etpSys['arch']+"/") == -1:
                 self.infoDict.clear()
-                self.prepared = False
+                self.__prepared = False
                 return -1
-            self.infoDict['smartpackage'] = self.Entropy.SystemSettings['repositories']['available'][self.infoDict['repository']]['smartpackage']
-            self.infoDict['pkgpath'] = self.Entropy.SystemSettings['repositories']['available'][self.infoDict['repository']]['pkgpath']
+
+            repo_data = self.Entropy.SystemSettings['repositories']
+            repo_meta = repo_data['available'][self.infoDict['repository']]
+            self.infoDict['smartpackage'] = repo_meta['smartpackage']
+            self.infoDict['pkgpath'] = repo_meta['pkgpath']
+
         else:
-            self.infoDict['pkgpath'] = etpConst['entropyworkdir']+"/"+self.infoDict['download']
-        self.infoDict['unpackdir'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']
-        self.infoDict['imagedir'] = etpConst['entropyunpackdir']+"/"+self.infoDict['download']+"/"+etpConst['entropyimagerelativepath']
+            self.infoDict['pkgpath'] = etpConst['entropyworkdir'] + \
+                os.path.sep + self.infoDict['download']
+
+        self.infoDict['unpackdir'] = etpConst['entropyunpackdir'] + \
+            os.path.sep + self.infoDict['download']
+
+        self.infoDict['imagedir'] = etpConst['entropyunpackdir'] + \
+            os.path.sep + self.infoDict['download'] + os.path.sep + \
+            etpConst['entropyimagerelativepath']
 
         self.infoDict['pkgdbpath'] = os.path.join(self.infoDict['unpackdir'],
             "edb/pkg.db")
-
-        # spm xpak data
-        self.infoDict['xpakpath'] = etpConst['entropyunpackdir'] + "/" + \
-            self.infoDict['download'] + "/" + \
-            etpConst['entropyxpakrelativepath']
-        if not self.infoDict['merge_from']:
-            self.infoDict['xpakstatus'] = None
-            self.infoDict['xpakdir'] = self.infoDict['xpakpath'] + "/" + \
-                etpConst['entropyxpakdatarelativepath']
-        else:
-            self.infoDict['xpakstatus'] = True
-            portdbdir = 'var/db/pkg' # XXX hard coded ?
-            portdbdir = os.path.join(self.infoDict['merge_from'], portdbdir)
-            portdbdir = os.path.join(portdbdir, self.infoDict['category'])
-            portdbdir = os.path.join(portdbdir, self.infoDict['name'] + "-" + \
-                self.infoDict['version'])
-            self.infoDict['xpakdir'] = portdbdir
 
         # compare both versions and if they match, disable removeidpackage
         if self.infoDict['removeidpackage'] != -1:
@@ -2339,8 +2476,31 @@ class Package:
             self.infoDict['unpackdir']
         self.infoDict['triggers']['install']['imagedir'] = \
             self.infoDict['imagedir']
+
+        # FIXME: move to entropy.spm
+
+        self.infoDict['xpakpath'] = etpConst['entropyunpackdir'] + \
+            os.path.sep + self.infoDict['download'] + os.path.sep + \
+            etpConst['entropyxpakrelativepath']
+
+        if not self.infoDict['merge_from']:
+            self.infoDict['xpakstatus'] = None
+            self.infoDict['xpakdir'] = self.infoDict['xpakpath'] + \
+                os.path.sep + etpConst['entropyxpakdatarelativepath']
+
+        else:
+            self.infoDict['xpakstatus'] = True
+            portdbdir = 'var/db/pkg' # XXX hard coded ?
+            portdbdir = os.path.join(self.infoDict['merge_from'], portdbdir)
+            portdbdir = os.path.join(portdbdir, self.infoDict['category'])
+            portdbdir = os.path.join(portdbdir, self.infoDict['name'] + "-" + \
+                self.infoDict['version'])
+
+            self.infoDict['xpakdir'] = portdbdir
+
         self.infoDict['triggers']['install']['xpakdir'] = \
             self.infoDict['xpakdir']
+
 
         return 0
 
@@ -2448,7 +2608,9 @@ class Package:
 
         # meta options
         if self.metaopts.has_key('fetch_abort_function'):
-            self.fetch_abort_function = self.metaopts.pop('fetch_abort_function')
+            self.fetch_abort_function = \
+                self.metaopts.pop('fetch_abort_function')
+
         if self.metaopts.has_key('dochecksum'):
             dochecksum = self.metaopts.get('dochecksum')
         self.infoDict['checksum'] = dochecksum
@@ -2462,7 +2624,9 @@ class Package:
         temp_already_downloaded_count = 0
         etp_workdir = etpConst['entropyworkdir']
         for idpackage, repository in matches:
-            if repository.endswith(etpConst['packagesext']): continue
+
+            if repository.endswith(etpConst['packagesext']):
+                continue
 
             dbconn = self.Entropy.open_repository(repository)
             myatom = dbconn.retrieveAtom(idpackage)
@@ -2484,12 +2648,17 @@ class Package:
             }
 
             repo_size = dbconn.retrieveSize(idpackage)
-            orig_branch = self.Entropy.get_branch_from_download_relative_uri(download)
+            orig_branch = self.Entropy.get_branch_from_download_relative_uri(
+                download)
             if self.Entropy.check_needed_package_download(download, None) < 0:
-                temp_fetch_list.append((repository, orig_branch, download, digest, signatures,))
+                obj = (repository, orig_branch, download, digest, signatures,)
+                temp_fetch_list.append(obj)
                 continue
+
             elif dochecksum:
-                temp_checksum_list.append((repository, orig_branch, download, digest, signatures,))
+                obj = (repository, orig_branch, download, digest, signatures,)
+                temp_checksum_list.append(obj)
+
             down_path = os.path.join(etp_workdir, download)
             if os.path.isfile(down_path):
                 with open(down_path, "r") as f:
