@@ -5,11 +5,11 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   0.99:
 
     - complete entropy.client.interfaces.package SPM cleanup
-    - entropy.db, add arch metadata on extrainfo
-    - entropy.tools + entropy.transceivers API docs merge
 
   1.0_beta1:
 
+    - entropy.db, add arch metadata on extrainfo
+    - entropy.tools + entropy.transceivers API docs merge
     - entropy.server API docs merge
     - entropy.db hookable plugins support (atom/dep validation, db taint,
         pkg add, pkg rm)
