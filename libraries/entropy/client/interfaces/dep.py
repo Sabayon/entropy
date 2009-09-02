@@ -1679,6 +1679,13 @@ class CalculatorsMixin:
             self.Cacher.push("%s%s" % (etpCache['world_update'],c_hash,),
                 data, async = False)
 
+        if not update:
+            # delete branch upgrade file if exists, since there are
+            # no updates, this file does not deserve to be saved anyway
+            br_path = etpConst['etp_in_branch_upgrade_file']
+            if os.access(br_path, os.W_OK | os.F_OK):
+                os.remove(br_path)
+
         return update, remove, fine, spm_fine
 
     def check_package_update(self, atom, deep = False):
