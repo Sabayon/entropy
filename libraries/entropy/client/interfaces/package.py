@@ -491,7 +491,11 @@ class Package:
         remove_content = sorted(self.pkgmeta['removecontent'], reverse = True)
         for item in remove_content:
 
+            if not item:
+                continue # empty element??
+
             sys_root_item = sys_root + item
+
             # collision check
             if col_protect > 0:
 
@@ -859,6 +863,15 @@ class Package:
             data = dbconn.getPackageData(self.pkgmeta['idpackage'],
                 content_insert_formatted = True)
 
+            if self.pkgmeta['removeidpackage'] != -1:
+                self.pkgmeta['removecontent'].update(
+                    self.Entropy.clientDbconn.contentDiff(
+                        self.pkgmeta['removeidpackage'],
+                        dbconn,
+                        self.pkgmeta['idpackage']
+                    )
+                )
+
         else:
 
             # normal repositories
@@ -868,15 +881,24 @@ class Package:
                 self.pkgmeta['pkgdbpath'])
             # it is safe to consider that package dbs coming from repos
             # contain only one entry
-            content = []
-            for pkg_idpackage in pkg_dbconn.listAllIdpackages():
-                content += pkg_dbconn.retrieveContent(
-                    pkg_idpackage, extended = True,
-                    formatted = True, insert_formatted = True
-                )
+            pkg_idpackage = sorted(pkg_dbconn.listAllIdpackages())[0]
+            content = pkg_dbconn.retrieveContent(
+                pkg_idpackage, extended = True,
+                formatted = True, insert_formatted = True
+            )
             real_idpk = self.pkgmeta['idpackage']
             content = [(real_idpk, x, y,) for orig_idpk, x, y in content]
             data['content'] = content
+
+            if self.pkgmeta['removeidpackage'] != -1:
+                self.pkgmeta['removecontent'].update(
+                    self.Entropy.clientDbconn.contentDiff(
+                        self.pkgmeta['removeidpackage'],
+                        pkg_dbconn,
+                        pkg_idpackage
+                    )
+                )
+
             pkg_dbconn.closeDB()
 
         # this is needed to make postinstall trigger to work properly
@@ -1304,6 +1326,9 @@ class Package:
         if self.pkgmeta.get('removecontent'):
             my_remove_content = set()
             for mypath in self.pkgmeta['removecontent']:
+
+                if not mypath:
+                    continue # empty?
 
                 item_dir = os.path.dirname("%s%s" % (sys_root, mypath,))
                 item = os.path.join(os.path.realpath(item_dir),
@@ -2363,11 +2388,11 @@ class Package:
         self.pkgmeta['removeconfig'] = removeConfig
 
         pkgkey = entropy.tools.dep_getkey(self.pkgmeta['atom'])
-        inst_match = self.Entropy.clientDbconn.atomMatch(pkgkey,
+        inst_idpackage, inst_rc = self.Entropy.clientDbconn.atomMatch(pkgkey,
             matchSlot = self.pkgmeta['slot'])
 
-        inst_idpackage = -1
-        if inst_match[1] == 0: inst_idpackage = inst_match[0]
+        # filled later...
+        self.pkgmeta['removecontent'] = set()
         self.pkgmeta['removeidpackage'] = inst_idpackage
 
         if self.pkgmeta['removeidpackage'] != -1:
@@ -2415,41 +2440,21 @@ class Package:
         # compare both versions and if they match, disable removeidpackage
         if self.pkgmeta['removeidpackage'] != -1:
 
-            installedVer, installedTag, installedRev = \
-                self.Entropy.clientDbconn.getVersioningData(
+            # differential remove list
+            self.pkgmeta['diffremoval'] = True
+            self.pkgmeta['removeatom'] = \
+                self.Entropy.clientDbconn.retrieveAtom(
                     self.pkgmeta['removeidpackage'])
 
-            repo_pkg_cmp = (self.pkgmeta['version'],
-                self.pkgmeta['versiontag'], self.pkgmeta['revision'],)
-            inst_pkg_cmp = (installedVer, installedTag, installedRev,)
-
-            pkgcmp = entropy.tools.entropy_compare_versions(
-                repo_pkg_cmp, inst_pkg_cmp)
-
-            if pkgcmp == 0:
-                self.pkgmeta['removeidpackage'] = -1
-            else:
-                # differential remove list
-                self.pkgmeta['diffremoval'] = True
-                self.pkgmeta['removeatom'] = \
-                    self.Entropy.clientDbconn.retrieveAtom(
-                        self.pkgmeta['removeidpackage'])
-
-                self.pkgmeta['removecontent'] = \
-                    self.Entropy.clientDbconn.contentDiff(
-                        self.pkgmeta['removeidpackage'],
-                        dbconn,
-                        idpackage
-                    )
-                self.pkgmeta['triggers']['remove'] = \
-                    self.Entropy.clientDbconn.getTriggerInfo(
-                        self.pkgmeta['removeidpackage']
-                    )
-                self.pkgmeta['triggers']['remove']['removecontent'] = \
-                    self.pkgmeta['removecontent']
-                self.pkgmeta['triggers']['remove']['accept_license'] = \
-                    self.Entropy.clientDbconn.retrieveLicensedataKeys(
-                        self.pkgmeta['removeidpackage'])
+            self.pkgmeta['triggers']['remove'] = \
+                self.Entropy.clientDbconn.getTriggerInfo(
+                    self.pkgmeta['removeidpackage']
+                )
+            self.pkgmeta['triggers']['remove']['removecontent'] = \
+                self.pkgmeta['removecontent'] # pass reference, not copy! nevva!
+            self.pkgmeta['triggers']['remove']['accept_license'] = \
+                self.Entropy.clientDbconn.retrieveLicensedataKeys(
+                    self.pkgmeta['removeidpackage'])
 
         # set steps
         self.pkgmeta['steps'] = []
