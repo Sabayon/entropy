@@ -31,6 +31,7 @@ from sulfur import SulfurApplication
 from sulfur.dialogs import ExceptionDialog
 from sulfur.setup import const
 
+exit_status = 0
 try:
     try:
         gtk.window_set_default_icon_from_file(
@@ -45,12 +46,13 @@ try:
     gtk.gdk.threads_leave()
     entropy.tools.kill_threads()
     mainApp.quit()
-except SystemExit:
+except SystemExit, e:
     print "Quit by User (SystemExit)"
     try:
         mainApp.quit()
     except NameError:
         pass
+    exit_status = e.code
 except KeyboardInterrupt:
     print "Quit by User (KeyboardInterrupt)"
     try:
@@ -66,4 +68,4 @@ except: # catch other exception and write it to the logger.
     except NameError:
         pass
 
-raise SystemExit(0)
+raise SystemExit(exit_status)
