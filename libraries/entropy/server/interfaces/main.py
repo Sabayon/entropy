@@ -1374,7 +1374,7 @@ class Server(Singleton, TextInterface):
                 self.entropyTools.dep_getkey(x[0]), x[1],) for x \
                     in sorted(packages)])
             if pkg_list_path is not None:
-                with open(pkgstring_list, "w") as pkg_f:
+                with open(pkg_list_path, "w") as pkg_f:
                     for pkgstr in pkgstring_list:
                         pkg_f.write(pkgstr + "\n")
                     pkg_f.flush()
