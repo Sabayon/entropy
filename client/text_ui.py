@@ -50,6 +50,7 @@ def package(options):
     equoRequestChecksum = True
     equoRequestSortSize = False
     equoRequestSaveHere = False
+    equoRequestDump = False
     equoRequestMultifetch = 1
     rc = 0
     _myopts = []
@@ -66,6 +67,8 @@ def package(options):
             equoRequestOnlyFetch = True
         elif (opt == "--deep"):
             equoRequestDeep = True
+        elif (opt == "--dump"):
+            equoRequestDump = True
         elif (opt == "--listfiles"):
             equoRequestListfiles = True
         elif (opt == "--configfiles"):
@@ -113,7 +116,8 @@ def package(options):
         rc, garbage = unusedPackagesTest(do_size_sort = equoRequestSortSize)
 
     elif (options[0] == "libtest"):
-        rc, garbage = librariesTest(listfiles = equoRequestListfiles)
+        rc, garbage = librariesTest(listfiles = equoRequestListfiles,
+            dump = equoRequestDump)
 
     elif (options[0] == "source"):
 
@@ -1707,7 +1711,7 @@ def dependenciesTest():
 
     return 0,0
 
-def librariesTest(listfiles = False):
+def librariesTest(listfiles = False, dump = False):
 
     def restore_qstats():
         etpUi['mute'] = mstat
@@ -1720,7 +1724,8 @@ def librariesTest(listfiles = False):
         etpUi['quiet'] = True
 
     QA = Equo.QA()
-    packagesMatched, brokenlibs, status = QA.test_shared_objects(Equo.clientDbconn)
+    packagesMatched, brokenlibs, status = QA.test_shared_objects(Equo.clientDbconn,
+        dump_results_to_file = dump)
     if status != 0:
         restore_qstats()
         return -1,1
