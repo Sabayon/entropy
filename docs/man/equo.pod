@@ -698,10 +698,6 @@ scan the System looking for newly compiled packages
 =over
 
 
-=item B<--branch=<branch>>
-
-choose on what branch operating
-
 =item B<--seekstore>
 
 analyze the Entropy Store directory directly
@@ -725,15 +721,6 @@ manage only the specified atoms
 
 add binary packages to repository w/o affecting scopes (multipackages)
 
-=over
-
-
-=item B<--branch=<branch>>
-
-choose on what branch operating
-
-=back
-
 =back
 
 
@@ -750,10 +737,6 @@ sync packages, database and also do some tidy
 
 =over
 
-
-=item B<--branch=<branch>>
-
-choose on what branch operating
 
 =item B<--noask>
 
@@ -875,15 +858,6 @@ synchronize the database
 =item B<remove>
 
 remove the provided atoms from the current repository database
-
-=over
-
-
-=item B<--branch=<branch>>
-
-choose on what branch operating
-
-=back
 
 
 =item B<multiremove>
