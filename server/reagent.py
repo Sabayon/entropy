@@ -110,6 +110,7 @@ myopts = [
     None,
     (1,'deptest',3,_('look for unsatisfied dependencies')),
     (1,'libtest',3,_('look for missing libraries')),
+        (2,'--dump',2,_('dump results to files')),
     (1,'pkgtest',3,_('verify the integrity of local package files')),
     (1,'depends',3,_('regenerate the depends table')),
     (1,'libpaths',2,_('regenerate the library paths table')),
@@ -203,7 +204,9 @@ elif (options[0] == "pkgtest"):
 
 elif (options[0] == "libtest"):
     import server_reagent
-    rc, pkgs = server_reagent.Entropy.test_shared_objects()
+    dump = "--dump" in options
+    rc, pkgs = server_reagent.Entropy.test_shared_objects(
+        dump_results_to_file = dump)
     x = server_reagent.Entropy.close_server_databases()
 
 elif (options[0] == "depends"):
