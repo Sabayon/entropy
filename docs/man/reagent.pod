@@ -315,6 +315,14 @@ look for unsatisfied dependencies
 
 look for missing libraries
 
+=over
+
+=item B<--dump>
+
+dump results to files
+
+=back
+
 =item B<pkgtest>
 
 verify the integrity of local package files

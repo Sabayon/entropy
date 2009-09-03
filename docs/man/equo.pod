@@ -406,6 +406,10 @@ look for missing libraries
 
 =over
 
+=item B<--dump>
+
+dump results to files
+
 =item B<--listfiles>
 
 print broken files to stdout
