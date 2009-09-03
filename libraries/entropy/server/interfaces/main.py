@@ -1284,14 +1284,39 @@ class Server(Singleton, TextInterface):
 
         return deps_not_matched
 
-    def test_shared_objects(self, get_files = False, repo = None):
+    def test_shared_objects(self, get_files = False, repo = None,
+        dump_results_to_file = False):
+
+        pkg_list_path = None
+        if dump_results_to_file:
+            tmp_dir = os.path.dirname(self.entropyTools.get_random_temp_file())
+            pkg_list_path = os.path.join(tmp_dir, "libtest_broken.txt")
+            dmp_data = [
+                (_("Broken and matched packages list"), pkg_list_path,),
+            ]
+            mytxt = "%s:" % (purple(_("Dumping results into these files")),)
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
+            for txt, path in dmp_data:
+                mytxt = "%s: %s" % (blue(txt), path,)
+                self.updateProgress(
+                    mytxt,
+                    importance = 0,
+                    type = "info",
+                    header = darkgreen("   ## ")
+                )
+
 
         # load db
         dbconn = self.open_server_repository(read_only = True,
             no_upload = True, repo = repo)
         QA = self.QA()
         packages_matched, brokenexecs, status = QA.test_shared_objects(dbconn,
-            broken_symbols = True)
+            broken_symbols = True, dump_results_to_file = dump_results_to_file)
         if status != 0:
             return 1, None
 
@@ -1337,17 +1362,23 @@ class Server(Singleton, TextInterface):
                     type = "info",
                     header = red("     # ")
                 )
-                for filename in sorted(list(packages[package_slot])):
+                for filename in sorted(packages[package_slot]):
                     self.updateProgress(
                         darkgreen(filename),
                         importance = 0,
                         type = "info",
                         header = brown("       => ")
                     )
-            # print string
-            pkgstring = ' '.join(["%s:%s" % (
+
+            pkgstring_list = sorted(["%s:%s" % (
                 self.entropyTools.dep_getkey(x[0]), x[1],) for x \
                     in sorted(packages)])
+            if pkg_list_path is not None:
+                with open(pkgstring_list, "w") as pkg_f:
+                    for pkgstr in pkgstring_list:
+                        pkg_f.write(pkgstr + "\n")
+                    pkg_f.flush()
+            pkgstring = ' '.join(pkgstring_list)
             mytxt = "%s: %s" % (darkgreen(_("Packages string")), pkgstring,)
             self.updateProgress(
                 mytxt,
