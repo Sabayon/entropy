@@ -203,7 +203,7 @@ elif (options[0] == "pkgtest"):
 
 elif (options[0] == "libtest"):
     import server_reagent
-    rc = server_reagent.Entropy.test_shared_objects()
+    rc, pkgs = server_reagent.Entropy.test_shared_objects()
     x = server_reagent.Entropy.close_server_databases()
 
 elif (options[0] == "depends"):
