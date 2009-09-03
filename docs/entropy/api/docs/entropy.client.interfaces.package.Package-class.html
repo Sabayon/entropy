@@ -190,6 +190,115 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.package.Package-class.html#remove_installed_package" class="summary-sig-name">remove_installed_package</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackage</span>)</span><br />
+      Remove installed package from Entropy installed packages repository.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.package-pysrc.html#Package.remove_installed_package">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.package.Package-class.html#remove_content_from_system" class="summary-sig-name">remove_content_from_system</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackage</span>,
+        <span class="summary-sig-arg">automerge_metadata</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Remove installed package content (files/directories) from live 
+      system.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.package-pysrc.html#Package.remove_content_from_system">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.package.Package-class.html#spm_install_package" class="summary-sig-name">spm_install_package</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackage</span>)</span><br />
+      Call Source Package Manager interface and tell it to register our 
+      newly installed package.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.package-pysrc.html#Package.spm_install_package">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.package.Package-class.html#spm_remove_package" class="summary-sig-name">spm_remove_package</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Call Source Package Manager interface and tell it to remove our just 
+      removed package.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.package-pysrc.html#Package.spm_remove_package">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.package.Package-class.html#add_installed_package" class="summary-sig-name">add_installed_package</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      For internal use only.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.package-pysrc.html#Package.add_installed_package">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="move_image_to_system"></a><span class="summary-sig-name">move_image_to_system</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">already_protected_config_files</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.package-pysrc.html#Package.move_image_to_system">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a name="sources_fetch_step"></a><span class="summary-sig-name">sources_fetch_step</span>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.package-pysrc.html#Package.sources_fetch_step">source&nbsp;code</a></span>
@@ -515,7 +624,7 @@
           <td><span class="summary-sig"><a name="prepare"></a><span class="summary-sig-name">prepare</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">matched_atom</span>,
         <span class="summary-sig-arg">action</span>,
-        <span class="summary-sig-arg">metaopts</span>=<span class="summary-sig-default"><code class="variable-group">{</code><code class="variable-group">}</code></span>)</span></td>
+        <span class="summary-sig-arg">metaopts</span>=<span class="summary-sig-default">None</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.package-pysrc.html#Package.prepare">source&nbsp;code</a></span>
             
@@ -542,6 +651,137 @@
     </td>
   </tr>
 </table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="remove_installed_package"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remove_installed_package</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idpackage</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.package-pysrc.html#Package.remove_installed_package">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove installed package from Entropy installed packages 
+  repository.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - Entropy Repository package identifier</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remove_content_from_system"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remove_content_from_system</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idpackage</span>,
+        <span class="sig-arg">automerge_metadata</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.package-pysrc.html#Package.remove_content_from_system">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove installed package content (files/directories) from live 
+  system.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - Entropy Repository package identifier</li>
+        <li><strong class="pname"><code>automerge_metadata</code></strong> (dict) - Entropy &quot;automerge metadata&quot;</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="spm_install_package"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">spm_install_package</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idpackage</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.package-pysrc.html#Package.spm_install_package">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Call Source Package Manager interface and tell it to register our 
+  newly installed package.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - Entropy repository package identifier</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="spm_remove_package"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">spm_remove_package</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.package-pysrc.html#Package.spm_remove_package">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Call Source Package Manager interface and tell it to remove our just 
+  removed package.</p>
+  <dl class="fields">
+    <dt>Returns: int</dt>
+        <dd>execution status</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="add_installed_package"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">add_installed_package</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.package-pysrc.html#Package.add_installed_package">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>For internal use only. Copy package from repository to installed 
+  packages one.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -573,7 +813,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sun Aug 30 13:19:05 2009
+    Generated by Epydoc 3.0.1 on Thu Sep  3 14:56:04 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -60,15 +60,16 @@
 <h1 class="epydoc">Class ServerFatscopeSystemSettingsPlugin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#ServerFatscopeSystemSettingsPlugin">source&nbsp;code</a></span></p>
 <center>
 <center>  <map id="uml_class_diagram_for_entropy__63" name="uml_class_diagram_for_entropy__63">
-<area shape="rect" href="entropy.tools-module.html" title="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin.entropyTools" alt="" coords="37,177,256,196"/>
-<area shape="rect" href="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin-class.html#repos_parser" title="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin.repos_parser" alt="" coords="37,199,256,217"/>
-<area shape="rect" href="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin-class.html" title="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin" alt="" coords="36,160,257,219"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#__init__" title="SystemSettingsPlugin constructor." alt="" coords="17,36,276,55"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#get_id" title="Returns the unique plugin id passed at construction time." alt="" coords="17,55,276,73"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#add_parser" title="You must call this method in order to add your custom parsers to the plugin." alt="" coords="17,73,276,92"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#parse" title="This method is called by SystemSettings instance when building its settings metadata." alt="" coords="17,92,276,111"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html#post_setup" title="This method is called by SystemSettings instance after having built all the SystemSettings metadata." alt="" coords="17,111,276,129"/>
-<area shape="rect" href="entropy.core.SystemSettingsPlugin-class.html" title="This is a plugin base class for all SystemSettings plugins." alt="" coords="16,11,277,131"/>
+<area shape="rect" href="entropy.tools-module.html" title="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin.entropyTools" alt="" coords="49,191,268,209"/>
+<area shape="rect" href="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin-class.html#repos_parser" title="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin.repos_parser" alt="" coords="49,212,268,231"/>
+<area shape="rect" href="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin-class.html" title="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin" alt="" coords="48,173,269,232"/>
+<area shape="rect" href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#BASE_PLUGIN_API_VERSION" title="This is a plugin base class for all SystemSettings plugins." alt="" coords="17,28,300,47"/>
+<area shape="rect" href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#__init__" title="SystemSettingsPlugin constructor." alt="" coords="17,49,300,68"/>
+<area shape="rect" href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#add_parser" title="You must call this method in order to add your custom parsers to the plugin." alt="" coords="17,68,300,87"/>
+<area shape="rect" href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#get_id" title="Returns the unique plugin id passed at construction time." alt="" coords="17,87,300,105"/>
+<area shape="rect" href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#parse" title="This method is called by SystemSettings instance when building its settings metadata." alt="" coords="17,105,300,124"/>
+<area shape="rect" href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#post_setup" title="This method is called by SystemSettings instance after having built all the SystemSettings metadata." alt="" coords="17,124,300,143"/>
+<area shape="rect" href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html" title="entropy.core.settings.plugins.skel.SystemSettingsPlugin" alt="" coords="16,11,301,144"/>
 </map>
   <img src="uml_class_diagram_for_entropy__63.gif" alt='' usemap="#uml_class_diagram_for_entropy__63" ismap="ismap" class="graph-without-title" />
 </center>
@@ -101,12 +102,55 @@
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.SystemSettingsPlugin-class.html">core.SystemSettingsPlugin</a></code></b>:
-      <code><a href="entropy.core.SystemSettingsPlugin-class.html#__init__">__init__</a></code>,
-      <code><a href="entropy.core.SystemSettingsPlugin-class.html#add_parser">add_parser</a></code>,
-      <code><a href="entropy.core.SystemSettingsPlugin-class.html#get_id">get_id</a></code>,
-      <code><a href="entropy.core.SystemSettingsPlugin-class.html#parse">parse</a></code>,
-      <code><a href="entropy.core.SystemSettingsPlugin-class.html#post_setup">post_setup</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html">core.settings.plugins.skel.SystemSettingsPlugin</a></code></b>:
+      <code><a href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#__init__">__init__</a></code>,
+      <code><a href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#add_parser">add_parser</a></code>,
+      <code><a href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#get_id">get_id</a></code>,
+      <code><a href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#parse">parse</a></code>,
+      <code><a href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#post_setup">post_setup</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__str__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html">core.settings.plugins.skel.SystemSettingsPlugin</a></code></b>:
+      <code><a href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#BASE_PLUGIN_API_VERSION">BASE_PLUGIN_API_VERSION</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
       </p>
     </td>
   </tr>
@@ -142,7 +186,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sun Aug 30 13:19:09 2009
+    Generated by Epydoc 3.0.1 on Thu Sep  3 14:56:07 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

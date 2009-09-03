@@ -82,41 +82,6 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">dict</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.factory-module.html#get_available_plugins" class="summary-sig-name">get_available_plugins</a>()</span><br />
-      Return currently available Source Package Manager plugin classes.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.factory-pysrc.html#get_available_plugins">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">entropy.spm.plugins.skel.SpmPlugin</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.factory-module.html#get_default_class" class="summary-sig-name">get_default_class</a>()</span><br />
-      Return currently configured Entropy Source Package Manager plugin 
-      class.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.factory-pysrc.html#get_default_class">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">entropy.spm.plugins.skel.SpmPlugin based instance</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -145,7 +110,22 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="PLUGIN_SUFFIX"></a><span class="summary-name">PLUGIN_SUFFIX</span> = <code title="'_plugin'"><code class="variable-quote">'</code><code class="variable-string">_plugin</code><code class="variable-quote">'</code></code>
+        <a name="settings"></a><span class="summary-name">settings</span> = <code title="SystemSettings()">SystemSettings()</code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="default_plugin"></a><span class="summary-name">default_plugin</span> = <code title="'portage'"><code class="variable-quote">'</code><code class="variable-string">portage</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="entropy.spm.plugins.factory-module.html#FACTORY" class="summary-name">FACTORY</a> = <code title="EntropyPluginFactory(SpmPlugin, plugs, default_plugin_name= default_pl\
+ugin, fallback_plugin_name= etpConst ['spm'] ['backend'])">EntropyPluginFactory(SpmPlugin, plugs, default_plugi<code class="variable-ellipsis">...</code></code>
     </td>
   </tr>
 </table>
@@ -158,52 +138,6 @@
     <span class="table-header">Function Details</span></td>
 </tr>
 </table>
-<a name="get_available_plugins"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_available_plugins</span>()</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.factory-pysrc.html#get_available_plugins">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return currently available Source Package Manager plugin classes. 
-  Note: SPM plugins can either be Python packages or modules and their name
-  MUST end with &quot;_plugin&quot;.</p>
-  <dl class="fields">
-    <dt>Returns: dict</dt>
-        <dd>dictionary composed by SPM plugin id as key and SPM Python module
-          as value</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_default_class"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_default_class</span>()</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.factory-pysrc.html#get_default_class">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return currently configured Entropy Source Package Manager plugin 
-  class.</p>
-  <dl class="fields">
-    <dt>Returns: entropy.spm.plugins.skel.SpmPlugin</dt>
-        <dd>Entropy Source Package Manager plugin class</dd>
-  </dl>
-</td></tr></table>
-</div>
 <a name="get_default_instance"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -226,6 +160,35 @@
     </ul></dd>
     <dt>Returns: entropy.spm.plugins.skel.SpmPlugin based instance</dt>
         <dd>currently selected SPM interface</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== VARIABLES DETAILS ==================== -->
+<a name="section-VariablesDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Variables Details</span></td>
+</tr>
+</table>
+<a name="FACTORY"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">FACTORY</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+EntropyPluginFactory(SpmPlugin, plugs, default_plugin_name= default_pl<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+ugin, fallback_plugin_name= etpConst ['spm'] ['backend'])
+</pre></td></tr></table>
+</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -261,7 +224,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sun Aug 30 13:19:03 2009
+    Generated by Epydoc 3.0.1 on Thu Sep  3 14:56:02 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

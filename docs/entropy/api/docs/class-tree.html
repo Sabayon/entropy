@@ -64,6 +64,8 @@
     </li>
     </ul>
     </li>
+    <li> <strong class="uidlink"><a href="entropy.services.system.executors.Base-class.html">entropy.services.system.executors.Base</a></strong>
+    </li>
     <li> <strong class="uidlink"><a href="entropy.client.services.ugc.commands.Base-class.html">entropy.client.services.ugc.commands.Base</a></strong>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.client.services.ugc.commands.Client-class.html">entropy.client.services.ugc.commands.Client</a></strong>
@@ -75,8 +77,6 @@
     </ul>
     </li>
     </ul>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.services.system.executors.Base-class.html">entropy.services.system.executors.Base</a></strong>
     </li>
     <li> <strong class="uidlink">urllib2.BaseHandler</strong>
     <ul>
@@ -131,9 +131,9 @@
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.services.ugc.interfaces.Client-class.html">entropy.client.services.ugc.interfaces.Client</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.client.services.system.interfaces.Client-class.html">entropy.client.services.system.interfaces.Client</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.services.ugc.interfaces.Client-class.html">entropy.services.ugc.interfaces.Client</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.client.services.system.interfaces.Client-class.html">entropy.client.services.system.interfaces.Client</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.CommandProcessor-class.html">entropy.services.interfaces.SocketHost.CommandProcessor</a></strong>
     </li>
@@ -147,6 +147,9 @@
     <li> <strong class="uidlink"><a href="entropy.misc.EntropyGeoIP-class.html">entropy.misc.EntropyGeoIP</a></strong>:
       <em class="summary">Entropy geo-tagging interface containing useful methods to ease 
         metadata management and transformation.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.core.EntropyPluginFactory-class.html">entropy.core.EntropyPluginFactory</a></strong>:
+      <em class="summary">Generic Entropy Components Plugin Factory (loader).</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.interfaces.trigger.Trigger.EntropyPySandbox-class.html">entropy.client.interfaces.trigger.Trigger.EntropyPySandbox</a></strong>
     </li>
@@ -165,9 +168,9 @@ Content (UGC) infrastructure.</em>
     </li>
     </ul>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.services.system.interfaces.Server.FakeServiceInterface-class.html">entropy.services.system.interfaces.Server.FakeServiceInterface</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.services.test.interfaces.Server.FakeServiceInterface-class.html">entropy.services.test.interfaces.Server.FakeServiceInterface</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.services.system.interfaces.Server.FakeServiceInterface-class.html">entropy.services.system.interfaces.Server.FakeServiceInterface</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.interfaces.fetch.FetchersMixin-class.html">entropy.client.interfaces.fetch.FetchersMixin</a></strong>
     <ul>
@@ -282,20 +285,9 @@ Content (UGC) infrastructure.</em>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.services.system.interfaces.Server-class.html">entropy.services.system.interfaces.Server</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.services.repository.interfaces.Server-class.html">entropy.services.repository.interfaces.Server</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.services.test.interfaces.Server-class.html">entropy.services.test.interfaces.Server</a></strong>
     </li>
-    </ul>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.core.SystemSettingsPlugin-class.html">entropy.core.SystemSettingsPlugin</a></strong>:
-      <em class="summary">This is a plugin base class for all SystemSettings plugins.</em>
-    <ul>
-    <li> <strong class="uidlink"><a href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html">entropy.client.interfaces.client.ClientSystemSettingsPlugin</a></strong>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin-class.html">entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin</a></strong>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.server.interfaces.main.ServerSystemSettingsPlugin-class.html">entropy.server.interfaces.main.ServerSystemSettingsPlugin</a></strong>
+    <li> <strong class="uidlink"><a href="entropy.services.repository.interfaces.Server-class.html">entropy.services.repository.interfaces.Server</a></strong>
     </li>
     </ul>
     </li>
@@ -461,9 +453,19 @@ Content (UGC) infrastructure.</em>
     </li>
     </ul>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.core.SystemSettings-class.html">entropy.core.SystemSettings</a></strong>:
+    <li> <strong class="uidlink"><a href="entropy.core.settings.base.SystemSettings-class.html">entropy.core.settings.base.SystemSettings</a></strong>:
       <em class="summary">This is the place where all the Entropy settings are stored if they
         are not considered instance constants (etpConst).</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html">entropy.core.settings.plugins.skel.SystemSettingsPlugin</a></strong>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html">entropy.client.interfaces.client.ClientSystemSettingsPlugin</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin-class.html">entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.server.interfaces.main.ServerSystemSettingsPlugin-class.html">entropy.server.interfaces.main.ServerSystemSettingsPlugin</a></strong>
     </li>
     </ul>
     </li>
@@ -496,11 +498,6 @@ Content (UGC) infrastructure.</em>
         from sequence's items</em>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize-class.html">entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize</a></strong>:
-      <em class="summary">Take a dependency structure as returned by paren_reduce or 
-        use_reduce and generate an equivalent structure that has no 
-        redundant lists.</em>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.spm.plugins.skel.SpmPlugin.paren_normalize-class.html">entropy.spm.plugins.skel.SpmPlugin.paren_normalize</a></strong>:
       <em class="summary">Take a dependency structure as returned by paren_reduce or 
         use_reduce and generate an equivalent structure that has no 
         redundant lists.</em>
@@ -543,7 +540,7 @@ Content (UGC) infrastructure.</em>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Sun Aug 30 13:19:02 2009
+    Generated by Epydoc 3.0.1 on Thu Sep  3 14:56:02 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
