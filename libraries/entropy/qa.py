@@ -18,6 +18,7 @@
     exceptions (errors) submission.
 
 """
+from __future__ import with_statement
 import os
 import sys
 import subprocess
@@ -335,7 +336,8 @@ class QAInterface:
         return taint
 
     def test_shared_objects(self, dbconn, broken_symbols = False,
-        task_bombing_func = None, self_dir_check = True):
+        task_bombing_func = None, self_dir_check = True,
+        dump_results_to_file = False):
 
         """
         Scan system looking for broken shared object ELF library dependencies.
@@ -352,7 +354,8 @@ class QAInterface:
             scan iteration to allow external routines to cleanly stop the
             execution of this function.
         @type task_bombing_func: callable
-        packagesMatched, plain_brokenexecs, 0
+        @keyword dump_results_to_file: dump test results to files (printed)
+        @type dump_results_to_file: bool
         @return: tuple of length 3, composed by (1) a dict of matched packages,
             (2) a list (set) of broken ELF objects and (3) the execution status
             (int, 0 means success).
@@ -366,9 +369,37 @@ class QAInterface:
             header = red(" @@ ")
         )
 
-        myroot = etpConst['systemroot'] + "/"
+        syms_list_path = None
+        files_list_path = None
+        if dump_results_to_file:
+
+            tmp_dir = os.path.dirname(self.entropyTools.get_random_temp_file())
+            syms_list_path = os.path.join(tmp_dir, "libtest_syms.txt")
+            files_list_path = os.path.join(tmp_dir, "libtest_files.txt")
+
+            dmp_data = [
+                (_("Broken symbols packages list"), syms_list_path,),
+                (_("Broken executables list"), files_list_path,),
+            ]
+            mytxt = "%s:" % (purple(_("Dumping results into these files")),)
+            self.Output.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
+            for txt, path in dmp_data:
+                mytxt = "%s: %s" % (blue(txt), path,)
+                self.Output.updateProgress(
+                    mytxt,
+                    importance = 0,
+                    type = "info",
+                    header = darkgreen("   ## ")
+                )
+
+        myroot = etpConst['systemroot'] + os.path.sep
         if not etpConst['systemroot']:
-            myroot = "/"
+            myroot = os.path.sep
 
         # run ldconfig first
         subprocess.call("ldconfig -r %s &> /dev/null" % (myroot,), shell = True)
@@ -487,6 +518,14 @@ class QAInterface:
             header = red(" @@ ")
         )
 
+        syms_list_f = None
+        if syms_list_path:
+            syms_list_f = open(syms_list_path, "w")
+
+        files_list_f = None
+        if files_list_path:
+            files_list_f = open(files_list_path, "w")
+
         plain_brokenexecs = set()
         total = len(executables)
         count = 0
@@ -564,7 +603,7 @@ class QAInterface:
             if broken_symbols and not mylibs:
 
                 read_broken_syms = self.entropyTools.read_elf_broken_symbols(
-                        etpConst['systemroot'] + executable)
+                        real_exec_path)
                 my_broken_syms = set()
                 for read_broken_sym in read_broken_syms:
                     for reg_sym in broken_syms_list_regexp:
@@ -577,9 +616,13 @@ class QAInterface:
                 continue
 
             if mylibs:
+
+                if files_list_f:
+                    files_list_f.write(executable + "\n")
+
                 alllibs = blue(' :: ').join(sorted(mylibs))
                 self.Output.updateProgress(
-                    red(etpConst['systemroot']+executable)+" [ "+alllibs+" ]",
+                    red(real_exec_path)+" [ "+alllibs+" ]",
                     importance = 1,
                     type = "info",
                     percent = True,
@@ -588,13 +631,17 @@ class QAInterface:
                 )
             elif broken_sym_found:
 
-                allsyms = darkred(' :: ').join(
-                    [brown(x) for x in list(broken_sym_found)])
+                allsyms = darkred(' :: ').join([brown(x) for x in \
+                    broken_sym_found])
                 if len(allsyms) > 50:
                     allsyms = brown(_('various broken symbols'))
 
+                if syms_list_f and broken_sym_found:
+                    syms_list_f.write("%s => %s\n" % (real_exec_path,
+                        sorted(broken_sym_found),))
+
                 self.Output.updateProgress(
-                    red(etpConst['systemroot']+executable)+" { "+allsyms+" }",
+                    red(real_exec_path)+" { "+allsyms+" }",
                     importance = 1,
                     type = "info",
                     percent = True,
@@ -603,6 +650,14 @@ class QAInterface:
                 )
 
             plain_brokenexecs.add(executable)
+
+        # close open files
+        if syms_list_f:
+            syms_list_f.flush()
+            syms_list_f.close()
+        if files_list_f:
+            files_list_f.flush()
+            files_list_f.close()
 
         del executables
         packagesMatched = {}
