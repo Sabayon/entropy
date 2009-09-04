@@ -1615,6 +1615,117 @@ class PortagePlugin(SpmPlugin):
 
         return 0
 
+    @staticmethod
+    def entropy_install_setup_hook(entropy_client, package_metadata):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        package_metadata['xpakpath'] = etpConst['entropyunpackdir'] + \
+            os.path.sep + package_metadata['download'] + os.path.sep + \
+            etpConst['entropyxpakrelativepath']
+
+        if not package_metadata['merge_from']:
+
+            package_metadata['xpakstatus'] = None
+            package_metadata['xpakdir'] = package_metadata['xpakpath'] + \
+                os.path.sep + etpConst['entropyxpakdatarelativepath']
+
+        else:
+
+            package_metadata['xpakstatus'] = True
+
+            try:
+                try:
+                    import portage.const as portage_const
+                except ImportError:
+                    import portage_const
+                portdbdir = portage_const.VDB_PATH
+            except ImportError:
+                portdbdir = 'var/db/pkg'
+
+            portdbdir = os.path.join(package_metadata['merge_from'], portdbdir)
+            portdbdir = os.path.join(portdbdir, package_metadata['category'])
+            portdbdir = os.path.join(portdbdir, package_metadata['name'] + \
+                "-" + package_metadata['version'])
+
+            package_metadata['xpakdir'] = portdbdir
+
+        package_metadata['triggers']['install']['xpakdir'] = \
+            package_metadata['xpakdir']
+
+        return 0
+
+    @staticmethod
+    def entropy_install_unpack_hook(entropy_client, package_metadata):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        # unpack xpak ?
+        if os.path.isdir(package_metadata['xpakpath']):
+            shutil.rmtree(package_metadata['xpakpath'], True)
+
+        # create data dir where we'll unpack the xpak
+        xpak_dir = package_metadata['xpakpath'] + os.path.sep + \
+            etpConst['entropyxpakdatarelativepath']
+
+        os.makedirs(xpak_dir, 0755)
+
+        xpak_path = package_metadata['xpakpath'] + os.path.sep + \
+            etpConst['entropyxpakfilename']
+
+        if not package_metadata['merge_from']:
+
+            if package_metadata['smartpackage']:
+
+                # we need to get the .xpak from database
+                xdbconn = entropy_client.open_repository(
+                    package_metadata['repository'])
+                xpakdata = xdbconn.retrieveXpakMetadata(
+                    package_metadata['idpackage'])
+                if xpakdata:
+                    # save into a file
+                    with open(xpak_path, "wb") as xpak_f:
+                        xpak_f.write(xpakdata)
+                        xpak_f.flush()
+                    package_metadata['xpakstatus'] = \
+                        self.entropyTools.unpack_xpak(
+                            xpak_path,
+                            xpak_dir
+                        )
+                else:
+                    package_metadata['xpakstatus'] = None
+                del xpakdata
+
+            else:
+                package_metadata['xpakstatus'] = self.entropyTools.extract_xpak(
+                    package_metadata['pkgpath'],
+                    xpak_dir
+                )
+
+        else: # merge_from
+
+            tolink_dir = xpak_dir
+            if os.path.isdir(tolink_dir):
+                shutil.rmtree(tolink_dir, True)
+            # now link
+            os.symlink(package_metadata['xpakdir'], tolink_dir)
+
+        # create fake portage ${D} linking it to imagedir
+        portage_cpv = package_metadata['category'] + "/" + \
+            package_metadata['name'] + "-" + package_metadata['version']
+
+        portage_db_fakedir = os.path.join(
+            package_metadata['unpackdir'],
+            "portage/" + portage_cpv
+        )
+
+        os.makedirs(portage_db_fakedir, 0755)
+        # now link it to package_metadata['imagedir']
+        os.symlink(package_metadata['imagedir'],
+            os.path.join(portage_db_fakedir, "image"))
+
+        return 0
+
     def _get_portage_vartree(self, root = None):
 
         if root is None:
