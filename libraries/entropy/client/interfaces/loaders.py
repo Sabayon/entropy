@@ -10,7 +10,8 @@
 
 """
 from __future__ import with_statement
-from entropy.spm.plugins.factory import get_default_instance as get_spm
+from entropy.spm.plugins.factory import get_default_instance as get_spm, \
+    get_default_class as get_spm_default_class
 from entropy.const import *
 from entropy.exceptions import *
 
@@ -70,6 +71,12 @@ class LoadersMixin:
         spm = get_spm(self)
         self.__spm_cache[myroot] = spm
         return spm
+
+    def Spm_class(self):
+        """
+        Return Source Package Manager default plugin class.
+        """
+        return get_spm_default_class()
 
     def Package(self):
         return self.__PackageLoader(self)
