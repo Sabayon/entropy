@@ -327,73 +327,10 @@ class Package:
                     self.pkgmeta['imagedir'])
                 os._exit(0)
 
-        # FIXME: add new entropy.spm plugin method
+        spm_class = self.Entropy.Spm_class()
+        # call Spm unpack hook
+        return spm_class.entropy_install_unpack_hook(self.Entropy, self.pkgmeta)
 
-        # unpack xpak ?
-        if os.path.isdir(self.pkgmeta['xpakpath']):
-            shutil.rmtree(self.pkgmeta['xpakpath'], True)
-
-        # create data dir where we'll unpack the xpak
-        xpak_dir = self.pkgmeta['xpakpath'] + os.path.sep + \
-            etpConst['entropyxpakdatarelativepath']
-
-        os.makedirs(xpak_dir, 0755)
-
-        xpak_path = self.pkgmeta['xpakpath'] + os.path.sep + \
-            etpConst['entropyxpakfilename']
-
-        if not self.pkgmeta['merge_from']:
-
-            if self.pkgmeta['smartpackage']:
-
-                # we need to get the .xpak from database
-                xdbconn = self.Entropy.open_repository(
-                    self.pkgmeta['repository'])
-                xpakdata = xdbconn.retrieveXpakMetadata(
-                    self.pkgmeta['idpackage'])
-                if xpakdata:
-                    # save into a file
-                    f = open(xpak_path, "wb")
-                    f.write(xpakdata)
-                    f.flush()
-                    f.close()
-                    self.pkgmeta['xpakstatus'] = entropy.tools.unpack_xpak(
-                        xpak_path,
-                        xpak_dir
-                    )
-                else:
-                    self.pkgmeta['xpakstatus'] = None
-                del xpakdata
-
-            else:
-                self.pkgmeta['xpakstatus'] = entropy.tools.extract_xpak(
-                    self.pkgmeta['pkgpath'],
-                    xpak_dir
-                )
-
-        else: # merge_from
-
-            tolink_dir = xpak_dir
-            if os.path.isdir(tolink_dir):
-                shutil.rmtree(tolink_dir, True)
-            # now link
-            os.symlink(self.pkgmeta['xpakdir'], tolink_dir)
-
-        # create fake portage ${D} linking it to imagedir
-        portage_cpv = self.pkgmeta['category'] + "/" + \
-            self.pkgmeta['name'] + "-" + self.pkgmeta['version']
-
-        portage_db_fakedir = os.path.join(
-            self.pkgmeta['unpackdir'],
-            "portage/" + portage_cpv
-        )
-
-        os.makedirs(portage_db_fakedir, 0755)
-        # now link it to self.pkgmeta['imagedir']
-        os.symlink(self.pkgmeta['imagedir'],
-            os.path.join(portage_db_fakedir, "image"))
-
-        return 0
 
     def __configure_package(self):
 
@@ -2482,32 +2419,9 @@ class Package:
         self.pkgmeta['triggers']['install']['imagedir'] = \
             self.pkgmeta['imagedir']
 
-        # FIXME: move to entropy.spm
-
-        self.pkgmeta['xpakpath'] = etpConst['entropyunpackdir'] + \
-            os.path.sep + self.pkgmeta['download'] + os.path.sep + \
-            etpConst['entropyxpakrelativepath']
-
-        if not self.pkgmeta['merge_from']:
-            self.pkgmeta['xpakstatus'] = None
-            self.pkgmeta['xpakdir'] = self.pkgmeta['xpakpath'] + \
-                os.path.sep + etpConst['entropyxpakdatarelativepath']
-
-        else:
-            self.pkgmeta['xpakstatus'] = True
-            portdbdir = 'var/db/pkg' # XXX hard coded ?
-            portdbdir = os.path.join(self.pkgmeta['merge_from'], portdbdir)
-            portdbdir = os.path.join(portdbdir, self.pkgmeta['category'])
-            portdbdir = os.path.join(portdbdir, self.pkgmeta['name'] + "-" + \
-                self.pkgmeta['version'])
-
-            self.pkgmeta['xpakdir'] = portdbdir
-
-        self.pkgmeta['triggers']['install']['xpakdir'] = \
-            self.pkgmeta['xpakdir']
-
-
-        return 0
+        spm_class = self.Entropy.Spm_class()
+        # call Spm setup hook
+        return spm_class.entropy_install_setup_hook(self.Entropy, self.pkgmeta)
 
     def __generate_fetch_metadata(self, sources = False):
         self.pkgmeta.clear()
