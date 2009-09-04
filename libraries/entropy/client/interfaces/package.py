@@ -2347,10 +2347,13 @@ class Package:
         # set unpack dir and image dir
         if self.pkgmeta['repository'].endswith(etpConst['packagesext']):
 
-            # FIXME: add repository arch metadata to entropy.db
-            # do arch check
-            compiled_arch = dbconn.retrieveDownloadURL(idpackage)
-            if compiled_arch.find("/"+etpSys['arch']+"/") == -1:
+            try:
+                compiled_arch = dbconn.getSetting("arch")
+                arch_fine = compiled_arch == etpConst['currentarch']
+            except KeyError:
+                arch_fine = True # sorry, old db, cannot check
+
+            if not arch_fine:
                 self.pkgmeta.clear()
                 self.__prepared = False
                 return -1
