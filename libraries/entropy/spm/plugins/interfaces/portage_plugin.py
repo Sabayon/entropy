@@ -23,6 +23,7 @@ from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.misc import LogFile
 from entropy.spm.plugins.skel import SpmPlugin
+import entropy.tools
 
 class PortagePackageGroups(dict):
     """
@@ -165,7 +166,6 @@ class PortagePlugin(SpmPlugin):
                         self._zap_parens(x, dest)
             return dest
 
-    import entropy.tools as entropyTools
     def init_singleton(self, OutputInterface):
 
         mytxt = _("OutputInterface does not have an updateProgress method")
@@ -589,18 +589,18 @@ class PortagePlugin(SpmPlugin):
         system_settings = SystemSettings()
 
         # fill package name and version
-        data['digest'] = self.entropyTools.md5sum(package_file)
+        data['digest'] = entropy.tools.md5sum(package_file)
         data['signatures'] = {
-            'sha1': self.entropyTools.sha1(package_file),
-            'sha256': self.entropyTools.sha256(package_file),
-            'sha512': self.entropyTools.sha512(package_file),
+            'sha1': entropy.tools.sha1(package_file),
+            'sha256': entropy.tools.sha256(package_file),
+            'sha512': entropy.tools.sha512(package_file),
         }
-        data['datecreation'] = str(self.entropyTools.get_file_unix_mtime(
+        data['datecreation'] = str(entropy.tools.get_file_unix_mtime(
             package_file))
-        data['size'] = str(self.entropyTools.get_file_size(package_file))
+        data['size'] = str(entropy.tools.get_file_size(package_file))
 
         tmp_dir = tempfile.mkdtemp()
-        self.entropyTools.extract_xpak(package_file, tmp_dir)
+        entropy.tools.extract_xpak(package_file, tmp_dir)
 
         # package injection status always false by default
         # developer can change metadatum after this function
@@ -626,7 +626,7 @@ class PortagePlugin(SpmPlugin):
 
         # workout pf
         pf_atom = os.path.join(data['category'], data['pf'])
-        pkgcat, pkgname, pkgver, pkgrev = self.entropyTools.catpkgsplit(
+        pkgcat, pkgname, pkgver, pkgrev = entropy.tools.catpkgsplit(
             pf_atom)
         if pkgrev != "r0":
             pkgver += "-%s" % (pkgrev,)
@@ -668,7 +668,7 @@ class PortagePlugin(SpmPlugin):
             etpConst['spm']['xpak_entries']['contents'])
         data['content'] = self._extract_pkg_metadata_content(content_file,
             package_file)
-        data['disksize'] = self.entropyTools.sum_file_sizes(data['content'])
+        data['disksize'] = entropy.tools.sum_file_sizes(data['content'])
 
         # [][][] Kernel dependent packages hook [][][]
         data['versiontag'] = ''
@@ -714,7 +714,7 @@ class PortagePlugin(SpmPlugin):
 
         data['download'] = etpConst['packagesrelativepath'] + data['branch'] \
             + "/"
-        data['download'] += self.entropyTools.create_package_filename(
+        data['download'] += entropy.tools.create_package_filename(
             data['category'], data['name'], data['version'], data['versiontag'])
 
         data['trigger'] = ""
@@ -816,7 +816,7 @@ class PortagePlugin(SpmPlugin):
 
         # write only if it's a systempackage
         data['systempackage'] = False
-        system_packages = [self.entropyTools.dep_getkey(x) for x in \
+        system_packages = [entropy.tools.dep_getkey(x) for x in \
             self.get_system_packages()]
         if data['category'] + "/" + data['name'] in system_packages:
             data['systempackage'] = True
@@ -908,7 +908,7 @@ class PortagePlugin(SpmPlugin):
         matched_slot = self.get_package_metadata(matched_atom, "SLOT")
         try:
             inst_key = "%s:%s" % (
-                self.entropyTools.dep_getkey(package),
+                entropy.tools.dep_getkey(package),
                 matched_slot,
             )
             installed_atom = self.match_installed_package(inst_key)
@@ -1267,14 +1267,14 @@ class PortagePlugin(SpmPlugin):
             mysettings._environ_whitelist.add("ROOT")
             mysettings._environ_whitelist = frozenset(mysettings._environ_whitelist)
         except (AttributeError,):
-            self.log_message(self.entropyTools.get_traceback())
+            self.log_message(entropy.tools.get_traceback())
 
         cpv = str(cpv)
         mysettings.setcpv(cpv)
         portage_tmpdir_created = False # for pkg_postrm, pkg_prerm
 
         if portage_tmpdir is None:
-            portage_tmpdir = self.entropyTools.get_random_temp_file()
+            portage_tmpdir = entropy.tools.get_random_temp_file()
 
         if portage_tmpdir:
             if not os.path.isdir(portage_tmpdir):
@@ -1324,7 +1324,7 @@ class PortagePlugin(SpmPlugin):
                 use_cache = 0
             )
         except:
-            self.log_message(self.entropyTools.get_traceback())
+            self.log_message(entropy.tools.get_traceback())
             raise
 
         # if mute, restore old stdout/stderr
@@ -1377,7 +1377,7 @@ class PortagePlugin(SpmPlugin):
                 os.listdir(cat_dir)]
             # filter by key
             real_findings = [x for x in my_findings if \
-                key == self.entropyTools.dep_getkey(x)]
+                key == entropy.tools.dep_getkey(x)]
             atomsfound.update(real_findings)
 
         myslot = package_metadata['slot']
@@ -1462,7 +1462,7 @@ class PortagePlugin(SpmPlugin):
 
             if keyslot not in world_atoms and \
                 os.access(world_dir, os.W_OK) and \
-                self.entropyTools.istextfile(world_file):
+                entropy.tools.istextfile(world_file):
 
                     world_atoms.discard(key)
                     world_atoms.add(keyslot)
@@ -1493,10 +1493,10 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        atom = self.entropyTools.remove_tag(package_metadata['removeatom'])
+        atom = entropy.tools.remove_tag(package_metadata['removeatom'])
         remove_build = self.get_installed_package_build_script_path(atom)
         remove_path = os.path.dirname(remove_build)
-        key = self.entropyTools.dep_getkey(atom)
+        key = entropy.tools.dep_getkey(atom)
 
         others_installed = self.match_installed_package(key, match_all = True)
         if atom in others_installed:
@@ -1594,7 +1594,7 @@ class PortagePlugin(SpmPlugin):
 
         except Exception, err:
 
-            self.entropyTools.print_traceback()
+            entropy.tools.print_traceback()
             mytxt = "%s: %s %s." % (
                 bold(_("QA")),
                 brown(_("Cannot run SPM configure phase for")),
@@ -1688,7 +1688,7 @@ class PortagePlugin(SpmPlugin):
                         xpak_f.write(xpakdata)
                         xpak_f.flush()
                     package_metadata['xpakstatus'] = \
-                        self.entropyTools.unpack_xpak(
+                        entropy.tools.unpack_xpak(
                             xpak_path,
                             xpak_dir
                         )
@@ -1697,7 +1697,7 @@ class PortagePlugin(SpmPlugin):
                 del xpakdata
 
             else:
-                package_metadata['xpakstatus'] = self.entropyTools.extract_xpak(
+                package_metadata['xpakstatus'] = entropy.tools.extract_xpak(
                     package_metadata['pkgpath'],
                     xpak_dir
                 )
@@ -2021,7 +2021,7 @@ class PortagePlugin(SpmPlugin):
                     deps = self._usedeps_reduce(deps, enabled_use)
                 deps = ' '.join(deps)
             except Exception, e:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 self.updateProgress(
                     darkred("%s: %s: %s :: %s") % (
                         _("Error calculating dependencies"),
@@ -2064,7 +2064,7 @@ class PortagePlugin(SpmPlugin):
             return myuse
 
         for dependency in dependencies:
-            use_deps = self.entropyTools.dep_getusedeps(dependency)
+            use_deps = entropy.tools.dep_getusedeps(dependency)
             if use_deps:
                 new_use_deps = []
                 for use in use_deps:
@@ -2108,11 +2108,11 @@ class PortagePlugin(SpmPlugin):
 
                 if new_use_deps:
                     dependency = "%s[%s]" % (
-                        self.entropyTools.remove_usedeps(dependency),
+                        entropy.tools.remove_usedeps(dependency),
                         ','.join(new_use_deps),
                     )
                 else:
-                    dependency = self.entropyTools.remove_usedeps(dependency)
+                    dependency = entropy.tools.remove_usedeps(dependency)
 
             newlist.append(dependency)
         return newlist
@@ -2594,7 +2594,7 @@ class PortagePlugin(SpmPlugin):
             if not os.path.isdir(mytempdir):
                 os.makedirs(mytempdir)
 
-            self.entropyTools.uncompress_tar_bz2(package_path, extractPath = mytempdir, catchEmpty = True)
+            entropy.tools.uncompress_tar_bz2(package_path, extractPath = mytempdir, catchEmpty = True)
             tmpdir_len = len(mytempdir)
             for currentdir, subdirs, files in os.walk(mytempdir):
                 pkg_content[currentdir[tmpdir_len:]] = u"dir"
@@ -2632,7 +2632,7 @@ class PortagePlugin(SpmPlugin):
                 ownlib = needed[0]
                 ownelf = -1
                 if os.access(ownlib,os.R_OK):
-                    ownelf = self.entropyTools.read_elf_class(ownlib)
+                    ownelf = entropy.tools.read_elf_class(ownlib)
                 for lib in needed[1].split(","):
                     #if lib.find(".so") != -1:
                     pkg_needed.add((lib,ownelf))
@@ -2642,14 +2642,14 @@ class PortagePlugin(SpmPlugin):
     def _extract_pkg_metadata_needed_paths(self, needed_libs):
 
         data = {}
-        ldpaths = self.entropyTools.collect_linker_paths()
+        ldpaths = entropy.tools.collect_linker_paths()
 
         for needed_lib, elf_class in needed_libs:
             for ldpath in ldpaths:
                 my_lib = os.path.join(ldpath, needed_lib)
                 if not os.access(my_lib, os.R_OK):
                     continue
-                myclass = self.entropyTools.read_elf_class(my_lib)
+                myclass = entropy.tools.read_elf_class(my_lib)
                 if myclass != elf_class:
                     continue
                 obj = data.setdefault(needed_lib, set())
@@ -2671,10 +2671,10 @@ class PortagePlugin(SpmPlugin):
             if len(foundfiles) > 1:
                 # get the latest
                 mtimes = []
-                for item in foundfiles: mtimes.append((self.entropyTools.get_file_unix_mtime(os.path.join(log_dir,item)),item))
+                for item in foundfiles: mtimes.append((entropy.tools.get_file_unix_mtime(os.path.join(log_dir,item)),item))
                 mtimes = sorted(mtimes)
                 elogfile = mtimes[-1][1]
-            messages = self.entropyTools.extract_elog(os.path.join(log_dir,elogfile))
+            messages = entropy.tools.extract_elog(os.path.join(log_dir,elogfile))
             for message in messages:
                 message = message.replace("emerge","install")
                 pkg_messages.append(message.decode('raw_unicode_escape'))
@@ -2685,11 +2685,11 @@ class PortagePlugin(SpmPlugin):
 
         pkg_licensedata = {}
         if licenses_dir and os.path.isdir(licenses_dir):
-            licdata = [x.strip() for x in license_string.split() if x.strip() and self.entropyTools.is_valid_string(x.strip())]
+            licdata = [x.strip() for x in license_string.split() if x.strip() and entropy.tools.is_valid_string(x.strip())]
             for mylicense in licdata:
                 licfile = os.path.join(licenses_dir,mylicense)
                 if os.access(licfile,os.R_OK):
-                    if self.entropyTools.istextfile(licfile):
+                    if entropy.tools.istextfile(licfile):
                         f = open(licfile)
                         content = ''
                         line = f.readline()
