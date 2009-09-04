@@ -200,6 +200,8 @@ class EntropyRepository:
     @todo: refactoring and generalization needed
     """
 
+    SETTING_KEYS = [ "arch" ]
+
     class Schema:
 
         def get_init(self):
@@ -479,6 +481,12 @@ class EntropyRepository:
                 CREATE TABLE xpakdata (
                     idpackage INTEGER PRIMARY KEY,
                     data BLOB
+                );
+
+                CREATE TABLE settings (
+                    setting_name VARCHAR,
+                    setting_value VARCHAR,
+                    PRIMARY KEY(setting_name)
                 );
 
             """
@@ -794,6 +802,7 @@ class EntropyRepository:
         # set cache size
         self.setCacheSize(8192)
         self.setDefaultCacheSize(8192)
+        self._setupInitialSettings()
         self.commitChanges()
 
     def filterTreeUpdatesActions(self, actions):
@@ -6386,6 +6395,41 @@ class EntropyRepository:
             self.commitChanges()
             self.clearCache()
 
+    def getSetting(self, setting_name):
+        """
+        Return stored Repository setting.
+        For currently supported setting_name values look at
+        EntropyRepository.SETTING_KEYS.
+
+        @param setting_name: name of repository setting
+        @type setting_name: string
+        @return: setting value
+        @rtype: string
+        @raise KeyError: if setting_name is not valid or available
+        """
+        if setting_name not in EntropyRepository.SETTING_KEYS:
+            raise KeyError
+        try:
+            self.cursor.execute("""
+            SELECT setting_value FROM settings WHERE setting_name = (?)
+            """, (setting_name,))
+        except self.dbapi2.Error:
+            raise KeyError
+
+        setting = self.cursor.fetchone()
+        if setting is None:
+            raise KeyError
+        return setting[0]
+
+    def _setupInitialSettings(self):
+        """
+        Setup initial repository settings
+        """
+        self.cursor.executescript("""
+            INSERT OR REPLACE INTO settings VALUES ("arch", "%s");
+            """ % (etpConst['currentarch'],)
+        )
+
     def _databaseStructureUpdates(self):
 
         old_readonly = self.readOnly
@@ -6429,6 +6473,9 @@ class EntropyRepository:
         if not self._doesTableExist('dependstable'):
             self._createDependsTable()
 
+        if not self._doesTableExist('settings'):
+            self._createSettingsTable()
+
         self.readOnly = old_readonly
         self.connection.commit()
 
@@ -6443,7 +6490,7 @@ class EntropyRepository:
         """, ("table", "baseinfo"))
         rslt = self.cursor.fetchone()
         if rslt is None:
-            mytxt = _("baseinfo table not found. Either does not exist or corrupted.")
+            mytxt = _("baseinfo error. Either does not exist or corrupted.")
             raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
 
         self.cursor.execute("""
@@ -6451,7 +6498,7 @@ class EntropyRepository:
         """, ("table", "extrainfo"))
         rslt = self.cursor.fetchone()
         if rslt is None:
-            mytxt = _("extrainfo table not found. Either does not exist or corrupted.")
+            mytxt = _("extrainfo error. Either does not exist or corrupted.")
             raise SystemDatabaseError("SystemDatabaseError: %s" % (mytxt,))
 
     def getIdpackagesDifferences(self, foreign_idpackages):
@@ -7486,6 +7533,17 @@ class EntropyRepository:
             ALTER TABLE counterstemp RENAME TO counters;
         """)
         self.commitChanges()
+
+    def _createSettingsTable(self):
+        with self.__write_mutex:
+            self.cursor.executescript("""
+                CREATE TABLE settings (
+                    setting_name VARCHAR,
+                    setting_value VARCHAR,
+                    PRIMARY KEY(setting_name)
+                );
+            """)
+            self._setupInitialSettings()
 
     def _createNeededlibrarypathsTable(self):
         with self.__write_mutex:
