@@ -1,5 +1,5 @@
 #!/usr/bin/python2 -O
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
@@ -135,6 +135,7 @@ class const:
                 "German - N/A",
                 "Italian - Fabio Erculiani",
                 "Portuguese - Lucas Paulino Azevedo",
+                "Russian - Maksim Belyanovskiy",
                 "Spanish - Daniel Halens Rodriguez",
                 )
             ),
