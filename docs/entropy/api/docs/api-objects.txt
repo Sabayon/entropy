@@ -849,6 +849,7 @@ entropy.client.interfaces.cache.CacheMixin.update_ugc_cache	entropy.client.inter
 entropy.client.interfaces.methods.MiscMixin.lock_check	entropy.client.interfaces.methods.MiscMixin-class.html#lock_check
 entropy.client.interfaces.methods.MatchMixin.unmask_match	entropy.client.interfaces.methods.MatchMixin-class.html#unmask_match
 entropy.client.interfaces.methods.MiscMixin.get_meant_packages	entropy.client.interfaces.methods.MiscMixin-class.html#get_meant_packages
+entropy.client.interfaces.loaders.LoadersMixin.Spm_class	entropy.client.interfaces.loaders.LoadersMixin-class.html#Spm_class
 entropy.client.interfaces.dep.CalculatorsMixin.generate_dependency_tree	entropy.client.interfaces.dep.CalculatorsMixin-class.html#generate_dependency_tree
 entropy.client.interfaces.dep.CalculatorsMixin.get_removal_queue	entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_removal_queue
 entropy.client.interfaces.dep.CalculatorsMixin.package_set_search	entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_search
@@ -1009,6 +1010,7 @@ entropy.client.interfaces.loaders.LoadersMixin.__spm_cache	entropy.client.interf
 entropy.client.interfaces.loaders.LoadersMixin.Spm	entropy.client.interfaces.loaders.LoadersMixin-class.html#Spm
 entropy.client.interfaces.loaders.LoadersMixin.__security_cache	entropy.client.interfaces.loaders.LoadersMixin-class.html#__security_cache
 entropy.client.interfaces.loaders.LoadersMixin.Security	entropy.client.interfaces.loaders.LoadersMixin-class.html#Security
+entropy.client.interfaces.loaders.LoadersMixin.Spm_class	entropy.client.interfaces.loaders.LoadersMixin-class.html#Spm_class
 entropy.client.interfaces.loaders.LoadersMixin.__init__	entropy.client.interfaces.loaders.LoadersMixin-class.html#__init__
 entropy.client.interfaces.methods.MatchMixin	entropy.client.interfaces.methods.MatchMixin-class.html
 entropy.client.interfaces.methods.MatchMixin.get_package_action	entropy.client.interfaces.methods.MatchMixin-class.html#get_package_action
@@ -1688,12 +1690,13 @@ entropy.db.EntropyRepository.atomMatch	entropy.db.EntropyRepository-class.html#a
 entropy.db.EntropyRepository.removeMirrorEntries	entropy.db.EntropyRepository-class.html#removeMirrorEntries
 entropy.db.EntropyRepository._createPackagesetsTable	entropy.db.EntropyRepository-class.html#_createPackagesetsTable
 entropy.db.EntropyRepository.addPackage	entropy.db.EntropyRepository-class.html#addPackage
-entropy.db.EntropyRepository._get_category_description_from_disk	entropy.db.EntropyRepository-class.html#_get_category_description_from_disk
+entropy.db.EntropyRepository._createConflictsIndex	entropy.db.EntropyRepository-class.html#_createConflictsIndex
 entropy.db.EntropyRepository.regenerateSpmUidTable	entropy.db.EntropyRepository-class.html#regenerateSpmUidTable
 entropy.db.EntropyRepository._createExtrainfoIndex	entropy.db.EntropyRepository-class.html#_createExtrainfoIndex
 entropy.db.EntropyRepository.listIdPackagesInIdcategory	entropy.db.EntropyRepository-class.html#listIdPackagesInIdcategory
 entropy.db.EntropyRepository.getBaseData	entropy.db.EntropyRepository-class.html#getBaseData
-entropy.db.EntropyRepository._create_dbstatus_data	entropy.db.EntropyRepository-class.html#_create_dbstatus_data
+entropy.db.EntropyRepository.insertTrigger	entropy.db.EntropyRepository-class.html#insertTrigger
+entropy.db.EntropyRepository.taintDatabase	entropy.db.EntropyRepository-class.html#taintDatabase
 entropy.db.EntropyRepository.retrieveSources	entropy.db.EntropyRepository-class.html#retrieveSources
 entropy.db.EntropyRepository.listAllIndexes	entropy.db.EntropyRepository-class.html#listAllIndexes
 entropy.db.EntropyRepository._write_rss_for_removed_package	entropy.db.EntropyRepository-class.html#_write_rss_for_removed_package
@@ -1705,7 +1708,7 @@ entropy.db.EntropyRepository.dumpTools	entropy.dump-module.html
 entropy.db.EntropyRepository.retrieveCompileFlags	entropy.db.EntropyRepository-class.html#retrieveCompileFlags
 entropy.db.EntropyRepository._fetchall2list	entropy.db.EntropyRepository-class.html#_fetchall2list
 entropy.db.EntropyRepository.retrieveSpmPhases	entropy.db.EntropyRepository-class.html#retrieveSpmPhases
-entropy.db.EntropyRepository.taintDatabase	entropy.db.EntropyRepository-class.html#taintDatabase
+entropy.db.EntropyRepository.insertDependencies	entropy.db.EntropyRepository-class.html#insertDependencies
 entropy.db.EntropyRepository.dropInstalledPackageFromStore	entropy.db.EntropyRepository-class.html#dropInstalledPackageFromStore
 entropy.db.EntropyRepository._doesTableExist	entropy.db.EntropyRepository-class.html#_doesTableExist
 entropy.db.EntropyRepository._createBaseinfoIndex	entropy.db.EntropyRepository-class.html#_createBaseinfoIndex
@@ -1771,7 +1774,7 @@ entropy.db.EntropyRepository.retrieveVersionTag	entropy.db.EntropyRepository-cla
 entropy.db.EntropyRepository.addSource	entropy.db.EntropyRepository-class.html#addSource
 entropy.db.EntropyRepository.retrieveProvide	entropy.db.EntropyRepository-class.html#retrieveProvide
 entropy.db.EntropyRepository._revisionBump	entropy.db.EntropyRepository-class.html#_revisionBump
-entropy.db.EntropyRepository.insertDependencies	entropy.db.EntropyRepository-class.html#insertDependencies
+entropy.db.EntropyRepository._createSettingsTable	entropy.db.EntropyRepository-class.html#_createSettingsTable
 entropy.db.EntropyRepository.isNeededAvailable	entropy.db.EntropyRepository-class.html#isNeededAvailable
 entropy.db.EntropyRepository.regenerateLibrarypathsidpackageTable	entropy.db.EntropyRepository-class.html#regenerateLibrarypathsidpackageTable
 entropy.db.EntropyRepository.retrieveSize	entropy.db.EntropyRepository-class.html#retrieveSize
@@ -1780,6 +1783,7 @@ entropy.db.EntropyRepository.listAllPackages	entropy.db.EntropyRepository-class.
 entropy.db.EntropyRepository.setSpmUid	entropy.db.EntropyRepository-class.html#setSpmUid
 entropy.db.EntropyRepository.__filterSlot	entropy.db.EntropyRepository-class.html#__filterSlot
 entropy.db.EntropyRepository.switchBranch	entropy.db.EntropyRepository-class.html#switchBranch
+entropy.db.EntropyRepository._setupInitialSettings	entropy.db.EntropyRepository-class.html#_setupInitialSettings
 entropy.db.EntropyRepository.retrieveUseflags	entropy.db.EntropyRepository-class.html#retrieveUseflags
 entropy.db.EntropyRepository.retrieveRevision	entropy.db.EntropyRepository-class.html#retrieveRevision
 entropy.db.EntropyRepository._createPackagesignaturesTable	entropy.db.EntropyRepository-class.html#_createPackagesignaturesTable
@@ -1800,7 +1804,7 @@ entropy.db.EntropyRepository.getTriggerInfo	entropy.db.EntropyRepository-class.h
 entropy.db.EntropyRepository.cleanupNeededPaths	entropy.db.EntropyRepository-class.html#cleanupNeededPaths
 entropy.db.EntropyRepository.dropAllIndexes	entropy.db.EntropyRepository-class.html#dropAllIndexes
 entropy.db.EntropyRepository._migrateCountersTable	entropy.db.EntropyRepository-class.html#_migrateCountersTable
-entropy.db.EntropyRepository._createConflictsIndex	entropy.db.EntropyRepository-class.html#_createConflictsIndex
+entropy.db.EntropyRepository._get_category_description_from_disk	entropy.db.EntropyRepository-class.html#_get_category_description_from_disk
 entropy.db.EntropyRepository.cleanupDependencies	entropy.db.EntropyRepository-class.html#cleanupDependencies
 entropy.db.EntropyRepository._cur2set	entropy.db.EntropyRepository-class.html#_cur2set
 entropy.db.EntropyRepository._doesColumnInTableExist	entropy.db.EntropyRepository-class.html#_doesColumnInTableExist
@@ -1824,7 +1828,7 @@ entropy.db.EntropyRepository.listAllFiles	entropy.db.EntropyRepository-class.htm
 entropy.db.EntropyRepository._createDependsTable	entropy.db.EntropyRepository-class.html#_createDependsTable
 entropy.db.EntropyRepository.storeXpakMetadata	entropy.db.EntropyRepository-class.html#storeXpakMetadata
 entropy.db.EntropyRepository.getStrictData	entropy.db.EntropyRepository-class.html#getStrictData
-entropy.db.EntropyRepository.insertTrigger	entropy.db.EntropyRepository-class.html#insertTrigger
+entropy.db.EntropyRepository._create_dbstatus_data	entropy.db.EntropyRepository-class.html#_create_dbstatus_data
 entropy.db.EntropyRepository.retrieveUnusedIdpackages	entropy.db.EntropyRepository-class.html#retrieveUnusedIdpackages
 entropy.db.EntropyRepository.retrieveNeededLibraryIdpackages	entropy.db.EntropyRepository-class.html#retrieveNeededLibraryIdpackages
 entropy.db.EntropyRepository.insertOnDiskSize	entropy.db.EntropyRepository-class.html#insertOnDiskSize
@@ -1851,6 +1855,7 @@ entropy.db.EntropyRepository.addLicense	entropy.db.EntropyRepository-class.html#
 entropy.db.EntropyRepository.clearTreeupdatesEntries	entropy.db.EntropyRepository-class.html#clearTreeupdatesEntries
 entropy.db.EntropyRepository.setCacheSize	entropy.db.EntropyRepository-class.html#setCacheSize
 entropy.db.EntropyRepository.searchPackagesByDescription	entropy.db.EntropyRepository-class.html#searchPackagesByDescription
+entropy.db.EntropyRepository.getSetting	entropy.db.EntropyRepository-class.html#getSetting
 entropy.db.EntropyRepository._createNeededlibrarypathsIndex	entropy.db.EntropyRepository-class.html#_createNeededlibrarypathsIndex
 entropy.db.EntropyRepository.addProtect	entropy.db.EntropyRepository-class.html#addProtect
 entropy.db.EntropyRepository.searchTaggedPackages	entropy.db.EntropyRepository-class.html#searchTaggedPackages
@@ -1964,7 +1969,7 @@ entropy.db.EntropyRepository.__filterSlotTagUse	entropy.db.EntropyRepository-cla
 entropy.db.EntropyRepository._createNeededlibraryidpackagesIndex	entropy.db.EntropyRepository-class.html#_createNeededlibraryidpackagesIndex
 entropy.db.EntropyRepository.retrieveSlot	entropy.db.EntropyRepository-class.html#retrieveSlot
 entropy.db.EntropyRepository.__filterUse	entropy.db.EntropyRepository-class.html#__filterUse
-entropy.db.EntropyRepository.isAtomAvailable	entropy.db.EntropyRepository-class.html#isAtomAvailable
+entropy.db.EntropyRepository.SETTING_KEYS	entropy.db.EntropyRepository-class.html#SETTING_KEYS
 entropy.db.EntropyRepository.__atomMatchFetchCache	entropy.db.EntropyRepository-class.html#__atomMatchFetchCache
 entropy.db.EntropyRepository.__atomMatchValidateCache	entropy.db.EntropyRepository-class.html#__atomMatchValidateCache
 entropy.db.EntropyRepository.createLicensedataTable	entropy.db.EntropyRepository-class.html#createLicensedataTable
@@ -1985,6 +1990,7 @@ entropy.db.EntropyRepository.listAllTables	entropy.db.EntropyRepository-class.ht
 entropy.db.EntropyRepository._createPackagechangelogsTable	entropy.db.EntropyRepository-class.html#_createPackagechangelogsTable
 entropy.db.EntropyRepository.closeDB	entropy.db.EntropyRepository-class.html#closeDB
 entropy.db.EntropyRepository.retrieveProtectMask	entropy.db.EntropyRepository-class.html#retrieveProtectMask
+entropy.db.EntropyRepository.isAtomAvailable	entropy.db.EntropyRepository-class.html#isAtomAvailable
 entropy.db.EntropyRepository.__handle_found_ids_match	entropy.db.EntropyRepository-class.html#__handle_found_ids_match
 entropy.db.EntropyRepository.retrieveDigest	entropy.db.EntropyRepository-class.html#retrieveDigest
 entropy.db.EntropyRepository.retrieveApi	entropy.db.EntropyRepository-class.html#retrieveApi
@@ -3240,7 +3246,6 @@ entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups	entropy.spm.p
 entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups.__init__	entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups-class.html#__init__
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.get_package_compile_options	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_package_compile_options
-entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.entropyTools	entropy.tools-module.html
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.get_package_changelog	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_package_changelog
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.SUPPORTED_MATCH_TYPES	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#SUPPORTED_MATCH_TYPES
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.execute_package_phase	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#execute_package_phase
@@ -3266,6 +3271,7 @@ entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin._portage_doebuild	en
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.get_package_groups	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_package_groups
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin._get_useflags	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#_get_useflags
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.get_security_advisory_metadata	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_security_advisory_metadata
+entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.entropy_install_setup_hook	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#entropy_install_setup_hook
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.get_package_sets	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_package_sets
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.get_package_category_description_metadata	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_package_category_description_metadata
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin._get_portage_binarytree	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#_get_portage_binarytree
@@ -3323,6 +3329,7 @@ entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin._usedeps_reduce	entr
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.get_security_packages	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_security_packages
 entropy.core.Singleton.is_destroyed	entropy.core.Singleton-class.html#is_destroyed
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.get_download_mirrors	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_download_mirrors
+entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.entropy_install_unpack_hook	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#entropy_install_unpack_hook
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize-class.html
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize._zap_parens	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize-class.html#_zap_parens
 entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize.__init__	entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize-class.html#__init__
@@ -3336,6 +3343,7 @@ entropy.spm.plugins.skel.SpmPlugin.get_merge_protected_paths	entropy.spm.plugins
 entropy.spm.plugins.skel.SpmPlugin.enable_package_compile_options	entropy.spm.plugins.skel.SpmPlugin-class.html#enable_package_compile_options
 entropy.spm.plugins.skel.SpmPlugin.get_security_advisory_metadata	entropy.spm.plugins.skel.SpmPlugin-class.html#get_security_advisory_metadata
 entropy.spm.plugins.skel.SpmPlugin.extract_package_metadata	entropy.spm.plugins.skel.SpmPlugin-class.html#extract_package_metadata
+entropy.spm.plugins.skel.SpmPlugin.entropy_install_setup_hook	entropy.spm.plugins.skel.SpmPlugin-class.html#entropy_install_setup_hook
 entropy.spm.plugins.skel.SpmPlugin.get_cache_directory	entropy.spm.plugins.skel.SpmPlugin-class.html#get_cache_directory
 entropy.core.Singleton.is_singleton	entropy.core.Singleton-class.html#is_singleton
 entropy.spm.plugins.skel.SpmPlugin.get_system_packages	entropy.spm.plugins.skel.SpmPlugin-class.html#get_system_packages
@@ -3359,6 +3367,7 @@ entropy.spm.plugins.skel.SpmPlugin.get_package_metadata	entropy.spm.plugins.skel
 entropy.spm.plugins.skel.SpmPlugin.package_phases	entropy.spm.plugins.skel.SpmPlugin-class.html#package_phases
 entropy.spm.plugins.skel.SpmPlugin.get_setting	entropy.spm.plugins.skel.SpmPlugin-class.html#get_setting
 entropy.spm.plugins.skel.SpmPlugin.execute_package_phase	entropy.spm.plugins.skel.SpmPlugin-class.html#execute_package_phase
+entropy.core.Singleton.__new__	entropy.core.Singleton-class.html#__new__
 entropy.spm.plugins.skel.SpmPlugin.get_installed_packages	entropy.spm.plugins.skel.SpmPlugin-class.html#get_installed_packages
 entropy.spm.plugins.skel.SpmPlugin.get_package_sets	entropy.spm.plugins.skel.SpmPlugin-class.html#get_package_sets
 entropy.spm.plugins.skel.SpmPlugin.get_packages	entropy.spm.plugins.skel.SpmPlugin-class.html#get_packages
@@ -3370,7 +3379,7 @@ entropy.core.Singleton.is_destroyed	entropy.core.Singleton-class.html#is_destroy
 entropy.spm.plugins.skel.SpmPlugin.PLUGIN_API_VERSION	entropy.spm.plugins.skel.SpmPlugin-class.html#PLUGIN_API_VERSION
 entropy.spm.plugins.skel.SpmPlugin.get_download_mirrors	entropy.spm.plugins.skel.SpmPlugin-class.html#get_download_mirrors
 entropy.spm.plugins.skel.SpmPlugin.SUPPORTED_MATCH_TYPES	entropy.spm.plugins.skel.SpmPlugin-class.html#SUPPORTED_MATCH_TYPES
-entropy.core.Singleton.__new__	entropy.core.Singleton-class.html#__new__
+entropy.spm.plugins.skel.SpmPlugin.entropy_install_unpack_hook	entropy.spm.plugins.skel.SpmPlugin-class.html#entropy_install_unpack_hook
 entropy.spm.plugins.skel.SpmPlugin.search_paths_owners	entropy.spm.plugins.skel.SpmPlugin-class.html#search_paths_owners
 entropy.spm.plugins.skel.SpmPlugin.remove_installed_package	entropy.spm.plugins.skel.SpmPlugin-class.html#remove_installed_package
 entropy.transceivers.FtpInterface	entropy.transceivers.FtpInterface-class.html

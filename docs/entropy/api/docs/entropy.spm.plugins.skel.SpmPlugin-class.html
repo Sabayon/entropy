@@ -68,14 +68,14 @@
 <area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#configure_installed_package" title="Configure installed package." alt="" coords="17,236,689,255"/>
 <area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#disable_package_compile_options" title="WARNING: this is an Entropy Server functionality." alt="" coords="17,255,689,273"/>
 <area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#enable_package_compile_options" title="WARNING: this is an Entropy Server functionality." alt="" coords="17,273,689,292"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#execute_package_phase" title="Execute Source Package Manager package phase (postinstall, preinstall, &#160;preremove, postremove, etc)." alt="" coords="17,292,689,311"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#extract_package_metadata" title="Extract Source Package Manager package metadata from given file." alt="" coords="17,311,689,329"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#generate_package" title="Generate a package tarball file for given package, from running system." alt="" coords="17,329,689,348"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_cache_directory" title="Return Source Package Manager cache directory path." alt="" coords="17,348,689,367"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_download_mirrors" title="Return list of download mirror URLs for given mirror name" alt="" coords="17,367,689,385"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_installed_package_build_script_path" title="Return build script path for given package looking into installed packages &#160;repository." alt="" coords="17,385,689,404"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_installed_package_compile_options" title="WARNING: this is an Entropy Server functionality." alt="" coords="17,404,689,423"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_installed_package_content" title="Return list of files/directories owned by package." alt="" coords="17,423,689,441"/>
+<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#entropy_install_setup_hook" title="This function is called by Entropy Client during package metadata setup." alt="" coords="17,292,689,311"/>
+<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#entropy_install_unpack_hook" title="This function is called by Entropy Client during package installation, &#160;unpack phase." alt="" coords="17,311,689,329"/>
+<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#execute_package_phase" title="Execute Source Package Manager package phase (postinstall, preinstall, &#160;preremove, postremove, etc)." alt="" coords="17,329,689,348"/>
+<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#extract_package_metadata" title="Extract Source Package Manager package metadata from given file." alt="" coords="17,348,689,367"/>
+<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#generate_package" title="Generate a package tarball file for given package, from running system." alt="" coords="17,367,689,385"/>
+<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_cache_directory" title="Return Source Package Manager cache directory path." alt="" coords="17,385,689,404"/>
+<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_download_mirrors" title="Return list of download mirror URLs for given mirror name" alt="" coords="17,404,689,423"/>
+<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_installed_package_build_script_path" title="Return build script path for given package looking into installed packages &#160;repository." alt="" coords="17,423,689,441"/>
 <area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#search_paths_owners" title="Return list of packages owning provided list of paths." alt="" coords="17,460,689,479"/>
 <area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html" title="Base class for Source Package Manager plugins" alt="" coords="16,123,691,480"/>
 <area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html" title="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin" alt="" coords="232,509,475,536"/>
@@ -861,6 +861,44 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#entropy_install_setup_hook" class="summary-sig-name">entropy_install_setup_hook</a>(<span class="summary-sig-arg">entropy_client</span>,
+        <span class="summary-sig-arg">package_metadata</span>)</span><br />
+      This function is called by Entropy Client during package metadata 
+      setup.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.entropy_install_setup_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#entropy_install_unpack_hook" class="summary-sig-name">entropy_install_unpack_hook</a>(<span class="summary-sig-arg">entropy_client</span>,
+        <span class="summary-sig-arg">package_metadata</span>)</span><br />
+      This function is called by Entropy Client during package 
+      installation, unpack phase.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.entropy_install_unpack_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -1099,6 +1137,72 @@ keys:
     </ul></dd>
     <dt>Returns: bool</dt>
         <dd>enable status, True if enabled, False if not</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="entropy_install_setup_hook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">entropy_install_setup_hook</span>(<span class="sig-arg">entropy_client</span>,
+        <span class="sig-arg">package_metadata</span>)</span>
+    <br /><em class="fname">Static Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.entropy_install_setup_hook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This function is called by Entropy Client during package metadata 
+  setup. It is intended to be used to inject additional metadata (that 
+  would be used afterwards in other entropy_install_* hooks) to entropy 
+  package install metadata. Note: for performance reasons, this is a static
+  method !</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_client</code></strong> (entropy.client.interfaces.Client.Client) - Entropy Client interface instance</li>
+        <li><strong class="pname"><code>package_metadata</code></strong> (dict) - Entropy package metadata</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="entropy_install_unpack_hook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">entropy_install_unpack_hook</span>(<span class="sig-arg">entropy_client</span>,
+        <span class="sig-arg">package_metadata</span>)</span>
+    <br /><em class="fname">Static Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.entropy_install_unpack_hook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This function is called by Entropy Client during package installation,
+  unpack phase. It is intended to be used to extract, if required, Source 
+  Package Manager metadata from Entropy packages useful for installing 
+  package into Source Package Manager plugin too. For example, 
+  PortagePlugin uses this hook to extract xpak metadata from entropy 
+  package files and setup Portage directories. Note: for performance 
+  reasons, this is a static method !</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_client</code></strong> (entropy.client.interfaces.Client.Client) - Entropy Client interface instance</li>
+        <li><strong class="pname"><code>package_metadata</code></strong> (dict) - Entropy package metadata</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2064,7 +2168,7 @@ keys:
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Sep  3 14:56:09 2009
+    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:16 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

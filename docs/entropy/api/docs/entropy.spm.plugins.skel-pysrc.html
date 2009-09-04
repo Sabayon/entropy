@@ -645,7 +645,46 @@ entropy.transceivers.FtpInterface.close" class="py-name" href="#" onclick="retur
 <a name="L581"></a><tt class="py-lineno">581</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: int</tt> </tt>
 <a name="L582"></a><tt class="py-lineno">582</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
 <a name="L583"></a><tt class="py-lineno">583</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">NotImplementedError</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
-</div></div><a name="L584"></a><tt class="py-lineno">584</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+</div><a name="L584"></a><tt class="py-lineno">584</tt>  <tt class="py-line"> </tt>
+<a name="L585"></a><tt class="py-lineno">585</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">staticmethod</tt> </tt>
+<a name="SpmPlugin.entropy_install_setup_hook"></a><div id="SpmPlugin.entropy_install_setup_hook-def"><a name="L586"></a><tt class="py-lineno">586</tt> <a class="py-toggle" href="#" id="SpmPlugin.entropy_install_setup_hook-toggle" onclick="return toggle('SpmPlugin.entropy_install_setup_hook');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.spm.plugins.skel.SpmPlugin-class.html#entropy_install_setup_hook">entropy_install_setup_hook</a><tt class="py-op">(</tt><tt class="py-param">entropy_client</tt><tt class="py-op">,</tt> <tt class="py-param">package_metadata</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SpmPlugin.entropy_install_setup_hook-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SpmPlugin.entropy_install_setup_hook-expanded"><a name="L587"></a><tt class="py-lineno">587</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L588"></a><tt class="py-lineno">588</tt>  <tt class="py-line"><tt class="py-docstring">        This function is called by Entropy Client during package metadata setup.</tt> </tt>
+<a name="L589"></a><tt class="py-lineno">589</tt>  <tt class="py-line"><tt class="py-docstring">        It is intended to be used to inject additional metadata (that would be</tt> </tt>
+<a name="L590"></a><tt class="py-lineno">590</tt>  <tt class="py-line"><tt class="py-docstring">        used afterwards in other entropy_install_* hooks) to entropy package</tt> </tt>
+<a name="L591"></a><tt class="py-lineno">591</tt>  <tt class="py-line"><tt class="py-docstring">        install metadata.</tt> </tt>
+<a name="L592"></a><tt class="py-lineno">592</tt>  <tt class="py-line"><tt class="py-docstring">        Note: for performance reasons, this is a static method !</tt> </tt>
+<a name="L593"></a><tt class="py-lineno">593</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L594"></a><tt class="py-lineno">594</tt>  <tt class="py-line"><tt class="py-docstring">        @param entropy_client: Entropy Client interface instance</tt> </tt>
+<a name="L595"></a><tt class="py-lineno">595</tt>  <tt class="py-line"><tt class="py-docstring">        @type entropy_client: entropy.client.interfaces.Client.Client</tt> </tt>
+<a name="L596"></a><tt class="py-lineno">596</tt>  <tt class="py-line"><tt class="py-docstring">        @param package_metadata: Entropy package metadata</tt> </tt>
+<a name="L597"></a><tt class="py-lineno">597</tt>  <tt class="py-line"><tt class="py-docstring">        @type package_metadata: dict</tt> </tt>
+<a name="L598"></a><tt class="py-lineno">598</tt>  <tt class="py-line"><tt class="py-docstring">        @return: execution status</tt> </tt>
+<a name="L599"></a><tt class="py-lineno">599</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: int</tt> </tt>
+<a name="L600"></a><tt class="py-lineno">600</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L601"></a><tt class="py-lineno">601</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">NotImplementedError</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L602"></a><tt class="py-lineno">602</tt>  <tt class="py-line"> </tt>
+<a name="L603"></a><tt class="py-lineno">603</tt>  <tt class="py-line"> </tt>
+<a name="L604"></a><tt class="py-lineno">604</tt>  <tt class="py-line">    <tt class="py-decorator">@</tt><tt class="py-decorator">staticmethod</tt> </tt>
+<a name="SpmPlugin.entropy_install_unpack_hook"></a><div id="SpmPlugin.entropy_install_unpack_hook-def"><a name="L605"></a><tt class="py-lineno">605</tt> <a class="py-toggle" href="#" id="SpmPlugin.entropy_install_unpack_hook-toggle" onclick="return toggle('SpmPlugin.entropy_install_unpack_hook');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.spm.plugins.skel.SpmPlugin-class.html#entropy_install_unpack_hook">entropy_install_unpack_hook</a><tt class="py-op">(</tt><tt class="py-param">entropy_client</tt><tt class="py-op">,</tt> <tt class="py-param">package_metadata</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="SpmPlugin.entropy_install_unpack_hook-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="SpmPlugin.entropy_install_unpack_hook-expanded"><a name="L606"></a><tt class="py-lineno">606</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L607"></a><tt class="py-lineno">607</tt>  <tt class="py-line"><tt class="py-docstring">        This function is called by Entropy Client during package installation,</tt> </tt>
+<a name="L608"></a><tt class="py-lineno">608</tt>  <tt class="py-line"><tt class="py-docstring">        unpack phase. It is intended to be used to extract, if required,</tt> </tt>
+<a name="L609"></a><tt class="py-lineno">609</tt>  <tt class="py-line"><tt class="py-docstring">        Source Package Manager metadata from Entropy packages useful for</tt> </tt>
+<a name="L610"></a><tt class="py-lineno">610</tt>  <tt class="py-line"><tt class="py-docstring">        installing package into Source Package Manager plugin too.</tt> </tt>
+<a name="L611"></a><tt class="py-lineno">611</tt>  <tt class="py-line"><tt class="py-docstring">        For example, PortagePlugin uses this hook to extract xpak metadata</tt> </tt>
+<a name="L612"></a><tt class="py-lineno">612</tt>  <tt class="py-line"><tt class="py-docstring">        from entropy package files and setup Portage directories.</tt> </tt>
+<a name="L613"></a><tt class="py-lineno">613</tt>  <tt class="py-line"><tt class="py-docstring">        Note: for performance reasons, this is a static method !</tt> </tt>
+<a name="L614"></a><tt class="py-lineno">614</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L615"></a><tt class="py-lineno">615</tt>  <tt class="py-line"><tt class="py-docstring">        @param entropy_client: Entropy Client interface instance</tt> </tt>
+<a name="L616"></a><tt class="py-lineno">616</tt>  <tt class="py-line"><tt class="py-docstring">        @type entropy_client: entropy.client.interfaces.Client.Client</tt> </tt>
+<a name="L617"></a><tt class="py-lineno">617</tt>  <tt class="py-line"><tt class="py-docstring">        @param package_metadata: Entropy package metadata</tt> </tt>
+<a name="L618"></a><tt class="py-lineno">618</tt>  <tt class="py-line"><tt class="py-docstring">        @type package_metadata: dict</tt> </tt>
+<a name="L619"></a><tt class="py-lineno">619</tt>  <tt class="py-line"><tt class="py-docstring">        @return: execution status</tt> </tt>
+<a name="L620"></a><tt class="py-lineno">620</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: int</tt> </tt>
+<a name="L621"></a><tt class="py-lineno">621</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L622"></a><tt class="py-lineno">622</tt>  <tt class="py-line">        <tt class="py-keyword">raise</tt> <tt class="py-name">NotImplementedError</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L623"></a><tt class="py-lineno">623</tt>  <tt class="py-line"> </tt><script type="text/javascript">
 <!--
 expandto(location.href);
 // -->
@@ -683,7 +722,7 @@ expandto(location.href);
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Thu Sep  3 14:56:11 2009
+    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:20 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
