@@ -582,3 +582,41 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
+    @staticmethod
+    def entropy_install_setup_hook(entropy_client, package_metadata):
+        """
+        This function is called by Entropy Client during package metadata setup.
+        It is intended to be used to inject additional metadata (that would be
+        used afterwards in other entropy_install_* hooks) to entropy package
+        install metadata.
+        Note: for performance reasons, this is a static method !
+
+        @param entropy_client: Entropy Client interface instance
+        @type entropy_client: entropy.client.interfaces.Client.Client
+        @param package_metadata: Entropy package metadata
+        @type package_metadata: dict
+        @return: execution status
+        @rtype: int
+        """
+        raise NotImplementedError()
+
+
+    @staticmethod
+    def entropy_install_unpack_hook(entropy_client, package_metadata):
+        """
+        This function is called by Entropy Client during package installation,
+        unpack phase. It is intended to be used to extract, if required,
+        Source Package Manager metadata from Entropy packages useful for
+        installing package into Source Package Manager plugin too.
+        For example, PortagePlugin uses this hook to extract xpak metadata
+        from entropy package files and setup Portage directories.
+        Note: for performance reasons, this is a static method !
+
+        @param entropy_client: Entropy Client interface instance
+        @type entropy_client: entropy.client.interfaces.Client.Client
+        @param package_metadata: Entropy package metadata
+        @type package_metadata: dict
+        @return: execution status
+        @rtype: int
+        """
+        raise NotImplementedError()
