@@ -165,7 +165,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # Package Radiobuttons
         self.packageRB = {}
         self.lastPkgPB = 'updates'
-        self.tooltip =  gtk.Tooltips()
 
         # color settings mapping dictionary
         self.colorSettingsMap = {
@@ -556,7 +555,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         except gobject.GError:
             pass
 
-        self.tooltip.set_tip(widget,tip)
         self.packageRB[tag] = widget
 
     def setup_page_buttons(self):
