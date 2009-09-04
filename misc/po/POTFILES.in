@@ -1,3 +1,10 @@
+../libraries/entropy/core/__init__.py
+../libraries/entropy/core/settings/base.py
+../libraries/entropy/core/settings/__init__.py
+../libraries/entropy/core/settings/plugins/factory.py
+../libraries/entropy/core/settings/plugins/__init__.py
+../libraries/entropy/core/settings/plugins/skel.py
+../libraries/entropy/core/settings/plugins/interfaces/__init__.py
 ../libraries/entropy/spm/__init__.py
 ../libraries/entropy/spm/plugins/factory.py
 ../libraries/entropy/spm/plugins/__init__.py
@@ -42,13 +49,13 @@
 ../libraries/entropy/client/interfaces/__init__.py
 ../libraries/entropy/client/interfaces/loaders.py
 ../libraries/entropy/client/interfaces/methods.py
+../libraries/entropy/client/interfaces/noticeboard.py
 ../libraries/entropy/client/interfaces/package.py
 ../libraries/entropy/client/interfaces/qa.py
 ../libraries/entropy/client/interfaces/repository.py
 ../libraries/entropy/client/interfaces/trigger.py
 ../libraries/entropy/cache.py
 ../libraries/entropy/const.py
-../libraries/entropy/core.py
 ../libraries/entropy/db.py
 ../libraries/entropy/dump.py
 ../libraries/entropy/exceptions.py
@@ -61,6 +68,7 @@
 ../libraries/entropy/tools.py
 ../libraries/entropy/transceivers.py
 ../libraries/entropy/xpak.py
+../libraries/test.py
 ../client/equo.py
 ../client/text_cache.py
 ../client/text_configuration.py
