@@ -47,6 +47,7 @@ try:
     entropy.tools.kill_threads()
     mainApp.quit()
 except SystemExit, e:
+    entropy.tools.kill_threads()
     print "Quit by User (SystemExit)"
     try:
         mainApp.quit()
@@ -54,6 +55,7 @@ except SystemExit, e:
         pass
     exit_status = e.code
 except KeyboardInterrupt:
+    entropy.tools.kill_threads()
     print "Quit by User (KeyboardInterrupt)"
     try:
         mainApp.quit()
