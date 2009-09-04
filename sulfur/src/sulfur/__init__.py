@@ -122,9 +122,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             raise SystemExit(0)
 
     def exit_now(self):
+        entropy.tools.kill_threads()
         self.wait_window.show()
-        try: gtk.main_quit()
-        except RuntimeError: pass
+        try:
+            gtk.main_quit()
+        except RuntimeError:
+            pass
 
     def gtk_loop(self):
         while gtk.events_pending():
@@ -514,22 +517,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def setup_packages_filter(self):
 
-        self.setup_package_radio_buttons(self.ui.rbUpdates, "updates",
-            _('Show Package Updates'))
-        self.setup_package_radio_buttons(self.ui.rbAvailable, "available",
-            _('Show available Packages'))
-        self.setup_package_radio_buttons(self.ui.rbInstalled, "installed",
-            _('Show Installed Packages'))
-        self.setup_package_radio_buttons(self.ui.rbMasked, "masked",
-            _('Show Masked Packages'))
-        self.setup_package_radio_buttons(self.ui.rbAll, "all",
-            _('Show All Packages'))
-        self.setup_package_radio_buttons(self.ui.rbPkgSets, "pkgsets",
-            _('Show Package Sets'))
-        self.setup_package_radio_buttons(self.ui.rbPkgQueued,"queued",
-            _('Show Queued Packages'))
+        self.setup_package_radio_buttons(self.ui.rbUpdates, "updates")
+        self.setup_package_radio_buttons(self.ui.rbAvailable, "available")
+        self.setup_package_radio_buttons(self.ui.rbInstalled, "installed")
+        self.setup_package_radio_buttons(self.ui.rbMasked, "masked")
+        self.setup_package_radio_buttons(self.ui.rbAll, "all")
+        self.setup_package_radio_buttons(self.ui.rbPkgSets, "pkgsets")
+        self.setup_package_radio_buttons(self.ui.rbPkgQueued,"queued")
 
-    def setup_package_radio_buttons(self, widget, tag, tip):
+    def setup_package_radio_buttons(self, widget, tag):
         widget.connect('toggled',self.on_pkgFilter_toggled, tag)
 
         #widget.set_relief( gtk.RELIEF_NONE )
