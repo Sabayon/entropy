@@ -714,7 +714,10 @@ class SulfurApplicationEventsMixin:
     def on_abortQueue_clicked(self,widget):
         msg = _("You have chosen to interrupt the processing. Are you sure you want to do it ?")
         rc = questionDialog(self.ui.main, msg)
-        if rc: self.abortQueueNow = True
+        if rc:
+            if self.do_debug:
+                print "on_abortQueue_clicked: abort is now on"
+            self.abortQueueNow = True
 
     def on_search_clicked(self,widget):
         self.etpbase.set_filter(Filter.processFilters)
