@@ -753,7 +753,8 @@ class RepositoryMixin:
 
             branch_mig_script = mydata['post_branch_hop_script']
             branch_mig_md5sum = '0'
-            if os.access(branch_mig_script, os.R_OK | os.F_OK):
+            if os.access(branch_mig_script, os.R_OK) and \
+                os.path.isfile(branch_mig_script):
                 branch_mig_md5sum = self.entropyTools.md5sum(branch_mig_script)
 
             const_debug_write(__name__,
@@ -863,7 +864,8 @@ class RepositoryMixin:
             # check if branch upgrade script exists
             branch_upg_script = mydata['post_branch_upgrade_script']
             branch_upg_md5sum = '0'
-            if os.access(branch_upg_script, os.R_OK | os.F_OK):
+            if os.access(branch_upg_script, os.R_OK) and \
+                os.path.isfile(branch_upg_script):
                 branch_upg_md5sum = self.entropyTools.md5sum(branch_upg_script)
 
             const_debug_write(__name__,
@@ -991,7 +993,7 @@ class MiscMixin:
                 f_obj.close()
             MiscMixin.RESOURCES_LOCK_F_REF = None
 
-        if os.access(etpConst['locks']['using_resources'], os.F_OK):
+        if os.path.isfile(etpConst['locks']['using_resources']):
             os.remove(etpConst['locks']['using_resources'])
 
     def resources_check_lock(self):

@@ -204,7 +204,7 @@ class Server:
                         break
 
                     down_path = os.path.join(tmp_dir, filename)
-                    if success and os.access(down_path, os.F_OK):
+                    if success and os.path.isfile(down_path):
                         down_f = open(down_path)
                         branch_data[branch] = down_f.read()
                         down_f.close()
@@ -782,7 +782,9 @@ class Server:
                     dlcount -= 1
 
                 crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
-                if os.access(revision_localtmppath, os.R_OK | os.F_OK):
+                if os.access(revision_localtmppath, os.R_OK) and \
+                    os.path.isfile(revision_localtmppath):
+
                     f_rev = open(revision_localtmppath,"r")
                     try:
                         revision = int(f_rev.readline().strip())
@@ -801,6 +803,7 @@ class Server:
                         )
                         revision = 0
                     f_rev.close()
+
                 elif dlcount == 0:
                     self.Entropy.updateProgress(
                         "[repo:%s|%s] %s: %s" % (
@@ -814,6 +817,7 @@ class Server:
                         header = darkred(" !!! ")
                     )
                     revision = 0
+
                 else:
                     self.Entropy.updateProgress(
                         "[repo:%s|%s] %s: %s" % (
@@ -827,6 +831,7 @@ class Server:
                         header = darkred(" !!! ")
                     )
                     revision = 0
+
                 if os.path.isfile(revision_localtmppath):
                     os.remove(revision_localtmppath)
 
@@ -1488,7 +1493,7 @@ class Server:
     def _create_metafiles_file(self, compressed_dest_path, file_list, repo):
 
         found_file_list = [x for x in file_list if os.path.isfile(x) and \
-            os.access(x, os.F_OK) and os.access(x, os.R_OK)]
+            os.path.isfile(x) and os.access(x, os.R_OK)]
         not_found_file_list = ["%s\n" % (os.path.basename(x),) for x in \
             file_list if x not in found_file_list]
         metafile_not_found_file = \
@@ -1737,8 +1742,10 @@ class Server:
             copy_back = False
             if not pretend:
                 try:
-                    if os.access(backup_dbpath, os.R_OK | os.F_OK):
+                    if os.access(backup_dbpath, os.R_OK) and \
+                        os.path.isfile(backup_dbpath):
                         os.remove(backup_dbpath)
+
                     shutil.copy2(old_dbpath, backup_dbpath)
                     copy_back = True
                 except shutil.Error:
@@ -2047,7 +2054,9 @@ class Server:
             if not mirrors_locked and db_locked:
                 # mirrors not locked remotely but only locally
                 mylock_file = self.get_database_lockfile(repo)
-                if os.access(mylock_file, os.W_OK | os.F_OK):
+                if os.access(mylock_file, os.W_OK) and \
+                    os.path.isfile(mylock_file):
+
                     os.remove(mylock_file)
                     continue
 

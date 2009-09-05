@@ -95,32 +95,34 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             keywords_path = os.path.join(repo_data['dbpath'],
                 etpConst['etpdatabasekeywordsfile'])
 
-            if os.access(maskpath, os.R_OK | os.F_OK):
+            if os.access(maskpath, os.R_OK) and os.path.isfile(maskpath):
                 repos_mask_setting[repoid] = maskpath
                 repos_mask_mtime[repoid] = dmp_dir + "/repo_" + \
                     repoid + "_" + etpConst['etpdatabasemaskfile'] + ".mtime"
 
-            if os.access(wlpath, os.R_OK | os.F_OK):
+            if os.access(wlpath, os.R_OK) and os.path.isfile(wlpath):
                 repos_lic_wl_setting[repoid] = wlpath
                 repos_lic_wl_mtime[repoid] = dmp_dir + "/repo_" + \
                     repoid + "_" + etpConst['etpdatabaselicwhitelistfile'] + \
                     ".mtime"
 
-            if os.access(sm_path, os.R_OK | os.F_OK):
+            if os.access(sm_path, os.R_OK) and os.path.isfile(sm_path):
                 repos_sm_mask_setting[repoid] = sm_path
                 repos_sm_mask_mtime[repoid] = dmp_dir + "/repo_" + \
                     repoid + "_" + etpConst['etpdatabasesytemmaskfile'] + \
                     ".mtime"
-            if os.access(ct_path, os.R_OK | os.F_OK):
+            if os.access(ct_path, os.R_OK) and os.path.isfile(ct_path):
                 confl_tagged[repoid] = ct_path
 
-            if os.access(critical_path, os.R_OK | os.F_OK):
+            if os.access(critical_path, os.R_OK) and \
+                os.path.isfile(critical_path):
                 repos_critical_updates_setting[repoid] = critical_path
                 repos_critical_updates_mtime[repoid] = dmp_dir + "/repo_" + \
                     repoid + "_" + etpConst['etpdatabasecriticalfile'] + \
                     ".mtime"
 
-            if os.access(keywords_path, os.R_OK | os.F_OK):
+            if os.access(keywords_path, os.R_OK) and \
+                os.path.isfile(keywords_path):
                 repos_keywords_setting[repoid] = keywords_path
                 repos_keywords_mtime[repoid] = dmp_dir + "/repo_" + \
                     repoid + "_" + etpConst['etpdatabasekeywordsfile'] + \
@@ -172,7 +174,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             brf.flush()
             brf.close()
 
-        if not os.access(old_branch_path, os.F_OK | os.R_OK):
+        if not os.access(old_branch_path, os.R_OK) and \
+            os.path.isfile(old_branch_path):
             write_current_branch(current_branch)
             return
 
@@ -216,7 +219,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
 
         def delete_in_branch_upgrade():
             br_path = etpConst['etp_in_branch_upgrade_file']
-            if os.access(br_path, os.W_OK | os.F_OK):
+            if os.access(br_path, os.W_OK) and os.path.isfile(br_path):
                 os.remove(br_path)
 
         # actually execute this only if
@@ -426,7 +429,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         for repoid in repoids:
             filepath = self.__repos_files['conflicting_tagged_packages'].get(
                 repoid)
-            if os.access(filepath, os.R_OK | os.F_OK):
+            if os.access(filepath, os.R_OK) and os.path.isfile(filepath):
                 confl_f = open(filepath,"r")
                 content = confl_f.readlines()
                 confl_f.close()

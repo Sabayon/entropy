@@ -346,7 +346,7 @@ class Repository:
             mytxt = _("self.dbformat_eapi must be in (1,2)")
             raise InvalidData('InvalidData: %s' % (mytxt,))
 
-        if not os.access(md5file, os.F_OK | os.R_OK):
+        if not (os.access(md5file, os.R_OK) and os.path.isfile(md5file)):
             return -1
 
         return self._verify_file_checksum(dbfile, md5file)
@@ -1056,7 +1056,8 @@ class Repository:
                 if (do_db_update_transfer is not None) and not \
                     do_db_update_transfer:
 
-                    if os.access(dbfile, os.R_OK | os.W_OK | os.F_OK):
+                    if os.access(dbfile, os.R_OK | os.W_OK) and \
+                        os.path.isfile(dbfile):
                         try:
                             os.rename(dbfile, dbfile_old)
                             do_db_update_transfer = True
@@ -1129,7 +1130,7 @@ class Repository:
             self.Entropy.cycleDone()
 
             # remove garbage
-            if os.access(dbfile_old, os.R_OK | os.F_OK):
+            if os.access(dbfile_old, os.R_OK) and os.path.isfile(dbfile_old):
                 os.remove(dbfile_old)
 
         # keep them closed

@@ -173,7 +173,7 @@ class SulfurApplicationEventsMixin:
             return True
 
         """
-        if not os.access(source, os.R_OK | os.W_OK | os.F_OK):
+        if not (os.access(source, os.R_OK | os.W_OK) os.path.isfile(source)):
             return
         source_f = open(source)
         txt = source_f.read()

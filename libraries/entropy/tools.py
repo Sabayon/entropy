@@ -1640,7 +1640,7 @@ def generic_file_content_parser(filepath):
     @rtype: 
     """
     data = []
-    if os.access(filepath, os.R_OK | os.F_OK):
+    if os.access(filepath, os.R_OK) and os.path.isfile(filepath):
         gen_f = open(filepath, "r")
         content = gen_f.readlines()
         gen_f.close()

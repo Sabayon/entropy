@@ -464,7 +464,7 @@ class Trigger:
         for path in self._trigger_data['conftouch']:
 
             path = etpConst['systemroot']+path
-            if not os.access(path, os.W_OK | os.F_OK):
+            if not os.access(path, os.W_OK) and os.path.isfile(path):
                 continue
             try:
                 f_item = open(path, "abw")
@@ -478,7 +478,7 @@ class Trigger:
         for item in self._trigger_data['initdisable']:
 
             item = etpConst['systemroot'] + item
-            if not os.access(item, os.F_OK | os.W_OK):
+            if not os.access(item, os.W_OK) and os.path.isfile(item):
                 continue
 
             myroot = "/"
@@ -625,7 +625,7 @@ class Trigger:
     def __ebuild_setup_phase(self, ebuild, portage_atom):
         rc = 0
         env_file = self.pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"
-        if not os.access(env_file, os.R_OK | os.F_OK):
+        if not os.access(env_file, os.R_OK) and os.path.isfile(env_file):
             rc = self.Spm.execute_package_phase(portage_atom, ebuild,
                 "setup",
                 work_dir = self.pkgdata['unpackdir'],

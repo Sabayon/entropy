@@ -261,7 +261,7 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
             dbconn = self._helper.open_server_repository(
                 just_reading = True, repo = repoid)
 
-            if os.access(exp_fp, os.R_OK | os.F_OK):
+            if os.access(exp_fp, os.R_OK) and os.path.isfile(exp_fp):
                 pkgs = self.entropyTools.generic_file_content_parser(exp_fp)
                 if '*' in pkgs: # wildcard support
                     idpackages.add(-1)

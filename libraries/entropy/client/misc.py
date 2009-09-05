@@ -46,7 +46,7 @@ class FileUpdates:
     def remove_file(self, key):
         self.scanfs(dcache = True)
         source_file = etpConst['systemroot'] + self.scandata[key]['source']
-        if os.access(source_file, os.F_OK) and os.access(source_file, os.W_OK):
+        if os.path.isfile(source_file) and os.access(source_file, os.W_OK):
             os.remove(source_file)
         self.remove_from_cache(key)
 

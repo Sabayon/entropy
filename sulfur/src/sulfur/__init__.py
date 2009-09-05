@@ -461,11 +461,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             atoms_install.extend(sys.argv[sys.argv.index("--install")+1:])
 
         packages_install = [x for x in packages_install if \
-            os.access(x, os.R_OK | os.F_OK)]
+            os.access(x, os.R_OK) and os.path.isfile(x)]
 
         for arg in sys.argv:
             if arg.endswith(etpConst['packagesext']) and \
-                os.access(arg, os.R_OK | os.F_OK):
+                os.access(arg, os.R_OK) and os.path.isfile(arg):
 
                 arg = os.path.realpath(arg)
                 packages_install.append(arg)

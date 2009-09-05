@@ -1033,11 +1033,11 @@ class LogFile:
         @type file_path: string
         """
         if isinstance(file_path, basestring):
-            if not os.access(file_path, os.F_OK) and os.access(
+            if not os.path.isfile(file_path) and os.access(
                 os.path.dirname(file_path), os.W_OK):
                 self._logfile = open(file_path, "aw")
             else:
-                if os.access(file_path, os.W_OK | os.F_OK):
+                if os.access(file_path, os.W_OK) and os.path.isfile(file_path):
                     self._logfile = open(file_path, "aw")
                 else:
                     self._logfile = open("/dev/null", "aw")

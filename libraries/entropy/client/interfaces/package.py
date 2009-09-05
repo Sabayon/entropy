@@ -1336,7 +1336,7 @@ class Package:
             protected = False # file doesn't exist
 
         # check if it's a text file
-        if protected and os.access(tofile, os.F_OK | os.R_OK):
+        if protected and os.path.isfile(tofile) and os.access(tofile, os.R_OK):
             protected = entropy.tools.istextfile(tofile)
             in_mask = protected
         else:
@@ -2504,7 +2504,8 @@ class Package:
         # if file exists, first checksum then fetch
         down_path = os.path.join(etpConst['entropyworkdir'],
             self.pkgmeta['download'])
-        if os.access(down_path, os.R_OK | os.F_OK):
+        if os.access(down_path, os.R_OK) and os.path.isfile(down_path):
+
             # check size first
             repo_size = dbconn.retrieveSize(idpackage)
             f = open(down_path, "r")

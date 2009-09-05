@@ -264,7 +264,7 @@ class PortagePlugin(SpmPlugin):
         if isinstance(ebuild_path, basestring):
 
             clog_path = os.path.join(os.path.dirname(ebuild_path), "ChangeLog")
-            if os.access(clog_path, os.R_OK | os.F_OK):
+            if os.access(clog_path, os.R_OK) and os.path.isfile(clog_path):
                 with open(clog_path, "r") as clog_f:
                     return clog_f.read()
 
@@ -342,7 +342,8 @@ class PortagePlugin(SpmPlugin):
         if security_property == "new":
 
             checklist = []
-            if os.access(glsaconfig["CHECKFILE"], os.R_OK | os.F_OK):
+            if os.access(glsaconfig["CHECKFILE"], os.R_OK) and \
+                os.path.isfile(glsaconfig["CHECKFILE"]):
                 with open(glsaconfig["CHECKFILE"], "r") as check_f:
                     checklist.extend([x.strip() for x in check_f.readlines()])
             glsalist = [x for x in completelist if x not in checklist]
@@ -571,7 +572,7 @@ class PortagePlugin(SpmPlugin):
 
         dblnk.unlockdb()
 
-        if os.access(file_save_path, os.F_OK):
+        if os.path.isfile(file_save_path):
             return file_save_path
 
         raise SPMError("SPMError: Spm:generate_package %s: %s %s" % (
@@ -720,7 +721,7 @@ class PortagePlugin(SpmPlugin):
         data['trigger'] = ""
         trigger_file = os.path.join(etpConst['triggersdir'], data['category'],
             data['name'], etpConst['triggername'])
-        if os.access(trigger_file, os.F_OK | os.R_OK):
+        if os.access(trigger_file, os.R_OK) and os.path.isfile(trigger_file):
             with open(trigger_file,"rb") as trig_f:
                 data['trigger'] = trig_f.read()
 
@@ -1302,7 +1303,7 @@ class PortagePlugin(SpmPlugin):
         ### ACCEPT_LICENSE
         for lic in licenses:
             lic_path = os.path.join(portdir_lic, lic)
-            if not os.access(lic_path, os.F_OK):
+            if os.access(portdir_lic, os.W_OK | os.R_OK):
                 lic_f = open(lic_path, "w")
                 lic_f.close()
 
@@ -1453,7 +1454,7 @@ class PortagePlugin(SpmPlugin):
         world_dir = os.path.dirname(world_file)
         world_atoms = set()
 
-        if os.access(world_file, os.R_OK | os.F_OK):
+        if os.access(world_file, os.R_OK) and os.path.isfile(world_file):
             with open(world_file, "r") as world_f:
                 world_atoms |= set((x.strip() for x in world_f.readlines() if \
                     x.strip()))
@@ -1499,8 +1500,6 @@ class PortagePlugin(SpmPlugin):
         key = entropy.tools.dep_getkey(atom)
 
         others_installed = self.match_installed_package(key, match_all = True)
-        if atom in others_installed:
-            others_installed.remove(atom)
 
         # Support for tagged packages
         slot = package_metadata['slot']
@@ -1532,9 +1531,14 @@ class PortagePlugin(SpmPlugin):
                 except OSError:
                     pass
 
-        if others_installed:
+        if isinstance(others_installed, (list, set, tuple,)):
 
             for myatom in others_installed:
+
+                if myatom == atom:
+                    # do not remove self
+                    continue
+
                 myslot = self.get_installed_package_metadata(myatom, "SLOT")
                 if myslot != slot:
                     continue
@@ -1549,7 +1553,7 @@ class PortagePlugin(SpmPlugin):
         # otherwise update Portage world file
         world_file = self.get_user_installed_packages_file()
         world_file_tmp = world_file + ".entropy.tmp"
-        if os.access(world_file, os.W_OK | os.F_OK):
+        if os.access(world_file, os.W_OK) and os.path.isfile(world_file):
 
             new = open(world_file_tmp,"w")
             old = open(world_file,"r")
@@ -1580,7 +1584,7 @@ class PortagePlugin(SpmPlugin):
         atom = package_metadata['key'] + "-" + package_metadata['version']
         myebuild = self.get_installed_package_build_script_path(atom)
 
-        if not os.access(myebuild, os.R_OK | os.F_OK):
+        if not (os.access(myebuild, os.R_OK) and os.path.isfile(myebuild)):
             # cannot find ebuild ! ouch!
             return 2
 

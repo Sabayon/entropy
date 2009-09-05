@@ -94,7 +94,7 @@ class AppletNoticeWindow(QWidget):
         self.setWindowTitle(_("Application updates"))
 
         # set window icon
-        if os.access(ICON_PATH, os.R_OK | os.F_OK):
+        if os.access(ICON_PATH, os.R_OK) and os.path.isfile(ICON_PATH):
             self.__window_icon = QIcon(ICON_PATH)
             self.setWindowIcon(self.__window_icon)
 

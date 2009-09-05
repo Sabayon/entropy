@@ -145,7 +145,8 @@ class Server(SocketHost):
                 compressed_dbfile = etpConst[cmethod_data[2]]
                 compressed_dbpath = os.path.join(dbpath, compressed_dbfile)
 
-                if not os.access(compressed_dbpath, os.R_OK | os.F_OK | os.W_OK):
+                if not (os.access(compressed_dbpath, os.R_OK | os.W_OK) and \
+                    os.path.isfile(compressed_dbpath)):
                     mytxt = darkred("%s: %s !!") % (
                         _("cannot unlock database, compressed file not found"),
                         compressed_dbpath,

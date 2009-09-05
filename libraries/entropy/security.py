@@ -116,7 +116,9 @@ class SecurityInterface:
             pass
         const_setup_perms(etpConst['securitydir'], etpConst['entropygid'])
 
-        if os.access(self.old_download_package_checksum, os.F_OK | os.R_OK):
+        if os.access(self.old_download_package_checksum, os.R_OK) and \
+            os.path.isfile(self.old_download_package_checksum):
+
             f_down = open(self.old_download_package_checksum)
             try:
                 self.previous_checksum = f_down.readline().strip().split()[0]

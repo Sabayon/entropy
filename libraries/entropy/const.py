@@ -973,7 +973,7 @@ def const_remove_entropy_pid():
     """
     pid = os.getpid()
     pid_file = etpConst['pidfile']
-    if not os.access(pid_file, os.F_OK):
+    if not os.path.lexists(pid_file):
         return True # not found, so removed
 
     # open file

@@ -593,7 +593,8 @@ class QAInterface:
                         # obviously, we're looking for another ELF object
                         my_real_exec_dir = os.path.dirname(real_exec_path)
                         mylib_guess = os.path.join(my_real_exec_dir, mylib)
-                        if os.access(mylib_guess, os.R_OK | os.F_OK):
+                        if os.access(mylib_guess, os.R_OK) and \
+                            os.path.isfile(mylib_guess):
                             if self.entropyTools.is_elf_file(mylib_guess):
                                 # we have found the missing library,
                                 # which wasn't in LDPATH, booooo @ package
@@ -951,7 +952,7 @@ class QAInterface:
         fd, tmp_path = tempfile.mkstemp()
         extract_path = self.entropyTools.extract_edb(pkg_path, tmp_path)
         if extract_path is None:
-            if os.access(tmp_path, os.F_OK):
+            if os.path.isfile(tmp_path):
                 os.remove(tmp_path)
             os.close(fd)
             return False # error!

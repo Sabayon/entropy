@@ -27,7 +27,7 @@ def write_new_line(buf, data):
 
 for path in args:
 
-    if not os.access(path, os.F_OK | os.R_OK | os.W_OK):
+    if not (os.path.isfile(path) and os.access(path, os.R_OK | os.W_OK)):
         sys.stderr.write("unable to deal with %s\n" % (path,))
         sys.stderr.flush()
         continue

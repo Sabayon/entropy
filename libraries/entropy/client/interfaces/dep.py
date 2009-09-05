@@ -1503,7 +1503,8 @@ class CalculatorsMixin:
         # check if we are branch migrating
         # in this case, critical pkgs feature is disabled
         in_branch_upgrade = etpConst['etp_in_branch_upgrade_file']
-        if os.access(in_branch_upgrade, os.R_OK | os.F_OK):
+        if os.access(in_branch_upgrade, os.R_OK) and \
+            os.path.isfile(in_branch_upgrade):
             return set(), []
 
         db_digest = self.all_repositories_checksum()
@@ -1683,7 +1684,7 @@ class CalculatorsMixin:
             # delete branch upgrade file if exists, since there are
             # no updates, this file does not deserve to be saved anyway
             br_path = etpConst['etp_in_branch_upgrade_file']
-            if os.access(br_path, os.W_OK | os.F_OK):
+            if os.access(br_path, os.W_OK) and os.path.isfile(br_path):
                 os.remove(br_path)
 
         return update, remove, fine, spm_fine

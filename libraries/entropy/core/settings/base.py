@@ -704,7 +704,7 @@ class SystemSettings(Singleton):
         @rtype: string
         """
         hw_hash_file = self.__setting_files['hw_hash']
-        if os.access(hw_hash_file, os.R_OK | os.F_OK):
+        if os.access(hw_hash_file, os.R_OK) and os.path.isfile(hw_hash_file):
             hash_f = open(hw_hash_file, "r")
             hash_data = hash_f.readline().strip()
             hash_f.close()
@@ -713,7 +713,9 @@ class SystemSettings(Singleton):
         hash_file_dir = os.path.dirname(hw_hash_file)
         hw_hash_exec = etpConst['etp_hw_hash_gen']
         if os.access(hash_file_dir, os.W_OK) and \
-            os.access(hw_hash_exec, os.X_OK | os.F_OK | os.R_OK):
+            os.access(hw_hash_exec, os.X_OK | os.R_OK) and \
+            os.path.isfile(hw_hash_exec):
+
             pipe = os.popen('{ ' + hw_hash_exec + '; } 2>&1', 'r')
             hash_data = pipe.read().strip()
             sts = pipe.close()

@@ -39,7 +39,7 @@ class NoticeBoardMixin:
         repo_data = self.SystemSettings['repositories']['available'][repoid]
         nb_path = repo_data['local_notice_board']
 
-        if not os.access(nb_path, os.F_OK | os.R_OK):
+        if not os.access(nb_path, os.R_OK) and os.path.isfile(nb_path):
             return {} # not found
 
         # load RSS metadata and return if valid
@@ -65,7 +65,7 @@ class NoticeBoardMixin:
         repo_data = self.SystemSettings['repositories']['available'][repoid]
         nb_path = repo_data['local_notice_board_userdata']
 
-        if not os.access(nb_path, os.F_OK | os.R_OK):
+        if not os.access(nb_path, os.R_OK) and os.path.isfile(nb_path):
             return {} # not found
 
         # load metadata

@@ -7424,7 +7424,9 @@ class EntropyRepository:
                 myatomcounterpath = os.path.join(os.path.dirname(build_path),
                     counter_path)
 
-                if not os.access(myatomcounterpath, os.F_OK | os.R_OK):
+                if not (os.access(myatomcounterpath, os.R_OK) and \
+                    os.path.isfile(myatomcounterpath)):
+
                     if verbose:
                         mytxt = "%s: %s: %s" % (
                             bold(_("ATTENTION")),
