@@ -2147,9 +2147,6 @@ class Package:
         finally:
             self.Entropy.resources_remove_lock()
 
-        # remove lock
-        self.Entropy.resources_remove_lock()
-
         if rc != 0:
             self.Entropy.updateProgress(
                 blue(_("An error occured. Action aborted.")),
