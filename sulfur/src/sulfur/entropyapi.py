@@ -38,6 +38,10 @@ class QueueExecutor:
         self.Entropy = SulfurApplication.Equo
         self.__on_lic_request = False
         self.__on_lic_rc = None
+        # reset fetcher last average count
+        GuiUrlFetcher.gui_last_avg = 0
+        # clear download mirrors status
+        self.Entropy.MirrorStatus.clear()
 
     def handle_licenses(self, queue):
 
@@ -378,7 +382,7 @@ class Equo(EquoInterface):
 
 class GuiUrlFetcher(UrlFetcher):
 
-    gui_last_avg = 100
+    gui_last_avg = 0
 
     def connect_to_gui(self, progress):
         self.progress = progress
@@ -397,12 +401,14 @@ class GuiUrlFetcher(UrlFetcher):
 
     def updateProgress(self):
 
-        if self.progress == None: return
+        if self.progress == None:
+            return
 
         myavg = abs(int(round(float(self.__average),1)))
-        if abs((myavg - self.gui_last_avg)) < 1: return
+        if abs((myavg - GuiUrlFetcher.gui_last_avg)) < 1:
+            return
 
-        if (myavg > self.gui_last_avg) or (myavg < 2) or (myavg > 97):
+        if (myavg > GuiUrlFetcher.gui_last_avg) or (myavg < 2) or (myavg > 97):
 
             self.progress.set_progress(round(float(self.__average)/100,1),
                 str(myavg)+"%")
@@ -413,4 +419,4 @@ class GuiUrlFetcher(UrlFetcher):
                     str(human_dt) + "/sec",
                 )
             )
-            self.gui_last_avg = myavg
+            GuiUrlFetcher.gui_last_avg = myavg
