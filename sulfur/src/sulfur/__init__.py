@@ -1501,8 +1501,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     return True
         return False
 
-    def process_queue(self, pkgs, remove_repos = [], fetch_only = False,
+    def process_queue(self, pkgs, remove_repos = None, fetch_only = False,
             download_sources = False):
+
+        if remove_repos is None:
+            remove_repos = []
 
         self.show_progress_bars()
 
@@ -1513,6 +1516,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 _("Another Entropy instance is running. Cannot process queue."))
             self.progress.reset_progress()
             self.switch_notebook_page('packages')
+            return False
+
+        # acquire Entropy resources here to avoid surpises afterwards
+        acquired = self.Equo.resources_create_lock()
+        if not acquired:
+            okDialog(self.ui.main,
+                _("Another Entropy instance is locking this task at the moment. Try in a few minutes."))
             return False
 
         switch_back_page = None
@@ -1567,6 +1577,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     except QueueError:
                         self.my_inst_abort = True
                         e, i = 1, None
+                        # make sure that bool is reset back to False
                     except:
                         entropy.tools.print_traceback()
                         e, i = 1, None
@@ -1627,6 +1638,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                         _("Attention. You have updated Entropy."
                         "\nSulfur will be reloaded.")
                     )
+                    self.Equo.resources_remove_lock()
                     self.quit(sysexit = False)
                     self.exit_now()
                     raise SystemExit(99)
@@ -1672,6 +1684,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.disable_ugc = False
         if switch_back_page is not None:
             self.switch_notebook_page(switch_back_page)
+
+        self.Equo.resources_remove_lock()
         return state
 
     def ui_lock(self, lock):
@@ -1738,16 +1752,29 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             break
 
     def queue_bombing(self):
+        if self.do_debug:
+            print "queue_bombing: bomb?"
         if self.abortQueueNow:
+            if self.do_debug:
+                print "queue_bombing: BOMBING !!!"
             self.abortQueueNow = False
             mytxt = _("Aborting queue tasks.")
             raise QueueError('QueueError %s' % (mytxt,))
 
     def mirror_bombing(self):
+
         if self.skipMirrorNow:
             self.skipMirrorNow = False
             mytxt = _("Skipping current mirror.")
             raise OnlineMirrorError('OnlineMirrorError %s' % (mytxt,))
+
+        if self.abortQueueNow:
+            self.abortQueueNow = False
+            print "mirror_bombing: queue BOMB !!!"
+            # do not reset self.abortQueueNow here, we need
+            # mirror_bombing to keep crashing
+            raise QueueError('QueueError %s' % (mytxt,))
+
 
     def load_ugc_repositories(self):
         self.ugcRepositoriesModel.clear()
