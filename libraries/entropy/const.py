@@ -1376,7 +1376,7 @@ def const_kill_threads():
             continue
         if hasattr(running_t,'kill'):
             running_t.kill()
-        running_t.join()
+        running_t.join(120.0) # wait 2 minutes?
 
 def __const_handle_exception(etype, value, t_back):
     """
