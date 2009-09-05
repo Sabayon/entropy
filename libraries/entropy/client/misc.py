@@ -97,7 +97,10 @@ class FileUpdates:
         for path in client_conf_protect:
 
             # this avoids encoding issues hands down
-            path = path.encode(sys.getfilesystemencoding())
+            try:
+                path = path.encode('utf-8')
+            except (UnicodeEncodeError,):
+                path = path.encode(sys.getfilesystemencoding())
             # it's a file?
             scanfile = False
             if os.path.isfile(path):

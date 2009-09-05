@@ -481,7 +481,10 @@ class QAInterface:
                 percent = True,
                 header = "  "
             )
-            ldpath = ldpath.encode(sys.getfilesystemencoding())
+            try:
+                ldpath = ldpath.encode('utf-8')
+            except (UnicodeEncodeError,):
+                ldpath = ldpath.encode(sys.getfilesystemencoding())
             mywalk_iter = os.walk(etpConst['systemroot'] + ldpath)
 
             def mywimf(dt):

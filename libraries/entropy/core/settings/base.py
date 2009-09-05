@@ -443,9 +443,9 @@ class SystemSettings(Singleton):
                 os.access(os.path.join(sets_dir, x),os.R_OK))]
             for set_file in set_files:
                 try:
+                    set_file = set_file.decode('utf-8')
+                except (UnicodeDecodeError,):
                     set_file = set_file.decode(sys.getfilesystemencoding())
-                except (UnicodeDecodeError, UnicodeEncodeError,):
-                    continue
                 pkg_set_data[set_file] = os.path.join(sets_dir, set_file)
         self.__setting_files['system_package_sets'].update(pkg_set_data)
 
