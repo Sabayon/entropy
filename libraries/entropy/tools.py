@@ -13,7 +13,6 @@ from __future__ import with_statement
     used arount the Entropy codebase.
 
 """
-
 import stat
 import errno
 import re
@@ -43,12 +42,13 @@ def is_root():
 
 def is_user_in_entropy_group(uid = None):
     """
-    docstring_title
+    Return whether UID or given UID (through uid keyword argument) is in
+    the "entropy" group (see entropy.const.etpConst['sysgroup']).
 
-    @keyword uid: 
-    @type uid: 
-    @return: 
-    @rtype: 
+    @keyword uid: valid system uid
+    @type uid: int
+    @return: True, if UID is in the "entropy" group
+    @rtype: bool
     """
 
     if uid == None:
@@ -76,12 +76,12 @@ def is_user_in_entropy_group(uid = None):
 
 def get_uid_from_user(username):
     """
-    docstring_title
+    Return UID for given username or -1 if not available.
 
-    @param username: 
-    @type username: 
-    @return: 
-    @rtype: 
+    @param username: valid system username
+    @type username: string
+    @return: UID if username is valid, otherwise -1
+    @rtype: int
     """
     try:
         return pwd.getpwnam(username)[2]
@@ -90,12 +90,13 @@ def get_uid_from_user(username):
 
 def get_gid_from_group(groupname):
     """
-    docstring_title
+    Return GID value for given system group name if exists, otherwise
+    return -1.
 
-    @param groupname: 
-    @type groupname: 
-    @return: 
-    @rtype: 
+    @param groupname: valid system group
+    @type groupname: string
+    @return: resolved GID or -1 if not available
+    @rtype: int
     """
     try:
         return grp.getgrnam(groupname)[2]
@@ -104,12 +105,12 @@ def get_gid_from_group(groupname):
 
 def get_user_from_uid(uid):
     """
-    docstring_title
+    Return username belonging to given system UID.
 
-    @param uid: 
-    @type uid: 
-    @return: 
-    @rtype: 
+    @param uid: valid system UID
+    @type uid: int
+    @return: username
+    @rtype: string or None
     """
     try:
         return pwd.getpwuid(uid)[0]
@@ -118,45 +119,42 @@ def get_user_from_uid(uid):
 
 def get_group_from_gid(gid):
     """
-    docstring_title
+    Return group name belonging to given system GID
 
-    @param gid: 
-    @type gid: 
-    @return: 
-    @rtype: 
+    @param gid: valid system GID
+    @type gid: int
+    @return: group name
+    @rtype: string or None
     """
     try:
         return grp.getgrgid(gid)[0]
     except (KeyError, IndexError,):
-        return -1
+        return None
 
 def kill_threads():
     """
-    docstring_title
-
-    @return: 
-    @rtype: 
+    Call entropy.const's const_kill_threads() method. Service function
+    available also here.
     """
     const_kill_threads()
 
 def print_traceback(f = None):
     """
-    docstring_title
+    Function called by Entropy when an exception occurs with the aim to give
+    user a clue of what went wrong.
 
-    @keyword f: 
-    @type f: 
-    @return: 
-    @rtype: 
+    @keyword f: write to f (file) object instead of stdout
+    @type f: valid file handle
     """
     import traceback
     traceback.print_exc(file = f)
 
 def get_traceback():
     """
-    docstring_title
+    Return last available Python traceback.
 
-    @return: 
-    @rtype: 
+    @return: traceback data
+    @rtype: string
     """
     import traceback
     from cStringIO import StringIO
@@ -166,12 +164,13 @@ def get_traceback():
 
 def print_exception(returndata = False):
     """
-    docstring_title
+    Print last Python exception and frame variables values (if available)
+    to stdout.
 
-    @keyword returndata: 
-    @type returndata: 
-    @return: 
-    @rtype: 
+    @keyword returndata: do not print data but return
+    @type returndata: bool
+    @return: exception data
+    @rtype: string
     """
     import traceback
     if not returndata:
@@ -214,16 +213,16 @@ def print_exception(returndata = False):
 # @returns False: if the file is not found
 def get_remote_data(url, timeout = 5):
     """
-    docstring_title
+    Fetch data at given URL (all the ones supported by Python urllib2) and
+    return it.
 
-    @param url: 
-    @type url: 
-    @keyword timeout: 
-    @type timeout: 
-    @return: 
-    @rtype: 
+    @param url: URL string
+    @type url: string
+    @keyword timeout: fetch timeout in seconds
+    @type timeout: int
+    @return: fetched data or False (when error occured)
+    @rtype: string or bool
     """
-
     import socket
     import urllib2
     # now pray the server
@@ -260,76 +259,45 @@ def get_remote_data(url, timeout = 5):
         socket.setdefaulttimeout(2)
         return False
 
-def is_png_file(path):
-    """
-    docstring_title
-
-    @param path: 
-    @type path: 
-    @return: 
-    @rtype: 
-    """
-    f = open(path, "r")
-    x = f.read(4)
+def _is_png_file(path):
+    with open(path, "r") as f:
+        x = f.read(4)
     if x == '\x89PNG':
         return True
     return False
 
-def is_jpeg_file(path):
-    """
-    docstring_title
-
-    @param path: 
-    @type path: 
-    @return: 
-    @rtype: 
-    """
-    f = open(path, "r")
-    x = f.read(10)
+def _is_jpeg_file(path):
+    with open(path, "r") as f:
+        x = f.read(10)
     if x == '\xff\xd8\xff\xe0\x00\x10JFIF':
         return True
     return False
 
-def is_bmp_file(path):
-    """
-    docstring_title
-
-    @param path: 
-    @type path: 
-    @return: 
-    @rtype: 
-    """
-    f = open(path, "r")
-    x = f.read(2)
+def _is_bmp_file(path):
+    with open(path, "r") as f:
+        x = f.read(2)
     if x == 'BM':
         return True
     return False
 
-def is_gif_file(path):
-    """
-    docstring_title
-
-    @param path: 
-    @type path: 
-    @return: 
-    @rtype: 
-    """
-    f = open(path, "r")
-    x = f.read(5)
+def _is_gif_file(path):
+    with open(path, "r") as f:
+        x = f.read(5)
     if x == 'GIF89':
         return True
     return False
 
 def is_supported_image_file(path):
     """
-    docstring_title
+    Return whether passed image file path "path" references a valid image file.
+    Currently supported image file types are: PNG, JPEG, BMP, GIF.
 
-    @param path: 
-    @type path: 
-    @return: 
-    @rtype: 
+    @param path: path pointing to a possibly valid image file
+    @type path: string
+    @return: True if path references a valid image file 
+    @rtype: bool
     """
-    calls = [is_png_file, is_jpeg_file, is_bmp_file, is_gif_file]
+    calls = [_is_png_file, _is_jpeg_file, _is_bmp_file, _is_gif_file]
     for mycall in calls:
         if mycall(path):
             return True
@@ -337,10 +305,11 @@ def is_supported_image_file(path):
 
 def is_april_first():
     """
-    docstring_title
+    Return whether today is April, 1st.
+    Please keep the joke.
 
-    @return: 
-    @rtype: 
+    @return: True if April 1st
+    @rtype: bool
     """
     april_first = "01-04"
     cur_time = time.strftime("%d-%m")
@@ -350,14 +319,12 @@ def is_april_first():
 
 def add_proxy_opener(module, data):
     """
-    docstring_title
+    Add proxy opener to urllib2 module.
 
-    @param module: 
-    @type module: 
-    @param data: 
-    @type data: 
-    @return: 
-    @rtype: 
+    @param module: urllib2 module
+    @type module: Python module
+    @param data: proxy settings
+    @type data: dict
     """
     import types
     if type(module) != types.ModuleType: # FIXME: check if it's urllib2
@@ -392,43 +359,46 @@ def add_proxy_opener(module, data):
 
 def is_valid_ascii(string):
     """
-    docstring_title
+    Return whether passed string only contains valid ASCII characters.
 
-    @param string: 
-    @type string: 
-    @return: 
-    @rtype: 
+    @param string: string to test
+    @type string: string
+    @return: True if string contains pure ASCII
+    @rtype: bool
     """
     try:
         mystring = str(string)
         del mystring
-    except:
+    except (UnicodeDecodeError, UnicodeEncodeError,):
         return False
     return True
 
 def is_valid_unicode(string):
     """
-    docstring_title
+    Return whether passed string is unicode.
 
-    @param string: 
-    @type string: 
-    @return: 
+    @param string: string to test
+    @type string: string
+    @return: True if string is unicode
     @rtype: 
     """
+    if isinstance(string, unicode):
+        return True
+
     try:
-        unicode(string)
-    except:
+        unicode(string, 'raw_unicode_escape')
+    except (UnicodeEncodeError, UnicodeDecodeError,):
         return False
     return True
 
 def is_valid_email(email):
     """
-    docstring_title
+    Return whether passed string is contains a valid email address.
 
-    @param email: 
-    @type email: 
-    @return: 
-    @rtype: 
+    @param email: string to test
+    @type email: string
+    @return: True if string is a valid email
+    @rtype: bool
     """
     monster = "(?:[a-z0-9!#$%&'*+/=?^_{|}~-]+(?:.[a-z0-9!#$%" + \
         "&'*+/=?^_{|}~-]+)*|\"(?:" + \
@@ -447,21 +417,23 @@ def is_valid_email(email):
 
 def islive():
     """
-    docstring_title
+    Return whether System is running in Live mode (off a CD/DVD).
+    See entropy.const.const_islive() for more information.
 
-    @return: 
-    @rtype: 
+    @return: True if System is running in Live mode
+    @rtype: bool
     """
     return const_islive()
 
 def get_file_size(file_path):
     """
-    docstring_title
+    Return size of given path passed in "file_path".
 
-    @param file_path: 
-    @type file_path: 
-    @return: 
-    @rtype: 
+    @param file_path: path to an existing file
+    @type file_path: string
+    @return: file size in bytes
+    @rtype: int
+    @raise OSError: if file referenced in file_path is not available
     """
     my = file_path[:]
     if isinstance(my, unicode):
@@ -471,12 +443,12 @@ def get_file_size(file_path):
 
 def sum_file_sizes(file_list):
     """
-    docstring_title
+    Return file size sum of given list of paths.
 
-    @param file_list: 
-    @type file_list: 
-    @return: 
-    @rtype: 
+    @param file_list: list of file paths
+    @type file_list: list
+    @return: summed size in bytes
+    @rtype: int
     """
     size = 0
     for myfile in file_list:
