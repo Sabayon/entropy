@@ -131,7 +131,7 @@ class const:
                 "Catalan - Roger Calvò",
                 "Chinese - N/A",
                 "Dutch - Andre Parhan",
-                "French - N/A",
+                "French - Benjamin Guay",
                 "German - N/A",
                 "Italian - Fabio Erculiani",
                 "Portuguese - Lucas Paulino Azevedo",
