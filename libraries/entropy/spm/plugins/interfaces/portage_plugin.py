@@ -601,7 +601,15 @@ class PortagePlugin(SpmPlugin):
         data['size'] = str(entropy.tools.get_file_size(package_file))
 
         tmp_dir = tempfile.mkdtemp()
-        entropy.tools.extract_xpak(package_file, tmp_dir)
+        meta_dir = os.path.join(tmp_dir, "portage")
+        pkg_dir = os.path.join(tmp_dir, "pkg")
+        os.mkdir(meta_dir)
+        os.mkdir(pkg_dir)
+
+        # extract stuff
+        entropy.tools.extract_xpak(package_file, meta_dir)
+        entropy.tools.uncompress_tar_bz2(package_file,
+            extractPath = pkg_dir)
 
         # package injection status always false by default
         # developer can change metadatum after this function
@@ -614,7 +622,7 @@ class PortagePlugin(SpmPlugin):
             value = ''
             try:
 
-                item_path = os.path.join(tmp_dir, portage_entries[item]['path'])
+                item_path = os.path.join(meta_dir, portage_entries[item]['path'])
                 with open(item_path, "r") as item_f:
                     value = item_f.readline().strip().decode(
                         'raw_unicode_escape')
@@ -637,7 +645,7 @@ class PortagePlugin(SpmPlugin):
         del data['pf']
 
         # setup spm_phases properly
-        spm_defined_phases_path = os.path.join(tmp_dir,
+        spm_defined_phases_path = os.path.join(meta_dir,
             portage_entries['spm_phases']['path'])
         if not os.path.isfile(spm_defined_phases_path):
             # force to None, because metadatum can be '', which is valid
@@ -658,21 +666,21 @@ class PortagePlugin(SpmPlugin):
             data['keywords'].insert(0, "")
 
         data['keywords'] = set(data['keywords'])
-        needed_file = os.path.join(tmp_dir,
+        needed_file = os.path.join(meta_dir,
             etpConst['spm']['xpak_entries']['needed'])
 
         data['needed'] = self._extract_pkg_metadata_needed(needed_file)
         data['needed_paths'] = self._extract_pkg_metadata_needed_paths(
             data['needed'])
 
-        content_file = os.path.join(tmp_dir,
+        content_file = os.path.join(meta_dir,
             etpConst['spm']['xpak_entries']['contents'])
         data['content'] = self._extract_pkg_metadata_content(content_file,
             package_file)
         data['disksize'] = entropy.tools.sum_file_sizes(data['content'])
 
         data['provided_libs'] = self._extract_pkg_metadata_provided_libs(
-            data['content'])
+            pkg_dir, data['content'])
 
         # [][][] Kernel dependent packages hook [][][]
         data['versiontag'] = ''
@@ -707,12 +715,12 @@ class PortagePlugin(SpmPlugin):
                 # and "equo database gentoosync" consequentially
 
         file_ext = etpConst['spm']['ebuild_file_extension']
-        ebuilds_in_path = [x for x in os.listdir(tmp_dir) if \
+        ebuilds_in_path = [x for x in os.listdir(meta_dir) if \
             x.endswith(".%s" % (file_ext,))]
 
         if not data['versiontag'] and ebuilds_in_path:
             # has the user specified a custom package tag inside the ebuild
-            ebuild_path = os.path.join(tmp_dir, ebuilds_in_path[0])
+            ebuild_path = os.path.join(meta_dir, ebuilds_in_path[0])
             data['versiontag'] = self._extract_pkg_metadata_ebuild_entropy_tag(
                 ebuild_path)
 
@@ -840,11 +848,6 @@ class PortagePlugin(SpmPlugin):
 
         # removing temporary directory
         shutil.rmtree(tmp_dir, True)
-        if os.path.isdir(tmp_dir):
-            try:
-                os.remove(tmp_dir)
-            except OSError:
-                pass
 
         # clear unused metadata
         del data['use'], data['iuse'], data['depend'], data['pdepend'], \
@@ -2656,7 +2659,6 @@ class PortagePlugin(SpmPlugin):
                 my_lib = os.path.join(ldpath, needed_lib)
                 if not os.access(my_lib, os.R_OK):
                     continue
-                # FIXME: this won't work with injected packages
                 myclass = entropy.tools.read_elf_class(my_lib)
                 if myclass != elf_class:
                     continue
@@ -2665,7 +2667,7 @@ class PortagePlugin(SpmPlugin):
 
         return data
 
-    def _extract_pkg_metadata_provided_libs(self, content):
+    def _extract_pkg_metadata_provided_libs(self, pkg_dir, content):
 
         provided_libs = set()
         ldpaths = entropy.tools.collect_linker_paths()
@@ -2677,11 +2679,12 @@ class PortagePlugin(SpmPlugin):
 
             if obj_dir not in ldpaths:
                 continue
-            # FIXME: this won't work with injected packages
-            if not entropy.tools.is_elf_file(obj):
+
+            unpack_obj = os.path.join(pkg_dir, obj)
+            if not entropy.tools.is_elf_file(unpack_obj):
                 continue
 
-            elf_class = entropy.tools.read_elf_class(obj)
+            elf_class = entropy.tools.read_elf_class(unpack_obj)
             provided_libs.add((obj_name, elf_class,))
 
         return provided_libs
