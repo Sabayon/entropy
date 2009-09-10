@@ -2880,6 +2880,7 @@ def spawn_function(f, *args, **kwds):
 def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
     """
     docstring_title
+    # FIXME: rename this and make bz2 independent
 
     @param filepath: 
     @type filepath: 
