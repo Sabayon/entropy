@@ -1135,13 +1135,11 @@ class CalculatorsMixin:
 
         match_id, match_repo = match
         match_db = self.open_repository(match_repo)
-        repo_libs = set(match_db.retrieveNeededLibraries(match_id))
+        repo_libs = match_db.retrieveProvidedLibraries(match_id)
 
-        client_libs = set(self.clientDbconn.retrieveNeededLibraries(
-            client_match[0]))
-        removed_libs = client_libs - repo_libs
-
-        print client_libs 
+        client_libs = self.clientDbconn.retrieveProvidedLibraries(
+            client_match[0])
+        removed_libs = set([x for x in client_libs if x not in repo_libs])
 
         idpackages = set()
         for lib, elf in removed_libs:
@@ -1160,7 +1158,6 @@ class CalculatorsMixin:
 
             broken_atoms.add(keyslot)
 
-        print broken_atoms
         return broken_atoms
 
 
