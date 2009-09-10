@@ -467,7 +467,8 @@ def reset_cache():
 def load_conf_cache():
     from entropy.client.interfaces import Client
     Equo = Client(noclientdb = 2)
-    if not etpUi['quiet']: print_info(red(" @@ ")+blue(_("Caching equo conf")), back = True)
+    if not etpUi['quiet']:
+        print_info(red(" @@ ")+blue(_("Caching equo conf")), back = True)
     try:
         while 1:
             try:
@@ -476,11 +477,13 @@ def load_conf_cache():
             except KeyboardInterrupt:
                 continue
     except:
-        if not etpUi['quiet']: print_info(red(" @@ ")+blue(_("Caching not run.")))
+        if not etpUi['quiet']:
+            print_info(red(" @@ ")+blue(_("Caching not run.")))
         Equo.destroy()
         return
 
-    if not etpUi['quiet']: print_info(red(" @@ ")+blue(_("Caching complete.")))
+    if not etpUi['quiet']:
+        print_info(red(" @@ ")+blue(_("Caching complete.")))
 
     if scandata: # can be None
         if len(scandata) > 0: # strict check
