@@ -218,7 +218,8 @@ def database(options):
 
     elif (options[0] == "check"):
         try:
-            valid = Equo.clientDbconn.validateDatabase()
+            valid = True
+            Equo.clientDbconn.validateDatabase()
         except SystemDatabaseError:
             valid = False
         if valid:
