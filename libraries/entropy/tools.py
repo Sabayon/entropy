@@ -3328,7 +3328,7 @@ def save_repository_settings(repodata, remove = False, disable = False, enable =
     @rtype: 
     """
 
-    if repodata['repoid'].endswith(".tbz2"):
+    if repodata['repoid'].endswith(etpConst['packagesext']):
         return
 
     content = read_repositories_conf()

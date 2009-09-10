@@ -671,6 +671,11 @@ class PortagePlugin(SpmPlugin):
             package_file)
         data['disksize'] = entropy.tools.sum_file_sizes(data['content'])
 
+        for obj, ftype in data['content'].items():
+            if ftype == "dir":
+                continue
+            print obj
+
         # [][][] Kernel dependent packages hook [][][]
         data['versiontag'] = ''
         kernelstuff = False

@@ -938,8 +938,11 @@ class CalculatorsMixin:
                 matchSlot = matchslot)
             if cm_idpackage != -1:
 
+                broken_children_atoms = self._lookup_library_drops(match,
+                    (cm_idpackage, cm_result,))
+
                 broken_atoms = lookup_library_breakages(match,
-                    (cm_idpackage, cm_result,), deep_deps = deep_deps)
+                    (cm_idpackage, cm_result,))
                 const_debug_write(__name__,
                     "generate_dependency_tree lib broken atoms for %s => %s" % (
                         matchkey+":"+matchslot, broken_atoms,))
@@ -960,8 +963,12 @@ class CalculatorsMixin:
                     deptree.add((treedepth,match))
                     treedepth += 1
 
+                # broken children atoms can be added to broken atoms
+                # and pulled into dep calculation
+                broken_atoms |= broken_children_atoms
                 for x in broken_atoms:
-                    if (tuple(x.split(":")) not in keyslotcache) and (x not in treecache):
+                    if (tuple(x.split(":")) not in keyslotcache) and \
+                        (x not in treecache):
                         mybuffer.push((treedepth,x))
 
             m_deplist = matchdb.retrieveDependenciesList(m_idpackage)
@@ -1122,29 +1129,90 @@ class CalculatorsMixin:
 
         return keyslots
 
-    def __get_lib_breaks_client_and_repo_side(self, match_db, match_idpackage, client_idpackage):
-        repo_needed = match_db.retrieveNeeded(match_idpackage, extended = True, format = True)
-        client_needed = self.clientDbconn.retrieveNeeded(client_idpackage, extended = True, format = True)
-        repo_split = [x.split(".so")[0] for x in repo_needed]
-        client_split = [x.split(".so")[0] for x in client_needed]
-        client_side = [x for x in client_needed if (x not in repo_needed) and (x.split(".so")[0] in repo_split)]
-        repo_side = [x for x in repo_needed if (x not in client_needed) and (x.split(".so")[0] in client_split)]
-        return repo_needed, client_side, repo_side
+    def _lookup_library_drops(self, match, client_match):
 
-    def _lookup_library_breakages(self, match, clientmatch, deep_deps = False):
+        broken_atoms = set()
+
+        match_id, match_repo = match
+        match_db = self.open_repository(match_repo)
+        repo_libs = set(match_db.retrieveNeededLibraries(match_id))
+
+        client_libs = set(self.clientDbconn.retrieveNeededLibraries(
+            client_match[0]))
+        removed_libs = client_libs - repo_libs
+
+        print client_libs 
+
+        idpackages = set()
+        for lib, elf in removed_libs:
+            idpackages |= self.clientDbconn.searchNeeded(lib, elfclass = elf)
+
+        for c_idpackage in idpackages:
+
+            keyslot = self.clientDbconn.retrieveKeySlotAggregated(c_idpackage)
+            idpackage, repo = self.atom_match(keyslot)
+            if idpackage == -1:
+                continue
+
+            cmpstat = self.get_package_action((idpackage, repo))
+            if cmpstat == 0:
+                continue
+
+            broken_atoms.add(keyslot)
+
+        print broken_atoms
+        return broken_atoms
+
+
+    def __get_lib_breaks_client_and_repo_side(self, match_db, match_idpackage,
+        client_idpackage):
+
+        soname = ".so"
+        repo_needed = match_db.retrieveNeeded(match_idpackage,
+            extended = True, format = True)
+        client_needed = self.clientDbconn.retrieveNeeded(client_idpackage,
+            extended = True, format = True)
+
+        repo_split = [x.split(soname)[0] for x in repo_needed]
+        client_split = [x.split(soname)[0] for x in client_needed]
+
+        client_lib_dumps = set() # was client_side
+        repo_lib_dumps = set() # was repo_side
+        # ^^ library dumps using repository NEEDED metadata
+        lib_removes = set()
+
+        for lib in client_needed:
+            if lib in repo_needed:
+                continue
+            lib_name = lib.split(soname)[0]
+            if lib_name in repo_split:
+                client_lib_dumps.add(lib)
+            else:
+                lib_removes.add(lib)
+
+        for lib in repo_needed:
+            if lib in client_needed:
+                continue
+            lib_name = lib.split(soname)[0]
+            if lib_name in client_split:
+                repo_lib_dumps.add(lib)
+
+        return repo_needed, lib_removes, client_lib_dumps, repo_lib_dumps
+
+    def _lookup_library_breakages(self, match, clientmatch):
 
         # there is no need to update this cache when "match"
         # will be installed, because at that point
         # clientmatch[0] will differ.
-        c_hash = "%s|%s|%s" % (
-            tuple(match),
-            deep_deps,
-            tuple(clientmatch),
+        c_hash = "%s|%s" % (
+            match,
+            clientmatch,
         )
         c_hash = "%s%s" % (etpCache['library_breakage'], hash(c_hash),)
         if self.xcache:
             cached = self.Cacher.pop(c_hash)
-            if cached != None: return cached
+            if cached is not None:
+                return cached
 
         # these should be pulled in before
         repo_atoms = set()
@@ -1152,12 +1220,14 @@ class CalculatorsMixin:
         client_atoms = set()
 
         matchdb = self.open_repository(match[1])
-        reponeeded, client_side, repo_side = self.__get_lib_breaks_client_and_repo_side(matchdb,
-            match[0], clientmatch[0])
+        reponeeded, lib_removes, client_side, repo_side = \
+            self.__get_lib_breaks_client_and_repo_side(matchdb,
+                match[0], clientmatch[0])
 
         # all the packages in client_side should be pulled in and updated
         client_idpackages = set()
-        for needed in client_side: client_idpackages |= self.clientDbconn.searchNeeded(needed)
+        for needed in client_side:
+            client_idpackages |= self.clientDbconn.searchNeeded(needed)
 
         client_keyslots = set()
         def mymf(idpackage):
@@ -1167,7 +1237,8 @@ class CalculatorsMixin:
             if ks is None:
                 return 0
             return ks
-        client_keyslots = set([x for x in map(mymf,client_idpackages) if x != 0])
+        client_keyslots = set([x for x in map(mymf,client_idpackages) \
+            if x != 0])
 
         # all the packages in repo_side should be pulled in too
         repodata = {}
@@ -1204,10 +1275,9 @@ class CalculatorsMixin:
                     break
 
         for idpackage,repo in found_matches:
-            if not deep_deps:
-                cmpstat = self.get_package_action((idpackage,repo))
-                if cmpstat == 0:
-                    continue
+            cmpstat = self.get_package_action((idpackage,repo))
+            if cmpstat == 0:
+                continue
             mydbc = self.open_repository(repo)
             repo_atoms.add(mydbc.retrieveAtom(idpackage))
 
@@ -1215,10 +1285,9 @@ class CalculatorsMixin:
             idpackage, repo = self.atom_match(key, matchSlot = slot)
             if idpackage == -1:
                 continue
-            if not deep_deps:
-                cmpstat = self.get_package_action((idpackage, repo))
-                if cmpstat == 0:
-                    continue
+            cmpstat = self.get_package_action((idpackage, repo))
+            if cmpstat == 0:
+                continue
             mydbc = self.open_repository(repo)
             client_atoms.add(mydbc.retrieveAtom(idpackage))
 

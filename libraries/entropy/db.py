@@ -4411,6 +4411,28 @@ class EntropyRepository:
 
         return self._cur2set(cur)
 
+    def retrieveNeededLibraries(self, idpackage):
+        """
+        Return list of library names (from NEEDED ELF metadata) provided by
+        given package identifier.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return: list of tuples of length 2 composed by library name and ELF
+            class
+        @rtype: list
+        """
+        # FIXME backward compatibility
+        if not self._doesTableExist('neededlibraryidpackages'):
+            return set()
+
+        cur = self.cursor.execute("""
+        SELECT library, elfclass FROM neededlibraryidpackages
+        WHERE idpackage = (?)
+        """, (idpackage,))
+        return cur.fetchall()
+
+
     def retrieveNeededLibraryIdpackages(self):
         """
         Return raw list of packages containing library with given ELF class.
@@ -5760,27 +5782,37 @@ class EntropyRepository:
 
         return cur.fetchall()
 
-    def searchNeeded(self, needed, like = False):
+    def searchNeeded(self, needed, elfclass = -1, like = False):
         """
         Search packages that need given NEEDED ELF entry (library name).
 
         @param needed: NEEDED ELF entry (shared object library name)
         @type needed: string
+        @param elfclass: search NEEDEDs only with given ELF class
+        @type elfclass: int
         @keyword like: do not match exact case
         @type like: bool
         @return: list (set) of package identifiers
         @rtype: set
         """
+        elfsearch = ''
+        search_args = (needed,)
+        if elfclass != -1:
+            elfsearch = ' AND needed.elfclass = (?)'
+            search_args = (needed, elfclass,)
+
         if like:
             cur = self.cursor.execute("""
             SELECT needed.idpackage FROM needed,neededreference
-            WHERE library LIKE (?) AND
-            needed.idneeded = neededreference.idneeded""", (needed,))
+            WHERE library LIKE (?) %s AND
+            needed.idneeded = neededreference.idneeded
+            """ % (elfsearch,), search_args)
         else:
             cur = self.cursor.execute("""
             SELECT needed.idpackage FROM needed,neededreference
-            WHERE library = (?) AND
-            needed.idneeded = neededreference.idneeded""", (needed,))
+            WHERE library = (?) %s AND
+            needed.idneeded = neededreference.idneeded
+            """ % (elfsearch,), search_args)
 
         return self._cur2set(cur)
 
