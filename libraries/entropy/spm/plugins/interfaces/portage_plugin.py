@@ -671,10 +671,8 @@ class PortagePlugin(SpmPlugin):
             package_file)
         data['disksize'] = entropy.tools.sum_file_sizes(data['content'])
 
-        for obj, ftype in data['content'].items():
-            if ftype == "dir":
-                continue
-            print obj
+        data['provided_libs'] = self._extract_pkg_metadata_provided_libs(
+            data['content'])
 
         # [][][] Kernel dependent packages hook [][][]
         data['versiontag'] = ''
@@ -2658,6 +2656,7 @@ class PortagePlugin(SpmPlugin):
                 my_lib = os.path.join(ldpath, needed_lib)
                 if not os.access(my_lib, os.R_OK):
                     continue
+                # FIXME: this won't work with injected packages
                 myclass = entropy.tools.read_elf_class(my_lib)
                 if myclass != elf_class:
                     continue
@@ -2665,6 +2664,27 @@ class PortagePlugin(SpmPlugin):
                 obj.add((my_lib, myclass,))
 
         return data
+
+    def _extract_pkg_metadata_provided_libs(self, content):
+
+        provided_libs = set()
+        ldpaths = entropy.tools.collect_linker_paths()
+        for obj, ftype in content.items():
+
+            if ftype == "dir":
+                continue
+            obj_dir, obj_name = os.path.split(obj)
+
+            if obj_dir not in ldpaths:
+                continue
+            # FIXME: this won't work with injected packages
+            if not entropy.tools.is_elf_file(obj):
+                continue
+
+            elf_class = entropy.tools.read_elf_class(obj)
+            provided_libs.add((obj_name, elf_class,))
+
+        return provided_libs
 
     def _extract_pkg_metadata_messages(self, log_dir, category, name, version):
 
