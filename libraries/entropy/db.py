@@ -6367,9 +6367,8 @@ class EntropyRepository:
         if mask:
             mask_t = 'mask'
         cur = self.cursor.execute("""
-        SELECT DISTINCT(protect) FROM configprotectreference 
-        WHERE idprotect >= 1 AND 
-        idprotect <= (SELECT max(idprotect) FROM configprotect%s) 
+        SELECT protect FROM configprotectreference WHERE idprotect IN
+            (SELECT distinct(idprotect) FROM configprotect%s)
         ORDER BY protect""" % (mask_t,))
 
         results = self._cur2set(cur)
