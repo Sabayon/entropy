@@ -7434,7 +7434,8 @@ class EntropyRepository:
             self._setupInitialSettings()
 
     def _createProvidedLibs(self):
-        with self.__write_mutex:
+
+        def do_create():
             self.cursor.executescript("""
                 CREATE TABLE provided_libs (
                     idpackage INTEGER,
@@ -7443,6 +7444,95 @@ class EntropyRepository:
                     elfclass INTEGER
                 );
             """)
+
+        with self.__write_mutex:
+
+            if self.clientDatabase and (self.dbname != etpConst['clientdbid']):
+                return do_create()
+
+            mytxt = "%s: %s" % (
+                bold(_("ATTENTION")),
+                red(_("generating provided_libs metadata, please wait!")),
+            )
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "warning"
+            )
+
+            try:
+                self._generateProvidedLibsMetadata()
+            except (IOError, OSError, self.dbapi2.Error), err:
+                mytxt = "%s: %s: [%s]" % (
+                    bold(_("ATTENTION")),
+                    red("cannot generate provided_libs metadata"),
+                    err,
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning"
+                )
+                do_create()
+
+
+    def _generateProvidedLibsMetadata(self):
+
+        def collect_provided(pkg_dir, content):
+
+            provided_libs = set()
+            ldpaths = self.entropyTools.collect_linker_paths()
+            for obj, ftype in content.items():
+
+                if ftype == "dir":
+                    continue
+                obj_dir, obj_name = os.path.split(obj)
+
+                if obj_dir not in ldpaths:
+                    continue
+
+                unpack_obj = os.path.join(pkg_dir, obj)
+                try:
+                    os.stat(unpack_obj)
+                except OSError:
+                    continue
+
+                # do not trust ftype
+                if os.path.isdir(unpack_obj):
+                    continue
+                if not self.entropyTools.is_elf_file(unpack_obj):
+                    continue
+
+                elf_class = self.entropyTools.read_elf_class(unpack_obj)
+                provided_libs.add((obj_name, obj, elf_class,))
+
+            return provided_libs
+
+        self.cursor.executescript("""
+            DROP TABLE IF EXISTS provided_libs_tmp;
+            CREATE TABLE provided_libs_tmp (
+                idpackage INTEGER,
+                library VARCHAR,
+                path VARCHAR,
+                elfclass INTEGER
+            );
+        """)
+
+        pkgs = self.listAllIdpackages()
+        for idpackage in pkgs:
+
+            content = self.retrieveContent(idpackage, extended = True,
+                formatted = True)
+            provided_libs = collect_provided(etpConst['systemroot'], content)
+
+            self.cursor.executemany("""
+            INSERT INTO provided_libs_tmp VALUES (?,?,?,?)
+            """, [(idpackage, x, y, z,) for x, y, z in provided_libs])
+
+        # rename
+        self.cursor.execute("""
+        ALTER TABLE provided_libs_tmp RENAME TO provided_libs;
+        """)
 
     def _createInstalledTableSource(self):
         with self.__write_mutex:
