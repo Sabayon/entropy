@@ -2681,6 +2681,14 @@ class PortagePlugin(SpmPlugin):
                 continue
 
             unpack_obj = os.path.join(pkg_dir, obj)
+            try:
+                os.stat(unpack_obj)
+            except OSError:
+                continue
+
+            # do not trust ftype
+            if os.path.isdir(unpack_obj):
+                continue
             if not entropy.tools.is_elf_file(unpack_obj):
                 continue
 
