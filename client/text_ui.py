@@ -567,7 +567,7 @@ def _showPackageInfo(foundAtoms, deps):
                 (pkgver,pkgtag,pkgrev,),
                 (installedVer,installedTag,installedRev,)
             )
-            if (pkgcmp == 0):
+            if (pkgcmp == 0) and is_installed:
                 if installedRepo != reponame:
                     mytxt = " | %s: " % (_("Switch repo"),)
                     action = darkgreen(_("Reinstall"))+mytxt+blue(installedRepo)+" ===> "+darkgreen(reponame)
