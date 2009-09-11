@@ -143,7 +143,8 @@ class Repository(SocketCommands):
         metadata['sets'] = dbconn.retrievePackageSets()
         metadata['treeupdates_actions'] = dbconn.listAllTreeUpdatesActions()
         metadata['treeupdates_digest'] = dbconn.retrieveRepositoryUpdatesDigest(repository)
-        metadata['library_idpackages'] = dbconn.retrieveNeededLibraryIdpackages()
+        # FIXME: kept for backward compatibility (<=0.99.0.x) remove in future
+        metadata['library_idpackages'] = []
 
         self.HostInterface.set_dcache((repository, arch, product, branch, 'docmd_repository_metadata'), metadata, repository)
         dbconn.closeDB()

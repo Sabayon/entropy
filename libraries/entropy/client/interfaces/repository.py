@@ -798,26 +798,6 @@ class Repository:
             )
             return None
 
-        # update libraries <=> idpackages map
-        try:
-            mydbconn.clearNeededLibraryIdpackages()
-            mydbconn.setNeededLibraryIdpackages(
-                repo_metadata['library_idpackages'])
-        except (self.dbapi2.Error,):
-            mydbconn.closeDB()
-            prepare_exit(eapi3_interface, session)
-            mytxt = "%s: %s" % (
-                blue(_("EAPI3 Service status")),
-                darkred(_("cannot update library data")),
-            )
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 0,
-                type = "info",
-                header = blue("  # "),
-            )
-            return None
-
         # I don't need you anymore
         # disconnect socket
         prepare_exit(eapi3_interface, session)

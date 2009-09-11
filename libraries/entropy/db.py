@@ -387,19 +387,6 @@ class EntropyRepository:
                     library VARCHAR
                 );
 
-                CREATE TABLE neededlibrarypaths (
-                    library VARCHAR,
-                    path VARCHAR,
-                    elfclass INTEGER,
-                    PRIMARY KEY(library, path, elfclass)
-                );
-
-                CREATE TABLE neededlibraryidpackages (
-                    idpackage INTEGER,
-                    library VARCHAR,
-                    elfclass INTEGER
-                );
-
                 CREATE TABLE provided_libs (
                     idpackage INTEGER,
                     library VARCHAR,
@@ -1271,7 +1258,6 @@ class EntropyRepository:
                 'size': u'136302',
                 'category': u'sys-libs',
                 'license': u'ZLIB',
-                'needed_paths': {},
                 'sources': set(),
                 'name': u'zlib',
                 'versiontag': u'',
@@ -1577,10 +1563,6 @@ class EntropyRepository:
                 sha1, sha256, sha512 = signatures['sha1'], \
                     signatures['sha256'], signatures['sha512']
                 self.insertSignatures(idpackage, sha1, sha256, sha512)
-            # needed libraries paths
-            if pkg_data.get('needed_paths'):
-                for lib in sorted(pkg_data['needed_paths']):
-                    self.insertNeededPaths(lib, pkg_data['needed_paths'][lib])
 
             if pkg_data.get('provided_libs'):
                 self.insertProvidedLibraries(idpackage, pkg_data['provided_libs'])
@@ -2352,21 +2334,6 @@ class EntropyRepository:
             INSERT INTO provided_libs VALUES (?,?,?,?)
             """, [(idpackage, x, y, z,) for x, y, z in libs_metadata])
 
-    def insertNeededPaths(self, library, paths):
-        """
-        Insert paths where given ELF obj (library) name can be located.
-        "library" is an ELF object name.
-
-        @param library: library name
-        @type library: string
-        @param paths: list of paths (list of strings)
-        @type paths: list
-        """
-        with self.__write_mutex:
-            self.cursor.executemany("""
-            INSERT OR IGNORE INTO neededlibrarypaths VALUES (?,?,?)
-            """, [(library, path, elfclass,) for path, elfclass in paths])
-
     def insertAutomergefiles(self, idpackage, automerge_data):
         """
         Insert configuration files automerge information for package.
@@ -3040,7 +3007,6 @@ class EntropyRepository:
         self.cleanupSources()
         self.cleanupEclasses()
         self.cleanupNeeded()
-        self.cleanupNeededPaths()
         self.cleanupDependencies()
         self.cleanupChangelogs()
 
@@ -3079,15 +3045,6 @@ class EntropyRepository:
             self.cursor.execute("""
             DELETE FROM neededreference 
             WHERE idneeded NOT IN (SELECT idneeded FROM needed)""")
-
-    def cleanupNeededPaths(self):
-        """
-        Cleanup "needed paths" metadata unused references to save space.
-        """
-        with self.__write_mutex:
-            self.cursor.execute("""
-            DELETE FROM neededlibrarypaths 
-            WHERE library NOT IN (SELECT library FROM neededreference)""")
 
     def cleanupDependencies(self):
         """
@@ -3524,7 +3481,6 @@ class EntropyRepository:
             'sources': sources,
             'eclasses': self.retrieveEclasses(idpackage),
             'needed': self.retrieveNeeded(idpackage, extended = True),
-            'needed_paths': self.retrieveNeededPaths(idpackage),
             'provided_libs': self.retrieveProvidedLibraries(idpackage),
             'provide': self.retrieveProvide(idpackage),
             'conflicts': self.retrieveConflicts(idpackage),
@@ -3606,7 +3562,6 @@ class EntropyRepository:
             'sources': sources,
             'eclasses': self.retrieveEclasses(idpackage),
             'needed': self.retrieveNeeded(idpackage, extended = True),
-            'needed_paths': self.retrieveNeededPaths(idpackage),
             'provided_libs': self.retrieveProvidedLibraries(idpackage),
             'provide': self.retrieveProvide(idpackage),
             'conflicts': self.retrieveConflicts(idpackage),
@@ -4396,65 +4351,6 @@ class EntropyRepository:
             return dict((lib, elfclass,) for lib, elfclass in needed)
         return needed
 
-    def retrieveNeededPaths(self, idpackage):
-        """
-        Return library linker paths available at the time package entered
-        repository.
-
-        @param idpackage: package indentifier
-        @type idpackage: int
-        @return: available linker paths (/etc/ld.so.conf content) metadata.
-            Dictionary composed by library name as key and tuple of path and
-            ELF class as values
-        @rtype: dict
-        """
-        # FIXME backward compatibility
-        if not self._doesTableExist('neededlibrarypaths'):
-            return set()
-
-        cur = self.cursor.execute("""
-            SELECT neededlibrarypaths.library, neededlibrarypaths.path,
-            neededlibrarypaths.elfclass FROM
-            neededlibrarypaths, neededreference, needed WHERE
-            needed.idpackage = (?) AND
-            needed.idneeded = neededreference.idneeded AND
-            neededreference.library = neededlibrarypaths.library
-        """, (idpackage,))
-
-        data = {}
-        for lib, path, elfclass in cur.fetchall():
-            obj = data.setdefault(lib, set())
-            obj.add((path, elfclass))
-        return data
-
-    def retrieveNeededLibraryPaths(self, needed_library_name, elfclass):
-        """
-        Return registered library paths for given library name
-        needed_library_name and ELF class.
-
-        @param needed_library_name: library name (libfoo.so.1.2.3)
-        @type needed_library_name: string
-        @param elfclass: ELF class of library name
-        @type elfclass: int
-        @return: list (set) of paths in where library is available
-        @rtype: set
-        """
-
-        # FIXME backward compatibility
-        if not self._doesTableExist('neededlibrarypaths'):
-            return set()
-
-        cur = self.cursor.execute("""
-            SELECT path FROM neededlibrarypaths, neededreference, needed
-            WHERE neededlibrarypaths.library = (?) AND
-            neededlibrarypaths.elfclass = (?) AND
-            neededreference.library = neededlibrarypaths.library AND
-            needed.elfclass = neededlibrarypaths.elfclass AND
-            needed.idneeded = neededreference.idneeded
-        """, (needed_library_name, elfclass,))
-
-        return self._cur2set(cur)
-
     def retrieveProvidedLibraries(self, idpackage):
         """
         Return list of library names (from NEEDED ELF metadata) provided by
@@ -4475,55 +4371,6 @@ class EntropyRepository:
         WHERE idpackage = (?)
         """, (idpackage,))
         return set(cur.fetchall())
-
-
-    def retrieveNeededLibraryIdpackages(self):
-        """
-        Return raw list of packages containing library with given ELF class.
-        For example:
-            [(123, u'libfoo.so.1.2.3', 2,), ...]
-        This is useful to determine which package provides a given library for
-        each ELF class available.
-
-        @return: list of tuples of length 3 (see description)
-        @rtype: list
-        """
-        # FIXME backward compatibility
-        if not self._doesTableExist('neededlibraryidpackages'):
-            return []
-
-        cur = self.cursor.execute("""
-        SELECT idpackage, library, elfclass FROM neededlibraryidpackages
-        """)
-        return cur.fetchall()
-
-    def clearNeededLibraryIdpackages(self):
-        """
-        Clear package and library names binding metadata.
-        See retrieveNeededLibraryIdpackages() for more information.
-        """
-        # FIXME backward compatibility
-        if not self._doesTableExist('neededlibraryidpackages'):
-            return
-
-        self.cursor.execute('DELETE FROM neededlibraryidpackages')
-
-    def setNeededLibraryIdpackages(self, library_map):
-        """
-        Inject given package <-> library name <-> ELF class map into
-        repository.
-
-        @param library_map: list of tuples of length 3, for example:
-            [(123, u'libfoo.so.1.2.3', 2,), ...]
-        @type library_map: list
-        """
-        # FIXME backward compatibility
-        if not self._doesTableExist('neededlibraryidpackages'):
-            return
-
-        self.cursor.executemany("""
-        INSERT INTO neededlibraryidpackages VALUES (?,?,?)
-        """, library_map)
 
     def retrieveConflicts(self, idpackage):
         """
@@ -5361,31 +5208,21 @@ class EntropyRepository:
         @rtype: list or set
         """
 
-        args = [needed]
+        args = (needed,)
         elfclass_txt = ''
+        if elfclass != -1:
+            elfclass_txt = ' AND provided_libs.elfclass = (?)'
+            args = (needed, elfclass,)
 
         if extended:
-            if elfclass != -1:
-                elfclass_txt = ' AND neededlibraryidpackages.elfclass = (?)'
-                args.append(elfclass)
             cur = self.cursor.execute("""
-                SELECT neededlibraryidpackages.idpackage,
-                neededlibrarypaths.path
-                FROM neededlibraryidpackages, neededlibrarypaths
-                WHERE neededlibraryidpackages.library = (?) AND
-                neededlibraryidpackages.library = neededlibrarypaths.library AND
-                neededlibraryidpackages.elfclass = neededlibrarypaths.elfclass
-            """ + elfclass_txt, args)
+            SELECT idpackage, path FROM provided_libs
+            WHERE library = (?)""" + elfclass_txt, args)
             return cur.fetchall()
 
-        # else
-        if elfclass != -1:
-            elfclass_txt = ' AND elfclass = (?)'
-            args.append(elfclass)
         cur = self.cursor.execute("""
-            SELECT idpackage FROM neededlibraryidpackages
-            WHERE library = (?)
-        """ + elfclass_txt, args)
+        SELECT idpackage FROM provided_libs
+        WHERE library = (?)""" + elfclass_txt, args)
         return self._cur2set(cur)
 
     def isSourceAvailable(self, source):
@@ -6534,17 +6371,6 @@ class EntropyRepository:
         if not self._doesTableExist('entropy_branch_migration'):
             self._createEntropyBranchMigrationTable()
 
-        if not self._doesTableExist('neededlibrarypaths'):
-            self._createNeededlibrarypathsTable()
-        if not self._doesColumnInTableExist("neededlibrarypaths", "elfclass"):
-            self._createNeededlibrarypathsTable()
-
-        if not self._doesTableExist('neededlibraryidpackages'):
-            self._createNeededlibraryidpackagesTable()
-        elif not self._doesColumnInTableExist("neededlibraryidpackages",
-            "elfclass"):
-            self._createNeededlibraryidpackagesTable()
-
         if not self._doesTableExist('provided_libs'):
             self._createProvidedLibs()
 
@@ -7201,8 +7027,6 @@ class EntropyRepository:
         self._createCompileFlagsIndex()
         self._createPackagesetsIndex()
         self._createAutomergefilesIndex()
-        self._createNeededlibrarypathsIndex()
-        self._createNeededlibraryidpackagesIndex()
         self._createProvidedLibsIndex()
 
     def _createMirrorlinksIndex(self):
@@ -7233,38 +7057,6 @@ class EntropyRepository:
                         ON provided_libs ( idpackage );
                         CREATE INDEX IF NOT EXISTS provided_libs_lib_elf
                         ON provided_libs ( library, elfclass );
-                    """)
-                except self.dbapi2.OperationalError:
-                    pass
-
-    def _createNeededlibraryidpackagesIndex(self):
-        if self.indexing:
-            with self.__write_mutex:
-                try:
-                    self.cursor.executescript("""
-                        CREATE INDEX IF NOT EXISTS neededlibidpackages_library
-                        ON neededlibraryidpackages ( library );
-                        CREATE INDEX IF NOT EXISTS neededlibidpackages_idpackage
-                        ON neededlibraryidpackages ( idpackage );
-                        CREATE INDEX IF NOT EXISTS neededlibidpackages_lib_elf
-                        ON neededlibraryidpackages ( library, elfclass );
-                    """)
-                except self.dbapi2.OperationalError:
-                    pass
-
-    def _createNeededlibrarypathsIndex(self):
-        if self.indexing:
-            with self.__write_mutex:
-                try:
-                    self.cursor.executescript("""
-                        CREATE INDEX IF NOT EXISTS neededlibpaths_library
-                        ON neededlibrarypaths ( library );
-                        CREATE INDEX IF NOT EXISTS neededlibpaths_elf
-                        ON neededlibrarypaths ( elfclass );
-                        CREATE INDEX IF NOT EXISTS neededlibpaths_path
-                        ON neededlibrarypaths ( path );
-                        CREATE INDEX IF NOT EXISTS neededlibpaths_library_elf
-                        ON neededlibrarypaths ( library, elfclass );
                     """)
                 except self.dbapi2.OperationalError:
                     pass
@@ -7652,29 +7444,6 @@ class EntropyRepository:
                 );
             """)
 
-    def _createNeededlibrarypathsTable(self):
-        with self.__write_mutex:
-            self.cursor.executescript("""
-                DROP TABLE IF EXISTS neededlibrarypaths;
-                CREATE TABLE neededlibrarypaths (
-                    library VARCHAR,
-                    path VARCHAR,
-                    elfclass INTEGER,
-                    PRIMARY KEY(library, path, elfclass)
-                );
-            """)
-
-    def _createNeededlibraryidpackagesTable(self):
-        with self.__write_mutex:
-            self.cursor.executescript("""
-                DROP TABLE IF EXISTS neededlibraryidpackages;
-                CREATE TABLE neededlibraryidpackages (
-                    idpackage INTEGER,
-                    library VARCHAR,
-                    elfclass INTEGER
-                );
-            """)
-
     def _createInstalledTableSource(self):
         with self.__write_mutex:
             self.cursor.execute("""
@@ -7823,49 +7592,6 @@ class EntropyRepository:
 
         # now validate dependstable
         self._sanitizeDependsTable()
-
-    def regenerateLibrarypathsidpackageTable(self, verbose = True):
-        """
-        Note: this is not intended for general audience.
-        Regenerate ELF object linker paths table.
-
-        @keyword verbose: enable verbosity
-        @type verbose: bool
-        """
-        if verbose:
-            self.updateProgress(
-                "%s ..." % (
-                    purple(_("Resolving libraries, please wait")),
-                ),
-                importance = 0, type = "info", back = True
-            )
-        self.cursor.executescript("""
-            DELETE FROM neededlibraryidpackages;
-            INSERT INTO neededlibraryidpackages (idpackage, library, elfclass)
-                SELECT
-                    baseinfo.idpackage as idpackage,
-                    neededreference.library as library,
-                    neededlibrarypaths.elfclass as elfclass
-                FROM
-                    baseinfo, neededlibrarypaths, needed,
-                    neededreference, content
-                WHERE
-                    neededreference.idneeded = needed.idneeded AND
-                    needed.idpackage = content.idpackage AND
-                    baseinfo.idpackage = needed.idpackage AND
-                    neededlibrarypaths.library = neededreference.library AND
-                    neededlibrarypaths.elfclass = needed.elfclass AND
-                    content.file = neededlibrarypaths.path
-                GROUP BY idpackage, library;
-
-        """)
-        if verbose:
-            self.updateProgress(
-                "%s" % (
-                    purple(_("Libraries solved, all fine")),
-                ),
-                importance = 0, type = "info"
-            )
 
     def moveSpmUidsToBranch(self, to_branch, from_branch = None):
         """

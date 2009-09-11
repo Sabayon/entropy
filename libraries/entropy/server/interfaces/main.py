@@ -1462,13 +1462,6 @@ class Server(Singleton, TextInterface):
         dbconn.taintDatabase()
         dbconn.commitChanges()
 
-    def library_paths_table_initialize(self, repo = None):
-        dbconn = self.open_server_repository(read_only = False,
-            no_upload = True, repo = repo)
-        dbconn.regenerateLibrarypathsidpackageTable()
-        dbconn.taintDatabase()
-        dbconn.commitChanges()
-
     def create_empty_database(self, dbpath = None, repo = None):
         if dbpath == None:
             dbpath = self.get_local_database_file(repo)
@@ -2294,7 +2287,6 @@ class Server(Singleton, TextInterface):
                 # reinit depends table
                 self.depends_table_initialize(repo)
                 # reinit librarypathsidpackage table
-                self.library_paths_table_initialize(repo)
                 if idpackages_added:
                     dbconn = self.open_server_repository(read_only = False,
                         no_upload = True, repo = repo)
@@ -2323,8 +2315,6 @@ class Server(Singleton, TextInterface):
 
         # reinit depends table
         self.depends_table_initialize(repo)
-        # reinit librarypathsidpackage table
-        self.library_paths_table_initialize(repo)
 
         if idpackages_added:
             dbconn = self.open_server_repository(read_only = False,
@@ -3199,7 +3189,6 @@ class Server(Singleton, TextInterface):
                 )
 
             self.depends_table_initialize(repo)
-            self.library_paths_table_initialize(repo)
 
             my_qa = self.QA()
 

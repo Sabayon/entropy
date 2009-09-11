@@ -670,8 +670,6 @@ class PortagePlugin(SpmPlugin):
             etpConst['spm']['xpak_entries']['needed'])
 
         data['needed'] = self._extract_pkg_metadata_needed(needed_file)
-        data['needed_paths'] = self._extract_pkg_metadata_needed_paths(
-            data['needed'])
 
         content_file = os.path.join(meta_dir,
             etpConst['spm']['xpak_entries']['contents'])
@@ -2648,24 +2646,6 @@ class PortagePlugin(SpmPlugin):
                     pkg_needed.add((lib,ownelf))
 
         return sorted(pkg_needed)
-
-    def _extract_pkg_metadata_needed_paths(self, needed_libs):
-
-        data = {}
-        ldpaths = entropy.tools.collect_linker_paths()
-
-        for needed_lib, elf_class in needed_libs:
-            for ldpath in ldpaths:
-                my_lib = os.path.join(ldpath, needed_lib)
-                if not os.access(my_lib, os.R_OK):
-                    continue
-                myclass = entropy.tools.read_elf_class(my_lib)
-                if myclass != elf_class:
-                    continue
-                obj = data.setdefault(needed_lib, set())
-                obj.add((my_lib, myclass,))
-
-        return data
 
     def _extract_pkg_metadata_provided_libs(self, pkg_dir, content):
 
