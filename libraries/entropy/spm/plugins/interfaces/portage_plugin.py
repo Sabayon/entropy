@@ -609,7 +609,7 @@ class PortagePlugin(SpmPlugin):
         # extract stuff
         entropy.tools.extract_xpak(package_file, meta_dir)
         entropy.tools.uncompress_tar_bz2(package_file,
-            extractPath = pkg_dir)
+            extractPath = pkg_dir, catchEmpty = True)
 
         # package injection status always false by default
         # developer can change metadatum after this function
