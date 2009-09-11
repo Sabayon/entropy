@@ -2685,7 +2685,7 @@ class PortagePlugin(SpmPlugin):
                 continue
 
             elf_class = entropy.tools.read_elf_class(unpack_obj)
-            provided_libs.add((obj_name, elf_class,))
+            provided_libs.add((obj_name, obj, elf_class,))
 
         return provided_libs
 

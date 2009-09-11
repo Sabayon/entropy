@@ -1142,7 +1142,7 @@ class CalculatorsMixin:
         removed_libs = set([x for x in client_libs if x not in repo_libs])
 
         idpackages = set()
-        for lib, elf in removed_libs:
+        for lib, path, elf in removed_libs:
             idpackages |= self.clientDbconn.searchNeeded(lib, elfclass = elf)
 
         for c_idpackage in idpackages:

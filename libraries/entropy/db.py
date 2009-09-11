@@ -403,6 +403,7 @@ class EntropyRepository:
                 CREATE TABLE provided_libs (
                     idpackage INTEGER,
                     library VARCHAR,
+                    path VARCHAR,
                     elfclass INTEGER
                 );
 
@@ -2343,13 +2344,13 @@ class EntropyRepository:
         @param idpackage: package indentifier
         @type idpackage: int
         @param libs_metadata: provided library metadata composed by list of
-            tuples of length 2 containing library name and ELF class.
+            tuples of length 3 containing library name, path and ELF class.
         @type libs_metadata: list
         """
         with self.__write_mutex:
             self.cursor.executemany("""
-            INSERT INTO provided_libs VALUES (?,?,?)
-            """, [(idpackage, x, y,) for x, y in libs_metadata])
+            INSERT INTO provided_libs VALUES (?,?,?,?)
+            """, [(idpackage, x, y, z,) for x, y, z in libs_metadata])
 
     def insertNeededPaths(self, library, paths):
         """
@@ -4470,7 +4471,7 @@ class EntropyRepository:
             return set()
 
         cur = self.cursor.execute("""
-        SELECT library, elfclass FROM provided_libs
+        SELECT library, path, elfclass FROM provided_libs
         WHERE idpackage = (?)
         """, (idpackage,))
         return set(cur.fetchall())
@@ -7646,6 +7647,7 @@ class EntropyRepository:
                 CREATE TABLE provided_libs (
                     idpackage INTEGER,
                     library VARCHAR,
+                    path VARCHAR,
                     elfclass INTEGER
                 );
             """)
