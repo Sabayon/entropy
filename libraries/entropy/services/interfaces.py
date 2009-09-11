@@ -770,7 +770,6 @@ class SocketHost:
 
             term = self.handle_termination_commands(data)
             if term:
-                del authenticator
                 return term
 
             cmd, args, session = self.handle_command_string(data)
