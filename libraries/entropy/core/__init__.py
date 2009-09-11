@@ -161,7 +161,7 @@ class EntropyPluginFactory:
             modpath = "%s.%s" % (pkg_modname, modname,)
 
             try:
-                module = __import__(modpath)
+                __import__(modpath)
             except ImportError, err:
                 sys.stderr.write("!!! Entropy Plugin warning, cannot " \
                     "load module: %s | %s !!!\n" % (modpath, err,))
