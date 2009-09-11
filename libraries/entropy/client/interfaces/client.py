@@ -174,8 +174,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             brf.flush()
             brf.close()
 
-        if not os.access(old_branch_path, os.R_OK) and \
-            os.path.isfile(old_branch_path):
+        if not os.path.isfile(old_branch_path):
             write_current_branch(current_branch)
             return
 
