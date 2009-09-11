@@ -17,7 +17,8 @@ from entropy.core import Singleton
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError
 from entropy.const import etpConst, etpSys, const_setup_perms, \
-    const_create_working_dirs, const_extract_srv_repo_params, etpUi
+    const_create_working_dirs, const_extract_srv_repo_params, etpUi, \
+    const_setup_file
 from entropy.output import TextInterface, purple, red, darkgreen, \
     bold, brown, blue, darkred
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
@@ -2388,6 +2389,7 @@ class Server(Singleton, TextInterface):
             dbconn.setSignatures(idpackage, signatures['sha1'],
                 signatures['sha256'], signatures['sha512'])
             self.entropyTools.create_md5_file(package_path)
+            const_setup_file(package_path, etpConst['entropygid'], 0664)
             # remove garbage
             os.remove(dbpath)
             self.updateProgress(

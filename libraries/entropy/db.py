@@ -37,7 +37,7 @@
 from __future__ import with_statement
 import os
 import shutil
-from entropy.const import etpConst, etpCache
+from entropy.const import etpConst, etpCache, const_setup_file
 from entropy.exceptions import IncorrectParameter, InvalidAtom, \
     SystemDatabaseError, OperationNotPermitted
 from entropy.i18n import _
@@ -727,6 +727,7 @@ class EntropyRepository:
         f.write(etpConst['currentarch']+" database tainted\n")
         f.flush()
         f.close()
+        const_setup_file(taint_file, etpConst['entropygid'], 0664)
         ServerRepositoryStatus().set_tainted(self.dbFile)
 
     def untaintDatabase(self):
