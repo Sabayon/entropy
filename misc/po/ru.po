@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Entropy 0.98.5.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-09-06 21:07+0200\n"
-"PO-Revision-Date: 2009-09-09 01:47-0000\n"
-"Last-Translator: Daniel Halens Rodriguez <daniel.halens@sabayonlinux.org>\n"
+"PO-Revision-Date: 2009-09-09 22:15+0300\n"
+"Last-Translator: Maksim Belyanovskiy <maxxbell@gmail.com>\n"
 "Language-Team: Maksim Belyanovskiy <maxxbell@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -160,16 +160,15 @@ msgstr "Невозможно обновить базу данных портед
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1431
 msgid "SPM uid update error"
-msgstr ""
+msgstr "Ошибка при обновлении SPM uid"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1482
 msgid "Cannot update SPM installed pkgs file"
-msgstr ""
+msgstr "Невозможно обновить файл установленных пакетов SPM"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1604
-#, fuzzy
 msgid "Cannot run SPM configure phase for"
-msgstr "Невозможно запустить Spm pkg_config() для"
+msgstr "Невозможно запустить фазу конфигурации SPM для"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1608
 #: ../../libraries/entropy/client/interfaces/package.py:1582
@@ -302,7 +301,7 @@ msgstr "Текущая локальная версия базы данных -"
 
 #: ../../libraries/entropy/services/ugc/interfaces.py:266
 msgid "not a valid directory path"
-msgstr "неправильный путь к папаке"
+msgstr "неправильный путь к папке"
 
 #: ../../libraries/entropy/services/ugc/interfaces.py:1731
 msgid "A valid entropy.client.services.ugc.commands.Base interface is needed"
@@ -651,15 +650,13 @@ msgid "Every dependency is satisfied. It's all fine."
 msgstr "Все зависимости удовлетворены. С чем и поздравляю."
 
 #: ../../libraries/entropy/server/interfaces/main.py:1295
-#, fuzzy
 msgid "Broken and matched packages list"
-msgstr "Нет подсчитанных пакетов"
+msgstr "Список испорченных и подсчитанных пакетов"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1297
 #: ../../libraries/entropy/qa.py:384
-#, fuzzy
 msgid "Dumping results into these files"
-msgstr "Запись текущей версии в файл"
+msgstr "Запись результатов в эти файлы"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1327
 #: ../../client/text_ui.py:1740
@@ -2620,28 +2617,25 @@ msgid "Package checksum matches"
 msgstr "Контрольная сумма пакета корректна"
 
 #: ../../libraries/entropy/client/interfaces/package.py:173
-#, fuzzy, python-format
+#, python-format
 msgid "Checksum does not match. Download attempt #%s"
-msgstr "Контрольная сумма пакета некорректна. Перезапуск... попытка #%s"
+msgstr "Контрольная сумма пакета некорректна. Попытка загрузки #%s"
 
 #: ../../libraries/entropy/client/interfaces/package.py:193
 msgid "Cannot properly fetch package! Quitting."
 msgstr "В общем, невозможно загрузить пакет! Выход."
 
 #: ../../libraries/entropy/client/interfaces/package.py:205
-#, fuzzy
 msgid "Cannot fetch package or checksum does not match"
-msgstr "Невозможно загрузить пакет либо контрольная сумма некорректна. Попробуйте загрузить последние репозитории."
+msgstr "Невозможно загрузить пакет либо контрольная сумма некорректна."
 
 #: ../../libraries/entropy/client/interfaces/package.py:206
-#, fuzzy
 msgid "Try to download latest repositories"
-msgstr "невозможно скачать версию репозитория"
+msgstr "Попробуйте загрузить последние репозитории"
 
 #: ../../libraries/entropy/client/interfaces/package.py:350
-#, fuzzy
 msgid "configuration phase"
-msgstr "Файл конфигурации"
+msgstr "Фаза конфигурации"
 
 #: ../../libraries/entropy/client/interfaces/package.py:365
 msgid "Removing from Entropy"
@@ -2669,9 +2663,8 @@ msgid "Updating database"
 msgstr "Обновление базы данных"
 
 #: ../../libraries/entropy/client/interfaces/package.py:710
-#, fuzzy
 msgid "Cleaning previously installed information..."
-msgstr "принимает ранее отмененные операции"
+msgstr "Очистка информации о ранее установленном..."
 
 #: ../../libraries/entropy/client/interfaces/package.py:974
 #, python-format
@@ -2680,13 +2673,12 @@ msgstr "%s - это файл, который должен быть папкой 
 
 #: ../../libraries/entropy/client/interfaces/package.py:1000
 msgid "directory expected, symlink found"
-msgstr ""
+msgstr "найден ярлык, хотя нужна была папка"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1003
 #: ../../libraries/entropy/client/interfaces/package.py:1172
-#, fuzzy
 msgid "Removing in 20 seconds !!"
-msgstr "Следующая попытка через 1 секунду"
+msgstr "Удаление через 20 секунд !!"
 
 #. we can merge it, files, even if
 #. contains changes have not been modified
@@ -2696,9 +2688,8 @@ msgid "Automerging config file, never modified"
 msgstr "Автообъединение конфигурационного файла, никогда не модифицировавшегося"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1169
-#, fuzzy
 msgid "file expected, directory found"
-msgstr "Несколько директорий Питона найдены:"
+msgstr "найдена папка, хотя нужен был файл"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1224
 msgid "File move error"
@@ -2734,27 +2725,24 @@ msgid "Downloading archive"
 msgstr "Скачивание архива"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1581
-#, fuzzy
 msgid "Package cannot be fetched. Try to update repositories"
-msgstr "Пакет не может быть загружен. Попробуйте обновить репозитории и попробовать снова."
+msgstr "Пакет не может быть загружен. Попробуйте обновить репозитории."
 
 #: ../../libraries/entropy/client/interfaces/package.py:1601
 msgid "archives"
 msgstr "архивы"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1619
-#, fuzzy
 msgid "Some packages cannot be fetched"
-msgstr "Некоторые пакеты маскированы"
+msgstr "Некоторые пакеты не могут быть загружены"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1620
-#, fuzzy
 msgid "Try to update your repositories and retry"
-msgstr "Пакет не может быть загружен. Попробуйте обновить репозитории и попробовать снова."
+msgstr "Попробуйте обновить репозитории и попробовать снова"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1649
 msgid "Package cannot be downloaded, unknown error."
-msgstr ""
+msgstr "Пакет не может быть скачан, неизвестная ошибка."
 
 #: ../../libraries/entropy/client/interfaces/package.py:1658
 msgid "Installed package in queue vanished, skipping."
@@ -2824,7 +2812,6 @@ msgid "Make sure that your system is healthy"
 msgstr "Будьте уверены, что с Вашей системой всё в порядке"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1942
-#, fuzzy
 msgid "It seems that Source Package Manager entry is missing"
 msgstr "Это означает, что недостаёт записи Менеджера Пакетов Источника"
 
@@ -2905,7 +2892,7 @@ msgstr "Конфигурирование"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2139
 msgid "Cannot acquire Entropy resources lock."
-msgstr ""
+msgstr "Невозможно подтвердить блокировку ресурсов Entropy"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2152
 msgid "An error occured. Action aborted."
@@ -3545,14 +3532,12 @@ msgid "Moving old entry"
 msgstr "Перемещение старой записи"
 
 #: ../../libraries/entropy/db.py:6493
-#, fuzzy
 msgid "baseinfo error. Either does not exist or corrupted."
-msgstr "Таблица baseinfo не найдена. Она не существует или испорчена."
+msgstr "Ошибка таблицы baseinfo. Она не существует или испорчена."
 
 #: ../../libraries/entropy/db.py:6501
-#, fuzzy
 msgid "extrainfo error. Either does not exist or corrupted."
-msgstr "Таблица extrainfo не найдена. Она не существует или испорчена."
+msgstr "Ошибка таблицы extrainfo. Она не существует или испорчена."
 
 #: ../../libraries/entropy/db.py:6569
 msgid "Syncing current database"
@@ -3583,9 +3568,8 @@ msgid "Database Export completed."
 msgstr "Экспорт базы данных завершён."
 
 #: ../../libraries/entropy/db.py:7433
-#, fuzzy
 msgid "Spm counter path not found in"
-msgstr "юзер не найден"
+msgstr "Путь к счётчику Spm не найден"
 
 #: ../../libraries/entropy/db.py:7451
 msgid "Spm id is not valid for"
@@ -3753,14 +3737,12 @@ msgid "Libraries test"
 msgstr "Тест библиотек"
 
 #: ../../libraries/entropy/qa.py:381
-#, fuzzy
 msgid "Broken symbols packages list"
-msgstr "испорченные пакеты"
+msgstr "Список испорченных пакетов символов"
 
 #: ../../libraries/entropy/qa.py:382
-#, fuzzy
 msgid "Broken executables list"
-msgstr "Ищутся испорченные исполняемые файлы"
+msgstr "Список испорченных исполняемых файлов"
 
 #: ../../libraries/entropy/qa.py:411
 msgid "Cannot find "
@@ -4344,7 +4326,7 @@ msgstr "ищет испорченные библиотеки"
 #: ../../client/equo.py:167
 #: ../../server/reagent.py:113
 msgid "dump results to files"
-msgstr ""
+msgstr "записать результаты в файлы"
 
 #: ../../client/equo.py:168
 msgid "print broken files to stdout"
@@ -4830,9 +4812,8 @@ msgstr "просто показать список пакетов"
 
 #: ../../client/equo.py:319
 #: ../../server/reagent.py:103
-#, fuzzy
 msgid "do not pull old package slots"
-msgstr "скачанные пакеты"
+msgstr "не заполняйте слоты старых пакетов"
 
 #: ../../client/equo.py:320
 #: ../../server/reagent.py:104
@@ -7600,9 +7581,8 @@ msgid "Another Entropy instance is running. Cannot process queue."
 msgstr "Другая сессия Entropy запущена. Невозможно обработать очередь."
 
 #: ../../sulfur/src/sulfur/__init__.py:1525
-#, fuzzy
 msgid "Another Entropy instance is locking this task at the moment. Try in a few minutes."
-msgstr "Другая сессия Entropy активна в данный момент, невозможно удовлетворить Ваш запрос"
+msgstr "Другая сессия Entropy блокирует это задание в данный момент. Попробуйте через несколько минут."
 
 #: ../../sulfur/src/sulfur/__init__.py:1531
 msgid "Running tasks"
@@ -8166,14 +8146,12 @@ msgid "Author"
 msgstr "Автор"
 
 #: ../../sulfur/src/sulfur/dialogs.py:4131
-#, fuzzy
 msgid "Timeout Error"
-msgstr "ошибка при превышении времени ожидания"
+msgstr "Ошибка при превышении времени ожидания"
 
 #: ../../sulfur/src/sulfur/dialogs.py:4132
-#, fuzzy
 msgid "Connection timed out, sorry!"
-msgstr "превышено время ожидания при передаче информации"
+msgstr "Превышено время ожидания при передаче информации, уж извините!"
 
 #: ../../sulfur/src/sulfur/dialogs.py:4283
 msgid "Package ChangeLog"
@@ -9079,9 +9057,8 @@ msgid "Cl_ean"
 msgstr "О_чистить"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:34
-#, fuzzy
 msgid "Close notice"
-msgstr "Режим выбора"
+msgstr "Закрыть уведомление"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:35
 msgid "Collision protection"
@@ -9283,7 +9260,7 @@ msgstr "HTTP Proxy"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:91
 msgid "Hide this until something new happens"
-msgstr ""
+msgstr "Скройте это, пока что-либо ещё не случилось"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:94
 msgid "If selected, packages will be downloaded only"
@@ -9367,7 +9344,7 @@ msgstr "_Объединить"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:120
 msgid "Mark as read"
-msgstr ""
+msgstr "Отметить как прочитанное"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:121
 msgid "Mask the selected packages"
@@ -10028,4 +10005,55 @@ msgstr "Уведомитель об обновлениях приложений 
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "_Загрузить пакетный менеджер"
+
+#~ msgid "selected SPM backend not available"
+#~ msgstr "Выбранный backend пакетного менеджера источника недоступен"
+#~ msgid "not set"
+#~ msgstr "не задано"
+#~ msgid "have you configured make.conf properly?"
+#~ msgstr "Вы правильно сконфигурировали make.conf?"
+#~ msgid "changelog string conversion error"
+#~ msgstr "Ошибка при конверсии строки лога изменений"
+#~ msgid "Cleaning old package files..."
+#~ msgstr "Очистка старых файлов пакетов..."
+#~ msgid "Cannot update Portage counter, destination %s does not exist."
+#~ msgstr "Невозможно обновить счетчик портеджа, расположение %s не существует"
+#~ msgid "Cannot update Portage world file, destination %s does not exist."
+#~ msgstr ""
+#~ "Невозможно обновить файл мира портеджа, расположение %s не существует"
+#~ msgid "Cannot update Portage world file, destination %s is corrupted."
+#~ msgstr "Невозможно обновить файл мира портеджа, расположение %s испорчено"
+#~ msgid ""
+#~ "%s is a directory when should be a symlink !! Removing in 20 seconds..."
+#~ msgstr ""
+#~ "%s - это папка, которая должна быть ссылкой !! Удаляется в течение 20  "
+#~ "секунд..."
+#~ msgid ""
+#~ "%s is a directory when it should be a file !! Removing in 20 seconds..."
+#~ msgstr ""
+#~ "%s - это директория, которая должна быть файлом !! Удаляется в течение "
+#~ "20  секунд..."
+#~ msgid "Cannot check CONFIG PROTECTION. Error"
+#~ msgstr "Невозможно проверить CONFIG PROTECTION. Ошибка."
+#~ msgid ""
+#~ "Some packages cannot be fetched. Try to update repositories and retry"
+#~ msgstr ""
+#~ "Некоторые пакеты не могут быть загружены. Попробуйте обновить репозитории "
+#~ "и попробовать снова."
+#~ msgid "Fetch for the chosen package is not available, unknown error."
+#~ msgstr "Загрузка указанного пакета недоступна, неизвестная ошибка"
+#~ msgid "Show Package Updates"
+#~ msgstr "Показать обновления пакетов"
+#~ msgid "Show available Packages"
+#~ msgstr "Показать доступные пакеты"
+#~ msgid "Show Installed Packages"
+#~ msgstr "Показать установленные пакеты"
+#~ msgid "Show Masked Packages"
+#~ msgstr "Показать маскированные пакеты"
+#~ msgid "Show All Packages"
+#~ msgstr "Показать все пакеты"
+#~ msgid "Show Package Sets"
+#~ msgstr "Показать наборы пакетов"
+#~ msgid "Show Queued Packages"
+#~ msgstr "Показать пакеты, поставленные в очередь"
 
