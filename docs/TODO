@@ -4,11 +4,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
-    - system has two tagged pkgs installed, if one is removed, spm entry got
-        removed too. spm should ask entropy if other pkgs are installed and if
-        so, update spm uid connection and NOT remove its entry.
-        => if another entry is available (spm should avoid to run the phase and
-            forget?)
     - entropy.tools + entropy.transceivers API docs merge
     - entropy.client.interfaces.trigger, move Portage code to entropy.spm
     - entropy.server API docs merge
