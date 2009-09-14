@@ -16,7 +16,8 @@ import stat
 import shutil
 from entropy.const import etpConst, etpSys, etpCache, const_setup_perms, \
     ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL, ETP_LOGLEVEL_VERBOSE
-from entropy.exceptions import PermissionDenied, InvalidData, IncorrectParameter
+from entropy.exceptions import PermissionDenied, InvalidData, \
+    IncorrectParameter, SPMError
 from entropy.i18n import _
 from entropy.output import TextInterface, brown, blue, bold, darkgreen, \
     darkblue, red, purple, darkred, print_info, print_error, print_warning
@@ -377,7 +378,20 @@ class Package:
             )
         self.remove_installed_package(self.pkgmeta['removeidpackage'])
 
-        spm_rc = self.spm_remove_package()
+        # if another package with the same atom is installed in
+        # Entropy db, do not call SPM at all because it would cause
+        # to get that package removed from there resulting in matching
+        # inconsistencies.
+        another_installed = self.Entropy.clientDbconn.getIDPackage(
+            self.pkgmeta['removeatom'])
+
+        if another_installed == -1:
+            spm_rc = self.spm_remove_package()
+        else:
+            # we have one installed, we need to update SPM uid
+            spm_rc = self.spm_update_package_uid(another_installed,
+                self.pkgmeta['removeatom'])
+
         if spm_rc != 0:
             return spm_rc
 
@@ -755,6 +769,54 @@ class Package:
             self.Entropy.clientDbconn.insertSpmUid(idpackage, spm_uid)
 
         return 0
+
+    def spm_update_package_uid(self, idpackage, entropy_atom):
+        """
+        Update Source Package Manager <-> Entropy package identifiers coupling.
+        Entropy can handle multiple packages in the same scope from a SPM POV
+        (see the "package tag" feature to provide linux kernel module packages
+        for different kernel versions). This method just reassigns a new SPM
+        unique package identifier to Entropy.
+
+        @param idpackage: Entropy package identifier bound to given entropy_atom
+        @type idpackage: int
+        @param entropy_atom: Entropy package atom, must be converted to a valid
+            SPM package atom.
+        @type entropy_atom: string
+        @return: execution status
+        @rtype: int
+        """
+        try:
+            Spm = self.Entropy.Spm()
+        except Exception, err:
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "Source Package Manager not available: %s | %s" % (
+                    type(Exception), err,
+                )
+            )
+            return -1
+
+        spm_package = Spm.convert_from_entropy_package_name(entropy_atom)
+        try:
+            spm_uid = Spm.assign_uid_to_installed_package(spm_package)
+        except (SPMError, KeyError,):
+            # installed package not available, we must ignore it
+            self.Entropy.clientLog.log(
+                ETP_LOGPRI_INFO,
+                ETP_LOGLEVEL_NORMAL,
+                "Spm uid not available for Spm package: %s (pkg not avail?)" % (
+                    spm_package,
+                )
+            )
+            return 0
+
+        if spm_uid != -1:
+            self.Entropy.clientDbconn.insertSpmUid(idpackage, spm_uid)
+
+        return 0
+
 
     def spm_remove_package(self):
         """
