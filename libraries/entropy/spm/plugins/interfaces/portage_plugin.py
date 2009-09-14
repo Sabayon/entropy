@@ -1131,6 +1131,13 @@ class PortagePlugin(SpmPlugin):
 
         return dict((x, y.getAtoms(),) for x, y in mysets.items())
 
+    def convert_from_entropy_package_name(self, entropy_package_name):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        spm_name = entropy.tools.remove_tag(entropy_package_name)
+        return spm_name
+
     def assign_uid_to_installed_package(self, package, root = None):
         """
         Reimplemented from SpmPlugin class.

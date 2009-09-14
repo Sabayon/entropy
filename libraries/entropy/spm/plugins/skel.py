@@ -487,6 +487,18 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
+    def convert_from_entropy_package_name(self, entropy_package_name):
+        """
+        This function should be able to convert an Entropy package name (atom)
+        to a Source Package Manager one.
+
+        @param entropy_package_name: Entropy package name string
+        @type entropy_package_name: string
+        @return: Source Package Manager package name string
+        @rtype: string
+        """
+        raise NotImplementedError()
+
     def search_paths_owners(self, paths, exact_match = True):
         """
         Return list of packages owning provided list of paths.
