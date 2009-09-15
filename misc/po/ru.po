@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Entropy 0.98.5.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-09-06 21:07+0200\n"
-"PO-Revision-Date: 2009-09-09 22:15+0300\n"
+"PO-Revision-Date: 2009-09-15 22:38+0300\n"
 "Last-Translator: Maksim Belyanovskiy <maxxbell@gmail.com>\n"
 "Language-Team: Maksim Belyanovskiy <maxxbell@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -93,7 +93,7 @@ msgstr "Приложения и библиотеки для мультимеди
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:89
 #: ../../sulfur/src/sulfur/sulfur.glade.h:128
 msgid "Networking"
-msgstr "Подключение к сети"
+msgstr "Сеть"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:91
 msgid "Applications and libraries for Networking"
@@ -1698,7 +1698,7 @@ msgstr "невозможно конвертировать поток в объе
 #: ../../libraries/entropy/client/services/ugc/commands.py:619
 #: ../../sulfur/src/sulfur/sulfur.glade.h:261
 msgid "User Generated Content"
-msgstr "Содержимое, сгенерированное пользователем"
+msgstr "Контент пользователя"
 
 #: ../../libraries/entropy/client/services/ugc/commands.py:620
 msgid "sending file"
@@ -2455,7 +2455,7 @@ msgstr "проверка работоспособности"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:504
 msgid "system database"
-msgstr "Системная база данных"
+msgstr "Системная БД"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:512
 msgid "Scanning..."
@@ -8927,7 +8927,7 @@ msgstr "доступных обновлений"
 
 #: ../../magneto/src/magneto/core/interfaces.py:221
 msgid "Sabayon updates available"
-msgstr "обновлений Sabayon доступны"
+msgstr "Обновления Sabayon доступны"
 
 #. all fine, no updates
 #: ../../magneto/src/magneto/core/interfaces.py:232
@@ -9708,7 +9708,7 @@ msgstr "Синхронизировать репозитории, чтобы за
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:233
 msgid "System Database"
-msgstr "Системная база данных"
+msgstr "Системная БД"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:234
 msgid "System files"
