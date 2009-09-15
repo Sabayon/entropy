@@ -703,7 +703,8 @@ class PortagePlugin(SpmPlugin):
         # validate the results above
         if kernelstuff:
             matchatom = "linux-%s-%s" % (kname,kver,)
-            if (matchatom == data['name']+"-"+data['version']):
+            # is this a kernel itself ?
+            if data['category'] == "sys-kernel":
                 kernelstuff_kernel = True
 
             data['versiontag'] = kmodver
