@@ -684,34 +684,47 @@ class PortagePlugin(SpmPlugin):
         data['versiontag'] = ''
         kernelstuff = False
         kernelstuff_kernel = False
-        for item in data['content']:
-            if item.startswith("/lib/modules/"):
-                kernelstuff = True
-                # get the version of the modules
-                kmodver = item.split("/lib/modules/")[1]
-                kmodver = kmodver.split("/")[0]
+        kmod_pfx = "/lib/modules"
+        kern_dep_key = None
 
-                lp = kmodver.split("-")[-1]
-                if lp.startswith("r"):
-                    kname = kmodver.split("-")[-2]
-                    kver = kmodver.split("-")[0]+"-"+kmodver.split("-")[-1]
-                else:
-                    kname = kmodver.split("-")[-1]
-                    kver = kmodver.split("-")[0]
-                break
+        for item in sorted(data['content']):
 
-        # validate the results above
-        if kernelstuff:
-            matchatom = "linux-%s-%s" % (kname,kver,)
-            # is this a kernel itself ?
-            if data['category'] == "sys-kernel":
+            if item == kmod_pfx:
+                continue
+            if not item.startswith(kmod_pfx):
+                continue
+
+            k_base = os.path.basename(item)
+            if k_base.startswith("."):
+                continue # hidden file
+            # hope that is fine!
+
+            owners = self.search_paths_owners([item])
+            if not owners:
+                continue
+
+            kernelstuff = True
+            if data['category'] == u"sys-kernel":
                 kernelstuff_kernel = True
 
-            data['versiontag'] = kmodver
+            # this, if kernelstuff_kernel is False,
+            # MUST match SLOT (for triggers here, to be able to handle
+            # multiple packages correctly and set back slot).
+            data['versiontag'] = k_base
+
+            k_atom, k_slot = owners.keys()[0]
+            k_cat, k_name, k_ver, k_rev = entropy.tools.catpkgsplit(k_atom)
+            if k_rev != "r0":
+                k_ver += "-%s" % (k_rev,)
+
             if not kernelstuff_kernel:
-                data['slot'] = kmodver # if you change this behaviour,
-                # you must change "reagent update"
-                # and "equo database gentoosync" consequentially
+                # overwrite slot, yeah
+                data['slot'] = k_base
+
+            if not kernelstuff_kernel:
+                kern_dep_key = "=%s~-1" % (k_atom,)
+
+            break
 
         file_ext = etpConst['spm']['ebuild_file_extension']
         ebuilds_in_path = [x for x in os.listdir(meta_dir) if \
@@ -790,9 +803,7 @@ class PortagePlugin(SpmPlugin):
             portage_metadata['PDEPEND'].split() if \
             x.startswith("!") and not x in ("(","||",")","")]
 
-        if (kernelstuff) and (not kernelstuff_kernel):
-            # add kname to the dependency
-            kern_dep_key = u"=sys-kernel/linux-"+kname+"-"+kver+"~-1"
+        if kern_dep_key is not None:
             data['dependencies'][kern_dep_key] = etpConst['spm']['(r)depend_id']
 
         # Conflicting tagged packages support
