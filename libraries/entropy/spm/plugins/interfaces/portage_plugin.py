@@ -1550,7 +1550,12 @@ class PortagePlugin(SpmPlugin):
                     # do not remove self
                     continue
 
-                myslot = self.get_installed_package_metadata(myatom, "SLOT")
+                try:
+                    myslot = self.get_installed_package_metadata(myatom, "SLOT")
+                except KeyError:
+                    # package got removed or not available or broken
+                    continue
+
                 if myslot != slot:
                     continue
                 mybuild = self.get_installed_package_build_script_path(myatom)
