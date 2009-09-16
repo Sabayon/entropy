@@ -1039,8 +1039,11 @@ class LogFile:
             else:
                 if os.access(file_path, os.W_OK) and os.path.isfile(file_path):
                     self._logfile = open(file_path, "aw")
-                else:
+                elif os.path.exists("/dev/null"):
                     self._logfile = open("/dev/null", "aw")
+                else:
+                    self._logfile = sys.stderr
+
         elif hasattr(file_path, 'write'):
             self._logfile = file_path
         else:
