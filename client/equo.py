@@ -1,4 +1,5 @@
 #!/usr/bin/python -O
+# -*- coding: utf-8 -*-
 '''
     # DESCRIPTION:
     # Entropy Package Manager client
@@ -242,6 +243,7 @@ myopts_extended = [
                 (4,'--repackage <atoms>',1,_('repackage the specified atoms')),
                 (4,'--noask',3,_('do not ask anything except critical things')),
                 (4,'--atoms <atoms>',1,_('manage only the specified atoms')),
+                (4,'--interactive',1,_('run in interactive mode (asking things one by one)')),
             (3,'inject <packages>',1,_('add binary packages to repository w/o affecting scopes (multipackages)')),
         (2,'mirrors',2,_('community repositories mirrors management functions')),
             (3,'sync',3,_('sync packages, database and also do some tidy')),

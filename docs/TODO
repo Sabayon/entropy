@@ -4,7 +4,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
-    - reagent update selective add/remove
     - entropy.tools + entropy.transceivers API docs merge
     - entropy.client.interfaces.trigger, move Portage code to entropy.spm
     - entropy.server API docs merge

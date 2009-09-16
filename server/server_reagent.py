@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 '''
     # DESCRIPTION:
     # textual interface for reagent
@@ -267,6 +268,7 @@ def update(options):
     reagentRequestRepackage = False
     reagentRequestAsk = True
     reagentRequestOnlyAtoms = False
+    reagentRequestInteractive = False
     repackageItems = []
     onlyAtoms = []
     _options = []
@@ -279,6 +281,8 @@ def update(options):
             reagentRequestOnlyAtoms = True
         elif opt == "--noask":
             reagentRequestAsk = False
+        elif opt == "--interactive":
+            reagentRequestInteractive = True
         else:
             if reagentRequestRepackage and (not opt.startswith("--")):
                 if not opt in repackageItems:
@@ -363,16 +367,32 @@ def update(options):
                     Entropy.transform_package_into_injected(idpackage, repo = repoid)
                 print_info(brown(" @@ ")+blue("%s." % (_("Database transform complete"),) ))
 
+        def show_rm(idpackage, repoid):
+            dbconn = Entropy.open_server_repository(read_only = True,
+                no_upload = True, repo = repoid)
+            atom = dbconn.retrieveAtom(idpackage)
+            exp_string = ''
+            pkg_expired = Entropy.is_match_expired((idpackage,repoid,))
+            if pkg_expired:
+                exp_string = "|%s" % (purple(_("expired")),)
+            print_info(brown("    # ")+"["+blue(repoid)+exp_string+"] "+red(atom))
+
+        if reagentRequestInteractive and toBeRemoved:
+            print_info(brown(" @@ ")+blue(_("So sweetheart, what packages do you want to remove ?")))
+            new_toBeRemoved = set()
+            for idpackage, repoid in toBeRemoved:
+                show_rm(idpackage, repoid)
+                rc = Entropy.askQuestion(">>   %s" % (_("Remove this package?"),))
+                if rc == "Yes":
+                    new_toBeRemoved.add((idpackage, repoid,))
+            toBeRemoved = new_toBeRemoved
+
         if toBeRemoved:
+
             print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be removed from the database"),) ))
-            for idpackage,repoid in toBeRemoved:
-                dbconn = Entropy.open_server_repository(read_only = True, no_upload = True, repo = repoid)
-                atom = dbconn.retrieveAtom(idpackage)
-                exp_string = ''
-                pkg_expired = Entropy.is_match_expired((idpackage,repoid,))
-                if pkg_expired:
-                    exp_string = "|%s" % (purple(_("expired")),)
-                print_info(brown("    # ")+"["+blue(repoid)+exp_string+"] "+red(atom))
+            for idpackage, repoid in toBeRemoved:
+                show_rm(idpackage, repoid)
+
             if reagentRequestAsk:
                 rc = Entropy.askQuestion(">>   %s" % (_("Would you like to remove them now ?"),) )
             else:
@@ -386,12 +406,23 @@ def update(options):
                 for repoid in remdata:
                     Entropy.remove_packages(remdata[repoid], repo = repoid)
 
+        if reagentRequestInteractive and toBeAdded:
+            print_info(brown(" @@ ")+blue(_("So sweetheart, what packages do you want to add ?")))
+            new_toBeAdded = set()
+            for tb_atom, tb_counter in toBeAdded:
+                print_info(brown("    # ")+red(tb_atom))
+                rc = Entropy.askQuestion(">>   %s" % (_("Add this package?"),))
+                if rc == "Yes":
+                    new_toBeAdded.add((tb_atom, tb_counter,))
+            toBeAdded = new_toBeAdded
+
         if toBeAdded:
 
             print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be added/updated to the add list"),) ))
             items = sorted([x[0] for x in toBeAdded])
             for item in items:
                 print_info(brown("    # ")+red(item))
+
             if reagentRequestAsk:
                 rc = Entropy.askQuestion(">>   %s (%s %s)" % (
                         _("Would you like to package them now ?"),

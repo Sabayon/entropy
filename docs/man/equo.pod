@@ -714,6 +714,10 @@ do not ask anything except critical things
 
 manage only the specified atoms
 
+=item B<--interactive>
+
+run in interactive mode (asking things one by one)
+
 =back
 
 

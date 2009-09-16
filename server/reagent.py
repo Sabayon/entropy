@@ -1,4 +1,5 @@
 #!/usr/bin/python -O
+# -*- coding: utf-8 -*-
 '''
     # DESCRIPTION:
     # this application gets a .tbz2 file as input and creates a database entry
@@ -52,6 +53,7 @@ myopts = [
         (2,'--repackage <atoms>',1,_('repackage the specified atoms')),
         (2,'--noask',3,_('do not ask anything except critical things')),
         (2,'--atoms <atoms>',2,_('manage only the specified atoms')),
+        (2,'--interactive',2,_('run in interactive mode (asking things one by one)')),
     None,
     (1,'inject <packages>',1,_('add binary packages to repository w/o affecting scopes (multipackages)')),
     None,
