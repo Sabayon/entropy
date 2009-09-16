@@ -411,7 +411,6 @@ class RepositoryMixin:
             dbpath = db_dir+"/packages.db")
         if dbfile == None:
             return -1, atoms_contained
-        etpSys['dirstoclean'].add(os.path.dirname(dbfile))
         # add dbfile
         repodata = {}
         repodata['repoid'] = basefile

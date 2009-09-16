@@ -1,4 +1,5 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
 '''
     Copyright (C) 2007-2009 Fabio Erculiani
 
@@ -30,6 +31,7 @@ from entropy.client.interfaces import Client
 from entropy.misc import ParallelTask
 from entropy.i18n import _
 Equo = Client()
+DIRS_TO_CLEAN = set()
 
 def package(options):
 
@@ -723,14 +725,15 @@ def installPackages(packages = None, atomsdata = None, deps = True,
         print_warning(mytxt)
         etpUi['pretend'] = True
 
-    etpSys['dirstoclean'].clear()
+    DIRS_TO_CLEAN.clear()
     def dirscleanup():
-        for x in etpSys['dirstoclean']:
+        for xdir in DIRS_TO_CLEAN:
             try:
-                if os.path.isdir(x): shutil.rmtree(x)
-            except:
-                pass
-        etpSys['dirstoclean'].clear()
+                if os.path.isdir(xdir):
+                    shutil.rmtree(xdir, True)
+            except shutil.Error:
+                continue
+        DIRS_TO_CLEAN.clear()
 
     explicit_user_packages = set()
 

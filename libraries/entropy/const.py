@@ -59,15 +59,14 @@ for arches, arch in ETP_ARCH_MAP.items():
         ETP_ARCH_CONST = arch
 
 etpSys = {
-    'archs': ["x86", "amd64"],
-    'keywords': set([ETP_ARCH_CONST,"~"+ETP_ARCH_CONST]),
+    'archs': ['alpha', 'amd64', 'amd64-fbsd', 'arm', 'hppa', 'ia64', 'm68k',
+        'mips', 'ppc', 'ppc64', 's390', 'sh', 'sparc', 'sparc-fbsd', 'x86',
+        'x86-fbsd'],
+    'keywords': set([ETP_ARCH_CONST, "~"+ETP_ARCH_CONST]),
     'api': '3',
     'arch': ETP_ARCH_CONST,
     'rootdir': "",
-    'maxthreads': 100,
-    'dirstoclean': set(),
     'serverside': False,
-    'killpids': set(),
 }
 
 etpUi = {
