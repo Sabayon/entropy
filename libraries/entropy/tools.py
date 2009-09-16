@@ -460,14 +460,15 @@ def sum_file_sizes(file_list):
 
 def check_required_space(mountpoint, bytes_required):
     """
-    docstring_title
+    Check available space in mount point and if it satisfies
+    the amount of required bytes given.
 
-    @param mountpoint: 
-    @type mountpoint: 
-    @param bytes_required: 
-    @type bytes_required: 
-    @return: 
-    @rtype: 
+    @param mountpoint: mount point
+    @type mountpoint: string
+    @param bytes_required: amount of bytes required to make function return True
+    @type bytes_required: bool
+    @return: if True, required space is available
+    @rtype: bool
     """
     import statvfs
     st = os.statvfs(mountpoint)
@@ -496,16 +497,17 @@ def getstatusoutput(cmd):
 # atomic file move function
 def movefile(src, dest, src_basedir = None):
     """
-    docstring_title
+    Move a file from source to destination in an atomic way.
 
-    @param src: 
-    @type src: 
-    @param dest: 
-    @type dest: 
-    @keyword src_basedir: 
-    @type src_basedir: 
-    @return: 
-    @rtype: 
+    @param src: source path
+    @type src: string
+    @param dest: destination path
+    @type dest: string
+    @keyword src_basedir: source path base directory, used to properly handle
+        symlink under certain circumstances
+    @type src_basedir: string
+    @return: True, if file was moved successfully
+    @rtype: bool
     """
 
     sstat = os.lstat(src)
@@ -527,7 +529,7 @@ def movefile(src, dest, src_basedir = None):
     if stat.S_ISLNK(sstat[stat.ST_MODE]):
         try:
             target = os.readlink(src)
-            if src_basedir != None:
+            if src_basedir is not None:
                 if target.find(src_basedir) == 0:
                     target = target[len(src_basedir):]
             if destexists and not stat.S_ISDIR(dstat[stat.ST_MODE]):
