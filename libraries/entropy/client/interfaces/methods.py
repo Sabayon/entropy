@@ -403,11 +403,11 @@ class RepositoryMixin:
         return repodata
 
     # every tbz2 file that would be installed must pass from here
-    def add_tbz2_to_repos(self, tbz2file):
+    def add_package_to_repos(self, pkg_file):
         atoms_contained = []
-        basefile = os.path.basename(tbz2file)
+        basefile = os.path.basename(pkg_file)
         db_dir = tempfile.mkdtemp()
-        dbfile = self.entropyTools.extract_edb(tbz2file,
+        dbfile = self.entropyTools.extract_edb(pkg_file,
             dbpath = db_dir+"/packages.db")
         if dbfile == None:
             return -1, atoms_contained
@@ -417,7 +417,7 @@ class RepositoryMixin:
         repodata['description'] = "Dynamic database from " + basefile
         repodata['packages'] = []
         repodata['dbpath'] = os.path.dirname(dbfile)
-        repodata['pkgpath'] = os.path.realpath(tbz2file) # extra info added
+        repodata['pkgpath'] = os.path.realpath(pkg_file) # extra info added
         repodata['smartpackage'] = False # extra info added
 
         mydbconn = self.open_generic_database(dbfile)

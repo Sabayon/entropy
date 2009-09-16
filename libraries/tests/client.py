@@ -92,7 +92,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_package_repository(self):
         test_pkg = _misc.get_test_entropy_package()
-        rc, atoms_contained = self.Client.add_tbz2_to_repos(test_pkg)
+        rc, atoms_contained = self.Client.add_package_to_repos(test_pkg)
         self.assertEqual(0, rc)
         self.assertNotEqual([],atoms_contained)
         for idpackage, repoid in atoms_contained:

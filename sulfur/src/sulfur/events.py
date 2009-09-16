@@ -1,5 +1,5 @@
 #!/usr/bin/python2 -O
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
@@ -398,7 +398,7 @@ class SulfurApplicationEventsMixin:
 
         newrepo = os.path.basename(fn)
         # we have it !
-        status, atomsfound = self.Equo.add_tbz2_to_repos(fn)
+        status, atomsfound = self.Equo.add_package_to_repos(fn)
         if status != 0:
             errtxt = _("is not a valid Entropy package")
             if status == -3:

@@ -483,7 +483,7 @@ def _scanPackages(packages, tbz2):
 
     if tbz2:
         for pkg in tbz2:
-            status, atomsfound = Equo.add_tbz2_to_repos(pkg)
+            status, atomsfound = Equo.add_package_to_repos(pkg)
             if status == 0:
                 foundAtoms += atomsfound[:]
                 del atomsfound
