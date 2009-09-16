@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 
     @author: Fabio Erculiani <lxnay@sabayonlinux.org>
@@ -404,8 +405,8 @@ def const_default_settings(rootdir):
 
         # proxy configuration constants, used system wide
         'proxy': {
-            'ftp': None,
-            'http': None,
+            'ftp': os.getenv("FTP_PROXY"),
+            'http': os.getenv("HTTP_PROXY"),
             'username': None,
             'password': None
         },
