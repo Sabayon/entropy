@@ -434,6 +434,8 @@ class GroupSortPackageViewModelInjector(EntropyPackageViewModelInjector):
 
 class EntropyPackageView:
 
+    ROW_HEIGHT = 35
+
     def __init__( self, treeview, qview, ui, etpbase, main_window,
         application = None ):
 
@@ -453,6 +455,7 @@ class EntropyPackageView:
         self.loaded_event = None
         self.do_refresh_view = False
         self.main_window = main_window
+        self.empty_mode = False
         self.event_click_pos = 0,0
         # default for installed packages
         self.pkg_install_ok = "package-installed-updated.png"
@@ -522,8 +525,8 @@ class EntropyPackageView:
         self.view_expanded = True
         self.view = treeview
         self.view.connect("button-press-event", self.on_view_button_press)
-        self.view.connect("enter-notify-event",self.treeview_enter_notify)
-        self.view.connect("leave-notify-event",self.treeview_leave_notify)
+        self.view.connect("enter-notify-event", self.treeview_enter_notify)
+        self.view.connect("leave-notify-event", self.treeview_leave_notify)
         self.store = self.setupView()
         self.dummyCats = {}
         self.__install_statuses = {}
@@ -1531,7 +1534,7 @@ class EntropyPackageView:
         self.view.get_selection().set_mode( gtk.SELECTION_MULTIPLE )
         self.view.set_model( store )
 
-        myheight = 35
+        myheight = EntropyPackageView.ROW_HEIGHT
         # selection pixmap
         cell1 = gtk.CellRendererPixbuf()
         cell1.set_property('height', myheight)
@@ -1673,6 +1676,7 @@ class EntropyPackageView:
 
         widget.set_model(None)
         widget.set_model(self.store)
+        self.empty_mode = empty
 
         if not pkgs:
             widget.set_property('headers-visible', False)
@@ -1756,6 +1760,10 @@ class EntropyPackageView:
     def get_data_text( self, column, cell, model, myiter, property ):
         obj = model.get_value( myiter, 0 )
         if obj:
+            if self.empty_mode:
+                w, h = self.view.get_size_request()
+                cell.set_fixed_size(w, h)
+
             try:
                 mydata = getattr( obj, property )
                 cell.set_property('markup',mydata)
