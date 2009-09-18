@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 
     @author: Fabio Erculiani <lxnay@sabayonlinux.org>
@@ -10,6 +11,7 @@
 """
 
 # System imports
+import os
 import sys
 import time
 import subprocess
@@ -247,6 +249,21 @@ class MagnetoCore(MagnetoCoreUI):
         self.show_alert(_("Sabayon repositories status"),
             _("Repositories are being updated automatically")
         )
+
+    def is_system_on_batteries(self):
+        """
+        Return whether System is running on batteries.
+
+        @return: True, if running on batteries
+        @rtype: bool
+        """
+        ac_powa_exec = "/usr/bin/on_ac_power"
+        if not os.access(ac_powa_exec, os.X_OK):
+            return False
+        ex_rc = os.system(ac_powa_exec)
+        if ex_rc:
+            return True
+        return False
 
     def is_system_changed(self):
 

@@ -198,7 +198,25 @@ class UpdatesDaemon(dbus.service.Object):
     def do_alert(self, string, msg, urgency = "critical"):
         write_output('alert: %s, %s, urgency: %s' % (string, msg, urgency,))
 
+    def is_system_on_batteries(self):
+        """
+        Return whether System is running on batteries.
+
+        @return: True, if running on batteries
+        @rtype: bool
+        """
+        ac_powa_exec = "/usr/bin/on_ac_power"
+        if not os.access(ac_powa_exec, os.X_OK):
+            return False
+        ex_rc = os.system(ac_powa_exec)
+        if ex_rc:
+            return True
+        return False
+
     def check_system_changes(self):
+        if self.is_system_on_batteries():
+            # running on batteries, then skip
+            return self.__alive
         changed = self._is_system_changed()
         if changed:
             # trigger check and push
@@ -224,6 +242,11 @@ class UpdatesDaemon(dbus.service.Object):
         return self.__alive
 
     def run_fetcher(self):
+
+        if self.is_system_on_batteries():
+            # running on batteries, then skip
+            return self.__alive
+
         with self.__fetch_mutex:
             task = ParallelTask(self.__run_fetcher)
             task.start()

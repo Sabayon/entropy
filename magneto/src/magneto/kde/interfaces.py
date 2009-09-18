@@ -93,6 +93,11 @@ class Magneto(MagnetoCore):
 
     def __do_first_check(self):
 
+        # if system is running on batteries,
+        # first check is skipped
+        if self.is_system_on_batteries():
+            return
+
         def _do_check():
             self.send_check_updates_signal()
             return False
