@@ -230,11 +230,6 @@ myopts_extended = [
         (2,'backup',2,_('backup the current Entropy installed packages database')),
         (2,'restore',2,_('restore a previously backed up Entropy installed packages database')),
     None,
-    (1,'packages',1,_('handles packages helper applications')),
-        (2,'python-updater',1,_('migrate all Python modules to the latest installed version')),
-        (2,'--ask',2,_('ask before making any changes')),
-        (2,'--pretend',1,_('just show what would be done')),
-    None,
     (1,'community',1,_('handles community-side features')),
 
         (2,'repos',2,_('community repositories management functions')),
@@ -588,11 +583,6 @@ def main():
         elif (options[0] == "database"):
             import text_rescue
             rc = text_rescue.database(options[1:])
-            text_rescue.Equo.destroy()
-
-        elif (options[0] == "packages"):
-            import text_rescue
-            rc = text_rescue.updater(options[1:])
             text_rescue.Equo.destroy()
 
         elif (options[0] == "ugc"):

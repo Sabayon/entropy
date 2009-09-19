@@ -655,28 +655,6 @@ restore a previously backed up Entropy installed packages database
 =back
 
 
-=item B<packages>
-
-handles packages helper applications
-
-=over
-
-
-=item B<python-updater>
-
-migrate all Python modules to the latest installed version
-
-=item B<--ask>
-
-ask before making any changes
-
-=item B<--pretend>
-
-just show what would be done
-
-=back
-
-
 =item B<community>
 
 handles community-side features
