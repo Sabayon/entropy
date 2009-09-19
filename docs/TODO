@@ -14,7 +14,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
         - title change
         - more sexy UI
     - Sulfur: when window is maximized, pkgs description must be longer
-    - Magneto: disable applet when running on batteries
 
   1.0_beta2:
 
