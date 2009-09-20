@@ -2160,7 +2160,7 @@ class Server(Singleton, TextInterface):
             mydbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = myrepo)
             myrepo_idpackages, myrepo_rc = mydbconn.atomMatch(rev_test_atom,
-                multiMatch = True)
+                multiMatch = True, useCache = False)
 
             if myrepo_rc == 1:
                 continue
