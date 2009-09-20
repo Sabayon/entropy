@@ -3136,6 +3136,7 @@ class EntropyRepository:
         """
         cur = self.cursor.execute("""
         SELECT dependency FROM dependenciesreference WHERE iddependency = (?)
+        LIMIT 1
         """, (iddependency,))
         dep = cur.fetchone()
         if dep:
@@ -3151,7 +3152,7 @@ class EntropyRepository:
         @rtype: string
         """
         cur = self.cursor.execute("""
-        SELECT category from categories WHERE idcategory = (?)
+        SELECT category from categories WHERE idcategory = (?) LIMIT 1
         """, (idcategory,))
         cat = cur.fetchone()
         if cat:
@@ -3200,15 +3201,17 @@ class EntropyRepository:
         """
         if endswith:
             cur = self.cursor.execute("""
-            SELECT baseinfo.idpackage FROM baseinfo,extrainfo 
+            SELECT baseinfo.idpackage FROM baseinfo,extrainfo
             WHERE extrainfo.download LIKE (?) AND
             baseinfo.idpackage = extrainfo.idpackage
+            LIMIT 1
             """, ("%"+download_relative_path,))
         else:
             cur = self.cursor.execute("""
-            SELECT baseinfo.idpackage FROM baseinfo,extrainfo 
+            SELECT baseinfo.idpackage FROM baseinfo,extrainfo
             WHERE extrainfo.download = (?) AND
             baseinfo.idpackage = extrainfo.idpackage
+            LIMIT 1
             """, (download_relative_path,))
 
         idpackage = cur.fetchone()
@@ -3242,6 +3245,7 @@ class EntropyRepository:
         """
         cur = self.cursor.execute("""
         SELECT "idcategory" FROM categories WHERE category = (?)
+        LIMIT 1
         """, (category,))
         idcat = cur.fetchone()
         if idcat:
@@ -3260,6 +3264,7 @@ class EntropyRepository:
         """
         cur = self.cursor.execute("""
         SELECT version, versiontag, revision FROM baseinfo WHERE idpackage = (?)
+        LIMIT 1
         """, (idpackage,))
         return cur.fetchone()
 
@@ -3659,7 +3664,7 @@ class EntropyRepository:
         @rtype: string
         """
         cur = self.cursor.execute("""
-        SELECT digest FROM treeupdates WHERE repository = (?)
+        SELECT digest FROM treeupdates WHERE repository = (?) LIMIT 1
         """, (repository,))
 
         mydigest = cur.fetchone()
@@ -3924,7 +3929,8 @@ class EntropyRepository:
         @rtype: string or None
         """
         cur = self.cursor.execute("""
-        SELECT atom FROM baseinfo WHERE idpackage = (?)""", (idpackage,))
+        SELECT atom FROM baseinfo WHERE idpackage = (?) LIMIT 1
+        """, (idpackage,))
         atom = cur.fetchone()
         if atom:
             return atom[0]
@@ -3939,7 +3945,8 @@ class EntropyRepository:
         @rtype: string or None
         """
         cur = self.cursor.execute("""
-        SELECT branch FROM baseinfo WHERE idpackage = (?)""", (idpackage,))
+        SELECT branch FROM baseinfo WHERE idpackage = (?) LIMIT 1
+        """, (idpackage,))
         branch = cur.fetchone()
         if branch:
             return branch[0]
@@ -3956,7 +3963,8 @@ class EntropyRepository:
         @rtype: string or None
         """
         cur = self.cursor.execute("""
-        SELECT data FROM triggers WHERE idpackage = (?)""", (idpackage,))
+        SELECT data FROM triggers WHERE idpackage = (?) LIMIT 1
+        """, (idpackage,))
         trigger = cur.fetchone()
         if not trigger:
             return '' # backward compatibility with <=0.52.x
@@ -3975,7 +3983,8 @@ class EntropyRepository:
         @rtype: string or None
         """
         cur = self.cursor.execute("""
-        SELECT download FROM extrainfo WHERE idpackage = (?)""", (idpackage,))
+        SELECT download FROM extrainfo WHERE idpackage = (?) LIMIT 1
+        """, (idpackage,))
         download = cur.fetchone()
         if download:
             return download[0]
@@ -3990,7 +3999,7 @@ class EntropyRepository:
         @rtype: string or None
         """
         cur = self.cursor.execute("""
-        SELECT description FROM extrainfo WHERE idpackage = (?)
+        SELECT description FROM extrainfo WHERE idpackage = (?) LIMIT 1
         """, (idpackage,))
         description = cur.fetchone()
         if description:
@@ -4006,7 +4015,8 @@ class EntropyRepository:
         @rtype: string or None
         """
         cur = self.cursor.execute("""
-        SELECT homepage FROM extrainfo WHERE idpackage = (?)""", (idpackage,))
+        SELECT homepage FROM extrainfo WHERE idpackage = (?) LIMIT 1
+        """, (idpackage,))
         home = cur.fetchone()
         if home:
             return home[0]
@@ -4022,10 +4032,11 @@ class EntropyRepository:
         @rtype: int
         """
         cur = self.cursor.execute("""
-        SELECT counters.counter FROM counters,baseinfo 
-        WHERE counters.idpackage = (?) AND 
-        baseinfo.idpackage = counters.idpackage AND 
-        baseinfo.branch = counters.branch""", (idpackage,))
+        SELECT counters.counter FROM counters,baseinfo
+        WHERE counters.idpackage = (?) AND
+        baseinfo.idpackage = counters.idpackage AND
+        baseinfo.branch = counters.branch LIMIT 1
+        """, (idpackage,))
         mycounter = cur.fetchone()
         if mycounter:
             return mycounter[0]
@@ -4055,7 +4066,8 @@ class EntropyRepository:
         @rtype: int or None
         """
         cur = self.cursor.execute("""
-        SELECT size FROM extrainfo WHERE idpackage = (?)""", (idpackage,))
+        SELECT size FROM extrainfo WHERE idpackage = (?) LIMIT 1
+        """, (idpackage,))
         size = cur.fetchone()
         if size:
             return size[0]
@@ -4075,7 +4087,8 @@ class EntropyRepository:
 
         """
         cur = self.cursor.execute("""
-        SELECT size FROM sizes WHERE idpackage = (?)""", (idpackage,))
+        SELECT size FROM sizes WHERE idpackage = (?) LIMIT 1
+        """, (idpackage,))
         size = cur.fetchone()
         if size:
             return size[0]
@@ -4093,7 +4106,8 @@ class EntropyRepository:
         @rtype: string or None
         """
         cur = self.cursor.execute("""
-        SELECT digest FROM extrainfo WHERE idpackage = (?)""", (idpackage,))
+        SELECT digest FROM extrainfo WHERE idpackage = (?) LIMIT 1
+        """, (idpackage,))
         digest = cur.fetchone()
         if digest:
             return digest[0]
@@ -4115,7 +4129,8 @@ class EntropyRepository:
 
         cur = self.cursor.execute("""
         SELECT sha1, sha256, sha512 FROM packagesignatures
-        WHERE idpackage = (?)""", (idpackage,))
+        WHERE idpackage = (?) LIMIT 1
+        """, (idpackage,))
         data = cur.fetchone()
 
         if data:
@@ -4135,7 +4150,7 @@ class EntropyRepository:
 
         """
         self.cursor.execute("""
-        SELECT name FROM baseinfo WHERE idpackage = (?)
+        SELECT name FROM baseinfo WHERE idpackage = (?) LIMIT 1
         """, (idpackage,))
         name = self.cursor.fetchone()
         if name:
@@ -4155,7 +4170,8 @@ class EntropyRepository:
         SELECT categories.category || "/" || baseinfo.name,baseinfo.slot
         FROM baseinfo,categories
         WHERE baseinfo.idpackage = (?) AND
-        baseinfo.idcategory = categories.idcategory""", (idpackage,))
+        baseinfo.idcategory = categories.idcategory LIMIT 1
+        """, (idpackage,))
         return cur.fetchone()
 
     def retrieveKeySlotAggregated(self, idpackage):
@@ -4171,9 +4187,10 @@ class EntropyRepository:
         """
         cur = self.cursor.execute("""
         SELECT categories.category || "/" || baseinfo.name || ":" ||
-        baseinfo.slot FROM baseinfo,categories 
+        baseinfo.slot FROM baseinfo,categories
         WHERE baseinfo.idpackage = (?) AND
-        baseinfo.idcategory = categories.idcategory""", (idpackage,))
+        baseinfo.idcategory = categories.idcategory LIMIT 1
+        """, (idpackage,))
         data = cur.fetchone()
         if data:
             return data[0]
@@ -4191,7 +4208,8 @@ class EntropyRepository:
         SELECT categories.category || "/" || baseinfo.name, baseinfo.slot,
         baseinfo.versiontag FROM baseinfo, categories WHERE
         baseinfo.idpackage = (?) AND
-        baseinfo.idcategory = categories.idcategory""", (idpackage,))
+        baseinfo.idcategory = categories.idcategory LIMIT 1
+        """, (idpackage,))
         return cur.fetchone()
 
     def retrieveVersion(self, idpackage):
@@ -4204,7 +4222,8 @@ class EntropyRepository:
         @rtype: string or None
         """
         cur = self.cursor.execute("""
-        SELECT version FROM baseinfo WHERE idpackage = (?)""", (idpackage,))
+        SELECT version FROM baseinfo WHERE idpackage = (?) LIMIT 1
+        """, (idpackage,))
         ver = cur.fetchone()
         if ver:
             return ver[0]
@@ -4220,7 +4239,7 @@ class EntropyRepository:
 
         """
         cur = self.cursor.execute("""
-        SELECT revision FROM baseinfo WHERE idpackage = (?)
+        SELECT revision FROM baseinfo WHERE idpackage = (?) LIMIT 1
         """, (idpackage,))
         rev = cur.fetchone()
         if rev:
@@ -4238,7 +4257,7 @@ class EntropyRepository:
 
         """
         cur = self.cursor.execute("""
-        SELECT datecreation FROM extrainfo WHERE idpackage = (?)
+        SELECT datecreation FROM extrainfo WHERE idpackage = (?) LIMIT 1
         """, (idpackage,))
         date = cur.fetchone()
         if date:
@@ -4254,7 +4273,7 @@ class EntropyRepository:
         @rtype: int or None
         """
         cur = self.cursor.execute("""
-        SELECT etpapi FROM baseinfo WHERE idpackage = (?)
+        SELECT etpapi FROM baseinfo WHERE idpackage = (?) LIMIT 1
         """, (idpackage,))
         api = cur.fetchone()
         if api:
@@ -4270,9 +4289,10 @@ class EntropyRepository:
         @rtype: set
         """
         cur = self.cursor.execute("""
-        SELECT flagname FROM useflags,useflagsreference 
+        SELECT flagname FROM useflags,useflagsreference
         WHERE useflags.idpackage = (?) AND 
-        useflags.idflag = useflagsreference.idflag""", (idpackage,))
+        useflags.idflag = useflagsreference.idflag
+        """, (idpackage,))
         return self._cur2set(cur)
 
     def retrieveEclasses(self, idpackage):
@@ -4305,7 +4325,7 @@ class EntropyRepository:
             return None
 
         cur = self.cursor.execute("""
-        SELECT phases FROM packagespmphases WHERE idpackage = (?)
+        SELECT phases FROM packagespmphases WHERE idpackage = (?) LIMIT 1
         """, (idpackage,))
         spm_phases = cur.fetchone()
 
@@ -4563,6 +4583,7 @@ class EntropyRepository:
         SELECT protect FROM configprotect,configprotectreference
         WHERE configprotect.idpackage = (?) AND
         configprotect.idprotect = configprotectreference.idprotect
+        LIMIT 1
         """, (idpackage,))
 
         protect = cur.fetchone()
@@ -4769,7 +4790,9 @@ class EntropyRepository:
         WHERE baseinfo.idpackage = (?) AND
         baseinfo.idcategory = categories.idcategory AND
         packagechangelogs.name = baseinfo.name AND
-        packagechangelogs.category = categories.category""", (idpackage,))
+        packagechangelogs.category = categories.category
+        LIMIT 1
+        """, (idpackage,))
         changelog = cur.fetchone()
         if changelog:
             changelog = changelog[0]
@@ -4798,8 +4821,9 @@ class EntropyRepository:
             unicode(x, "raw_unicode_escape")
 
         cur = self.cursor.execute("""
-        SELECT changelog FROM packagechangelogs WHERE category = (?)AND
-        name = (?)""", (category, name,))
+        SELECT changelog FROM packagechangelogs WHERE category = (?) AND
+        name = (?) LIMIT 1
+        """, (category, name,))
 
         changelog = cur.fetchone()
         if changelog:
@@ -4815,7 +4839,8 @@ class EntropyRepository:
         @rtype: string or None
         """
         cur = self.cursor.execute("""
-        SELECT slot FROM baseinfo WHERE idpackage = (?)""", (idpackage,))
+        SELECT slot FROM baseinfo WHERE idpackage = (?) LIMIT 1
+        """, (idpackage,))
         slot = cur.fetchone()
         if slot:
             return slot[0]
@@ -4834,7 +4859,7 @@ class EntropyRepository:
         @rtype: string or None
         """
         cur = self.cursor.execute("""
-        SELECT versiontag FROM baseinfo WHERE idpackage = (?)
+        SELECT versiontag FROM baseinfo WHERE idpackage = (?) LIMIT 1
         """, (idpackage,))
         vtag = cur.fetchone()
         if vtag:
@@ -4864,9 +4889,10 @@ class EntropyRepository:
         @rtype: string or None
         """
         cur = self.cursor.execute("""
-        SELECT category FROM baseinfo,categories 
-        WHERE baseinfo.idpackage = (?) AND 
-        baseinfo.idcategory = categories.idcategory""", (idpackage,))
+        SELECT category FROM baseinfo,categories
+        WHERE baseinfo.idpackage = (?) AND
+        baseinfo.idcategory = categories.idcategory LIMIT 1
+        """, (idpackage,))
 
         cat = cur.fetchone()
         if cat:
@@ -4913,7 +4939,7 @@ class EntropyRepository:
                 continue
 
             cur = self.cursor.execute("""
-            SELECT text FROM licensedata WHERE licensename = (?)
+            SELECT text FROM licensedata WHERE licensename = (?) LIMIT 1
             """, (licname,))
             lictext = cur.fetchone()
             if lictext is not None:
@@ -4950,7 +4976,7 @@ class EntropyRepository:
                 continue
 
             cur = self.cursor.execute("""
-            SELECT licensename FROM licensedata WHERE licensename = (?)
+            SELECT licensename FROM licensedata WHERE licensename = (?) LIMIT 1
             """, (licname,))
             lic_id = cur.fetchone()
             if lic_id:
@@ -4972,7 +4998,7 @@ class EntropyRepository:
             unicode(x, "raw_unicode_escape")
 
         cur = self.cursor.execute("""
-        SELECT text FROM licensedata WHERE licensename = (?)
+        SELECT text FROM licensedata WHERE licensename = (?) LIMIT 1
         """, (license_name,))
 
         text = cur.fetchone()
@@ -4991,7 +5017,8 @@ class EntropyRepository:
         cur = self.cursor.execute("""
         SELECT license FROM baseinfo,licenses 
         WHERE baseinfo.idpackage = (?) AND 
-        baseinfo.idlicense = licenses.idlicense""", (idpackage,))
+        baseinfo.idlicense = licenses.idlicense LIMIT 1
+        """, (idpackage,))
 
         licname = cur.fetchone()
         if licname:
@@ -5108,7 +5135,8 @@ class EntropyRepository:
         @rtype: int
         """
         cur = self.cursor.execute("""
-        SELECT idpackage FROM baseinfo WHERE atom = (?)""", (atom,))
+        SELECT idpackage FROM baseinfo WHERE atom = (?) LIMIT 1
+        """, (atom,))
         result = cur.fetchone()
         if result:
             return result[0]
@@ -5144,7 +5172,8 @@ class EntropyRepository:
         @rtype: bool
         """
         cur = self.cursor.execute("""
-        SELECT idpackage FROM baseinfo WHERE idpackage = (?)""", (idpackage,))
+        SELECT idpackage FROM baseinfo WHERE idpackage = (?) LIMIT 1
+        """, (idpackage,))
         result = cur.fetchone()
         if not result:
             return False
@@ -5160,7 +5189,8 @@ class EntropyRepository:
         @rtype: bool
         """
         cur = self.cursor.execute("""
-        SELECT idcategory FROM categories WHERE category = (?)""", (category,))
+        SELECT idcategory FROM categories WHERE category = (?) LIMIT 1
+        """, (category,))
         result = cur.fetchone()
         if result:
             return result[0]
@@ -5179,6 +5209,7 @@ class EntropyRepository:
         """
         cur = self.cursor.execute("""
         SELECT idprotect FROM configprotectreference WHERE protect = (?)
+        LIMIT 1
         """, (protect,))
         result = cur.fetchone()
         if result:
@@ -5252,7 +5283,8 @@ class EntropyRepository:
 
         """
         cur = self.cursor.execute("""
-        SELECT idsource FROM sourcesreference WHERE source = (?)""", (source,))
+        SELECT idsource FROM sourcesreference WHERE source = (?) LIMIT 1
+        """, (source,))
         result = cur.fetchone()
         if result:
             return result[0]
@@ -5270,7 +5302,7 @@ class EntropyRepository:
         """
         cur = self.cursor.execute("""
         SELECT iddependency FROM dependenciesreference WHERE dependency = (?)
-        """, (dependency,))
+        LIMIT 1""", (dependency,))
         result = cur.fetchone()
         if result:
             return result[0]
@@ -5287,7 +5319,7 @@ class EntropyRepository:
         @rtype: int
         """
         cur = self.cursor.execute("""
-        SELECT idkeyword FROM keywordsreference WHERE keywordname = (?)
+        SELECT idkeyword FROM keywordsreference WHERE keywordname = (?) LIMIT 1
         """, (keyword,))
         result = cur.fetchone()
         if result:
@@ -5305,7 +5337,7 @@ class EntropyRepository:
         @rtype: int
         """
         cur = self.cursor.execute("""
-        SELECT idflag FROM useflagsreference WHERE flagname = (?)
+        SELECT idflag FROM useflagsreference WHERE flagname = (?) LIMIT 1
         """, (useflag,))
         result = cur.fetchone()
         if result:
@@ -5323,7 +5355,7 @@ class EntropyRepository:
         @rtype: int
         """
         cur = self.cursor.execute("""
-        SELECT idclass FROM eclassesreference WHERE classname = (?)
+        SELECT idclass FROM eclassesreference WHERE classname = (?) LIMIT 1
         """, (eclass,))
         result = cur.fetchone()
         if result:
@@ -5342,7 +5374,7 @@ class EntropyRepository:
         @rtype: int
         """
         cur = self.cursor.execute("""
-        SELECT idneeded FROM neededreference WHERE library = (?)
+        SELECT idneeded FROM neededreference WHERE library = (?) LIMIT 1
         """, (needed,))
         result = cur.fetchone()
         if result:
@@ -5360,7 +5392,7 @@ class EntropyRepository:
         @rtype: bool
         """
         cur = self.cursor.execute("""
-        SELECT counter FROM counters WHERE counter = (?)
+        SELECT counter FROM counters WHERE counter = (?) LIMIT 1
         """, (spm_uid,))
         result = cur.fetchone()
         if result:
@@ -5380,7 +5412,8 @@ class EntropyRepository:
         @rtype: bool
         """
         cur = self.cursor.execute("""
-        SELECT counter FROM trashedcounters WHERE counter = (?)""", (spm_uid,))
+        SELECT counter FROM trashedcounters WHERE counter = (?) LIMIT 1
+        """, (spm_uid,))
         result = cur.fetchone()
         if result:
             return True
@@ -5397,7 +5430,7 @@ class EntropyRepository:
         @rtype: bool
         """
         cur = self.cursor.execute("""
-        SELECT licensename FROM licensedata WHERE licensename = (?)
+        SELECT licensename FROM licensedata WHERE licensename = (?) LIMIT 1
         """, (license_name,))
         result = cur.fetchone()
         if not result:
@@ -5416,6 +5449,7 @@ class EntropyRepository:
         """
         cur = self.cursor.execute("""
         SELECT licensename FROM licenses_accepted WHERE licensename = (?)
+        LIMIT 1
         """, (license_name,))
         result = cur.fetchone()
         if not result:
@@ -5460,7 +5494,7 @@ class EntropyRepository:
             pkglicense = ' '
 
         cur = self.cursor.execute("""
-        SELECT idlicense FROM licenses WHERE license = (?)
+        SELECT idlicense FROM licenses WHERE license = (?) LIMIT 1
         """, (pkglicense,))
         result = cur.fetchone()
 
@@ -5479,7 +5513,7 @@ class EntropyRepository:
         @rtype: bool
         """
         cur = self.cursor.execute("""
-        SELECT idpackage FROM systempackages WHERE idpackage = (?)
+        SELECT idpackage FROM systempackages WHERE idpackage = (?) LIMIT 1
         """, (idpackage,))
         result = cur.fetchone()
         if result:
@@ -5498,7 +5532,7 @@ class EntropyRepository:
         @rtype: bool
         """
         cur = self.cursor.execute("""
-        SELECT idpackage FROM injected WHERE idpackage = (?)
+        SELECT idpackage FROM injected WHERE idpackage = (?) LIMIT 1
         """, (idpackage,))
         result = cur.fetchone()
         if result:
@@ -5520,7 +5554,8 @@ class EntropyRepository:
         """
         cur = self.cursor.execute("""
         SELECT idflags FROM flags WHERE chost = (?)
-        AND cflags = (?) AND cxxflags = (?)""",
+        AND cflags = (?) AND cxxflags = (?) LIMIT 1
+        """,
             (chost, cflags, cxxflags,)
         )
         result = cur.fetchone()
@@ -6059,9 +6094,8 @@ class EntropyRepository:
         searchdata = (atom, slot, revision,)
         cur = self.cursor.execute("""
         SELECT idpackage FROM baseinfo
-        where atom = (?)
-        AND slot = (?)
-        AND revision = (?)""", searchdata)
+        where atom = (?)  AND slot = (?) AND revision = (?) LIMIT 1
+        """, searchdata)
         rslt = cur.fetchone()
 
         if rslt: # check if it's masked
@@ -6087,6 +6121,7 @@ class EntropyRepository:
         SELECT post_migration_md5sum, post_upgrade_md5sum
         FROM entropy_branch_migration
         WHERE repository = (?) AND from_branch = (?) AND to_branch = (?)
+        LIMIT 1
         """, (repository, from_branch, to_branch,))
         return cur.fetchone()
 
@@ -6688,6 +6723,7 @@ class EntropyRepository:
     def _doesTableExist(self, table):
         cur = self.cursor.execute("""
         select name from SQLITE_MASTER where type = "table" and name = (?)
+        LIMIT 1
         """, (table,))
         rslt = cur.fetchone()
         if rslt is None:
@@ -6839,8 +6875,8 @@ class EntropyRepository:
         with self.__write_mutex:
             try:
                 cur = self.cursor.execute("""
-                SELECT repositoryname FROM installedtable 
-                WHERE idpackage = (?)""", (idpackage,))
+                SELECT repositoryname FROM installedtable
+                WHERE idpackage = (?) LIMIT 1""", (idpackage,))
                 return cur.fetchone()[0]
             except (self.dbapi2.OperationalError, TypeError,):
                 return None
@@ -6941,7 +6977,7 @@ class EntropyRepository:
         """
         try:
             cur = self.cursor.execute("""
-            SELECT data from xpakdata where idpackage = (?)
+            SELECT data from xpakdata where idpackage = (?) LIMIT 1
             """, (idpackage,))
             mydata = cur.fetchone()
             if not mydata:
