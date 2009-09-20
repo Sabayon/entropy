@@ -2147,10 +2147,40 @@ class Server(Singleton, TextInterface):
         mydata['injected'] = inject
         idpackage, revision, mydata = dbconn.handlePackage(mydata)
 
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        myserver_repos = list(srv_set['repositories'].keys())
+
+        ### since we are handling more repositories, we need to make sure
+        ### that there are no packages in other repositories with same atom
+        ### and greater revision
+        rev_test_atom = mydata['atom']
+        max_rev = 0
+        for myrepo in myserver_repos:
+
+            mydbconn = self.open_server_repository(read_only = True,
+                no_upload = True, repo = myrepo)
+            myrepo_idpackages, myrepo_rc = mydbconn.atomMatch(rev_test_atom,
+                multiMatch = True)
+
+            if myrepo_rc == 1:
+                continue
+
+            for myrepo_idpackage in myrepo_idpackages:
+                myrev = mydbconn.retrieveRevision(myrepo_idpackage)
+                if myrev > max_rev:
+                    max_rev = myrev
+
+        if max_rev >= revision:
+            max_rev += 1
+            revision = max_rev
+            mydata['revision'] = revision
+            # update revision for pkg now
+            dbconn.setRevision(idpackage, revision)
+
+
         # set trashed counters
         trashing_counters = set()
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        myserver_repos = srv_set['repositories'].keys()
+
         for myrepo in myserver_repos:
             mydbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = myrepo)
