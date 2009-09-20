@@ -1,4 +1,9 @@
 #!/usr/bin/python2
+
+import os
+locale_dir = os.path.realpath(os.path.join(os.getcwd(), "i18n"))
+os.environ['TEXTDOMAINDIR'] = locale_dir
+
 import sys
 import unittest
 sys.path.insert(0,'.')
