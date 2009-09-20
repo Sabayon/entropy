@@ -1300,8 +1300,6 @@ class PortagePlugin(SpmPlugin):
         except (AttributeError,):
             self.log_message(entropy.tools.get_traceback())
 
-        cpv = str(cpv)
-        mysettings.setcpv(cpv)
         portage_tmpdir_created = False # for pkg_postrm, pkg_prerm
 
         if portage_tmpdir is None:
@@ -1337,8 +1335,10 @@ class PortagePlugin(SpmPlugin):
                 lic_f = open(lic_path, "w")
                 lic_f.close()
 
+        cpv = str(cpv)
         mydbapi = self.portage.fakedbapi(settings=mysettings)
         mydbapi.cpv_inject(cpv, metadata = metadata)
+        mysettings.setcpv(cpv, mydb = mydbapi)
 
         # cached vartree class
         vartree = self._get_portage_vartree(root = root)
