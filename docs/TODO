@@ -4,9 +4,9 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
+    - handlePackage, remove revision from returning data
+    - remove etpConst['spm']['cache']
     - removePackage slowness
-    - ditch etpConst['spm']['cache']
-    - entropy.tools + entropy.transceivers API docs merge
     - entropy.client.interfaces.trigger, move Portage code to entropy.spm
     - entropy.db hookable plugins support (atom/dep validation, db taint,
         pkg add, pkg rm)
