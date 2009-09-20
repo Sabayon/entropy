@@ -625,7 +625,7 @@ class Trigger:
     def __ebuild_setup_phase(self, ebuild, portage_atom):
         rc = 0
         env_file = self.pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"
-        if not os.access(env_file, os.R_OK) and os.path.isfile(env_file):
+        if not (os.access(env_file, os.R_OK) and os.path.isfile(env_file)):
             rc = self.Spm.execute_package_phase(portage_atom, ebuild,
                 "setup",
                 work_dir = self.pkgdata['unpackdir'],
