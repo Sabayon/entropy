@@ -4,9 +4,8 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
-    - entropy.tools + entropy.transceivers API docs merge
+    - removePackage slowness
     - entropy.client.interfaces.trigger, move Portage code to entropy.spm
-    - entropy.server API docs merge
     - entropy.db hookable plugins support (atom/dep validation, db taint,
         pkg add, pkg rm)
     - Transform Sulfur into Entropy Store:
@@ -14,6 +13,8 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
         - title change
         - more sexy UI
     - Sulfur: when window is maximized, pkgs description must be longer
+    - entropy.server API docs merge
+    - entropy.tools + entropy.transceivers API docs merge
 
   1.0_beta2:
 
