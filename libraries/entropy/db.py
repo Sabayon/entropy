@@ -1339,8 +1339,8 @@ class EntropyRepository:
 
         # remove old package atom, we do it here because othersie
         if idpackage != -1:
-            # injected packages wouldn't be removed by addPackages
-            self.removePackage(idpackage)
+            # injected packages wouldn't be removed by addPackage
+            self.removePackage(idpackage, do_cleanup = False, do_commit = False)
             if forcedRevision == -1:
                 curRevision += 1
 
