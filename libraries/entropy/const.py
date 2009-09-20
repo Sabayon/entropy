@@ -536,7 +536,6 @@ def const_default_settings(rootdir):
             'verbose_cmd': "--verbose",
             'nocolor_cmd': "--color=n",
             'backend': "portage", # default one
-            'cache': {},
             'xpak_entries': {
                 'description': "DESCRIPTION",
                 'homepage': "HOMEPAGE",

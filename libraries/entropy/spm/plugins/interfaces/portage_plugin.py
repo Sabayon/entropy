@@ -130,6 +130,13 @@ class PortagePlugin(SpmPlugin):
         "match-visible", "minimum-all", "minimum-visible"
     ]
 
+    CACHE = {
+        'vartree': {},
+        'binarytree': {},
+        'config': {},
+        'portagetree': {},
+    }
+
     class paren_normalize(list):
         """Take a dependency structure as returned by paren_reduce or use_reduce
         and generate an equivalent structure that has no redundant lists."""
@@ -1763,49 +1770,34 @@ class PortagePlugin(SpmPlugin):
         if root is None:
             root = etpConst['systemroot'] + os.path.sep
 
-        if not etpConst['spm']['cache'].has_key('portage'):
-            etpConst['spm']['cache']['portage'] = {}
-        if not etpConst['spm']['cache']['portage'].has_key('vartree'):
-            etpConst['spm']['cache']['portage']['vartree'] = {}
-
-        cached = etpConst['spm']['cache']['portage']['vartree'].get(root)
-        if cached != None:
+        cached = PortagePlugin.CACHE['vartree'].get(root)
+        if cached is not None:
             return cached
 
         try:
             mytree = self.portage.vartree(root=root)
         except Exception, e:
             raise SPMError("SPMError: %s: %s" % (Exception,e,))
-        etpConst['spm']['cache']['portage']['vartree'][root] = mytree
+        PortagePlugin.CACHE['vartree'][root] = mytree
         return mytree
 
     def _get_portage_portagetree(self, root):
 
-        if not etpConst['spm']['cache'].has_key('portage'):
-            etpConst['spm']['cache']['portage'] = {}
-        if not etpConst['spm']['cache']['portage'].has_key('portagetree'):
-            etpConst['spm']['cache']['portage']['portagetree'] = {}
-
-        cached = etpConst['spm']['cache']['portage']['portagetree'].get(root)
-        if cached != None:
+        cached = PortagePlugin.CACHE['portagetree'].get(root)
+        if cached is not None:
             return cached
 
         try:
             mytree = self.portage.portagetree(root=root)
         except Exception, e:
             raise SPMError("SPMError: %s: %s" % (Exception,e,))
-        etpConst['spm']['cache']['portage']['portagetree'][root] = mytree
+        PortagePlugin.CACHE['portagetree'][root] = mytree
         return mytree
 
     def _get_portage_binarytree(self, root):
 
-        if not etpConst['spm']['cache'].has_key('portage'):
-            etpConst['spm']['cache']['portage'] = {}
-        if not etpConst['spm']['cache']['portage'].has_key('binarytree'):
-            etpConst['spm']['cache']['portage']['binarytree'] = {}
-
-        cached = etpConst['spm']['cache']['portage']['binarytree'].get(root)
-        if cached != None:
+        cached = PortagePlugin.CACHE['binarytree'].get(root)
+        if cached is not None:
             return cached
 
         pkgdir = root+self.portage.settings['PKGDIR']
@@ -1813,27 +1805,25 @@ class PortagePlugin(SpmPlugin):
             mytree = self.portage.binarytree(root,pkgdir)
         except Exception, e:
             raise SPMError("SPMError: %s: %s" % (Exception,e,))
-        etpConst['spm']['cache']['portage']['binarytree'][root] = mytree
+        PortagePlugin.CACHE['binarytree'][root] = mytree
         return mytree
 
     def _get_portage_config(self, config_root, root, use_cache = True):
 
         if use_cache:
-            if not etpConst['spm']['cache'].has_key('portage'):
-                etpConst['spm']['cache']['portage'] = {}
-            if not etpConst['spm']['cache']['portage'].has_key('config'):
-                etpConst['spm']['cache']['portage']['config'] = {}
-
-            cached = etpConst['spm']['cache']['portage']['config'].get((config_root,root))
-            if cached != None:
+            cached = PortagePlugin.CACHE['config'].get((config_root,root))
+            if cached is not None:
                 return cached
 
         try:
-            mysettings = self.portage.config(config_root = config_root, target_root = root, config_incrementals = self.portage_const.INCREMENTALS)
+            mysettings = self.portage.config(config_root = config_root,
+                target_root = root,
+                config_incrementals = self.portage_const.INCREMENTALS)
         except Exception, e:
             raise SPMError("SPMError: %s: %s" % (Exception,e,))
         if use_cache:
-            etpConst['spm']['cache']['portage']['config'][(config_root,root)] = mysettings
+            PortagePlugin.CACHE['config'][(config_root,root)] = mysettings
+
         return mysettings
 
     def _get_package_use_file(self):
