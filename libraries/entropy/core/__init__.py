@@ -67,7 +67,8 @@ class EntropyPluginFactory:
     _PYTHON_EXTENSION = ".py"
 
     def __init__(self, base_plugin_class, plugin_package_module,
-        default_plugin_name = None, fallback_plugin_name = None):
+        default_plugin_name = None, fallback_plugin_name = None,
+        egg_entry_point_group = None):
         """
         Entropy Generic Plugin Factory constructor.
         MANDATORY: every plugin module/package(name) must end with _plugin
@@ -100,6 +101,10 @@ class EntropyPluginFactory:
         If plugin class features a "PLUGIN_DISABLED" class attribute with
         a boolean value of True, such plugin will be ignored.
 
+        If egg_entry_point_group is specified, Python Egg support is enabled
+        and classes are loaded via this infrastructure.
+        NOTE: if egg_entry_point_group is set, you NEED the setuptools package.
+
         @param base_plugin_class: Base EntropyPlugin-based class that valid
             plugin classes must inherit from.
         @type base_plugin_class: class
@@ -113,6 +118,9 @@ class EntropyPluginFactory:
         @keyword fallback_plugin_name: identifier of the fallback plugin to load
             if default is not available
         @type fallback_plugin_name: string
+        @keyword egg_entry_point_group: valid Python Egg entry point group, in
+            this case, Python Egg support is used
+        @type egg_entry_point_group: string
         @raise AttributeError: when passed plugin_package_module is not a
             valid Python package module
         """
@@ -121,27 +129,76 @@ class EntropyPluginFactory:
         self.__plugin_package_module = plugin_package_module
         self.__default_plugin_name = default_plugin_name
         self.__fallback_plugin_name = fallback_plugin_name
+        self.__egg_entry_group = egg_entry_point_group
         self.__cache = None
 
-
-    def get_available_plugins(self):
+    def clear_cache(self):
         """
-        Return currently available EntropyPlugin plugin classes.
-        Note: Entropy plugins can either be Python packages or modules and
-        their name MUST end with PluginFactory._PLUGIN_SUFFIX ("_plugin").
-
-        @return: dictionary composed by Entropy plugin id as key and Entropy
-            Python module as value
-        @rtype: dict
+        Clear available plugins cache. When calling get_available_plugins()
+        module object is parsed again.
         """
-        if self.__cache is not None:
-            return self.__cache.copy()
+        self.__cache = None
 
-        available = {}
+    def _inspect_object(self, obj):
+        """
+        This method verifies if given object is a valid plugin.
+
+        @return: True, if valid
+        @rtype: bool
+        """
+
         base_api = self.__base_class.BASE_PLUGIN_API_VERSION
 
+        if not inspect.isclass(obj):
+            return False
+
+        if not issubclass(obj, self.__base_class):
+            return False
+
+        if hasattr(obj, '__subclasses__'):
+            # new style class
+            if obj.__subclasses__(): # only lower classes taken
+                return False
+        else:
+            sys.stderr.write("!!! Entropy Plugin warning: " \
+                "%s is not a new style class !!!\n" % (obj,))
+
+        if obj is self.__base_class:
+            # in this case, obj is our base class,
+            # so we are very sure that obj is not valid
+            return False
+
+        if not hasattr(obj, "PLUGIN_API_VERSION"):
+            sys.stderr.write("!!! Entropy Plugin warning: " \
+                "no PLUGIN_API_VERSION in %s !!!\n" % (obj,))
+            return False
+
+        if obj.PLUGIN_API_VERSION != base_api:
+            sys.stderr.write("!!! Entropy Plugin warning: " \
+                "PLUGIN_API_VERSION mismatch in %s !!!\n" % (obj,))
+            return False
+
+        if hasattr(obj, 'PLUGIN_DISABLED'):
+            if obj.PLUGIN_DISABLED:
+                # this plugin has been disabled
+                return False
+
+        return True
+
+    def _scan_dir(self):
+        """
+        Scan modules in given directory looking for a valid plugin class.
+        Directory is os.path.dirname(self.__modfile).
+
+        @return: module dictionary composed by module name as key and plugin
+            class as value
+        @rtype: dict
+        """
+        available = {}
         pkg_modname = self.__plugin_package_module.__name__
-        for modname in os.listdir(os.path.dirname(self.__modfile)):
+        mod_dir = os.path.dirname(self.__modfile)
+
+        for modname in os.listdir(mod_dir):
 
             if modname.startswith("__"):
                 continue # python stuff
@@ -169,41 +226,54 @@ class EntropyPluginFactory:
 
             for obj in sys.modules[modpath].__dict__.values():
 
-                if not inspect.isclass(obj):
+                valid = self._inspect_object(obj)
+                if not valid:
                     continue
-
-                if not issubclass(obj, self.__base_class):
-                    continue
-
-                if hasattr(obj, '__subclasses__'):
-                    # new style class
-                    if obj.__subclasses__(): # only lower classes taken
-                        continue
-                else:
-                    sys.stderr.write("!!! Entropy Plugin warning: " \
-                        "%s is not a new style class !!!\n" % (obj,))
-
-                if obj is self.__base_class:
-                    # in this case, obj is our base class,
-                    # so we are very sure that obj is not valid
-                    continue
-
-                if not hasattr(obj, "PLUGIN_API_VERSION"):
-                    sys.stderr.write("!!! Entropy Plugin warning: " \
-                        "no PLUGIN_API_VERSION in %s !!!\n" % (obj,))
-                    continue
-
-                if obj.PLUGIN_API_VERSION != base_api:
-                    sys.stderr.write("!!! Entropy Plugin warning: " \
-                        "PLUGIN_API_VERSION mismatch in %s !!!\n" % (obj,))
-                    continue
-
-                if hasattr(obj, 'PLUGIN_DISABLED'):
-                    if obj.PLUGIN_DISABLED:
-                        # this plugin has been disabled
-                        continue
 
                 available[modname_clean] = obj
+
+        return available
+
+    def _scan_egg_group(self):
+        """
+        Scan classes in given Python Egg group name looking for a valid plugin.
+
+        @return: module dictionary composed by module name as key and plugin
+            class as value
+        @rtype: dict
+        """
+        # needs setuptools
+        import pkg_resources
+        available = {}
+
+        for entry in pkg_resources.iter_entry_points(self.__egg_entry_group):
+
+            obj = entry.load()
+            valid = self._inspect_object(obj)
+            if not valid:
+                continue
+            available[entry.name] = obj
+
+        return available
+
+
+    def get_available_plugins(self):
+        """
+        Return currently available EntropyPlugin plugin classes.
+        Note: Entropy plugins can either be Python packages or modules and
+        their name MUST end with PluginFactory._PLUGIN_SUFFIX ("_plugin").
+
+        @return: dictionary composed by Entropy plugin id as key and Entropy
+            Python module as value
+        @rtype: dict
+        """
+        if self.__cache is not None:
+            return self.__cache.copy()
+
+        if self.__egg_entry_group:
+            available = self._scan_egg_group()
+        else:
+            available = self._scan_dir()
 
         self.__cache = available.copy()
         return available
