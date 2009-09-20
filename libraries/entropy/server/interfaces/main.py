@@ -2154,7 +2154,7 @@ class Server(Singleton, TextInterface):
         ### that there are no packages in other repositories with same atom
         ### and greater revision
         rev_test_atom = mydata['atom']
-        max_rev = 0
+        max_rev = -1
         for myrepo in myserver_repos:
 
             mydbconn = self.open_server_repository(read_only = True,
