@@ -382,15 +382,22 @@ class Package:
         # Entropy db, do not call SPM at all because it would cause
         # to get that package removed from there resulting in matching
         # inconsistencies.
-        another_installed = self.Entropy.clientDbconn.getIDPackage(
+        others_installed = self.Entropy.clientDbconn.getIDPackages(
             self.pkgmeta['removeatom'])
 
-        if another_installed == -1:
+        # It's obvious that clientdb cannot have more than one idpackage
+        # featuring the same "atom" value, but still, let's be fault-tolerant.
+        spm_rc = 0
+
+        if not others_installed:
             spm_rc = self.spm_remove_package()
-        else:
+
+        for other_installed in others_installed:
             # we have one installed, we need to update SPM uid
-            spm_rc = self.spm_update_package_uid(another_installed,
+            spm_rc = self.spm_update_package_uid(other_installed,
                 self.pkgmeta['removeatom'])
+            if spm_rc != 0:
+                break # ohi ohi ohi
 
         if spm_rc != 0:
             return spm_rc

@@ -1330,20 +1330,21 @@ class EntropyRepository:
             return self.addPackage(pkg_data, revision = forcedRevision,
                 formatted_content = formattedContent)
 
-        idpackage = self.getIDPackage(pkgatom)
+        idpackages = self.getIDPackages(pkgatom)
         current_rev = forcedRevision
 
-        if forcedRevision == -1:
-            current_rev = 0
-            if idpackage != -1:
-                current_rev = self.retrieveRevision(idpackage)
+        for idpackage in idpackages:
 
-        # remove old package atom, we do it here because othersie
-        if idpackage != -1:
+            if forcedRevision == -1:
+                myrev = self.retrieveRevision(idpackage)
+                if myrev > current_rev:
+                    current_rev = myrev
+
             # injected packages wouldn't be removed by addPackage
             self.removePackage(idpackage, do_cleanup = False, do_commit = False)
-            if forcedRevision == -1:
-                current_rev += 1
+
+        if forcedRevision == -1:
+            current_rev += 1
 
         # add the new one
         remove_conflicting_packages(pkg_data)
@@ -3167,23 +3168,6 @@ class EntropyRepository:
         @rtype: string
         """
         return get_spm(self).get_package_category_description_metadata(category)
-
-    def getIDPackage(self, atom):
-        """
-        Obtain repository package identifier from its atom string.
-
-        @param atom: package atom
-        @type atom: string
-        @return: idpackage in repository or -1 if not found
-        @rtype: int
-        """
-        cur = self.cursor.execute("""
-        SELECT idpackage FROM baseinfo WHERE atom = (?) LIMIT 1
-        """, (atom,))
-        idpackage = cur.fetchone()
-        if idpackage:
-            return idpackage[0]
-        return -1
 
     def getIDPackages(self, atom):
         """

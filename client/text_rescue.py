@@ -604,11 +604,14 @@ def database(options):
                     myatom += "#"+mydata['versiontag']
 
                 # look for atom in client database
-                oldidpackage = Equo.clientDbconn.getIDPackage(myatom)
-                if oldidpackage != -1:
+                oldidpackages = sorted(Equo.clientDbconn.getIDPackages(myatom))
+                oldidpackage = None
+                if oldidpackages:
+                    oldidpackage = oldidpackages[-1]
+
+                mydata['revision'] = 9999 # can't do much more
+                if oldidpackage:
                     mydata['revision'] = Equo.clientDbconn.retrieveRevision(oldidpackage)
-                else:
-                    mydata['revision'] = 9999 # can't do much more
 
                 idpk, rev, xx = Equo.clientDbconn.handlePackage(mydata, forcedRevision = mydata['revision'])
                 Equo.clientDbconn.dropInstalledPackageFromStore(idpk)
