@@ -158,7 +158,7 @@ class Magneto(MagnetoCore):
 
         def do_show():
             notification = KNotification("Updates",
-                flags = KNotification.CloseOnTimeOut)
+                flags = KNotification.CloseOnTimeout)
             notification.setText("<b>%s</b><br/>%s" % (title, text,))
             if urgency == 'critical':
                 notification.setPixmap(self.icons.best_match("critical",22))
