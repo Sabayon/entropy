@@ -2205,6 +2205,21 @@ class EntropyRepository:
             """, (slot, idpackage,))
             self.commitChanges()
 
+    def setRevision(self, idpackage, revision):
+        """
+        Set Entropy revision for package.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param revision: new revision
+        @type revision: int
+        """
+        with self.__write_mutex:
+            self.cursor.execute("""
+            UPDATE baseinfo SET revision = (?) WHERE idpackage = (?)
+            """, (revision, idpackage,))
+            self.commitChanges()
+
     def removeLicensedata(self, license_name):
         """
         Remove license text for given license name identifier.
