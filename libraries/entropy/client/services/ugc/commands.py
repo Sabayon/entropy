@@ -99,6 +99,12 @@ class Base:
             )
         elif data != self.Service.answers['ok']:
             mytxt = _("received wrong answer")
+
+            # do not spam terminal
+            if isinstance(data, basestring):
+                if len(data) > 10:
+                    data = data[:10] + "[...]"
+
             self.Output.updateProgress(
                 "[%s:%s|%s:%s|%s:%s] %s: %s" % (
                         darkblue(_("repo")),
