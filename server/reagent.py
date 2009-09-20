@@ -1,26 +1,14 @@
-#!/usr/bin/python -O
-# -*- coding: utf-8 -*-
-'''
-    # DESCRIPTION:
-    # this application gets a .tbz2 file as input and creates a database entry
-    # with all the information needed by the Entropy client
+#!/usr/bin/python2 -O
+"""
 
-    Copyright (C) 2007-2008 Fabio Erculiani
+    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
+    @contact: lxnay@sabayonlinux.org
+    @copyright: Fabio Erculiani
+    @license: GPL-2
 
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 2 of the License, or
-    (at your option) any later version.
+    B{Entropy Package Manager Server}.
 
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
-'''
+"""
 
 import os, sys
 sys.path.insert(0,'../libraries')
