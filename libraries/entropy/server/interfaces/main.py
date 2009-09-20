@@ -2159,12 +2159,8 @@ class Server(Singleton, TextInterface):
 
             mydbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = myrepo)
-            myrepo_idpackages, myrepo_rc = mydbconn.atomMatch(rev_test_atom,
-                multiMatch = True, useCache = False)
 
-            if myrepo_rc == 1:
-                continue
-
+            myrepo_idpackages = mydbconn.getIDPackages(rev_test_atom)
             for myrepo_idpackage in myrepo_idpackages:
                 myrev = mydbconn.retrieveRevision(myrepo_idpackage)
                 if myrev > max_rev:
