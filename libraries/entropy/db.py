@@ -1331,22 +1331,23 @@ class EntropyRepository:
                 formatted_content = formattedContent)
 
         idpackage = self.getIDPackage(pkgatom)
-        curRevision = forcedRevision
+        current_rev = forcedRevision
+
         if forcedRevision == -1:
-            curRevision = 0
+            current_rev = 0
             if idpackage != -1:
-                curRevision = self.retrieveRevision(idpackage)
+                current_rev = self.retrieveRevision(idpackage)
 
         # remove old package atom, we do it here because othersie
         if idpackage != -1:
             # injected packages wouldn't be removed by addPackage
             self.removePackage(idpackage, do_cleanup = False, do_commit = False)
             if forcedRevision == -1:
-                curRevision += 1
+                current_rev += 1
 
         # add the new one
         remove_conflicting_packages(pkg_data)
-        return self.addPackage(pkg_data, revision = curRevision,
+        return self.addPackage(pkg_data, revision = current_rev,
             formatted_content = formattedContent)
 
     def retrieve_packages_to_remove(self, name, category, slot, injected):
@@ -3177,12 +3178,26 @@ class EntropyRepository:
         @rtype: int
         """
         cur = self.cursor.execute("""
-        SELECT idpackage FROM baseinfo WHERE atom = (?)
+        SELECT idpackage FROM baseinfo WHERE atom = (?) LIMIT 1
         """, (atom,))
         idpackage = cur.fetchone()
         if idpackage:
             return idpackage[0]
         return -1
+
+    def getIDPackages(self, atom):
+        """
+        Obtain repository package identifiers from atom string.
+
+        @param atom: package atom
+        @type atom: string
+        @return: list of matching idpackages found
+        @rtype: set
+        """
+        cur = self.cursor.execute("""
+        SELECT idpackage FROM baseinfo WHERE atom = (?)
+        """, (atom,))
+        return self._cur2set(cur)
 
     def getIDPackageFromDownload(self, download_relative_path,
         endswith = False):
