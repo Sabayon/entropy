@@ -2622,12 +2622,7 @@ def isnumber(x):
     @return: 
     @rtype: 
     """
-    try:
-        t = int(x)
-        del t
-        return True
-    except:
-        return False
+    return isinstance(x, (long, int,))
 
 
 def istextfile(filename, blocksize = 512):
