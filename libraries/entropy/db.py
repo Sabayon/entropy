@@ -7778,7 +7778,12 @@ class EntropyRepository:
 
         # time wasted for a reason
         data, rc = cached_obj
-        if rc != 0: return cached_obj
+        if rc != 0:
+            return cached_obj
+
+        # data must be int !
+        if not self.entropyTools.isnumber(data):
+            return None
 
         if (not extendedResults) and (not multiMatch):
             if not self.isIdpackageAvailable(data):
