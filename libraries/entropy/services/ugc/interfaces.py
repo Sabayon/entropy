@@ -2158,10 +2158,6 @@ class Client:
                 self.sock_conn = self.SSL['m'].Connection(self.context, self.real_sock_conn)
             else:
                 self.sock_conn = self.real_sock_conn
-            # make sure that SSL socket is in BLOCKING mode
-            # this is what we want also to avoid issues with data stream
-            # flooding
-            self.real_sock_conn.setblocking(True)
         else:
             self.sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
             if hasattr(self.sock_conn,'settimeout'):
@@ -2209,6 +2205,15 @@ class Client:
                 raise ConnectionError("ConnectionError: %s" % (mytxt,))
             else:
                 raise
+
+        if self.ssl:
+            # make sure that SSL socket is in BLOCKING mode
+            # this is what we want also to avoid issues with data stream
+            # flooding
+            #
+            # Moved here because setblocking resets the given timeout on
+            # connect() causing connection test to hang
+            self.real_sock_conn.setblocking(True)
 
         if not self.quiet:
             mytxt = _("Successfully connected to host")
