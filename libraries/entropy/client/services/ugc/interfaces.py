@@ -57,7 +57,9 @@ class Client:
             'quiet': self.quiet,
             'show_progress': self.show_progress
         }
-        if timeout != None: kwargs['socket_timeout'] = timeout
+        if timeout is not None:
+            kwargs['socket_timeout'] = timeout
+
         srv = Client(*args,**kwargs)
         srv.connect(url, port)
         return srv
@@ -80,7 +82,8 @@ class Client:
         if aware != None:
             return aware
 
-        srv = self.get_service_connection(repository, check = False, timeout = 3)
+        srv = self.get_service_connection(repository, check = False,
+            timeout = 6)
         if srv == None:
             aware = False
         else:
