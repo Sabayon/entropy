@@ -2214,6 +2214,11 @@ class Client:
             # Moved here because setblocking resets the given timeout on
             # connect() causing connection test to hang
             self.real_sock_conn.setblocking(True)
+            # re-set timeout again, this workarounds the famous bug
+            # that caused UGC to not being able to send large amount
+            # of data
+            if hasattr(self.real_sock_conn,'settimeout'):
+                self.real_sock_conn.settimeout(self.socket_timeout)
 
         if not self.quiet:
             mytxt = _("Successfully connected to host")
