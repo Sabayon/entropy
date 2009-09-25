@@ -624,8 +624,36 @@ class Trigger:
 
     def __ebuild_setup_phase(self, ebuild, portage_atom):
         rc = 0
-        env_file = self.pkgdata['unpackdir']+"/portage/"+portage_atom+"/temp/environment"
-        if not (os.access(env_file, os.R_OK) and os.path.isfile(env_file)):
+        env_file = os.path.join(self.pkgdata['unpackdir'], "portage",
+            portage_atom, "temp/environment")
+        if not os.path.isfile(env_file):
+
+            # FIXME: please remove as soon as upstream fixes it
+            # FIXME: workaround for buggy linux-info.eclass not being
+            # ported to EAPI=2 yet.
+            # It is required to make depmod running properly for the
+            # kernel modules inside this ebuild
+            # fix KV_OUT_DIR= inside environment
+            bz2envfile = os.path.join(self.pkgdata['xpakdir'],
+                "environment.bz2")
+            if "linux-info" in self.pkgdata['eclasses'] and \
+                os.path.isfile(bz2envfile) and self.pkgdata['versiontag']:
+
+                import bz2
+                envfile = self.Entropy.entropyTools.unpack_bzip2(bz2envfile)
+                bzf = bz2.BZ2File(bz2envfile,"w")
+                f = open(envfile,"r")
+                line = f.readline()
+                while line:
+                    if line == "KV_OUT_DIR=/usr/src/linux\n":
+                        line = "KV_OUT_DIR=/lib/modules/%s/build\n" % (
+                            self.pkgdata['versiontag'],)
+                    bzf.write(line)
+                    line = f.readline()
+                f.close()
+                bzf.close()
+                os.remove(envfile)
+
             rc = self.Spm.execute_package_phase(portage_atom, ebuild,
                 "setup",
                 work_dir = self.pkgdata['unpackdir'],
@@ -635,7 +663,7 @@ class Trigger:
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
-                    "[POST] ATTENTION Cannot properly run Source Package Manager pkg_setup()"
+                    "[POST] ATTENTION Cannot properly run Source Package Manager setup"
                     " phase for "+str(portage_atom)+". Something bad happened."
                 )
         return rc
