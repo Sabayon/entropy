@@ -14,6 +14,7 @@ import os
 import sys
 import shutil
 import tempfile
+import bz2
 from entropy.const import etpConst, etpUi
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidData
@@ -136,6 +137,8 @@ class PortagePlugin(SpmPlugin):
         'config': {},
         'portagetree': {},
     }
+
+    ENV_FILE_COMP = "environment.bz2"
 
     class paren_normalize(list):
         """Take a dependency structure as returned by paren_reduce or use_reduce
@@ -1764,6 +1767,31 @@ class PortagePlugin(SpmPlugin):
             os.path.join(portage_db_fakedir, "image"))
 
         return 0
+
+    def _ebuild_env_setup_hook(self, ebuild):
+
+        ebuild_path = os.path.dirname(ebuild)
+
+        myroot = os.path.sep
+        if etpConst['systemroot']:
+            myroot = etpConst['systemroot'] + os.path.sep
+
+        # we need to fix ROOT= if it's set inside environment
+        bz2envfile = os.path.join(ebuild_path, PortagePlugin.ENV_FILE_COMP)
+        if os.path.isfile(bz2envfile) and os.path.isdir(myroot):
+            envfile = entropy.tools.unpack_bzip2(bz2envfile)
+            bzf = bz2.BZ2File(bz2envfile, "w")
+            f = open(envfile, "r")
+            line = f.readline()
+            while line:
+                if line.startswith("ROOT="):
+                    line = "ROOT=%s\n" % (myroot,)
+                bzf.write(line)
+                line = f.readline()
+
+            f.close()
+            bzf.close()
+            os.remove(envfile)
 
     def _get_portage_vartree(self, root = None):
 

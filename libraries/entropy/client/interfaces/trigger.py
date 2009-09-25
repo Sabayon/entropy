@@ -21,25 +21,21 @@ from entropy.i18n import _
 
 class Trigger:
 
+    VALID_PHASES = ("preinstall", "postinstall", "preremove", "postremove",)
+
     import entropy.tools as entropyTools
-    def __init__(self, EquoInstance, phase, pkgdata, package_action = None):
+    def __init__(self, entropy_client, phase, pkgdata, package_action = None):
 
-        if not isinstance(EquoInstance,Client):
-            mytxt = _("A valid Entropy Instance is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+        if not isinstance(entropy_client, Client):
+            mytxt = "A valid Entropy Instance is needed"
+            raise AttributeError, mytxt
 
-        self.Entropy = EquoInstance
-        self.clientLog = self.Entropy.clientLog
-        self.validPhases = ("preinstall","postinstall","preremove","postremove")
+        self.Entropy = entropy_client
         self.pkgdata = pkgdata
         self.prepared = False
         self.triggers = []
         self._trigger_data = {}
         self.package_action = package_action
-
-        # Portage/Gentoo specific
-        self.MODULEDB_DIR="/var/lib/module-rebuild/"
-        self.INITSERVICES_DIR="/var/lib/init.d/"
 
         self.spm_support = True
         try:
@@ -62,12 +58,9 @@ class Trigger:
 
         self.phase = phase
         # validate phase
-        self.phaseValidation()
-
-    def phaseValidation(self):
-        if self.phase not in self.validPhases:
-            mytxt = "%s: %s" % (_("Valid phases"),self.validPhases,)
-            raise InvalidData("InvalidData: %s" % (mytxt,))
+        if self.phase not in Trigger.VALID_PHASES:
+            mytxt = "Valid phases: %s" % (Trigger.VALID_PHASES,)
+            raise AttributeError, mytxt
 
     def prepare(self):
         func = getattr(self, self.phase)
@@ -76,10 +69,8 @@ class Trigger:
         return len(self.triggers) > 0
 
     def run(self):
-        for trigger in self.triggers:
-            fname = 'trigger_%s' % (trigger,)
-            if not hasattr(self,fname): continue
-            getattr(self, fname)()
+        for trigger_func in self.triggers:
+            trigger_func()
 
     def kill(self):
         self.prepared = False
@@ -95,30 +86,24 @@ class Trigger:
                     if etpConst['spm']['postinst_phase'] not \
                         in self.pkgdata['spm_phases']:
                         break
-                functions.append('ebuild_postinstall')
+                functions.append(self.trigger_spm_postinstall)
                 break
 
         # load linker paths
         ldpaths = self.Entropy.entropyTools.collect_linker_paths()
         for x in self.pkgdata['content']:
 
-            if x.startswith("/etc/conf.d") or x.startswith("/etc/init.d"):
-                c_items = self._trigger_data.setdefault('conftouch', set())
-                c_items.add(x)
-                if "conftouch" not in functions:
-                    functions.append('conftouch')
-
-            if "env_update" not in functions:
+            if self.trigger_env_update not in functions:
                 if x.startswith('/etc/env.d/'):
-                    functions.append('env_update')
+                    functions.append(self.trigger_env_update)
 
-            if "run_ldconfig" not in functions:
+            if self.trigger_run_ldconfig not in functions:
                 if (os.path.dirname(x) in ldpaths):
                     if x.find(".so") > -1:
-                        functions.append('run_ldconfig')
+                        functions.append(self.trigger_run_ldconfig)
 
         if self.pkgdata['trigger']:
-            functions.append('call_ext_postinstall')
+            functions.append(self.trigger_call_ext_postinstall)
 
         del ldpaths
         return functions
@@ -134,11 +119,11 @@ class Trigger:
                     if etpConst['spm']['preinst_phase'] not \
                         in self.pkgdata['spm_phases']:
                         break
-                functions.append('ebuild_preinstall')
+                functions.append(self.trigger_spm_preinstall)
                 break
 
         if self.pkgdata['trigger']:
-            functions.append('call_ext_preinstall')
+            functions.append(self.trigger_call_ext_preinstall)
 
         return functions
 
@@ -155,23 +140,23 @@ class Trigger:
             if len(functions) == 3:
                 break # no need to go further
 
-            if "initdisable" not in functions:
+            if self.trigger_initdisable not in functions:
                 if x.startswith('/etc/init.d/'):
                     c_item = self._trigger_data.setdefault('initdisable', set())
                     c_item.add(x)
-                    functions.append('initdisable')
+                    functions.append(self.trigger_initdisable)
 
-            if "env_update" not in functions:
+            if self.trigger_env_update not in functions:
                 if x.startswith('/etc/env.d/'):
-                    functions.append('env_update')
+                    functions.append(self.trigger_env_update)
 
-            if "run_ldconfig" not in functions:
+            if self.trigger_run_ldconfig not in functions:
                 if (os.path.dirname(x) in ldpaths):
                     if x.find(".so") > -1:
-                        functions.append('run_ldconfig')
+                        functions.append(self.trigger_run_ldconfig)
 
         if self.pkgdata['trigger']:
-            functions.append('call_ext_postremove')
+            functions.append(self.trigger_call_ext_postremove)
 
         del ldpaths
         return functions
@@ -189,7 +174,7 @@ class Trigger:
                     if etpConst['spm']['prerm_phase'] not \
                         in self.pkgdata['spm_phases']:
                         break
-                functions.append('ebuild_preremove')
+                functions.append(self.trigger_spm_preremove)
                 break
 
             # doing here because we need /var/db/pkg stuff
@@ -199,11 +184,11 @@ class Trigger:
                     if etpConst['spm']['postrm_phase'] not \
                         in self.pkgdata['spm_phases']:
                         break
-                functions.append('ebuild_postremove')
+                functions.append(self.trigger_spm_postremove)
                 break
 
         if self.pkgdata['trigger']:
-            functions.append('call_ext_preremove')
+            functions.append(self.trigger_call_ext_preremove)
 
         return functions
 
@@ -446,33 +431,6 @@ class Trigger:
             my = self.EntropyPySandbox(self.Entropy)
         return my.run(self.phase, self.pkgdata, triggerfile)
 
-
-    def trigger_conftouch(self):
-
-        self.Entropy.clientLog.log(
-            ETP_LOGPRI_INFO,
-            ETP_LOGLEVEL_NORMAL,
-            "[POST] Updating {conf.d,init.d} mtime..."
-        )
-        mytxt = "%s ..." % (_("Updating {conf.d,init.d} mtime"),)
-        self.Entropy.updateProgress(
-            brown(mytxt),
-            importance = 0,
-            header = red("   ## ")
-        )
-
-        for path in self._trigger_data['conftouch']:
-
-            path = etpConst['systemroot']+path
-            if not os.access(path, os.W_OK) and os.path.isfile(path):
-                continue
-            try:
-                f_item = open(path, "abw")
-            except (OSError, IOError,):
-                continue
-            f_item.flush()
-            f_item.close()
-
     def trigger_initdisable(self):
 
         for item in self._trigger_data['initdisable']:
@@ -525,7 +483,7 @@ class Trigger:
             ETP_LOGLEVEL_NORMAL,
             "[POST] Running ldconfig"
         )
-        mytxt = "%s %s" % (_("Regenerating"),"/etc/ld.so.cache",)
+        mytxt = "%s %s" % (_("Regenerating"), "/etc/ld.so.cache",)
         self.Entropy.updateProgress(
             brown(mytxt),
             importance = 0,
@@ -540,7 +498,7 @@ class Trigger:
             ETP_LOGLEVEL_NORMAL,
             "[POST] Running env-update"
         )
-        if os.access(etpConst['systemroot']+"/usr/sbin/env-update",os.X_OK):
+        if os.access(etpConst['systemroot']+ "/usr/sbin/env-update", os.X_OK):
             mytxt = "%s ..." % (_("Updating environment"),)
             self.Entropy.updateProgress(
                 brown(mytxt),
@@ -552,8 +510,9 @@ class Trigger:
             else:
                 subprocess.call('env-update --no-ldconfig &> /dev/null', shell = True)
 
-    def trigger_ebuild_postinstall(self):
-        stdfile = open("/dev/null","w")
+    def trigger_spm_postinstall(self):
+
+        stdfile = open("/dev/null", "w")
         oldstderr = sys.stderr
         oldstdout = sys.stdout
         sys.stderr = stdfile
@@ -623,6 +582,7 @@ class Trigger:
         return 0
 
     def __ebuild_setup_phase(self, ebuild, portage_atom):
+
         rc = 0
         env_file = os.path.join(self.pkgdata['unpackdir'], "portage",
             portage_atom, "temp/environment")
@@ -669,8 +629,9 @@ class Trigger:
         return rc
 
 
-    def trigger_ebuild_preinstall(self):
-        stdfile = open("/dev/null","w")
+    def trigger_spm_preinstall(self):
+
+        stdfile = open("/dev/null", "w")
         oldstderr = sys.stderr
         oldstdout = sys.stdout
         sys.stderr = stdfile
@@ -738,8 +699,9 @@ class Trigger:
         stdfile.close()
         return 0
 
-    def trigger_ebuild_preremove(self):
-        stdfile = open("/dev/null","w")
+    def trigger_spm_preremove(self):
+
+        stdfile = open("/dev/null", "w")
         oldstderr = sys.stderr
         sys.stderr = stdfile
 
@@ -827,8 +789,9 @@ class Trigger:
         self._remove_overlayed_ebuild()
         return 0
 
-    def trigger_ebuild_postremove(self):
-        stdfile = open("/dev/null","w")
+    def trigger_spm_postremove(self):
+
+        stdfile = open("/dev/null", "w")
         oldstderr = sys.stderr
         sys.stderr = stdfile
 
@@ -937,43 +900,22 @@ class Trigger:
         if os.path.isfile(newmyebuild):
             myebuild = newmyebuild
             self.myebuild_moved = myebuild
-            self._ebuild_env_setup_hook(myebuild)
+            self.Spm._ebuild_env_setup_hook(myebuild)
+
         return myebuild
 
-    def _ebuild_env_setup_hook(self, myebuild):
-        ebuild_path = os.path.dirname(myebuild)
-        if not etpConst['systemroot']:
-            myroot = "/"
-        else:
-            myroot = etpConst['systemroot']+"/"
-
-        # we need to fix ROOT= if it's set inside environment
-        bz2envfile = os.path.join(ebuild_path,"environment.bz2")
-        if os.path.isfile(bz2envfile) and os.path.isdir(myroot):
-            import bz2
-            envfile = self.Entropy.entropyTools.unpack_bzip2(bz2envfile)
-            bzf = bz2.BZ2File(bz2envfile,"w")
-            f = open(envfile,"r")
-            line = f.readline()
-            while line:
-                if line.startswith("ROOT="):
-                    line = "ROOT=%s\n" % (myroot,)
-                bzf.write(line)
-                line = f.readline()
-            f.close()
-            bzf.close()
-            os.remove(envfile)
-
     def _remove_overlayed_ebuild(self):
+
         if not self.myebuild_moved:
             return
+        if not os.path.isfile(self.myebuild_moved):
+            return
 
-        if os.path.isfile(self.myebuild_moved):
-            mydir = os.path.dirname(self.myebuild_moved)
-            shutil.rmtree(mydir,True)
+        mydir = os.path.dirname(self.myebuild_moved)
+        shutil.rmtree(mydir, True)
+        mydir = os.path.dirname(mydir)
+        content = os.listdir(mydir)
+        while not content:
+            os.rmdir(mydir)
             mydir = os.path.dirname(mydir)
             content = os.listdir(mydir)
-            while not content:
-                os.rmdir(mydir)
-                mydir = os.path.dirname(mydir)
-                content = os.listdir(mydir)
