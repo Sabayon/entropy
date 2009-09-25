@@ -136,15 +136,9 @@ class Trigger:
 
         for x in self.pkgdata['removecontent']:
 
-            # initdisable, env_update; run_ldconfig
-            if len(functions) == 3:
+            # env_update; run_ldconfig
+            if len(functions) == 2:
                 break # no need to go further
-
-            if x.startswith('/etc/init.d/'):
-                c_item = self._trigger_data.setdefault('initdisable', set())
-                c_item.add(x)
-                if self.trigger_initdisable not in functions:
-                    functions.append(self.trigger_initdisable)
 
             if self.trigger_env_update not in functions:
                 if x.startswith('/etc/env.d/'):
@@ -430,48 +424,6 @@ class Trigger:
         else:
             my = self.EntropyPySandbox(self.Entropy)
         return my.run(self.phase, self.pkgdata, triggerfile)
-
-    def trigger_initdisable(self):
-
-        for item in self._trigger_data['initdisable']:
-
-            item = etpConst['systemroot'] + item
-            if not os.access(item, os.W_OK) and os.path.isfile(item):
-                continue
-
-            myroot = "/"
-            if etpConst['systemroot']:
-                myroot = etpConst['systemroot']+"/"
-            runlevels_dir = etpConst['systemroot']+"/etc/runlevels"
-            runlevels = []
-
-            if os.path.isdir(runlevels_dir) and os.access(runlevels_dir,os.R_OK):
-                runlevels = [x for x in os.listdir(runlevels_dir) \
-                    if os.path.isdir(os.path.join(runlevels_dir, x)) \
-                    and os.path.isfile(
-                        os.path.join(runlevels_dir, x, os.path.basename(item)))
-                ]
-
-            for runlevel in runlevels:
-                self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
-                    "[POST] Removing boot service: %s, runlevel: %s" % (
-                        os.path.basename(item), runlevel,)
-                )
-                mytxt = "%s: %s : %s" % (
-                    brown(_("Removing boot service")),
-                    os.path.basename(item),
-                    runlevel,
-                )
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 0,
-                    header = red("   ## ")
-                )
-                cmd = 'ROOT="%s" rc-update del %s %s' % (myroot,
-                    os.path.basename(item), runlevel)
-                subprocess.call(cmd, shell = True)
 
     def trigger_run_ldconfig(self):
         if not etpConst['systemroot']:
