@@ -140,10 +140,10 @@ class Trigger:
             if len(functions) == 3:
                 break # no need to go further
 
-            if self.trigger_initdisable not in functions:
-                if x.startswith('/etc/init.d/'):
-                    c_item = self._trigger_data.setdefault('initdisable', set())
-                    c_item.add(x)
+            if x.startswith('/etc/init.d/'):
+                c_item = self._trigger_data.setdefault('initdisable', set())
+                c_item.add(x)
+                if self.trigger_initdisable not in functions:
                     functions.append(self.trigger_initdisable)
 
             if self.trigger_env_update not in functions:
