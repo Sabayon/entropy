@@ -139,6 +139,10 @@ def initconfig_entropy_constants(rootdir):
     if rootdir and not os.path.isdir(rootdir):
         raise AttributeError("not a valid chroot.")
 
+    # set env ROOT
+    # this way it doesn't need to be set around the code
+    os.environ['ROOT'] = rootdir + os.path.sep
+
     # save backed up settings
     if etpConst.has_key('backed_up'):
         backed_up_settings = etpConst.pop('backed_up')
