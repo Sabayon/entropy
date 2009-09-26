@@ -92,11 +92,11 @@ class Queue:
     def show_key_slot_error_message(self, blocked):
 
         confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
-                    list(blocked),
-                    top_text = _("Attention"),
-                    sub_text = _("There are packages that can't be installed at the same time, thus are blocking your request:"),
-                    bottom_text = "",
-                    cancel = False
+            list(blocked),
+            top_text = _("Attention"),
+            sub_text = _("There are packages that can't be installed at the same time, thus are blocking your request:"),
+            bottom_text = "",
+            cancel = False
         )
         confirmDialog.run()
         confirmDialog.destroy()
@@ -432,6 +432,7 @@ class Queue:
                 self.etpbase.get_raw_groups('available')
                 self.etpbase.get_raw_groups('reinstallable')
                 self.etpbase.get_raw_groups('updates')
+                self.etpbase.get_raw_groups('unfiltered_updates')
                 self.etpbase.get_raw_groups('masked')
                 self.etpbase.get_raw_groups('downgrade')
 
@@ -708,7 +709,10 @@ class EntropyPackages:
         return [x for x in map(fm,self.Entropy.calculate_available_packages()) \
             if type(x) is not int]
 
-    def _pkg_get_updates(self):
+    def _pkg_get_updates_raw(self):
+        return self._pkg_get_updates(critical_updates = False)
+
+    def _pkg_get_updates(self, critical_updates = True):
 
         gp_call = self.get_package_item
         cdb_atomMatch = self.Entropy.clientDbconn.atomMatch
@@ -727,7 +731,8 @@ class EntropyPackages:
 
         try:
             updates, remove, fine, spm_fine = \
-                self.Entropy.calculate_world_updates()
+                self.Entropy.calculate_world_updates(
+                    critical_updates = critical_updates)
         except SystemDatabaseError:
             # broken client db
             return []
@@ -742,7 +747,7 @@ class EntropyPackages:
         if const.debug:
             t1 = time.time()
 
-        already_in = set((x.matched_atom for x in self.get_raw_groups("updates")))
+        already_in = set((x.matched_atom for x in self.get_raw_groups("unfiltered_updates")))
         already_in |= set((x.matched_atom for x in self.get_raw_groups("available")))
         already_in |= set((x.matched_atom for x in self.get_raw_groups("reinstallable")))
         already_in |= set((x.matched_atom for x in self.get_raw_groups("masked")))
@@ -838,7 +843,7 @@ class EntropyPackages:
         return [x for x in masked_objs if x.user_masked]
 
     def _pkg_get_user_unmasked(self):
-        objs = self.get_raw_groups("updates") + self.get_raw_groups("available") + \
+        objs = self.get_raw_groups("unfiltered_updates") + self.get_raw_groups("available") + \
             self.get_raw_groups('reinstallable')# + self.get_raw_groups("downgrade")
         return [x for x in objs if x.user_unmasked]
 
@@ -880,6 +885,7 @@ class EntropyPackages:
         gp_call = self.get_package_item
 
         self.get_groups("updates")
+        self.get_groups("unfiltered_updates")
         self.get_groups("available")
         self.get_groups("reinstallable")
         self.get_groups("downgrade")
@@ -979,6 +985,7 @@ class EntropyPackages:
             "queued": self._pkg_get_queued,
             "available": self._pkg_get_available,
             "updates": self._pkg_get_updates,
+            "unfiltered_updates": self._pkg_get_updates_raw,
             "reinstallable": self._pkg_get_reinstallable,
             "masked": self._pkg_get_masked,
             "user_masked": self._pkg_get_user_masked,
