@@ -22,6 +22,8 @@ from entropy.i18n import _
 class Trigger:
 
     VALID_PHASES = ("preinstall", "postinstall", "preremove", "postremove",)
+    ENV_VARS_DIR = "/etc/env.d"
+    ENV_UPDATE_HOOK = "env-update"
 
     import entropy.tools as entropyTools
     def __init__(self, entropy_client, phase, pkgdata, package_action = None):
@@ -80,6 +82,7 @@ class Trigger:
     def postinstall(self):
 
         functions = []
+
         if self.spm_support:
             while 1:
                 if self.pkgdata['spm_phases'] != None:
@@ -89,23 +92,18 @@ class Trigger:
                 functions.append(self.trigger_spm_postinstall)
                 break
 
-        # load linker paths
-        ldpaths = self.Entropy.entropyTools.collect_linker_paths()
-        for x in self.pkgdata['content']:
+        cont_dirs = set((os.path.dirname(x) for x in self.pkgdata['content']))
 
-            if self.trigger_env_update not in functions:
-                if x.startswith('/etc/env.d/'):
-                    functions.append(self.trigger_env_update)
-
-            if self.trigger_run_ldconfig not in functions:
-                if (os.path.dirname(x) in ldpaths):
-                    if x.find(".so") > -1:
-                        functions.append(self.trigger_run_ldconfig)
+        if Trigger.ENV_VARS_DIR in cont_dirs:
+            functions.append(self.trigger_env_update)
+        else:
+            ldpaths = self.Entropy.entropyTools.collect_linker_paths()
+            if len(cont_dirs) != len(cont_dirs - set(ldpaths)):
+                functions.append(self.trigger_env_update)
 
         if self.pkgdata['trigger']:
             functions.append(self.trigger_call_ext_postinstall)
 
-        del ldpaths
         return functions
 
     def preinstall(self):
@@ -131,28 +129,19 @@ class Trigger:
 
         functions = []
 
-        # load linker paths
-        ldpaths = self.Entropy.entropyTools.collect_linker_paths()
+        cont_dirs = set((os.path.dirname(x) for x in \
+            self.pkgdata['removecontent']))
 
-        for x in self.pkgdata['removecontent']:
-
-            # env_update; run_ldconfig
-            if len(functions) == 2:
-                break # no need to go further
-
-            if self.trigger_env_update not in functions:
-                if x.startswith('/etc/env.d/'):
-                    functions.append(self.trigger_env_update)
-
-            if self.trigger_run_ldconfig not in functions:
-                if (os.path.dirname(x) in ldpaths):
-                    if x.find(".so") > -1:
-                        functions.append(self.trigger_run_ldconfig)
+        if Trigger.ENV_VARS_DIR in cont_dirs:
+            functions.append(self.trigger_env_update)
+        else:
+            ldpaths = self.Entropy.entropyTools.collect_linker_paths()
+            if len(cont_dirs) != len(cont_dirs - set(ldpaths)):
+                functions.append(self.trigger_env_update)
 
         if self.pkgdata['trigger']:
             functions.append(self.trigger_call_ext_postremove)
 
-        del ldpaths
         return functions
 
 
@@ -425,24 +414,6 @@ class Trigger:
             my = self.EntropyPySandbox(self.Entropy)
         return my.run(self.phase, self.pkgdata, triggerfile)
 
-    def trigger_run_ldconfig(self):
-        if not etpConst['systemroot']:
-            myroot = "/"
-        else:
-            myroot = etpConst['systemroot']+"/"
-        self.Entropy.clientLog.log(
-            ETP_LOGPRI_INFO,
-            ETP_LOGLEVEL_NORMAL,
-            "[POST] Running ldconfig"
-        )
-        mytxt = "%s %s" % (_("Regenerating"), "/etc/ld.so.cache",)
-        self.Entropy.updateProgress(
-            brown(mytxt),
-            importance = 0,
-            header = red("   ## ")
-        )
-        subprocess.call("ldconfig -r %s &> /dev/null" % (myroot,), shell = True)
-
     def trigger_env_update(self):
 
         self.Entropy.clientLog.log(
@@ -450,17 +421,7 @@ class Trigger:
             ETP_LOGLEVEL_NORMAL,
             "[POST] Running env-update"
         )
-        if os.access(etpConst['systemroot']+ "/usr/sbin/env-update", os.X_OK):
-            mytxt = "%s ..." % (_("Updating environment"),)
-            self.Entropy.updateProgress(
-                brown(mytxt),
-                importance = 0,
-                header = red("   ## ")
-            )
-            if etpConst['systemroot']:
-                subprocess.call("echo 'env-update --no-ldconfig' | chroot %s &> /dev/null" % (etpConst['systemroot'],), shell = True)
-            else:
-                subprocess.call('env-update --no-ldconfig &> /dev/null', shell = True)
+        subprocess.call([Trigger.ENV_UPDATE_HOOK])
 
     def trigger_spm_postinstall(self):
 
