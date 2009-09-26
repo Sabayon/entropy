@@ -5,7 +5,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   1.0_beta1:
 
     - move sensible pkgs to alt dir
-    - entropy.client.interfaces.trigger, move Portage code to entropy.spm
+    - move etpConst['spm'] to entropy.spm
     - entropy.db hookable plugins support (atom/dep validation, db taint,
         pkg add, pkg rm)
     - Transform Sulfur into Entropy Store:

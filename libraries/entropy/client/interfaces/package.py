@@ -352,7 +352,7 @@ class Package:
             importance = 0,
             header = red("   ## ")
         )
-        return Spm.configure_installed_package(self.pkgmeta)
+        return Spm.execute_package_phase(self.pkgmeta, "configure")
 
 
     def __remove_package(self):
@@ -2338,6 +2338,10 @@ class Package:
         self.pkgmeta['key'], self.pkgmeta['slot'] = key, slot
         self.pkgmeta['version'] = \
             self.Entropy.clientDbconn.retrieveVersion(idpackage)
+        self.pkgmeta['category'] = \
+            self.Entropy.clientDbconn.retrieveCategory(idpackage)
+        self.pkgmeta['name'] = \
+            self.Entropy.clientDbconn.retrieveName(idpackage)
         self.pkgmeta['accept_license'] = \
             self.Entropy.clientDbconn.retrieveLicensedataKeys(idpackage)
         self.pkgmeta['steps'] = []

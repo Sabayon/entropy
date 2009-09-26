@@ -514,26 +514,16 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
-    def execute_package_phase(self, package, build_script_path, phase_name,
-        work_dir = None, licenses_accepted = None):
+    def execute_package_phase(self, package_metadata, phase_name):
         """
         Execute Source Package Manager package phase (postinstall, preinstall,
         preremove, postremove, etc).
 
-        @param package: package name
-        @type package: string
-        @param build_script_path: path to Source Package Manager build script
-            to call
-        @type build_script_path: string
+        @param package_metadata: Entropy package phase metadata
+        @type package_metadata: dict
         @param phase_name: name of the phase to call, must be a valid phase
             contained in package_phases() output.
         @type phase_name: string
-        @keyword work_dir: specify a work directory if required by your SPM
-        @type work_dir: string
-        @keyword licenses_accepted: list of license names already accepted
-            that can be given to Source Package Manager (to skip its license
-            acceptance verification stuff, for example)
-        @type licenses_accepted: list
         @return: phase script exit status
         @rtype: int
         @raise KeyError: if phase is not available
@@ -560,25 +550,6 @@ class SpmPlugin(Singleton):
     def remove_installed_package(self, package_metadata):
         """
         Remove installed package from SPM database.
-        "package_metadata" is a dictionary featuring the following (relevant)
-        keys:
-            ['accept_license', 'imagedir', 'xpakpath', 'slot', 'pkgdbpath',
-             'versiontag', 'version', 'xpakstatus', 'unpackdir', 'revision',
-             'category', 'repository', 'xpakdir', 'name', 'install_source',
-             'removeatom'
-            ]
-
-        @param package_metadata: Entropy package metadata
-        @type package_metadata: dict
-        @return: execution status
-        @rtype: int
-        """
-        raise NotImplementedError()
-
-    def configure_installed_package(self, package_metadata):
-        """
-        Configure installed package. Some SPM require users to do manual
-        stuff on packages.
         "package_metadata" is a dictionary featuring the following (relevant)
         keys:
             ['accept_license', 'imagedir', 'xpakpath', 'slot', 'pkgdbpath',

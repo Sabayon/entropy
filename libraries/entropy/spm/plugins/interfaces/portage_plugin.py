@@ -11,10 +11,10 @@
 """
 from __future__ import with_statement
 import os
+import bz2
 import sys
 import shutil
 import tempfile
-import bz2
 from entropy.const import etpConst, etpUi
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidData
@@ -139,6 +139,7 @@ class PortagePlugin(SpmPlugin):
     }
 
     ENV_FILE_COMP = "environment.bz2"
+    EBUILD_EXT = ".ebuild"
 
     class paren_normalize(list):
         """Take a dependency structure as returned by paren_reduce or use_reduce
@@ -289,7 +290,7 @@ class PortagePlugin(SpmPlugin):
         Reimplemented from SpmPlugin class.
         """
         return os.path.join(self._get_vdb_path(root = root), package,
-            package.split("/")[-1] + etpConst['spm']['source_build_ext'])
+            package.split("/")[-1] + PortagePlugin.EBUILD_EXT)
 
     def get_installed_package_metadata(self, package, key, root = None):
         """
@@ -1222,6 +1223,7 @@ class PortagePlugin(SpmPlugin):
 
     def _portage_doebuild(self, myebuild, mydo, tree, cpv,
         portage_tmpdir = None, licenses = None):
+
         # myebuild = path/to/ebuild.ebuild with a valid unpacked xpak metadata
         # tree = "bintree"
         # cpv = atom
@@ -1381,26 +1383,396 @@ class PortagePlugin(SpmPlugin):
         del keys
         return rc
 
-    def execute_package_phase(self, package, build_script_path, phase_name,
-        work_dir = None, licenses_accepted = None):
+    @staticmethod
+    def _pkg_compose_atom(package_metadata):
+        return package_metadata['category'] + "/" + \
+                package_metadata['name'] + "-" + package_metadata['version']
+
+    @staticmethod
+    def _pkg_compose_xpak_ebuild(package_metadata):
+        package = PortagePlugin._pkg_compose_atom(package_metadata)
+        return os.path.join(package_metadata['xpakdir'],
+            os.path.basename(package) + PortagePlugin.EBUILD_EXT)
+
+    def _pkg_remove_overlayed_ebuild(self, moved_ebuild):
+
+        mydir = os.path.dirname(moved_ebuild)
+        shutil.rmtree(mydir, True)
+        mydir = os.path.dirname(mydir)
+        content = os.listdir(mydir)
+        while not content:
+            os.rmdir(mydir)
+            mydir = os.path.dirname(mydir)
+            content = os.listdir(mydir)
+
+    def _pkg_remove_ebuild_env_setup_hook(self, ebuild):
+
+        ebuild_path = os.path.dirname(ebuild)
+
+        myroot = os.path.sep
+        if etpConst['systemroot']:
+            myroot = etpConst['systemroot'] + os.path.sep
+
+        # we need to fix ROOT= if it's set inside environment
+        bz2envfile = os.path.join(ebuild_path, PortagePlugin.ENV_FILE_COMP)
+        if os.path.isfile(bz2envfile) and os.path.isdir(myroot):
+            envfile = entropy.tools.unpack_bzip2(bz2envfile)
+            bzf = bz2.BZ2File(bz2envfile, "w")
+            f = open(envfile, "r")
+            line = f.readline()
+            while line:
+                if line.startswith("ROOT="):
+                    line = "ROOT=%s\n" % (myroot,)
+                bzf.write(line)
+                line = f.readline()
+
+            f.close()
+            bzf.close()
+            os.remove(envfile)
+
+    def _pkg_remove_setup_ebuild_env(self, myebuild, portage_atom):
+
+        ebuild_dir = os.path.dirname(myebuild)
+        ebuild_file = os.path.basename(myebuild)
+        moved_ebuild = None
+
+        # copy the whole directory in a safe place
+        dest_dir = os.path.join(etpConst['entropyunpackdir'],
+            "vardb/" + portage_atom)
+        if os.path.exists(dest_dir):
+            if os.path.isdir(dest_dir):
+                shutil.rmtree(dest_dir, True)
+            elif os.path.isfile(dest_dir) or os.path.islink(dest_dir):
+                os.remove(dest_dir)
+
+        os.makedirs(dest_dir)
+        items = os.listdir(ebuild_dir)
+        for item in items:
+            myfrom = os.path.join(ebuild_dir, item)
+            myto = os.path.join(dest_dir, item)
+            shutil.copy2(myfrom, myto)
+
+        newmyebuild = os.path.join(dest_dir, ebuild_file)
+        if os.path.isfile(newmyebuild):
+            myebuild = newmyebuild
+            moved_ebuild = myebuild
+            self._pkg_remove_ebuild_env_setup_hook(myebuild)
+
+        return myebuild, moved_ebuild
+
+    def _pkg_setup(self, package_metadata, skip_if_found = False):
+
+        package = PortagePlugin._pkg_compose_atom(package_metadata)
+        env_file = os.path.join(package_metadata['unpackdir'], "portage",
+            package, "temp/environment")
+
+        if os.path.isfile(env_file) and skip_if_found:
+            return 0
+
+        # FIXME: please remove as soon as upstream fixes it
+        # FIXME: workaround for buggy linux-info.eclass not being
+        # ported to EAPI=2 yet.
+        # It is required to make depmod running properly for the
+        # kernel modules inside this ebuild
+        # fix KV_OUT_DIR= inside environment
+        bz2envfile = os.path.join(package_metadata['xpakdir'],
+            PortagePlugin.ENV_FILE_COMP)
+
+        if "linux-info" in package_metadata['eclasses'] and \
+            os.path.isfile(bz2envfile) and package_metadata['versiontag']:
+
+            envfile = entropy.tools.unpack_bzip2(bz2envfile)
+            bzf = bz2.BZ2File(bz2envfile,"w")
+            f = open(envfile,"r")
+            line = f.readline()
+            while line:
+                if line == "KV_OUT_DIR=/usr/src/linux\n":
+                    line = "KV_OUT_DIR=/lib/modules/%s/build\n" % (
+                        package_metadata['versiontag'],)
+                bzf.write(line)
+                line = f.readline()
+            f.close()
+            bzf.close()
+            os.remove(envfile)
+
+        ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
+        rc = self._portage_doebuild(ebuild, "setup",
+            "bintree", package, portage_tmpdir = package_metadata['unpackdir'],
+            licenses = package_metadata.get('accept_license'))
+
+        if rc == 1:
+            self.log_message(
+                "[POST] ATTENTION Cannot properly run Source Package Manager"
+                " setup phase for %s Something bad happened." % (package,)
+            )
+
+        return rc
+
+    def _pkg_fooinst(self, package_metadata, phase):
+
+        tmp_file = tempfile.mktemp()
+        stdfile = open(tmp_file, "w")
+        oldstderr = sys.stderr
+        oldstdout = sys.stdout
+        sys.stderr = stdfile
+
+        package = PortagePlugin._pkg_compose_atom(package_metadata)
+        ebuild = PortagePlugin._pkg_compose_xpak_ebuild(package_metadata)
+        rc = 0
+        remove_tmp = True
+
+        try:
+            # is ebuild available
+            if not (os.path.isfile(ebuild) and os.access(ebuild, os.R_OK)):
+                return rc
+
+            try:
+
+                if not etpUi['debug']:
+                    sys.stdout = stdfile
+                self._pkg_setup(package_metadata, skip_if_found = True)
+                if not etpUi['debug']:
+                    sys.stdout = oldstdout
+
+                rc = self._portage_doebuild(ebuild, phase, "bintree",
+                    package, portage_tmpdir = package_metadata['unpackdir'],
+                    licenses = package_metadata.get('accept_license'))
+
+                if rc != 0:
+                    self.log_message(
+                        "[PRE] ATTENTION Cannot properly run SPM %s"
+                        " phase for %s. Something bad happened." % (
+                            phase, package,)
+                    )
+
+            except Exception, e:
+
+                stdfile.flush()
+                sys.stdout = oldstdout
+                entropy.tools.print_traceback()
+
+                self.log_message(
+                    "[PRE] ATTENTION Cannot properly run SPM %s"
+                    " phase for %s. Something bad happened."
+                    " Exception %s [%s]" % (
+                        phase, package, Exception, e,)
+                )
+
+                mytxt = "%s: %s %s. %s. %s: %s + %s [%s]" % (
+                    bold(_("QA")),
+                    brown(_("Cannot run Source Package Manager trigger for")),
+                    bold(str(package)),
+                    brown(_("Please report it")),
+                    bold(_("Attach this")),
+                    darkred(etpConst['spmlogfile']),
+                    darkred(tmp_file),
+                    brown(phase),
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
+                remove_tmp = False
+
+            return rc
+
+        finally:
+
+            sys.stderr = oldstderr
+            sys.stdout = oldstdout
+            stdfile.flush()
+            stdfile.close()
+
+            if (rc == 0) and remove_tmp:
+                try:
+                    os.remove(tmp_file)
+                except OSError:
+                    pass
+
+    def _pkg_foorm(self, package_metadata, phase):
+
+        tmp_file = tempfile.mktemp()
+        stdfile = open(tmp_file, "w")
+        oldstderr = sys.stderr
+        oldstdout = sys.stdout
+        sys.stderr = stdfile
+
+        rc = 0
+        remove_tmp = True
+        moved_ebuild = None
+        package = PortagePlugin._pkg_compose_atom(package_metadata)
+        ebuild = self.get_installed_package_build_script_path(package)
+
+        try:
+
+            if not os.path.isfile(ebuild):
+                return 0
+
+            try:
+                ebuild, moved_ebuild = self._pkg_remove_setup_ebuild_env(
+                    ebuild, package)
+
+            except EOFError, e:
+                sys.stderr = oldstderr
+                # stuff on system is broken, ignore it
+                self.updateProgress(
+                    darkred("!!! Ebuild: pkg_" + phase + "() failed, EOFError: ") + \
+                        str(e) + darkred(" - ignoring"),
+                    importance = 1,
+                    type = "warning",
+                    header = red("   ## ")
+                )
+                return 0
+
+            except ImportError, e:
+                sys.stderr = oldstderr
+                # stuff on system is broken, ignore it
+                self.updateProgress(
+                    darkred("!!! Ebuild: pkg_" + phase + "() failed, ImportError: ") + \
+                        str(e) + darkred(" - ignoring"),
+                    importance = 1,
+                    type = "warning",
+                    header = red("   ## ")
+                )
+                return 0
+
+            try:
+
+                work_dir = os.path.join(etpConst['entropyunpackdir'], package)
+
+                rc = self._portage_doebuild(ebuild, phase, "bintree",
+                    package, portage_tmpdir = work_dir,
+                    licenses = package_metadata.get('accept_license'))
+
+                if rc != 1:
+                    self.log_message(
+                        "[PRE] ATTENTION Cannot properly run SPM %s trigger "
+                        "for %s. Something bad happened." % (phase, package,)
+                    )
+
+            except Exception, e:
+
+                stdfile.flush()
+                sys.stdout = oldstdout
+                entropy.tools.print_traceback()
+
+                self.log_message(
+                    "[PRE] ATTENTION Cannot properly run SPM %s"
+                    " phase for %s. Something bad happened."
+                    " Exception %s [%s]" % (phase, package, Exception, e,)
+                )
+
+                mytxt = "%s: %s %s. %s. %s: %s + %s [%s]" % (
+                    bold(_("QA")),
+                    brown(_("Cannot run Source Package Manager trigger for")),
+                    bold(str(package)),
+                    brown(_("Please report it")),
+                    bold(_("Attach this")),
+                    darkred(etpConst['spmlogfile']),
+                    darkred(tmp_file),
+                    brown(phase),
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
+                remove_tmp = False
+
+            if moved_ebuild is not None:
+                if os.path.isfile(moved_ebuild):
+                    self._pkg_remove_overlayed_ebuild(moved_ebuild)
+
+            return rc
+
+        finally:
+
+            sys.stderr = oldstderr
+            sys.stdout = oldstdout
+            stdfile.flush()
+            stdfile.close()
+
+            if (rc == 0) and remove_tmp:
+                try:
+                    os.remove(tmp_file)
+                except OSError:
+                    pass
+
+
+    def _pkg_preinst(self, package_metadata):
+        return self._pkg_fooinst(package_metadata, "preinst")
+
+    def _pkg_postinst(self, package_metadata):
+        return self._pkg_fooinst(package_metadata, "postinst")
+
+    def _pkg_prerm(self, package_metadata):
+        return self._pkg_foorm(package_metadata, "prerm")
+
+    def _pkg_postrm(self, package_metadata):
+        return self._pkg_foorm(package_metadata, "postrm")
+
+    def _pkg_config(self, package_metadata):
+
+        package = PortagePlugin._pkg_compose_atom(package_metadata)
+        ebuild = self.get_installed_package_build_script_path(package)
+        if not os.path.isfile(ebuild):
+            return 2
+
+        try:
+
+            rc = self._portage_doebuild(ebuild, "config", "bintree",
+                package, licenses = package_metadata.get('accept_license'))
+
+            if rc != 0:
+                return 3
+
+        except Exception, err:
+
+            entropy.tools.print_traceback()
+            mytxt = "%s: %s %s." % (
+                bold(_("QA")),
+                brown(_("Cannot run SPM configure phase for")),
+                bold(str(package)),
+            )
+            mytxt2 = "%s: %s, %s" % (
+                bold(_("Error")),
+                type(Exception),
+                err,
+            )
+            for txt in (mytxt, mytxt2,):
+                self.updateProgress(
+                    txt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
+            return 1
+
+        return 0
+
+    def execute_package_phase(self, package_metadata, phase_name):
         """
         Reimplemented from SpmPlugin class.
         """
-        if licenses_accepted is None:
-            licenses_accepted = []
-
         portage_phase = PortagePlugin.package_phases_map[phase_name]
-        return self._portage_doebuild(build_script_path, portage_phase,
-            "bintree", package, work_dir, licenses_accepted)
+        phase_calls = {
+            'setup': self._pkg_setup,
+            'preinst': self._pkg_preinst,
+            'postinst': self._pkg_postinst,
+            'prerm': self._pkg_prerm,
+            'postrm': self._pkg_postrm,
+            'config': self._pkg_config,
+        }
+        return phase_calls[portage_phase](package_metadata)
 
     def add_installed_package(self, package_metadata):
         """
         Reimplemented from SpmPlugin class.
         """
         atomsfound = set()
-        category = package_metadata['category']
-        key = category + "/" + package_metadata['name']
-        spm_package = key + "-" + package_metadata['version']
+        spm_package = PortagePlugin._pkg_compose_atom(package_metadata)
+        key = entropy.tools.dep_getkey(spm_package)
+        category = key.split("/")[0]
 
         build = self.get_installed_package_build_script_path(spm_package)
         pkg_dir = os.path.dirname(build)
@@ -1615,48 +1987,6 @@ class PortagePlugin(SpmPlugin):
 
         return 0
 
-    def configure_installed_package(self, package_metadata):
-        """
-        Reimplemented from SpmPlugin class.
-        """
-        atom = package_metadata['key'] + "-" + package_metadata['version']
-        myebuild = self.get_installed_package_build_script_path(atom)
-
-        if not (os.access(myebuild, os.R_OK) and os.path.isfile(myebuild)):
-            # cannot find ebuild ! ouch!
-            return 2
-
-        try:
-            rc = self.execute_package_phase(atom, myebuild,
-                "configure",
-                licenses_accepted = package_metadata['accept_license']
-            )
-            if rc == 1:
-                return 3
-
-        except Exception, err:
-
-            entropy.tools.print_traceback()
-            mytxt = "%s: %s %s." % (
-                bold(_("QA")),
-                brown(_("Cannot run SPM configure phase for")),
-                bold(str(atom)),
-            )
-            mytxt2 = "%s: %s, %s" % (
-                bold(_("Error")),
-                type(Exception),
-                err,
-            )
-            for txt in (mytxt, mytxt2,):
-                self.updateProgress(
-                    txt,
-                    importance = 0,
-                    header = red("   ## ")
-                )
-            return 1
-
-        return 0
-
     @staticmethod
     def entropy_install_setup_hook(entropy_client, package_metadata):
         """
@@ -1686,9 +2016,8 @@ class PortagePlugin(SpmPlugin):
                 portdbdir = 'var/db/pkg'
 
             portdbdir = os.path.join(package_metadata['merge_from'], portdbdir)
-            portdbdir = os.path.join(portdbdir, package_metadata['category'])
-            portdbdir = os.path.join(portdbdir, package_metadata['name'] + \
-                "-" + package_metadata['version'])
+            portdbdir = os.path.join(portdbdir,
+                PortagePlugin._pkg_compose_atom(package_metadata))
 
             package_metadata['xpakdir'] = portdbdir
 
@@ -1753,8 +2082,7 @@ class PortagePlugin(SpmPlugin):
             os.symlink(package_metadata['xpakdir'], tolink_dir)
 
         # create fake portage ${D} linking it to imagedir
-        portage_cpv = package_metadata['category'] + "/" + \
-            package_metadata['name'] + "-" + package_metadata['version']
+        portage_cpv = PortagePlugin._pkg_compose_atom(package_metadata)
 
         portage_db_fakedir = os.path.join(
             package_metadata['unpackdir'],
@@ -1767,31 +2095,6 @@ class PortagePlugin(SpmPlugin):
             os.path.join(portage_db_fakedir, "image"))
 
         return 0
-
-    def _ebuild_env_setup_hook(self, ebuild):
-
-        ebuild_path = os.path.dirname(ebuild)
-
-        myroot = os.path.sep
-        if etpConst['systemroot']:
-            myroot = etpConst['systemroot'] + os.path.sep
-
-        # we need to fix ROOT= if it's set inside environment
-        bz2envfile = os.path.join(ebuild_path, PortagePlugin.ENV_FILE_COMP)
-        if os.path.isfile(bz2envfile) and os.path.isdir(myroot):
-            envfile = entropy.tools.unpack_bzip2(bz2envfile)
-            bzf = bz2.BZ2File(bz2envfile, "w")
-            f = open(envfile, "r")
-            line = f.readline()
-            while line:
-                if line.startswith("ROOT="):
-                    line = "ROOT=%s\n" % (myroot,)
-                bzf.write(line)
-                line = f.readline()
-
-            f.close()
-            bzf.close()
-            os.remove(envfile)
 
     def _get_portage_vartree(self, root = None):
 

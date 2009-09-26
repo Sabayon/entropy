@@ -526,9 +526,9 @@ def const_default_settings(rootdir):
             'global_make_profile_link_name' : "profile.link",
             # source package manager executable
             'exec': rootdir+"/usr/bin/emerge",
-            'env_update_cmd': rootdir+"/usr/sbin/env-update",
-            'source_profile': ["source", rootdir+"/etc/profile"],
-            'source_build_ext': ".ebuild",
+            'env_dir_reference': "/etc/env.d",
+            'env_update_cmd': "/usr/sbin/env-update",
+            'source_profile': ["source", "/etc/profile"],
             'ask_cmd': "--ask",
             'info_cmd': "--info",
             'remove_cmd': "-C",

@@ -22,8 +22,14 @@ from entropy.i18n import _
 class Trigger:
 
     VALID_PHASES = ("preinstall", "postinstall", "preremove", "postremove",)
-    ENV_VARS_DIR = "/etc/env.d"
-    ENV_UPDATE_HOOK = "env-update"
+    ENV_VARS_DIR = etpConst['spm']['env_dir_reference']
+    ENV_UPDATE_HOOK = etpConst['spm']['env_update_cmd']
+    PHASES = {
+        'preinstall': "preinstall",
+        'postinstall': "postinstall",
+        'preremove': "preremove",
+        'postremove': "postremove",
+    }
 
     import entropy.tools as entropyTools
     def __init__(self, entropy_client, phase, pkgdata, package_action = None):
@@ -199,7 +205,8 @@ class Trigger:
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
-                "[POST] ATTENTION Cannot run External trigger for "+mykey+"!! "+str(Exception)+": "+str(e)
+                "[POST] ATTENTION Cannot run External trigger for " + \
+                    mykey + "!! " + str(Exception) + ": " + str(e)
             )
             mytxt = "%s: %s %s. %s." % (
                 bold(_("QA")),
@@ -425,410 +432,40 @@ class Trigger:
 
     def trigger_spm_postinstall(self):
 
-        stdfile = open("/dev/null", "w")
-        oldstderr = sys.stderr
-        oldstdout = sys.stdout
-        sys.stderr = stdfile
-
-        myebuild = None
-        if os.path.isdir(self.pkgdata['xpakdir']) and \
-            os.access(self.pkgdata['xpakdir'], os.R_OK):
-
-            myebuild = [self.pkgdata['xpakdir']+"/"+x for x \
-                in os.listdir(self.pkgdata['xpakdir']) if \
-                x.endswith(etpConst['spm']['source_build_ext'])]
-
-        if myebuild:
-            myebuild = myebuild[0]
-            portage_atom = self.pkgdata['category'] + "/" + \
-                self.pkgdata['name'] + "-" + self.pkgdata['version']
-            self.Entropy.updateProgress(
-                "SPM: %s" % (brown(_("post-install phase")),),
-                importance = 0,
-                header = red("   ## ")
-            )
-            try:
-
-                if not etpUi['debug']:
-                    sys.stdout = stdfile
-                self.__ebuild_setup_phase(myebuild, portage_atom)
-                if not etpUi['debug']:
-                    sys.stdout = oldstdout
-
-                rc = self.Spm.execute_package_phase(portage_atom, myebuild,
-                    "postinstall",
-                    work_dir = self.pkgdata['unpackdir'],
-                    licenses_accepted = self.pkgdata['accept_license']
-                )
-                if rc == 1:
-                    self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO,
-                        ETP_LOGLEVEL_NORMAL,
-                        "[POST] ATTENTION Cannot properly run Source Package Manager post-install (pkg_postinst()) trigger for " + \
-                        str(portage_atom) + ". Something bad happened."
-                        )
-
-            except Exception, e:
-                sys.stdout = oldstdout
-                self.entropyTools.print_traceback()
-                self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
-                    "[POST] ATTENTION Cannot run Source Package Manager trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e)
-                )
-                mytxt = "%s: %s %s. %s. %s: %s" % (
-                    bold(_("QA")),
-                    brown(_("Cannot run Source Package Manager trigger for")),
-                    bold(str(portage_atom)),
-                    brown(_("Please report it")),
-                    bold(_("Attach this")),
-                    darkred(etpConst['spmlogfile']),
-                )
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 0,
-                    header = red("   ## ")
-                )
-        sys.stderr = oldstderr
-        sys.stdout = oldstdout
-        stdfile.close()
-        return 0
-
-    def __ebuild_setup_phase(self, ebuild, portage_atom):
-
-        rc = 0
-        env_file = os.path.join(self.pkgdata['unpackdir'], "portage",
-            portage_atom, "temp/environment")
-        if not os.path.isfile(env_file):
-
-            # FIXME: please remove as soon as upstream fixes it
-            # FIXME: workaround for buggy linux-info.eclass not being
-            # ported to EAPI=2 yet.
-            # It is required to make depmod running properly for the
-            # kernel modules inside this ebuild
-            # fix KV_OUT_DIR= inside environment
-            bz2envfile = os.path.join(self.pkgdata['xpakdir'],
-                "environment.bz2")
-            if "linux-info" in self.pkgdata['eclasses'] and \
-                os.path.isfile(bz2envfile) and self.pkgdata['versiontag']:
-
-                import bz2
-                envfile = self.Entropy.entropyTools.unpack_bzip2(bz2envfile)
-                bzf = bz2.BZ2File(bz2envfile,"w")
-                f = open(envfile,"r")
-                line = f.readline()
-                while line:
-                    if line == "KV_OUT_DIR=/usr/src/linux\n":
-                        line = "KV_OUT_DIR=/lib/modules/%s/build\n" % (
-                            self.pkgdata['versiontag'],)
-                    bzf.write(line)
-                    line = f.readline()
-                f.close()
-                bzf.close()
-                os.remove(envfile)
-
-            rc = self.Spm.execute_package_phase(portage_atom, ebuild,
-                "setup",
-                work_dir = self.pkgdata['unpackdir'],
-                licenses_accepted = self.pkgdata['accept_license']
-            )
-            if rc == 1:
-                self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
-                    "[POST] ATTENTION Cannot properly run Source Package Manager setup"
-                    " phase for "+str(portage_atom)+". Something bad happened."
-                )
-        return rc
-
+        self.Entropy.updateProgress(
+            "SPM: %s" % (brown(_("post-install phase")),),
+            importance = 0,
+            header = red("   ## ")
+        )
+        return self.Spm.execute_package_phase(self.pkgdata,
+            Trigger.PHASES['postinstall'])
 
     def trigger_spm_preinstall(self):
 
-        stdfile = open("/dev/null", "w")
-        oldstderr = sys.stderr
-        oldstdout = sys.stdout
-        sys.stderr = stdfile
-
-        myebuild = None
-        if os.path.isdir(self.pkgdata['xpakdir']) and \
-            os.access(self.pkgdata['xpakdir'], os.R_OK):
-
-            myebuild = [self.pkgdata['xpakdir']+"/"+x for x in \
-                os.listdir(self.pkgdata['xpakdir']) if \
-                x.endswith(etpConst['spm']['source_build_ext'])]
-
-        if myebuild:
-            myebuild = myebuild[0]
-            portage_atom = self.pkgdata['category'] + "/" + \
-                self.pkgdata['name'] + "-" + self.pkgdata['version']
-            self.Entropy.updateProgress(
-                "SPM: %s" % (brown(_("pre-install phase")),),
-                importance = 0,
-                header = red("   ## ")
-            )
-            try:
-
-                if not etpUi['debug']:
-                    sys.stdout = stdfile
-                self.__ebuild_setup_phase(myebuild, portage_atom)
-                if not etpUi['debug']:
-                    sys.stdout = oldstdout
-
-                rc = self.Spm.execute_package_phase(portage_atom, myebuild,
-                    "preinstall",
-                    work_dir = self.pkgdata['unpackdir'],
-                    licenses_accepted = self.pkgdata['accept_license']
-                )
-                if rc == 1:
-                    self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO,
-                        ETP_LOGLEVEL_NORMAL,
-                        "[PRE] ATTENTION Cannot properly run Source Package Manager pre-install (pkg_preinst()) trigger for " + \
-                        str(portage_atom)+". Something bad happened."
-                    )
-            except Exception, e:
-                sys.stdout = oldstdout
-                self.entropyTools.print_traceback()
-                self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
-                    "[PRE] ATTENTION Cannot run Source Package Manager preinst trigger for "+portage_atom+"!! "+str(Exception)+": "+str(e)
-                )
-                mytxt = "%s: %s %s. %s. %s: %s" % (
-                    bold(_("QA")),
-                    brown(_("Cannot run Source Package Manager trigger for")),
-                    bold(str(portage_atom)),
-                    brown(_("Please report it")),
-                    bold(_("Attach this")),
-                    darkred(etpConst['spmlogfile']),
-                )
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 0,
-                    header = red("   ## ")
-                )
-        sys.stderr = oldstderr
-        sys.stdout = oldstdout
-        stdfile.close()
-        return 0
+        self.Entropy.updateProgress(
+            "SPM: %s" % (brown(_("pre-install phase")),),
+            importance = 0,
+            header = red("   ## ")
+        )
+        return self.Spm.execute_package_phase(self.pkgdata,
+            Trigger.PHASES['preinstall'])
 
     def trigger_spm_preremove(self):
 
-        stdfile = open("/dev/null", "w")
-        oldstderr = sys.stderr
-        sys.stderr = stdfile
-
-        portage_atom = self.pkgdata['category'] + "/" + self.pkgdata['name'] + \
-            "-" + self.pkgdata['version']
-
-        myebuild = self.Spm.get_installed_package_build_script_path(
-            portage_atom)
-
-        self.myebuild_moved = None
-        if os.path.isfile(myebuild):
-            try:
-                myebuild = self._setup_remove_ebuild_environment(myebuild, portage_atom)
-            except EOFError, e:
-                sys.stderr = oldstderr
-                stdfile.close()
-                # stuff on system is broken, ignore it
-                self.Entropy.updateProgress(
-                    darkred("!!! Ebuild: pkg_prerm() failed, EOFError: ")+str(e)+darkred(" - ignoring"),
-                    importance = 1,
-                    type = "warning",
-                    header = red("   ## ")
-                )
-                return 0
-            except ImportError, e:
-                sys.stderr = oldstderr
-                stdfile.close()
-                # stuff on system is broken, ignore it
-                self.Entropy.updateProgress(
-                    darkred("!!! Ebuild: pkg_prerm() failed, ImportError: ")+str(e)+darkred(" - ignoring"),
-                    importance = 1,
-                    type = "warning",
-                    header = red("   ## ")
-                )
-                return 0
-
-        if os.path.isfile(myebuild):
-
-            self.Entropy.updateProgress(
-                "SPM: %s" % (brown(_("pre-remove phase")),),
-                importance = 0,
-                header = red("   ## ")
-            )
-            try:
-                rc = self.Spm.execute_package_phase(portage_atom, myebuild,
-                    "preremove",
-                    work_dir = etpConst['entropyunpackdir']+"/"+portage_atom,
-                    licenses_accepted = self.pkgdata['accept_license']
-                )
-                if rc == 1:
-                    self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO,
-                        ETP_LOGLEVEL_NORMAL,
-                        "[PRE] ATTENTION Cannot properly run Source Package Manager trigger for " + \
-                        str(portage_atom)+". Something bad happened."
-                    )
-            except Exception, e:
-                sys.stderr = oldstderr
-                stdfile.close()
-                self.entropyTools.print_traceback()
-                self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
-                    "[PRE] ATTENTION Cannot run Source Package Manager " + \
-                        "pre-remove trigger for " + portage_atom + "!! " + \
-                        str(Exception)+": "+str(e)
-                )
-                mytxt = "%s: %s %s. %s. %s: %s" % (
-                    bold(_("QA")),
-                    brown(_("Cannot run Source Package Manager trigger for")),
-                    bold(str(portage_atom)),
-                    brown(_("Please report it")),
-                    bold(_("Attach this")),
-                    darkred(etpConst['spmlogfile']),
-                )
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 0,
-                    header = red("   ## ")
-                )
-                return 0
-
-        sys.stderr = oldstderr
-        stdfile.close()
-        self._remove_overlayed_ebuild()
-        return 0
+        self.Entropy.updateProgress(
+            "SPM: %s" % (brown(_("pre-remove phase")),),
+            importance = 0,
+            header = red("   ## ")
+        )
+        return self.Spm.execute_package_phase(self.pkgdata,
+            Trigger.PHASES['preremove'])
 
     def trigger_spm_postremove(self):
 
-        stdfile = open("/dev/null", "w")
-        oldstderr = sys.stderr
-        sys.stderr = stdfile
-
-        portage_atom = self.pkgdata['category'] + "/" + self.pkgdata['name'] + \
-            "-" + self.pkgdata['version']
-
-        myebuild = self.Spm.get_installed_package_build_script_path(
-            portage_atom)
-
-        self.myebuild_moved = None
-        if os.path.isfile(myebuild):
-            try:
-                myebuild = self._setup_remove_ebuild_environment(myebuild, portage_atom)
-            except EOFError, e:
-                sys.stderr = oldstderr
-                stdfile.close()
-                # stuff on system is broken, ignore it
-                self.Entropy.updateProgress(
-                    darkred("!!! Ebuild: pkg_postrm() failed, EOFError: ")+str(e)+darkred(" - ignoring"),
-                    importance = 1,
-                    type = "warning",
-                    header = red("   ## ")
-                )
-                return 0
-            except ImportError, e:
-                sys.stderr = oldstderr
-                stdfile.close()
-                # stuff on system is broken, ignore it
-                self.Entropy.updateProgress(
-                    darkred("!!! Ebuild: pkg_postrm() failed, ImportError: ")+str(e)+darkred(" - ignoring"),
-                    importance = 1,
-                    type = "warning",
-                    header = red("   ## ")
-                )
-                return 0
-
-        if os.path.isfile(myebuild):
-            self.Entropy.updateProgress(
-                "SPM: %s" % (brown(_("post-remove phase")),),
-                importance = 0,
-                header = red("   ## ")
-            )
-            try:
-                rc = self.Spm.execute_package_phase(portage_atom, myebuild,
-                    "postremove",
-                    work_dir = etpConst['entropyunpackdir']+"/"+portage_atom,
-                    licenses_accepted = self.pkgdata['accept_license']
-                )
-                if rc == 1:
-                    self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO,
-                        ETP_LOGLEVEL_NORMAL,
-                        "[PRE] ATTENTION Cannot properly run Source Package Manager postremove trigger for " + \
-                        str(portage_atom)+". Something bad happened."
-                    )
-            except Exception, e:
-                sys.stderr = oldstderr
-                stdfile.close()
-                self.entropyTools.print_traceback()
-                self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
-                    "[PRE] ATTENTION Cannot run Source Package Manager postremove trigger for " + \
-                    portage_atom+"!! "+str(Exception)+": "+str(e)
-                )
-                mytxt = "%s: %s %s. %s. %s: %s" % (
-                    bold(_("QA")),
-                    brown(_("Cannot run Source Package Manager trigger for")),
-                    bold(str(portage_atom)),
-                    brown(_("Please report it")),
-                    bold(_("Attach this")),
-                    darkred(etpConst['spmlogfile']),
-                )
-                self.Entropy.updateProgress(
-                    mytxt,
-                    importance = 0,
-                    header = red("   ## ")
-                )
-                return 0
-
-        sys.stderr = oldstderr
-        stdfile.close()
-        self._remove_overlayed_ebuild()
-        return 0
-
-    def _setup_remove_ebuild_environment(self, myebuild, portage_atom):
-
-        ebuild_dir = os.path.dirname(myebuild)
-        ebuild_file = os.path.basename(myebuild)
-
-        # copy the whole directory in a safe place
-        dest_dir = os.path.join(etpConst['entropyunpackdir'],"vardb/"+portage_atom)
-        if os.path.exists(dest_dir):
-            if os.path.isdir(dest_dir):
-                shutil.rmtree(dest_dir,True)
-            elif os.path.isfile(dest_dir) or os.path.islink(dest_dir):
-                os.remove(dest_dir)
-        os.makedirs(dest_dir)
-        items = os.listdir(ebuild_dir)
-        for item in items:
-            myfrom = os.path.join(ebuild_dir,item)
-            myto = os.path.join(dest_dir,item)
-            shutil.copy2(myfrom,myto)
-
-        newmyebuild = os.path.join(dest_dir,ebuild_file)
-        if os.path.isfile(newmyebuild):
-            myebuild = newmyebuild
-            self.myebuild_moved = myebuild
-            self.Spm._ebuild_env_setup_hook(myebuild)
-
-        return myebuild
-
-    def _remove_overlayed_ebuild(self):
-
-        if not self.myebuild_moved:
-            return
-        if not os.path.isfile(self.myebuild_moved):
-            return
-
-        mydir = os.path.dirname(self.myebuild_moved)
-        shutil.rmtree(mydir, True)
-        mydir = os.path.dirname(mydir)
-        content = os.listdir(mydir)
-        while not content:
-            os.rmdir(mydir)
-            mydir = os.path.dirname(mydir)
-            content = os.listdir(mydir)
+        self.Entropy.updateProgress(
+            "SPM: %s" % (brown(_("post-remove phase")),),
+            importance = 0,
+            header = red("   ## ")
+        )
+        return self.Spm.execute_package_phase(self.pkgdata,
+            Trigger.PHASES['postremove'])
