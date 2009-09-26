@@ -566,7 +566,7 @@ class Server(Singleton, TextInterface):
             )
             answer = self.askQuestion(
                 _("Do you want to initialize your default repository ?"))
-            if answer == "No":
+            if answer == _("No"):
                 mytxt = red("%s.") % (
                     _("Continuing with an uninitialized repository"),)
                 self.updateProgress(
@@ -1662,7 +1662,7 @@ class Server(Singleton, TextInterface):
             if ask:
                 rc_question = self.askQuestion(
                     _("Would you like to continue ?"))
-                if rc_question == "No":
+                if rc_question == _("No"):
                     continue
 
             remote_relative_path = self.get_remote_packages_relative_path(repo)
@@ -1957,7 +1957,7 @@ class Server(Singleton, TextInterface):
 
         if ask:
             rc_question = self.askQuestion(_("Would you like to continue ?"))
-            if rc_question == "No":
+            if rc_question == _("No"):
                 return switched
 
         for idpackage, repo in my_matches:
@@ -3075,7 +3075,7 @@ class Server(Singleton, TextInterface):
             )
 
             rc_question = self.askQuestion(_("Do you want to continue ?"))
-            if rc_question == "No":
+            if rc_question == _("No"):
                 return
             try:
                 os.remove(self.get_local_database_file(repo))
@@ -3127,7 +3127,7 @@ class Server(Singleton, TextInterface):
 
             rc_question = self.askQuestion(
                 _("Would you like to sync packages first (important!) ?"))
-            if rc_question == "Yes":
+            if rc_question == _("Yes"):
                 self.MirrorsService.sync_packages(repo = repo)
 
             # fill tree updates actions
@@ -3351,7 +3351,7 @@ class Server(Singleton, TextInterface):
         if ask:
             rc_question = self.askQuestion(
                 _("Would you like to continue ?"))
-            if rc_question == "No":
+            if rc_question == _("No"):
                 return set(), set(), {}
 
         match = set()
@@ -3599,7 +3599,7 @@ class Server(Singleton, TextInterface):
 
         if ask:
             rc_question = self.askQuestion(_("Would you like to continue ?"))
-            if rc_question == "No":
+            if rc_question == _("No"):
                 return set(), set(), set(), set()
 
 

@@ -289,10 +289,10 @@ class QAInterface:
                     )
             if ask:
                 rc_ask = self.Output.askQuestion(_("Do you want to add them?"))
-                if rc_ask == "No":
+                if rc_ask == _("No"):
                     continue
                 rc_ask = self.Output.askQuestion(_("Selectively?"))
-                if rc_ask == "Yes":
+                if rc_ask == _("Yes"):
                     newmissing = set()
                     new_blacklist = set()
                     for dependency in missing:
@@ -307,12 +307,12 @@ class QAInterface:
                             header = blue(" @@ ")
                         )
                         rc_ask = self.Output.askQuestion(_("Want to add?"))
-                        if rc_ask == "Yes":
+                        if rc_ask == _("Yes"):
                             newmissing.add(dependency)
                         else:
                             rc_ask = self.Output.askQuestion(
                                 _("Want to blacklist?"))
-                            if rc_ask == "Yes":
+                            if rc_ask == _("Yes"):
                                 new_blacklist.add(dependency)
                     if new_blacklist and (black_list_adder != None):
                         black_list_adder(new_blacklist, repo = repo)

@@ -840,7 +840,7 @@ def main():
 
         print_error(darkgreen(_("Of course you are on the Internet...")))
         rc = Text.askQuestion(_("Erm... Can I send the error, along with some information\n   about your hardware to my creators so they can fix me? (Your IP will be logged)"))
-        if rc == "No":
+        if rc == _("No"):
             print_error(darkgreen(_("Ok, ok ok ok... Sorry!")))
             raise SystemExit(2)
 

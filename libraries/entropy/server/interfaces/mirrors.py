@@ -2990,7 +2990,7 @@ class Server:
             if ask:
                 rc_sync = self.Entropy.askQuestion(
                     _("Would you like to run the steps above ?"))
-                if rc_sync == "No":
+                if rc_sync == _("No"):
                     continue
 
             try:
@@ -3324,7 +3324,7 @@ class Server:
         if ask:
             rc_question = self.Entropy.askQuestion(
                 _("Would you like to continue ?"))
-            if rc_question == "No":
+            if rc_question == _("No"):
                 return errors, branch_data
 
         myqueue = []

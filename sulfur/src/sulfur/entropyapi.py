@@ -347,8 +347,11 @@ class Equo(EquoInterface):
             return False
         gobject.timeout_add(0, update_gui)
 
-    def askQuestion(self, question, importance = 0, responses = ["Yes","No"],
+    def askQuestion(self, question, importance = 0, responses = None,
         parent = None):
+
+        if responses is None:
+            responses = (_("Yes"), _("No"),)
 
         if parent is None:
             try:

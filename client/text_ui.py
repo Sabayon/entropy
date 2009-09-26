@@ -296,7 +296,7 @@ def worldUpdate(onlyfetch = False, replay = False, resume = False,
             if human:
                 do_run = True
                 rc = Equo.askQuestion("     %s" % (_("Would you like to scan them ?"),) )
-                if rc == "No":
+                if rc == _("No"):
                     do_run = False
 
             if do_run:
@@ -582,7 +582,7 @@ def _showPackageInfo(foundAtoms, deps):
         if deps:
             if (etpUi['ask']):
                 rc = Equo.askQuestion("     %s" % (_("Would you like to continue with dependencies calculation ?"),) )
-                if rc == "No":
+                if rc == _("No"):
                     return True,(0,0)
 
     return False,(0,0)
@@ -992,7 +992,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
 
         if (etpUi['ask']):
             rc = Equo.askQuestion("     %s" % (_("Would you like to execute the queue ?"),) )
-            if rc == "No":
+            if rc == _("No"):
                 dirscleanup()
                 return 0,0
         if (etpUi['pretend']):
@@ -1312,7 +1312,7 @@ def configurePackages(packages = None):
 
     if etpUi['ask']:
         rc = Equo.askQuestion(question = "     %s" % (_("Would you like to configure them now ?"),))
-        if rc == "No":
+        if rc == _("No"):
             return 0,0
 
     totalqueue = str(len(foundAtoms))
@@ -1461,7 +1461,7 @@ def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
 
         if etpUi['ask']:
             rc = Equo.askQuestion(question)
-            if rc == "No":
+            if rc == _("No"):
                 lookForOrphanedPackages = False
                 if (not deps):
                     return 0,0
@@ -1503,13 +1503,13 @@ def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
             if human:
                 question = "     %s" % (_("Would you like to proceed with a selective removal ?"),)
             rc = Equo.askQuestion(question)
-            if rc == "No" and not human:
+            if rc == _("No") and not human:
                 return 0,0
-            elif rc == "Yes" and human:
+            elif rc == _("Yes") and human:
                 doSelectiveRemoval = True
-            elif rc == "No" and human:
+            elif rc == _("No") and human:
                 rc = Equo.askQuestion("     %s" % (_("Would you like to skip this step then ?"),))
-                if rc == "Yes":
+                if rc == _("Yes"):
                     return 0,0
         elif deps:
             Equo.entropyTools.countdown(
@@ -1578,7 +1578,7 @@ def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
             print_info(red(" -- ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(atom))
             if doSelectiveRemoval:
                 rc = Equo.askQuestion("     %s" % (_("Remove this one ?"),) )
-                if rc == "No":
+                if rc == _("No"):
                     # update resume cache
                     ignored.append(idpackage)
         removalQueue = [x for x in removalQueue if x not in ignored]
@@ -1690,7 +1690,7 @@ def dependenciesTest():
 
         if (etpUi['ask']):
             rc = Equo.askQuestion("     %s"  % (_("Would you like to install the available packages ?"),) )
-            if rc == "No":
+            if rc == _("No"):
                 return 0,0
         else:
             mytxt = "%s %s %s" % (
@@ -1768,7 +1768,7 @@ def librariesTest(listfiles = False, dump = False):
     if (atomsdata):
         if (etpUi['ask']):
             rc = Equo.askQuestion("     %s" % (_("Would you like to install them ?"),) )
-            if rc == "No":
+            if rc == _("No"):
                 restore_qstats()
                 return 0,atomsdata
         else:

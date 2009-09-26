@@ -1615,10 +1615,12 @@ class RepositoryManagerMenu(MenuSkel):
     def remove_entropy_packages(self, matched_atoms, reload_func = None):
 
         rc = self.Entropy.askQuestion(_("Are you sure you want to remove the selected packages ? (For EVA!)"))
-        if rc != "Yes": return
+        if rc != _("Yes"):
+            return
 
         rc = self.Entropy.askQuestion(_("This is your last chance, are you really really really sure?"))
-        if rc != "Yes": return
+        if rc != _("Yes"):
+            return
 
         with self.BufferLock:
             try:
@@ -5061,7 +5063,7 @@ class UGCAddMenu(MenuSkel):
 
         # confirm ?
         rc = self.Entropy.askQuestion(_("Do you confirm your submission?"))
-        if rc != "Yes":
+        if rc != _("Yes"):
             return False
 
         self.show_loading()

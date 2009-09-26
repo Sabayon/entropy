@@ -211,7 +211,7 @@ def ugcVotes(options):
             )
         )
         rc = Equo.askQuestion("Do you want to submit?")
-        if rc != "Yes":
+        if rc != _("Yes"):
             return 1
 
         # submit vote
@@ -378,7 +378,7 @@ def ugcDocuments(options):
             )
         )
         rc = Equo.askQuestion("Do you want to submit?")
-        if rc != "Yes":
+        if rc != _("Yes"):
             return 1
 
         # submit comment
@@ -454,7 +454,7 @@ def ugcDocuments(options):
             )
             return 1
         rc = Equo.askQuestion("Would you like to review them?")
-        if rc == "Yes":
+        if rc == _("Yes"):
             data, err_msg = Equo.UGC.get_documents_by_identifiers(repository, identifiers)
             if not isinstance(data,tuple):
                 print_error(
@@ -471,7 +471,7 @@ def ugcDocuments(options):
                 showDocument(comment_dict, repository, comment_dict['pkgkey'])
 
         rc = Equo.askQuestion("Would you like to continue with the removal?")
-        if rc != "Yes":
+        if rc != _("Yes"):
             return 1
 
         for identifier in identifiers:

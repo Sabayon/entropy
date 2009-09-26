@@ -65,13 +65,13 @@ def database(options):
         print_warning(mytxt)
         print_warning(red(_("If you dont know what you're doing just, don't do this. Really. I'm not joking.")))
         rc = Equo.askQuestion("  %s" % (_("Understood ?"),))
-        if rc == "No":
+        if rc == _("No"):
             return 0
         rc = Equo.askQuestion("  %s" % (_("Really ?"),) )
-        if rc == "No":
+        if rc == _("No"):
             return 0
         rc = Equo.askQuestion("  %s. %s" % (_("This is your last chance"),_("Ok?"),) )
-        if rc == "No":
+        if rc == _("No"):
             return 0
 
         # clean caches
@@ -233,13 +233,13 @@ def database(options):
         )
         print_warning(mytxt)
         rc = Equo.askQuestion("     %s" % (_("Can I continue ?"),) )
-        if rc == "No":
+        if rc == _("No"):
             return 0
         rc = Equo.askQuestion("     %s" % (_("Are you REALLY sure ?"),) )
-        if rc == "No":
+        if rc == _("No"):
             return 0
         rc = Equo.askQuestion("     %s" % (_("Do you even know what you're doing ?"),) )
-        if rc == "No":
+        if rc == _("No"):
             return 0
 
         # clean caches
@@ -499,7 +499,7 @@ def database(options):
             return 2
 
         rc = Equo.askQuestion(_("Are you ready ?"))
-        if rc == "No":
+        if rc == _("No"):
             return 0
 
         acquired = Equo.resources_create_lock()
@@ -523,9 +523,11 @@ def database(options):
                 print_info(brown("    # ")+red(atom))
             toBeRemoved -= broken
             if toBeRemoved:
-                rc = "Yes"
-                if etpUi['ask']: rc = Equo.askQuestion(">>   %s" % (_("Continue with removal ?"),))
-                if rc == "Yes":
+                rc = _("Yes")
+                if etpUi['ask']:
+                    rc = Equo.askQuestion(">>   %s" % (
+                        _("Continue with removal ?"),))
+                if rc == _("Yes"):
                     queue = 0
                     totalqueue = str(len(toBeRemoved))
                     for x in toBeRemoved:
@@ -551,9 +553,11 @@ def database(options):
             print_info(brown(" @@ ")+mytxt)
             for x in toBeAdded:
                 print_info(darkgreen("   # ")+red(x[0]))
-            rc = "Yes"
-            if etpUi['ask']: rc = Equo.askQuestion(">>   %s" % (_("Continue with adding ?"),) )
-            if rc == "No":
+            rc = _("Yes")
+            if etpUi['ask']:
+                rc = Equo.askQuestion(">>   %s" % (
+                    _("Continue with adding ?"),) )
+            if rc == _("No"):
                 Equo.resources_remove_lock()
                 return 0
             # now analyze

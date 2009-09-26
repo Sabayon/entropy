@@ -101,7 +101,7 @@ def QuickpkgHandler(mypackages, savedir = None):
 
     if (not etpUi['quiet']) or (etpUi['ask']):
         rc = Equo.askQuestion(">>   %s" % (_("Would you like to recompose the selected packages ?"),))
-        if rc == "No":
+        if rc == _("No"):
             return 0
 
     for pkg in packages:
@@ -270,7 +270,7 @@ def smartPackagesHandler(mypackages):
         print_info(brown("\t[")+red("%s:" % (_("from"),))+pkg[1]+brown("]")+" - "+atom)
 
     rc = Equo.askQuestion(">>   %s" % (_("Would you like to create the packages above ?"),))
-    if rc == "No":
+    if rc == _("No"):
         return 0
 
     print_info(darkgreen(" * ")+red("%s..." % (_("Creating merged Smart Package"),)))
@@ -412,7 +412,7 @@ def smartappsHandler(mypackages):
 
     rc = Equo.askQuestion(">>   %s" % (
         _("Would you like to create the packages above ?"),))
-    if rc == "No":
+    if rc == _("No"):
         return 0
 
     rc = smartgenerator(packages)

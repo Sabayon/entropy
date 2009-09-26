@@ -796,7 +796,7 @@ class TextInterface:
         """
 
         if responses is None:
-            responses = (_("Yes"),_("No"),)
+            responses = (_("Yes"), _("No"),)
 
         colours = [green, red, blue, darkgreen, darkred, darkblue,
             brown, purple]

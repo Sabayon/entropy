@@ -347,8 +347,8 @@ def update(options):
             if reagentRequestAsk:
                 rc = Entropy.askQuestion(">>   %s" % (_("Would you like to transform them now ?"),) )
             else:
-                rc = "Yes"
-            if rc == "Yes":
+                rc = _("Yes")
+            if rc == _("Yes"):
                 for idpackage,repoid in toBeInjected:
                     dbconn = Entropy.open_server_repository(read_only = True, no_upload = True, repo = repoid)
                     atom = dbconn.retrieveAtom(idpackage)
@@ -372,7 +372,7 @@ def update(options):
             for idpackage, repoid in toBeRemoved:
                 show_rm(idpackage, repoid)
                 rc = Entropy.askQuestion(">>   %s" % (_("Remove this package?"),))
-                if rc == "Yes":
+                if rc == _("Yes"):
                     new_toBeRemoved.add((idpackage, repoid,))
             toBeRemoved = new_toBeRemoved
 
@@ -385,8 +385,8 @@ def update(options):
             if reagentRequestAsk:
                 rc = Entropy.askQuestion(">>   %s" % (_("Would you like to remove them now ?"),) )
             else:
-                rc = "Yes"
-            if rc == "Yes":
+                rc = _("Yes")
+            if rc == _("Yes"):
                 remdata = {}
                 for idpackage,repoid in toBeRemoved:
                     if not remdata.has_key(repoid):
@@ -401,7 +401,7 @@ def update(options):
             for tb_atom, tb_counter in toBeAdded:
                 print_info(brown("    # ")+red(tb_atom))
                 rc = Entropy.askQuestion(">>   %s" % (_("Add this package?"),))
-                if rc == "Yes":
+                if rc == _("Yes"):
                     new_toBeAdded.add((tb_atom, tb_counter,))
             toBeAdded = new_toBeAdded
 
@@ -419,7 +419,7 @@ def update(options):
                         Entropy.default_repository,
                     )
                 )
-                if rc == "No":
+                if rc == _("No"):
                     return 0
 
             problems = Entropy.check_config_file_updates()
@@ -525,7 +525,7 @@ def database(options):
                 bold(to_branch), len(pkglist), darkgreen(_("packages")),))
 
             rc = Entropy.askQuestion(_("Would you like to continue ?"))
-            if rc == "No":
+            if rc == _("No"):
                 return 4
 
             status = Entropy.switch_packages_branch(from_branch, to_branch,
@@ -580,7 +580,7 @@ def database(options):
 
 
         rc = Entropy.askQuestion(_("Would you like to continue ?"))
-        if rc == "No":
+        if rc == _("No"):
             return 0
 
         print_info(darkgreen(" * ")+red("%s..." % (_("Removing selected packages"),) ))
@@ -624,7 +624,7 @@ def database(options):
 
         # ask to continue
         rc = Entropy.askQuestion(_("Would you like to continue ?"))
-        if rc == "No":
+        if rc == _("No"):
             return 0
 
         print_info(green(" * ")+red("%s ..." % (_("Removing selected packages"),) ))

@@ -81,7 +81,7 @@ def update(cmd = None):
         if cmd == -1:
             # exit
             return -1
-        elif cmd in (-3,-5):
+        elif cmd in (-3, -5):
             # automerge files asking one by one
             for key in keys:
                 if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
@@ -91,7 +91,7 @@ def update(cmd = None):
                 print_info(darkred("%s: " % (_("Configuration file"),) )+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
                 if cmd == -3:
                     rc = Equo.askQuestion(">>   %s" % (_("Overwrite ?"),) )
-                    if rc == "No":
+                    if rc == _("No"):
                         continue
                 print_info(darkred("%s " % (_("Moving"),) )+darkgreen(etpConst['systemroot']+scandata[key]['source'])+darkred(" %s " % (_("to"),) )+brown(etpConst['systemroot']+scandata[key]['destination']))
 
@@ -100,7 +100,7 @@ def update(cmd = None):
 
             break
 
-        elif cmd in (-7,-9):
+        elif cmd in (-7, -9):
             for key in keys:
 
                 if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
@@ -112,7 +112,7 @@ def update(cmd = None):
                 print_info(darkred("%s: " % (_("Configuration file"),) )+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
                 if cmd == -7:
                     rc = Equo.askQuestion(">>   %s" % (_("Discard ?"),) )
-                    if rc == "No":
+                    if rc == _("No"):
                         continue
                 print_info(darkred("%s " % (_("Discarding"),) )+darkgreen(etpConst['systemroot']+scandata[key]['source']))
 
