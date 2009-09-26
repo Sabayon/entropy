@@ -151,7 +151,16 @@ class SulfurConsole(vte.Terminal):
         self.chars_count += len(txt)
         if self.chars_count > self.max_chars:
             self.reset()
-        return vte.Terminal.feed(self, txt, len(txt))
+
+        # Workaround vte.Terminal bug not passing to .feed proper message RAW
+        # size. feed() supports UTF-8 but then, string length is wrongly passed
+        # by python, because it does not consider the fact that UTF-8 chars can
+        # be long 16bits.
+        raw_txt_len = len(txt)
+        if isinstance(txt, unicode):
+            raw_txt_len = len(txt.encode('utf-8'))
+
+        return vte.Terminal.feed(self, txt, raw_txt_len)
 
 
 
