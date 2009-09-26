@@ -1917,7 +1917,7 @@ class EntropyQueueView:
 
     def __init__( self, widget, queue ):
         self.view = widget
-        self.model = self.setup_view()
+        self.setup_view()
         self.queue = queue
         self.Equo = Equo()
         self.ugc_update_event_handler_id = \
@@ -1925,8 +1925,6 @@ class EntropyQueueView:
 
     def setup_view( self ):
 
-        model = gtk.TreeStore( gobject.TYPE_STRING )
-        self.view.set_model( model )
         cell1 = gtk.CellRendererText()
         column1= gtk.TreeViewColumn( _( "Packages" ), cell1, markup=0 )
         column1.set_resizable( True )
@@ -1935,9 +1933,7 @@ class EntropyQueueView:
         column1.set_fixed_width( 300 )
         column1.set_cell_data_func( cell1, self.get_data_text )
         self.view.append_column( column1 )
-
         column1.set_sort_column_id( -1 )
-        return model
 
     def get_data_text( self, column, cell, model, iter ):
         namedesc = model.get_value( iter, 0 )
@@ -1958,15 +1954,20 @@ class EntropyQueueView:
             cell.set_property(stype,None)
 
     def __ugc_refresh(self, event):
-        self.refresh()
+        try:
+            # this is atomic
+            self.refresh()
+        except:
+            pass
 
-    def refresh ( self ):
-        self.model.clear()
+    def refresh(self):
+
+        model = gtk.TreeStore(gobject.TYPE_STRING)
 
         label = "<b>%s</b>" % (_( "Packages to remove" ),)
         mylist = self.queue.packages['r']
         if mylist:
-            self.populate_list( label, mylist )
+            self.populate_list( model, label, mylist )
 
         label = "<b>%s</b>" % (_( "Packages to downgrade" ),)
         mylist = self.queue.packages['d']
@@ -1976,17 +1977,24 @@ class EntropyQueueView:
         label = "<b>%s</b>" % (_( "Packages to install" ),)
         mylist = self.queue.packages['i']
         if mylist:
-            self.populate_list( label, mylist )
+            self.populate_list( model, label, mylist )
 
         label = "<b>%s</b>" % (_( "Packages to update" ),)
         mylist = self.queue.packages['u']
         if mylist:
-            self.populate_list( label, mylist )
+            self.populate_list( model, label, mylist )
 
         label = "<b>%s</b>" % (_( "Packages to reinstall" ),)
         mylist = self.queue.packages['rr']
         if mylist:
-            self.populate_list( label, mylist )
+            self.populate_list( model, label, mylist )
+
+        self.view.set_model(model)
+        search_col = 0
+        self.view.set_search_column( search_col )
+        self.view.set_search_equal_func(self.atom_search)
+        self.view.set_property('headers-visible', True)
+        self.view.set_property('enable-search', True)
 
         self.view.expand_all()
 
@@ -1994,9 +2002,8 @@ class EntropyQueueView:
         namedesc = model.get_value( iterator, 0 )
         return not (namedesc.find(key) != -1)
 
-    def populate_list( self, label, mylist ):
+    def populate_list( self, model, label, mylist ):
 
-        search_col = 0
         categories = {}
         for po in mylist:
             mycat = po.cat
@@ -2007,7 +2014,7 @@ class EntropyQueueView:
         cats = categories.keys()
         cats.sort()
 
-        grandfather = self.model.append( None, (label,) )
+        grandfather = model.append( None, (label,) )
         for category in cats:
             cat_desc = _("No description")
             cat_desc_data = self.Equo.get_category_description_data(category)
@@ -2023,14 +2030,10 @@ class EntropyQueueView:
                     onlyname = category
             )
             mydummy.color = SulfurConf.color_package_category
-            parent = self.model.append( grandfather, (mydummy.namedesc,) )
+            parent = model.append( grandfather, (mydummy.namedesc,) )
             for po in categories[category]:
-                self.model.append( parent, (po.namedesc,) )
+                model.append( parent, (po.namedesc,) )
 
-        self.view.set_search_column( search_col )
-        self.view.set_search_equal_func(self.atom_search)
-        self.view.set_property('headers-visible',True)
-        self.view.set_property('enable-search',True)
 
 class EntropyFilesView:
 
