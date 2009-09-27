@@ -3,12 +3,15 @@ msgstr ""
 "Project-Id-Version: French Entropy translation for Sabayon Linux 0.1\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-09-06 21:07+0200\n"
-"PO-Revision-Date: 2009-09-09 01:28+0100\n"
-"Last-Translator: Benjamin <benjamin.guay@gmail.com>\n"
-"Language-Team: french <nsuffys@gmail.com>\n"
+"PO-Revision-Date: 2009-09-19 14:02+0100\n"
+"Last-Translator: SUFFYS <nsuffys@gmail.com>\n"
+"Language-Team: French <nsuffys@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: French\n"
+"X-Poedit-Country: FRANCE\n"
+"X-Poedit-SourceCharset: iso-8859-1\n"
 
 #: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:37
 msgid "Office"
@@ -655,8 +658,8 @@ msgid "Broken and matched packages list"
 msgstr "Aucun paquet correspondant"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1297
-#, fuzzy
 #: ../../libraries/entropy/qa.py:384
+#, fuzzy
 msgid "Dumping results into these files"
 msgstr "déjà activé"
 
@@ -1336,8 +1339,8 @@ msgid "dump light checksum"
 msgstr "Somme de contrôle"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1431
-#, fuzzy
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1487
+#, fuzzy
 msgid "opener"
 msgstr "correspondances"
 
@@ -1588,8 +1591,8 @@ msgid "socket error"
 msgstr "erreur de socket"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2922
-#, fuzzy
 #: ../../server/server_reagent.py:496
+#, fuzzy
 msgid "on"
 msgstr "ou le"
 
@@ -1679,11 +1682,11 @@ msgid "repo"
 msgstr "dépôt"
 
 #: ../../libraries/entropy/client/services/ugc/commands.py:55
-#, fuzzy
 #: ../../libraries/entropy/client/services/ugc/commands.py:72
 #: ../../libraries/entropy/client/services/ugc/commands.py:90
 #: ../../libraries/entropy/client/services/ugc/commands.py:106
 #: ../../libraries/entropy/client/services/ugc/commands.py:143
+#, fuzzy
 msgid "arch"
 msgstr "Recherche en cours"
 
@@ -1944,19 +1947,19 @@ msgid "Compile specified atoms with specified parameters"
 msgstr ""
 
 #: ../../libraries/entropy/client/services/system/methods.py:178
-#, fuzzy
 #: ../../libraries/entropy/client/services/system/methods.py:196
 #: ../../libraries/entropy/client/services/system/methods.py:219
 #: ../../libraries/entropy/client/services/system/methods.py:228
 #: ../../libraries/entropy/client/services/system/methods.py:236
+#, fuzzy
 msgid "Atoms"
 msgstr "Atome"
 
 #: ../../libraries/entropy/client/services/system/methods.py:179
-#, fuzzy
 #: ../../libraries/entropy/client/services/system/methods.py:197
 #: ../../sulfur/src/sulfur/dialogs.py:3193
 #: ../../sulfur/src/sulfur/dialogs.py:3236
+#, fuzzy
 msgid "Pretend"
 msgstr "Créé"
 
@@ -1980,8 +1983,8 @@ msgid "No color"
 msgstr "Pas de couleur"
 
 #: ../../libraries/entropy/client/services/system/methods.py:183
-#, fuzzy
 #: ../../sulfur/src/sulfur/dialogs.py:3240
+#, fuzzy
 msgid "Fetch only"
 msgstr "rapporter"
 
@@ -2582,8 +2585,8 @@ msgid "must be an ASCII string"
 msgstr "doit être une chaîne ASCII"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:1197
-#, fuzzy
 #: ../../libraries/entropy/client/interfaces/methods.py:1226
+#, fuzzy
 msgid "cannot start with"
 msgstr "Impossible de trouver"
 
@@ -2717,9 +2720,8 @@ msgstr ""
 
 #: ../../libraries/entropy/client/interfaces/package.py:1003
 #: ../../libraries/entropy/client/interfaces/package.py:1172
-#, fuzzy
 msgid "Removing in 20 seconds !!"
-msgstr "Nouvel essai dans 1 seconde."
+msgstr "Suppression dans 20 secondes !!"
 
 #. we can merge it, files, even if
 #. contains changes have not been modified
@@ -2871,8 +2873,8 @@ msgid "Fetch not available"
 msgstr "Indisponible"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1979
-#, fuzzy
 #: ../../sulfur/src/sulfur/entropyapi.py:145
+#, fuzzy
 msgid "Fetching"
 msgstr "Matching"
 
@@ -4641,8 +4643,8 @@ msgid "analyze the Entropy Store directory directly"
 msgstr "analyser le répertoire du magasin Entropy  directement"
 
 #: ../../client/equo.py:242
-#, fuzzy
 #: ../../server/reagent.py:52
+#, fuzzy
 msgid "repackage the specified atoms"
 msgstr "montrer les paquets possédant le tag spécifié"
 
@@ -4654,8 +4656,8 @@ msgid "do not ask anything except critical things"
 msgstr "ne rien demander sauf les trucs critiques"
 
 #: ../../client/equo.py:244
-#, fuzzy
 #: ../../server/reagent.py:54
+#, fuzzy
 msgid "manage only the specified atoms"
 msgstr "montrer les paquets possédant le tag spécifié"
 
@@ -4834,10 +4836,10 @@ msgid "move packages from a repository to another"
 msgstr "déplacer des paquets d'un dépôt à l'autre"
 
 #: ../../client/equo.py:291
-#, fuzzy
 #: ../../client/equo.py:293
 #: ../../server/reagent.py:94
 #: ../../server/reagent.py:96
+#, fuzzy
 msgid "pulls dependencies in"
 msgstr "Dépendances"
 
@@ -4914,8 +4916,8 @@ msgid "do not pull old package slots"
 msgstr "Paquets téléchargés"
 
 #: ../../client/equo.py:320
-#, fuzzy
 #: ../../server/reagent.py:104
+#, fuzzy
 msgid "compile packages in provided package set names"
 msgstr "compiler les paquets appartenant aux catégories données"
 
@@ -4940,8 +4942,8 @@ msgid "scan orphaned packages on SPM"
 msgstr "vérifier les paquets orphelins dans SPM"
 
 #: ../../client/equo.py:329
-#, fuzzy
 #: ../../server/activator.py:72
+#, fuzzy
 msgid "notice board handling functions"
 msgstr "fonctions de gestion de la base de données"
 
@@ -5391,11 +5393,11 @@ msgstr "Pas de correspondance pour"
 
 #. atom
 #: ../../client/text_query.py:257
-#, fuzzy
 #: ../../client/text_query.py:369
 #: ../../sulfur/src/sulfur/dialogs.py:2943
 #: ../../sulfur/src/sulfur/dialogs.py:3579
 #: ../../sulfur/src/sulfur/dialogs.py:6058
+#, fuzzy
 msgid "Atom"
 msgstr "Atome"
 
@@ -5868,15 +5870,15 @@ msgid "Press Enter to continue"
 msgstr "Appuyez sur Entrée pour continuer"
 
 #: ../../client/text_repositories.py:248
-#, fuzzy
 #: ../../server/server_activator.py:207
+#, fuzzy
 msgid "Choose one by typing its identifier"
 msgstr "Merci de choisir un fichier à mettre à jour en entrant son numéro d'identification."
 
 #: ../../client/text_repositories.py:276
-#, fuzzy
 #: ../../sulfur/src/sulfur/dialogs.py:2283
 #: ../../sulfur/src/sulfur/sulfur.glade.h:133
+#, fuzzy
 msgid "Notice board"
 msgstr "télécharger les paquets uniquement"
 
@@ -6176,8 +6178,8 @@ msgid "Select the database you want to restore"
 msgstr "Choisir la base de données que vous voulez restaurer"
 
 #: ../../client/text_rescue.py:662
-#, fuzzy
 #: ../../server/server_reagent.py:666
+#, fuzzy
 msgid "Entropy installed packages database restore tool"
 msgstr "depuis la base de données des paquets installés"
 
@@ -7558,8 +7560,8 @@ msgid "UGC Status"
 msgstr "État UGC"
 
 #: ../../sulfur/src/sulfur/__init__.py:800
-#, fuzzy
 #: ../../sulfur/src/sulfur/__init__.py:828
+#, fuzzy
 msgid "Error setting parameter"
 msgstr "Pas assez de paramètres"
 
@@ -7887,8 +7889,8 @@ msgid "Packages information"
 msgstr "Information des paquets"
 
 #: ../../sulfur/src/sulfur/dialogs.py:784
-#, fuzzy
 #: ../../sulfur/src/sulfur/sulfur.glade.h:12
+#, fuzzy
 msgid "Advisory information"
 msgstr "montrer les informations du système"
 
@@ -7920,8 +7922,8 @@ msgid "Add USE"
 msgstr ""
 
 #: ../../sulfur/src/sulfur/dialogs.py:840
-#, fuzzy
 #: ../../sulfur/src/sulfur/sulfur.glade.h:187
+#, fuzzy
 msgid "Remove USE"
 msgstr "supprimé"
 
@@ -8673,14 +8675,14 @@ msgid "Choose what Package Set you want to edit"
 msgstr "Pas de dépôt trouvé en ligne"
 
 #: ../../sulfur/src/sulfur/events.py:870
-#, fuzzy
 #: ../../sulfur/src/sulfur/events.py:875
+#, fuzzy
 msgid "Package Set name"
 msgstr "Nom du Paquet"
 
 #: ../../sulfur/src/sulfur/events.py:871
-#, fuzzy
 #: ../../sulfur/src/sulfur/events.py:876
+#, fuzzy
 msgid "Package atoms"
 msgstr "Nom du Paquet"
 
@@ -10187,5 +10189,4 @@ msgstr "Icône de notifications "
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "_Charger le gestionnaire de paquets"
-
 
