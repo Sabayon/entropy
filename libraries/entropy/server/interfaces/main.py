@@ -2157,6 +2157,10 @@ class Server(Singleton, TextInterface):
         max_rev = -1
         for myrepo in myserver_repos:
 
+            # not myself
+            if myrepo == repo:
+                continue
+
             mydbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = myrepo)
 
