@@ -128,15 +128,16 @@ class const:
 
            (_("Translation:"),
             (
-                "Catalan - Roger Calvò",
-                "Chinese - N/A",
-                "Dutch - Andre Parhan",
-                "French - Benjamin Guay",
-                "German - N/A",
-                "Italian - Fabio Erculiani",
-                "Portuguese - Lucas Paulino Azevedo",
-                "Russian - Maksim Belyanovskiy",
-                "Spanish - Daniel Halens Rodriguez",
+                "ca - Roger Calvò",
+                "de - N/A",
+                "es - Daniel Halens Rodriguez",
+                "fr - Suffys Nicolas"
+                "fr_CA - Benjamin Guay",
+                "it - Fabio Erculiani",
+                "nl - Andre Parhan",
+                "pt - Lucas Paulino Azevedo",
+                "ru - Maksim Belyanovskiy",
+                "zh - N/A",
                 )
             ),
 
