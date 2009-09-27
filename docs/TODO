@@ -4,6 +4,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
+    - revision bump matter, still present?
     - move sensible pkgs to alt dir
     - move etpConst['spm'] to entropy.spm
     - entropy.db hookable plugins support (atom/dep validation, db taint,
