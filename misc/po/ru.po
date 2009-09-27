@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Entropy 0.98.5.3\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-09-06 21:07+0200\n"
-"PO-Revision-Date: 2009-09-15 22:38+0300\n"
+"PO-Revision-Date: 2009-09-21 02:01+0300\n"
 "Last-Translator: Maksim Belyanovskiy <maxxbell@gmail.com>\n"
 "Language-Team: Maksim Belyanovskiy <maxxbell@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -751,7 +751,7 @@ msgstr "неверная md5"
 #: ../../libraries/entropy/server/interfaces/main.py:1750
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2791
 msgid "download errors"
-msgstr "ошибки загррузки"
+msgstr "ошибки загрузки"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1751
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1846
@@ -2326,7 +2326,7 @@ msgstr "Аггрегированная скорость передачи"
 #: ../../libraries/entropy/client/interfaces/fetch.py:433
 #: ../../libraries/entropy/client/interfaces/package.py:1511
 msgid "second"
-msgstr "секунда"
+msgstr "сек"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:201
 #: ../../libraries/entropy/client/interfaces/fetch.py:449
@@ -9260,7 +9260,7 @@ msgstr "HTTP Proxy"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:91
 msgid "Hide this until something new happens"
-msgstr "Скройте это, пока что-либо ещё не случилось"
+msgstr "Не показывать это окно, пока не появится что-то новое"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:94
 msgid "If selected, packages will be downloaded only"
