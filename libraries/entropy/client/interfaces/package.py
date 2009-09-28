@@ -1024,30 +1024,6 @@ class Package:
         encoded_image_dir = image_dir.encode('utf-8')
         movefile = entropy.tools.movefile
 
-        def workout_utime(path):
-            # Update mtime and atime to reflect actual
-            # install time, this is done also to avoid issues
-            # with files being in future (for eg. build server operates
-            # on a different timezone)
-            try:
-                os.utime(path, None)
-            except (OSError,), err:
-                self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
-                    "WARNING: cannot run utime for %s [%s]" % (path, err,)
-                )
-                self.Entropy.updateProgress(
-                    "QA: %s: %s => %s" % (
-                        _("cannot run utime()"),
-                        path,
-                        err,
-                    ),
-                    importance = 1,
-                    type = "warning",
-                    header = red(" !!! ")
-                )
-
         def workout_subdir(currentdir, subdir):
 
             imagepath_dir = "%s/%s" % (currentdir, subdir,)
@@ -1333,9 +1309,6 @@ class Package:
             item_dir = os.path.realpath(os.path.dirname(tofile))
             item_inst = os.path.join(item_dir, os.path.basename(tofile))
             items_installed.add(item_inst)
-
-            # update file times
-            workout_utime(tofile)
 
             if protected:
                 # add to disk cache
