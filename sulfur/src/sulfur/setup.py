@@ -131,7 +131,7 @@ class const:
                 "ca - Roger Calvò",
                 "de - N/A",
                 "es - Daniel Halens Rodriguez",
-                "fr - Suffys Nicolas"
+                "fr - Suffys Nicolas",
                 "fr_CA - Benjamin Guay",
                 "it - Fabio Erculiani",
                 "nl - Andre Parhan",
