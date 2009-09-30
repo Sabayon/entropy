@@ -225,40 +225,51 @@ def get_remote_data(url, timeout = 5):
     @rtype: string or bool
     """
     import socket
-    import urllib.request, urllib.error, urllib.parse
+    if sys.hexversion >= 0x3000000:
+        import urllib.request as urllib_request
+    else:
+        import urllib2
+
     # now pray the server
     from entropy.core.settings.base import SystemSettings
     sys_settings = SystemSettings()
     proxy_settings = sys_settings['system']['proxy']
-    try:
-        mydict = {}
-        if proxy_settings['ftp']:
-            mydict['ftp'] = proxy_settings['ftp']
-        if proxy_settings['http']:
-            mydict['http'] = proxy_settings['http']
-        if mydict:
-            mydict['username'] = proxy_settings['username']
-            mydict['password'] = proxy_settings['password']
+
+    mydict = {}
+    if proxy_settings['ftp']:
+        mydict['ftp'] = proxy_settings['ftp']
+    if proxy_settings['http']:
+        mydict['http'] = proxy_settings['http']
+    if mydict:
+        mydict['username'] = proxy_settings['username']
+        mydict['password'] = proxy_settings['password']
+        if sys.hexversion >= 0x3000000:
+            add_proxy_opener(urllib_request, mydict)
+        else:
             add_proxy_opener(urllib2, mydict)
+    else:
+        if sys.hexversion >= 0x3000000:
+            urllib_request._opener = None
         else:
             # unset
             urllib2._opener = None
-        try:
+
+    try:
+        if sys.hexversion >= 0x3000000:
             item = urllib.request.urlopen(url, timeout = timeout)
-        except TypeError: # Python 2.5 support
-            socket.setdefaulttimeout(timeout)
-            item = urllib.request.urlopen(url)
+        else:
+            item = urllib2.urlopen(url)
+
         result = item.readlines()
         item.close()
-        del item
-        if (not result):
-            socket.setdefaulttimeout(2)
-            return False
-        socket.setdefaulttimeout(2)
-        return result
     except:
-        socket.setdefaulttimeout(2)
         return False
+    finally:
+        socket.setdefaulttimeout(2)
+
+    if not result:
+        return False
+    return result
 
 def _is_png_file(path):
     with open(path, "r") as f:
@@ -328,7 +339,7 @@ def add_proxy_opener(module, data):
     @type data: dict
     """
     import types
-    if type(module) != types.ModuleType: # FIXME: check if it's urllib2
+    if type(module) != types.ModuleType:
         InvalidDataType("InvalidDataType: not a module")
     if not data:
         return
