@@ -394,7 +394,7 @@ class Server(Singleton, TextInterface):
     def migrate_repository_databases_to_new_branched_path(self):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         migrated_filename = '.branch_migrated'
-        for repoid in srv_set['repositories'].keys():
+        for repoid in list(srv_set['repositories'].keys()):
 
             if repoid == etpConst['clientserverrepoid']: continue
             mydir = srv_set['repositories'][repoid]['database_dir']
@@ -608,7 +608,7 @@ class Server(Singleton, TextInterface):
             header = red(" @@ ")
         )
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        repos = srv_set['repositories'].keys()
+        repos = list(srv_set['repositories'].keys())
         mytxt = blue("%s:") % (_("Currently configured repositories"),)
         self.updateProgress(
             mytxt,
@@ -985,7 +985,7 @@ class Server(Singleton, TextInterface):
         portage_dirs_digest = "0"
         if not doRescan:
 
-            if self.repository_treeupdate_digests.has_key(repo):
+            if repo in self.repository_treeupdate_digests:
                 portage_dirs_digest = self.repository_treeupdate_digests.get(
                     repo)
             else:
@@ -1166,7 +1166,7 @@ class Server(Singleton, TextInterface):
     def deps_tester(self, default_repo = None):
 
         sys_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        server_repos = sys_set['repositories'].keys()
+        server_repos = list(sys_set['repositories'].keys())
         installed_packages = set()
         # if a default repository is passed, we will just test against it
         if default_repo:
@@ -1219,7 +1219,7 @@ class Server(Singleton, TextInterface):
         )
 
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        server_repos = srv_set['repositories'].keys()
+        server_repos = list(srv_set['repositories'].keys())
         deps_not_matched = self.deps_tester(repo)
 
         if deps_not_matched:
@@ -1235,7 +1235,7 @@ class Server(Singleton, TextInterface):
                     ridpackages = dbconn.searchIdpackageFromIddependency(riddep)
                     for i in ridpackages:
                         iatom = dbconn.retrieveAtom(i)
-                        if not crying_atoms.has_key(atom):
+                        if atom not in crying_atoms:
                             crying_atoms[atom] = set()
                         crying_atoms[atom].add((iatom, repo))
 
@@ -1254,7 +1254,7 @@ class Server(Singleton, TextInterface):
                     type = "info",
                     header = blue("   # ")
                 )
-                if crying_atoms.has_key(atom):
+                if atom in crying_atoms:
                     self.updateProgress(
                         red(mytxt),
                         importance = 0,
@@ -2301,7 +2301,7 @@ class Server(Singleton, TextInterface):
                 )
                 idpackages_added.add(idpackage)
                 to_be_injected.add((idpackage, destination_path))
-            except Exception, err:
+            except Exception as err:
                 self.entropyTools.print_traceback()
                 self.updateProgress(
                     "[repo:%s] %s: %s" % (
@@ -2418,7 +2418,7 @@ class Server(Singleton, TextInterface):
             dbconn.setSignatures(idpackage, signatures['sha1'],
                 signatures['sha256'], signatures['sha512'])
             self.entropyTools.create_md5_file(package_path)
-            const_setup_file(package_path, etpConst['entropygid'], 0664)
+            const_setup_file(package_path, etpConst['entropygid'], 0o664)
             # remove garbage
             os.remove(dbpath)
             self.updateProgress(
@@ -2809,28 +2809,28 @@ class Server(Singleton, TextInterface):
 
     def package_set_list(self, *args, **kwargs):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        repos = srv_set['repositories'].keys()
+        repos = list(srv_set['repositories'].keys())
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
         return self.ClientService.package_set_list(*args, **kwargs)
 
     def package_set_search(self, *args, **kwargs):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        repos = srv_set['repositories'].keys()
+        repos = list(srv_set['repositories'].keys())
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
         return self.ClientService.package_set_search(*args, **kwargs)
 
     def package_set_match(self, *args, **kwargs):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        repos = srv_set['repositories'].keys()
+        repos = list(srv_set['repositories'].keys())
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
         return self.ClientService.package_set_match(*args, **kwargs)
 
     def atom_match(self, *args, **kwargs):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        repos = srv_set['repositories'].keys()
+        repos = list(srv_set['repositories'].keys())
         kwargs['server_repos'] = repos
         kwargs['serverInstance'] = self
         return self.ClientService.atom_match(*args, **kwargs)
@@ -2857,7 +2857,7 @@ class Server(Singleton, TextInterface):
         my_settings = self.SystemSettings[self.sys_settings_plugin_id]['server']
         exp_based_scope = my_settings['exp_based_scope']
 
-        server_repos = my_settings['repositories'].keys()
+        server_repos = list(my_settings['repositories'].keys())
 
         # packages to be added
         for spm_atom, spm_counter in installed_packages:
@@ -2996,7 +2996,7 @@ class Server(Singleton, TextInterface):
 
     def is_counter_trashed(self, counter):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        server_repos = srv_set['repositories'].keys()
+        server_repos = list(srv_set['repositories'].keys())
         for repo in server_repos:
             dbconn = self.open_server_repository(read_only = True,
                 no_upload = True, repo = repo)
@@ -3268,9 +3268,9 @@ class Server(Singleton, TextInterface):
 
     def get_remote_package_checksum(self, repo, filename, branch):
 
-        import urllib2
+        import urllib.request, urllib.error, urllib.parse
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if not srv_set['repositories'][repo].has_key('handler'):
+        if 'handler' not in srv_set['repositories'][repo]:
             return None
         url = srv_set['repositories'][repo]['handler']
 
@@ -3295,12 +3295,12 @@ class Server(Singleton, TextInterface):
             else:
                 # unset
                 urllib2._opener = None
-            item = urllib2.urlopen(request)
+            item = urllib.request.urlopen(request)
             result = item.readline().strip()
             item.close()
             del item
             return result
-        except (urllib2.URLError, urllib2.HTTPError,): # no HTTP support?
+        except (urllib.error.URLError, urllib.error.HTTPError,): # no HTTP support?
             return None
 
     def verify_remote_packages(self, packages, ask = True, repo = None):
@@ -3448,7 +3448,7 @@ class Server(Singleton, TextInterface):
                         header = darkred(" !!! "),
                         count = (currentcounter, totalcounter,)
                     )
-                    if not broken_packages.has_key(crippled_uri):
+                    if crippled_uri not in broken_packages:
                         broken_packages[crippled_uri] = []
                     broken_packages[crippled_uri].append(pkgfile)
 
@@ -3461,7 +3461,7 @@ class Server(Singleton, TextInterface):
                     type = "info",
                     header = red(" * ")
                 )
-                for mirror in broken_packages.keys():
+                for mirror in list(broken_packages.keys()):
                     mytxt = "%s: %s" % (
                         brown(_("Mirror")),
                         bold(mirror),

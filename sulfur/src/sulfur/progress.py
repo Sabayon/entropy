@@ -47,11 +47,11 @@ class _Total:
     def show(self):
         self.progress.show()
 
-    def next(self):
+    def __next__(self):
         now = 0.0
         if self.currentStep < self.numSteps:
             self.currentStep += 1
-            for i in xrange(0, self.currentStep):
+            for i in range(0, self.currentStep):
                 now += self.steps[i]
                 self.nowProgress = now
                 self.setAbsProgress(now)
@@ -61,7 +61,7 @@ class _Total:
     def _percent(self, total, now):
         if total == 0:
             return 0
-        return (now*100L)/total
+        return (now*100)/total
 
     def clear( self ):
         self.progress.set_fraction(0)

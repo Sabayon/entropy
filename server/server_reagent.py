@@ -181,7 +181,7 @@ def repositories(options):
                 print_info("%s [type:%s] %s" % (brown("    # "),darkgreen(str(dep_id)),purple(dep_str),))
             if not atom_manual_deps:
                 print_info("%s %s" % (brown("    # "),_("No dependencies"),))
-            print
+            print()
             current_mdeps = sorted([x[0] for x in atom_manual_deps])
             input_params = [
                 ('new_mdeps',('list',('Manual dependencies',current_mdeps),),dep_check_cb,True)
@@ -389,7 +389,7 @@ def update(options):
             if rc == _("Yes"):
                 remdata = {}
                 for idpackage,repoid in toBeRemoved:
-                    if not remdata.has_key(repoid):
+                    if repoid not in remdata:
                         remdata[repoid] = set()
                     remdata[repoid].add(idpackage)
                 for repoid in remdata:
@@ -687,7 +687,7 @@ def database(options):
             if data == None:
                 return 1
             myid, dbx = data['db']
-            print dbx
+            print(dbx)
             try:
                 dbpath = db_data.pop(myid)
             except IndexError:
@@ -774,7 +774,7 @@ def spm_compile_categories(options, do_list = False):
             packages.append(slots_data[-1][1])
 
     if do_list:
-        print ' '.join(["="+x for x in packages])
+        print(' '.join(["="+x for x in packages]))
     else:
         args = [etpConst['spm']['exec'], etpConst['spm']['ask_cmd'],
             etpConst['spm']['verbose_cmd']]

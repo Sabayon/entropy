@@ -17,7 +17,7 @@ class StatusInterface(dict):
         dict.__init__(self)
 
     def add_failing_mirror(self, mirrorname, increment = 1):
-        if not self.has_key(mirrorname):
+        if mirrorname not in self:
             self[mirrorname] = 0
         self[mirrorname] += increment
         return self[mirrorname]

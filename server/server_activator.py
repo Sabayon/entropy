@@ -40,7 +40,7 @@ def sync(options, justTidy = False):
     if sync_all:
         sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
-        repos = Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys()
+        repos = list(Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys())
         repos.sort()
     old_default = Entropy.default_repository
 
@@ -115,7 +115,7 @@ def packages(options):
         if sync_all:
             sys_settings_plugin_id = \
                 etpConst['system_settings_plugins_ids']['server_plugin']
-            repos = Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys()
+            repos = list(Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys())
             repos.sort()
         old_default = Entropy.default_repository
 
@@ -346,7 +346,7 @@ def database(options):
         if sync_all:
             sys_settings_plugin_id = \
                 etpConst['system_settings_plugins_ids']['server_plugin']
-            repos = Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys()
+            repos = list(Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys())
             repos.sort()
         old_default = Entropy.default_repository
 

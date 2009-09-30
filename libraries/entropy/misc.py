@@ -15,7 +15,7 @@
 import os
 import sys
 import time
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import threading
 from entropy.const import etpConst, etpUi
 from entropy.core.settings.base import SystemSettings
@@ -110,7 +110,7 @@ class Lifo:
         @return: None
         @rtype: None
         """
-        for key, buf_entry in self.__buf.items():
+        for key, buf_entry in list(self.__buf.items()):
             # identity is generally faster, so try
             # this first
             if self.__buf is None: # shutting down py
@@ -851,18 +851,18 @@ class RSS:
         managing_editor.appendChild(ed_text)
         channel.appendChild(managing_editor)
 
-        keys = self.__items.keys()
+        keys = list(self.__items.keys())
         if reverse:
             keys.reverse()
         for key in keys:
 
             # sanity check, you never know
-            if not self.__items.has_key(key):
+            if key not in self.__items:
                 self.remove_entry(key)
                 continue
             k_error = False
             for item in ('title', 'link', 'guid', 'description', 'pubDate',):
-                if not self.__items[key].has_key(item):
+                if item not in self.__items[key]:
                     k_error = True
                     break
             if k_error:
@@ -1129,13 +1129,13 @@ class Callable:
         """
         self.__call__ = anycallable
 
-class MultipartPostHandler(urllib2.BaseHandler):
+class MultipartPostHandler(urllib.request.BaseHandler):
 
     """
     Custom urllib2 opener used in the Entropy codebase.
     """
 
-    handler_order = urllib2.HTTPHandler.handler_order - 10 # needs to run first
+    handler_order = urllib.request.HTTPHandler.handler_order - 10 # needs to run first
 
     def __init__(self):
         """
@@ -1151,7 +1151,7 @@ class MultipartPostHandler(urllib2.BaseHandler):
         @param request: urllib2 HTTP request object
         """
 
-        import urllib
+        import urllib.request, urllib.parse, urllib.error
         doseq = 1
 
         data = request.get_data()
@@ -1159,17 +1159,17 @@ class MultipartPostHandler(urllib2.BaseHandler):
             v_files = []
             v_vars = []
             try:
-                for (key, value) in data.items():
+                for (key, value) in list(data.items()):
                     if type(value) == file:
                         v_files.append((key, value))
                     else:
                         v_vars.append((key, value))
             except TypeError:
-                raise TypeError, "not a valid non-string sequence" \
-                        " or mapping object"
+                raise TypeError("not a valid non-string sequence" \
+                        " or mapping object")
 
             if len(v_files) == 0:
-                data = urllib.urlencode(v_vars, doseq)
+                data = urllib.parse.urlencode(v_vars, doseq)
             else:
                 boundary, data = self.multipart_encode(v_vars, v_files)
                 contenttype = 'multipart/form-data; boundary=%s' % boundary
@@ -1185,7 +1185,7 @@ class MultipartPostHandler(urllib2.BaseHandler):
         method. Not for re-use.
         """
 
-        from cStringIO import StringIO
+        from io import StringIO
         import mimetools, mimetypes
         #import stat
 

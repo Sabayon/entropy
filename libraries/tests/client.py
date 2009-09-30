@@ -9,7 +9,7 @@ from entropy.const import etpConst, etpUi
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError
-import _misc
+from . import _misc
 
 class EntropyRepositoryTest(unittest.TestCase):
 
@@ -38,12 +38,12 @@ class EntropyRepositoryTest(unittest.TestCase):
         etpConst[const_key] = const_val
         self.Client.backup_constant(const_key)
         self.Client.reload_constants()
-        self.assertEqual(True, etpConst.has_key(const_key))
+        self.assertEqual(True, const_key in etpConst)
         self.assertEqual(const_val, etpConst.get(const_key))
         # now remove
         etpConst['backed_up'].pop(const_key)
         self.Client.reload_constants()
-        self.assertEqual(False, etpConst.has_key(const_key))
+        self.assertEqual(False, const_key in etpConst)
         self.assertEqual(None, etpConst.get(const_key))
 
     def test_syssetting_backup(self):
@@ -58,21 +58,21 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.SystemSettings.update(foo_data)
         self.SystemSettings.set_persistent_setting(foo_data)
         self.SystemSettings.clear()
-        self.assertEqual(True,self.SystemSettings.has_key(key1))
-        self.assertEqual(True,self.SystemSettings.has_key(key2))
+        self.assertEqual(True,key1 in self.SystemSettings)
+        self.assertEqual(True,key2 in self.SystemSettings)
         self.assertEqual(val1,self.SystemSettings.get(key1))
         self.assertEqual(val2,self.SystemSettings.get(key2))
 
         # now remove
         self.SystemSettings.unset_persistent_setting(key1)
         self.SystemSettings.clear()
-        self.assertEqual(False,self.SystemSettings.has_key(key1))
-        self.assertEqual(True,self.SystemSettings.has_key(key2))
+        self.assertEqual(False,key1 in self.SystemSettings)
+        self.assertEqual(True,key2 in self.SystemSettings)
 
         self.SystemSettings.unset_persistent_setting(key2)
         self.SystemSettings.clear()
-        self.assertEqual(False,self.SystemSettings.has_key(key1))
-        self.assertEqual(False,self.SystemSettings.has_key(key2))
+        self.assertEqual(False,key1 in self.SystemSettings)
+        self.assertEqual(False,key2 in self.SystemSettings)
 
     def test_memory_repository(self):
         dbconn = self.Client.init_generic_memory_repository(

@@ -101,7 +101,7 @@ codes["blink"]     = esc_seq + "05m"
 codes["overline"]  = esc_seq + "06m"  # Who made this up? Seriously.
 
 ansi_color_codes = []
-for x in xrange(30, 38):
+for x in range(30, 38):
         ansi_color_codes.append("%im" % x)
         ansi_color_codes.append("%i;01m" % x)
 
@@ -109,7 +109,7 @@ rgb_ansi_colors = ['0x000000', '0x555555', '0xAA0000', '0xFF5555', '0x00AA00',
         '0x55FF55', '0xAA5500', '0xFFFF55', '0x0000AA', '0x5555FF', '0xAA00AA',
         '0xFF55FF', '0x00AAAA', '0x55FFFF', '0xAAAAAA', '0xFFFFFF']
 
-for x in xrange(len(rgb_ansi_colors)):
+for x in range(len(rgb_ansi_colors)):
         codes[rgb_ansi_colors[x]] = esc_seq + ansi_color_codes[x]
 
 del x
@@ -496,9 +496,9 @@ def print_menu(data, args = None):
                 myfunc = darkblue
                 myfunc_desc = purple
             try:
-                print myfunc(name),
+                print(myfunc(name), end=' ')
             except UnicodeEncodeError:
-                print myfunc(name.encode('utf-8')),
+                print(myfunc(name.encode('utf-8')), end=' ')
 
             # write desc
             if desc:
@@ -506,9 +506,9 @@ def print_menu(data, args = None):
                     n_d_ident -= 1
                     writechar("\t")
                 try:
-                    print myfunc_desc(desc),
+                    print(myfunc_desc(desc), end=' ')
                 except UnicodeEncodeError:
-                    print myfunc_desc(desc.encode('utf-8')),
+                    print(myfunc_desc(desc.encode('utf-8')), end=' ')
             writechar("\n")
 
 def reset_cursor():
@@ -547,14 +547,14 @@ def print_error(msg, back = False, flush = True):
     writechar("\r")
     if back:
         try:
-            print darkred(">>"),msg,
+            print(darkred(">>"),msg, end=' ')
         except UnicodeEncodeError:
-            print darkred(">>"),msg.encode('utf-8'),
+            print(darkred(">>"),msg.encode('utf-8'), end=' ')
     else:
         try:
-            print darkred(">>"),msg
+            print(darkred(">>"),msg)
         except UnicodeEncodeError:
-            print darkred(">>"),msg.encode('utf-8')
+            print(darkred(">>"),msg.encode('utf-8'))
     if flush:
         _flush_stdouterr()
 
@@ -581,14 +581,14 @@ def print_info(msg, back = False, flush = True):
     writechar("\r")
     if back:
         try:
-            print darkgreen(">>"),msg,
+            print(darkgreen(">>"),msg, end=' ')
         except UnicodeEncodeError:
-            print darkgreen(">>"),msg.encode('utf-8'),
+            print(darkgreen(">>"),msg.encode('utf-8'), end=' ')
     else:
         try:
-            print darkgreen(">>"),msg
+            print(darkgreen(">>"),msg)
         except UnicodeEncodeError:
-            print darkgreen(">>"),msg.encode('utf-8')
+            print(darkgreen(">>"),msg.encode('utf-8'))
     if flush:
         _flush_stdouterr()
 
@@ -615,14 +615,14 @@ def print_warning(msg, back = False, flush = True):
     writechar("\r")
     if back:
         try:
-            print red(">>"),msg,
+            print(red(">>"),msg, end=' ')
         except UnicodeEncodeError:
-            print red(">>"),msg.encode('utf-8'),
+            print(red(">>"),msg.encode('utf-8'), end=' ')
     else:
         try:
-            print red(">>"),msg
+            print(red(">>"),msg)
         except UnicodeEncodeError:
-            print red(">>"),msg.encode('utf-8')
+            print(red(">>"),msg.encode('utf-8'))
     if flush:
         _flush_stdouterr()
 
@@ -642,9 +642,9 @@ def print_generic(msg):
     # disabled, because it causes quite a mess when writing to files
     # writechar("\r")
     try:
-        print msg
+        print(msg)
     except UnicodeEncodeError:
-        print msg.encode('utf-8')
+        print(msg.encode('utf-8'))
     _flush_stdouterr()
 
 def writechar(chars):
@@ -659,7 +659,7 @@ def writechar(chars):
     try:
         sys.stdout.write(chars)
         sys.stdout.flush()
-    except IOError, e:
+    except IOError as e:
         if e.errno == 32:
             return
         raise
@@ -684,9 +684,9 @@ def readtext(request, password = False):
             text = getpass(request.encode('utf-8')+" ")
     else:
         try:
-            print request,"",
+            print(request,"", end=' ')
         except UnicodeEncodeError:
-            print request.encode('utf-8'),"",
+            print(request.encode('utf-8'),"", end=' ')
         _flush_stdouterr()
         text = _my_raw_input()
     return text
@@ -694,9 +694,9 @@ def readtext(request, password = False):
 def _my_raw_input(txt = ''):
     if txt:
         try:
-            print darkgreen(txt),
+            print(darkgreen(txt), end=' ')
         except UnicodeEncodeError:
-            print darkgreen(txt.encode('utf-8')),
+            print(darkgreen(txt.encode('utf-8')), end=' ')
     _flush_stdouterr()
     response = ''
     while 1:
@@ -803,9 +803,9 @@ class TextInterface:
         colours_len = len(colours)
 
         try:
-            print darkgreen(question),
+            print(darkgreen(question), end=' ')
         except UnicodeEncodeError:
-            print darkgreen(question.encode('utf-8')),
+            print(darkgreen(question.encode('utf-8')), end=' ')
         _flush_stdouterr()
 
         try:
@@ -814,7 +814,7 @@ class TextInterface:
                 xtermTitle(_("Entropy got a question for you"))
                 _flush_stdouterr()
                 answer_items = [colours[x % colours_len](responses[x]) \
-                    for x in xrange(len(responses))]
+                    for x in range(len(responses))]
                 response = _my_raw_input("["+"/".join(answer_items)+"] ")
                 _flush_stdouterr()
 
@@ -825,7 +825,7 @@ class TextInterface:
                     _flush_stdouterr()
 
         except (EOFError, KeyboardInterrupt):
-            print "%s." % (_("Interrupted"),)
+            print("%s." % (_("Interrupted"),))
             xtermTitleReset()
             raise SystemExit(100)
 
@@ -864,9 +864,9 @@ class TextInterface:
         results = {}
         if title:
             try:
-                print title
+                print(title)
             except UnicodeEncodeError:
-                print title.encode('utf-8')
+                print(title.encode('utf-8'))
         _flush_stdouterr()
 
         def option_chooser(option_data):

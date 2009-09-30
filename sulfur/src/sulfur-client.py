@@ -40,9 +40,9 @@ try:
     gtk.gdk.threads_leave()
     entropy.tools.kill_threads()
     mainApp.quit()
-except SystemExit, e:
+except SystemExit as e:
     entropy.tools.kill_threads()
-    print "Quit by User (SystemExit)"
+    print("Quit by User (SystemExit)")
     try:
         mainApp.quit()
     except NameError:
@@ -50,7 +50,7 @@ except SystemExit, e:
     exit_status = e.code
 except KeyboardInterrupt:
     entropy.tools.kill_threads()
-    print "Quit by User (KeyboardInterrupt)"
+    print("Quit by User (KeyboardInterrupt)")
     try:
         mainApp.quit()
     except NameError:

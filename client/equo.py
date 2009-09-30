@@ -735,45 +735,45 @@ def main():
         print_error(darkred(" * ")+red(_("Installed Packages Database not found or corrupted. Please generate it using 'equo database' tools")))
         raise SystemExit(101)
 
-    except OnlineMirrorError, e:
+    except OnlineMirrorError as e:
 
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
         raise SystemExit(101)
 
-    except RepositoryError, e:
+    except RepositoryError as e:
 
         reset_cache()
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
         raise SystemExit(101)
 
-    except FtpError, e:
+    except FtpError as e:
 
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
         raise SystemExit(101)
 
-    except PermissionDenied, e:
+    except PermissionDenied as e:
 
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
         raise SystemExit(1)
 
-    except FileNotFound, e:
+    except FileNotFound as e:
 
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
         raise SystemExit(1)
 
-    except SPMError, e:
+    except SPMError as e:
 
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
         raise SystemExit(1)
 
-    except dbapi2Exceptions['OperationalError'], e:
+    except dbapi2Exceptions['OperationalError'] as e:
 
         if unicode(e).find("disk I/O error") == -1:
             raise
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue. Your hard disk is probably faulty."),) ))
         raise SystemExit(101)
 
-    except SystemError, e: # becoming from entropy.db
+    except SystemError as e: # becoming from entropy.db
 
         print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
         raise SystemExit(1)
@@ -781,13 +781,13 @@ def main():
     except SystemExit:
         raise
 
-    except IOError, e:
+    except IOError as e:
 
         reset_cache()
         if e.errno != 32:
             raise
 
-    except OSError, e:
+    except OSError as e:
 
         if e.errno == 28:
             entropyTools.print_exception()
@@ -831,8 +831,8 @@ def main():
                 ferror.write(unicode(x)+"\n")
             ferror.flush()
             ferror.close()
-        except Exception, e:
-            print
+        except Exception as e:
+            print()
             print_error(darkred(_("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org.")))
             raise SystemExit(1)
 

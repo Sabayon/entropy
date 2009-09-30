@@ -183,7 +183,7 @@ class NoticeBoardMixin:
         @type repoid: string
         """
         data = self.get_noticeboard_userdata(repoid)
-        if not data.has_key('as_read'):
+        if 'as_read' not in data:
             return False
         nb_hash = self._get_noticeboard_hash(repoid)
         return nb_hash == data['as_read']

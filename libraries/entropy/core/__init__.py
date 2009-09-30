@@ -219,12 +219,12 @@ class EntropyPluginFactory:
 
             try:
                 __import__(modpath)
-            except ImportError, err:
+            except ImportError as err:
                 sys.stderr.write("!!! Entropy Plugin warning, cannot " \
                     "load module: %s | %s !!!\n" % (modpath, err,))
                 continue
 
-            for obj in sys.modules[modpath].__dict__.values():
+            for obj in list(sys.modules[modpath].__dict__.values()):
 
                 valid = self._inspect_object(obj)
                 if not valid:

@@ -137,7 +137,7 @@ class RepositoryMixin:
     def open_repository(self, repoid):
 
         key = self.__get_repository_cache_key(repoid)
-        if not self.__repodb_cache.has_key(key):
+        if key not in self.__repodb_cache:
             dbconn = self.load_repository_database(repoid, xcache = self.xcache,
                 indexing = self.indexing)
             try:
@@ -278,15 +278,15 @@ class RepositoryMixin:
             if myrev == -1:
                 myrev = 0
             self.SystemSettings['repositories']['available'][repodata['repoid']]['dbrevision'] = str(myrev)
-            if repodata.has_key("position"):
+            if "position" in repodata:
                 self.SystemSettings['repositories']['order'].insert(
                     repodata['position'], repodata['repoid'])
             else:
                 self.SystemSettings['repositories']['order'].append(
                     repodata['repoid'])
-            if not repodata.has_key("service_port"):
+            if "service_port" not in repodata:
                 repodata['service_port'] = int(etpConst['socket_service']['port'])
-            if not repodata.has_key("ssl_service_port"):
+            if "ssl_service_port" not in repodata:
                 repodata['ssl_service_port'] = int(etpConst['socket_service']['ssl_port'])
             self.SystemSettings['repositories']['available'][repodata['repoid']]['service_port'] = repodata['service_port']
             self.SystemSettings['repositories']['available'][repodata['repoid']]['ssl_service_port'] = repodata['ssl_service_port']
@@ -300,11 +300,11 @@ class RepositoryMixin:
     def remove_repository(self, repoid, disable = False):
 
         done = False
-        if self.SystemSettings['repositories']['available'].has_key(repoid):
+        if repoid in self.SystemSettings['repositories']['available']:
             del self.SystemSettings['repositories']['available'][repoid]
             done = True
 
-        if self.SystemSettings['repositories']['excluded'].has_key(repoid):
+        if repoid in self.SystemSettings['repositories']['excluded']:
             del self.SystemSettings['repositories']['excluded'][repoid]
             done = True
 
@@ -396,7 +396,7 @@ class RepositoryMixin:
         try:
             repodata = self.SystemSettings['repositories']['available'][repoid].copy()
         except KeyError:
-            if not self.SystemSettings['repositories']['excluded'].has_key(repoid):
+            if repoid not in self.SystemSettings['repositories']['excluded']:
                 raise
             repodata = self.SystemSettings['repositories']['excluded'][repoid].copy()
         return repodata
@@ -520,7 +520,7 @@ class RepositoryMixin:
                                 )
             try:
                 self.clientDbconn.getPackageData(x)
-            except Exception ,e:
+            except Exception as e:
                 self.entropyTools.print_traceback()
                 errors = True
                 self.updateProgress(
@@ -585,7 +585,7 @@ class RepositoryMixin:
 
     def backup_database(self, dbpath, backup_dir = None, silent = False, compress_level = 9):
 
-        if compress_level not in range(1,10):
+        if compress_level not in list(range(1,10)):
             compress_level = 9
 
         backup_dir = os.path.dirname(dbpath)
@@ -729,7 +729,7 @@ class RepositoryMixin:
         errors = False
         repo_data = self.SystemSettings['repositories']['available']
         repo_data_excl = self.SystemSettings['repositories']['available']
-        all_repos = sorted(set(repo_data.keys() + repo_data_excl.keys()))
+        all_repos = sorted(set(list(repo_data.keys()) + list(repo_data_excl.keys())))
 
         for repoid in all_repos:
 
@@ -961,7 +961,7 @@ class MiscMixin:
 
     def setup_default_file_perms(self, filepath):
         # setup file permissions
-        os.chmod(filepath,0664)
+        os.chmod(filepath,0o664)
         if etpConst['entropygid'] != None:
             os.chown(filepath,-1,etpConst['entropygid'])
 
@@ -1023,7 +1023,7 @@ class MiscMixin:
 
         lockdir = os.path.dirname(pidfile)
         if not os.path.isdir(lockdir):
-            os.makedirs(lockdir,0775)
+            os.makedirs(lockdir,0o775)
         const_setup_perms(lockdir,etpConst['entropygid'])
         if mypid == None:
             mypid = os.getpid()
@@ -1031,7 +1031,7 @@ class MiscMixin:
         pid_f = open(pidfile, "w")
         try:
             fcntl.flock(pid_f.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-        except IOError, err:
+        except IOError as err:
             if err.errno not in (errno.EACCES, errno.EAGAIN,):
                 # ouch, wtf?
                 raise
@@ -1105,7 +1105,7 @@ class MiscMixin:
         return False # yay!
 
     def backup_constant(self, constant_name):
-        if etpConst.has_key(constant_name):
+        if constant_name in etpConst:
             myinst = etpConst[constant_name]
             if type(etpConst[constant_name]) in (list,tuple):
                 myinst = etpConst[constant_name][:]
@@ -1183,7 +1183,7 @@ class MiscMixin:
             if not os.path.isdir(sets_dir):
                 if os.path.lexists(sets_dir):
                     os.remove(sets_dir)
-                os.makedirs(sets_dir,0775)
+                os.makedirs(sets_dir,0o775)
                 const_setup_perms(sets_dir, etpConst['entropygid'])
 
         try:
@@ -1275,7 +1275,7 @@ class MiscMixin:
                     found = self.clientDbconn.isLicenseAccepted(key)
                     if found:
                         continue
-                    if not licenses.has_key(key):
+                    if key not in licenses:
                         licenses[key] = set()
                     licenses[key].add(match)
         return licenses
@@ -1370,7 +1370,7 @@ class MiscMixin:
 
         # expand metadata
         categories = self.list_repo_categories()
-        for data in groups.values():
+        for data in list(groups.values()):
 
             exp_cats = set()
             for g_cat in data['categories']:
@@ -1702,7 +1702,7 @@ class MatchMixin:
     def _mask_unmask_match(self, match, method, methods_reference, dry_run = False, clean_all_cache = False):
 
         f = methods_reference.get(method)
-        if not callable(f):
+        if not hasattr(f, '__call__'):
             raise IncorrectParameter('IncorrectParameter: %s: %s' % (_("not a valid method"),method,) )
 
         self.Cacher.discard()

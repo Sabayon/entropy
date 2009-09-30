@@ -11,7 +11,7 @@
 """
 
 import shutil
-import commands
+import subprocess
 from entropy.const import *
 from entropy.output import *
 from entropy.client.interfaces import Client
@@ -66,7 +66,7 @@ def update(cmd = None):
             print_info(darkred(_("All fine baby. Nothing to do!")))
             break
 
-        keys = scandata.keys()
+        keys = list(scandata.keys())
         if not docmd:
             cmd = selfile()
         else:
@@ -263,7 +263,7 @@ def selaction():
 def showdiff(fromfile,tofile):
     # run diff
     diffcmd = "diff -Nu "+fromfile+" "+tofile #+" | less --no-init --QUIT-AT-EOF"
-    output = commands.getoutput(diffcmd).split("\n")
+    output = subprocess.getoutput(diffcmd).split("\n")
     coloured = []
     for line in output:
 	if line.startswith("---"):
@@ -281,7 +281,7 @@ def showdiff(fromfile,tofile):
     f.writelines(coloured)
     f.flush()
     f.close()
-    print
+    print()
     os.system("cat \"%s\" | less --no-init --QUIT-AT-EOF" % ("/tmp/"+os.path.basename(fromfile),))
     try:
 	os.remove("/tmp/"+os.path.basename(fromfile))

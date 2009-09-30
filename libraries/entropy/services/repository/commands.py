@@ -273,7 +273,7 @@ class Repository(SocketCommands):
                 )
             except:
                 tb = self.entropyTools.get_traceback()
-                print tb
+                print(tb)
                 self.HostInterface.socketLog.write(tb)
                 dbconn.closeDB()
                 return None

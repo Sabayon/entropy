@@ -8,7 +8,7 @@ from entropy.client.interfaces import Client
 from entropy.const import etpConst, etpUi
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
-import _misc
+from . import _misc
 
 class EntropyRepositoryTest(unittest.TestCase):
 
@@ -68,7 +68,7 @@ class EntropyRepositoryTest(unittest.TestCase):
             try:
                 self.assert_(key not in cont_diff)
             except AssertionError:
-                print key
+                print(key)
                 raise
 
         py_diff = sorted([x for x in db_data['content'] if x not in \

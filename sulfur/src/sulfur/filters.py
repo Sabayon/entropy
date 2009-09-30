@@ -37,7 +37,7 @@ class Filtering:
 
     def listFilters(self):
         for flt in self.filters:
-            print "%s : %s " % (flt.get_name(),flt._state)
+            print("%s : %s " % (flt.get_name(),flt._state))
 
     def get(self,name):
         for flt in self.filters:

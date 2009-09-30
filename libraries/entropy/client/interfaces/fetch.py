@@ -55,7 +55,7 @@ class FetchersMixin:
 
             dest_dir = os.path.dirname(dest_path)
             if not os.path.isdir(dest_dir):
-                os.makedirs(dest_dir,0755)
+                os.makedirs(dest_dir,0o755)
 
             url_path_list.append((url,dest_path,))
             if cksum != None: checksum_map[count] = cksum
@@ -77,7 +77,7 @@ class FetchersMixin:
         data_transfer = fetchConn.get_data_transfer()
         if diff_map:
             defval = -1
-            for key, val in diff_map.items():
+            for key, val in list(diff_map.items()):
                 if val == "-1": # general error
                     diff_map[key] = -1
                 elif val == "-2":
@@ -302,7 +302,7 @@ class FetchersMixin:
             filepath = os.path.join(etpConst['packagesbindir'],branch,filename)
         filepath_dir = os.path.dirname(filepath)
         if not os.path.isdir(filepath_dir):
-            os.makedirs(filepath_dir,0755)
+            os.makedirs(filepath_dir,0o755)
 
         existed_before = False
         if os.path.isfile(filepath) and os.path.exists(filepath):

@@ -70,7 +70,7 @@ myconst = [
           ]
 
 for x in myconst:
-    if not settings.has_key(x[0]):
+    if x[0] not in settings:
         settings[x[0]] = eval(x[0])
     else:
         if not isinstance(settings[x[0]],x[1]):

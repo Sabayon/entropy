@@ -62,7 +62,7 @@ class phpBB3(phpBB3Auth,SocketAuthenticator):
         rc = False
         try:
             rc = self.login()
-        except PermissionDenied, e:
+        except PermissionDenied as e:
             return rc,user,None,e.value
 
         if rc:

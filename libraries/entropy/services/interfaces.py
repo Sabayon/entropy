@@ -24,7 +24,7 @@ from entropy.output import blue, red, darkgreen
 class SocketHost:
 
     import socket
-    import SocketServer
+    import socketserver
     from threading import Thread
 
     class BasicPamAuthenticator(SocketAuthenticator):
@@ -165,7 +165,7 @@ class SocketHost:
         def terminate_instance(self):
             pass
 
-    class HostServerMixin(SocketServer.ThreadingMixIn, SocketServer.TCPServer):
+    class HostServerMixin(socketserver.ThreadingMixIn, socketserver.TCPServer):
 
         class ConnWrapper:
             '''
@@ -181,7 +181,7 @@ class SocketHost:
 
         import entropy.tools as entropyTools
         import socket as socket_mod
-        import SocketServer
+        import socketserver
         # This means the main server will not do the equivalent of a
         # pthread_join() on the new threads.  With this set, Ctrl-C will
         # kill the server reliably.
@@ -211,7 +211,7 @@ class SocketHost:
             else:
                 try:
                     self.SocketServer.TCPServer.__init__(self, server_address, RequestHandlerClass)
-                except self.socket_mod.error, e:
+                except self.socket_mod.error as e:
                     if e[0] == 13:
                         raise ConnectionError('ConnectionError: %s' % (_("Cannot bind the service"),))
                     raise
@@ -368,9 +368,9 @@ class SocketHost:
             if self.HostInterface.connections > 0:
                 self.HostInterface.connections -= 1
 
-    class RequestHandler(SocketServer.BaseRequestHandler):
+    class RequestHandler(socketserver.BaseRequestHandler):
 
-        import SocketServer
+        import socketserver
         import select
         import socket
         import entropy.tools as entropyTools
@@ -486,7 +486,7 @@ class SocketHost:
                     self.__data_counter = None
                 except ValueError:
                     tb = self.entropyTools.get_traceback()
-                    print tb
+                    print(tb)
                     self.server.processor.HostInterface.socketLog.write(tb)
                     self.server.processor.HostInterface.socketLog.write(repr(data))
                     self.server.processor.HostInterface.socketLog.write(str(self))
@@ -499,7 +499,7 @@ class SocketHost:
                         )
                     )
                     return True
-                except self.socket.timeout, e:
+                except self.socket.timeout as e:
                     self.server.processor.HostInterface.updateProgress(
                         'interrupted: %s, reason: %s - from client: %s' % (
                             self.server.server_address,
@@ -508,7 +508,7 @@ class SocketHost:
                         )
                     )
                     return True
-                except self.socket.sslerror, e:
+                except self.socket.sslerror as e:
                     self.server.processor.HostInterface.updateProgress(
                         'interrupted: %s, SSL socket error reason: %s - from client: %s' % (
                             self.server.server_address,
@@ -529,7 +529,7 @@ class SocketHost:
                     return False
                 except self.ssl_exceptions['ZeroReturnError']:
                     return True
-                except self.ssl_exceptions['Error'], e:
+                except self.ssl_exceptions['Error'] as e:
                     self.server.processor.HostInterface.updateProgress(
                         'interrupted: SSL Error, reason: %s - from client: %s' % (
                             e,
@@ -537,7 +537,7 @@ class SocketHost:
                         )
                     )
                     return True
-                except InterruptError, e:
+                except InterruptError as e:
                     self.server.processor.HostInterface.updateProgress(
                         'interrupted: Command Error, reason: %s - from client: %s' % (
                             e,
@@ -586,7 +586,7 @@ class SocketHost:
                             seconds += 1
                             try:
                                 dead = os.waitpid(pid, os.WNOHANG)[0]
-                            except OSError, e:
+                            except OSError as e:
                                 if e.errno != 10: raise
                                 dead = True
                             if passed_away:
@@ -641,7 +641,7 @@ class SocketHost:
                             )
                         )
                     if dobreak: break
-                except Exception, e:
+                except Exception as e:
                     self.server.processor.HostInterface.updateProgress(
                         'interrupted: Unhandled exception: %s, error: %s - from client: %s' % (
                             Exception,
@@ -651,7 +651,7 @@ class SocketHost:
                     )
                     # print exception
                     tb = self.entropyTools.get_traceback()
-                    print tb
+                    print(tb)
                     self.server.processor.HostInterface.socketLog.write(tb)
                     break
 
@@ -695,7 +695,7 @@ class SocketHost:
                 args = args[1:] # remove session
 
             stream_enabled = False
-            if (session != None) and self.HostInterface.sessions.has_key(session):
+            if (session != None) and session in self.HostInterface.sessions:
                 stream_enabled = self.HostInterface.sessions[session].get('stream_mode')
 
             if stream_enabled and (cmd not in self.HostInterface.config_commands):
@@ -788,7 +788,7 @@ class SocketHost:
             elif (("authenticator" in cmd_data['args']) or (cmd in self.HostInterface.login_pass_commands)):
                 try:
                     authenticator = self.load_authenticator()
-                except ConnectionError, e:
+                except ConnectionError as e:
                     self.HostInterface.updateProgress(
                         '[from: %s] authenticator error: cannot load: %s' % (
                             self.client_address,
@@ -796,10 +796,10 @@ class SocketHost:
                         )
                     )
                     tb = self.entropyTools.get_traceback()
-                    print tb
+                    print(tb)
                     self.HostInterface.socketLog.write(tb)
                     return "close"
-                except Exception, e:
+                except Exception as e:
                     self.HostInterface.updateProgress(
                         '[from: %s] authenticator error: cannot load: %s - unknown error' % (
                             self.client_address,
@@ -807,7 +807,7 @@ class SocketHost:
                         )
                     )
                     tb = self.entropyTools.get_traceback()
-                    print tb
+                    print(tb)
                     self.HostInterface.socketLog.write(tb)
                     return "close"
 
@@ -850,7 +850,7 @@ class SocketHost:
                     del authenticator
                     del Entropy
                     return "close"
-                except self.socket.error, e:
+                except self.socket.error as e:
                     self.HostInterface.updateProgress(
                         '[from: %s] command error: socket error: %s' % (
                             self.client_address,
@@ -861,7 +861,7 @@ class SocketHost:
                     del authenticator
                     del Entropy
                     return "close"
-                except self.HostInterface.SSL_exceptions['SysCallError'], e:
+                except self.HostInterface.SSL_exceptions['SysCallError'] as e:
                     self.HostInterface.updateProgress(
                         '[from: %s] command error: SSL SysCallError: %s' % (
                             self.client_address,
@@ -872,10 +872,10 @@ class SocketHost:
                     del authenticator
                     del Entropy
                     return "close"
-                except Exception, e:
+                except Exception as e:
                     # write to self.HostInterface.socketLog
                     tb = self.entropyTools.get_traceback()
-                    print tb
+                    print(tb)
                     self.HostInterface.socketLog.write(tb)
                     # store error
                     self.HostInterface.updateProgress(
@@ -932,7 +932,7 @@ class SocketHost:
                 myargs, mykwargs = self._get_args_kwargs(args)
 
             rc = self.spawn_function(cmd, myargs, mykwargs, session, Entropy, authenticator)
-            if session != None and self.HostInterface.sessions.has_key(session):
+            if session != None and session in self.HostInterface.sessions:
                 self.HostInterface.store_rc(rc, session)
             return rc
 
@@ -1203,7 +1203,7 @@ class SocketHost:
                 return obj
 
             def can_be_streamed(obj):
-                if isinstance(obj,(bool,basestring,int,float,list,tuple,set,dict,)):
+                if isinstance(obj,(bool,basestring,int,float,list,tuple,set,dict)):
                     return True
                 return False
 
@@ -1375,16 +1375,16 @@ class SocketHost:
                    'Available Commands:\n\n'
             valid_cmds = sorted(self.HostInterface.valid_commands.keys())
             for cmd in valid_cmds:
-                if self.HostInterface.valid_commands[cmd].has_key('desc'):
+                if 'desc' in self.HostInterface.valid_commands[cmd]:
                     desc = self.HostInterface.valid_commands[cmd]['desc']
                 else:
                     desc = 'no description available'
 
-                if self.HostInterface.valid_commands[cmd].has_key('syntax'):
+                if 'syntax' in self.HostInterface.valid_commands[cmd]:
                     syntax = self.HostInterface.valid_commands[cmd]['syntax']
                 else:
                     syntax = 'no syntax available'
-                if self.HostInterface.valid_commands[cmd].has_key('from'):
+                if 'from' in self.HostInterface.valid_commands[cmd]:
                     myfrom = self.HostInterface.valid_commands[cmd]['from']
                 else:
                     myfrom = 'N/A'
@@ -1419,9 +1419,9 @@ class SocketHost:
             elif comp == "gzip": # old and burried
                 import gzip
                 try:
-                    import cStringIO as stringio
+                    import io as stringio
                 except ImportError:
-                    import StringIO as stringio
+                    import io as stringio
                 f = stringio.StringIO()
                 self.dumpTools.serialize(rc, f)
                 myf = stringio.StringIO()
@@ -1550,7 +1550,7 @@ class SocketHost:
     def setup_ssl(self):
 
         do_ssl = False
-        if self.kwds.has_key('ssl'):
+        if 'ssl' in self.kwds:
             do_ssl = self.kwds.pop('ssl')
 
         if not do_ssl:
@@ -1558,7 +1558,7 @@ class SocketHost:
 
         try:
             from OpenSSL import SSL, crypto
-        except ImportError, e:
+        except ImportError as e:
             self.updateProgress('Unable to load OpenSSL, error: %s' % (repr(e),))
             return
         self.SSL_exceptions['WantReadError'] = SSL.WantReadError
@@ -1594,23 +1594,23 @@ class SocketHost:
                     self.SSL['key'],
                     self.SSL['cert']
                 )
-                os.chmod(self.SSL['ca_cert'],0644)
+                os.chmod(self.SSL['ca_cert'],0o644)
                 try:
                     os.chown(self.SSL['ca_cert'],-1,0)
                 except OSError:
                     pass
-                os.chmod(self.SSL['ca_pkey'],0600)
+                os.chmod(self.SSL['ca_pkey'],0o600)
                 try:
                     os.chown(self.SSL['ca_pkey'],-1,0)
                 except OSError:
                     pass
 
-        os.chmod(self.SSL['key'],0600)
+        os.chmod(self.SSL['key'],0o600)
         try:
             os.chown(self.SSL['key'],-1,0)
         except OSError:
             pass
-        os.chmod(self.SSL['cert'],0644)
+        os.chmod(self.SSL['cert'],0o644)
         try:
             os.chown(self.SSL['cert'],-1,0)
         except OSError:
@@ -1677,7 +1677,7 @@ class SocketHost:
     def create_ssl_certificate_request(self, pkey, digest, **name):
         req = self.SSL['crypto'].X509Req()
         subj = req.get_subject()
-        for (key,value) in name.items():
+        for (key,value) in list(name.items()):
             setattr(subj, key, value)
         req.set_pubkey(pkey)
         req.sign(pkey, digest)
@@ -1685,7 +1685,7 @@ class SocketHost:
 
     def setup_external_command_classes(self):
 
-        if self.kwds.has_key('external_cmd_classes'):
+        if 'external_cmd_classes' in self.kwds:
             ext_commands = self.kwds.pop('external_cmd_classes')
             if not isinstance(ext_commands,list):
                 raise InvalidDataType("InvalidDataType: external_cmd_classes must be a list")
@@ -1749,7 +1749,7 @@ class SocketHost:
                 self.config_commands.remove(cmd)
 
     def start_local_output_interface(self):
-        if self.kwds.has_key('sock_output'):
+        if 'sock_output' in self.kwds:
             outputIntf = self.kwds.pop('sock_output')
             self.__output = outputIntf
 
@@ -1759,7 +1759,7 @@ class SocketHost:
         self.AuthenticatorLock = self.threading.Lock()
         auth_inst = (self.BasicPamAuthenticator, [self], {},) # authentication class, args, keywords
         # external authenticator
-        if self.kwds.has_key('sock_auth'):
+        if 'sock_auth' in self.kwds:
             authIntf = self.kwds.pop('sock_auth')
             if type(authIntf) is tuple:
                 if len(authIntf) == 3:
@@ -1790,7 +1790,7 @@ class SocketHost:
             return
 
         with self.SessionsLock:
-            for session_id in self.sessions.keys():
+            for session_id in list(self.sessions.keys()):
                 sess_time = self.sessions[session_id]['t']
                 is_running = self.sessions[session_id]['running']
                 auth_uid = self.sessions[session_id]['auth_uid'] # is kept alive?
@@ -1852,18 +1852,18 @@ class SocketHost:
 
     def update_session_time(self, session):
         with self.SessionsLock:
-            if self.sessions.has_key(session):
+            if session in self.sessions:
                 self.sessions[session]['t'] = time.time()
                 self.updateProgress('session time updated for %s' % (session,) )
 
     def set_session_running(self, session):
         with self.SessionsLock:
-            if self.sessions.has_key(session):
+            if session in self.sessions:
                 self.sessions[session]['running'] = True
 
     def unset_session_running(self, session):
         with self.SessionsLock:
-            if self.sessions.has_key(session):
+            if session in self.sessions:
                 self.sessions[session]['running'] = False
 
     def destroy_session(self, session):
@@ -1871,7 +1871,7 @@ class SocketHost:
             self._destroy_session(session)
 
     def _destroy_session(self, session):
-        if self.sessions.has_key(session):
+        if session in self.sessions:
             stream_path = self.sessions[session]['stream_path']
             del self.sessions[session]
             if os.path.isfile(stream_path) and os.access(stream_path,os.W_OK) and not os.path.islink(stream_path):
@@ -1891,7 +1891,7 @@ class SocketHost:
                                                 self
                                             )
                 break
-            except self.socket.error, e:
+            except self.socket.error as e:
                 if e[0] == 98:
                     # Address already in use
                     self.updateProgress('address already in use (%s, port: %s), waiting 5 seconds...' % (self.hostname,self.port,))

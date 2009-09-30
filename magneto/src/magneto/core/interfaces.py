@@ -170,7 +170,7 @@ class MagnetoCore(MagnetoCoreUI):
                     self._updating_signal_name, self.updating_signal,
                     dbus_interface = self._dbus_interface
                 )
-            except dbus.exceptions.DBusException, e:
+            except dbus.exceptions.DBusException as e:
                 self._dbus_init_error_msg = unicode(e)
                 # service not avail
                 tries -= 1

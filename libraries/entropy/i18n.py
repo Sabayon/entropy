@@ -71,7 +71,7 @@ def change_language(lang):
     gettext.install('entropy', localedir = localedir, unicode = True)
     _ = _
     # redeclare "_" in all loaded modules
-    for module in sys.modules.values():
+    for module in list(sys.modules.values()):
         if not hasattr(module, "__dict__"):
             continue
         t_func = module.__dict__.get("_")

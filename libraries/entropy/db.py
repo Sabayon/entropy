@@ -52,7 +52,7 @@ try: # try with sqlite3 from >=python 2.5
 except ImportError: # fallback to pysqlite
     try:
         from pysqlite2 import dbapi2
-    except ImportError, e:
+    except ImportError as e:
         raise SystemError(
             "%s. %s: %s" % (
                 _("Entropy needs Python compiled with sqlite3 support"),
@@ -726,7 +726,7 @@ class EntropyRepository:
         f.write(etpConst['currentarch']+" database tainted\n")
         f.flush()
         f.close()
-        const_setup_file(taint_file, etpConst['entropygid'], 0664)
+        const_setup_file(taint_file, etpConst['entropygid'], 0o664)
         ServerRepositoryStatus().set_tainted(self.dbFile)
 
     def untaintDatabase(self):
@@ -956,7 +956,7 @@ class EntropyRepository:
         if spm_moves:
             try:
                 self.doTreeupdatesSpmCleanup(spm_moves)
-            except Exception, e:
+            except Exception as e:
                 mytxt = "%s: %s: %s, %s." % (
                     bold(_("WARNING")),
                     red(_("Cannot run SPM cleanup, error")),
@@ -1454,7 +1454,7 @@ class EntropyRepository:
             except (KeyError, ValueError):
                 pkg_data['revision'] = 0 # revision not specified
                 revision = 0
-        elif not pkg_data.has_key('revision'):
+        elif 'revision' not in pkg_data:
             pkg_data['revision'] = revision
 
         # create new category if it doesn't exist
@@ -1500,7 +1500,7 @@ class EntropyRepository:
         )
 
         myidpackage_string = 'NULL'
-        if isinstance(idpackage, (int, long,)):
+        if isinstance(idpackage, (int, long)):
 
             manual_deps = self.retrieveManualDependencies(idpackage)
 
@@ -1604,7 +1604,7 @@ class EntropyRepository:
 
         ### RSS Atom support
         ### dictionary will be elaborated by activator
-        if self.SystemSettings.has_key(self.srv_sys_settings_plugin):
+        if self.srv_sys_settings_plugin in self.SystemSettings:
             srv_data = self.SystemSettings[self.srv_sys_settings_plugin]
             if srv_data['server']['rss']['enabled'] and not self.clientDatabase:
 
@@ -1640,11 +1640,11 @@ class EntropyRepository:
             srv_updates.update(rss_obj)
 
         # setup metadata keys, if not available
-        if not srv_updates.has_key('added'):
+        if 'added' not in srv_updates:
             srv_updates['added'] = {}
-        if not srv_updates.has_key('removed'):
+        if 'removed' not in srv_updates:
             srv_updates['removed'] = {}
-        if not srv_updates.has_key('light'):
+        if 'light' not in srv_updates:
             srv_updates['light'] = {}
 
         # if pkgatom (rss_atom) is in the "removed" metadata, drop it
@@ -1686,11 +1686,11 @@ class EntropyRepository:
             srv_updates.update(rss_obj)
 
         # setup metadata keys, if not available
-        if not srv_updates.has_key('added'):
+        if 'added' not in srv_updates:
             srv_updates['added'] = {}
-        if not srv_updates.has_key('removed'):
+        if 'removed' not in srv_updates:
             srv_updates['removed'] = {}
-        if not srv_updates.has_key('light'):
+        if 'light' not in srv_updates:
             srv_updates['light'] = {}
 
         # if pkgatom (rss_atom) is in the "added" metadata, drop it
@@ -1739,7 +1739,7 @@ class EntropyRepository:
 
         ### RSS Atom support
         ### dictionary will be elaborated by activator
-        if self.SystemSettings.has_key(self.srv_sys_settings_plugin):
+        if self.srv_sys_settings_plugin in self.SystemSettings:
             if self.SystemSettings[self.srv_sys_settings_plugin]['server']['rss']['enabled'] and \
                 (not self.clientDatabase) and do_rss:
 
@@ -2479,7 +2479,7 @@ class EntropyRepository:
         @type licenses_data: dict
         """
 
-        mylicenses = licenses_data.keys()
+        mylicenses = list(licenses_data.keys())
         def my_mf(mylicense):
             return not self.isLicensedataKeyAvailable(mylicense)
 
@@ -2500,7 +2500,7 @@ class EntropyRepository:
             # set() used after filter to remove duplicates
             self.cursor.executemany("""
             INSERT into licensedata VALUES (?,?,?)
-            """, map(my_mm, set(filter(my_mf, mylicenses))))
+            """, list(map(my_mm, set(filter(my_mf, mylicenses)))))
 
     def insertConfigProtect(self, idpackage, idprotect, mask = False):
         """
@@ -2572,7 +2572,7 @@ class EntropyRepository:
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into keywords VALUES (?,?)
-            """, map(mymf, keywords))
+            """, list(map(mymf, keywords)))
 
     def insertUseflags(self, idpackage, useflags):
         """
@@ -2594,7 +2594,7 @@ class EntropyRepository:
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into useflags VALUES (?,?)
-            """, map(mymf, useflags))
+            """, list(map(mymf, useflags)))
 
     def insertSignatures(self, idpackage, sha1, sha256, sha512):
         """
@@ -2727,7 +2727,7 @@ class EntropyRepository:
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into needed VALUES (?,?,?)
-            """, map(mymf, neededs))
+            """, list(map(mymf, neededs)))
 
     def insertEclasses(self, idpackage, eclasses):
         """
@@ -2749,7 +2749,7 @@ class EntropyRepository:
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into eclasses VALUES (?,?)
-            """, map(mymf, eclasses))
+            """, list(map(mymf, eclasses)))
 
     def insertOnDiskSize(self, idpackage, mysize):
         """
@@ -4513,7 +4513,7 @@ class EntropyRepository:
         excluded_deptypes_query = ""
         if exclude_deptypes != None:
             for dep_type in exclude_deptypes:
-                if not isinstance(dep_type, (int, long,)):
+                if not isinstance(dep_type, (int, long)):
                     # filter out crap
                     continue
                 excluded_deptypes_query += " AND dependencies.type != %s" % (
@@ -6466,7 +6466,7 @@ class EntropyRepository:
         @rtype: tuple
         """
         myids = self.listAllIdpackages()
-        if isinstance(foreign_idpackages, (list, tuple,)):
+        if isinstance(foreign_idpackages, (list, tuple)):
             outids = set(foreign_idpackages)
         else:
             outids = foreign_idpackages
@@ -7393,7 +7393,7 @@ class EntropyRepository:
                             type = "warning"
                         )
                     continue
-                except Exception, e:
+                except Exception as e:
                     if verbose:
                         mytxt = "%s: %s: %s [%s]" % (
                             bold(_("ATTENTION")),
@@ -7512,7 +7512,7 @@ class EntropyRepository:
 
             try:
                 self._generateProvidedLibsMetadata()
-            except (IOError, OSError, self.dbapi2.Error), err:
+            except (IOError, OSError, self.dbapi2.Error) as err:
                 mytxt = "%s: %s: [%s]" % (
                     bold(_("ATTENTION")),
                     red("cannot generate provided_libs metadata"),
@@ -7532,7 +7532,7 @@ class EntropyRepository:
 
             provided_libs = set()
             ldpaths = self.entropyTools.collect_linker_paths()
-            for obj, ftype in content.items():
+            for obj, ftype in list(content.items()):
 
                 if ftype == "dir":
                     continue
@@ -7824,7 +7824,7 @@ class EntropyRepository:
         mykw = "%smask_ids" % (reponame,)
         user_package_mask_ids = self.SystemSettings.get(mykw)
 
-        if not isinstance(user_package_mask_ids, (list, set,)):
+        if not isinstance(user_package_mask_ids, (list, set)):
             user_package_mask_ids = set()
 
             for atom in self.SystemSettings['mask']:
@@ -7860,7 +7860,7 @@ class EntropyRepository:
         mykw = "%sunmask_ids" % (reponame,)
         user_package_unmask_ids = self.SystemSettings.get(mykw)
 
-        if not isinstance(user_package_unmask_ids, (list, set,)):
+        if not isinstance(user_package_unmask_ids, (list, set)):
 
             user_package_unmask_ids = set()
             for atom in self.SystemSettings['unmask']:
@@ -7897,7 +7897,7 @@ class EntropyRepository:
             repos_mask = client_settings['repositories']['mask']
 
         repomask = repos_mask.get(reponame)
-        if isinstance(repomask, (list, set,)):
+        if isinstance(repomask, (list, set)):
 
             # first, seek into generic masking, all branches
             # (below) avoid issues with repository names
@@ -7988,7 +7988,7 @@ class EntropyRepository:
         # seek in repository first
         keyword_repo = self.SystemSettings['keywords']['repositories']
 
-        for keyword in keyword_repo.get(reponame, {}).keys():
+        for keyword in list(keyword_repo.get(reponame, {}).keys()):
 
             if keyword not in mykeywords:
                 continue
@@ -8046,7 +8046,7 @@ class EntropyRepository:
 
         # if we get here, it means we didn't find a match in repositories
         # so we scan packages, last chance
-        for keyword in keyword_pkg.keys():
+        for keyword in list(keyword_pkg.keys()):
             # use .keys() because keyword_pkg gets modified during iteration
 
             # first of all check if keyword is in mykeywords
@@ -8060,7 +8060,7 @@ class EntropyRepository:
             kwd_key = "%s_ids" % (keyword,)
             keyword_data_ids = keyword_pkg.get(reponame+kwd_key)
 
-            if not isinstance(keyword_data_ids, (list, set,)):
+            if not isinstance(keyword_data_ids, (list, set)):
                 keyword_data_ids = set()
                 for atom in keyword_data:
                     # match atom
@@ -8129,7 +8129,7 @@ class EntropyRepository:
             # create cache
 
             keyword_data_ids = {}
-            for atom, values in repo_settings.items():
+            for atom, values in list(repo_settings.items()):
                 matches, r = self.atomMatch(atom, multiMatch = True,
                     packagesFilter = False)
                 if r != 0:
@@ -8376,7 +8376,7 @@ class EntropyRepository:
             atomUse = ()
         atomSlot = self.entropyTools.dep_getslot(atom)
         atomRev = self.entropyTools.dep_get_entropy_revision(atom)
-        if isinstance(atomRev, (int, long,)):
+        if isinstance(atomRev, (int, long)):
             if atomRev < 0: atomRev = None
 
         # use match

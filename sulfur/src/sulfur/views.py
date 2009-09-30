@@ -74,7 +74,7 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
         cat_descs = {}
         for po in packages:
             for set_name in po.set_names:
-                if not categories.has_key(set_name):
+                if set_name not in categories:
                     categories[set_name] = []
                 cat_descs[set_name] = po.set_cat_namedesc
                 if po not in categories[set_name]:
@@ -86,9 +86,9 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
 
             cat_desc = orig_cat_desc
             cat_desc_data = self.entropy.get_category_description_data(category)
-            if cat_desc_data.has_key(_LOCALE):
+            if _LOCALE in cat_desc_data:
                 cat_desc = cat_desc_data[_LOCALE]
-            elif cat_desc_data.has_key('en'):
+            elif 'en' in cat_desc_data:
                 cat_desc = cat_desc_data['en']
             elif cat_descs.get(category):
                 cat_desc = cat_descs.get(category)
@@ -132,7 +132,7 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
                 mycat = po.cat
             except dbapi2.Error:
                 continue
-            if not categories.has_key(mycat):
+            if mycat not in categories:
                 categories[mycat] = []
             categories[mycat].append(po)
 
@@ -142,9 +142,9 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
 
             cat_desc = orig_cat_desc
             cat_desc_data = self.entropy.get_category_description_data(category)
-            if cat_desc_data.has_key(_LOCALE):
+            if _LOCALE in cat_desc_data:
                 cat_desc = cat_desc_data[_LOCALE]
-            elif cat_desc_data.has_key('en'):
+            elif 'en' in cat_desc_data:
                 cat_desc = cat_desc_data['en']
             elif cat_descs.get(category):
                 cat_desc = cat_descs.get(category)
@@ -175,7 +175,7 @@ class NameSortPackageViewModelInjector(DefaultPackageViewModelInjector):
                 myinitial = po.onlyname.lower()[0]
             except dbapi2.Error:
                 continue
-            if not categories.has_key(myinitial):
+            if myinitial not in categories:
                 categories[myinitial] = []
             categories[myinitial].append(po)
 
@@ -378,7 +378,7 @@ class GroupSortPackageViewModelInjector(EntropyPackageViewModelInjector):
 
         groups = self.entropy.get_package_groups()
         group_data = dict((tuple(val['categories']), key,) for key, val \
-            in groups.items())
+            in list(groups.items()))
 
         nocat = _("No category")
         groups['no_category'] = {
@@ -1490,7 +1490,7 @@ class EntropyPackageView:
         self.change_model_injector(new)
         if self.Sulfur != None:
             sorter = self.Sulfur.ui.pkgSorter
-            for sort_name, sort_class in self.Sulfur.avail_pkg_sorters.items():
+            for sort_name, sort_class in list(self.Sulfur.avail_pkg_sorters.items()):
                 if sort_class == new:
                     sort_id = self.Sulfur.pkg_sorters_id_inverse.get(sort_name)
                     sorter.set_active(sort_id)
@@ -1748,7 +1748,7 @@ class EntropyPackageView:
         column.set_expand(expand)
         column.set_sort_column_id( -1 )
         column.set_clickable(clickable)
-        if callable(click_cb):
+        if hasattr(click_cb, '__call__'):
             column.connect("clicked", click_cb)
         self.view.append_column( column )
         return column
@@ -2003,20 +2003,20 @@ class EntropyQueueView:
         categories = {}
         for po in mylist:
             mycat = po.cat
-            if not categories.has_key(mycat):
+            if mycat not in categories:
                 categories[mycat] = []
             categories[mycat].append(po)
 
-        cats = categories.keys()
+        cats = list(categories.keys())
         cats.sort()
 
         grandfather = model.append( None, (label,) )
         for category in cats:
             cat_desc = _("No description")
             cat_desc_data = self.Equo.get_category_description_data(category)
-            if cat_desc_data.has_key(_LOCALE):
+            if _LOCALE in cat_desc_data:
                 cat_desc = cat_desc_data[_LOCALE]
-            elif cat_desc_data.has_key('en'):
+            elif 'en' in cat_desc_data:
                 cat_desc = cat_desc_data['en']
             cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,
                 cleanMarkupString(cat_desc),)
@@ -2075,7 +2075,7 @@ class EntropyFilesView:
 
     def populate( self, scandata ):
         self.model.clear()
-        keys = scandata.keys()
+        keys = list(scandata.keys())
         keys.sort()
         for key in keys:
             self.model.append(None, [key,
@@ -2230,7 +2230,7 @@ class EntropyAdvisoriesView:
         for key in identifiers:
             if not adv_metadata[key]['affected']:
                 continue
-            affected_data = adv_metadata[key]['affected'].keys()
+            affected_data = list(adv_metadata[key]['affected'].keys())
             if not affected_data:
                 continue
             for a_key in affected_data:

@@ -35,7 +35,7 @@ class Trigger:
 
         if not isinstance(entropy_client, Client):
             mytxt = "A valid Entropy Instance is needed"
-            raise AttributeError, mytxt
+            raise AttributeError(mytxt)
 
         self.Entropy = entropy_client
         self.pkgdata = pkgdata
@@ -48,7 +48,7 @@ class Trigger:
         try:
             Spm = self.Entropy.Spm()
             self.Spm = Spm
-        except Exception, e:
+        except Exception as e:
             self.entropyTools.print_traceback()
             mytxt = darkred("%s, %s: %s, %s !") % (
                 _("Source Package Manager interface can't be loaded"),
@@ -67,7 +67,7 @@ class Trigger:
         # validate phase
         if self.phase not in Trigger.VALID_PHASES:
             mytxt = "Valid phases: %s" % (Trigger.VALID_PHASES,)
-            raise AttributeError, mytxt
+            raise AttributeError(mytxt)
 
     def prepare(self):
         func = getattr(self, self.phase)
@@ -196,7 +196,7 @@ class Trigger:
     def trigger_call_ext_generic(self):
         try:
             return self.do_trigger_call_ext_generic()
-        except Exception, e:
+        except Exception as e:
             mykey = self.pkgdata['category']+"/"+self.pkgdata['name']
             tb = self.entropyTools.get_traceback()
             self.Entropy.updateProgress(tb, importance = 0, type = "error")
@@ -368,7 +368,7 @@ class Trigger:
         def run(self, stage, pkgdata, trigger_file):
             my_ext_status = 1
             if os.path.isfile(trigger_file):
-                execfile(trigger_file)
+                exec(compile(open(trigger_file).read(), trigger_file, 'exec'))
             if os.path.isfile(trigger_file):
                 os.remove(trigger_file)
             return my_ext_status
@@ -414,7 +414,7 @@ class Trigger:
         f.close()
         entropy_sh = etpConst['trigger_sh_interpreter']
         if interpreter == "#!%s" % (entropy_sh,):
-            os.chmod(triggerfile,0775)
+            os.chmod(triggerfile,0o775)
             my = self.EntropyShSandbox(self.Entropy)
         else:
             my = self.EntropyPySandbox(self.Entropy)

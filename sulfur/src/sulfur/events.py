@@ -89,7 +89,7 @@ class SulfurApplicationEventsMixin:
         try:
             if os.path.isfile(dbpath) and os.access(dbpath,os.W_OK):
                 os.remove(dbpath)
-        except OSError, e:
+        except OSError as e:
             okDialog( self.ui.main, "%s: %s" % (_("Error during removal"),e,) )
             return
         self.fill_pref_db_backup_page()
@@ -153,7 +153,7 @@ class SulfurApplicationEventsMixin:
 
     def on_mergeFiles_clicked( self, widget ):
         self.Equo.FileUpdates.scanfs(dcache = True)
-        keys = self.Equo.FileUpdates.scandata.keys()
+        keys = list(self.Equo.FileUpdates.scandata.keys())
         for key in keys:
             self.Equo.FileUpdates.merge_file(key)
             # it's cool watching it runtime
@@ -161,7 +161,7 @@ class SulfurApplicationEventsMixin:
 
     def on_deleteFiles_clicked( self, widget ):
         self.Equo.FileUpdates.scanfs(dcache = True)
-        keys = self.Equo.FileUpdates.scandata.keys()
+        keys = list(self.Equo.FileUpdates.scandata.keys())
         for key in keys:
             self.Equo.FileUpdates.remove_file(key)
             # it's cool watching it runtime
@@ -186,7 +186,7 @@ class SulfurApplicationEventsMixin:
         self.on_filesViewChanges_clicked(widget)
 
     def on_filesViewChanges_clicked( self, widget ):
-        import commands
+        import subprocess
         identifier, source, dest = self._get_Edit_filename()
         if not identifier:
             return True
@@ -196,7 +196,7 @@ class SulfurApplicationEventsMixin:
         red_tt = mybuffer.create_tag("red", foreground = "red")
         green_tt = mybuffer.create_tag("green", foreground = "darkgreen")
 
-        for line in commands.getoutput(diffcmd).split("\n"):
+        for line in subprocess.getoutput(diffcmd).split("\n"):
             myiter = mybuffer.get_end_iter()
             if line.startswith("+"):
                 mybuffer.insert_with_tags(myiter, line+"\n", green_tt)
@@ -589,7 +589,7 @@ class SulfurApplicationEventsMixin:
             gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE,gtk.RESPONSE_OK))
         if fn:
             pkgdata = self.queue.get().copy()
-            for key in pkgdata.keys():
+            for key in list(pkgdata.keys()):
                 if pkgdata[key]: pkgdata[key] = [x.matched_atom for x in pkgdata[key]]
             self.Equo.dumpTools.dumpobj(fn,pkgdata,True)
 
@@ -606,7 +606,7 @@ class SulfurApplicationEventsMixin:
                 return
 
             collected_items = []
-            for key in pkgdata.keys():
+            for key in list(pkgdata.keys()):
                 for pkg in pkgdata[key]:
                     try:
                         yp, new = self.etpbase.get_package_item(pkg)
@@ -716,7 +716,7 @@ class SulfurApplicationEventsMixin:
         rc = questionDialog(self.ui.main, msg)
         if rc:
             if self.do_debug:
-                print "on_abortQueue_clicked: abort is now on"
+                print("on_abortQueue_clicked: abort is now on")
             self.abortQueueNow = True
 
     def on_search_clicked(self,widget):
@@ -789,7 +789,7 @@ class SulfurApplicationEventsMixin:
         if self.Equo.UGC == None: return
         repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
         avail_repos = self.Equo.SystemSettings['repositories']['available']
-        for repoid in list(set(avail_repos.keys()+repo_excluded.keys())):
+        for repoid in list(set(list(avail_repos.keys())+list(repo_excluded.keys()))):
             self.Equo.UGC.UGCCache.clear_cache(repoid)
             self.set_status_ticker("%s: %s ..." % (_("Cleaning UGC cache of"),repoid,))
         self.set_status_ticker("%s" % (_("UGC cache cleared"),))
@@ -799,7 +799,7 @@ class SulfurApplicationEventsMixin:
             return
         repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
         avail_repos = self.Equo.SystemSettings['repositories']['available']
-        for repoid in list(set(avail_repos.keys()+repo_excluded.keys())):
+        for repoid in list(set(list(avail_repos.keys())+list(repo_excluded.keys()))):
             if not self.Equo.UGC.is_repository_eapi3_aware(repoid):
                 continue
             logged_data = self.Equo.UGC.read_login(repoid)
@@ -1042,9 +1042,9 @@ class SulfurApplicationEventsMixin:
             self.gtk_loop()
 
         if self.do_debug and self.libtest_abort:
-            print "on_libtestButton_clicked: scan abort"
+            print("on_libtestButton_clicked: scan abort")
         if self.do_debug:
-            print "on_libtestButton_clicked: done scanning"
+            print("on_libtestButton_clicked: done scanning")
 
         if self.libtest_abort:
             do_stop()
@@ -1052,7 +1052,7 @@ class SulfurApplicationEventsMixin:
             return
 
         matches = set()
-        for key in packages_matched.keys():
+        for key in list(packages_matched.keys()):
             matches |= packages_matched[key]
 
         if broken_execs:
@@ -1084,7 +1084,7 @@ class SulfurApplicationEventsMixin:
     def on_ui_color_set(self, widget):
         key = self.colorSettingsReverseMap.get(widget)
         if not hasattr(SulfurConf,key):
-            print "WARNING: no %s in SulfurConf" % (key,)
+            print("WARNING: no %s in SulfurConf" % (key,))
             return
         w_col = widget.get_color().to_string()
         self.on_Preferences_toggled(None,True)
@@ -1092,7 +1092,7 @@ class SulfurApplicationEventsMixin:
 
     def on_notebook_switch_page(self, widget, page_w, page_num):
         page = "packages"
-        for page_n, c_page in const.PAGES.items():
+        for page_n, c_page in list(const.PAGES.items()):
             if c_page == page_num:
                 page = page_n
                 break

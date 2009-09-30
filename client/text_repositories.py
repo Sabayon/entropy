@@ -164,7 +164,7 @@ def do_sync(reponames = [], forceUpdate = False):
     except MissingParameter:
         print_error(darkred(" * ")+red("%s %s" % (_("No repositories specified in"),etpConst['repositoriesconf'],)))
         return 127
-    except Exception, e:
+    except Exception as e:
         print_error(darkred(" @@ ")+red("%s: %s" % (_("Unhandled exception"),e,)))
         return 2
 

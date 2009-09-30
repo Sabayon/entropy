@@ -104,7 +104,7 @@ class Server(SocketHost):
         from entropy.services.system.commands import Base
         self.setup_stdout_storage_dir()
 
-        if not kwargs.has_key('external_cmd_classes'):
+        if 'external_cmd_classes' not in kwargs:
             kwargs['external_cmd_classes'] = []
         kwargs['external_cmd_classes'].insert(0,Base)
 
@@ -114,7 +114,7 @@ class Server(SocketHost):
 
         self.ExecutorCommandClasses = [(self.BuiltInSystemManagerExecutorCommands,[],{},)]
         self.ExecutorCommandInstances = []
-        if kwargs.has_key('external_executor_cmd_classes'):
+        if 'external_executor_cmd_classes' in kwargs:
             self.ExecutorCommandClasses += kwargs.pop('external_executor_cmd_classes')
         self.handle_executor_command_classes_initialization()
 
@@ -183,7 +183,7 @@ class Server(SocketHost):
         if os.path.isfile(self.STDOUT_STORAGE_DIR) or os.path.islink(self.STDOUT_STORAGE_DIR):
             os.remove(self.STDOUT_STORAGE_DIR)
         if not os.path.isdir(self.STDOUT_STORAGE_DIR):
-            os.makedirs(self.STDOUT_STORAGE_DIR,0775)
+            os.makedirs(self.STDOUT_STORAGE_DIR,0o775)
             if etpConst['entropygid'] != None:
                 const_setup_perms(self.STDOUT_STORAGE_DIR,etpConst['entropygid'])
 
@@ -214,7 +214,7 @@ class Server(SocketHost):
 
     def remove_from_pinboard(self, pinboard_id):
         with self.PinboardLock:
-            if self.PinboardData.has_key(pinboard_id):
+            if pinboard_id in self.PinboardData:
                 self.PinboardData.pop(pinboard_id)
                 self.store_pinboard()
                 return True
@@ -222,14 +222,14 @@ class Server(SocketHost):
 
     def set_pinboard_item_status(self, pinboard_id, status):
         with self.PinboardLock:
-            if self.PinboardData.has_key(pinboard_id):
+            if pinboard_id in self.PinboardData:
                 self.PinboardData[pinboard_id]['done'] = status
                 self.store_pinboard()
                 return True
             return False
 
     def get_pinboard_id(self):
-        numbers = self.PinboardData.keys()
+        numbers = list(self.PinboardData.keys())
         if numbers:
             number = max(numbers)+1
         else:
@@ -363,11 +363,11 @@ class Server(SocketHost):
     def flush_item(self, item, queue_id):
         if not isinstance(item,dict):
             return False
-        if item.has_key('stdout'):
+        if 'stdout' in item:
             stdout = item['stdout']
             if (os.path.isfile(stdout) and os.access(stdout,os.W_OK)):
                 os.remove(stdout)
-        if item.has_key('interactive'):
+        if 'interactive' in item:
             if item['interactive'] and (queue_id in self.ManagerQueueStdInOut):
                 stdin, stdout = self.ManagerQueueStdInOut.pop(queue_id)
                 os.close(stdin)
@@ -423,9 +423,9 @@ class Server(SocketHost):
         return None, None
 
     def _queue_copy_obj(self, obj):
-        if isinstance(obj,(dict,set,frozenset,)):
+        if isinstance(obj,(dict,set,frozenset)):
             return obj.copy()
-        elif isinstance(obj,(list,tuple,)):
+        elif isinstance(obj,(list,tuple)):
             return obj[:]
         return obj
 
@@ -467,13 +467,13 @@ class Server(SocketHost):
                 t.start()
                 return
             done, result = self.SystemExecutor.execute_task(command_data)
-        except Exception, e:
+        except Exception as e:
             if self.QueueLock.locked(): self.QueueLock.release()
             self.entropyTools.print_traceback()
             done = False
             result = (False, unicode(e),)
 
-        if command_data.has_key('extended_result') and done:
+        if 'extended_result' in command_data and done:
             try:
                 command_data['result'], extended_result = self._queue_copy_obj(result)
                 self.store_queue_ext_rc(queue_id, extended_result)

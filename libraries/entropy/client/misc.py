@@ -147,7 +147,7 @@ class FileUpdates:
                                 try:
                                     os.rename(etpConst['systemroot']+mydict['source'],
                                         etpConst['systemroot']+mydict['destination'])
-                                except (OSError, IOError,), e:
+                                except (OSError, IOError,) as e:
                                     if not quiet:
                                         mytxt = "%s :: %s: %s. %s: %s" % (
                                             red(_("System Error")),
@@ -205,7 +205,7 @@ class FileUpdates:
 
     def add_to_cache(self, filepath, quiet = False):
         self.scanfs(dcache = True, quiet = quiet)
-        keys = self.scandata.keys()
+        keys = list(self.scandata.keys())
         try:
             for key in keys:
                 if self.scandata[key]['source'] == filepath[len(etpConst['systemroot']):]:

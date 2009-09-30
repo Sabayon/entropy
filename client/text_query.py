@@ -251,7 +251,7 @@ def search_changelog(atoms, dbconn = None, Equo = None):
             print_generic(_("No ChangeLog available"))
         else:
             print_generic(changelog)
-        print "="*80
+        print("="*80)
 
     return 0
 
@@ -537,10 +537,10 @@ def search_orphaned_files(Equo = None):
                         back = True)
                 try:
                     foundFiles[unicode(filename, 'raw_unicode_escape')] = u"obj"
-                except (UnicodeDecodeError, UnicodeEncodeError,), e:
+                except (UnicodeDecodeError, UnicodeEncodeError,) as e:
                     if etpUi['quiet']:
                         continue
-                    print "!!! error on", filename, "skipping:", e
+                    print("!!! error on", filename, "skipping:", e)
 
             if foundFiles:
                 tdbconn.insertContent(1, foundFiles)

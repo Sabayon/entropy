@@ -51,7 +51,7 @@ class Server(SocketHost):
         self.SystemSettings['socket_service']['max_connections'] = 5000
 
         etpConst['socketloglevel'] = 1
-        if not kwargs.has_key('external_cmd_classes'):
+        if 'external_cmd_classes' not in kwargs:
             kwargs['external_cmd_classes'] = []
         kwargs['external_cmd_classes'].insert(0,self.RepositoryCommands)
         SocketHost.__init__(
@@ -283,7 +283,7 @@ class Server(SocketHost):
                 mydbpath,
                 etpConst['etpdatabasedownloadlockfile']
             )
-            if not self.repositories[x].has_key('cmethod'):
+            if 'cmethod' not in self.repositories[x]:
                 raise AttributeError("cmethod not specified for: %s" % (x,))
             if self.repositories[x]['cmethod'] not in etpConst['etpdatabasesupportedcformats']:
                 raise AttributeError("wrong cmethod for: %s" % (x,))

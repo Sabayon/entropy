@@ -154,7 +154,7 @@ class PortagePlugin(SpmPlugin):
             for x in i:
                 if isinstance(x, basestring):
                     if x == '||':
-                        x = self._zap_parens(i.next(), [], disjunction=True)
+                        x = self._zap_parens(next(i), [], disjunction=True)
                         if len(x) == 1:
                             dest.append(x[0])
                         else:
@@ -162,7 +162,7 @@ class PortagePlugin(SpmPlugin):
                             dest.append(x)
                     elif x.endswith("?"):
                         dest.append(x)
-                        dest.append(self._zap_parens(i.next(), []))
+                        dest.append(self._zap_parens(next(i), []))
                     else:
                         dest.append(x)
                 else:
@@ -181,7 +181,7 @@ class PortagePlugin(SpmPlugin):
         mytxt = _("OutputInterface does not have an updateProgress method")
         if not hasattr(OutputInterface,'updateProgress'):
             raise AttributeError(mytxt)
-        elif not callable(OutputInterface.updateProgress):
+        elif not hasattr(OutputInterface.updateProgress, '__call__'):
             raise AttributeError(mytxt)
 
         # interface only needed OutputInterface functions
@@ -458,7 +458,7 @@ class PortagePlugin(SpmPlugin):
         Reimplemented from SpmPlugin class.
         """
         mirrors = []
-        if self.portage.thirdpartymirrors.has_key(mirror_name):
+        if mirror_name in self.portage.thirdpartymirrors:
             mirrors.extend(self.portage.thirdpartymirrors[mirror_name])
         return mirrors
 
@@ -722,7 +722,7 @@ class PortagePlugin(SpmPlugin):
             # multiple packages correctly and set back slot).
             data['versiontag'] = k_base
 
-            k_atom, k_slot = owners.keys()[0]
+            k_atom, k_slot = list(owners.keys())[0]
             k_cat, k_name, k_ver, k_rev = entropy.tools.catpkgsplit(k_atom)
             if k_rev != "r0":
                 k_ver += "-%s" % (k_rev,)
@@ -764,7 +764,7 @@ class PortagePlugin(SpmPlugin):
         try:
             data['changelog'] = unicode(self.get_package_changelog(pkgatom),
                 'raw_unicode_escape')
-        except (UnicodeEncodeError, UnicodeDecodeError,), e:
+        except (UnicodeEncodeError, UnicodeDecodeError,) as e:
             sys.stderr.write("%s: %s, %s\n" % (
                 "changelog string conversion error", e,
                 package_file,)
@@ -1134,7 +1134,7 @@ class PortagePlugin(SpmPlugin):
                 return True
             return False
 
-        return filter(catfilter, packages)
+        return list(filter(catfilter, packages))
 
     def get_package_sets(self, builtin_sets):
         """
@@ -1151,7 +1151,7 @@ class PortagePlugin(SpmPlugin):
             for pkg_set in builtin_pkg_sets:
                 mysets.pop(pkg_set)
 
-        return dict((x, y.getAtoms(),) for x, y in mysets.items())
+        return dict((x, y.getAtoms(),) for x, y in list(mysets.items()))
 
     def convert_from_entropy_package_name(self, entropy_package_name):
         """
@@ -1189,7 +1189,7 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        if not isinstance(paths, (list, set, frozenset, dict, tuple,)):
+        if not isinstance(paths, (list, set, frozenset, dict, tuple)):
             raise AttributeError("iterable needed")
         root = etpConst['systemroot'] + os.path.sep
         mytree = self._get_portage_vartree(root)
@@ -1280,7 +1280,7 @@ class PortagePlugin(SpmPlugin):
             mysettings.backup_changes("ACCEPT_LICENSE")
 
         mysettings['EAPI'] = "0"
-        if metadata.has_key('EAPI'):
+        if 'EAPI' in metadata:
             mysettings['EAPI'] = metadata['EAPI']
 
         # workaround for scripts asking for user intervention
@@ -1544,7 +1544,7 @@ class PortagePlugin(SpmPlugin):
                             phase, package,)
                     )
 
-            except Exception, e:
+            except Exception as e:
 
                 stdfile.flush()
                 sys.stdout = oldstdout
@@ -1612,7 +1612,7 @@ class PortagePlugin(SpmPlugin):
                 ebuild, moved_ebuild = self._pkg_remove_setup_ebuild_env(
                     ebuild, package)
 
-            except EOFError, e:
+            except EOFError as e:
                 sys.stderr = oldstderr
                 # stuff on system is broken, ignore it
                 self.updateProgress(
@@ -1624,7 +1624,7 @@ class PortagePlugin(SpmPlugin):
                 )
                 return 0
 
-            except ImportError, e:
+            except ImportError as e:
                 sys.stderr = oldstderr
                 # stuff on system is broken, ignore it
                 self.updateProgress(
@@ -1650,7 +1650,7 @@ class PortagePlugin(SpmPlugin):
                         "for %s. Something bad happened." % (phase, package,)
                     )
 
-            except Exception, e:
+            except Exception as e:
 
                 stdfile.flush()
                 sys.stdout = oldstdout
@@ -1726,7 +1726,7 @@ class PortagePlugin(SpmPlugin):
             if rc != 0:
                 return 3
 
-        except Exception, err:
+        except Exception as err:
 
             entropy.tools.print_traceback()
             mytxt = "%s: %s %s." % (
@@ -1811,13 +1811,13 @@ class PortagePlugin(SpmPlugin):
                     return 0
 
             if not os.path.isdir(cat_dir):
-                os.makedirs(cat_dir, 0755)
+                os.makedirs(cat_dir, 0o755)
             if os.path.isdir(pkg_dir):
                 shutil.rmtree(pkg_dir)
 
             try:
                 shutil.copytree(copypath, pkg_dir)
-            except (IOError,), e:
+            except (IOError,) as e:
                 mytxt = "%s: %s: %s: %s" % (red(_("QA")),
                     brown(_("Cannot update Portage database to destination")),
                     purple(pkg_dir),e,)
@@ -1830,7 +1830,7 @@ class PortagePlugin(SpmPlugin):
 
             try:
                 counter = self.assign_uid_to_installed_package(spm_package)
-            except SPMError, err:
+            except SPMError as err:
                 mytxt = "%s: %s [%s]" % (
                     brown(_("SPM uid update error")), pkg_dir, err,
                 )
@@ -1880,7 +1880,7 @@ class PortagePlugin(SpmPlugin):
 
                     os.rename(world_file_tmp, world_file)
 
-        except (UnicodeDecodeError, UnicodeEncodeError,), e:
+        except (UnicodeDecodeError, UnicodeEncodeError,) as e:
 
             mytxt = "%s: %s" % (
                 brown(_("Cannot update SPM installed pkgs file")), world_file,
@@ -1935,7 +1935,7 @@ class PortagePlugin(SpmPlugin):
                 except OSError:
                     pass
 
-        if isinstance(others_installed, (list, set, tuple,)):
+        if isinstance(others_installed, (list, set, tuple)):
 
             for myatom in others_installed:
 
@@ -2038,7 +2038,7 @@ class PortagePlugin(SpmPlugin):
         xpak_dir = package_metadata['xpakpath'] + os.path.sep + \
             etpConst['entropyxpakdatarelativepath']
 
-        os.makedirs(xpak_dir, 0755)
+        os.makedirs(xpak_dir, 0o755)
 
         xpak_path = package_metadata['xpakpath'] + os.path.sep + \
             etpConst['entropyxpakfilename']
@@ -2088,7 +2088,7 @@ class PortagePlugin(SpmPlugin):
             "portage/" + portage_cpv
         )
 
-        os.makedirs(portage_db_fakedir, 0755)
+        os.makedirs(portage_db_fakedir, 0o755)
         # now link it to package_metadata['imagedir']
         os.symlink(package_metadata['imagedir'],
             os.path.join(portage_db_fakedir, "image"))
@@ -2106,7 +2106,7 @@ class PortagePlugin(SpmPlugin):
 
         try:
             mytree = self.portage.vartree(root=root)
-        except Exception, e:
+        except Exception as e:
             raise SPMError("SPMError: %s: %s" % (Exception,e,))
         PortagePlugin.CACHE['vartree'][root] = mytree
         return mytree
@@ -2119,7 +2119,7 @@ class PortagePlugin(SpmPlugin):
 
         try:
             mytree = self.portage.portagetree(root=root)
-        except Exception, e:
+        except Exception as e:
             raise SPMError("SPMError: %s: %s" % (Exception,e,))
         PortagePlugin.CACHE['portagetree'][root] = mytree
         return mytree
@@ -2133,7 +2133,7 @@ class PortagePlugin(SpmPlugin):
         pkgdir = root+self.portage.settings['PKGDIR']
         try:
             mytree = self.portage.binarytree(root,pkgdir)
-        except Exception, e:
+        except Exception as e:
             raise SPMError("SPMError: %s: %s" % (Exception,e,))
         PortagePlugin.CACHE['binarytree'][root] = mytree
         return mytree
@@ -2149,7 +2149,7 @@ class PortagePlugin(SpmPlugin):
             mysettings = self.portage.config(config_root = config_root,
                 target_root = root,
                 config_incrementals = self.portage_const.INCREMENTALS)
-        except Exception, e:
+        except Exception as e:
             raise SPMError("SPMError: %s: %s" % (Exception,e,))
         if use_cache:
             PortagePlugin.CACHE['config'][(config_root,root)] = mysettings
@@ -2372,7 +2372,7 @@ class PortagePlugin(SpmPlugin):
                 if k.endswith("DEPEND"):
                     deps = self._usedeps_reduce(deps, enabled_use)
                 deps = ' '.join(deps)
-            except Exception, e:
+            except Exception as e:
                 entropy.tools.print_traceback()
                 self.updateProgress(
                     darkred("%s: %s: %s :: %s") % (
@@ -2608,7 +2608,7 @@ class PortagePlugin(SpmPlugin):
                         if mydeparray:
                             newdeparray.append(mydeparray.pop(0))
                         else:
-                            raise ValueError, _("Conditional with no target")
+                            raise ValueError(_("Conditional with no target"))
 
                     # Deprecation checks
                     warned = 0
@@ -2995,7 +2995,7 @@ class PortagePlugin(SpmPlugin):
 
         provided_libs = set()
         ldpaths = entropy.tools.collect_linker_paths()
-        for obj, ftype in content.items():
+        for obj, ftype in list(content.items()):
 
             if ftype == "dir":
                 continue

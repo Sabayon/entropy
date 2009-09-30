@@ -92,7 +92,7 @@ class RemoteDatabase:
             return
         try:
             self.dbconn.ping()
-        except self.mysql_exceptions.OperationalError, e:
+        except self.mysql_exceptions.OperationalError as e:
             if e[0] != 2006:
                 raise
             else:
@@ -105,7 +105,7 @@ class RemoteDatabase:
 
     def set_connection_data(self, data):
         self.connection_data = data.copy()
-        if not self.connection_data.has_key('converters') and self.conversion_dict:
+        if 'converters' not in self.connection_data and self.conversion_dict:
             self.connection_data['converters'] = self.conversion_dict.copy()
 
     def check_connection_data(self):
@@ -123,13 +123,13 @@ class RemoteDatabase:
             ('conv',"converters"), # mysql type converter dict
         ]
         for ckey, dkey in keys:
-            if not self.connection_data.has_key(dkey):
+            if dkey not in self.connection_data:
                 continue
             kwargs[ckey] = self.connection_data.get(dkey)
 
         try:
             self.dbconn = self.mysql.connect(**kwargs)
-        except self.mysql_exceptions.OperationalError, e:
+        except self.mysql_exceptions.OperationalError as e:
             raise ConnectionError('ConnectionError: %s' % (e,))
         self.plain_cursor = self.dbconn.cursor()
         self.cursor = self.mysql.cursors.DictCursor(self.dbconn)

@@ -110,7 +110,7 @@ class SecurityInterface:
                 os.remove(etpConst['securitydir'])
 
             if not os.path.isdir(etpConst['securitydir']):
-                os.makedirs(etpConst['securitydir'], 0775)
+                os.makedirs(etpConst['securitydir'], 0o775)
 
         except OSError:
             pass
@@ -140,7 +140,7 @@ class SecurityInterface:
             except OSError:
                 pass
 
-        os.makedirs(self.unpackdir, 0775)
+        os.makedirs(self.unpackdir, 0o775)
         const_setup_perms(self.unpackdir, etpConst['entropygid'])
 
     def __download_glsa_package(self):
@@ -228,7 +228,7 @@ class SecurityInterface:
         if os.listdir(etpConst['securitydir']):
             shutil.rmtree(etpConst['securitydir'], True)
             if not os.path.isdir(etpConst['securitydir']):
-                os.makedirs(etpConst['securitydir'], 0775)
+                os.makedirs(etpConst['securitydir'], 0o775)
             const_setup_perms(self.unpackdir, etpConst['entropygid'])
 
     def __put_advisories_in_place(self):
@@ -344,7 +344,7 @@ class SecurityInterface:
                 xml_metadata = self.__get_xml_metadata(xml)
             except KeyboardInterrupt:
                 return {}
-            except Exception, err:
+            except Exception as err:
                 exc_string = unicode(Exception)
                 exc_err = unicode(err)
             if xml_metadata == None:
@@ -384,12 +384,12 @@ class SecurityInterface:
         @return: filtered security advisories metadata
         @rtype: dict
         """
-        keys = adv_metadata.keys()
+        keys = list(adv_metadata.keys())
         for key in keys:
             valid = True
             if adv_metadata[key]['affected']:
                 affected = adv_metadata[key]['affected']
-                affected_keys = affected.keys()
+                affected_keys = list(affected.keys())
                 valid = False
                 skipping_keys = set()
                 for a_key in affected_keys:
@@ -484,7 +484,7 @@ class SecurityInterface:
         If affected: affected packages will be returned.
         """
         adv_data = self.get_advisories_metadata()
-        adv_data_keys = adv_data.keys()
+        adv_data_keys = list(adv_data.keys())
         valid_keys = set()
         for adv in adv_data_keys:
             is_affected = self.is_affected(adv, adv_data)
@@ -499,7 +499,7 @@ class SecurityInterface:
                     pass
         # now we need to filter packages in adv_dat
         for adv in adv_data:
-            for key in adv_data[adv]['affected'].keys():
+            for key in list(adv_data[adv]['affected'].keys()):
                 atoms = adv_data[adv]['affected'][key][0]['vul_atoms']
                 applicable = True
                 for atom in atoms:
@@ -518,7 +518,7 @@ class SecurityInterface:
         @rtype: set
         """
         adv_data = self.get_advisories_metadata()
-        adv_data_keys = adv_data.keys()
+        adv_data_keys = list(adv_data.keys())
         del adv_data
         self.affected_atoms.clear()
         for key in adv_data_keys:
@@ -635,7 +635,7 @@ class SecurityInterface:
         # if not affected_packages: advisory will be dropped
         for pkg in affected.getElementsByTagName("package"):
             name = pkg.getAttribute("name")
-            if not affected_packages.has_key(name):
+            if name not in affected_packages:
                 affected_packages[name] = []
 
             pdata = {}

@@ -209,7 +209,7 @@ class CalculatorsMixin:
         k_ms = "//"
         k_mt = "@#@"
         k_mr = "-1"
-        if isinstance(matchRepo,(list,tuple,set,)):
+        if isinstance(matchRepo,(list,tuple,set)):
             u_hash = hash(frozenset(matchRepo))
         if isinstance(matchSlot,basestring):
             k_ms = matchSlot
@@ -295,7 +295,7 @@ class CalculatorsMixin:
 
         elif len(repoResults) == 1:
             # one result found
-            repo = repoResults.keys()[0]
+            repo = list(repoResults.keys())[0]
             dbpkginfo = (repoResults[repo],repo)
 
         elif len(repoResults) > 1:
@@ -448,7 +448,7 @@ class CalculatorsMixin:
             if not server_repos:
                 sys_pkgsets = self.SystemSettings['system_package_sets']
                 if search:
-                    mysets = [x for x in sys_pkgsets.keys() if \
+                    mysets = [x for x in list(sys_pkgsets.keys()) if \
                         (x.find(package_set) != -1)]
                     for myset in mysets:
                         mydata = sys_pkgsets.get(myset)
@@ -637,7 +637,7 @@ class CalculatorsMixin:
             const_debug_write(__name__, "...")
             return dependency
 
-        unsatisfied = map(fm_dep,dependencies)
+        unsatisfied = list(map(fm_dep,dependencies))
         unsatisfied = set([x for x in unsatisfied if x != 0])
 
         if self.xcache:
@@ -708,7 +708,7 @@ class CalculatorsMixin:
                 idpackage, repoid = am(mydep, packagesFilter = False)
                 if idpackage != -1:
                     treelevel += 1
-                    if not maskedtree.has_key(treelevel) and not flat:
+                    if treelevel not in maskedtree and not flat:
                         maskedtree[treelevel] = {}
                     dbconn = open_db(repoid)
                     vidpackage, idreason = dbconn.idpackageValidator(idpackage)
@@ -976,7 +976,7 @@ class CalculatorsMixin:
                 "generate_dependency_tree dependency list for %s => %s" % (
                     m_idpackage, m_deplist,))
 
-            myundeps = filter(my_dep_filter, m_deplist)
+            myundeps = list(filter(my_dep_filter, m_deplist))
 
             const_debug_write(__name__,
                 "generate_dependency_tree filtered dependency list => %s" % (
@@ -991,7 +991,7 @@ class CalculatorsMixin:
                     "generate_dependency_tree unsatisfied dependencies (deep: %s) => %s" % (
                         deep_deps, m_unsat_deplist,))
 
-                myundeps = filter(my_dep_filter, m_unsat_deplist)
+                myundeps = list(filter(my_dep_filter, m_unsat_deplist))
 
                 const_debug_write(__name__,
                     "generate_dependency_tree filtered UNSATISFIED dependencies => %s" % (
@@ -1364,7 +1364,7 @@ class CalculatorsMixin:
                 max_parent_key = max(deptree)
                 deptree[0] |= newtree.pop(0)
                 levelcount = 0
-                for mylevel in sorted(newtree.keys(), reverse = True):
+                for mylevel in sorted(list(newtree.keys()), reverse = True):
                     levelcount += 1
                     deptree[max_parent_key+levelcount] = newtree.get(mylevel)
 
@@ -1490,7 +1490,7 @@ class CalculatorsMixin:
                 break
 
         # now filter newtree
-        for count in sorted(tree.keys(), reverse = True):
+        for count in sorted(list(tree.keys()), reverse = True):
             x = 0
             while x < count:
                 tree[x] -= tree[count]

@@ -238,7 +238,7 @@ class SystemSettings(Singleton):
         """
         with self.__mutex:
             # backup here too
-            if self.__persistent_settings.has_key(mykey):
+            if mykey in self.__persistent_settings:
                 self.__persistent_settings[mykey] = myvalue
             self.__data[mykey] = myvalue
 
@@ -303,7 +303,7 @@ class SystemSettings(Singleton):
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return self.__data.has_key(mykey)
+            return mykey in self.__data
 
     def copy(self):
         """
@@ -324,28 +324,28 @@ class SystemSettings(Singleton):
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return self.__data.items()
+            return list(self.__data.items())
 
     def iteritems(self):
         """
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return self.__data.iteritems()
+            return iter(self.__data.items())
 
     def iterkeys(self):
         """
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return self.__data.iterkeys()
+            return iter(self.__data.keys())
 
     def keys(self):
         """
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return self.__data.keys()
+            return list(self.__data.keys())
 
     def pop(self, mykey, default = None):
         """
@@ -380,7 +380,7 @@ class SystemSettings(Singleton):
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return self.__data.values()
+            return list(self.__data.values())
 
     def clear(self):
         """
@@ -1020,7 +1020,7 @@ class SystemSettings(Singleton):
 
                 reponame, repodata = const_extract_cli_repo_params(line,
                     data['branch'], data['product'])
-                if my_repodata.has_key(reponame):
+                if reponame in my_repodata:
 
                     my_repodata[reponame]['plain_packages'].extend(
                         repodata['plain_packages'])
@@ -1148,7 +1148,7 @@ class SystemSettings(Singleton):
         else:
             try:
                 os.makedirs(etpConst['dumpstoragedir'])
-            except IOError, e:
+            except IOError as e:
                 if e.errno == 30: # readonly filesystem
                     etpUi['pretend'] = True
                 return
@@ -1173,21 +1173,21 @@ class SystemSettings(Singleton):
 
         if not os.path.isdir(etpConst['dumpstoragedir']):
             try:
-                os.makedirs(etpConst['dumpstoragedir'], 0775)
+                os.makedirs(etpConst['dumpstoragedir'], 0o775)
                 const_setup_perms(etpConst['dumpstoragedir'],
                     etpConst['entropygid'])
-            except IOError, e:
+            except IOError as e:
                 if e.errno == 30: # readonly filesystem
                     etpUi['pretend'] = True
                 return
-            except (OSError,), e:
+            except (OSError,) as e:
                 # unable to create the storage directory
                 # useless to continue
                 return
 
         try:
             mtime_f = open(tosaveinto,"w")
-        except IOError, e: # unable to write?
+        except IOError as e: # unable to write?
             if e.errno == 30: # readonly filesystem
                 etpUi['pretend'] = True
             return
@@ -1195,7 +1195,7 @@ class SystemSettings(Singleton):
             mtime_f.write(str(currmtime))
             mtime_f.flush()
             mtime_f.close()
-            os.chmod(tosaveinto, 0664)
+            os.chmod(tosaveinto, 0o664)
             if etpConst['entropygid'] != None:
                 os.chown(tosaveinto, 0, etpConst['entropygid'])
 

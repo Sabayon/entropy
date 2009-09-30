@@ -22,7 +22,7 @@ class Base:
     def __init__(self, SystemManagerExecutorInstance, *args, **kwargs):
 
         try:
-            import cPickle as pickle
+            import pickle as pickle
         except ImportError:
             import pickle
         self.pickle = pickle
@@ -294,7 +294,7 @@ class Base:
             if not matched_atom:
                 continue
 
-            if not atoms_data.has_key(category):
+            if category not in atoms_data:
                 atoms_data[category] = {}
 
             atoms_data[category][matched_atom] = self._get_spm_pkginfo(matched_atom)
@@ -316,7 +316,7 @@ class Base:
                 category = key.split("/")[0]
             except:
                 continue
-            if not package_data.has_key(category):
+            if category not in package_data:
                 package_data[category] = {}
             package_data[category][package] = self._get_spm_pkginfo(package)
 
@@ -337,7 +337,7 @@ class Base:
                 category = key.split("/")[0]
             except:
                 continue
-            if not package_data.has_key(category):
+            if category not in package_data:
                 package_data[category] = {}
             package_data[category][package] = self._get_spm_pkginfo(package, from_installed = True)
 
@@ -530,7 +530,7 @@ class Base:
                     dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
                     atoms_removed.append(dbconn.retrieveAtom(idpackage))
                     dbconn.closeDB()
-                    if not remdata.has_key(repoid):
+                    if repoid not in remdata:
                         remdata[repoid] = set()
                     remdata[repoid].add(idpackage)
                 for repoid in remdata:
@@ -621,7 +621,7 @@ class Base:
             try:
                 deps_not_matched = self.SystemManagerExecutor.SystemInterface.Entropy.dependencies_test()
                 return True,deps_not_matched
-            except Exception, e:
+            except Exception as e:
                 self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
@@ -654,7 +654,7 @@ class Base:
             if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 return self.SystemManagerExecutor.SystemInterface.Entropy.test_shared_objects()
-            except Exception, e:
+            except Exception as e:
                 self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
@@ -695,7 +695,7 @@ class Base:
                 else:
                     data = self.SystemManagerExecutor.SystemInterface.Entropy.verify_remote_packages([], ask = False, repo = repoid)
                 return True, data
-            except Exception, e:
+            except Exception as e:
                 self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
@@ -733,7 +733,7 @@ class Base:
                     read_only = True
                 )
                 dbconn.closeDB()
-            except Exception, e:
+            except Exception as e:
                 self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
@@ -822,7 +822,7 @@ class Base:
 
                 return True, repo_data
 
-            except Exception, e:
+            except Exception as e:
                 self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
@@ -942,7 +942,7 @@ class Base:
 
                 return True, repo_data
 
-            except Exception, e:
+            except Exception as e:
                 self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
@@ -993,7 +993,7 @@ class Base:
                 if data == None:
                     return False,None
                 return True,data
-            except Exception, e:
+            except Exception as e:
                 self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
@@ -1029,7 +1029,7 @@ class Base:
                     data = self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.remove_from_notice_board(entry_id, repo = repoid)
                 self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.upload_notice_board(repo = repoid)
                 return True,data
-            except Exception, e:
+            except Exception as e:
                 self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:
@@ -1063,7 +1063,7 @@ class Base:
             try:
                 data = self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.update_notice_board(title, notice_text, link = link, repo = repoid)
                 return True,data
-            except Exception, e:
+            except Exception as e:
                 self.entropyTools.print_traceback()
                 return False,unicode(e)
             finally:

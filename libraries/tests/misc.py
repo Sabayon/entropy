@@ -11,7 +11,7 @@ class MiscTest(unittest.TestCase):
         self.__lifo = Lifo()
         self._lifo_item1 = set([1, 2, 3, 4])
         self._lifo_item2 = set([1, 2, 3, 4])
-        self._lifo_item3 = dict(((None,x,) for x in xrange(0, 20)))
+        self._lifo_item3 = dict(((None,x,) for x in range(0, 20)))
         self._lifo_item4 = u'èòàèòà'
         self._lifo_item5 = (1, 2, 3, 4,)
         self._lifo_item6 = '------'

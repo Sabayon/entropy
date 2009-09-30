@@ -25,7 +25,7 @@ class Client:
         if not hasattr(OutputInterface, 'updateProgress'):
             mytxt = _("OutputInterface does not have an updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
-        elif not callable(OutputInterface.updateProgress):
+        elif not hasattr(OutputInterface.updateProgress, '__call__'):
             mytxt = _("OutputInterface does not have an updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
 
@@ -139,7 +139,7 @@ class Client:
         if self.do_cache_connection:
             self.CacheLock.acquire()
             try:
-                keys = self.connection_cache.keys()
+                keys = list(self.connection_cache.keys())
                 for key in keys:
                     data = self.connection_cache.pop(key)
                     data['conn'].disconnect()
@@ -152,7 +152,7 @@ class Client:
         if self.shutdown: return
         if not self.connection_cache: return
 
-        keys = self.connection_cache.keys()
+        keys = list(self.connection_cache.keys())
         for key in keys:
             curr_ts = self.get_ts()
             ts = self.connection_cache[key]['ts']

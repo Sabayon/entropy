@@ -53,7 +53,7 @@ ETP_ARCH_MAP = {
 }
 _uname_m = os.uname()[4]
 ETP_ARCH_CONST = 'UNKNOWN'
-for arches, arch in ETP_ARCH_MAP.items():
+for arches, arch in list(ETP_ARCH_MAP.items()):
     if _uname_m in arches:
         ETP_ARCH_CONST = arch
 
@@ -143,7 +143,7 @@ def initconfig_entropy_constants(rootdir):
     os.environ['ROOT'] = rootdir + os.path.sep
 
     # save backed up settings
-    if etpConst.has_key('backed_up'):
+    if 'backed_up' in etpConst:
         backed_up_settings = etpConst.pop('backed_up')
     else:
         backed_up_settings = {}
@@ -495,8 +495,8 @@ def const_default_settings(rootdir):
         'uid': os.getuid(), # current running UID
         'entropygid': None,
         'sysgroup': "entropy",
-        'defaultumask': 022,
-        'storeumask': 002,
+        'defaultumask': 0o22,
+        'storeumask': 0o02,
         'gentle_nice': 15,
         'current_nice': 0,
         'default_nice': 0,
@@ -696,7 +696,7 @@ def const_default_settings(rootdir):
             5: _('YouTube(tm) Video'),
         },
         'ugc_accessfile': default_etp_ugc_confdir+"/access.xml",
-        'ugc_voterange': range(1, 6),
+        'ugc_voterange': list(range(1, 6)),
 
         # handler settings
         'handlers': {
@@ -872,7 +872,7 @@ def const_pid_exists(pid):
     try:
         os.kill(pid, signal.SIG_DFL)
         return 1
-    except OSError, err:
+    except OSError as err:
         return err.errno == errno.EPERM
 
 def const_setup_entropy_pid(just_read = False, force_handling = False):
@@ -926,7 +926,7 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
                     with open(pid_file,"w") as pid_f:
                         pid_f.write(str(pid))
                         pid_f.flush()
-                except IOError, err:
+                except IOError as err:
                     if err.errno != 30: # readonly filesystem
                         raise
                 try:
@@ -953,7 +953,7 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
                     fcntl.flock(pid_fw.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
                     pid_fw.write(str(pid))
                     pid_fw.flush()
-                except IOError, err:
+                except IOError as err:
                     # already locked?
                     if err.errno not in (errno.EACCES, errno.EAGAIN,):
                         raise
@@ -999,7 +999,7 @@ def const_remove_entropy_pid():
         # using os.remove for atomicity
         os.remove(pid_file)
         removed = True
-    except OSError, err:
+    except OSError as err:
         if err.errno not in (errno.ENOENT, errno.EACCES,):
             raise
 
@@ -1024,7 +1024,7 @@ def const_secure_config_file(config_file):
     except KeyError:
         mygid = 0
     try:
-        const_setup_file(config_file, mygid, 0660)
+        const_setup_file(config_file, mygid, 0o660)
     except (OSError, IOError,):
         pass
 
@@ -1038,7 +1038,7 @@ def const_chmod_entropy_pid():
         mygid = const_get_entropy_gid()
     except KeyError:
         mygid = 0
-    const_setup_file(etpConst['pidfile'], mygid, 0664)
+    const_setup_file(etpConst['pidfile'], mygid, 0o664)
 
 def const_create_working_dirs():
 
@@ -1099,7 +1099,7 @@ def const_create_working_dirs():
             d_paths = sorted(d_paths)
             for d_path in d_paths:
                 os.mkdir(d_path)
-                const_setup_file(d_path, gid, 0775)
+                const_setup_file(d_path, gid, 0o775)
         except (OSError, IOError,):
             pass
 
@@ -1219,14 +1219,14 @@ def const_setup_perms(mydir, gid):
             if cur_gid != gid:
                 os.chown(currentdir, -1, gid)
             cur_mod = const_get_chmod(currentdir)
-            if cur_mod != oct(0775):
-                os.chmod(currentdir, 0775)
+            if cur_mod != oct(0o775):
+                os.chmod(currentdir, 0o775)
         except OSError:
             pass
         for item in files:
             item = os.path.join(currentdir, item)
             try:
-                const_setup_file(item, gid, 0664)
+                const_setup_file(item, gid, 0o664)
             except OSError:
                 pass
 
@@ -1261,7 +1261,7 @@ def const_get_chmod(myfile):
     @return: octal representing permissions
     """
     myst = os.stat(myfile)[stat.ST_MODE]
-    return oct(myst & 0777)
+    return oct(myst & 0o777)
 
 def const_set_chmod(myfile, chmod):
     """

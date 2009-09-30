@@ -127,7 +127,7 @@ def CommonFlate(mytbz2s, action, savedir = None):
     try:
         Spm = Equo.Spm()
         del Spm
-    except Exception, e:
+    except Exception as e:
         Equo.entropyTools.print_traceback()
         mytxt = _("Source Package Manager backend not available")
         print_error(darkred(" * ")+red("%s: %s" % (mytxt,e,)))
@@ -459,9 +459,9 @@ def smartgenerator(matched_atoms):
     binary_execs = []
     for item in pkgcontent:
         filepath = pkg_data_dir + item
-        import commands
+        import subprocess
         if os.access(filepath,os.X_OK):
-            if commands.getoutput("file %s" % (filepath,)).find("LSB executable") != -1:
+            if subprocess.getoutput("file %s" % (filepath,)).find("LSB executable") != -1:
                 binary_execs.append(item)
 
     # now uncompress all the rest
@@ -484,7 +484,7 @@ def smartgenerator(matched_atoms):
     wrapper_path = pkg_data_dir+"/wrp/wrapper"
     shutil.copy2(wrapper_file, wrapper_path)
     # chmod
-    os.chmod(wrapper_path,0755)
+    os.chmod(wrapper_path,0o755)
 
     cc_content = """
 #include <cstdlib>

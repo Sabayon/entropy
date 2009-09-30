@@ -27,7 +27,7 @@ def test_spm():
     try:
         Spm = Equo.Spm()
         return Spm
-    except Exception, e:
+    except Exception as e:
         Equo.entropyTools.print_traceback()
         mytxt = _("Source Package Manager backend not available")
         print_error(darkred(" * ")+red("%s: %s" % (mytxt,e,)))
@@ -134,7 +134,7 @@ def database(options):
             # now extract info
             try:
                 mydata = Spm.extract_package_metadata(temptbz2)
-            except Exception, e:
+            except Exception as e:
                 Equo.entropyTools.print_traceback()
                 Equo.clientLog.log(
                     ETP_LOGPRI_INFO,
@@ -176,7 +176,7 @@ def database(options):
             print_info(blue("(")+darkgreen(str(count))+"/"+darkred(maxcount)+blue(")")+red(" %s: " % (_("atom"),) )+brown(atom), back = True)
             try:
                 Equo.clientDbconn.atomMatch(atom)
-            except Exception, e:
+            except Exception as e:
                 Equo.entropyTools.print_traceback()
                 Equo.clientLog.log(
                     ETP_LOGPRI_INFO,
@@ -589,7 +589,7 @@ def database(options):
                 # now extract info
                 try:
                     mydata = Spm.extract_package_metadata(temptbz2)
-                except Exception, e:
+                except Exception as e:
                     Equo.clientLog.log(
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
@@ -757,23 +757,23 @@ def getinfo(dict = False):
         return info
 
     import types
-    keys = info.keys()
+    keys = list(info.keys())
     keys.sort()
     for x in keys:
         #print type(info[x])
-        if type(info[x]) is types.DictType:
+        if type(info[x]) is dict:
             toptext = x
-            ykeys = info[x].keys()
+            ykeys = list(info[x].keys())
             ykeys.sort()
             for y in ykeys:
-                if type(info[x][y]) is types.DictType:
+                if type(info[x][y]) is dict:
                     topsubtext = y
-                    zkeys = info[x][y].keys()
+                    zkeys = list(info[x][y].keys())
                     zkeys.sort()
                     for z in zkeys:
-                        print red(toptext)+": "+blue(topsubtext)+" => "+darkgreen(z)+" => "+str(info[x][y][z])
+                        print(red(toptext)+": "+blue(topsubtext)+" => "+darkgreen(z)+" => "+str(info[x][y][z]))
                 else:
-                    print red(toptext)+": "+blue(y)+" => "+str(info[x][y])
+                    print(red(toptext)+": "+blue(y)+" => "+str(info[x][y]))
             #print info[x]
         else:
-            print red(x)+": "+str(info[x])
+            print(red(x)+": "+str(info[x]))

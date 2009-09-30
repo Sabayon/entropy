@@ -270,7 +270,7 @@ class Package:
             # is allowed to not provide such info.
             pkg_dbdir = os.path.dirname(self.pkgmeta['pkgdbpath'])
             if not os.path.isdir(pkg_dbdir):
-                os.makedirs(pkg_dbdir, 0755)
+                os.makedirs(pkg_dbdir, 0o755)
 
             # extract edb
             entropy.tools.extract_edb(self.pkgmeta['pkgpath'],
@@ -336,7 +336,7 @@ class Package:
 
         try:
             Spm = self.Entropy.Spm()
-        except Exception, err:
+        except Exception as err:
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
@@ -573,7 +573,7 @@ class Package:
 
             try:
                 os.remove(sys_root_item)
-            except OSError, err:
+            except OSError as err:
                 self.Entropy.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
@@ -757,7 +757,7 @@ class Package:
         """
         try:
             Spm = self.Entropy.Spm()
-        except Exception, err:
+        except Exception as err:
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
@@ -797,7 +797,7 @@ class Package:
         """
         try:
             Spm = self.Entropy.Spm()
-        except Exception, err:
+        except Exception as err:
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
@@ -837,7 +837,7 @@ class Package:
         """
         try:
             Spm = self.Entropy.Spm()
-        except Exception, err:
+        except Exception as err:
             self.Entropy.clientLog.log(
                 ETP_LOGPRI_INFO,
                 ETP_LOGLEVEL_NORMAL,
@@ -1086,7 +1086,7 @@ class Package:
                     # /me brings chainsaw
                     try:
                         shutil.rmtree(rootdir, True)
-                    except (shutil.Error, OSError,), err:
+                    except (shutil.Error, OSError,) as err:
                         self.Entropy.clientLog.log(
                             ETP_LOGPRI_INFO,
                             ETP_LOGLEVEL_NORMAL,
@@ -1159,7 +1159,7 @@ class Package:
                     prot_md5 = entropy.tools.md5sum(fromfile)
                     self.pkgmeta['configprotect_data'].append(
                         (prot_old_tofile, prot_md5,))
-                except (IOError,), err:
+                except (IOError,) as err:
                     self.Entropy.clientLog.log(
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
@@ -1215,7 +1215,7 @@ class Package:
                 try:
                     # try to cope...
                     os.remove(tofile)
-                except (OSError, IOError,), err:
+                except (OSError, IOError,) as err:
                     self.Entropy.clientLog.log(
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
@@ -1252,7 +1252,7 @@ class Package:
 
                 try:
                     shutil.rmtree(tofile, True)
-                except (shutil.Error, IOError,), err:
+                except (shutil.Error, IOError,) as err:
                     self.Entropy.clientLog.log(
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
@@ -1266,7 +1266,7 @@ class Package:
             try:
                 done = movefile(fromfile, tofile,
                     src_basedir = encoded_image_dir)
-            except (IOError,), err:
+            except (IOError,) as err:
                 # try to move forward, sometimes packages might be
                 # fucked up and contain broken things
                 if err.errno not in (errno.ENOENT, errno.EACCES,):
@@ -1520,7 +1520,7 @@ class Package:
         self.error_on_not_prepared()
 
         down_data = self.pkgmeta['download']
-        down_keys = down_data.keys()
+        down_keys = list(down_data.keys())
         d_cache = set()
         rc = 0
         key_cache = [os.path.basename(x) for x in down_keys]
@@ -2033,13 +2033,13 @@ class Package:
         if xterm_header is None:
             xterm_header = ""
 
-        if self.pkgmeta.has_key('remove_installed_vanished'):
+        if 'remove_installed_vanished' in self.pkgmeta:
             self.xterm_title += ' %s' % (_("Installed package vanished"),)
             self.Entropy.setTitle(self.xterm_title)
             rc = self.vanished_step()
             return rc
 
-        if self.pkgmeta.has_key('fetch_not_available'):
+        if 'fetch_not_available' in self.pkgmeta:
             self.xterm_title += ' %s' % (_("Fetch not available"),)
             self.Entropy.setTitle(self.xterm_title)
             rc = self.fetch_not_available_step()
@@ -2284,7 +2284,7 @@ class Package:
         self.pkgmeta['diffremoval'] = False
 
         remove_config = False
-        if self.metaopts.has_key('removeconfig'):
+        if 'removeconfig' in self.metaopts:
             remove_config = self.metaopts.get('removeconfig')
         self.pkgmeta['removeconfig'] = remove_config
 
@@ -2332,13 +2332,13 @@ class Package:
         self.pkgmeta['repository'] = repository
 
         # fetch abort function
-        if self.metaopts.has_key('fetch_abort_function'):
+        if 'fetch_abort_function' in self.metaopts:
             self.fetch_abort_function = \
                 self.metaopts.pop('fetch_abort_function')
 
         install_source = etpConst['install_sources']['unknown']
         meta_inst_source = self.metaopts.get('install_source', install_source)
-        if meta_inst_source in etpConst['install_sources'].values():
+        if meta_inst_source in list(etpConst['install_sources'].values()):
             install_source = meta_inst_source
         self.pkgmeta['install_source'] = install_source
 
@@ -2380,13 +2380,13 @@ class Package:
         # fill action queue
         self.pkgmeta['removeidpackage'] = -1
         removeConfig = False
-        if self.metaopts.has_key('removeconfig'):
+        if 'removeconfig' in self.metaopts:
             removeConfig = self.metaopts.get('removeconfig')
 
         self.pkgmeta['remove_metaopts'] = {
             'removeconfig': True,
         }
-        if self.metaopts.has_key('remove_metaopts'):
+        if 'remove_metaopts' in self.metaopts:
             self.pkgmeta['remove_metaopts'] = \
                 self.metaopts.get('remove_metaopts')
 
@@ -2505,16 +2505,16 @@ class Package:
         dochecksum = True
 
         # fetch abort function
-        if self.metaopts.has_key('fetch_abort_function'):
+        if 'fetch_abort_function' in self.metaopts:
             self.fetch_abort_function = \
                 self.metaopts.pop('fetch_abort_function')
 
-        if self.metaopts.has_key('dochecksum'):
+        if 'dochecksum' in self.metaopts:
             dochecksum = self.metaopts.get('dochecksum')
 
         # fetch_path is the path where data should be downloaded
         # at the moment is implemented only for sources = True
-        if self.metaopts.has_key('fetch_path'):
+        if 'fetch_path' in self.metaopts:
             fetch_path = self.metaopts.get('fetch_path')
             if entropy.tools.is_valid_path(fetch_path):
                 self.pkgmeta['fetch_path'] = fetch_path
@@ -2568,7 +2568,7 @@ class Package:
                     elif os.path.isdir(unpack_dir):
                         shutil.rmtree(unpack_dir, True)
                 if not os.path.lexists(unpack_dir):
-                    os.makedirs(unpack_dir, 0775)
+                    os.makedirs(unpack_dir, 0o775)
                 const_setup_perms(unpack_dir, etpConst['entropygid'])
             return 0
 
@@ -2602,11 +2602,11 @@ class Package:
         dochecksum = True
 
         # meta options
-        if self.metaopts.has_key('fetch_abort_function'):
+        if 'fetch_abort_function' in self.metaopts:
             self.fetch_abort_function = \
                 self.metaopts.pop('fetch_abort_function')
 
-        if self.metaopts.has_key('dochecksum'):
+        if 'dochecksum' in self.metaopts:
             dochecksum = self.metaopts.get('dochecksum')
         self.pkgmeta['checksum'] = dochecksum
 
@@ -2628,7 +2628,7 @@ class Package:
 
             # general purpose metadata
             self.pkgmeta['atoms'].append(myatom)
-            if not self.pkgmeta['repository_atoms'].has_key(repository):
+            if repository not in self.pkgmeta['repository_atoms']:
                 self.pkgmeta['repository_atoms'][repository] = set()
             self.pkgmeta['repository_atoms'][repository].add(myatom)
 

@@ -24,7 +24,7 @@ class Server(SocketHost):
         entropy_interface_kwargs = {}, **kwargs):
 
         from entropy.services.system.commands import Base
-        if not kwargs.has_key('external_cmd_classes'):
+        if 'external_cmd_classes' not in kwargs:
             kwargs['external_cmd_classes'] = []
         kwargs['external_cmd_classes'].insert(0, Base)
 

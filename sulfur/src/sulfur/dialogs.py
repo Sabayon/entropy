@@ -17,7 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-import time, gtk, gobject, pango, thread, pty, sys
+import time, gtk, gobject, pango, _thread, pty, sys
 from entropy.i18n import _,_LOCALE
 from entropy.exceptions import *
 from entropy.const import *
@@ -34,10 +34,10 @@ class MenuSkel:
 
     def _getAllMethods(self):
         result = {}
-        allAttrNames = self.__dict__.keys() + self._getAllClassAttributes()
+        allAttrNames = list(self.__dict__.keys()) + self._getAllClassAttributes()
         for name in allAttrNames:
             value = getattr(self, name)
-            if callable(value):
+            if hasattr(value, '__call__'):
                 result[name] = value
         return result
 
@@ -45,7 +45,7 @@ class MenuSkel:
         nameSet = {}
         for currClass in self._getAllClasses():
             nameSet.update(currClass.__dict__)
-        result = nameSet.keys()
+        result = list(nameSet.keys())
         return result
 
     def _getAllClasses(self):
@@ -118,7 +118,7 @@ class AddRepositoryWindow(MenuSkel):
         if not repodata['repoid']:
             errors.append(_('No Repository Identifier'))
 
-        if repodata['repoid'] and self.Equo.SystemSettings['repositories']['available'].has_key(repodata['repoid']):
+        if repodata['repoid'] and repodata['repoid'] in self.Equo.SystemSettings['repositories']['available']:
             if not edit:
                 errors.append(_('Duplicated Repository Identifier'))
 
@@ -248,7 +248,7 @@ class AddRepositoryWindow(MenuSkel):
         else:
             disable = False
             repo_excluded = self.Equo.SystemSettings['repositories']['excluded']
-            if repo_excluded.has_key(repodata['repoid']):
+            if repodata['repoid'] in repo_excluded:
                 disable = True
             self.Equo.remove_repository(repodata['repoid'], disable = disable)
             if not disable:
@@ -310,7 +310,7 @@ class NoticeBoardWindow(MenuSkel):
     def text_data_func( self, column, cell, model, iterator ):
         obj = model.get_value(iterator, 0)
         if obj:
-            if obj.has_key('is_repo'):
+            if 'is_repo' in obj:
                 cell.set_property('markup',"<big><b>%s</b></big>\n<small>%s</small>" % (cleanMarkupString(obj['name']),cleanMarkupString(obj['desc']),))
             else:
                 mytxt = '<b><u>%s</u></b>\n<small><b>%s</b>: %s</small>' % (
@@ -372,7 +372,7 @@ class NoticeBoardWindow(MenuSkel):
         ( model, iterator ) = widget.get_selection().get_selected()
         if model != None and iterator != None:
             obj = model.get_value(iterator, 0)
-            if not obj.has_key('is_repo'):
+            if 'is_repo' not in obj:
                 my = RmNoticeBoardMenu(self.nb_ui.noticeBoardWindow)
                 my.load(obj)
 
@@ -725,7 +725,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.sm_ui.repoManagerTermHBox.show_all()
 
     def debug_print(self, f, msg):
-        if self.do_debug: print "repoman debug:",f,msg
+        if self.do_debug: print("repoman debug:",f,msg)
 
     def clear_console(self):
         self.std_input.text_read = ''
@@ -1069,8 +1069,8 @@ class RepositoryManagerMenu(MenuSkel):
 
     def spm_package_obj_to_cell(self, obj, cell):
         use_data = []
-        if obj.has_key('use'):
-            if obj['use'].has_key('use_string'):
+        if 'use' in obj:
+            if 'use_string' in obj['use']:
                 use_data = obj['use']['use_string'].split()
         max_chars = 100
         use_string = []
@@ -1083,9 +1083,9 @@ class RepositoryManagerMenu(MenuSkel):
         use_string = ' '.join(use_string).strip()
         installed_string = ''
         available_string = ''
-        if obj.has_key('installed_atom'):
+        if 'installed_atom' in obj:
             installed_string = '<b>%s</b>: %s\n' % (_("Installed"),cleanMarkupString(str(obj['installed_atom'])),)
-        if obj.has_key('available_atom'):
+        if 'available_atom' in obj:
             available_string = '<b>%s</b>: %s\n' % (_("Available"),cleanMarkupString(str(obj['available_atom'])),)
 
         atom = obj.get('atom')
@@ -1132,24 +1132,24 @@ class RepositoryManagerMenu(MenuSkel):
         cell.set_property('markup',mytxt)
 
     def get_status_from_queue_item(self, item):
-        if item.has_key('errored_ts'):
+        if 'errored_ts' in item:
             return "gtk-cancel"
-        elif item.has_key('processed_ts'):
+        elif 'processed_ts' in item:
             return "gtk-apply"
-        elif item.has_key('processing_ts'):
+        elif 'processing_ts' in item:
             return "gtk-refresh"
-        elif item.has_key('queue_ts'):
+        elif 'queue_ts' in item:
             return "gtk-up"
         return "gtk-apply"
 
     def get_ts_from_queue_item(self, item):
-        if item.has_key('errored_ts'):
+        if 'errored_ts' in item:
             return item['errored_ts']
-        elif item.has_key('processed_ts'):
+        elif 'processed_ts' in item:
             return item['processed_ts']
-        elif item.has_key('processing_ts'):
+        elif 'processing_ts' in item:
             return item['processing_ts']
-        elif item.has_key('queue_ts'):
+        elif 'queue_ts' in item:
             return item['queue_ts']
         return None
 
@@ -1191,7 +1191,7 @@ class RepositoryManagerMenu(MenuSkel):
                 logged, error = self.Service.login(srv, session)
                 if not logged:
                     return False, _("Login failed. Please retry.")
-            except Exception, e:
+            except Exception as e:
                 entropyTools.print_traceback()
                 return False, "%s: %s" % (_("Connection Error"),e,)
             srv.close_session(session)
@@ -1245,7 +1245,7 @@ class RepositoryManagerMenu(MenuSkel):
             try:
                 status, repo_info = self.Service.Methods.get_available_repositories()
                 if not status: return None
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
         return repo_info
@@ -1262,7 +1262,7 @@ class RepositoryManagerMenu(MenuSkel):
 
                 self.EntropyRepositories = repo_info.copy()
                 self.EntropyRepositoryStore.clear()
-                for repoid in self.EntropyRepositories['available'].keys():
+                for repoid in list(self.EntropyRepositories['available'].keys()):
                     item = self.EntropyRepositoryStore.append( (repoid,) )
                     if repoid == self.EntropyRepositories['current']:
                         self.EntropyRepositoryCombo.set_active_iter(item)
@@ -1301,7 +1301,7 @@ class RepositoryManagerMenu(MenuSkel):
                 status, queue = self.Service.Methods.get_queue()
                 if not status:
                     return
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1313,7 +1313,7 @@ class RepositoryManagerMenu(MenuSkel):
     def fill_queue_view(self, queue):
 
         self.QueueStore.clear()
-        keys = queue.keys()
+        keys = list(queue.keys())
 
         if "processing_order" in keys:
             for queue_id in queue['processing_order']:
@@ -1364,7 +1364,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, pindata = self.Service.Methods.get_pinboard_data()
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1407,13 +1407,13 @@ class RepositoryManagerMenu(MenuSkel):
                 if self.is_processing == None: return
                 if not self.is_writing_output: return
                 obj = self.is_processing.copy()
-                if not obj.has_key('queue_id'): return
+                if 'queue_id' not in obj: return
                 queue_id = obj['queue_id']
 
             with self.BufferLock:
                 try:
                     status, stdout = self.Service.Methods.get_queue_id_stdout(queue_id, n_bytes)
-                except Exception, e:
+                except Exception as e:
                     self.service_status_message(e)
                     return
 
@@ -1470,7 +1470,7 @@ class RepositoryManagerMenu(MenuSkel):
                 status, (result,extended_result,) = self.Service.Methods.get_queue_id_result(queue_id)
                 if not status:
                     return
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1536,7 +1536,7 @@ class RepositoryManagerMenu(MenuSkel):
                 obj = model.get_value(myiter, 0)
                 for atom in obj['packages']:
                     for atom_info in obj['packages'][atom]:
-                        if atom_info.has_key('unaff_atoms'):
+                        if 'unaff_atoms' in atom_info:
                             atoms |= set(atom_info['unaff_atoms'])
             if atoms:
                 self.on_repoManagerPkgInfo_clicked(None, atoms = atoms, clear = True)
@@ -1601,7 +1601,7 @@ class RepositoryManagerMenu(MenuSkel):
                 status, package_data = self.Service.Methods.get_entropy_idpackage_information(idpackage, repoid)
                 self.debug_print("retrieve_entropy_idpackage_data_and_show","done for: %s, %s" % (idpackage,repoid,))
                 if not status: return
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1624,7 +1624,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, msg = self.Service.Methods.remove_entropy_packages(matched_atoms)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1632,7 +1632,7 @@ class RepositoryManagerMenu(MenuSkel):
             self.service_status_message(msg)
             return
 
-        if status and callable(reload_func):
+        if status and hasattr(reload_func, '__call__'):
             reload_func()
 
     def handle_uses_for_atoms(self, atoms, use):
@@ -1667,7 +1667,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.get_noticeboard(repoid)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1687,7 +1687,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, data = self.Service.Methods.write_to_running_command_pipe(queue_id, write_to_stdout, txt)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1696,7 +1696,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.remove_from_pinboard(remove_ids)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1708,7 +1708,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, err_msg = self.Service.Methods.add_to_pinboard(note,extended_text)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1722,7 +1722,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.run_custom_shell_command(command)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1736,7 +1736,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.get_spm_categories_installed(categories)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1761,7 +1761,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, data = self.Service.Methods.sync_spm()
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1780,7 +1780,7 @@ class RepositoryManagerMenu(MenuSkel):
                         data['verbose'],
                         data['nocolor'],
                     )
-                except Exception, e:
+                except Exception as e:
                     self.service_status_message(e)
                     return
 
@@ -1809,7 +1809,7 @@ class RepositoryManagerMenu(MenuSkel):
                     data['ldflags'],
                     data['cflags'],
                 )
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1823,7 +1823,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.run_spm_info()
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1838,7 +1838,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.enable_uses_for_atoms(atoms, use)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1853,7 +1853,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.disable_uses_for_atoms(atoms, use)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1867,7 +1867,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.get_spm_atoms_info(atoms)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1890,7 +1890,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 self.Service.Methods.kill_processing_queue_id(queue_id)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1899,7 +1899,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 self.Service.Methods.remove_queue_ids(queue_ids)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1908,7 +1908,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.get_spm_categories_updates(categories)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1929,7 +1929,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.run_entropy_dependency_test()
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1945,7 +1945,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.run_entropy_treeupdates(repoid)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1961,7 +1961,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.run_entropy_checksum_test(repoid, mode)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -1977,7 +1977,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.scan_entropy_mirror_updates(repos)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -2000,7 +2000,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.run_entropy_mirror_updates(repo_data)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -2018,7 +2018,7 @@ class RepositoryManagerMenu(MenuSkel):
             data = {}
             try:
                 status, queue_id = self.Service.Methods.run_entropy_library_test()
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -2035,7 +2035,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, data = self.Service.Methods.search_entropy_packages(search_type, search_string, repoid)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -2061,7 +2061,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         from_repo = list(repoids)[0]
 
-        avail_repos = self.EntropyRepositories['available'].keys()
+        avail_repos = list(self.EntropyRepositories['available'].keys())
         if not avail_repos: return
 
         def fake_callback_repos(s):
@@ -2090,7 +2090,7 @@ class RepositoryManagerMenu(MenuSkel):
             status = False
             try:
                 status, queue_id = self.Service.Methods.move_entropy_packages_to_repository(idpackages, from_repo, data['to_repo'], do_copy = data['do_copy'])
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -2120,7 +2120,7 @@ class RepositoryManagerMenu(MenuSkel):
             data = {}
             try:
                 status, queue_id = self.Service.Methods.scan_entropy_packages_database_changes()
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -2147,7 +2147,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.run_entropy_database_updates(to_add, to_remove, to_inject)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -2172,7 +2172,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.add_notice_board_entry(repoid, title, notice_text, link)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -2196,7 +2196,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.remove_notice_board_entries(repoid, list(ids))
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -2310,7 +2310,7 @@ class RepositoryManagerMenu(MenuSkel):
         def my_data_text( column, cell, model, myiter, property ):
             obj = model.get_value( myiter, 0 ) # cleanMarkupString
             if obj:
-                if obj.has_key('is_master'):
+                if 'is_master' in obj:
                     if obj['from'] == "repoid":
                         cell.set_property('markup',"<big><b>%s</b>: <i>%s</i></big>" % (_("Repository"),cleanMarkupString(obj['text']),))
                     elif obj['from'] == "pkg_master":
@@ -2371,7 +2371,7 @@ class RepositoryManagerMenu(MenuSkel):
             run_data = {}
             for obj in objects:
                 repoid, dbsync, pkgsync = obj['run']
-                if run_data.has_key(repoid): continue
+                if repoid in run_data: continue
                 run_data[repoid] = {
                     'db': dbsync,
                     'pkg': pkgsync,
@@ -2387,7 +2387,7 @@ class RepositoryManagerMenu(MenuSkel):
                 return True
 
             # now ask for mirrors
-            for repoid in run_data.keys():
+            for repoid in list(run_data.keys()):
 
                 input_params = [
                     ('commit_msg',_("Commit message"),fake_callback,False,),
@@ -2434,7 +2434,7 @@ class RepositoryManagerMenu(MenuSkel):
             if obj:
                 if property == "package":
                     is_cat = False
-                    if obj.has_key('is_master'):
+                    if 'is_master' in obj:
                         is_cat = True
                     if is_cat:
                         mytxt = "<big><b>%s</b></big>" % (obj['text'],)
@@ -2445,7 +2445,7 @@ class RepositoryManagerMenu(MenuSkel):
                         self.entropy_package_obj_to_cell(obj, cell)
 
                 elif property == "repoid":
-                    if obj.has_key('repoid'):
+                    if 'repoid' in obj:
                         cell.set_property('markup',"<small>%s</small>" % (cleanMarkupString(obj['repoid']),))
                     else:
                         cell.set_property('markup','')
@@ -2460,7 +2460,7 @@ class RepositoryManagerMenu(MenuSkel):
             if model == None: return
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
-                if obj.has_key('is_master'): continue
+                if 'is_master' in obj: continue
                 if obj['from'] != "add":
                     self.retrieve_entropy_idpackage_data_and_show(obj['idpackage'], obj['repoid'])
 
@@ -2468,7 +2468,7 @@ class RepositoryManagerMenu(MenuSkel):
             myiters, model = self.collect_data_view_iters()
             if model == None: return
 
-            avail_repos = self.EntropyRepositories['available'].keys()
+            avail_repos = list(self.EntropyRepositories['available'].keys())
             if not avail_repos: return
 
             def fake_callback(s):
@@ -2481,7 +2481,7 @@ class RepositoryManagerMenu(MenuSkel):
             objects = []
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
-                if obj.has_key('is_master'): continue
+                if 'is_master' in obj: continue
                 if obj['from'] != "add": continue
                 objects.append(obj)
 
@@ -2521,7 +2521,7 @@ class RepositoryManagerMenu(MenuSkel):
             objects = []
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
-                if obj.has_key('is_master'): continue
+                if 'is_master' in obj: continue
                 objects.append(obj)
 
             to_add = []
@@ -2586,7 +2586,7 @@ class RepositoryManagerMenu(MenuSkel):
         add_cats_data = {}
         for spm_atom, spm_counter in data['add_data']:
             cat = entropyTools.dep_getkey(spm_atom).split("/")[0]
-            if not add_cats_data.has_key(cat):
+            if cat not in add_cats_data:
                 add_cats_data[cat] = []
             item = data['add_data'][(spm_atom, spm_counter,)]
             item['repoid'] = self.EntropyRepositories['current']
@@ -2596,27 +2596,27 @@ class RepositoryManagerMenu(MenuSkel):
 
         remove_cats_data = {}
         for idpackage, repoid in data['remove_data']:
-            if not data['remove_data'].has_key((idpackage, repoid,)):
+            if (idpackage, repoid,) not in data['remove_data']:
                 continue
             item = data['remove_data'][(idpackage, repoid,)]
             if not item: continue
             item['select'] = True
             item['match_key'] = (idpackage, repoid,)
             cat = item['category']
-            if not remove_cats_data.has_key(cat):
+            if cat not in remove_cats_data:
                 remove_cats_data[cat] = []
             remove_cats_data[cat].append(item)
 
         inject_cats_data = {}
         for idpackage, repoid in data['inject_data']:
-            if not data['inject_data'].has_key((idpackage, repoid,)):
+            if (idpackage, repoid,) not in data['inject_data']:
                 continue
             item = data['inject_data'][(idpackage, repoid,)]
             if not item: continue
             item['select'] = True
             item['match_key'] = (idpackage, repoid,)
             cat = item['category']
-            if not inject_cats_data.has_key(cat):
+            if cat not in inject_cats_data:
                 inject_cats_data[cat] = []
             inject_cats_data[cat].append(item)
 
@@ -2696,7 +2696,7 @@ class RepositoryManagerMenu(MenuSkel):
         color_even = '#E6FFCA'
 
 
-        repos = data.keys()
+        repos = list(data.keys())
         for repoid in repos:
             color = color_odd
             master = {
@@ -2712,7 +2712,7 @@ class RepositoryManagerMenu(MenuSkel):
             for uri in data[repoid]:
 
                 color = color_odd
-                if not data[repoid][uri].has_key('packages'):
+                if 'packages' not in data[repoid][uri]:
                     color = color_even
 
                 uri_master = {
@@ -2737,7 +2737,7 @@ class RepositoryManagerMenu(MenuSkel):
                 db_item['run'] = (repoid,True,True,) # repoid, dbsync, pkgsync
 
                 self.DataStore.append( uri_parent, (db_item,))
-                if data[repoid][uri].has_key('packages'):
+                if 'packages' in data[repoid][uri]:
 
                     for action in data[repoid][uri]['packages']:
 
@@ -2785,7 +2785,7 @@ class RepositoryManagerMenu(MenuSkel):
             if obj:
                 if property == "package":
                     is_cat = False
-                    if obj.has_key('is_cat'):
+                    if 'is_cat' in obj:
                         is_cat = True
                     if is_cat:
                         mytxt = "<big><b>%s</b></big>" % (obj['name'],)
@@ -2801,7 +2801,7 @@ class RepositoryManagerMenu(MenuSkel):
             if model == None: return
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
-                if obj.has_key('is_cat'): continue
+                if 'is_cat' in obj: continue
                 self.retrieve_entropy_idpackage_data_and_show(obj['idpackage'], obj['repoid'])
 
         def remove_package_button_clicked(widget):
@@ -2810,7 +2810,7 @@ class RepositoryManagerMenu(MenuSkel):
             items = []
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
-                if obj.has_key('is_cat'): continue
+                if 'is_cat' in obj: continue
                 items.append((obj['idpackage'],obj['repoid'],))
             if items:
                 self.remove_entropy_packages(items, reload_func = reload_func)
@@ -2821,7 +2821,7 @@ class RepositoryManagerMenu(MenuSkel):
             items = []
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
-                if obj.has_key('is_cat'): continue
+                if 'is_cat' in obj: continue
                 items.append((obj['idpackage'],obj['repoid'],))
             if items:
                 self.move_entropy_packages(items, reload_func)
@@ -2843,7 +2843,7 @@ class RepositoryManagerMenu(MenuSkel):
             item = packages_data['data'].get(idpackage)
             if item == None: continue
             mycat = item['category']
-            if not cats_data.has_key(mycat):
+            if mycat not in cats_data:
                 cats_data[mycat] = []
             cats_data[mycat].append(item)
 
@@ -2886,7 +2886,7 @@ class RepositoryManagerMenu(MenuSkel):
         def my_data_text( column, cell, model, myiter, property ):
             obj = model.get_value( myiter, 0 )
             if obj:
-                if obj.has_key('is_cat'):
+                if 'is_cat' in obj:
                     txt = "<big><b>%s</b></big>" % (obj['name'],)
                     cell.set_property('markup',txt)
                 else:
@@ -2899,7 +2899,7 @@ class RepositoryManagerMenu(MenuSkel):
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
                 if obj:
-                    if obj.has_key('available_atom'):
+                    if 'available_atom' in obj:
                         if not obj['available_atom']:
                             continue
                         atom = obj['available_atom']
@@ -2914,7 +2914,7 @@ class RepositoryManagerMenu(MenuSkel):
             atoms = []
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
-                if obj.has_key('key') and obj.has_key('slot'):
+                if 'key' in obj and 'slot' in obj:
                     atom_string = "%s:%s" % (obj['key'],obj['slot'],)
                     atoms.append(atom_string)
             if atoms:
@@ -2927,7 +2927,7 @@ class RepositoryManagerMenu(MenuSkel):
             atoms = []
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
-                if obj.has_key('key') and obj.has_key('slot'):
+                if 'key' in obj and 'slot' in obj:
                     atom_string = "%s:%s" % (obj['key'],obj['slot'],)
                     atoms.append(atom_string)
             if atoms:
@@ -2983,7 +2983,7 @@ class RepositoryManagerMenu(MenuSkel):
                             self.debug_print("on_repoManagerQueueDown_clicked","%s, %s" % (item1,item2,))
                             if status:
                                 self.QueueStore.swap(iterator,next_iterator)
-                        except Exception, e:
+                        except Exception as e:
                             self.service_status_message(e)
                             return
                     self.update_queue_view()
@@ -3012,7 +3012,7 @@ class RepositoryManagerMenu(MenuSkel):
                             self.debug_print("on_repoManagerQueueUp_clicked","%s, %s" % (item1,item2,))
                             if status:
                                 self.QueueStore.swap(iterator,next_iterator)
-                        except Exception, e:
+                        except Exception as e:
                             self.service_status_message(e)
                             return
                     self.update_queue_view()
@@ -3113,7 +3113,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 cmd_data['call'](*evalued_params)
-            except Exception, e:
+            except Exception as e:
                 okDialog(self.window, "%s: %s" % (_("Error executing call"),e,), title = _("Custom command Error"))
 
     def on_repoManagerPauseQueueButton_toggled(self, widget):
@@ -3122,7 +3122,7 @@ class RepositoryManagerMenu(MenuSkel):
                 do_pause = not self.queue_pause
                 self.Service.Methods.pause_queue(do_pause)
                 self.queue_pause = do_pause
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -3355,7 +3355,7 @@ class RepositoryManagerMenu(MenuSkel):
         )
         if data == None: return
 
-        if data.has_key('autorefresh'):
+        if 'autorefresh' in data:
             if data['autorefresh']:
                 self.is_writing_output = True
                 self.is_processing = {'queue_id': queue_id}
@@ -3432,7 +3432,7 @@ class RepositoryManagerMenu(MenuSkel):
                 with self.BufferLock:
                     try:
                         status, queue_id = self.Service.Methods.set_pinboard_items_done(done_ids, status)
-                    except Exception, e:
+                    except Exception as e:
                         self.service_status_message(e)
                         return
                 if status:
@@ -3467,7 +3467,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.get_spm_glsa_data(data['list_type'][1])
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -3498,7 +3498,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, queue_id = self.Service.Methods.set_default_repository(repoid)
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -3521,7 +3521,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         data = {}
         data['repoid'] = repoid
-        avail_repos = self.EntropyRepositories['available'].keys()
+        avail_repos = list(self.EntropyRepositories['available'].keys())
         if not avail_repos: return
         input_params = []
         if not repoid:
@@ -3542,7 +3542,7 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, repo_data = self.Service.Methods.get_available_entropy_packages(data['repoid'])
-            except Exception, e:
+            except Exception as e:
                 self.service_status_message(e)
                 return
 
@@ -3564,7 +3564,7 @@ class RepositoryManagerMenu(MenuSkel):
         def fake_callback(s):
             return s
 
-        avail_repos = self.EntropyRepositories['available'].keys()
+        avail_repos = list(self.EntropyRepositories['available'].keys())
         if not avail_repos: return
 
         search_reference = {
@@ -3607,7 +3607,7 @@ class RepositoryManagerMenu(MenuSkel):
 
     def on_repoManagerSpmTreeupdatesButton_clicked(self, widget):
 
-        avail_repos = self.EntropyRepositories['available'].keys()
+        avail_repos = list(self.EntropyRepositories['available'].keys())
         if not avail_repos: return
 
         def fake_callback_cb(s):
@@ -3629,7 +3629,7 @@ class RepositoryManagerMenu(MenuSkel):
 
     def on_repoManagerMirrorUpdatesButton_clicked(self, widget):
 
-        avail_repos = self.EntropyRepositories['available'].keys()
+        avail_repos = list(self.EntropyRepositories['available'].keys())
         if not avail_repos: return
 
         def fake_callback_cb(s):
@@ -3656,7 +3656,7 @@ class RepositoryManagerMenu(MenuSkel):
 
     def on_repoManagerChecksumTestButton_clicked(self, widget):
 
-        avail_repos = self.EntropyRepositories['available'].keys()
+        avail_repos = list(self.EntropyRepositories['available'].keys())
         if not avail_repos: return
 
         def fake_callback(s):
@@ -3694,7 +3694,7 @@ class RepositoryManagerMenu(MenuSkel):
 
     def on_repoManagerNoticeBoardButton_clicked(self, widget, repoid = None):
 
-        avail_repos = self.EntropyRepositories['available'].keys()
+        avail_repos = list(self.EntropyRepositories['available'].keys())
         if not avail_repos: return
 
         def fake_callback(s):
@@ -3954,7 +3954,7 @@ class PkgInfoMenu(MenuSkel):
     def ugc_pixbuf( self, column, cell, model, myiter ):
         obj = model.get_value( myiter, 0 )
         if isinstance(obj,dict):
-            if obj.has_key('preview_path'):
+            if 'preview_path' in obj:
                 self.set_pixbuf_to_cell(cell,obj['preview_path'])
             else:
                 self.set_pixbuf_to_cell(cell,obj['image_path'])
@@ -3965,7 +3965,7 @@ class PkgInfoMenu(MenuSkel):
         if isinstance(obj,dict):
             self.set_colors_to_cell(cell,obj)
 
-            if obj.has_key('is_cat'):
+            if 'is_cat' in obj:
                 cell.set_property('markup',"<b>%s</b>\n<small>%s</small>" % (obj['parent_desc'],_("Expand to browse"),))
             else:
                 title = _("N/A")
@@ -4000,14 +4000,14 @@ class PkgInfoMenu(MenuSkel):
 
     def set_colors_to_cell(self, cell, obj):
         odd = 0
-        if obj.has_key('counter'):
+        if 'counter' in obj:
             odd = obj['counter']%2
-        if obj.has_key('background'):
+        if 'background' in obj:
             cell.set_property('cell-background',obj['background'][odd])
         else:
             cell.set_property('cell-background',None)
         try:
-            if obj.has_key('foreground'):
+            if 'foreground' in obj:
                 cell.set_property('foreground',obj['foreground'])
             else:
                 cell.set_property('foreground',None)
@@ -4055,7 +4055,7 @@ class PkgInfoMenu(MenuSkel):
         if myiter == None: return
         obj = model.get_value( myiter, 0 )
         if not isinstance(obj,dict): return
-        if obj.has_key('is_cat'): return
+        if 'is_cat' in obj: return
         self.show_loading()
         self.Entropy.UGC.remove_document_autosense(self.repository, int(obj['iddoc']), obj['iddoctype'])
         self.hide_loading()
@@ -4073,7 +4073,7 @@ class PkgInfoMenu(MenuSkel):
         if myiter == None: return
         obj = model.get_value( myiter, 0 )
         if not isinstance(obj,dict): return
-        if obj.has_key('is_cat'): return
+        if 'is_cat' in obj: return
         my = UGCInfoMenu(self.Entropy, obj, self.repository, self.pkginfo_ui.pkgInfo)
         my.load()
 
@@ -4134,7 +4134,7 @@ class PkgInfoMenu(MenuSkel):
                 docs_data = None
                 okDialog(self.window, err_msg, title = dialog_title)
 
-            if not isinstance(docs_data, (list, tuple,)):
+            if not isinstance(docs_data, (list, tuple)):
                 self.ugc_data = {}
             else:
                 self.ugc_data = self.digest_remote_docs_data(docs_data)
@@ -4150,7 +4150,7 @@ class PkgInfoMenu(MenuSkel):
         for mydict in data:
             if not mydict:
                 continue
-            if not newdata.has_key(mydict['iddoctype']):
+            if mydict['iddoctype'] not in newdata:
                 newdata[mydict['iddoctype']] = []
             newdata[mydict['iddoctype']].append(mydict)
         return newdata
@@ -4169,7 +4169,7 @@ class PkgInfoMenu(MenuSkel):
             if int(doc_type) not in (etpConst['ugc_doctypes']['image'],):
                 continue
             for mydoc in self.ugc_data[doc_type]:
-                if not mydoc.has_key('store_url'):
+                if 'store_url' not in mydoc:
                     continue
                 if not mydoc['store_url']:
                     continue
@@ -4201,7 +4201,7 @@ class PkgInfoMenu(MenuSkel):
         if self.ugc_data == None: return
 
         spawn_fetch = False
-        doc_types = self.ugc_data.keys()
+        doc_types = list(self.ugc_data.keys())
         doc_type_image_map = {
             1: const.ugc_text_pix,
             2: const.ugc_text_pix,
@@ -4238,7 +4238,7 @@ class PkgInfoMenu(MenuSkel):
             docs_dates = {}
             for mydoc in self.ugc_data[doc_type]:
                 ts = mydoc['ts']
-                if not docs_dates.has_key(ts):
+                if ts not in docs_dates:
                     docs_dates[ts] = []
                 docs_dates[ts].append(mydoc)
             sorted_dates = sorted(docs_dates.keys())
@@ -4784,7 +4784,7 @@ class SecurityAdvisoryMenu(MenuSkel):
             item.set_markup("<b>%s</b>" % (t,))
 
         # packages
-        if data.has_key('packages'):
+        if 'packages' in data:
             packages_data = data['packages']
         else:
             packages_data = data['affected']
@@ -4794,7 +4794,7 @@ class SecurityAdvisoryMenu(MenuSkel):
 
         # title
         myurl = ''
-        if data.has_key('url'):
+        if 'url' in data:
             myurl = data['url']
 
         self.advinfo_ui.labelTitle.set_markup( "<small>%s</small>" % (data['title'],))
@@ -4803,7 +4803,7 @@ class SecurityAdvisoryMenu(MenuSkel):
 
         # description
         desc_text = ' '.join([x.strip() for x in data['description'].split("\n")]).strip()
-        if data.has_key('description_items'):
+        if 'description_items' in data:
             if data['description_items']:
                 for item in data['description_items']:
                     desc_text += '\n\t%s %s' % ("<span foreground='%s'>(*)</span>" % (SulfurConf.color_title,),item,)
@@ -4928,7 +4928,7 @@ class UGCInfoMenu(MenuSkel):
     def load(self):
 
         pix_path = self.ugc_data['image_path']
-        if self.ugc_data.has_key('preview_path'):
+        if 'preview_path' in self.ugc_data:
             if os.path.isfile(self.ugc_data['preview_path']) and os.access(self.ugc_data['preview_path'],os.R_OK):
                 pix_path = self.ugc_data['preview_path']
         self.ugcinfo_ui.ugcImage.set_from_file(pix_path)
@@ -5126,7 +5126,7 @@ class UGCAddMenu(MenuSkel):
                 description,
                 keywords_text
             )
-        except Exception, e:
+        except Exception as e:
             rslt = False
             data = e
         return rslt, data
@@ -5397,20 +5397,20 @@ class MaskedPackagesDialog(MenuSkel):
 
         for po in pkgs:
             mycat = po.cat
-            if not categories.has_key(mycat):
+            if mycat not in categories:
                 categories[mycat] = []
             categories[mycat].append(po)
 
         from sulfur.package import DummyEntropyPackage
 
-        cats = categories.keys()
+        cats = list(categories.keys())
         cats.sort()
         for category in cats:
             cat_desc = _("No description")
             cat_desc_data = self.Entropy.get_category_description_data(category)
-            if cat_desc_data.has_key(_LOCALE):
+            if _LOCALE in cat_desc_data:
                 cat_desc = cat_desc_data[_LOCALE]
-            elif cat_desc_data.has_key('en'):
+            elif 'en' in cat_desc_data:
                 cat_desc = cat_desc_data['en']
             cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(cat_desc),)
             mydummy = DummyEntropyPackage(
@@ -5588,31 +5588,31 @@ class ConfirmationDialog:
 
     def show_data_simpledict( self, model, pkgs ):
         model.clear()
-        if pkgs.has_key("downgrade"):
+        if "downgrade" in pkgs:
             if pkgs['downgrade']:
                 label = "<b>%s</b>" % _("To be downgraded")
                 parent = model.append( None, [label] )
                 for pkg in pkgs['downgrade']:
                     model.append( parent, [pkg] )
-        if pkgs.has_key("remove"):
+        if "remove" in pkgs:
             if pkgs['remove']:
                 label = "<b>%s</b>" % _("To be removed")
                 parent = model.append( None, [label] )
                 for pkg in pkgs['remove']:
                     model.append( parent, [pkg] )
-        if pkgs.has_key("reinstall"):
+        if "reinstall" in pkgs:
             if pkgs['reinstall']:
                 label = "<b>%s</b>" % _("To be reinstalled")
                 parent = model.append( None, [label] )
                 for pkg in pkgs['reinstall']:
                     model.append( parent, [pkg] )
-        if pkgs.has_key("install"):
+        if "install" in pkgs:
             if pkgs['install']:
                 label = "<b>%s</b>" % _("To be installed")
                 parent = model.append( None, [label] )
                 for pkg in pkgs['install']:
                     model.append( parent, [pkg] )
-        if pkgs.has_key("update"):
+        if "update" in pkgs:
             if pkgs['update']:
                 label = "<b>%s</b>" % _("To be updated")
                 parent = model.append( None, [label] )
@@ -6183,7 +6183,7 @@ class InputDialog:
                 content = mywidget.get_active(),mywidget.get_active_text()
             elif isinstance(mywidget,gtk.TextBuffer):
                 content = mywidget.get_text(mywidget.get_start_iter(),mywidget.get_end_iter(), True)
-            elif isinstance(mywidget,(gtk.ListStore,gtk.TreeStore,)):
+            elif isinstance(mywidget,(gtk.ListStore,gtk.TreeStore)):
                 myiter = mywidget.get_iter_first()
                 content = []
                 while myiter:
@@ -6398,7 +6398,7 @@ class LicenseDialog:
 
             license_identifier = model.get_value( iterator, 0 )
             # for security reasons
-            if not self.licenses.has_key(license_identifier):
+            if license_identifier not in self.licenses:
                 return
 
             packages = self.licenses[license_identifier]

@@ -259,11 +259,11 @@ class SulfurConf:
 
         def do_save():
             if not os.path.isdir(os.path.dirname(const.SETTINGS_FILE)):
-                os.makedirs(os.path.dirname(const.SETTINGS_FILE), 0755)
+                os.makedirs(os.path.dirname(const.SETTINGS_FILE), 0o755)
             myxml = entropyTools.xml_from_dict_extended(SulfurConf.getconf())
             try:
                 f = open(const.SETTINGS_FILE,"w")
-            except (IOError,OSError,), e:
+            except (IOError,OSError,) as e:
                 return False, e
             f.write(myxml+"\n")
             f.flush()
@@ -272,7 +272,7 @@ class SulfurConf:
 
         try:
             return do_save()
-        except Exception, e:
+        except Exception as e:
             entropyTools.print_traceback()
             return False,e
         return True,None
@@ -300,10 +300,10 @@ class SulfurConf:
         validators = SulfurConf.getconf_validators()
         if not saved_conf: return
         if not isinstance(saved_conf,dict): return
-        for key, val in saved_conf.items():
+        for key, val in list(saved_conf.items()):
             if not hasattr(SulfurConf,key): continue
             vf = validators.get(key)
-            if not callable(vf):
+            if not hasattr(vf, '__call__'):
                 sys.stderr.write("WARNING: SulfurConf, no callable validator for %s" % (key,))
                 continue
             valid = vf(val)
@@ -319,7 +319,7 @@ def cleanMarkupString(msg):
     msg = gobject.markup_escape_text(msg)
     return msg
 
-from htmlentitydefs import codepoint2name
+from html.entities import codepoint2name
 def unicode2htmlentities(u):
    htmlentities = list()
    for c in u:
@@ -373,10 +373,10 @@ class fakeoutfile:
             self.write(s)
 
     def seek(self, a):
-        raise IOError, (29, 'Illegal seek')
+        raise IOError(29, 'Illegal seek')
 
     def tell(self):
-        raise IOError, (29, 'Illegal seek')
+        raise IOError(29, 'Illegal seek')
 
     def truncate(self):
         self.tell()
@@ -413,15 +413,15 @@ class fakeinfile:
         return self.readline().split("\n")
 
     def write(self, s):
-        raise IOError, (29, 'Illegal seek')
+        raise IOError(29, 'Illegal seek')
 
     def writelines(self, l):
-        raise IOError, (29, 'Illegal seek')
+        raise IOError(29, 'Illegal seek')
 
     def seek(self, a):
-        raise IOError, (29, 'Illegal seek')
+        raise IOError(29, 'Illegal seek')
 
     def tell(self):
-        raise IOError, (29, 'Illegal seek')
+        raise IOError(29, 'Illegal seek')
 
     truncate = tell

@@ -82,7 +82,7 @@ def package(options):
                 myn = int(opt[len("--multifetch="):])
             except ValueError:
                 continue
-            if myn not in range(2,11):
+            if myn not in list(range(2,11)):
                 continue
             equoRequestMultifetch = myn
         elif (opt == "--nochecksum"):
@@ -358,7 +358,7 @@ def branchHop(branch):
         print_error(darkred(" * ")+red("%s %s" % (
             _("No repositories specified in"), etpConst['repositoriesconf'],)))
         status = False
-    except Exception, e:
+    except Exception as e:
         print_error(darkred(" @@ ")+red("%s: %s" % (
             _("Unhandled exception"), e,)))
         status = False
@@ -421,7 +421,7 @@ def _scanPackages(packages, tbz2):
                 for match in masked_matches[0]:
                     masked, idreason, reason = Equo.get_masked_package_reason(match)
                     if not masked: continue
-                    if not m_reasons.has_key((idreason,reason,)):
+                    if (idreason,reason,) not in m_reasons:
                         m_reasons[(idreason,reason,)] = []
                     m_reasons[(idreason,reason,)].append(match)
 
@@ -615,7 +615,7 @@ def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps):
                     for match in masked_matches[0]:
                         masked, idreason, reason = Equo.get_masked_package_reason(match)
                         if not masked: continue
-                        if not m_reasons.has_key((idreason,reason,)):
+                        if (idreason,reason,) not in m_reasons:
                             m_reasons[(idreason,reason,)] = []
                         m_reasons[(idreason,reason,)].append(match)
 
@@ -1075,7 +1075,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 licenses.pop(mylic)
     if licenses:
         print_info(red(" @@ ")+blue("%s:" % (_("You need to accept the licenses below"),) ))
-        keys = licenses.keys()
+        keys = list(licenses.keys())
         keys.sort()
         for key in keys:
             print_info(red("    :: %s: " % (_("License"),) )+bold(key)+red(", %s:" % (_("needed by"),) ))
@@ -1134,7 +1134,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 Package.prepare(matches, "multi_fetch", metaopts)
                 myrepo_data = Package.pkgmeta['repository_atoms']
                 for myrepo in myrepo_data:
-                    if not mykeys.has_key(myrepo):
+                    if myrepo not in mykeys:
                         mykeys[myrepo] = set()
                     for myatom in myrepo_data[myrepo]:
                         mykeys[myrepo].add(Equo.entropyTools.dep_getkey(myatom))
@@ -1160,7 +1160,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 Package = Equo.Package()
                 Package.prepare(match,"fetch", metaopts)
                 myrepo = Package.pkgmeta['repository']
-                if not mykeys.has_key(myrepo):
+                if myrepo not in mykeys:
                     mykeys[myrepo] = set()
                 mykeys[myrepo].add(Equo.entropyTools.dep_getkey(Package.pkgmeta['atom']))
 
@@ -1592,7 +1592,7 @@ def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
         metaopts['removeconfig'] = configFiles
         Package = Equo.Package()
         Package.prepare((idpackage,),"remove", metaopts)
-        if not Package.pkgmeta.has_key('remove_installed_vanished'):
+        if 'remove_installed_vanished' not in Package.pkgmeta:
 
             xterm_header = "Equo (remove) :: "+str(currentqueue)+" of "+totalqueue+" ::"
             print_info(red(" -- ")+bold("(")+blue(str(currentqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.pkgmeta['removeatom']))
@@ -1656,7 +1656,7 @@ def dependenciesTest():
                 ridpackages = Equo.clientDbconn.searchIdpackageFromIddependency(riddep)
                 for i in ridpackages:
                     iatom = Equo.clientDbconn.retrieveAtom(i)
-                    if not crying_atoms.has_key(dep):
+                    if dep not in crying_atoms:
                         crying_atoms[dep] = set()
                     crying_atoms[dep].add(iatom)
 
@@ -1683,7 +1683,7 @@ def dependenciesTest():
         print_info(red(" @@ ")+blue("%s:" % (_("These are the dependencies not found"),) ))
         for atom in depsNotMatched:
             print_info("   # "+red(atom))
-            if crying_atoms.has_key(atom):
+            if atom in crying_atoms:
                 print_info(blue("      # ")+red("%s:" % (_("Needed by"),) ))
                 for x in crying_atoms[atom]:
                     print_info(blue("      # ")+darkgreen(x))
@@ -1727,7 +1727,7 @@ def librariesTest(listfiles = False, dump = False):
 
     if listfiles:
         for x in brokenlibs:
-            print x
+            print(x)
         restore_qstats()
         return 0,0
 
@@ -1757,7 +1757,7 @@ def librariesTest(listfiles = False, dump = False):
                 dbconn = Equo.open_repository(repoid)
                 myatom = dbconn.retrieveAtom(idpackage)
                 atomsdata.add((idpackage,repoid))
-                print myatom
+                print(myatom)
         restore_qstats()
         return 0,atomsdata
 

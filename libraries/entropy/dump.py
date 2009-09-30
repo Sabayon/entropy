@@ -75,13 +75,13 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True):
                     d_paths = sorted(d_paths)
                     for d_path in d_paths:
                         os.mkdir(d_path)
-                        const_setup_file(d_path, E_GID, 0775)
+                        const_setup_file(d_path, E_GID, 0o775)
 
                 dmpfile = dump_path+D_EXT
             with open(dmpfile,"wb") as dmp_f:
                 pickle.dump(my_object, dmp_f)
                 dmp_f.flush()
-            const_setup_file(dmpfile, E_GID, 0664)
+            const_setup_file(dmpfile, E_GID, 0o664)
         except RuntimeError:
             try:
                 os.remove(dmpfile)

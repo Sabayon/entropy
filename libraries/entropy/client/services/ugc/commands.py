@@ -24,12 +24,12 @@ class Base:
         if not hasattr(OutputInterface,'updateProgress'):
             mytxt = _("OutputInterface does not have an updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
-        elif not callable(OutputInterface.updateProgress):
+        elif not hasattr(OutputInterface.updateProgress, '__call__'):
             mytxt = _("OutputInterface does not have an updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
 
         from entropy.services.ugc.interfaces import Client as Cl
-        if not isinstance(Service, (Cl,)):
+        if not isinstance(Service, Cl):
                 mytxt = _("A valid entropy.services.ugc.interfaces.Client based instance is needed")
                 raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (Service,mytxt,))
 

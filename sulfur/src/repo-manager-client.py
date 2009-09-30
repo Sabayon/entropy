@@ -77,11 +77,11 @@ if __name__ == "__main__":
         gtk.gdk.threads_leave()
         Equo.destroy()
     except SystemExit:
-        print "Quit by User"
+        print("Quit by User")
         main_app.destroy()
         raise SystemExit(0)
     except KeyboardInterrupt:
-        print "Quit by User (KeyboardInterrupt)"
+        print("Quit by User (KeyboardInterrupt)")
         main_app.destroy()
         raise SystemExit(0)
     except: # catch other exception and write it to the logger.

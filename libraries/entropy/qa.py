@@ -63,7 +63,7 @@ class QAInterface:
         if not hasattr(self.Output, 'updateProgress'):
             mytxt = _("Output interface has no updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-        elif not callable(self.Output.updateProgress):
+        elif not hasattr(self.Output.updateProgress, '__call__'):
             mytxt = _("Output interface has no updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
@@ -254,7 +254,7 @@ class QAInterface:
             missing_extended, missing = self._get_missing_rdepends(dbconn,
                 idpackage, self_check = self_check)
             missing -= black_list
-            for item in missing_extended.keys():
+            for item in list(missing_extended.keys()):
                 missing_extended[item] -= black_list
                 if not missing_extended[item]:
                     del missing_extended[item]
@@ -444,7 +444,7 @@ class QAInterface:
         ldpaths.add("/usr/libexec")
 
         # remove duplicated dirs (due to symlinks) to speed up scanning
-        for real_dir in reverse_symlink_map.keys():
+        for real_dir in list(reverse_symlink_map.keys()):
             syms = reverse_symlink_map[real_dir]
             for sym in syms:
                 if sym in ldpaths:
@@ -468,7 +468,7 @@ class QAInterface:
         sys_root_len = len(etpConst['systemroot'])
         for ldpath in ldpaths:
 
-            if callable(task_bombing_func):
+            if hasattr(task_bombing_func, '__call__'):
                 task_bombing_func()
             count += 1
             self.Output.updateProgress(
@@ -535,7 +535,7 @@ class QAInterface:
         for executable in executables:
 
             # task bombing hook
-            if callable(task_bombing_func):
+            if hasattr(task_bombing_func, '__call__'):
                 task_bombing_func()
 
             count += 1
@@ -696,7 +696,7 @@ class QAInterface:
                     cmpstat = client.get_package_action(mymatch)
                     if cmpstat == 0:
                         continue
-                    if not packagesMatched.has_key(brokenlib):
+                    if brokenlib not in packagesMatched:
                         packagesMatched[brokenlib] = set()
 
                     packagesMatched[brokenlib].add(mymatch)
@@ -746,7 +746,7 @@ class QAInterface:
                     mylib)
                 if found:
                     continue
-                if not broken_libs.has_key(mylib):
+                if mylib not in broken_libs:
                     broken_libs[mylib] = set()
                 broken_libs[mylib].add(myneeded)
 
@@ -836,9 +836,9 @@ class QAInterface:
                     key, slot = dbconn.retrieveKeySlot(r_idpackage)
                     if (key, slot) not in scope_cache:
                         if not dbconn.isSystemPackage(r_idpackage):
-                            if not rdepends.has_key((needed, elfclass)):
+                            if (needed, elfclass) not in rdepends:
                                 rdepends[(needed, elfclass)] = set()
-                            if not idpackage_map.has_key((needed, elfclass)):
+                            if (needed, elfclass) not in idpackage_map:
                                 idpackage_map[(needed, elfclass)] = set()
                             keyslot = "%s:%s" % (key, slot,)
                             obj = idpackage_map_reverse.setdefault(
@@ -1043,9 +1043,9 @@ class ErrorReportInterface:
         @type post_url: string
         """
         from entropy.misc import MultipartPostHandler
-        import urllib2
+        import urllib.request, urllib.error, urllib.parse
         self.url = post_url
-        self.opener = urllib2.build_opener(MultipartPostHandler)
+        self.opener = urllib.request.build_opener(MultipartPostHandler)
         self.generated = False
         self.params = {}
 

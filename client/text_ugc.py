@@ -166,7 +166,7 @@ def ugcVotes(options):
             return 1
         elif not isinstance(data,dict):
             return 1
-        elif not data.has_key('vote'):
+        elif 'vote' not in data:
             return 1
         elif not data['vote']:
             return 1
@@ -252,7 +252,7 @@ def ugcDocuments(options):
 
     if cmd == "get":
         data, err_string = Equo.UGC.get_docs(repository, pkgkey)
-        if not isinstance(data,(list,tuple,)):
+        if not isinstance(data,(list,tuple)):
             print_error(
                 "[%s:%s] %s: %s, %s" % (
                     darkgreen(repository),
@@ -556,7 +556,7 @@ def showDocument(mydict, repository, pkgkey):
             Equo.entropyTools.bytes_into_human(mydict['size']),
         )
     )
-    if mydict.has_key('store_url'):
+    if 'store_url' in mydict:
         if mydict['store_url'] != None:
             print_info("\t%s: %s" % (
                     blue(_("Download")),

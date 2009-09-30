@@ -39,7 +39,7 @@ class Queue:
         self.pkgView = None
         self.queueView = None
         self.Sulfur = SulfurApplication
-        import dialogs
+        from . import dialogs
         self.dialogs = dialogs
         self.clear()
 
@@ -294,7 +294,7 @@ class Queue:
                 del self.before[:]
                 return 0,1
         finally:
-            items = [x for x in self.packages.values() if x]
+            items = [x for x in list(self.packages.values()) if x]
             if items:
                 SulfurSignals.emit('install_queue_filled')
             else:
@@ -337,7 +337,7 @@ class Queue:
                         return False
                     return True
 
-                pkgs = filter(myfilter,pkgs)
+                pkgs = list(filter(myfilter,pkgs))
                 if not pkgs: return -2,1
                 myq = [x.matched_atom[0] for x in self.packages['r']]
                 pkgs = [x.matched_atom[0] for x in pkgs if x.matched_atom[0] \
@@ -346,7 +346,7 @@ class Queue:
                 return status,1
 
         finally:
-            items = [x for x in self.packages.values() if x]
+            items = [x for x in list(self.packages.values()) if x]
             if items:
                 SulfurSignals.emit('install_queue_filled')
             else:
@@ -615,15 +615,15 @@ class EntropyPackages:
         self.selected_advisory_item = None
 
     def populate_single_group(self, mask, force = False):
-        if self._packages.has_key(mask) and not force and mask not in \
+        if mask in self._packages and not force and mask not in \
             self._non_cached_groups:
             return
         if const.debug:
             t1 = time.time()
         self._packages[mask] = self._get_groups(mask)
         if const.debug:
-            print "populate_single_group: generated group content for %s in %s" % (
-                mask, time.time() - t1,)
+            print("populate_single_group: generated group content for %s in %s" % (
+                mask, time.time() - t1,))
 
     def get_groups(self, flt):
         if flt == 'all':
@@ -650,7 +650,7 @@ class EntropyPackages:
 
     def do_filtering(self,pkgs):
         if self.filterCallback:
-            return filter(self.filterCallback,pkgs)
+            return list(filter(self.filterCallback,pkgs))
         return pkgs
 
     def get_raw_groups(self, flt):
@@ -658,8 +658,8 @@ class EntropyPackages:
             t1 = time.time()
         self.populate_single_group(flt)
         if const.debug:
-            print "get_raw_groups: generated group content for %s in %s" % (
-                flt, time.time() - t1,)
+            print("get_raw_groups: generated group content for %s in %s" % (
+                flt, time.time() - t1,))
         return self._packages[flt]
 
     def get_package_item(self, pkgdata):
@@ -692,7 +692,7 @@ class EntropyPackages:
 
     def _pkg_get_queued(self):
         data = []
-        for mylist in self.queue.packages.values():
+        for mylist in list(self.queue.packages.values()):
             data.extend(mylist)
         return data
 
@@ -763,8 +763,8 @@ class EntropyPackages:
         already_in |= set((x.matched_atom for x in self.get_raw_groups("user_unmasked")))
 
         if const.debug:
-            print "_pkg_get_downgrade: created already_in in %s" % (
-                time.time() - t1,)
+            print("_pkg_get_downgrade: created already_in in %s" % (
+                time.time() - t1,))
             t1 = time.time()
 
         matches = set()
@@ -779,8 +779,8 @@ class EntropyPackages:
                 already_in))
 
         if const.debug:
-            print "_pkg_get_downgrade: first iteration in %s" % (
-                time.time() - t1,)
+            print("_pkg_get_downgrade: first iteration in %s" % (
+                time.time() - t1,))
             t1 = time.time()
 
         final_matches = []
@@ -800,8 +800,8 @@ class EntropyPackages:
             final_matches.append(yp)
 
         if const.debug:
-            print "_pkg_get_downgrade: second iteration in %s" % (
-                time.time() - t1,)
+            print("_pkg_get_downgrade: second iteration in %s" % (
+                time.time() - t1,))
 
         return final_matches
 
@@ -1084,7 +1084,7 @@ class EntropyPackages:
                     return (clientdata[item],(mydata[item],repoid,))
                 return 0
 
-            matched_data |= set([x for x in map(fm,filter(fm_pre,clientdata)) \
+            matched_data |= set([x for x in map(fm,list(filter(fm_pre,clientdata))) \
                 if type(x) is not int])
 
         return matched_data

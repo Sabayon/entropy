@@ -172,7 +172,7 @@ class Base(SocketCommands):
             for key in self.HostInterface.done_queue_keys:
                 for queue_id in myqueue.get(key):
                     item = myqueue[key].get(queue_id)
-                    if not item.has_key('extended_result'):
+                    if 'extended_result' not in item:
                         continue
                     item['extended_result'] = None
 
@@ -248,11 +248,11 @@ class Base(SocketCommands):
         if key not in self.HostInterface.done_queue_keys:
             return False,'process not completed yet'
 
-        if not item.has_key('result'):
+        if 'result' not in item:
             return False,'result not available'
 
         ext_result = None
-        if item.has_key('extended_result'):
+        if 'extended_result' in item:
             ext_result = self.HostInterface.load_queue_ext_rc(queue_id)
 
         return True,(item['result'],ext_result,)
@@ -322,10 +322,10 @@ class Base(SocketCommands):
         xml_string = ' '.join(myargs)
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
-        except Exception, e:
+        except Exception as e:
             return None,"error: %s" % (e,)
 
-        if not (mydict.has_key('note') and mydict.has_key('extended_text')):
+        if not ('note' in mydict and 'extended_text' in mydict):
             return None,'wrong dict arguments, xml must have 2 items with attr value -> note, extended_text'
         note = mydict.get('note')
         extended_text = mydict.get('extended_text')
@@ -397,9 +397,9 @@ class Base(SocketCommands):
             os.write(w_fd,txt)
             if write_stdout:
                 stdout.write(txt)
-        except OSError, e:
+        except OSError as e:
             return False,'OSError: %s' % (e,)
-        except IOError, e:
+        except IOError as e:
             return False,'IOError: %s' % (e,)
         finally:
             if write_stdout:
@@ -739,15 +739,15 @@ class Repository(SocketCommands):
 
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
-        except Exception, e:
+        except Exception as e:
             return None,"error: %s" % (e,)
 
-        if not ( mydict.has_key('atoms') and mydict.has_key('pretend') and \
-                 mydict.has_key('oneshot') and  mydict.has_key('verbose') and \
-                 mydict.has_key('fetchonly') and  mydict.has_key('buildonly') and \
-                 mydict.has_key('nodeps') and \
-                 mydict.has_key('nocolor') and  mydict.has_key('custom_use') and \
-                 mydict.has_key('ldflags') and  mydict.has_key('cflags') ):
+        if not ( 'atoms' in mydict and 'pretend' in mydict and \
+                 'oneshot' in mydict and  'verbose' in mydict and \
+                 'fetchonly' in mydict and  'buildonly' in mydict and \
+                 'nodeps' in mydict and \
+                 'nocolor' in mydict and  'custom_use' in mydict and \
+                 'ldflags' in mydict and  'cflags' in mydict ):
             return None,'wrong dict arguments, xml must have 10 items with attr value' + \
                         ' -> atoms, pretend, oneshot, verbose, nocolor, fetchonly, ' + \
                         'buildonly, nodeps, custom_use, ldflags, cflags'
@@ -810,11 +810,11 @@ class Repository(SocketCommands):
 
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
-        except Exception, e:
+        except Exception as e:
             return None,"error: %s" % (e,)
 
-        if not ( mydict.has_key('atoms') and mydict.has_key('pretend') and \
-                 mydict.has_key('verbose') and mydict.has_key('nocolor') ):
+        if not ( 'atoms' in mydict and 'pretend' in mydict and \
+                 'verbose' in mydict and 'nocolor' in mydict ):
             return None,'wrong dict arguments, xml must have 4 items with attr value -> atoms, pretend, verbose, nocolor'
 
         atoms = mydict.get('atoms')
@@ -873,9 +873,9 @@ class Repository(SocketCommands):
         xml_string = ' '.join(myargs)
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
-        except Exception, e:
+        except Exception as e:
             return None,"error: %s" % (e,)
-        if not (mydict.has_key('atoms') and mydict.has_key('useflags')):
+        if not ('atoms' in mydict and 'useflags' in mydict):
             return None,'wrong dict arguments, xml must have 2 items with attr value -> atoms, useflags'
 
         atoms = mydict.get('atoms')
@@ -898,9 +898,9 @@ class Repository(SocketCommands):
         xml_string = ' '.join(myargs)
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
-        except Exception, e:
+        except Exception as e:
             return None,"error: %s" % (e,)
-        if not (mydict.has_key('atoms') and mydict.has_key('useflags')):
+        if not ('atoms' in mydict and 'useflags' in mydict):
             return None,'wrong dict arguments, xml must have 2 items with attr value -> atoms, useflags'
 
         atoms = mydict.get('atoms')
@@ -985,7 +985,7 @@ class Repository(SocketCommands):
         msg = 'ok'
         try:
             self.HostInterface.Entropy.switch_default_repository(repoid, save = True, handle_uninitialized = False)
-        except Exception, e:
+        except Exception as e:
             status = False
             msg = unicode(e)
         return status, msg
@@ -1039,7 +1039,7 @@ class Repository(SocketCommands):
 
         repo_data = {}
         for idpackage,repoid in matched_atoms:
-            if not repo_data.has_key(repoid):
+            if repoid not in repo_data:
                 repo_data[repoid] = []
             repo_data[repoid].append(idpackage)
 
@@ -1048,7 +1048,7 @@ class Repository(SocketCommands):
         try:
             for repoid in repo_data:
                 self.HostInterface.Entropy.remove_packages(repo_data[repoid],repo = repoid)
-        except Exception, e:
+        except Exception as e:
             status = False
             msg = unicode(e)
 
@@ -1155,7 +1155,7 @@ class Repository(SocketCommands):
         serialized_string = '\n'.join(myargs)
         try:
             mydict = self.dumpTools.unserialize_string(serialized_string)
-        except Exception, e:
+        except Exception as e:
             return False,'cannot parse data: %s' % (e,)
 
         status, userdata, err_str = authenticator.docmd_userdata()
@@ -1184,7 +1184,7 @@ class Repository(SocketCommands):
 
             for item in to_add_string:
                 atom, counter, repoid = item.split(":")
-                if not to_add.has_key(repoid):
+                if repoid not in to_add:
                     to_add[repoid] = []
                 to_add[repoid].append(atom)
 
@@ -1196,7 +1196,7 @@ class Repository(SocketCommands):
                 idpackage, repoid = item.split(":")
                 to_inject.append((idpackage, repoid,))
 
-        except Exception, e:
+        except Exception as e:
             return False,'cannot run database updates properly: %s' % (e,)
 
         status, userdata, err_str = authenticator.docmd_userdata()
@@ -1343,10 +1343,10 @@ class Repository(SocketCommands):
         xml_string = ' '.join(myargs)
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
-        except Exception, e:
+        except Exception as e:
             return None,"error: %s" % (e,)
-        if not (mydict.has_key('repoid') and mydict.has_key('title') and \
-                mydict.has_key('notice_text') and mydict.has_key('link')):
+        if not ('repoid' in mydict and 'title' in mydict and \
+                'notice_text' in mydict and 'link' in mydict):
             return None,'wrong dict arguments, xml must have 4 items with attr value -> repoid, title, notice_text, link'
 
         repoid = mydict.get('repoid')

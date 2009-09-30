@@ -266,7 +266,7 @@ class Server(RemoteDatabase):
         if not os.path.isdir(path):
             try:
                 os.makedirs(path)
-            except OSError, e:
+            except OSError as e:
                 raise PermissionDenied('PermissionDenied: %s' % (e,))
             if etpConst['entropygid'] != None:
                 const_setup_perms(path,etpConst['entropygid'])
@@ -495,7 +495,7 @@ class Server(RemoteDatabase):
     def _get_ugc_extra_metadata(self, mydict):
         mydict['store_url'] = None
         mydict['keywords'] = self.get_ugc_keywords(mydict['iddoc'])
-        if mydict.has_key("key"):
+        if "key" in mydict:
             mydict['pkgkey'] = mydict['key']
         else:
             mydict['pkgkey'] = self.get_pkgkey(mydict['idkey'])
@@ -811,7 +811,7 @@ class Server(RemoteDatabase):
         self.check_connection()
 
         if iddoctypes is None:
-            iddoctypes = self.DOC_TYPES.values()
+            iddoctypes = list(self.DOC_TYPES.values())
 
         if len(iddoctypes) == 1:
             iddoctypes_str = " = %s" % (iddoctypes[0],)
@@ -875,7 +875,7 @@ class Server(RemoteDatabase):
         self.check_connection()
 
         if iddoctypes is None:
-            iddoctypes = self.DOC_TYPES.values()
+            iddoctypes = list(self.DOC_TYPES.values())
 
         if len(iddoctypes) == 1:
             iddoctypes_str = " = %s" % (iddoctypes[0],)
@@ -940,7 +940,7 @@ class Server(RemoteDatabase):
         self.check_connection()
 
         if iddoctypes is None:
-            iddoctypes = self.DOC_TYPES.values()
+            iddoctypes = list(self.DOC_TYPES.values())
 
         if len(iddoctypes) == 1:
             iddoctypes_str = " = %s" % (iddoctypes[0],)
@@ -1004,7 +1004,7 @@ class Server(RemoteDatabase):
         self.check_connection()
 
         if iddoctypes is None:
-            iddoctypes = self.DOC_TYPES.values()
+            iddoctypes = list(self.DOC_TYPES.values())
 
         if len(iddoctypes) == 1:
             iddoctypes_str = " = %s" % (iddoctypes[0],)
@@ -1070,7 +1070,7 @@ class Server(RemoteDatabase):
         self.check_connection()
 
         if iddoctypes is None:
-            iddoctypes = self.DOC_TYPES.values()
+            iddoctypes = list(self.DOC_TYPES.values())
 
         if len(iddoctypes) == 1:
             iddoctypes_str = " = %s" % (iddoctypes[0],)
@@ -1146,7 +1146,7 @@ class Server(RemoteDatabase):
         data = self.fetchone()
         if not data:
             return False
-        elif not data.has_key('ts'):
+        elif 'ts' not in data:
             return False
         elif data['ts'] == None:
             return False
@@ -1481,7 +1481,7 @@ class Server(RemoteDatabase):
         if not os.path.isdir(dest_dir):
             try:
                 os.makedirs(dest_dir)
-            except OSError, e:
+            except OSError as e:
                 raise PermissionDenied('PermissionDenied: %s' % (e,))
             if etpConst['entropygid'] != None:
                 const_setup_perms(dest_dir,etpConst['entropygid'])
@@ -1501,12 +1501,12 @@ class Server(RemoteDatabase):
                 shutil.move(file_path, dest_path)
         if etpConst['entropygid'] != None:
             try:
-                const_setup_file(dest_path, etpConst['entropygid'], 0664)
+                const_setup_file(dest_path, etpConst['entropygid'], 0o664)
             except OSError:
                 pass
             # at least set chmod
             try:
-                const_set_chmod(dest_path,0664)
+                const_set_chmod(dest_path,0o664)
             except OSError:
                 pass
 
@@ -1673,7 +1673,7 @@ class Server(RemoteDatabase):
         if data is None:
             do_remove()
             return False, None
-        elif not data.has_key('ddata'):
+        elif 'ddata' not in data:
             do_remove()
             return False, None
 
@@ -1695,15 +1695,15 @@ class Server(RemoteDatabase):
             return None
         keywords = ['google_email', 'google_password']
         for keyword in keywords:
-            if not self.connection_data.has_key(keyword):
+            if keyword not in self.connection_data:
                 return None
         # note: your google account must be linked with the YouTube one
         srv = self.YouTubeService.YouTubeService()
         srv.email = self.connection_data['google_email']
         srv.password = self.connection_data['google_password']
-        if self.connection_data.has_key('google_developer_key'):
+        if 'google_developer_key' in self.connection_data:
             srv.developer_key = self.connection_data['google_developer_key']
-        if self.connection_data.has_key('google_client_id'):
+        if 'google_client_id' in self.connection_data:
             srv.client_id = self.connection_data['google_client_id']
         srv.source = 'Entropy'
         srv.ProgrammaticLogin()
@@ -1721,7 +1721,7 @@ class Client:
         if not hasattr(OutputInterface,'updateProgress'):
             mytxt = _("OutputInterface does not have an updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
-        elif not callable(OutputInterface.updateProgress):
+        elif not hasattr(OutputInterface.updateProgress, '__call__'):
             mytxt = _("OutputInterface does not have an updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
 
@@ -1918,17 +1918,17 @@ class Client:
                     self._ssl_poll(select.POLLOUT, 'write')
                 except self.SSL_exceptions['WantReadError']:
                     self._ssl_poll(select.POLLIN, 'write')
-                except UnicodeEncodeError, e:
+                except UnicodeEncodeError as e:
                     if encode_done:
                         raise
                     mydata = mydata.encode('utf-8')
                     encode_done = True
                     continue
 
-        except self.SSL_exceptions['Error'], e:
+        except self.SSL_exceptions['Error'] as e:
             self.disconnect()
             raise SSLError('SSLError: %s' % (e,))
-        except self.socket.sslerror, e:
+        except self.socket.sslerror as e:
             self.disconnect()
             raise SSLError('SSL Socket error: %s' % (e,))
         except:
@@ -1941,7 +1941,7 @@ class Client:
             self.transmit("%s end" % (session_id,))
             # since we don't know if it's expired, we need to wrap it
             data = self.receive()
-        except self.socket.error, e:
+        except self.socket.error as e:
             if etpUi['debug']:
                 self.entropyTools.print_traceback()
                 import pdb
@@ -2057,7 +2057,7 @@ class Client:
                 self.buffer_length = None
                 break
 
-            except ValueError, e:
+            except ValueError as e:
                 if not self.quiet:
                     mytxt = _("malformed data. receive aborted")
                     self.Output.updateProgress(
@@ -2072,7 +2072,7 @@ class Client:
                         header = self.output_header
                     )
                 return None
-            except self.socket.timeout, e:
+            except self.socket.timeout as e:
                 if not self.quiet:
                     mytxt = _("connection timed out while receiving data")
                     self.Output.updateProgress(
@@ -2087,7 +2087,7 @@ class Client:
                         header = self.output_header
                     )
                 return None
-            except self.socket.error, e:
+            except self.socket.error as e:
                 if not self.quiet:
                     mytxt = _("connection error while receiving data")
                     self.Output.updateProgress(
@@ -2110,7 +2110,7 @@ class Client:
                 self._ssl_poll(select.POLLOUT, 'read')
             except self.SSL_exceptions['ZeroReturnError']:
                 break
-            except self.SSL_exceptions['SysCallError'], e:
+            except self.SSL_exceptions['SysCallError'] as e:
                 if not self.quiet:
                     mytxt = _("syscall error while receiving data")
                     self.Output.updateProgress(
@@ -2198,7 +2198,7 @@ class Client:
                         type = "warning",
                         header = self.output_header
                     )
-        except self.socket.error, e:
+        except self.socket.error as e:
             if e[0] == 111:
                 mytxt = "%s: %s, %s: %s" % (_("Cannot connect to"),host,_("on port"),port,)
                 raise ConnectionError("ConnectionError: %s" % (mytxt,))

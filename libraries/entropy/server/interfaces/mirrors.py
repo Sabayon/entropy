@@ -1514,7 +1514,7 @@ class Server:
             if not ftp_connection.is_file_available(bdir):
                 try:
                     ftp_connection.mkdir(bdir)
-                except Exception, err:
+                except Exception as err:
                     error = unicode(err)
                     if (error.find("550") == -1) and \
                         (error.find("File exist") == -1):
@@ -1618,7 +1618,7 @@ class Server:
             no_upload = True, repo = repo, do_treeupdates = False)
         # grab treeupdates from other databases and inject
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        server_repos = srv_set['repositories'].keys()
+        server_repos = list(srv_set['repositories'].keys())
         all_actions = set()
         for myrepo in server_repos:
 
@@ -1638,7 +1638,7 @@ class Server:
             # clear first
             dbconn.removeTreeUpdatesActions(repo)
             dbconn.insertTreeUpdatesActions(all_actions, repo)
-        except dbapi2.Error, err:
+        except dbapi2.Error as err:
             self.entropyTools.print_traceback()
             mytxt = "%s, %s: %s. %s" % (
                 _("Troubles with treeupdates"),
@@ -2910,7 +2910,7 @@ class Server:
                 upload_queue, download_queue, removal_queue, fine_queue, \
                     remote_packages_data = self.calculate_packages_to_sync(uri,
                         self.SystemSettings['repositories']['branch'], repo)
-            except self.socket.error, err:
+            except self.socket.error as err:
                 self.Entropy.updateProgress(
                     "[repo:%s|%s|branch:%s] %s: %s, %s %s" % (
                         repo,
@@ -3049,7 +3049,7 @@ class Server:
                 )
                 continue
 
-            except EntropyPackageException, err:
+            except EntropyPackageException as err:
 
                 mirrors_errors = True
                 broken_mirrors.add(uri)
@@ -3072,7 +3072,7 @@ class Server:
                 return mirrors_tainted, mirrors_errors, successfull_mirrors, \
                     broken_mirrors, check_data
 
-            except Exception, err:
+            except Exception as err:
 
                 self.entropyTools.print_traceback()
                 mirrors_errors = True
@@ -3256,7 +3256,7 @@ class Server:
                 etpConst['etpdatabasepkglist'], repo = repo,
                 excluded_branches = [branch])
             # format data
-            for key, val in branch_pkglist_data.items():
+            for key, val in list(branch_pkglist_data.items()):
                 branch_pkglist_data[key] = val.split("\n")
 
 

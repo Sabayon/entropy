@@ -259,7 +259,7 @@ class UGC(SocketCommands):
         session_data = self.HostInterface.sessions.get(authenticator.session)
         if not session_data:
             return False
-        elif not session_data.has_key('auth_uid'):
+        elif 'auth_uid' not in session_data:
             return False
         return session_data['auth_uid']
 
@@ -270,7 +270,7 @@ class UGC(SocketCommands):
         session_data = self.HostInterface.sessions.get(authenticator.session)
         if not session_data:
             return False
-        elif not session_data.has_key('stream_path'):
+        elif 'stream_path' not in session_data:
             return False
         elif not session_data['stream_path']:
             return False
@@ -283,7 +283,7 @@ class UGC(SocketCommands):
         session_data = self.HostInterface.sessions.get(authenticator.session)
         if not session_data:
             return None
-        elif not session_data.has_key('ip_address'):
+        elif 'ip_address' not in session_data:
             return None
         return session_data['ip_address']
 
@@ -296,13 +296,13 @@ class UGC(SocketCommands):
         xml_string = ' '.join(myargs[1:])
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
-        except Exception, e:
+        except Exception as e:
             return None,"error: %s" % (e,)
-        if not (mydict.has_key('doc_type') \
-                and mydict.has_key('title') \
-                and mydict.has_key('description') \
-                and mydict.has_key('keywords') \
-                and mydict.has_key('file_name') ):
+        if not ('doc_type' in mydict \
+                and 'title' in mydict \
+                and 'description' in mydict \
+                and 'keywords' in mydict \
+                and 'file_name' in mydict ):
             return None,'wrong dict arguments, xml must have 5 items with attr value -> doc_type, title, description, keywords, file_name'
         doc_type = mydict.get('doc_type')
         title = mydict.get('title')
@@ -366,9 +366,9 @@ class UGC(SocketCommands):
         xml_string = ' '.join(myargs[1:])
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
-        except Exception, e:
+        except Exception as e:
             return None,"error: %s" % (e,)
-        if not (mydict.has_key('comment') and mydict.has_key('title') and mydict.has_key('keywords')):
+        if not ('comment' in mydict and 'title' in mydict and 'keywords' in mydict):
             return None,'wrong dict arguments, xml must have 3 items with attr value -> comment, title, keywords'
         comment = mydict.get('comment')
         title = mydict.get('title')
@@ -433,9 +433,9 @@ class UGC(SocketCommands):
         xml_string = ' '.join(myargs[1:])
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
-        except Exception, e:
+        except Exception as e:
             return None,"error: %s" % (e,)
-        if not (mydict.has_key('comment') and mydict.has_key('title') and mydict.has_key('keywords')):
+        if not ('comment' in mydict and 'title' in mydict and 'keywords' in mydict):
             return None,'wrong dict arguments, xml must have two item with attr value -> comment, title'
         new_comment = mydict.get('comment')
         new_title = mydict.get('title')
@@ -594,11 +594,11 @@ class UGC(SocketCommands):
         xml_string = ' '.join(myargs)
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
-        except Exception, e:
+        except Exception as e:
             return None,"error: %s" % (e,)
-        if not (mydict.has_key('branch') and \
-            mydict.has_key('release_string') and \
-            mydict.has_key('pkgkeys')):
+        if not ('branch' in mydict and \
+            'release_string' in mydict and \
+            'pkgkeys' in mydict):
             return None,'wrong dict arguments, xml must have 3 items with attr value -> branch, release_string, pkgkeys'
 
         branch = mydict.get('branch')
@@ -778,7 +778,7 @@ class UGC(SocketCommands):
         try:
             xml_string = zlib.decompress(comp_xml_string)
             mydict = self.entropyTools.dict_from_xml_extended(xml_string)
-        except Exception, e:
+        except Exception as e:
             return None, "error: %s" % (e,)
 
         subject = 'Entropy Error Reporting Handler'

@@ -162,7 +162,7 @@ class Client:
 
     def login(self, repository, force = False):
 
-        if not self.TxLocks.has_key(repository):
+        if repository not in self.TxLocks:
             self.TxLocks[repository] = self.threading.Lock()
 
         with self.TxLocks[repository]:
@@ -174,7 +174,7 @@ class Client:
 
     def do_cmd(self, repository, login_required, func, args, kwargs):
 
-        if not self.TxLocks.has_key(repository):
+        if repository not in self.TxLocks:
             self.TxLocks[repository] = self.threading.Lock()
 
         with self.TxLocks[repository]:
@@ -393,11 +393,11 @@ class AuthStore(Singleton):
             gid = 0
 
         try:
-            const_setup_file(self.access_dir, gid, 0700)
+            const_setup_file(self.access_dir, gid, 0o700)
         except OSError:
             pass
         try:
-            const_setup_file(self.access_file, gid, 0600)
+            const_setup_file(self.access_file, gid, 0o600)
         except OSError:
             pass
 
@@ -487,9 +487,9 @@ class Cache:
         self.xcache[repository][item] = my_obj
 
     def _clear_live_cache_item(self, repository, item):
-        if not self.xcache.has_key(repository):
+        if repository not in self.xcache:
             return
-        if not self.xcache[repository].has_key(item):
+        if item not in self.xcache[repository]:
             return
         del self.xcache[repository][item]
 
@@ -529,7 +529,7 @@ class Cache:
 
         try:
             if not os.path.isdir(cache_dir):
-                os.makedirs(cache_dir,0775)
+                os.makedirs(cache_dir,0o775)
                 if etpConst['entropygid'] != None:
                     const_setup_perms(cache_dir,etpConst['entropygid'])
         except OSError:
@@ -549,7 +549,7 @@ class Cache:
         if not os.path.isfile(cache_file): return None
 
         try:
-            os.chmod(cache_file,0664)
+            os.chmod(cache_file,0o664)
             if etpConst['entropygid'] != None:
                 os.chown(cache_file,-1,etpConst['entropygid'])
         except OSError:
@@ -637,7 +637,7 @@ class Cache:
         cache_key = self._get_alldocs_cache_key(repository)
         cached = self._get_live_cache_item(repository, cache_key)
         if isinstance(cached,dict):
-            if cached.has_key(pkgkey): return cached[pkgkey]
+            if pkgkey in cached: return cached[pkgkey]
         else:
             cached = {}
         with self.CacheLock:
@@ -672,7 +672,7 @@ class Cache:
             return 0.0
         elif not isinstance(cache,dict):
             return 0.0
-        elif not cache.has_key(pkgkey):
+        elif pkgkey not in cache:
             return 0.0
         return cache[pkgkey]
 
@@ -682,7 +682,7 @@ class Cache:
             return 0
         elif not isinstance(cache,dict):
             return 0
-        elif not cache.has_key(pkgkey):
+        elif pkgkey not in cache:
             return 0
         try:
             return int(cache[pkgkey])

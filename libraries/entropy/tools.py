@@ -156,7 +156,7 @@ def get_traceback():
     @rtype: string
     """
     import traceback
-    from cStringIO import StringIO
+    from io import StringIO
     buf = StringIO()
     traceback.print_exc(file = buf)
     return buf.getvalue()
@@ -185,26 +185,26 @@ def print_exception(returndata = False):
     #if not returndata: print
     for frame in stack:
         if not returndata:
-            print
-            print "Frame %s in %s at line %s" % (frame.f_code.co_name,
+            print()
+            print("Frame %s in %s at line %s" % (frame.f_code.co_name,
                                              frame.f_code.co_filename,
-                                             frame.f_lineno)
+                                             frame.f_lineno))
         else:
             data.append("Frame %s in %s at line %s" % (frame.f_code.co_name,
                                              frame.f_code.co_filename,
                                              frame.f_lineno))
-        for key, value in frame.f_locals.items():
+        for key, value in list(frame.f_locals.items()):
             if not returndata:
-                print "\t%20s = " % key,
+                print("\t%20s = " % key, end=' ')
             else:
                 data.append("\t%20s = " % key,)
             try:
                 if not returndata:
-                    print value
+                    print(value)
                 else:
                     data.append(value)
             except:
-                if not returndata: print "<ERROR WHILE PRINTING VALUE>"
+                if not returndata: print("<ERROR WHILE PRINTING VALUE>")
     return data
 
 # Get the content of an online page
@@ -223,7 +223,7 @@ def get_remote_data(url, timeout = 5):
     @rtype: string or bool
     """
     import socket
-    import urllib2
+    import urllib.request, urllib.error, urllib.parse
     # now pray the server
     from entropy.core.settings.base import SystemSettings
     sys_settings = SystemSettings()
@@ -242,10 +242,10 @@ def get_remote_data(url, timeout = 5):
             # unset
             urllib2._opener = None
         try:
-            item = urllib2.urlopen(url, timeout = timeout)
+            item = urllib.request.urlopen(url, timeout = timeout)
         except TypeError: # Python 2.5 support
             socket.setdefaulttimeout(timeout)
-            item = urllib2.urlopen(url)
+            item = urllib.request.urlopen(url)
         result = item.readlines()
         item.close()
         del item
@@ -334,9 +334,9 @@ def add_proxy_opener(module, data):
     username = None
     password = None
     authinfo = None
-    if data.has_key('password'):
+    if 'password' in data:
         username = data.pop('username')
-    if data.has_key('password'):
+    if 'password' in data:
         username = data.pop('password')
     if username == None or password == None:
         username = None
@@ -538,10 +538,10 @@ def movefile(src, dest, src_basedir = None):
             return True
         except SystemExit:
             raise
-        except Exception, e:
-            print "!!! failed to properly create symlink:"
-            print "!!!", dest, "->", target
-            print "!!!", e
+        except Exception as e:
+            print("!!! failed to properly create symlink:")
+            print("!!!", dest, "->", target)
+            print("!!!", e)
             return False
 
     renamefailed = True
@@ -549,11 +549,11 @@ def movefile(src, dest, src_basedir = None):
         try:
             os.rename(src, dest)
             renamefailed = False
-        except Exception, e:
+        except Exception as e:
             if e[0] != errno.EXDEV:
                 # Some random error.
-                print "!!! Failed to move", src, "to", dest
-                print "!!!", e
+                print("!!! Failed to move", src, "to", dest)
+                print("!!!", e)
                 return False
             # Invalid cross-device-link 'bind' mounted or actually Cross-Device
 
@@ -568,19 +568,19 @@ def movefile(src, dest, src_basedir = None):
                 shutil.copyfile(src, tmp_dest)
                 os.rename(tmp_dest, dest)
                 didcopy = True
-            except SystemExit, e:
+            except SystemExit as e:
                 raise
-            except Exception, e:
-                print '!!! copy', src, '->', dest, 'failed.'
-                print "!!!", e
+            except Exception as e:
+                print('!!! copy', src, '->', dest, 'failed.')
+                print("!!!", e)
                 return False
         else:
             #we don't yet handle special, so we need to fall back to /bin/mv
             a = getstatusoutput("mv -f '%s' '%s'" % (src, dest,))
             if a[0] != 0:
-                print "!!! Failed to move special file:"
-                print "!!! '" + src + "' to '" + dest + "'"
-                print "!!!", a
+                print("!!! Failed to move special file:")
+                print("!!! '" + src + "' to '" + dest + "'")
+                print("!!!", a)
                 return False
         try:
             if didcopy:
@@ -590,12 +590,12 @@ def movefile(src, dest, src_basedir = None):
                     os.chown(dest, sstat[stat.ST_UID], sstat[stat.ST_GID])
                 os.chmod(dest, stat.S_IMODE(sstat[stat.ST_MODE])) # Sticky is reset on chown
                 os.unlink(src)
-        except SystemExit, e:
+        except SystemExit as e:
             raise
-        except Exception, e:
-            print "!!! Failed to chown/chmod/unlink in movefile()"
-            print "!!!", dest
-            print "!!!", e
+        except Exception as e:
+            print("!!! Failed to chown/chmod/unlink in movefile()")
+            print("!!!", dest)
+            print("!!!", e)
             return False
 
     try:
@@ -606,10 +606,10 @@ def movefile(src, dest, src_basedir = None):
         try:
             long(os.stat(dest).st_mtime)
             return True
-        except OSError, e:
-            print "!!! Failed to stat in movefile()\n"
-            print "!!! %s\n" % dest
-            print "!!! %s\n" % str(e)
+        except OSError as e:
+            print("!!! Failed to stat in movefile()\n")
+            print("!!! %s\n" % dest)
+            print("!!! %s\n" % str(e))
             return False
 
     return True
@@ -694,14 +694,14 @@ def countdown(secs = 5, what = "Counting...", back = False):
     if secs:
         if back:
             try:
-                print red(">>"), what,
+                print(red(">>"), what, end=' ')
             except UnicodeEncodeError:
-                print red(">>"), what.encode('utf-8'),
+                print(red(">>"), what.encode('utf-8'), end=' ')
         else:
             try:
-                print what
+                print(what)
             except UnicodeEncodeError:
-                print what.encode('utf-8')
+                print(what.encode('utf-8'))
         for i in range(secs)[::-1]:
             sys.stdout.write(red(str(i+1)+" "))
             sys.stdout.flush()
@@ -847,7 +847,7 @@ def getfd(filespec, readOnly = 0):
     @rtype: 
     """
     import types
-    if type(filespec) == types.IntType:
+    if type(filespec) == int:
         return filespec
     if filespec == None:
         filespec = "/dev/null"
@@ -981,7 +981,7 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
                 # Extract directory with a safe mode, so that
                 # all files below can be extracted as well.
                 try:
-                    os.makedirs(os.path.join(dest_path, tarinfo.name), 0777)
+                    os.makedirs(os.path.join(dest_path, tarinfo.name), 0o777)
                 except EnvironmentError:
                     pass
                 return tarinfo
@@ -1044,7 +1044,7 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
             except tarfile.ExtractError:
                 if tar.errorlevel > 1:
                     return False
-        done = map(mymf2, directories)
+        done = list(map(mymf2, directories))
         del done
 
     except EOFError:
@@ -1589,13 +1589,13 @@ def sort_update_files(update_list):
     for item in update_list:
         # get year
         year = item.split("-")[1]
-        if sort_dict.has_key(year):
+        if year in sort_dict:
             sort_dict[year].append(item)
         else:
             sort_dict[year] = []
             sort_dict[year].append(item)
     new_list = []
-    keys = sort_dict.keys()
+    keys = list(sort_dict.keys())
     keys.sort()
     for key in keys:
         sort_dict[key].sort()
@@ -1760,7 +1760,7 @@ def ververify(myverx, silent = 1):
         return 1
     else:
         if not silent:
-            print "!!! syntax error in version: %s" % myver
+            print("!!! syntax error in version: %s" % myver)
         return 0
 
 
@@ -1982,12 +1982,12 @@ def pkgsplit(mypkg, silent=1):
 
     if len(myparts) < 2:
         if not silent:
-            print "!!! Name error in", mypkg+": missing a version or name part."
+            print("!!! Name error in", mypkg+": missing a version or name part.")
             return None
     for x in myparts:
         if len(x) == 0:
             if not silent:
-                print "!!! Name error in", mypkg+": empty \"-\" part."
+                print("!!! Name error in", mypkg+": empty \"-\" part.")
                 return None
 
     #verify rev
@@ -2621,7 +2621,7 @@ def isnumber(x):
     @return: 
     @rtype: 
     """
-    return isinstance(x, (long, int,))
+    return isinstance(x, (long, int))
 
 
 def istextfile(filename, blocksize = 512):
@@ -2651,7 +2651,7 @@ def istext(s):
     """
     import string
     _null_trans = string.maketrans("", "")
-    text_characters = "".join(map(chr, range(32, 127)) + list("\n\r\t\b"))
+    text_characters = "".join(list(map(chr, list(range(32, 127)))) + list("\n\r\t\b"))
 
     if "\0" in s:
         return False
@@ -2722,7 +2722,7 @@ def escape_single(x):
     if type(x) == type(""):
         tmpstr = ''
         for d in range(len(x)):
-            if x[d] in mappings.keys():
+            if x[d] in list(mappings.keys()):
                 if x[d] in ("'", '"'):
                     if d+1 < len(x):
                         if x[d+1] != x[d]:
@@ -2748,7 +2748,7 @@ def unescape(val):
     """
     if type(val)==type(""):
         tmpstr = ''
-        for key, item in mappings.items():
+        for key, item in list(mappings.items()):
             val = val.replace(item, key)
         tmpstr = val
     else:
@@ -2792,8 +2792,8 @@ def spliturl(url):
     @return: 
     @rtype: 
     """
-    import urlparse
-    return urlparse.urlsplit(url)
+    import urllib.parse
+    return urllib.parse.urlsplit(url)
 
 def compress_tar_bz2(storepath, pathtocompress):
     """
@@ -2835,7 +2835,7 @@ def spawn_function(f, *args, **kwds):
         kwds.pop('write_pid_func')
 
     try:
-        import cPickle as pickle
+        import pickle as pickle
     except ImportError:
         import pickle
     pread, pwrite = os.pipe()
@@ -2861,13 +2861,13 @@ def spawn_function(f, *args, **kwds):
         try:
             result = f(*args, **kwds)
             status = 0
-        except Exception, exc:
+        except Exception as exc:
             result = exc
             status = 1
         f = os.fdopen(pwrite, 'wb')
         try:
             pickle.dump((status, result), f, pickle.HIGHEST_PROTOCOL)
-        except pickle.PicklingError, exc:
+        except pickle.PicklingError as exc:
             pickle.dump((2, exc), f, pickle.HIGHEST_PROTOCOL)
         f.close()
         os._exit(0)
@@ -2962,7 +2962,7 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
                 # Extract directory with a safe mode, so that
                 # all files below can be extracted as well.
                 try:
-                    os.makedirs(epath, 0777)
+                    os.makedirs(epath, 0o777)
                 except EnvironmentError:
                     pass
                 return tarinfo, epath
@@ -3000,7 +3000,7 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
                 if tar.errorlevel > 1:
                     raise
 
-        done = map(mymf2, entries)
+        done = list(map(mymf2, entries))
         del done
 
     except EOFError:
@@ -3381,7 +3381,7 @@ def save_repository_settings(repodata, remove = False, disable = False, enable =
             repolines_data[repocount]['line'] = line
 
         # inject new repodata
-        keys = repolines_data.keys()
+        keys = list(repolines_data.keys())
         keys.sort()
         for cc in keys:
             #repoid = repolines_data[cc]['repoid']
@@ -3511,7 +3511,7 @@ def is_valid_string(string):
     @return: 
     @rtype: 
     """
-    invalid = [ord(x) for x in string if ord(x) not in xrange(32, 127)]
+    invalid = [ord(x) for x in string if ord(x) not in range(32, 127)]
     if invalid: return False
     return True
 
@@ -3551,9 +3551,9 @@ def open_buffer():
     @rtype: 
     """
     try:
-        import cStringIO as stringio
+        import io as stringio
     except ImportError:
-        import StringIO as stringio
+        import io as stringio
     return stringio.StringIO()
 
 def seek_till_newline(f):
@@ -3728,7 +3728,7 @@ def xml_from_dict_extended(dictionary):
     from xml.dom import minidom
     doc = minidom.Document()
     ugc = doc.createElement("entropy")
-    for key, value in dictionary.items():
+    for key, value in list(dictionary.items()):
         item = doc.createElement('item')
         item.setAttribute('value', key)
         if isinstance(value, str):
@@ -3824,7 +3824,7 @@ def xml_from_dict(dictionary):
     from xml.dom import minidom
     doc = minidom.Document()
     ugc = doc.createElement("entropy")
-    for key, value in dictionary.items():
+    for key, value in list(dictionary.items()):
         item = doc.createElement('item')
         item.setAttribute('value', key)
         item_value = doc.createTextNode(value)

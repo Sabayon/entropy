@@ -34,8 +34,8 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
         self.ADMIN_GROUPS = [7893, 7898]
         self.MODERATOR_GROUPS = [484]
         self.DEVELOPER_GROUPS = [7900]
-        self.USERNAME_LENGTH_RANGE = range(3,21)
-        self.PASSWORD_LENGTH_RANGE = range(6,31)
+        self.USERNAME_LENGTH_RANGE = list(range(3,21))
+        self.PASSWORD_LENGTH_RANGE = list(range(6,31))
         self.PRIVMSGS_NO_BOX = -3
         self.NOTIFY_EMAIL = 0
         self.FAKE_USERNAME = 'already_authed'
@@ -78,7 +78,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
         data = self.cursor.fetchone()
         if not data: return False
         if not isinstance(data,dict): return False
-        if not data.has_key('user_id'): return False
+        if 'user_id' not in data: return False
         return True
 
     def does_email_exist(self, email):
@@ -87,7 +87,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
         data = self.cursor.fetchone()
         if not data: return False
         if not isinstance(data,dict): return False
-        if not data.has_key('user_id'): return False
+        if 'user_id' not in data: return False
         return True
 
     def is_username_allowed(self, username):
@@ -96,7 +96,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
         data = self.cursor.fetchone()
         if not data: return True
         if not isinstance(data,dict): return True
-        if not data.has_key('disallow_id'): return True
+        if 'disallow_id' not in data: return True
         return False
 
     def validate_username_string(self, username, username_clean):
@@ -246,7 +246,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
         sql = self._generate_sql('insert', self.TABLE_PREFIX+'user_group', group_data)
         try:
             self.cursor.execute(sql)
-        except self.mysql_exceptions.IntegrityError, e:
+        except self.mysql_exceptions.IntegrityError as e:
             # for sure it's about duplicated entry
             return False, 1062
 
@@ -258,7 +258,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
         data = self.cursor.fetchone()
         gcolor = None
         if isinstance(data,dict):
-            if data.has_key('group_colour'):
+            if 'group_colour' in data:
                 gcolor = data['group_colour']
         if gcolor: self._set_config_value('newest_user_colour',gcolor)
 
@@ -269,9 +269,9 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
         self.check_connection()
         self.check_login_data()
 
-        if not self.login_data.has_key('username'):
+        if 'username' not in self.login_data:
             raise PermissionDenied('PermissionDenied: %s' % (_('no username specified'),))
-        elif not self.login_data.has_key('password'):
+        elif 'password' not in self.login_data:
             raise PermissionDenied('PermissionDenied: %s' % (_('no password specified'),))
 
         if not self.login_data['password']:
@@ -335,7 +335,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
         bday = self.cursor.fetchone()
         if not bday:
             return None
-        elif not bday.has_key('user_birthday'):
+        elif 'user_birthday' not in bday:
             return None
         return bday['user_birthday']
 
@@ -348,7 +348,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
         data = self.cursor.fetchone()
         if not data:
             return ''
-        elif not data.has_key('username_clean'):
+        elif 'username_clean' not in data:
             return ''
         return data['username_clean']
 
@@ -468,7 +468,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
         self.cursor.execute('SELECT group_id FROM '+self.TABLE_PREFIX+'users WHERE user_id = %s', (self.login_data['user_id'],))
         data = self.cursor.fetchone()
         if data:
-            if data.has_key('group_id'):
+            if 'group_id' in data:
                 return data['group_id']
 
         return -1
@@ -528,7 +528,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
         data = self.cursor.fetchone()
         if not data:
             return ''
-        elif not data.has_key('user_email'):
+        elif 'user_email' not in data:
             return ''
         return data['user_email']
 
@@ -567,7 +567,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
             sql = self._generate_sql("update",self.TABLE_PREFIX+'users', my_params, 'user_id = %s' % (self.login_data['user_id'],))
             self.cursor.execute(sql)
             return True, None
-        except Exception, e:
+        except Exception as e:
             return False, unicode(e)
 
 
@@ -579,7 +579,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
         self.cursor.execute('SELECT config_value FROM '+self.TABLE_PREFIX+'config WHERE config_name = %s',(config_name,))
         myconfig = self.cursor.fetchone()
         if isinstance(myconfig,dict):
-            if myconfig.has_key('config_value'):
+            if 'config_value' in myconfig:
                 return myconfig['config_value']
         return None
 

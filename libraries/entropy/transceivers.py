@@ -10,7 +10,7 @@
 
 """
 import os
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import time
 from entropy.const import etpConst
 from entropy.output import TextInterface, darkblue, darkred, purple, blue, \
@@ -69,7 +69,7 @@ class UrlFetcher:
         elif not hasattr(self.__Output,'updateProgress'):
             mytxt = _("Output interface passed doesn't have the updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-        elif not callable(self.__Output.updateProgress):
+        elif not hasattr(self.__Output.updateProgress, '__call__'):
             mytxt = _("Output interface passed doesn't have the updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
@@ -143,9 +143,9 @@ class UrlFetcher:
             urllib2._opener = None
 
     def __encode_url(self, url):
-        import urllib
+        import urllib.request, urllib.parse, urllib.error
         url = os.path.join(os.path.dirname(url),
-            urllib.quote(os.path.basename(url)))
+            urllib.parse.quote(os.path.basename(url)))
         return url
 
     def set_id(self, th_id):
@@ -164,7 +164,7 @@ class UrlFetcher:
 
         if self.__url.startswith("http://"):
             headers = { 'User-Agent' : self.user_agent }
-            req = urllib2.Request(self.__url, self.__extra_header_data, headers)
+            req = urllib.request.Request(self.__url, self.__extra_header_data, headers)
         else:
             req = self.__url
 
@@ -172,11 +172,11 @@ class UrlFetcher:
         while 1:
             # get file size if available
             try:
-                self.__remotefile = urllib2.urlopen(req)
+                self.__remotefile = urllib.request.urlopen(req)
             except KeyboardInterrupt:
                 self.__close(False)
                 raise
-            except urllib2.HTTPError, e:
+            except urllib.error.HTTPError as e:
                 if (e.code == 405) and not u_agent_error:
                     # server doesn't like our user agent
                     req = self.__url
@@ -208,7 +208,7 @@ class UrlFetcher:
                 and (self.__startingposition < self.__remotesize):
 
                 try:
-                    request = urllib2.Request(
+                    request = urllib.request.Request(
                         self.__url,
                         headers = {
                             "Range" : "bytes=" + \
@@ -227,7 +227,7 @@ class UrlFetcher:
                 return self.__prepare_return()
             else:
                 self.localfile = open(self.__path_to_save,"wb")
-            self.__remotefile = urllib2.urlopen(request)
+            self.__remotefile = urllib.request.urlopen(request)
         except KeyboardInterrupt:
             self.__close(False)
             raise
@@ -423,7 +423,7 @@ class MultipleUrlFetcher:
         elif not hasattr(self.__Output,'updateProgress'):
             mytxt = _("Output interface passed doesn't have the updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
-        elif not callable(self.__Output.updateProgress):
+        elif not hasattr(self.__Output.updateProgress, '__call__'):
             mytxt = _("Output interface passed doesn't have the updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
@@ -629,7 +629,7 @@ class FtpInterface:
         if not hasattr(OutputInterface,'updateProgress'):
             mytxt = _("OutputInterface does not have an updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
-        elif not callable(OutputInterface.updateProgress):
+        elif not hasattr(OutputInterface.updateProgress, '__call__'):
             mytxt = _("OutputInterface does not have an updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
 
@@ -652,9 +652,9 @@ class FtpInterface:
             try:
                 self.__ftpconn = self.ftplib.FTP(self.__ftphost)
                 break
-            except (self.socket.gaierror,), e:
+            except (self.socket.gaierror,) as e:
                 raise ConnectionError('ConnectionError: %s' % (e,))
-            except (self.socket.error,), e:
+            except (self.socket.error,) as e:
                 if not count:
                     raise ConnectionError('ConnectionError: %s' % (e,))
                 continue
@@ -672,7 +672,7 @@ class FtpInterface:
             )
         try:
             self.__ftpconn.login(self.__ftpuser,self.__ftppassword)
-        except self.ftplib.error_perm, e:
+        except self.ftplib.error_perm as e:
             raise FtpError('FtpError: %s' % (e,))
         if self.__verbose:
             mytxt = _("switching to")
@@ -747,7 +747,7 @@ class FtpInterface:
     def set_cwd(self, mydir, dodir = False):
         try:
             return self._set_cwd(mydir, dodir)
-        except self.ftplib.error_perm, e:
+        except self.ftplib.error_perm as e:
             raise FtpError('FtpError: %s' % (e,))
 
     def _set_cwd(self, mydir, dodir = False):
@@ -761,7 +761,7 @@ class FtpInterface:
             )
         try:
             self.__ftpconn.cwd(mydir)
-        except self.ftplib.error_perm, e:
+        except self.ftplib.error_perm as e:
             if e[0][:3] == '550' and dodir:
                 self.recursive_mkdir(mydir)
                 self.__ftpconn.cwd(mydir)
@@ -796,7 +796,7 @@ class FtpInterface:
     def delete_file(self,file):
         try:
             rc = self.__ftpconn.delete(file)
-        except self.ftplib.error_perm, e:
+        except self.ftplib.error_perm as e:
             if e[0][:3] == '550':
                 return True
             return False # not found
@@ -812,7 +812,7 @@ class FtpInterface:
             if not self.is_file_available(mycurpath):
                 try:
                     self.mkdir(mycurpath)
-                except self.ftplib.error_perm, e:
+                except self.ftplib.error_perm as e:
                     if e[0].lower().find("permission denied") != -1:
                         raise
                     elif e[0][:3] != '550':
@@ -874,7 +874,7 @@ class FtpInterface:
                     return True
                 return False
 
-            except Exception, e: # connection reset by peer
+            except Exception as e: # connection reset by peer
 
                 self.entropyTools.print_traceback()
                 mytxt = red("%s: %s, %s... #%s") % (
@@ -934,7 +934,7 @@ class FtpInterface:
                     return True
                 return False
 
-            except Exception, e: # connection reset by peer
+            except Exception as e: # connection reset by peer
 
                 self.entropyTools.print_traceback()
                 mytxt = red("%s: %s, %s... #%s") % (

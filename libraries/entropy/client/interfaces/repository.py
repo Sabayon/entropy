@@ -68,7 +68,7 @@ class Repository:
             raise MissingParameter("MissingParameter: %s" % (mytxt,))
 
         if not self.reponames:
-            self.reponames.extend(self.Entropy.SystemSettings['repositories']['available'].keys()[:])
+            self.reponames.extend(list(self.Entropy.SystemSettings['repositories']['available'].keys())[:])
 
     def __del__(self):
         if self.LockScanner != None:
@@ -152,7 +152,7 @@ class Repository:
 
         # create dir if it doesn't exist
         if not os.path.isdir(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']):
-            os.makedirs(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'],0775)
+            os.makedirs(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'],0o775)
 
         const_setup_perms(etpConst['etpdatabaseclientdir'],etpConst['entropygid'])
 
@@ -420,7 +420,7 @@ class Repository:
             os.remove(filepath)
         filepath_dir = os.path.dirname(filepath)
         if not os.path.isdir(filepath_dir) and not os.path.lexists(filepath_dir):
-            os.makedirs(filepath_dir,0775)
+            os.makedirs(filepath_dir,0o775)
             const_setup_perms(filepath_dir, etpConst['entropygid'])
 
         fetchConn = self.Entropy.urlFetcher(
@@ -562,9 +562,9 @@ class Repository:
             return False,False,False
         elif not isinstance(data,dict):
             return None,None,None
-        elif not data.has_key('added') or \
-            not data.has_key('removed') or \
-            not data.has_key('checksum'):
+        elif 'added' not in data or \
+            'removed' not in data or \
+            'checksum' not in data:
                 return None,None,None
         return data['added'],data['removed'],data['checksum']
 
@@ -719,7 +719,7 @@ class Repository:
                             pkgdata[idpackage],
                             ignore_exceptions = False
                         )
-                except (IOError,EOFError,OSError,), e:
+                except (IOError,EOFError,OSError,) as e:
                     mytxt = "%s: %s: %s." % (
                         blue(_("Local status")),
                         darkred("Error storing data"),
@@ -973,7 +973,7 @@ class Repository:
                     status = False
                     try:
                         status = self.handle_eapi3_database_sync(repo)
-                    except self.socket.error, e:
+                    except self.socket.error as e:
                         mytxt = "%s: %s" % (
                             blue(_("EAPI3 Service error")),
                             darkred(unicode(e)),
@@ -1097,7 +1097,7 @@ class Repository:
             if repo == def_repoid:
                 try:
                     self.run_config_files_updates(repo)
-                except Exception, e:
+                except Exception as e:
                     self.entropyTools.print_traceback()
                     mytxt = "%s: %s" % (
                         blue(_("Configuration files update error, not critical, continuing")),
@@ -1573,7 +1573,7 @@ class Repository:
         try:
             securityConn = self.Entropy.Security()
             securityConn.fetch_advisories()
-        except Exception, e:
+        except Exception as e:
             self.entropyTools.print_traceback(f = self.Entropy.clientLog)
             mytxt = "%s: %s" % (red(_("Advisories fetch error")),e,)
             self.Entropy.updateProgress(
@@ -1809,7 +1809,7 @@ class Repository:
             while 1:
                 tmpdir = os.path.join(os.path.dirname(mypath),"meta_unpack_%s" % (random.randint(1,10000),))
                 if not os.path.lexists(tmpdir): break
-            os.makedirs(tmpdir,0775)
+            os.makedirs(tmpdir,0o775)
 
             repo_dir = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']
             try:

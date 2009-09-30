@@ -87,7 +87,7 @@ def xpak_mem(mydata):
 	indexpos=0
 	dataglob=""
 	datapos=0
-	for x, newglob in mydata.iteritems():
+	for x, newglob in mydata.items():
 		mydatasize=len(newglob)
 		indexglob=indexglob+encodeint(len(x))+x+encodeint(datapos)+encodeint(mydatasize)
 		indexpos=indexpos+4+len(x)+4+4
@@ -159,7 +159,7 @@ def getboth(infile):
 def listindex(myindex):
 	"""Print to the terminal the filenames listed in the indexglob passed in."""
 	for x in getindex_mem(myindex):
-		print x
+		print(x)
 
 def getindex_mem(myindex):
 	"""Returns the filenames listed in the indexglob passed in."""
@@ -280,7 +280,7 @@ class tbz2:
 			# thus the above sanity check.
 			try:
 				shutil.rmtree(datadir)
-			except OSError, oe:
+			except OSError as oe:
 				if oe.errno == errno.ENOENT:
 					pass
 				else:

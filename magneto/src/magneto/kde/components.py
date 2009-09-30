@@ -30,7 +30,7 @@ class AppletIconPixbuf:
 
     def add_file(self, name, filename):
 
-        if not self.images.has_key(name):
+        if name not in self.images:
             self.images[name] = []
 
         filename = os.path.join(PIXMAPS_PATH, filename)

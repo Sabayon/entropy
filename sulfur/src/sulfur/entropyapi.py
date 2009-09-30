@@ -158,7 +158,7 @@ class QueueExecutor:
             Package.prepare(packageInfo,fetch_action,metaopts)
 
             myrepo = Package.pkgmeta['repository']
-            if not mykeys.has_key(myrepo):
+            if myrepo not in mykeys:
                 mykeys[myrepo] = set()
             mykeys[myrepo].add(self.Entropy.entropyTools.dep_getkey(
                 Package.pkgmeta['atom']))
@@ -213,7 +213,7 @@ class QueueExecutor:
             Package = self.Entropy.Package()
             Package.prepare((idpackage,),"remove", metaopts)
 
-            if not Package.pkgmeta.has_key('remove_installed_vanished'):
+            if 'remove_installed_vanished' not in Package.pkgmeta:
                 self.Entropy.updateProgress(
                     "Removing: "+Package.pkgmeta['removeatom'],
                     importance = 2,
@@ -327,23 +327,23 @@ class Equo(EquoInterface):
         if not back and hasattr(self, 'progress_log'):
 
             def update_gui():
-                if callable(self.progress_log):
+                if hasattr(self.progress_log, '__call__'):
                     self.progress_log(count_str+text)
                 return False
             gobject.timeout_add(0, update_gui)
 
         elif not back:
-            print count_str+text
+            print(count_str+text)
 
     def cycleDone(self):
         def update_gui():
-            self.progress.total.next()
+            next(self.progress.total)
             return False
         gobject.timeout_add(0, update_gui)
 
     def setTotalCycles(self, total):
         def update_gui():
-            self.progress.total.setup( range(total) )
+            self.progress.total.setup( list(range(total)) )
             return False
         gobject.timeout_add(0, update_gui)
 
