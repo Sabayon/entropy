@@ -716,11 +716,12 @@ class EntropyPackages:
 
         gp_call = self.get_package_item
         cdb_atomMatch = self.Entropy.clientDbconn.atomMatch
-        def fm(match):
+
+        def setup_item(match):
             try:
                 yp, new = gp_call(match)
             except RepositoryError:
-                return 0
+                return None
             key, slot = yp.keyslot
             installed_match = cdb_atomMatch(key, matchSlot = slot)
             if installed_match[0] != -1:
@@ -737,10 +738,17 @@ class EntropyPackages:
             # broken client db
             return []
 
-        # we need to cache these too on get_package_item
-        map(fm, spm_fine)
+        for match in spm_fine:
+            setup_item(match)
 
-        return [x for x in map(fm, updates) if type(x) is not int]
+        pkg_updates = []
+        for match in updates:
+            pkg = setup_item(match)
+            if pkg is None:
+                continue
+            pkg_updates.append(pkg)
+
+        return pkg_updates
 
     def _pkg_get_downgrade(self):
 

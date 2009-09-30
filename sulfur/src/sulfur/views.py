@@ -127,16 +127,14 @@ class DefaultPackageViewModelInjector(EntropyPackageViewModelInjector):
         categories = {}
         cat_descs = {}
 
-        def fm(po):
+        for po in packages:
             try:
                 mycat = po.cat
             except dbapi2.Error:
-                return 0
+                continue
             if not categories.has_key(mycat):
                 categories[mycat] = []
             categories[mycat].append(po)
-            return 0
-        map(fm,packages)
 
         cats = sorted(categories)
         orig_cat_desc = _("No description")
@@ -172,16 +170,14 @@ class NameSortPackageViewModelInjector(DefaultPackageViewModelInjector):
 
         categories = {}
 
-        def fm(po):
+        for po in packages:
             try:
                 myinitial = po.onlyname.lower()[0]
             except dbapi2.Error:
-                return 0
+                continue
             if not categories.has_key(myinitial):
                 categories[myinitial] = []
             categories[myinitial].append(po)
-            return 0
-        map(fm, packages)
 
         letters = sorted(categories, reverse = self.reverse)
         for letter in letters:
