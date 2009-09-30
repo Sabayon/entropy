@@ -8,10 +8,6 @@ all:
 
 clean:
 	for d in $(SUBDIRS); do make -C $$d clean; done
-	cd pylzma && $(PYTHON) setup.py clean --all
-
-pylzma:
-	cd pylzma && $(PYTHON) setup.py build
 
 entropy-install:
 
@@ -119,11 +115,6 @@ magneto-kde-install:
 sulfur-install:
 
 	make DESTDIR="$(DESTDIR)" -C sulfur install
-
-pylzma-install:
-
-	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/libraries/pylzma/
-	cd pylzma && $(PYTHON) setup.py install --root="$(DESTDIR)" --install-lib="$(LIBDIR)/entropy/libraries/pylzma/"
 
 pycompile-all:
 
