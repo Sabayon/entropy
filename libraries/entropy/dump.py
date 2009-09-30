@@ -25,10 +25,7 @@
 
 import os
 from entropy.const import etpConst, const_setup_perms, const_setup_file
-try:
-    import cPickle as pickle
-except ImportError:
-    import pickle
+import pickle
 
 D_EXT = etpConst['cachedumpext']
 D_DIR = etpConst['dumpstoragedir']
