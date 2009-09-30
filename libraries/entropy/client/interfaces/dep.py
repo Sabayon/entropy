@@ -9,7 +9,6 @@
     B{Entropy Package Manager Client Dependency handling Interface}.
 
 """
-from __future__ import with_statement
 from entropy.misc import Lifo
 from entropy.const import *
 from entropy.exceptions import *

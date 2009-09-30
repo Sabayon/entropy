@@ -9,7 +9,6 @@
     B{Entropy Package Manager Client Notice Board functions Interface}.
 
 """
-from __future__ import with_statement
 import os
 from entropy.misc import RSS
 from entropy.dump import loadobj as dump_loadobj, dumpobj as dump_dumpobj

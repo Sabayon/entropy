@@ -9,7 +9,6 @@
     B{Entropy transceiver module}.
 
 """
-from __future__ import with_statement
 import os
 import urllib2
 import time

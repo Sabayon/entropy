@@ -9,7 +9,6 @@
     B{Entropy Package Manager Client Package Interface}.
 
 """
-from __future__ import with_statement
 import os
 import errno
 import stat

@@ -10,7 +10,6 @@
 
 """
 
-from __future__ import with_statement
 import os
 from entropy.core import Singleton
 from entropy.exceptions import *

@@ -9,7 +9,6 @@
     B{Entropy Package Manager Server Mirrors Interfaces}.
 
 """
-from __future__ import with_statement
 import os
 import tempfile
 import shutil

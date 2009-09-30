@@ -9,7 +9,6 @@
     B{Entropy Package Manager Client Miscellaneous functions Interface}.
 
 """
-from __future__ import with_statement
 import os
 import stat
 import fcntl

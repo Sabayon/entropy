@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # Entropy miscellaneous tools module
-from __future__ import with_statement
 """
 
     @author: Fabio Erculiani <lxnay@sabayonlinux.org>

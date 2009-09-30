@@ -10,7 +10,6 @@
 
 """
 
-from __future__ import with_statement
 import subprocess
 import shutil
 from entropy.client.interfaces.client import Client

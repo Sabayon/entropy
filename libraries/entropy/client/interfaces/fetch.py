@@ -9,7 +9,6 @@
     B{Entropy Package Manager Client Packages retrieval Interface}.
 
 """
-from __future__ import with_statement
 import os
 from entropy.i18n import _
 from entropy.const import *

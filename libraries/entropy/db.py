@@ -34,7 +34,6 @@
 
 """
 
-from __future__ import with_statement
 import os
 import shutil
 from entropy.const import etpConst, etpCache, const_setup_file

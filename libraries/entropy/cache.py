@@ -16,7 +16,6 @@
 
 """
 
-from __future__ import with_statement
 from entropy.core import Singleton
 from entropy.misc import TimeScheduled, Lifo
 import time

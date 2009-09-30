@@ -9,7 +9,6 @@
     B{Entropy Package Manager Client Cache Interface}.
 
 """
-from __future__ import with_statement
 import os
 from entropy.const import *
 from entropy.exceptions import *

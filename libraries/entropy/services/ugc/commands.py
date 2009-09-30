@@ -10,7 +10,6 @@
 
 """
 
-from __future__ import with_statement
 import os
 import shutil
 from entropy.services.skel import SocketCommands

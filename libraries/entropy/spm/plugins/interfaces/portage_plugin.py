@@ -9,7 +9,6 @@
     B{Entropy Source Package Manager "Portage" Plugin}.
 
 """
-from __future__ import with_statement
 import os
 import bz2
 import sys

@@ -9,7 +9,6 @@
     B{Entropy Package Manager Client Instance Loaders Interface}.
 
 """
-from __future__ import with_statement
 from entropy.spm.plugins.factory import get_default_instance as get_spm, \
     get_default_class as get_spm_default_class
 from entropy.const import *

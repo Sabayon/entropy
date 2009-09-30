@@ -9,7 +9,6 @@
     B{Entropy Services System Management Interface}.
 
 """
-from __future__ import with_statement
 import time
 import os
 import random

@@ -9,7 +9,6 @@
     B{Entropy Client Services Base Interface}.
 
 """
-from __future__ import with_statement
 import time
 from entropy.exceptions import *
 from entropy.i18n import _

@@ -9,7 +9,6 @@
     B{Entropy Services System Management Executors Interface}.
 
 """
-from __future__ import with_statement
 import os
 import sys
 import subprocess

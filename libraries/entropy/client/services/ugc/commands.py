@@ -10,7 +10,6 @@
 
 """
 
-from __future__ import with_statement
 import os
 from entropy.exceptions import *
 from entropy.const import etpConst

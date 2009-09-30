@@ -17,7 +17,6 @@
     ONLY mimics a I{dict} AND it's not a subclass of it.
 
 """
-from __future__ import with_statement
 import os
 import sys
 from threading import RLock

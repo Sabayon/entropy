@@ -9,7 +9,6 @@
     B{Entropy Client Services Base Mixin Interfaces}.
 
 """
-from __future__ import with_statement
 from entropy.i18n import _
 
 class BaseMixin:

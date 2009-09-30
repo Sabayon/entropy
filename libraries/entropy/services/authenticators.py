@@ -10,7 +10,6 @@
 
 """
 
-from __future__ import with_statement
 
 from entropy.services.skel import Authenticator
 from entropy.services.auth_interfaces import phpBB3Auth
