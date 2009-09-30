@@ -580,14 +580,14 @@ def print_info(msg, back = False, flush = True):
     writechar("\r")
     if back:
         try:
-            sys.stdout.write(darkred(">>") + " " + msg)
+            sys.stdout.write(darkgreen(">>") + " " + msg)
         except UnicodeEncodeError:
-            sys.stdout.write(darkred(">>") + " " + msg.encode('utf-8'))
+            sys.stdout.write(darkgreen(">>") + " " + msg.encode('utf-8'))
     else:
         try:
-            sys.stdout.write(darkred(">>") + " " + msg + "\n")
+            sys.stdout.write(darkgreen(">>") + " " + msg + "\n")
         except UnicodeEncodeError:
-            sys.stdout.write(darkred(">>") + " " + msg.encode('utf-8') + "\n")
+            sys.stdout.write(darkgreen(">>") + " " + msg.encode('utf-8') + "\n")
     if flush:
         _flush_stdouterr()
 

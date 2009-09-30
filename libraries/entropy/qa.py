@@ -1043,9 +1043,13 @@ class ErrorReportInterface:
         @type post_url: string
         """
         from entropy.misc import MultipartPostHandler
-        import urllib.request, urllib.error, urllib.parse
+        if sys.hexversion >= 0x3000000:
+            import urllib.request as urlmod
+        else:
+            import urllib2 as urlmod
+
         self.url = post_url
-        self.opener = urllib.request.build_opener(MultipartPostHandler)
+        self.opener = urlmod.build_opener(MultipartPostHandler)
         self.generated = False
         self.params = {}
 
@@ -1059,10 +1063,10 @@ class ErrorReportInterface:
         if mydict:
             mydict['username'] = proxy_settings['username']
             mydict['password'] = proxy_settings['password']
-            self.entropyTools.add_proxy_opener(urllib2, mydict)
+            self.entropyTools.add_proxy_opener(urlmod, mydict)
         else:
             # unset
-            urllib2._opener = None
+            urlmod._opener = None
 
     def prepare(self, tb_text, name, email, report_data = "", description = ""):
 
@@ -1084,8 +1088,6 @@ class ErrorReportInterface:
         @return: None
         @rtype: None
         """
-
-        import sys
         from entropy.tools import getstatusoutput
         self.params['arch'] = etpConst['currentarch']
         self.params['stacktrace'] = tb_text

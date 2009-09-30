@@ -15,7 +15,12 @@
 import os
 import sys
 import time
-import urllib.request, urllib.error, urllib.parse
+if sys.hexversion >= 0x3000000:
+    import urllib.request, urllib.error, urllib.parse
+    UrllibBaseHandler = urllib.request.BaseHandler
+else:
+    import urllib2
+    UrllibBaseHandler = urllib2.BaseHandler
 import threading
 from entropy.const import etpConst, etpUi
 from entropy.core.settings.base import SystemSettings
@@ -1129,13 +1134,17 @@ class Callable:
         """
         self.__call__ = anycallable
 
-class MultipartPostHandler(urllib.request.BaseHandler):
+class MultipartPostHandler(UrllibBaseHandler):
 
     """
     Custom urllib2 opener used in the Entropy codebase.
     """
 
-    handler_order = urllib.request.HTTPHandler.handler_order - 10 # needs to run first
+    # needs to run first
+    if sys.hexversion >= 0x3000000:
+        handler_order = urllib.request.HTTPHandler.handler_order - 10
+    else:
+        handler_order = urllib2.HTTPHandler.handler_order - 10
 
     def __init__(self):
         """
@@ -1151,7 +1160,6 @@ class MultipartPostHandler(urllib.request.BaseHandler):
         @param request: urllib2 HTTP request object
         """
 
-        import urllib.request, urllib.parse, urllib.error
         doseq = 1
 
         data = request.get_data()
@@ -1169,7 +1177,11 @@ class MultipartPostHandler(urllib.request.BaseHandler):
                         " or mapping object")
 
             if len(v_files) == 0:
-                data = urllib.parse.urlencode(v_vars, doseq)
+                if sys.hexversion >= 0x3000000:
+                    data = urllib.parse.urlencode(v_vars, doseq)
+                else:
+                    import urllib
+                    data = urllib.urlencode(v_vars, doseq)
             else:
                 boundary, data = self.multipart_encode(v_vars, v_files)
                 contenttype = 'multipart/form-data; boundary=%s' % boundary

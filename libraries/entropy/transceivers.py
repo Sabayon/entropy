@@ -10,7 +10,15 @@
 
 """
 import os
-import urllib.request, urllib.error, urllib.parse
+import sys
+
+if sys.hexversion >= 0x3000000:
+    import urllib.request as urlmod
+    import urllib.error as urlmod_error
+else:
+    import urllib2 as urlmod
+    import urllib2 as urlmod_error
+
 import time
 from entropy.const import etpConst
 from entropy.output import TextInterface, darkblue, darkred, purple, blue, \
@@ -137,15 +145,18 @@ class UrlFetcher:
         if mydict:
             mydict['username'] = proxy_data['username']
             mydict['password'] = proxy_data['password']
-            self.entropyTools.add_proxy_opener(urllib2, mydict)
+            self.entropyTools.add_proxy_opener(urlmod, mydict)
         else:
             # unset
-            urllib2._opener = None
+            urlmod._opener = None
 
     def __encode_url(self, url):
-        import urllib.request, urllib.parse, urllib.error
+        if sys.hexversion >= 0x3000000:
+            import urllib.parse as encurl
+        else:
+            import urllib as encurl
         url = os.path.join(os.path.dirname(url),
-            urllib.parse.quote(os.path.basename(url)))
+            encurl.quote(os.path.basename(url)))
         return url
 
     def set_id(self, th_id):
@@ -164,7 +175,7 @@ class UrlFetcher:
 
         if self.__url.startswith("http://"):
             headers = { 'User-Agent' : self.user_agent }
-            req = urllib.request.Request(self.__url, self.__extra_header_data, headers)
+            req = urlmod.Request(self.__url, self.__extra_header_data, headers)
         else:
             req = self.__url
 
@@ -172,11 +183,11 @@ class UrlFetcher:
         while 1:
             # get file size if available
             try:
-                self.__remotefile = urllib.request.urlopen(req)
+                self.__remotefile = urlmod.urlopen(req)
             except KeyboardInterrupt:
                 self.__close(False)
                 raise
-            except urllib.error.HTTPError as e:
+            except urlmod_error.HTTPError as e:
                 if (e.code == 405) and not u_agent_error:
                     # server doesn't like our user agent
                     req = self.__url
@@ -208,7 +219,7 @@ class UrlFetcher:
                 and (self.__startingposition < self.__remotesize):
 
                 try:
-                    request = urllib.request.Request(
+                    request = urlmod.Request(
                         self.__url,
                         headers = {
                             "Range" : "bytes=" + \
@@ -227,7 +238,7 @@ class UrlFetcher:
                 return self.__prepare_return()
             else:
                 self.localfile = open(self.__path_to_save,"wb")
-            self.__remotefile = urllib.request.urlopen(request)
+            self.__remotefile = urlmod.urlopen(request)
         except KeyboardInterrupt:
             self.__close(False)
             raise

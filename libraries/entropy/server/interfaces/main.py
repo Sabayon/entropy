@@ -3268,7 +3268,13 @@ class Server(Singleton, TextInterface):
 
     def get_remote_package_checksum(self, repo, filename, branch):
 
-        import urllib.request, urllib.error, urllib.parse
+        if sys.hexversion >= 0x3000000:
+            import urllib.request as urlmod
+            import urllib.error as urlmod_error
+        else:
+            import urllib2 as urlmod
+            import urllib2 as urlmod_error
+
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         if 'handler' not in srv_set['repositories'][repo]:
             return None
@@ -3291,16 +3297,17 @@ class Server(Singleton, TextInterface):
             if mydict:
                 mydict['username'] = proxy_settings['username']
                 mydict['password'] = proxy_settings['password']
-                self.entropyTools.add_proxy_opener(urllib2, mydict)
+                self.entropyTools.add_proxy_opener(urlmod, mydict)
             else:
                 # unset
-                urllib2._opener = None
-            item = urllib.request.urlopen(request)
+                urlmod._opener = None
+            item = urlmod.urlopen(request)
             result = item.readline().strip()
             item.close()
             del item
             return result
-        except (urllib.error.URLError, urllib.error.HTTPError,): # no HTTP support?
+        except (urlmod_error.URLError, urlmod_error.HTTPError,):
+            # no HTTP support?
             return None
 
     def verify_remote_packages(self, packages, ask = True, repo = None):

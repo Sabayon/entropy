@@ -214,7 +214,7 @@ def print_exception(returndata = False):
 # @returns False: if the file is not found
 def get_remote_data(url, timeout = 5):
     """
-    Fetch data at given URL (all the ones supported by Python urllib2) and
+    Fetch data at given URL (all the ones supported by Python urllib) and
     return it.
 
     @param url: URL string
@@ -226,9 +226,9 @@ def get_remote_data(url, timeout = 5):
     """
     import socket
     if sys.hexversion >= 0x3000000:
-        import urllib.request as urllib_request
+        import urllib.request as urlmod
     else:
-        import urllib2
+        import urllib2 as urlmod
 
     # now pray the server
     from entropy.core.settings.base import SystemSettings
@@ -243,22 +243,13 @@ def get_remote_data(url, timeout = 5):
     if mydict:
         mydict['username'] = proxy_settings['username']
         mydict['password'] = proxy_settings['password']
-        if sys.hexversion >= 0x3000000:
-            add_proxy_opener(urllib_request, mydict)
-        else:
-            add_proxy_opener(urllib2, mydict)
+        add_proxy_opener(urlmod, mydict)
     else:
-        if sys.hexversion >= 0x3000000:
-            urllib_request._opener = None
-        else:
-            # unset
-            urllib2._opener = None
+        # unset
+        urlmod._opener = None
 
     try:
-        if sys.hexversion >= 0x3000000:
-            item = urllib.request.urlopen(url, timeout = timeout)
-        else:
-            item = urllib2.urlopen(url)
+        item = urlmod.urlopen(url, timeout = timeout)
 
         result = item.readlines()
         item.close()
@@ -331,9 +322,9 @@ def is_april_first():
 
 def add_proxy_opener(module, data):
     """
-    Add proxy opener to urllib2 module.
+    Add proxy opener to urllib module.
 
-    @param module: urllib2 module
+    @param module: urllib module
     @type module: Python module
     @param data: proxy settings
     @type data: dict
@@ -2802,8 +2793,11 @@ def spliturl(url):
     @return: 
     @rtype: 
     """
-    import urllib.parse
-    return urllib.parse.urlsplit(url)
+    if sys.hexversion >= 0x3000000:
+        import urllib.parse as urlmod
+    else:
+        import urlparse as urlmod
+    return urlmod.urlsplit(url)
 
 def compress_tar_bz2(storepath, pathtocompress):
     """
