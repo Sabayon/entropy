@@ -10,7 +10,6 @@
     This module contains Entropy (user) Output classes and routines.
 
 """
-
 import sys, os
 import curses
 from entropy.const import etpUi
@@ -496,9 +495,9 @@ def print_menu(data, args = None):
                 myfunc = darkblue
                 myfunc_desc = purple
             try:
-                print(myfunc(name), end=' ')
+                sys.stdout.write(myfunc(name))
             except UnicodeEncodeError:
-                print(myfunc(name.encode('utf-8')), end=' ')
+                    sys.stdout.write(myfunc(name.encode('utf-8')))
 
             # write desc
             if desc:
@@ -506,9 +505,9 @@ def print_menu(data, args = None):
                     n_d_ident -= 1
                     writechar("\t")
                 try:
-                    print(myfunc_desc(desc), end=' ')
+                    sys.stdout.write(myfunc_desc(desc))
                 except UnicodeEncodeError:
-                    print(myfunc_desc(desc.encode('utf-8')), end=' ')
+                    sys.stdout.write(myfunc_desc(desc.encode('utf-8')))
             writechar("\n")
 
 def reset_cursor():
@@ -547,14 +546,14 @@ def print_error(msg, back = False, flush = True):
     writechar("\r")
     if back:
         try:
-            print(darkred(">>"),msg, end=' ')
+            sys.stdout.write(darkred(">>") + " " + msg)
         except UnicodeEncodeError:
-            print(darkred(">>"),msg.encode('utf-8'), end=' ')
+            sys.stdout.write(darkred(">>") + " " + msg.encode('utf-8'))
     else:
         try:
-            print(darkred(">>"),msg)
+            sys.stdout.write(darkred(">>") + " " + msg + "\n")
         except UnicodeEncodeError:
-            print(darkred(">>"),msg.encode('utf-8'))
+            sys.stdout.write(darkred(">>") + " " + msg.encode('utf-8') + "\n")
     if flush:
         _flush_stdouterr()
 
@@ -581,14 +580,14 @@ def print_info(msg, back = False, flush = True):
     writechar("\r")
     if back:
         try:
-            print(darkgreen(">>"),msg, end=' ')
+            sys.stdout.write(darkred(">>") + " " + msg)
         except UnicodeEncodeError:
-            print(darkgreen(">>"),msg.encode('utf-8'), end=' ')
+            sys.stdout.write(darkred(">>") + " " + msg.encode('utf-8'))
     else:
         try:
-            print(darkgreen(">>"),msg)
+            sys.stdout.write(darkred(">>") + " " + msg + "\n")
         except UnicodeEncodeError:
-            print(darkgreen(">>"),msg.encode('utf-8'))
+            sys.stdout.write(darkred(">>") + " " + msg.encode('utf-8') + "\n")
     if flush:
         _flush_stdouterr()
 
@@ -615,18 +614,18 @@ def print_warning(msg, back = False, flush = True):
     writechar("\r")
     if back:
         try:
-            print(red(">>"),msg, end=' ')
+            sys.stdout.write(red(">>") + " " + msg)
         except UnicodeEncodeError:
-            print(red(">>"),msg.encode('utf-8'), end=' ')
+            sys.stdout.write(red(">>") + " " + msg.encode('utf-8'))
     else:
         try:
-            print(red(">>"),msg)
+            sys.stdout.write(red(">>") + " " + msg + "\n")
         except UnicodeEncodeError:
-            print(red(">>"),msg.encode('utf-8'))
+            sys.stdout.write(red(">>") + " " + msg.encode('utf-8') + "\n")
     if flush:
         _flush_stdouterr()
 
-def print_generic(msg):
+def print_generic(*args):
     """
     Service function used by Entropy text client (will be moved from here)
     to write generic messages to stdout (not stderr, atm).
@@ -641,10 +640,11 @@ def print_generic(msg):
         return
     # disabled, because it causes quite a mess when writing to files
     # writechar("\r")
-    try:
-        print(msg)
-    except UnicodeEncodeError:
-        print(msg.encode('utf-8'))
+    for msg in args:
+        try:
+            print(msg)
+        except UnicodeEncodeError:
+            print(msg.encode('utf-8'))
     _flush_stdouterr()
 
 def writechar(chars):
@@ -684,9 +684,9 @@ def readtext(request, password = False):
             text = getpass(request.encode('utf-8')+" ")
     else:
         try:
-            print(request,"", end=' ')
+            sys.stdout.write(request)
         except UnicodeEncodeError:
-            print(request.encode('utf-8'),"", end=' ')
+            sys.stdout.write(request.encode('utf-8'))
         _flush_stdouterr()
         text = _my_raw_input()
     return text
@@ -694,9 +694,9 @@ def readtext(request, password = False):
 def _my_raw_input(txt = ''):
     if txt:
         try:
-            print(darkgreen(txt), end=' ')
+            sys.stdout.write(darkgreen(txt))
         except UnicodeEncodeError:
-            print(darkgreen(txt.encode('utf-8')), end=' ')
+            sys.stdout.write(darkgreen(txt.encode('utf-8')))
     _flush_stdouterr()
     response = ''
     while 1:
@@ -803,9 +803,9 @@ class TextInterface:
         colours_len = len(colours)
 
         try:
-            print(darkgreen(question), end=' ')
+            sys.stdout.write(darkgreen(question))
         except UnicodeEncodeError:
-            print(darkgreen(question.encode('utf-8')), end=' ')
+            sys.stdout.write(darkgreen(question.encode('utf-8')))
         _flush_stdouterr()
 
         try:

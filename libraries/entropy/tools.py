@@ -25,7 +25,8 @@ import grp
 import pwd
 import hashlib
 import random
-from entropy.output import TextInterface, print_info, red, darkgreen, green
+from entropy.output import TextInterface, print_info, print_generic, red, \
+    darkgreen, green
 from entropy.const import etpConst, const_kill_threads, const_islive
 from entropy.exceptions import FileNotFound, InvalidAtom, InvalidDataType, \
     DirectoryNotFound
@@ -185,8 +186,8 @@ def print_exception(returndata = False):
     #if not returndata: print
     for frame in stack:
         if not returndata:
-            print()
-            print("Frame %s in %s at line %s" % (frame.f_code.co_name,
+            sys.stdout.write("\n")
+            print_generic("Frame %s in %s at line %s" % (frame.f_code.co_name,
                                              frame.f_code.co_filename,
                                              frame.f_lineno))
         else:
@@ -195,16 +196,17 @@ def print_exception(returndata = False):
                                              frame.f_lineno))
         for key, value in list(frame.f_locals.items()):
             if not returndata:
-                print("\t%20s = " % key, end=' ')
+                sys.stdout.write("\t%20s = " % key)
             else:
                 data.append("\t%20s = " % key,)
             try:
                 if not returndata:
-                    print(value)
+                    sys.stdout.write(value)
                 else:
                     data.append(value)
             except:
-                if not returndata: print("<ERROR WHILE PRINTING VALUE>")
+                if not returndata:
+                    sys.stdout.write("<ERROR WHILE PRINTING VALUE>")
     return data
 
 # Get the content of an online page
@@ -539,9 +541,9 @@ def movefile(src, dest, src_basedir = None):
         except SystemExit:
             raise
         except Exception as e:
-            print("!!! failed to properly create symlink:")
-            print("!!!", dest, "->", target)
-            print("!!!", e)
+            print_generic("!!! failed to properly create symlink:")
+            print_generic("!!!", dest, "->", target)
+            print_generic("!!!", e)
             return False
 
     renamefailed = True
@@ -552,8 +554,8 @@ def movefile(src, dest, src_basedir = None):
         except Exception as e:
             if e[0] != errno.EXDEV:
                 # Some random error.
-                print("!!! Failed to move", src, "to", dest)
-                print("!!!", e)
+                print_generic("!!! Failed to move", src, "to", dest)
+                print_generic("!!!", e)
                 return False
             # Invalid cross-device-link 'bind' mounted or actually Cross-Device
 
@@ -571,16 +573,16 @@ def movefile(src, dest, src_basedir = None):
             except SystemExit as e:
                 raise
             except Exception as e:
-                print('!!! copy', src, '->', dest, 'failed.')
-                print("!!!", e)
+                print_generic('!!! copy', src, '->', dest, 'failed.')
+                print_generic("!!!", e)
                 return False
         else:
             #we don't yet handle special, so we need to fall back to /bin/mv
             a = getstatusoutput("mv -f '%s' '%s'" % (src, dest,))
             if a[0] != 0:
-                print("!!! Failed to move special file:")
-                print("!!! '" + src + "' to '" + dest + "'")
-                print("!!!", a)
+                print_generic("!!! Failed to move special file:")
+                print_generic("!!! '" + src + "' to '" + dest + "'")
+                print_generic("!!!", a)
                 return False
         try:
             if didcopy:
@@ -593,9 +595,9 @@ def movefile(src, dest, src_basedir = None):
         except SystemExit as e:
             raise
         except Exception as e:
-            print("!!! Failed to chown/chmod/unlink in movefile()")
-            print("!!!", dest)
-            print("!!!", e)
+            print_generic("!!! Failed to chown/chmod/unlink in movefile()")
+            print_generic("!!!", dest)
+            print_generic("!!!", e)
             return False
 
     try:
@@ -607,9 +609,9 @@ def movefile(src, dest, src_basedir = None):
             long(os.stat(dest).st_mtime)
             return True
         except OSError as e:
-            print("!!! Failed to stat in movefile()\n")
-            print("!!! %s\n" % dest)
-            print("!!! %s\n" % str(e))
+            print_generic("!!! Failed to stat in movefile()\n")
+            print_generic("!!! %s\n" % dest)
+            print_generic("!!! %s\n" % str(e))
             return False
 
     return True
@@ -694,14 +696,11 @@ def countdown(secs = 5, what = "Counting...", back = False):
     if secs:
         if back:
             try:
-                print(red(">>"), what, end=' ')
+                print_generic(red(">>") + " " + what)
             except UnicodeEncodeError:
-                print(red(">>"), what.encode('utf-8'), end=' ')
+                print_generic(red(">>") + " " + what.encode('utf-8'))
         else:
-            try:
-                print(what)
-            except UnicodeEncodeError:
-                print(what.encode('utf-8'))
+            print_generic(what)
         for i in range(secs)[::-1]:
             sys.stdout.write(red(str(i+1)+" "))
             sys.stdout.flush()
@@ -1760,7 +1759,7 @@ def ververify(myverx, silent = 1):
         return 1
     else:
         if not silent:
-            print("!!! syntax error in version: %s" % myver)
+            print_generic("!!! syntax error in version: %s" % myver)
         return 0
 
 
@@ -1982,12 +1981,12 @@ def pkgsplit(mypkg, silent=1):
 
     if len(myparts) < 2:
         if not silent:
-            print("!!! Name error in", mypkg+": missing a version or name part.")
+            print_generic("!!! Name error in", mypkg+": missing a version or name part.")
             return None
     for x in myparts:
         if len(x) == 0:
             if not silent:
-                print("!!! Name error in", mypkg+": empty \"-\" part.")
+                print_generic("!!! Name error in", mypkg+": empty \"-\" part.")
                 return None
 
     #verify rev
