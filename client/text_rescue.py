@@ -756,7 +756,6 @@ def getinfo(dict = False):
     if (dict):
         return info
 
-    import types
     keys = list(info.keys())
     keys.sort()
     for x in keys:
