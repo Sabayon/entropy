@@ -866,6 +866,14 @@ class RepositoryMixin:
                 os.path.isfile(branch_upg_script):
                 branch_upg_md5sum = self.entropyTools.md5sum(branch_upg_script)
 
+            if branch_upg_md5sum == '0':
+                # script not found, skip completely
+                const_debug_write(__name__,
+                    "run_repository_post_branch_upgrade_hooks: %s: %s" % (
+                        repoid, "branch upgrade script not avail",)
+                )
+                continue
+
             const_debug_write(__name__,
                 "run_repository_post_branch_upgrade_hooks: script md5: %s" % (
                     branch_upg_md5sum,)
