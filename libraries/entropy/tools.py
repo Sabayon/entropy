@@ -608,7 +608,7 @@ def movefile(src, dest, src_basedir = None):
         # The utime can fail here with EPERM even though the move succeeded.
         # Instead of failing, use stat to return the mtime if possible.
         try:
-            long(os.stat(dest).st_mtime)
+            int(os.stat(dest).st_mtime)
             return True
         except OSError as e:
             print_generic("!!! Failed to stat in movefile()\n")
@@ -2622,7 +2622,11 @@ def isnumber(x):
     @return: 
     @rtype: 
     """
-    return isinstance(x, (long, int))
+    try:
+        int(x)
+        return True
+    except ValueError:
+        return False
 
 
 def istextfile(filename, blocksize = 512):
@@ -3515,7 +3519,7 @@ def is_valid_string(string):
     @return: 
     @rtype: 
     """
-    invalid = [ord(x) for x in string if ord(x) not in range(32, 127)]
+    invalid = [ord(x) for x in string if ord(x) not in list(range(32, 127))]
     if invalid: return False
     return True
 

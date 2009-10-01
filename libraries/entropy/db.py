@@ -1500,7 +1500,7 @@ class EntropyRepository:
         )
 
         myidpackage_string = 'NULL'
-        if isinstance(idpackage, (int, long)):
+        if isinstance(idpackage, (int,)):
 
             manual_deps = self.retrieveManualDependencies(idpackage)
 
@@ -4513,7 +4513,7 @@ class EntropyRepository:
         excluded_deptypes_query = ""
         if exclude_deptypes != None:
             for dep_type in exclude_deptypes:
-                if not isinstance(dep_type, (int, long)):
+                if not isinstance(dep_type, (int,)):
                     # filter out crap
                     continue
                 excluded_deptypes_query += " AND dependencies.type != %s" % (
@@ -8376,7 +8376,7 @@ class EntropyRepository:
             atomUse = ()
         atomSlot = self.entropyTools.dep_getslot(atom)
         atomRev = self.entropyTools.dep_get_entropy_revision(atom)
-        if isinstance(atomRev, (int, long)):
+        if isinstance(atomRev, (int,)):
             if atomRev < 0: atomRev = None
 
         # use match

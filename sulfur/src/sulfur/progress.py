@@ -80,7 +80,7 @@ class _Total:
             return
         self.gtk_loop()
         self.lastFrac = now+0.01
-        percent = long(self._percent(1, now))
+        percent = int(self._percent(1, now))
         self.progress.set_fraction(now)
         if prefix:
             text = "%s : %3i%%" % (prefix, percent)

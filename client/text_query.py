@@ -251,7 +251,7 @@ def search_changelog(atoms, dbconn = None, Equo = None):
             print_generic(_("No ChangeLog available"))
         else:
             print_generic(changelog)
-        print("="*80)
+        print_generic("="*80)
 
     return 0
 

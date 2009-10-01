@@ -737,45 +737,46 @@ def main():
 
     except OnlineMirrorError as e:
 
-        print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
+        print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
         raise SystemExit(101)
 
     except RepositoryError as e:
 
         reset_cache()
-        print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
+        print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
         raise SystemExit(101)
 
     except FtpError as e:
 
-        print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
+        print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
         raise SystemExit(101)
 
     except PermissionDenied as e:
 
-        print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
+        print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
         raise SystemExit(1)
 
     except FileNotFound as e:
 
-        print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
+        print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
         raise SystemExit(1)
 
     except SPMError as e:
 
-        print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
+        print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
         raise SystemExit(1)
 
     except dbapi2Exceptions['OperationalError'] as e:
 
-        if unicode(e).find("disk I/O error") == -1:
+        if str(e).find("disk I/O error") == -1:
             raise
-        print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue. Your hard disk is probably faulty."),) ))
+        print_error("%s %s. %s." % (darkred(" * "), e,
+            _("Cannot continue. Your hard disk is probably faulty."),))
         raise SystemExit(101)
 
     except SystemError as e: # becoming from entropy.db
 
-        print_error(darkred(" * ")+red(unicode(e)+". %s." % (_("Cannot continue"),) ))
+        print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
         raise SystemExit(1)
 
     except SystemExit:
@@ -791,7 +792,8 @@ def main():
 
         if e.errno == 28:
             entropyTools.print_exception()
-            print_error(darkred(_("Your hard drive is full! Next time remember to have a look at it before starting. I'm sorry, there's nothing I can do for you. It's your fault :-(")))
+            print_error("%s %s. %s." % (darkred(" * "), e,
+                _("Your hard drive is full! Next time remember to have a look at it before starting. I'm sorry, there's nothing I can do for you. It's your fault :-("),))
             raise SystemExit(5)
         else:
             raise
@@ -828,7 +830,7 @@ def main():
             ferror = open("/tmp/equoerror.txt","aw")
             ferror.write("\n\n")
             for x in exception_data:
-                ferror.write(unicode(x)+"\n")
+                ferror.write("%s\n" % (e,))
             ferror.flush()
             ferror.close()
         except Exception as e:
@@ -859,7 +861,7 @@ def main():
                 "/sabayonlinux.org/handlers/http_error_report.php"
             error = ErrorReportInterface(post_url)
 
-        error.prepare(errorText, name, email, '\n'.join([unicode(x) for x in exception_data]), description)
+        error.prepare(errorText, name, email, '\n'.join([x for x in exception_data]), description)
         result = error.submit()
         if result:
             print_error(darkgreen(_("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible.")))
