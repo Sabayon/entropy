@@ -1294,6 +1294,51 @@ class CalculatorsMixin:
 
         return client_atoms
 
+    def __deptree_prioritize_systempkgs(self, deptree):
+
+
+        conflicts_key = 0
+        # save list of conflicts, actually at key 0
+        conflicts = deptree.get(conflicts_key, set()).copy()
+
+        system_tree = {}
+        normal_tree = {}
+        system_pkgs_cache = {}
+
+
+        for deplevel in deptree:
+
+            if deplevel == conflicts_key: # skip conflicts
+                continue
+
+            for idpackage, repoid in deptree[deplevel]:
+
+                if repoid not in system_pkgs_cache:
+                    repodb = self.open_repository(repoid)
+                    system_pkgs_cache[repoid] = repodb.getSystemPackages()
+
+                if idpackage in system_pkgs_cache[repoid]:
+                    obj = system_tree.setdefault(deplevel, set())
+                    obj.add((idpackage, repoid,))
+                else:
+                    obj = normal_tree.setdefault(deplevel, set())
+                    obj.add((idpackage, repoid,))
+
+        # now create new deptree
+        # system_tree is used because it's already half ready
+        # it just needs entries from normal tree
+        min_deplevel = max(system_tree)
+
+        for deplevel in normal_tree:
+
+            # start from the next available
+            min_deplevel += 1
+            system_tree[min_deplevel] = normal_tree[deplevel]
+
+        # add conflicts back
+        system_tree[conflicts_key] = conflicts
+
+        return system_tree
 
     def get_required_packages(self, matched_atoms, empty_deps = False, deep_deps = False, quiet = False):
 
@@ -1310,7 +1355,8 @@ class CalculatorsMixin:
         )),)
         if self.xcache:
             cached = self.Cacher.pop(c_hash)
-            if cached != None: return cached
+            if cached is not None:
+                return cached
 
         deptree = {}
         deptree[0] = set()
@@ -1343,7 +1389,8 @@ class CalculatorsMixin:
                         back = True, header = ":: ", footer = " ::",
                         percent = True, count = (count,atomlen))
 
-            if matched_atom in matchfilter: continue
+            if matched_atom in matchfilter:
+                continue
             newtree, result = self.generate_dependency_tree(
                 matched_atom, empty_deps, deep_deps,
                 matchfilter = matchfilter, filter_unsat_cache = filter_unsat_cache, treecache = treecache,
@@ -1357,7 +1404,7 @@ class CalculatorsMixin:
             if result == -2: # deps not found
                 error_generated = -2
                 error_tree |= set(newtree) # it is a list, we convert it into set and update error_tree
-            elif (result != 0):
+            elif result != 0:
                 return newtree, result
             elif newtree:
                 # add conflicts
@@ -1369,12 +1416,15 @@ class CalculatorsMixin:
                     deptree[max_parent_key+levelcount] = newtree.get(mylevel)
 
         if error_generated != 0:
-            return error_tree,error_generated
+            return error_tree, error_generated
+
+        # now we need to move system packages at the top
+        deptree = self.__deptree_prioritize_systempkgs(deptree)
 
         if self.xcache:
-            self.Cacher.push(c_hash,(deptree,0))
+            self.Cacher.push(c_hash,(deptree, 0))
 
-        return deptree,0
+        return deptree, 0
 
     def _filter_depends_multimatched_atoms(self, idpackage, depends, monotree):
         remove_depends = set()
