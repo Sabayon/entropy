@@ -9,7 +9,7 @@
     B{Entropy Package Manager Server Main Interfaces}.
 
 """
-
+import sys
 import os
 import shutil
 from entropy.core import Singleton
