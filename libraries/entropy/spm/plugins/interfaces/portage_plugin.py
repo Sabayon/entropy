@@ -140,6 +140,8 @@ class PortagePlugin(SpmPlugin):
     ENV_FILE_COMP = "environment.bz2"
     EBUILD_EXT = ".ebuild"
 
+    sys.path.append("/usr/lib/gentoolkit/pym")
+
     class paren_normalize(list):
         """Take a dependency structure as returned by paren_reduce or use_reduce
         and generate an equivalent structure that has no redundant lists."""
@@ -187,7 +189,6 @@ class PortagePlugin(SpmPlugin):
         # interface only needed OutputInterface functions
         self.updateProgress = OutputInterface.updateProgress
         self.askQuestion = OutputInterface.askQuestion
-        sys.path.append("/usr/lib/gentoolkit/pym")
 
         # importing portage stuff
         import portage
