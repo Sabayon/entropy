@@ -9,6 +9,11 @@
     B{Entropy Package Manager Client}.
 
 """
+import sys
+if sys.hexversion >= 0x3000000:
+    from subprocess import getoutput
+else:
+    from commands import getoutput
 import shutil
 from entropy.const import *
 from entropy.output import *
@@ -459,9 +464,8 @@ def smartgenerator(matched_atoms):
     binary_execs = []
     for item in pkgcontent:
         filepath = pkg_data_dir + item
-        import subprocess
         if os.access(filepath,os.X_OK):
-            if subprocess.getoutput("file %s" % (filepath,)).find("LSB executable") != -1:
+            if getoutput("file %s" % (filepath,)).find("LSB executable") != -1:
                 binary_execs.append(item)
 
     # now uncompress all the rest

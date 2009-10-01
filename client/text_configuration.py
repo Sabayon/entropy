@@ -9,9 +9,12 @@
     B{Entropy Package Manager Client}.
 
 """
-
+import sys
 import shutil
-import subprocess
+if sys.hexversion >= 0x3000000:
+    from subprocess import getoutput
+else:
+    from commands import getoutput
 from entropy.const import *
 from entropy.output import *
 from entropy.client.interfaces import Client
@@ -263,7 +266,7 @@ def selaction():
 def showdiff(fromfile,tofile):
     # run diff
     diffcmd = "diff -Nu "+fromfile+" "+tofile #+" | less --no-init --QUIT-AT-EOF"
-    output = subprocess.getoutput(diffcmd).split("\n")
+    output = getoutput(diffcmd).split("\n")
     coloured = []
     for line in output:
 	if line.startswith("---"):

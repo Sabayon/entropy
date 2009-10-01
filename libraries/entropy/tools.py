@@ -201,12 +201,12 @@ def print_exception(returndata = False):
                 data.append("\t%20s = " % key,)
             try:
                 if not returndata:
-                    sys.stdout.write(value)
+                    sys.stdout.write(value + "\n")
                 else:
                     data.append(value)
             except:
                 if not returndata:
-                    sys.stdout.write("<ERROR WHILE PRINTING VALUE>")
+                    sys.stdout.write("<ERROR WHILE PRINTING VALUE>\n")
     return data
 
 # Get the content of an online page
