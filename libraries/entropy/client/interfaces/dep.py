@@ -1327,7 +1327,10 @@ class CalculatorsMixin:
         # now create new deptree
         # system_tree is used because it's already half ready
         # it just needs entries from normal tree
-        min_deplevel = max(system_tree)
+        if system_tree:
+            min_deplevel = max(system_tree)
+        else:
+            min_deplevel = conflicts_key
 
         for deplevel in normal_tree:
 
