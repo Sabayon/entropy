@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 
     @author: Fabio Erculiani <lxnay@sabayonlinux.org>
@@ -803,9 +804,9 @@ class TextInterface:
         colours_len = len(colours)
 
         try:
-            sys.stdout.write(darkgreen(question))
+            sys.stdout.write(darkgreen(question) + " ")
         except UnicodeEncodeError:
-            sys.stdout.write(darkgreen(question.encode('utf-8')))
+            sys.stdout.write(darkgreen(question.encode('utf-8')) + " ")
         _flush_stdouterr()
 
         try:
