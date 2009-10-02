@@ -1794,6 +1794,29 @@ class CalculatorsMixin:
                         update.append((m_idpackage,repoid))
                     continue
                 else:
+
+                    # Note: this is a bugfix to improve branch migration
+                    # and really check if pkg has been repackaged and branch
+                    # changed.
+                    # first check branch
+                    if idpackage is not None:
+
+                        c_branch = self.clientDbconn.retrieveBranch(idpackage)
+                        c_repodb = self.open_repository(repoid)
+                        r_branch = c_repodb.retrieveBranch(m_idpackage)
+
+                        if (c_branch != r_branch) and (c_branch is not None) \
+                            and (r_branch is not None):
+
+                            c_digest = self.clientDbconn.retrieveDigest(idpackage)
+                            r_digest = c_repodb.retrieveDigest(m_idpackage)
+
+                            if (r_digest != c_digest) and (r_digest is not None) \
+                                and (c_digest is not None):
+                                if (m_idpackage,repoid) not in update:
+                                    update.append((m_idpackage,repoid))
+                                continue
+
                     # no difference
                     fine.append(cl_atom)
                     continue
