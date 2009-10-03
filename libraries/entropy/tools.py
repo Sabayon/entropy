@@ -27,7 +27,8 @@ import hashlib
 import random
 from entropy.output import TextInterface, print_info, print_generic, red, \
     darkgreen, green
-from entropy.const import etpConst, const_kill_threads, const_islive
+from entropy.const import etpConst, const_kill_threads, const_islive, \
+    const_isunicode
 from entropy.exceptions import FileNotFound, InvalidAtom, InvalidDataType, \
     DirectoryNotFound
 
@@ -385,9 +386,10 @@ def is_valid_unicode(string):
     @return: True if string is unicode
     @rtype: 
     """
-    if isinstance(string, unicode):
+    if const_isunicode(string):
         return True
 
+    # try to convert bytes to unicode
     try:
         unicode(string, 'raw_unicode_escape')
     except (UnicodeEncodeError, UnicodeDecodeError,):
@@ -439,7 +441,7 @@ def get_file_size(file_path):
     @raise OSError: if file referenced in file_path is not available
     """
     my = file_path[:]
-    if isinstance(my, unicode):
+    if const_isunicode(my):
         my = my.encode("utf-8")
     mystat = os.lstat(my)
     return int(mystat.st_size)
