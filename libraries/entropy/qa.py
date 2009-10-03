@@ -274,7 +274,7 @@ class QAInterface:
             )
             for missing_data in missing_extended:
                 self.Output.updateProgress(
-                        "%s:" % (brown(unicode(missing_data)),),
+                        "%s:" % (brown(repr(missing_data)),),
                         importance = 0,
                         type = "info",
                         header = purple("   ## ")
