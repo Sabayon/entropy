@@ -22,7 +22,7 @@ else:
     import urllib2
     UrllibBaseHandler = urllib2.BaseHandler
 import threading
-from entropy.const import etpConst, etpUi
+from entropy.const import etpConst, etpUi, const_isunicode, const_isstring
 from entropy.core.settings.base import SystemSettings
 
 class Lifo:
@@ -423,9 +423,9 @@ class EmailSender:
         @rtype: None
         """
         # Create a text/plain message
-        if isinstance(content, unicode):
+        if const_isunicode(content):
             content = content.encode('utf-8')
-        if isinstance(subject, unicode):
+        if const_isunicode(subject):
             subject = subject.encode('utf-8')
 
         msg = self.text(content)
@@ -827,32 +827,32 @@ class RSS:
 
         # title
         title = doc.createElement("title")
-        title_text = doc.createTextNode(unicode(self.__title))
+        title_text = doc.createTextNode(self.__title)
         title.appendChild(title_text)
         channel.appendChild(title)
         # link
         link = doc.createElement("link")
-        link_text = doc.createTextNode(unicode(self.__link))
+        link_text = doc.createTextNode(self.__link)
         link.appendChild(link_text)
         channel.appendChild(link)
         # description
         description = doc.createElement("description")
-        desc_text = doc.createTextNode(unicode(self.__description))
+        desc_text = doc.createTextNode(self.__description)
         description.appendChild(desc_text)
         channel.appendChild(description)
         # language
         language = doc.createElement("language")
-        lang_text = doc.createTextNode(unicode(self.__language))
+        lang_text = doc.createTextNode(self.__language)
         language.appendChild(lang_text)
         channel.appendChild(language)
         # copyright
         cright = doc.createElement("copyright")
-        cr_text = doc.createTextNode(unicode(self.__cright))
+        cr_text = doc.createTextNode(self.__cright)
         cright.appendChild(cr_text)
         channel.appendChild(cright)
         # managingEditor
         managing_editor = doc.createElement("managingEditor")
-        ed_text = doc.createTextNode(unicode(self.__editor))
+        ed_text = doc.createTextNode(self.__editor)
         managing_editor.appendChild(ed_text)
         channel.appendChild(managing_editor)
 
@@ -879,32 +879,32 @@ class RSS:
             # title
             item_title = doc.createElement("title")
             item_title_text = doc.createTextNode(
-                unicode(self.__items[key]['title']))
+                self.__items[key]['title'])
             item_title.appendChild(item_title_text)
             item.appendChild(item_title)
             # link
             item_link = doc.createElement("link")
             item_link_text = doc.createTextNode(
-                unicode(self.__items[key]['link']))
+                self.__items[key]['link'])
             item_link.appendChild(item_link_text)
             item.appendChild(item_link)
             # guid
             item_guid = doc.createElement("guid")
             item_guid.setAttribute("isPermaLink", "true")
             item_guid_text = doc.createTextNode(
-                unicode(self.__items[key]['guid']))
+                self.__items[key]['guid'])
             item_guid.appendChild(item_guid_text)
             item.appendChild(item_guid)
             # description
             item_desc = doc.createElement("description")
             item_desc_text = doc.createTextNode(
-                unicode(self.__items[key]['description']))
+                self.__items[key]['description'])
             item_desc.appendChild(item_desc_text)
             item.appendChild(item_desc)
             # pubdate
             item_date = doc.createElement("pubDate")
             item_date_text = doc.createTextNode(
-                unicode(self.__items[key]['pubDate']))
+                self.__items[key]['pubDate'])
             item_date.appendChild(item_date_text)
             item.appendChild(item_date)
 
@@ -1036,7 +1036,7 @@ class LogFile:
         @keyword file_path: path to file
         @type file_path: string
         """
-        if isinstance(file_path, basestring):
+        if const_isstring(file_path):
             if not os.path.isfile(file_path) and os.access(
                 os.path.dirname(file_path), os.W_OK):
                 self._logfile = open(file_path, "aw")
