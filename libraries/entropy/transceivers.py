@@ -20,7 +20,7 @@ else:
     import urllib2 as urlmod_error
 
 import time
-from entropy.const import etpConst
+from entropy.const import etpConst, const_isstring
 from entropy.output import TextInterface, darkblue, darkred, purple, blue, \
     brown, darkgreen, red, bold
 from entropy.exceptions import *
@@ -465,7 +465,7 @@ class MultipleUrlFetcher:
         th_id = 0
         speed_limit = 0
         dsl = self.__system_settings['repositories']['transfer_limit']
-        if isinstance(dsl,int) and self.__url_path_list:
+        if isinstance(dsl, int) and self.__url_path_list:
             speed_limit = dsl/len(self.__url_path_list)
 
         class MyFetcher(self.__url_fetcher):
@@ -1069,15 +1069,15 @@ class FtpServerHandler:
 
         self.FtpInterface = ftp_interface
         self.Entropy = entropy_interface
-        if not isinstance(uris,list):
+        if not isinstance(uris, list):
             raise InvalidDataType("InvalidDataType: %s" % (_("uris must be a list instance"),))
-        if not isinstance(files_to_upload,(list,dict)):
+        if not isinstance(files_to_upload,(list, dict)):
             raise InvalidDataType("InvalidDataType: %s" % (
                     _("files_to_upload must be a list or dict instance"),
                 )
             )
         self.uris = uris
-        if isinstance(files_to_upload,list):
+        if isinstance(files_to_upload, list):
             self.myfiles = files_to_upload[:]
         else:
             self.myfiles = sorted([x for x in files_to_upload])
@@ -1094,14 +1094,14 @@ class FtpServerHandler:
             # default to database directory
             branch = self.Entropy.SystemSettings['repositories']['branch']
             my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo), branch)
-            self.ftp_basedir = unicode(my_path)
+            self.ftp_basedir = my_path
         else:
-            self.ftp_basedir = unicode(ftp_basedir)
+            self.ftp_basedir = ftp_basedir
         if not local_basedir:
             # default to database directory
             self.local_basedir = os.path.dirname(self.Entropy.get_local_database_file(self.repo))
         else:
-            self.local_basedir = unicode(local_basedir)
+            self.local_basedir = local_basedir
         self.critical_files = critical_files
         self.handlers_data = handlers_data.copy()
 
@@ -1127,7 +1127,7 @@ class FtpServerHandler:
 
         valid_remote_md5 = True
         # if remote server supports MD5 commands, remote_md5 is filled
-        if isinstance(remote_md5, basestring):
+        if const_isstring(remote_md5):
             valid_md5 = self.entropyTools.is_valid_md5(remote_md5)
             ckres = False
             if valid_md5: # seems valid
@@ -1329,7 +1329,7 @@ class FtpServerHandler:
                 ftp.set_cwd(self.ftp_basedir, dodir = True)
 
                 mycwd = None
-                if isinstance(mypath,tuple):
+                if isinstance(mypath, tuple):
                     if len(mypath) < 2: continue
                     mycwd = mypath[0]
                     mypath = mypath[1]
