@@ -770,9 +770,11 @@ def getinfo(dict = False):
                     zkeys = list(info[x][y].keys())
                     zkeys.sort()
                     for z in zkeys:
-                        print(red(toptext)+": "+blue(topsubtext)+" => "+darkgreen(z)+" => "+str(info[x][y][z]))
+                        sys.stdout.write(red(toptext) + ": " + \
+                            blue(topsubtext) + " => " + darkgreen(z) + \
+                            " => " + str(info[x][y][z]) + "\n")
                 else:
-                    print(red(toptext)+": "+blue(y)+" => "+str(info[x][y]))
-            #print info[x]
+                    sys.stdout.write(red(toptext) + ": "+blue(y) + " => " + \
+                        str(info[x][y]) + "\n")
         else:
-            print(red(x)+": "+str(info[x]))
+            sys.stdout.write(red(x) + ": " + str(info[x]) + "\n")

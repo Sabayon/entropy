@@ -150,7 +150,7 @@ def ugcVotes(options):
     elif cmd == "add":
 
         print_info(" %s [%s|%s] %s" % (
-                bold(u"@@"),
+                bold("@@"),
                 darkgreen(str(repository)),
                 purple(str(pkgkey)),
                 blue(_("Add vote")),
@@ -199,7 +199,7 @@ def ugcVotes(options):
 
         # verify
         print_info(" %s [%s|%s] %s:" % (
-                bold(u"@@"),
+                bold("@@"),
                 darkgreen(str(repository)),
                 purple(str(pkgkey)),
                 blue(_("Please review your submission")),
@@ -229,7 +229,7 @@ def ugcVotes(options):
             return 1
         else:
             print_info(" %s [%s|%s] %s" % (
-                    bold(u"@@"),
+                    bold("@@"),
                     darkgreen(str(repository)),
                     purple(str(pkgkey)),
                     blue(_("Vote added, thank you!")),
@@ -286,7 +286,7 @@ def ugcDocuments(options):
     elif cmd == "add":
 
         print_info(" %s [%s|%s] %s" % (
-                bold(u"@@"),
+                bold("@@"),
                 darkgreen(str(repository)),
                 purple(str(pkgkey)),
                 blue(_("Add document")),
@@ -344,7 +344,7 @@ def ugcDocuments(options):
         keywords = ', '.join(data['keywords'].split())
         # verify
         print_info(" %s [%s|%s] %s:" % (
-                bold(u"@@"),
+                bold("@@"),
                 darkgreen(str(repository)),
                 purple(str(pkgkey)),
                 blue(_("Please review your submission")),
@@ -409,7 +409,7 @@ def ugcDocuments(options):
                 iddoc = rslt
                 r_content = data
             print_info(" %s [%s|%s|id:%s|%s] %s" % (
-                    bold(u"@@"),
+                    bold("@@"),
                     darkgreen(str(repository)),
                     purple(str(pkgkey)),
                     iddoc,
@@ -421,13 +421,13 @@ def ugcDocuments(options):
     elif cmd == "remove":
 
         print_info(" %s [%s] %s" % (
-                bold(u"@@"),
+                bold("@@"),
                 darkgreen(str(repository)),
                 blue(_("Documents removal")),
             )
         )
         print_info(" %s [%s] %s:" % (
-                bold(u"@@"),
+                bold("@@"),
                 darkgreen(str(repository)),
                 blue(_("Please review your submission")),
             )
@@ -527,7 +527,7 @@ def showDocument(mydict, repository, pkgkey):
     if doctype is None:
         doctype = _("Unknown type")
     print_info(" %s [%s|%s|%s|%s|%s|%s]" % (
-            bold(u"@@"),
+            bold("@@"),
             bold(str(mydict['iddoc'])),
             darkred(str(doctype)),
             darkgreen(str(repository)),
@@ -568,7 +568,7 @@ def showDocument(mydict, repository, pkgkey):
 
 def showVote(vote, repository, pkgkey):
     print_info(" %s [%s|%s] %s: %s" % (
-            bold(u"@@"),
+            bold("@@"),
             darkgreen(str(repository)),
             purple(str(pkgkey)),
             darkred(_("Current package vote")),
