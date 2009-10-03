@@ -568,7 +568,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
             self.cursor.execute(sql)
             return True, None
         except Exception as e:
-            return False, unicode(e)
+            return False, str(e)
 
 
     def _set_config_value(self, config_name, data):

@@ -36,7 +36,7 @@ class Base(SocketCommands):
                 'as_user': False,
                 'desc': "get current queue",
                 'syntax': "<SESSION_ID> systemsrv:get_queue",
-                'from': unicode(self),
+                'from': str(self),
             },
             'systemsrv:get_queue_item_by_id':    {
                 'auth': True,
@@ -46,7 +46,7 @@ class Base(SocketCommands):
                 'as_user': False,
                 'desc': "get current queue item through its queue id",
                 'syntax': "<SESSION_ID> systemsrv:get_queue_item_by_id <queue_id>",
-                'from': unicode(self),
+                'from': str(self),
             },
             'systemsrv:get_queue_id_stdout':    {
                 'auth': True,
@@ -56,7 +56,7 @@ class Base(SocketCommands):
                 'as_user': False,
                 'desc': "get current queue item stdout/stderr output",
                 'syntax': "<SESSION_ID> systemsrv:get_queue_id_stdout <queue_id> <how many bytes (from tail)>",
-                'from': unicode(self),
+                'from': str(self),
             },
             'systemsrv:get_queue_id_result':    {
                 'auth': True,
@@ -66,7 +66,7 @@ class Base(SocketCommands):
                 'as_user': False,
                 'desc': "get current queue item result output",
                 'syntax': "<SESSION_ID> systemsrv:get_queue_id_result <queue_id>",
-                'from': unicode(self),
+                'from': str(self),
             },
             'systemsrv:remove_queue_ids':    {
                 'auth': True,
@@ -76,7 +76,7 @@ class Base(SocketCommands):
                 'as_user': False,
                 'desc': "remove queue items using their queue ids",
                 'syntax': "<SESSION_ID> systemsrv:remove_queue_ids <queue_id 1> <queue_id 2> <...>",
-                'from': unicode(self),
+                'from': str(self),
             },
             'systemsrv:pause_queue':    {
                 'auth': True,
@@ -86,7 +86,7 @@ class Base(SocketCommands):
                 'as_user': False,
                 'desc': "toggle queue pause (understood?)",
                 'syntax': "<SESSION_ID> systemsrv:pause_queue <True/False>",
-                'from': unicode(self),
+                'from': str(self),
             },
             'systemsrv:kill_processing_queue_id':    {
                 'auth': True,
@@ -96,7 +96,7 @@ class Base(SocketCommands):
                 'as_user': False,
                 'desc': "kill a running process using its queue id",
                 'syntax': "<SESSION_ID> systemsrv:kill_processing_queue_id <queue_id>",
-                'from': unicode(self),
+                'from': str(self),
             },
             'systemsrv:swap_items_in_queue':    {
                 'auth': True,
@@ -106,7 +106,7 @@ class Base(SocketCommands):
                 'as_user': False,
                 'desc': "swap items in queue to change their order",
                 'syntax': "<SESSION_ID> systemsrv:swap_items_in_queue <queue_id1> <queue_id1>",
-                'from': unicode(self),
+                'from': str(self),
             },
             'systemsrv:get_pinboard_data':    {
                 'auth': True,
@@ -116,7 +116,7 @@ class Base(SocketCommands):
                 'as_user': False,
                 'desc': "get pinboard content",
                 'syntax': "<SESSION_ID> systemsrv:get_pinboard_data",
-                'from': unicode(self),
+                'from': str(self),
             },
             'systemsrv:add_to_pinboard':    {
                 'auth': True,
@@ -126,7 +126,7 @@ class Base(SocketCommands):
                 'as_user': False,
                 'desc': "add item to pinboard",
                 'syntax': "<SESSION_ID> systemsrv:add_to_pinboard <xml string containing pinboard note and extended text>",
-                'from': unicode(self),
+                'from': str(self),
             },
             'systemsrv:remove_from_pinboard':    {
                 'auth': True,
@@ -136,7 +136,7 @@ class Base(SocketCommands):
                 'as_user': False,
                 'desc': "remove item from pinboard",
                 'syntax': "<SESSION_ID> systemsrv:remove_from_pinboard <pinboard identifier 1> <pinboard identifier 2> <...>",
-                'from': unicode(self),
+                'from': str(self),
             },
             'systemsrv:set_pinboard_items_done':    {
                 'auth': True,
@@ -146,7 +146,7 @@ class Base(SocketCommands):
                 'as_user': False,
                 'desc': "set pinboard items status using their pinboard identifiers",
                 'syntax': "<SESSION_ID> systemsrv:set_pinboard_items_done <pinboard identifier 1> <pinboard identifier 2> <...> <status (True/False)>",
-                'from': unicode(self),
+                'from': str(self),
             },
             'systemsrv:write_to_running_command_pipe':    {
                 'auth': True,
@@ -156,7 +156,7 @@ class Base(SocketCommands):
                 'as_user': False,
                 'desc': "write text to stdin of a running command",
                 'syntax': "<SESSION_ID> systemsrv:write_to_running_command_pipe <queue_id> <write stdout (True/False)> <txt ...>",
-                'from': unicode(self),
+                'from': str(self),
             },
         }
 
@@ -436,7 +436,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "spawn portage sync (emerge --sync)",
                 'syntax': "<SESSION_ID> srvrepo:sync_spm",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:compile_atoms':    {
                 'auth': True,
@@ -446,7 +446,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "compile specified atoms using Spm (Portage?)",
                 'syntax': "<SESSION_ID> srvrepo:compile_atoms <xml string containing atoms and compile options>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:spm_remove_atoms':    {
                 'auth': True,
@@ -456,7 +456,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "remove specified atoms using Spm (Portage?)",
                 'syntax': "<SESSION_ID> srvrepo:spm_remove_atoms <xml string containing atoms and remove options>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:get_spm_categories_updates':    {
                 'auth': True,
@@ -466,7 +466,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "get SPM updates for the specified package categories",
                 'syntax': "<SESSION_ID> srvrepo:get_spm_categories_updates <category 1> <category 2> <...>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:get_spm_categories_installed':    {
                 'auth': True,
@@ -476,7 +476,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "get SPM installed packages for the specified package categories",
                 'syntax': "<SESSION_ID> srvrepo:get_spm_categories_installed <category 1> <category 2> <...>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:enable_uses_for_atoms':    {
                 'auth': True,
@@ -486,7 +486,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "enable use flags for the specified atom",
                 'syntax': "<SESSION_ID> srvrepo:enable_uses_for_atom <xml string containing atoms and use flags>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:disable_uses_for_atoms':    {
                 'auth': True,
@@ -496,7 +496,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "enable use flags for the specified atom",
                 'syntax': "<SESSION_ID> srvrepo:disable_uses_for_atom <xml string containing atoms and use flags>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:get_spm_atoms_info':    {
                 'auth': True,
@@ -506,7 +506,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "get info from SPM for the specified atoms",
                 'syntax': "<SESSION_ID> srvrepo:get_spm_atoms_info <atom1> <atom2> <atom3>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:run_spm_info':    {
                 'auth': True,
@@ -516,7 +516,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "run SPM info command",
                 'syntax': "<SESSION_ID> srvrepo:run_spm_info",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:run_custom_shell_command':    {
                 'auth': True,
@@ -526,7 +526,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "run custom shell command",
                 'syntax': "<SESSION_ID> srvrepo:run_custom_shell_command <shell command blah blah>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:get_spm_glsa_data':    {
                 'auth': True,
@@ -536,7 +536,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "get SPM security updates info",
                 'syntax': "<SESSION_ID> srvrepo:get_spm_glsa_data <list_type string (affected,new,all)>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:get_available_repositories':    {
                 'auth': True,
@@ -546,7 +546,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "get information about available Entropy repositories",
                 'syntax': "<SESSION_ID> srvrepo:get_available_repositories",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:set_default_repository':    {
                 'auth': True,
@@ -556,7 +556,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "set a new default Entropy Server repository",
                 'syntax': "<SESSION_ID> srvrepo:set_default_repository <repoid>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:get_available_entropy_packages':    {
                 'auth': True,
@@ -566,7 +566,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "get available Entropy packages from the chosen repository id",
                 'syntax': "<SESSION_ID> srvrepo:get_available_entropy_packages <repoid>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:get_entropy_idpackage_information':    {
                 'auth': True,
@@ -576,7 +576,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "get Entropy package metadata using its idpackage and repository id",
                 'syntax': "<SESSION_ID> srvrepo:get_entropy_idpackage_information <idpackage> <repoid>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:remove_entropy_packages':    {
                 'auth': True,
@@ -586,7 +586,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "remove Entropy packages using their match -> (idpackage,repo)",
                 'syntax': "<SESSION_ID> srvrepo:remove_entropy_packages idpackage:repoid,idpackage,repoid,...",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:search_entropy_packages':    {
                 'auth': True,
@@ -596,7 +596,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "search Entropy packages using a defined search type, search string inside the specified repository",
                 'syntax': "<SESSION_ID> srvrepo:search_entropy_packages <repoid> <search_type> <search string...>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:move_entropy_packages_to_repository':    {
                 'auth': True,
@@ -606,7 +606,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "move or copy Entropy packages from a repository to another",
                 'syntax': "<SESSION_ID> srvrepo:move_entropy_packages_to_repository <from_repo> <to_repo> <do_copy (True: copy, False: move)> <idpackages...>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:scan_entropy_packages_database_changes':    {
                 'auth': True,
@@ -616,7 +616,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "scan Spm package changes to retrieve a list of action that should be run on the repositories",
                 'syntax': "<SESSION_ID> srvrepo:scan_entropy_packages_database_changes",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:run_entropy_database_updates':    {
                 'auth': True,
@@ -626,7 +626,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "run Entropy database updates",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_database_updates <to_add: atom:counter:repoid,atom:counter:repoid,...> <to_remove: idpackage:repoid,idpackage:repoid,...> <to_inject: idpackage:repoid,idpackage:repoid,...>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:run_entropy_dependency_test':    {
                 'auth': True,
@@ -636,7 +636,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "run Entropy dependency test",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_dependency_test",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:run_entropy_library_test':    {
                 'auth': True,
@@ -646,7 +646,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "run Entropy dependency test",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_library_test",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:run_entropy_treeupdates':    {
                 'auth': True,
@@ -656,7 +656,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "run Entropy database treeupdates",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_treeupdates <repoid>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:scan_entropy_mirror_updates':    {
                 'auth': True,
@@ -666,7 +666,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "scan mirror updates for the specified repository identifiers",
                 'syntax': "<SESSION_ID> srvrepo:scan_entropy_mirror_updates <repoid 1> <repoid 2> <...>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:run_entropy_mirror_updates':    {
                 'auth': True,
@@ -676,7 +676,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "run mirror updates for the provided repositories",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_mirror_updates <xml data, properly formatted>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:run_entropy_checksum_test':    {
                 'auth': True,
@@ -686,7 +686,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "run Entropy packages checksum verification tool",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_checksum_test <repoid> <mode>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:get_notice_board':    {
                 'auth': True,
@@ -696,7 +696,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "get repository notice board",
                 'syntax': "<SESSION_ID> srvrepo:get_notice_board <repoid>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:remove_notice_board_entries':    {
                 'auth': True,
@@ -706,7 +706,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "remove notice board entries",
                 'syntax': "<SESSION_ID> srvrepo:remove_notice_board_entries <repoid> <entry_id1> <entry_id2> <...>",
-                'from': unicode(self)
+                'from': str(self)
             },
             'srvrepo:add_notice_board_entry':    {
                 'auth': True,
@@ -716,7 +716,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "remove notice board entry",
                 'syntax': "<SESSION_ID> srvrepo:add_notice_board_entry <xml formatted data>",
-                'from': unicode(self)
+                'from': str(self)
             },
         }
 
@@ -987,7 +987,7 @@ class Repository(SocketCommands):
             self.HostInterface.Entropy.switch_default_repository(repoid, save = True, handle_uninitialized = False)
         except Exception as e:
             status = False
-            msg = unicode(e)
+            msg = str(e)
         return status, msg
 
     def docmd_get_available_entropy_packages(self, myargs):
@@ -1050,7 +1050,7 @@ class Repository(SocketCommands):
                 self.HostInterface.Entropy.remove_packages(repo_data[repoid],repo = repoid)
         except Exception as e:
             status = False
-            msg = unicode(e)
+            msg = str(e)
 
         return status, msg
 
@@ -1329,7 +1329,7 @@ class Repository(SocketCommands):
         gid = userdata.get('gid')
 
         queue_id = self.HostInterface.add_to_queue(
-            cmd, ' '.join([unicode(x) for x in myargs]), uid, gid,
+            cmd, ' '.join([str(x) for x in myargs]), uid, gid,
             'remove_notice_board_entries', [repoid,entry_ids], {}, True, False, interactive = True
         )
         if queue_id < 0: return False, queue_id

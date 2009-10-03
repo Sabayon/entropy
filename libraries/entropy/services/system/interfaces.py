@@ -471,7 +471,7 @@ class Server(SocketHost):
             if self.QueueLock.locked(): self.QueueLock.release()
             self.entropyTools.print_traceback()
             done = False
-            result = (False, unicode(e),)
+            result = (False, str(e),)
 
         if 'extended_result' in command_data and done:
             try:

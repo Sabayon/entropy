@@ -623,7 +623,7 @@ class Base:
                 return True,deps_not_matched
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,unicode(e)
+                return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -656,7 +656,7 @@ class Base:
                 return self.SystemManagerExecutor.SystemInterface.Entropy.test_shared_objects()
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,unicode(e)
+                return False,str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -697,7 +697,7 @@ class Base:
                 return True, data
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,unicode(e)
+                return False,str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -735,7 +735,7 @@ class Base:
                 dbconn.closeDB()
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,unicode(e)
+                return False,str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -824,7 +824,7 @@ class Base:
 
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,unicode(e)
+                return False,str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -944,7 +944,7 @@ class Base:
 
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,unicode(e)
+                return False,str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -995,7 +995,7 @@ class Base:
                 return True,data
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,unicode(e)
+                return False,str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -1031,7 +1031,7 @@ class Base:
                 return True,data
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,unicode(e)
+                return False,str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -1065,7 +1065,7 @@ class Base:
                 return True,data
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,unicode(e)
+                return False,str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()

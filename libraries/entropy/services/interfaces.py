@@ -1033,7 +1033,7 @@ class SocketHost:
                                                   # needs auth = True
                                 'desc': "instantiate a session", # description
                                 'syntax': "begin", # syntax
-                                'from': unicode(self), # from what class
+                                'from': str(self), # from what class
                             },
                 'end':      {
                                 'auth': False,
@@ -1043,7 +1043,7 @@ class SocketHost:
                                 'as_user': False,
                                 'desc': "end a session",
                                 'syntax': "<SESSION_ID> end",
-                                'from': unicode(self),
+                                'from': str(self),
                             },
                 'session_config':      {
                                 'auth': False,
@@ -1053,7 +1053,7 @@ class SocketHost:
                                 'as_user': False,
                                 'desc': "set session configuration options",
                                 'syntax': "<SESSION_ID> session_config <option> [parameters]",
-                                'from': unicode(self),
+                                'from': str(self),
                             },
                 'rc':       {
                                 'auth': False,
@@ -1063,7 +1063,7 @@ class SocketHost:
                                 'as_user': False,
                                 'desc': "get data returned by the last valid command (streamed python object)",
                                 'syntax': "<SESSION_ID> rc",
-                                'from': unicode(self),
+                                'from': str(self),
                             },
                 'hello':    {
                                 'auth': False,
@@ -1073,7 +1073,7 @@ class SocketHost:
                                 'as_user': False,
                                 'desc': "get server status",
                                 'syntax': "hello",
-                                'from': unicode(self),
+                                'from': str(self),
                             },
                 'alive':    {
                                 'auth': True,
@@ -1083,7 +1083,7 @@ class SocketHost:
                                 'as_user': False,
                                 'desc': "check if a session is still alive",
                                 'syntax': "alive <SESSION_ID>",
-                                'from': unicode(self),
+                                'from': str(self),
                             },
                 'login':    {
                                 'auth': False,
@@ -1093,7 +1093,7 @@ class SocketHost:
                                 'as_user': False,
                                 'desc': "login on the running server (allows running extra commands)",
                                 'syntax': "<SESSION_ID> login <authenticator parameters, default: <user> <auth_type> <password> >",
-                                'from': unicode(self),
+                                'from': str(self),
                             },
                 'user_data':    {
                                 'auth': True,
@@ -1103,7 +1103,7 @@ class SocketHost:
                                 'as_user': False,
                                 'desc': "get general user information, user must be logged in",
                                 'syntax': "<SESSION_ID> user_data",
-                                'from': unicode(self),
+                                'from': str(self),
                             },
                 'logout':   {
                                 'auth': True,
@@ -1113,7 +1113,7 @@ class SocketHost:
                                 'as_user': False,
                                 'desc': "logout on the running server",
                                 'syntax': "<SESSION_ID> logout <USER>",
-                                'from': unicode(self),
+                                'from': str(self),
                             },
                 'help':   {
                                 'auth': False,
@@ -1123,7 +1123,7 @@ class SocketHost:
                                 'as_user': False,
                                 'desc': "this output",
                                 'syntax': "help",
-                                'from': unicode(self),
+                                'from': str(self),
                             },
                 'available_commands':   {
                                 'auth': False,
@@ -1133,7 +1133,7 @@ class SocketHost:
                                 'as_user': False,
                                 'desc': "get info about available commands (you must retrieve this using the 'rc' command)",
                                 'syntax': "available_commands",
-                                'from': unicode(self),
+                                'from': str(self),
                             },
                 'stream':   {
                                 'auth': True,
@@ -1143,7 +1143,7 @@ class SocketHost:
                                 'as_user': False,
                                 'desc': "send a chunk of data to be saved on the session temp file path (will be removed on session expiration)",
                                 'syntax': "<SESSION_ID> stream <chunk of byte-string to write to file>",
-                                'from': unicode(self),
+                                'from': str(self),
                             },
             }
 
