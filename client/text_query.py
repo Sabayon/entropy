@@ -11,6 +11,7 @@
 """
 
 import os
+from entropy.compat import *
 from entropy.const import etpUi
 from entropy.output import darkgreen, darkred, red, blue, \
     brown, purple, bold, print_info, print_error, print_generic
@@ -532,9 +533,14 @@ def search_orphaned_files(Equo = None):
                 count += 1
                 if not etpUi['quiet'] and ((count == 0) or (count % 500 == 0)):
                     count = 0
-                    print_info(red(" @@ ")+blue("%s: " % (_("Analyzing"),)) + \
-                        bold(unicode(filename[:50],'raw_unicode_escape')+"..."),
-                        back = True)
+                    fname = unicode(filename[:50], 'raw_unicode_escape')
+                    print_info(" %s %s: %s" % (
+                            red("@@"),
+                            blue(_("Analyzing")),
+                            fname,
+                        ),
+                        back = True
+                    )
                 try:
                     foundFiles[unicode(filename, 'raw_unicode_escape')] = u"obj"
                 except (UnicodeDecodeError, UnicodeEncodeError,) as e:
