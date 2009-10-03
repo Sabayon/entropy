@@ -324,28 +324,28 @@ class SystemSettings(Singleton):
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return list(self.__data.items())
+            return self.__data.items()
 
     def iteritems(self):
         """
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return iter(self.__data.items())
+            return self.__data.iteritems()
 
     def iterkeys(self):
         """
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return iter(self.__data.keys())
+            return self.__data.iterkeys()
 
     def keys(self):
         """
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return list(self.__data.keys())
+            return self.__data.keys()
 
     def pop(self, mykey, default = None):
         """
@@ -380,7 +380,7 @@ class SystemSettings(Singleton):
         dict method. See Python dict API reference.
         """
         with self.__mutex:
-            return list(self.__data.values())
+            return self.__data.values()
 
     def clear(self):
         """
