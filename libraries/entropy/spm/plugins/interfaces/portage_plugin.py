@@ -36,72 +36,72 @@ class PortagePackageGroups(dict):
             'office': {
                 'name': _("Office"),
                 'description': _("Applications used in office environments"),
-                'categories': [u'app-office', u'app-pda', u'app-mobilephone',
-                    u'app-cdr', u'app-antivirus', u'app-laptop', u'mail-',
+                'categories': ['app-office', 'app-pda', 'app-mobilephone',
+                    'app-cdr', 'app-antivirus', 'app-laptop', 'mail-',
                 ],
             },
             'development': {
                 'name': _("Development"),
                 'description': _("Applications or system libraries"),
-                'categories': [u'dev-', u'sys-devel'],
+                'categories': ['dev-', 'sys-devel'],
             },
             'system': {
                 'name': _("System"),
                 'description': _("System applications or libraries"),
-                'categories': [u'sys-'],
+                'categories': ['sys-'],
             },
             'games': {
                 'name': _("Games"),
                 'description': _("Games, enjoy your spare time"),
-                'categories': [u'games-'],
+                'categories': ['games-'],
             },
             'gnome': {
                 'name': _("GNOME Desktop"),
                 'description': \
                     _("Applications and libraries for the GNOME Desktop"),
-                'categories': [u'gnome-'],
+                'categories': ['gnome-'],
             },
             'kde': {
                 'name': _("KDE Desktop"),
                 'description': \
                     _("Applications and libraries for the KDE Desktop"),
-                'categories': [u'kde-'],
+                'categories': ['kde-'],
             },
             'xfce': {
                 'name': _("XFCE Desktop"),
                 'description': \
                     _("Applications and libraries for the XFCE Desktop"),
-                'categories': [u'xfce-'],
+                'categories': ['xfce-'],
             },
             'lxde': {
                 'name': _("LXDE Desktop"),
                 'description': \
                     _("Applications and libraries for the LXDE Desktop"),
-                'categories': [u'lxde-'],
+                'categories': ['lxde-'],
             },
             'multimedia': {
                 'name': _("Multimedia"),
                 'description': \
                     _("Applications and libraries for Multimedia"),
-                'categories': [u'media-'],
+                'categories': ['media-'],
             },
             'networking': {
                 'name': _("Networking"),
                 'description': \
                     _("Applications and libraries for Networking"),
-                'categories': [u'net-', u'www-'],
+                'categories': ['net-', 'www-'],
             },
             'science': {
                 'name': _("Science"),
                 'description': \
                     _("Scientific applications and libraries"),
-                'categories': [u'sci-'],
+                'categories': ['sci-'],
             },
             'x11': {
                 'name': _("X11"),
                 'description': \
                     _("Applications and libraries for X11"),
-                'categories': [u'x11-'],
+                'categories': ['x11-'],
             },
         }
         self.update(data)
