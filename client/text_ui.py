@@ -538,7 +538,15 @@ def _showPackageInfo(foundAtoms, deps):
                     installedTag = "NoTag"
                 installedRev = Equo.clientDbconn.retrieveRevision(idx)
 
-            print_info("   # "+red("(")+bold(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+bold(pkgatom)+" >>> "+red(Equo.SystemSettings['repositories']['available'][reponame]['description']))
+            mytxt = "   # %s%s/%s%s [%s] %s" % (
+                red("("),
+                bold(str(atomscounter)),
+                blue(str(totalatoms)),
+                red(")"),
+                red(reponame),
+                bold(pkgatom),
+            )
+            print_info(mytxt)
             mytxt = "\t%s:\t %s / %s / %s %s %s / %s / %s" % (
                 red(_("Versions")),
                 blue(installedVer),
@@ -557,21 +565,17 @@ def _showPackageInfo(foundAtoms, deps):
                 installedVer = "0"
             if installedRev == "NoRev":
                 installedRev = 0
-            pkgcmp = Equo.entropyTools.entropy_compare_versions(
-                (pkgver,pkgtag,pkgrev,),
-                (installedVer,installedTag,installedRev,)
-            )
+            pkgcmp = Equo.get_package_action((idpackage, reponame))
             if (pkgcmp == 0) and is_installed:
                 if installedRepo != reponame:
                     mytxt = " | %s: " % (_("Switch repo"),)
                     action = darkgreen(_("Reinstall"))+mytxt+blue(installedRepo)+" ===> "+darkgreen(reponame)
                 else:
                     action = darkgreen(_("Reinstall"))
-            elif (pkgcmp > 0) or (not is_installed):
-                if (installedVer == "0"):
-                    action = darkgreen(_("Install"))
-                else:
-                    action = blue(_("Upgrade"))
+            elif pkgcmp == 1:
+                action = darkgreen(_("Install"))
+            elif pkgcmp == 2:
+                action = blue(_("Upgrade"))
             else:
                 action = red(_("Downgrade"))
             print_info("\t"+red("%s:\t\t" % (_("Action"),) )+" "+action)
