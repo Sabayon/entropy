@@ -345,8 +345,8 @@ class SecurityInterface:
             except KeyboardInterrupt:
                 return {}
             except Exception as err:
-                exc_string = unicode(Exception)
-                exc_err = unicode(err)
+                exc_string = str(Exception)
+                exc_err = str(err)
             if xml_metadata == None:
                 more_info = ""
                 if exc_string:
