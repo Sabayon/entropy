@@ -151,8 +151,8 @@ def ugcVotes(options):
 
         print_info(" %s [%s|%s] %s" % (
                 bold(u"@@"),
-                darkgreen(unicode(repository)),
-                purple(unicode(pkgkey)),
+                darkgreen(str(repository)),
+                purple(str(pkgkey)),
                 blue(_("Add vote")),
             )
         )
@@ -200,8 +200,8 @@ def ugcVotes(options):
         # verify
         print_info(" %s [%s|%s] %s:" % (
                 bold(u"@@"),
-                darkgreen(unicode(repository)),
-                purple(unicode(pkgkey)),
+                darkgreen(str(repository)),
+                purple(str(pkgkey)),
                 blue(_("Please review your submission")),
             )
         )
@@ -230,8 +230,8 @@ def ugcVotes(options):
         else:
             print_info(" %s [%s|%s] %s" % (
                     bold(u"@@"),
-                    darkgreen(unicode(repository)),
-                    purple(unicode(pkgkey)),
+                    darkgreen(str(repository)),
+                    purple(str(pkgkey)),
                     blue(_("Vote added, thank you!")),
                 )
             )
@@ -287,8 +287,8 @@ def ugcDocuments(options):
 
         print_info(" %s [%s|%s] %s" % (
                 bold(u"@@"),
-                darkgreen(unicode(repository)),
-                purple(unicode(pkgkey)),
+                darkgreen(str(repository)),
+                purple(str(pkgkey)),
                 blue(_("Add document")),
             )
         )
@@ -345,8 +345,8 @@ def ugcDocuments(options):
         # verify
         print_info(" %s [%s|%s] %s:" % (
                 bold(u"@@"),
-                darkgreen(unicode(repository)),
-                purple(unicode(pkgkey)),
+                darkgreen(str(repository)),
+                purple(str(pkgkey)),
                 blue(_("Please review your submission")),
             )
         )
@@ -410,8 +410,8 @@ def ugcDocuments(options):
                 r_content = data
             print_info(" %s [%s|%s|id:%s|%s] %s" % (
                     bold(u"@@"),
-                    darkgreen(unicode(repository)),
-                    purple(unicode(pkgkey)),
+                    darkgreen(str(repository)),
+                    purple(str(pkgkey)),
                     iddoc,
                     r_content,
                     blue(_("Document added, thank you!")),
@@ -422,13 +422,13 @@ def ugcDocuments(options):
 
         print_info(" %s [%s] %s" % (
                 bold(u"@@"),
-                darkgreen(unicode(repository)),
+                darkgreen(str(repository)),
                 blue(_("Documents removal")),
             )
         )
         print_info(" %s [%s] %s:" % (
                 bold(u"@@"),
-                darkgreen(unicode(repository)),
+                darkgreen(str(repository)),
                 blue(_("Please review your submission")),
             )
         )
@@ -460,7 +460,7 @@ def ugcDocuments(options):
                 print_error(
                     "[%s:%s] %s: %s, %s" % (
                         darkgreen(repository),
-                        darkred(unicode(identifiers)),
+                        darkred(str(identifiers)),
                         blue(_("UGC error")),
                         data,
                         err_msg,
@@ -480,7 +480,7 @@ def ugcDocuments(options):
                 print_error(
                     "[%s:%s] %s: %s, %s" % (
                         darkgreen(repository),
-                        darkred(unicode(identifier)),
+                        darkred(str(identifier)),
                         blue(_("UGC error")),
                         doc_data,
                         err_msg,
@@ -515,23 +515,25 @@ def ugcDocuments(options):
 
 def showDocument(mydict, repository, pkgkey):
 
-    title = unicode(mydict['title'],'raw_unicode_escape')
-    if not title: title = _("No title")
+    title = unicode(mydict['title'], 'raw_unicode_escape')
+    if not title:
+        title = _("No title")
     title = darkgreen(title)
     doctype = None
     for item in etpConst['ugc_doctypes']:
         if etpConst['ugc_doctypes'][item] == mydict['iddoctype']:
             doctype = item
             break
-    if doctype == None: doctype = _("Unknown type")
+    if doctype is None:
+        doctype = _("Unknown type")
     print_info(" %s [%s|%s|%s|%s|%s|%s]" % (
             bold(u"@@"),
-            bold(unicode(mydict['iddoc'])),
-            darkred(unicode(doctype)),
-            darkgreen(unicode(repository)),
-            purple(unicode(pkgkey)),
-            blue(unicode(mydict['username'])),
-            darkgreen(unicode(mydict['ts'])),
+            bold(str(mydict['iddoc'])),
+            darkred(str(doctype)),
+            darkgreen(str(repository)),
+            purple(str(pkgkey)),
+            blue(mydict['username']),
+            darkgreen(str(mydict['ts'])),
         )
     )
     print_info("\t%s: %s" % (
@@ -567,8 +569,8 @@ def showDocument(mydict, repository, pkgkey):
 def showVote(vote, repository, pkgkey):
     print_info(" %s [%s|%s] %s: %s" % (
             bold(u"@@"),
-            darkgreen(unicode(repository)),
-            purple(unicode(pkgkey)),
+            darkgreen(str(repository)),
+            purple(str(pkgkey)),
             darkred(_("Current package vote")),
             darkgreen(str(vote)),
         )
