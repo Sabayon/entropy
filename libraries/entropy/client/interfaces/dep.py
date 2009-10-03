@@ -580,7 +580,6 @@ class CalculatorsMixin:
             try:
                 repo_pkgver, repo_pkgtag, repo_pkgrev = dbconn.getVersioningData(r_id)
                 # note: read rationale below
-                repo_branch = dbconn.retrieveBranch(r_id)
                 repo_digest = dbconn.retrieveDigest(r_id)
             except (intf_error, TypeError,):
                 # package entry is broken
@@ -595,16 +594,14 @@ class CalculatorsMixin:
                 try:
                     installedVer, installedTag, installedRev = cdb_getversioning(c_id)
                     # note: read rationale below
-                    installedBranch = cdb_retrieveBranch(c_id)
                     installedDigest = cdb_retrieveDigest(c_id)
                 except TypeError: # corrupted entry?
                     installedVer = "0"
                     installedTag = ''
                     installedRev = 0
-                    installedBranch = None
                     installedDigest = None
                 client_data.add((installedVer, installedTag, installedRev,
-                    installedBranch, installedDigest,))
+                    installedDigest,))
 
             # support for app-foo/foo-123~-1
             # -1 revision means, always pull the latest
@@ -616,15 +613,14 @@ class CalculatorsMixin:
 
             # this is required for multi-slotted packages (like python)
             # and when people mix Entropy and Portage
-            for installedVer, installedTag, installedRev, cbranch, cdigest in client_data:
+            for installedVer, installedTag, installedRev, cdigest in client_data:
 
                 vcmp = etp_cmp((repo_pkgver,repo_pkgtag,repo_pkgrev,),
                     (installedVer,installedTag,installedRev,))
 
                 # check if both pkgs share the same branch and digest, this must
                 # be done to avoid system inconsistencies across branch upgrades
-                if (vcmp == 0) and (cbranch != repo_branch) and \
-                    (cdigest != repo_digest):
+                if (vcmp == 0) and (cdigest != repo_digest):
                     vcmp = 1
 
                 if (vcmp == 0):
@@ -1796,26 +1792,19 @@ class CalculatorsMixin:
                 else:
 
                     # Note: this is a bugfix to improve branch migration
-                    # and really check if pkg has been repackaged and branch
-                    # changed.
+                    # and really check if pkg has been repackaged
                     # first check branch
                     if idpackage is not None:
 
-                        c_branch = self.clientDbconn.retrieveBranch(idpackage)
                         c_repodb = self.open_repository(repoid)
-                        r_branch = c_repodb.retrieveBranch(m_idpackage)
+                        c_digest = self.clientDbconn.retrieveDigest(idpackage)
+                        r_digest = c_repodb.retrieveDigest(m_idpackage)
 
-                        if (c_branch != r_branch) and (c_branch is not None) \
-                            and (r_branch is not None):
-
-                            c_digest = self.clientDbconn.retrieveDigest(idpackage)
-                            r_digest = c_repodb.retrieveDigest(m_idpackage)
-
-                            if (r_digest != c_digest) and (r_digest is not None) \
-                                and (c_digest is not None):
-                                if (m_idpackage,repoid) not in update:
-                                    update.append((m_idpackage,repoid))
-                                continue
+                        if (r_digest != c_digest) and (r_digest is not None) \
+                            and (c_digest is not None):
+                            if (m_idpackage,repoid) not in update:
+                                update.append((m_idpackage,repoid))
+                            continue
 
                     # no difference
                     fine.append(cl_atom)
