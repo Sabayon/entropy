@@ -28,9 +28,6 @@
 
 
 """
-
-
-
 import sys
 import os
 import stat
@@ -39,7 +36,6 @@ import fcntl
 import signal
 import gzip
 import bz2
-
 from entropy.i18n import _
 
 
@@ -1074,7 +1070,7 @@ def const_create_working_dirs():
                 pass
 
     # Create paths
-    keys = [x for x in etpConst if isinstance(etpConst[x], basestring)]
+    keys = [x for x in etpConst if const_isstring(etpConst[x])]
     for key in keys:
 
         if not etpConst[key] or \
@@ -1339,6 +1335,42 @@ def const_add_entropy_group():
         app_line = "entropy:x:%s:\n" % (new_id,)
         group_fw.write(app_line)
         group_fw.flush()
+
+def const_isstring(obj):
+    """
+    Return whether obj is a string (unicode or raw).
+
+    @param obj: Python object
+    @type obj: Python object
+    @return: True, if object is string
+    @rtype: bool
+    """
+    if sys.hexversion >= 0x3000000:
+        return isinstance(obj, (str, bytes,))
+    else:
+        return isinstance(obj, basestring)
+
+def const_isunicode(obj):
+    """
+    Return whether obj is a unicode.
+
+    @param obj: Python object
+    @type obj: Python object
+    @return: True, if object is unicode
+    @rtype: bool
+    """
+    if sys.hexversion >= 0x3000000:
+        return isinstance(obj, str)
+    else:
+        return isinstance(obj, unicode)
+
+def const_convert_to_unicode(obj):
+    if const_isunicode(obj):
+        return obj
+    if sys.hexversion >= 0x3000000:
+        return str(obj, 'raw_unicode_escape')
+    else:
+        return unicode(obj, 'raw_unicode_escape')
 
 def const_islive():
     """
