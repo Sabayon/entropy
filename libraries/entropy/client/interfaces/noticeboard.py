@@ -10,6 +10,7 @@
 
 """
 import os
+from entropy.const import const_isstring
 from entropy.misc import RSS
 from entropy.dump import loadobj as dump_loadobj, dumpobj as dump_dumpobj
 from entropy.exceptions import RepositoryError
@@ -142,7 +143,7 @@ class NoticeBoardMixin:
             if key not in nb_data:
                 continue
             elem = nb_data[key]
-            if not isinstance(elem, basestring):
+            if not const_isstring(elem):
                 continue
             mystr += elem
 

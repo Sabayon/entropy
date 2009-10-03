@@ -150,7 +150,7 @@ class RepositoryMixin:
 
     def load_repository_database(self, repoid, xcache = True, indexing = True):
 
-        if isinstance(repoid,basestring):
+        if const_isstring(repoid):
             if repoid.endswith(etpConst['packagesext']):
                 xcache = False
 
@@ -1352,7 +1352,7 @@ class MiscMixin:
             valid_repos.extend(self.validRepositories[:])
 
         for repo in valid_repos:
-            if isinstance(repo, basestring):
+            if const_isstring(repo):
                 dbconn = self.open_repository(repo)
             elif isinstance(repo, EntropyRepository):
                 dbconn = repo

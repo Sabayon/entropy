@@ -211,11 +211,11 @@ class CalculatorsMixin:
         k_mr = "-1"
         if isinstance(matchRepo,(list,tuple,set)):
             u_hash = hash(frozenset(matchRepo))
-        if isinstance(matchSlot,basestring):
+        if const_isstring(matchSlot):
             k_ms = matchSlot
-        if isinstance(matchTag,basestring):
+        if const_isstring(matchTag):
             k_mt = matchTag
-        if isinstance(matchRevision,basestring):
+        if const_isstring(matchRevision):
             k_mr = matchRevision
 
         c_hash = "|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
@@ -453,12 +453,12 @@ class CalculatorsMixin:
                     for myset in mysets:
                         mydata = sys_pkgsets.get(myset)
                         set_data.append((etpConst['userpackagesetsid'],
-                            unicode(myset), mydata.copy(),))
+                            const_convert_to_unicode(myset), mydata.copy(),))
                 else:
                     mydata = sys_pkgsets.get(package_set)
                     if mydata is not None:
                         set_data.append((etpConst['userpackagesetsid'],
-                            unicode(package_set), mydata,))
+                            const_convert_to_unicode(package_set), mydata,))
                         if not multiMatch:
                             break
 

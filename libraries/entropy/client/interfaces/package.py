@@ -14,7 +14,8 @@ import errno
 import stat
 import shutil
 from entropy.const import etpConst, etpSys, etpCache, const_setup_perms, \
-    ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL, ETP_LOGLEVEL_VERBOSE
+    ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL, ETP_LOGLEVEL_VERBOSE, \
+    const_isunicode, const_convert_to_unicode
 from entropy.exceptions import PermissionDenied, InvalidData, \
     IncorrectParameter, SPMError
 from entropy.i18n import _
@@ -474,7 +475,7 @@ class Package:
                 (not self.pkgmeta['diffremoval']):
 
                 protected_item_test = sys_root_item
-                if isinstance(protected_item_test, unicode):
+                if const_isunicode(protected_item_test):
                     protected_item_test = protected_item_test.encode('utf-8')
 
                 in_mask, protected, x, do_continue = \
@@ -2393,7 +2394,7 @@ class Package:
         self.pkgmeta['merge_from'] = None
         mf = self.metaopts.get('merge_from')
         if mf != None:
-            self.pkgmeta['merge_from'] = unicode(mf)
+            self.pkgmeta['merge_from'] = const_convert_to_unicode(mf)
         self.pkgmeta['removeconfig'] = removeConfig
 
         pkgkey = entropy.tools.dep_getkey(self.pkgmeta['atom'])

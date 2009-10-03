@@ -231,15 +231,15 @@ class Trigger:
 
             # mandatory variables
             category = pkgdata.get('category')
-            if isinstance(category,unicode):
+            if const_isunicode(category):
                 category = category.encode('utf-8')
 
             pn = pkgdata.get('name')
-            if isinstance(pn,unicode):
+            if const_isunicode(pn):
                 pn = pn.encode('utf-8')
 
             pv = pkgdata.get('version')
-            if isinstance(pv,unicode):
+            if const_isunicode(pv):
                 pv = pv.encode('utf-8')
 
             pr = self.entropyTools.dep_get_portage_revision(pv)
@@ -247,62 +247,62 @@ class Trigger:
             if pr == "r0": pvr += "-%s" % (pr,)
 
             pet = pkgdata.get('versiontag')
-            if isinstance(pet,unicode):
+            if const_isunicode(pet):
                 pet = pet.encode('utf-8')
 
             per = pkgdata.get('revision')
-            if isinstance(per,unicode):
+            if const_isunicode(per):
                 per = per.encode('utf-8')
 
             etp_branch = pkgdata.get('branch')
-            if isinstance(etp_branch,unicode):
+            if const_isunicode(etp_branch):
                 etp_branch = etp_branch.encode('utf-8')
 
             slot = pkgdata.get('slot')
-            if isinstance(slot,unicode):
+            if const_isunicode(slot):
                 slot = slot.encode('utf-8')
 
             pkgatom = pkgdata.get('atom')
             pkgkey = self.entropyTools.dep_getkey(pkgatom)
             pvrte = pkgatom[len(pkgkey)+1:]
-            if isinstance(pvrte,unicode):
+            if const_isunicode(pvrte):
                 pvrte = pvrte.encode('utf-8')
 
             etpapi = pkgdata.get('etpapi')
-            if isinstance(etpapi,unicode):
+            if const_isunicode(etpapi):
                 etpapi = etpapi.encode('utf-8')
 
             p = pkgatom
-            if isinstance(p,unicode):
+            if const_isunicode(p):
                 p = p.encode('utf-8')
 
             chost, cflags, cxxflags = pkgdata.get('chost'), \
                 pkgdata.get('cflags'), pkgdata.get('cxxflags')
 
             chost = pkgdata.get('etpapi')
-            if isinstance(chost,unicode):
+            if const_isunicode(chost):
                 chost = chost.encode('utf-8')
 
             cflags = pkgdata.get('etpapi')
-            if isinstance(cflags,unicode):
+            if const_isunicode(cflags):
                 cflags = cflags.encode('utf-8')
 
             cxxflags = pkgdata.get('etpapi')
-            if isinstance(cxxflags,unicode):
+            if const_isunicode(cxxflags):
                 cxxflags = cxxflags.encode('utf-8')
 
             # Not mandatory variables
 
             eclasses = ' '.join(pkgdata.get('eclasses',[]))
-            if isinstance(eclasses,unicode):
+            if const_isunicode(eclasses):
                 eclasses = eclasses.encode('utf-8')
 
             unpackdir = pkgdata.get('unpackdir','')
-            if isinstance(unpackdir,unicode):
+            if const_isunicode(unpackdir):
                 unpackdir = unpackdir.encode('utf-8')
 
             imagedir = pkgdata.get('imagedir','')
-            if isinstance(imagedir,unicode):
+            if const_isunicode(imagedir):
                 imagedir = imagedir.encode('utf-8')
 
             sb_dirs = [unpackdir,imagedir]

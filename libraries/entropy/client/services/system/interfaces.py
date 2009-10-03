@@ -10,6 +10,7 @@
 
 """
 import time
+from entropy.const import const_isstring
 from entropy.exceptions import *
 from entropy.i18n import _
 from entropy.misc import TimeScheduled
@@ -82,16 +83,21 @@ class Client:
                 self.connection_killer.kill()
 
     def _validate_credentials(self):
-        if not isinstance(self.hostname,basestring):
-            raise IncorrectParameter("IncorrectParameter: hostname: %s. %s" % (_('not a string'),_('Please use setup_connection() properly'),))
-        if not isinstance(self.username,basestring):
-            raise IncorrectParameter("IncorrectParameter: username: %s. %s" % (_('not a string'),_('Please use setup_connection() properly'),))
-        if not isinstance(self.password,basestring):
-            raise IncorrectParameter("IncorrectParameter: password: %s. %s" % (_('not a string'),_('Please use setup_connection() properly'),))
-        if not isinstance(self.hostport,int):
-            raise IncorrectParameter("IncorrectParameter: port: %s. %s" % (_('not an int'),_('Please use setup_connection() properly'),))
-        if not isinstance(self.ssl_connection,bool):
-            raise IncorrectParameter("IncorrectParameter: ssl_connection: %s. %s" % (_('not a bool'),_('Please use setup_connection() properly'),))
+        if not const_isstring(self.hostname):
+            raise IncorrectParameter("IncorrectParameter: hostname: %s. %s" % (
+                _('not a string'),_('Please use setup_connection() properly'),))
+        if not const_isstring(self.username):
+            raise IncorrectParameter("IncorrectParameter: username: %s. %s" % (
+                _('not a string'),_('Please use setup_connection() properly'),))
+        if not const_isstring(self.password):
+            raise IncorrectParameter("IncorrectParameter: password: %s. %s" % (
+                _('not a string'),_('Please use setup_connection() properly'),))
+        if not isinstance(self.hostport, int):
+            raise IncorrectParameter("IncorrectParameter: port: %s. %s" % (
+                _('not an int'),_('Please use setup_connection() properly'),))
+        if not isinstance(self.ssl_connection, bool):
+            raise IncorrectParameter("IncorrectParameter: ssl_connection: %s. %s" % (
+                _('not a bool'),_('Please use setup_connection() properly'),))
 
     def get_session_cache(self, cmd_tuple):
         if self.do_cache_session:

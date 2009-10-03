@@ -144,11 +144,11 @@ class Base:
             self.Output.updateProgress(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
                         darkblue(_("repo")),
-                        bold(unicode(repository)),
+                        bold(str(repository)),
                         darkred(_("arch")),
-                        bold(unicode(arch)),
+                        bold(str(arch)),
                         darkgreen(_("product")),
-                        bold(unicode(product)),
+                        bold(str(product)),
                         blue(mytxt),
                 ),
                 importance = 1,

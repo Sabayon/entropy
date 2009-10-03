@@ -27,7 +27,8 @@ class Repository:
     import entropy.dump as dumpTools
     import entropy.tools as entropyTools
     import socket
-    def __init__(self, EquoInstance, reponames = [], forceUpdate = False, noEquoCheck = False, fetchSecurity = True):
+    def __init__(self, EquoInstance, reponames = [], forceUpdate = False,
+        noEquoCheck = False, fetchSecurity = True):
 
         self.LockScanner = None
         from entropy.client.interfaces import Client
@@ -976,7 +977,7 @@ class Repository:
                     except self.socket.error as e:
                         mytxt = "%s: %s" % (
                             blue(_("EAPI3 Service error")),
-                            darkred(unicode(e)),
+                            darkred(repr(e)),
                         )
                         self.Entropy.updateProgress(
                             mytxt,
@@ -1101,7 +1102,7 @@ class Repository:
                     self.entropyTools.print_traceback()
                     mytxt = "%s: %s" % (
                         blue(_("Configuration files update error, not critical, continuing")),
-                        darkred(unicode(e)),
+                        darkred(repr(e)),
                     )
                     self.Entropy.updateProgress(mytxt, importance = 0,
                         type = "info", header = blue("  # "),)
@@ -1217,7 +1218,7 @@ class Repository:
                             # there can't be bash vars with a space after its name on declaration
                             self.Entropy.updateProgress(
                                 "%s: %s %s. %s." % (
-                                    red(system_make_conf), bold(unicode(setting)),
+                                    red(system_make_conf), bold(repr(setting)),
                                     blue(_("variable differs")), red(_("Updating")),
                                 ),
                                 importance = 1,
@@ -1777,7 +1778,7 @@ class Repository:
         def my_show_file_unpack(fp):
             self.Entropy.updateProgress(
                 "%s: %s" % (darkgreen(_("unpacked meta file")),brown(fp),),
-                header = blue(u"\t  << ")
+                header = blue("\t  << ")
             )
 
         downloaded_by_unpack = set()

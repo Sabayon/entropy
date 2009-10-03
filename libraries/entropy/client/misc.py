@@ -60,13 +60,13 @@ class FileUpdates:
             bcount = 0
             backupfile = etpConst['systemroot'] + \
                 os.path.dirname(self.scandata[key]['destination']) + \
-                "/._entropy_backup." + unicode(bcount) + "_" + \
+                "/._entropy_backup." + str(bcount) + "_" + \
                 os.path.basename(self.scandata[key]['destination'])
             while os.path.lexists(backupfile):
                 bcount += 1
                 backupfile = etpConst['systemroot'] + \
                 os.path.dirname(self.scandata[key]['destination']) + \
-                "/._entropy_backup." + unicode(bcount) + "_" + \
+                "/._entropy_backup." + str(bcount) + "_" + \
                 os.path.basename(self.scandata[key]['destination'])
             try:
                 shutil.copy2(dest_file, backupfile)
