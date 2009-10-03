@@ -643,9 +643,9 @@ def print_generic(*args):
     # writechar("\r")
     for msg in args:
         try:
-            print(msg)
+            sys.stdout.write(msg + "\n")
         except UnicodeEncodeError:
-            print(msg.encode('utf-8'))
+            sys.stdout.write(msg.encode('utf-8') + "\n")
     _flush_stdouterr()
 
 def writechar(chars):
@@ -826,7 +826,11 @@ class TextInterface:
                     _flush_stdouterr()
 
         except (EOFError, KeyboardInterrupt):
-            print("%s." % (_("Interrupted"),))
+            msg = "%s.\n" % (_("Interrupted"),)
+            try:
+                sys.stdout.write(msg)
+            except UnicodeEncodeError:
+                sys.stdout.write(msg.encode("utf-8"))
             xtermTitleReset()
             raise SystemExit(100)
 
@@ -865,9 +869,9 @@ class TextInterface:
         results = {}
         if title:
             try:
-                print(title)
+                sys.stdout.write(title + "\n")
             except UnicodeEncodeError:
-                print(title.encode('utf-8'))
+                sys.stdout.write(title.encode('utf-8') + "\n")
         _flush_stdouterr()
 
         def option_chooser(option_data):
