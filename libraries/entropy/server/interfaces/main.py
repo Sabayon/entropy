@@ -1528,7 +1528,7 @@ class Server(Singleton, TextInterface):
             self.updateProgress(
                 "%s: %s" % (
                     blue(_("Packages already tagged, action aborted")),
-                    ', '.join([darkred(unicode(x)) for x in invalid_atoms]),
+                    ', '.join([darkred(str(x)) for x in invalid_atoms]),
                 ),
                 importance = 1, type = "error", header = darkred(" !! ")
             )
@@ -2307,7 +2307,7 @@ class Server(Singleton, TextInterface):
                     "[repo:%s] %s: %s" % (
                         darkgreen(repo),
                         darkred(_("Exception caught, closing tasks")),
-                        darkgreen(unicode(err)),
+                        darkgreen(str(err)),
                     ),
                     importance = 1,
                     type = "error",

@@ -408,7 +408,7 @@ class Server:
                 ftp_connection.set_cwd(my_path, dodir = True)
 
         crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
-        lock_string = u''
+        lock_string = ''
 
         if dblock:
             self.create_local_database_lockfile(repo)
@@ -1026,10 +1026,10 @@ class Server:
         rss_dump_name = repo + etpConst['rss-dump-name']
         db_revision_path = self.Entropy.get_local_database_revision_file(repo)
 
-        rss_title = u"%s Online Repository Status" % (
+        rss_title = "%s Online Repository Status" % (
             self.SystemSettings['system']['name'],)
         rss_description = \
-            u"Keep you updated on what's going on in the %s Repository." % (
+            "Keep you updated on what's going on in the %s Repository." % (
                 self.SystemSettings['system']['name'],)
 
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
@@ -1044,13 +1044,13 @@ class Server:
                 revision = f_rev.readline().strip()
                 f_rev.close()
             except (IOError, OSError):
-                revision = u"N/A"
-            commitmessage = u''
+                revision = "N/A"
+            commitmessage = ''
             if self.Entropy.rssMessages['commitmessage']:
-                commitmessage = u' :: ' + \
+                commitmessage = ' :: ' + \
                     self.Entropy.rssMessages['commitmessage']
 
-            title = u": " + self.SystemSettings['system']['name'] + u" " + \
+            title = ": " + self.SystemSettings['system']['name'] + " " + \
                 product[0].upper() + product[1:] + " " + \
                 self.SystemSettings['repositories']['branch'] + \
                 " :: Revision: " + revision + commitmessage
@@ -1515,7 +1515,7 @@ class Server:
                 try:
                     ftp_connection.mkdir(bdir)
                 except Exception as err:
-                    error = unicode(err)
+                    error = repr(err)
                     if (error.find("550") == -1) and \
                         (error.find("File exist") == -1):
 
@@ -1917,7 +1917,7 @@ class Server:
                 self.Entropy.updateProgress(
                     "%s: %s" % (
                         blue(_("download path")),
-                        brown(unicode(download_data[myfile])),
+                        brown(download_data[myfile]),
                     ),
                     importance = 0,
                     type = "info",
@@ -2732,7 +2732,7 @@ class Server:
                     blue(_("upload errors")),
                     red(crippled_uri),
                     blue(_("reason")),
-                    darkgreen(unicode(reason)),
+                    darkgreen(repr(reason)),
                 ),
                 importance = 1,
                 type = "error",
@@ -3096,7 +3096,7 @@ class Server:
                     returndata = True)
                 for line in exc_txt:
                     self.Entropy.updateProgress(
-                        unicode(line),
+                        repr(line),
                         importance = 1,
                         type = "error",
                         header = darkred(":  ")
