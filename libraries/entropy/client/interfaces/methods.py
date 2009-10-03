@@ -1611,13 +1611,21 @@ class MatchMixin:
         dbconn = self.open_repository(match[1])
         pkgkey, pkgslot = dbconn.retrieveKeySlot(match[0])
         results = self.clientDbconn.searchKeySlot(pkgkey, pkgslot)
-        if not results: return 1
+        if not results:
+            return 1
 
         installed_idpackage = results[0][0]
         pkgver, pkgtag, pkgrev = dbconn.getVersioningData(match[0])
         installedVer, installedTag, installedRev = self.clientDbconn.getVersioningData(installed_idpackage)
         pkgcmp = self.entropyTools.entropy_compare_versions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
         if pkgcmp == 0:
+            # check digest, if it differs, we should mark pkg as update
+            # we don't want users to think that they are "reinstalling" stuff
+            # because it will just confuse them
+            inst_digest = self.clientDbconn.retrieveDigest(installed_idpackage)
+            repo_digest = dbconn.retrieveDigest(match[0])
+            if inst_digest != repo_digest:
+                return 2
             return 0
         elif pkgcmp > 0:
             return 2
