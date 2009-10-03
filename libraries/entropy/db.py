@@ -36,7 +36,7 @@
 
 import os
 import shutil
-from entropy.const import etpConst, etpCache, const_setup_file
+from entropy.const import etpConst, etpCache, const_setup_file, const_isunicode
 from entropy.exceptions import IncorrectParameter, InvalidAtom, \
     SystemDatabaseError, OperationNotPermitted
 from entropy.i18n import _
@@ -1500,7 +1500,7 @@ class EntropyRepository:
         )
 
         myidpackage_string = 'NULL'
-        if isinstance(idpackage, (int,)):
+        if isinstance(idpackage, int):
 
             manual_deps = self.retrieveManualDependencies(idpackage)
 
@@ -2488,7 +2488,7 @@ class EntropyRepository:
             lic_data = licenses_data.get(mylicense, '')
 
             # support both utf8 and str input
-            if isinstance(lic_data, unicode): # encode to str
+            if const_isunicode(lic_data): # encode to str
                 try:
                     lic_data = lic_data.encode('raw_unicode_escape')
                 except (UnicodeDecodeError,):
@@ -4523,7 +4523,7 @@ class EntropyRepository:
         excluded_deptypes_query = ""
         if exclude_deptypes != None:
             for dep_type in exclude_deptypes:
-                if not isinstance(dep_type, (int,)):
+                if not isinstance(dep_type, int):
                     # filter out crap
                     continue
                 excluded_deptypes_query += " AND dependencies.type != %s" % (
@@ -8386,7 +8386,7 @@ class EntropyRepository:
             atomUse = ()
         atomSlot = self.entropyTools.dep_getslot(atom)
         atomRev = self.entropyTools.dep_get_entropy_revision(atom)
-        if isinstance(atomRev, (int,)):
+        if isinstance(atomRev, int):
             if atomRev < 0: atomRev = None
 
         # use match
