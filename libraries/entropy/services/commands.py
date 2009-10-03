@@ -28,7 +28,7 @@ class phpBB3(SocketCommands):
                 'as_user': False,
                 'desc': "returns whether the username linked with the session belongs to a simple user",
                 'syntax': "<SESSION_ID> is_user",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'is_developer':    {
                 'auth': True,
@@ -38,7 +38,7 @@ class phpBB3(SocketCommands):
                 'as_user': False,
                 'desc': "returns whether the username linked with the session belongs to a developer",
                 'syntax': "<SESSION_ID> is_developer",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'is_moderator':    {
                 'auth': True,
@@ -48,7 +48,7 @@ class phpBB3(SocketCommands):
                 'as_user': False,
                 'desc': "returns whether the username linked with the session belongs to a moderator",
                 'syntax': "<SESSION_ID> is_moderator",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'is_administrator':    {
                 'auth': True,
@@ -58,7 +58,7 @@ class phpBB3(SocketCommands):
                 'as_user': False,
                 'desc': "returns whether the username linked with the session belongs to an administrator",
                 'syntax': "<SESSION_ID> is_administrator",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
         }
 

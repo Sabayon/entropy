@@ -15,7 +15,7 @@ import time
 import random
 from entropy.services.skel import Authenticator, RemoteDatabase
 from entropy.exceptions import *
-from entropy.const import etpConst
+from entropy.const import etpConst, const_isstring
 from entropy.i18n import _
 
 class phpBB3Auth(Authenticator,RemoteDatabase):
@@ -437,7 +437,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
         if isinstance(group,int):
             if group in groups:
                 return True
-        elif isinstance(group,basestring):
+        elif const_isstring(group):
             self.cursor.execute('SELECT group_id FROM '+self.TABLE_PREFIX+'groups WHERE group_name = %s', (group,))
             data = self.cursor.fetchone()
             if not data:
@@ -557,7 +557,7 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
 
         # validate parameters
         b_day = my_params.get('user_birthday')
-        if isinstance(b_day,basestring):
+        if const_isstring(b_day):
             import re
             myre = re.compile("(0[1-9]|[12][0-9]|3[01])[-](0[1-9]|1[012])[-](19|20)\d\d")
             if not myre.match(b_day):

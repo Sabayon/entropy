@@ -32,7 +32,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "returns idpackage differences against the latest available repository",
                 'syntax': "<SESSION_ID> repository_server:dbdiff <repository> <arch> <product> <branch> [idpackages]",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'repository_server:pkginfo_strict':    {
                 'auth': False,
@@ -42,7 +42,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "returns metadata of the provided idpackages excluding 'content'",
                 'syntax': "<SESSION_ID> repository_server:pkginfo_strict <content fmt True/False> <repository> <arch> <product> <branch> <idpackage>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'repository_server:treeupdates':    {
                 'auth': False,
@@ -52,7 +52,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "returns repository treeupdates metadata",
                 'syntax': "<SESSION_ID> repository_server:treeupdates <repository> <arch> <product> <branch>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'repository_server:get_package_sets': {
                 'auth': False,
@@ -62,7 +62,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "returns repository package sets metadata",
                 'syntax': "<SESSION_ID> repository_server:get_package_sets <repository> <arch> <product> <branch>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'repository_server:get_repository_metadata': {
                 'auth': False,
@@ -72,7 +72,7 @@ class Repository(SocketCommands):
                 'as_user': False,
                 'desc': "returns repository metadata (package sets, treeupdates, libraries <=> idpackages map)",
                 'syntax': "<SESSION_ID> repository_server:get_repository_metadata <repository> <arch> <product> <branch>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             }
         }
 

@@ -15,7 +15,7 @@ import select
 import shutil
 import time
 from entropy.const import etpConst, ETP_LOGLEVEL_NORMAL, ETP_LOGPRI_INFO, \
-    const_setup_perms
+    const_setup_perms, const_isstring
 from entropy.exceptions import *
 from entropy.services.skel import SocketAuthenticator, SocketCommands
 from entropy.i18n import _
@@ -146,7 +146,7 @@ class SocketHost:
 
             user = myargs[0]
             # filter n00bs
-            if not user or not isinstance(user,basestring):
+            if not user or not const_isstring(user):
                 return False,None,"wrong user"
 
             return True,user,"ok"

@@ -29,7 +29,7 @@ class Test(SocketCommands):
                 'as_user': False,
                 'desc': "print arguments echo",
                 'syntax': "<SESSION_ID> test:echo <raw_data>",
-                'from': unicode(self),
+                'from': str(self),
             },
         }
 

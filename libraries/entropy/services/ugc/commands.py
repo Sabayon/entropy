@@ -48,7 +48,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "get the comments of the provided package key",
                 'syntax': "<SESSION_ID> ugc:get_comments app-foo/foo",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:get_comments_by_identifiers':    {
                 'auth': False,
@@ -58,7 +58,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "get the comments belonging to the provided identifiers",
                 'syntax': "<SESSION_ID> ugc:get_comments_by_identifiers <identifier1> <identifier2> <identifier3>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:get_documents_by_identifiers':    {
                 'auth': False,
@@ -68,7 +68,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "get the documents belonging to the provided identifiers",
                 'syntax': "<SESSION_ID> ugc:get_documents_by_identifiers <identifier1> <identifier2> <identifier3>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:get_vote':    {
                 'auth': False,
@@ -78,7 +78,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "get the vote of the provided package key",
                 'syntax': "<SESSION_ID> ugc:get_vote app-foo/foo",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:get_downloads':    {
                 'auth': False,
@@ -88,7 +88,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "get the number of downloads of the provided package key",
                 'syntax': "<SESSION_ID> ugc:get_downloads app-foo/foo",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:get_textdocs':    {
                 'auth': False,
@@ -98,7 +98,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "get the text documents belonging to the provided package key",
                 'syntax': "<SESSION_ID> ugc:get_textdocs app-foo/foo",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:get_textdocs_by_identifiers':    {
                 'auth': False,
@@ -108,7 +108,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "get the text documents belonging to the provided identifiers",
                 'syntax': "<SESSION_ID> ugc:get_textdocs_by_identifiers <identifier1> <identifier2> <identifier3>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:get_alldocs':    {
                 'auth': False,
@@ -118,7 +118,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "get the all the documents belonging to the provided package key",
                 'syntax': "<SESSION_ID> ugc:get_alldocs app-foo/foo",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:get_allvotes':    {
                 'auth': False,
@@ -128,7 +128,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "get vote information for every available package key",
                 'syntax': "<SESSION_ID> ugc:get_allvotes",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:get_alldownloads':    {
                 'auth': False,
@@ -138,7 +138,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "get download information for every available package key",
                 'syntax': "<SESSION_ID> ugc:get_alldownloads",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:do_vote':    {
                 'auth': True,
@@ -148,7 +148,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "vote the specified application (from 0 to 5)",
                 'syntax': "<SESSION_ID> ugc:do_vote app-foo/foo <0..5>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:do_downloads':    {
                 'auth': False,
@@ -158,7 +158,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "inform the system of downloaded applications",
                 'syntax': "<SESSION_ID> ugc:do_downloads app-foo/foo1 app-foo/foo2 <...>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:add_comment':    {
                 'auth': True,
@@ -168,7 +168,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "insert a comment related to a package key",
                 'syntax': "<SESSION_ID> ugc:add_comment app-foo/foo <valid xml formatted data>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:remove_comment':    {
                 'auth': True,
@@ -178,7 +178,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "remove a comment (you need its iddoc and mod/admin privs)",
                 'syntax': "<SESSION_ID> ugc:remove_comment <iddoc>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:edit_comment':    {
                 'auth': True,
@@ -188,7 +188,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "edit a comment related to a package key (you need its iddoc, mod/admin privs or being the author)",
                 'syntax': "<SESSION_ID> ugc:edit_comment <iddoc> <valid xml formatted data>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:register_stream':    {
                 'auth': True,
@@ -198,7 +198,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "register an uploaded file (through stream cmd) to the relative place (image, file, videos)",
                 'syntax': "<SESSION_ID> ugc:register_stream app-foo/foo <valid xml formatted data>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:remove_image':    {
                 'auth': True,
@@ -208,7 +208,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "remove an image (you need its iddoc and mod/admin privs)",
                 'syntax': "<SESSION_ID> ugc:remove_image <iddoc>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:remove_file':    {
                 'auth': True,
@@ -218,7 +218,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "remove a file (you need its iddoc and mod/admin privs)",
                 'syntax': "<SESSION_ID> ugc:remove_file <iddoc>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:remove_youtube_video':    {
                 'auth': True,
@@ -228,7 +228,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "remove a youtube video (you need its iddoc and mod/admin privs)",
                 'syntax': "<SESSION_ID> ugc:remove_youtube_video <iddoc>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:do_download_stats':    {
                 'auth': False,
@@ -238,7 +238,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "send information regarding downloads and distribution used",
                 'syntax': "<SESSION_ID> ugc:do_download_stats <valid xml formatted data>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
             'ugc:report_error':    {
                 'auth': False,
@@ -248,7 +248,7 @@ class UGC(SocketCommands):
                 'as_user': False,
                 'desc': "submit an Entropy Error Report",
                 'syntax': "<SESSION_ID> ugc:report_error <valid xml formatted data>",
-                'from': unicode(self), # from what class
+                'from': str(self), # from what class
             },
         }
 
