@@ -1,5 +1,5 @@
 #!/usr/bin/python2 -O
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
@@ -960,7 +960,7 @@ class RepositoryManagerMenu(MenuSkel):
             if data[key]['private']: continue
             item = data[key].copy()
             item['key'] = key
-            params = ' | '.join([cleanMarkupString(unicode(x)) for x in item['params']])
+            params = ' | '.join([cleanMarkupString(str(x)) for x in item['params']])
             if not params:
                 params = _("None")
             txt = "<small><b>%s</b>: %s\n<b>%s</b>: %s</small>" % (
@@ -1167,7 +1167,7 @@ class RepositoryManagerMenu(MenuSkel):
             elif property == "commands:desc":
                 cell.set_property('markup',obj['myinfo'])
             elif property == "pinboard:date":
-                cell.set_property('markup',unicode(obj['ts']))
+                cell.set_property('markup', str(obj['ts']))
             elif property == "pinboard:note":
                 cell.set_property('markup',cleanMarkupString(obj['note']))
 
@@ -1235,7 +1235,7 @@ class RepositoryManagerMenu(MenuSkel):
     def service_status_message(self, e):
         entropyTools.print_traceback()
         def do_ok():
-            okDialog(self.sm_ui.repositoryManager, unicode(e),
+            okDialog(self.sm_ui.repositoryManager, str(e),
                 title = _("Communication error"))
             return False
         gobject.idle_add(do_ok)
@@ -3739,12 +3739,12 @@ class SmPinboardMenu(MenuSkel):
     def load(self, item):
 
         na = _("N/A")
-        self.sm_ui.smPinboardId.set_text(unicode(item['pinboard_id']))
-        self.sm_ui.smPinboardDate.set_text(unicode(item['ts']))
-        self.sm_ui.smPinboardDone.set_text(unicode(item['done']))
-        self.sm_ui.smPinboardNote.set_text(unicode(item['note']))
+        self.sm_ui.smPinboardId.set_text(item['pinboard_id'])
+        self.sm_ui.smPinboardDate.set_text(item['ts'])
+        self.sm_ui.smPinboardDone.set_text(item['done'])
+        self.sm_ui.smPinboardNote.set_text(item['note'])
         mybuffer = gtk.TextBuffer()
-        mybuffer.set_text(unicode(item['extended_text']))
+        mybuffer.set_text(item['extended_text'])
         self.sm_ui.smPinboardExtendedNote.set_buffer(mybuffer)
 
         bold_items = [
@@ -3803,8 +3803,8 @@ class RmNoticeBoardMenu(MenuSkel):
     def load(self, item):
 
         na = _("N/A")
-        self.rm_ui.rmNoticeBoardIdLabel.set_text(unicode(item['id']))
-        self.rm_ui.rmNoticeBoardDateLabel.set_text(cleanMarkupString(unicode(item['pubDate'])))
+        self.rm_ui.rmNoticeBoardIdLabel.set_text(item['id'])
+        self.rm_ui.rmNoticeBoardDateLabel.set_text(cleanMarkupString(item['pubDate']))
         self.rm_ui.rmNoticeBoardTitleLabel.set_text(cleanMarkupString(item['title']))
         self.rm_ui.rmNoticeBoardLinkLabel.set_label(item['link'])
         self.rm_ui.rmNoticeBoardLinkLabel.set_uri(item['link'])
@@ -3852,21 +3852,21 @@ class SmQueueMenu(MenuSkel):
     def load(self, item):
 
         na = _("N/A")
-        self.sm_ui.smQueueIdL.set_text(unicode(item['queue_id']))
+        self.sm_ui.smQueueIdL.set_text(item['queue_id'])
         self.sm_ui.smCommandNameL.set_text(item['command_name'])
         self.sm_ui.smCommandDescL.set_text(item['command_desc'])
         args = "None"
-        if isinstance(item['args'],list):
-            args = ' '.join([unicode(x) for x in item['args']])
+        if isinstance(item['args'], list):
+            args = ' '.join([x for x in item['args']])
         self.sm_ui.smCommandArgsL.set_text(args)
         self.sm_ui.smCallL.set_text(item['call'])
         self.sm_ui.smUserGroupL.set_text("%s / %s " % (item.get('user_id'),item.get('group_id'),))
-        self.sm_ui.smQueuedAtL.set_text(unicode(item['queue_ts']))
-        self.sm_ui.smProcessingAtL.set_text(unicode(item.get('processing_ts')))
-        self.sm_ui.smCompletedAtL.set_text(unicode(item.get('completed_ts')))
-        self.sm_ui.smErroredAtL.set_text(unicode(item.get('errored_ts')))
-        self.sm_ui.smStdoutFileL.set_text(unicode(item['stdout']))
-        self.sm_ui.smProcessResultL.set_text(unicode(item.get('result')))
+        self.sm_ui.smQueuedAtL.set_text(item['queue_ts'])
+        self.sm_ui.smProcessingAtL.set_text(item.get('processing_ts'))
+        self.sm_ui.smCompletedAtL.set_text(item.get('completed_ts'))
+        self.sm_ui.smErroredAtL.set_text(item.get('errored_ts'))
+        self.sm_ui.smStdoutFileL.set_text(item['stdout'])
+        self.sm_ui.smProcessResultL.set_text(item.get('result', ''))
 
         bold_items = [
 
