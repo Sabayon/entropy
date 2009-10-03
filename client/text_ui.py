@@ -852,6 +852,9 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 if not (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']):
                     continue
 
+                inst_meta = (installedVer, installedTag, installedRev,)
+                avail_meta = (pkgver, pkgtag, pkgrev,)
+
                 action = 0
                 repoSwitch = False
                 if (reponame != installedRepo) and (installedRepo is not None):
@@ -862,23 +865,26 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                     flags = " ["
                 if installedRepo is None:
                     installedRepo = _('Not available')
-                pkgcmp = Equo.entropyTools.entropy_compare_versions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
-                if (pkgcmp == 0):
+                pkgcmp = Equo.get_package_action((idpackage, reponame))
+                if pkgcmp == 0:
                     pkgsToReinstall += 1
                     flags += red("R")
                     action = 1
-                elif (pkgcmp > 0):
-                    if (installedVer == "-1"):
-                        pkgsToInstall += 1
-                        flags += darkgreen("N")
+                elif pkgcmp == 1:
+                    pkgsToInstall += 1
+                    flags += darkgreen("N")
+                elif pkgcmp == 2:
+                    pkgsToUpdate += 1
+                    if avail_meta == inst_meta:
+                        flags += blue("U") + red("R")
                     else:
-                        pkgsToUpdate += 1
                         flags += blue("U")
-                        action = 2
+                    action = 2
                 else:
                     pkgsToDowngrade += 1
                     flags += darkblue("D")
                     action = -1
+
                 if repoSwitch:
                     flags += darkred("] ")
                 else:
