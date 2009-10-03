@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Copyright 2001-2004 Gentoo Foundation
 # Distributed under the terms of the GNU General Public License v2
 # $Id: xpak.py 5595 2007-01-12 08:08:03Z antarus $
@@ -87,7 +88,7 @@ def xpak_mem(mydata):
 	indexpos=0
 	dataglob=""
 	datapos=0
-	for x, newglob in mydata.items():
+	for x, newglob in list(mydata.items()):
 		mydatasize=len(newglob)
 		indexglob=indexglob+encodeint(len(x))+x+encodeint(datapos)+encodeint(mydatasize)
 		indexpos=indexpos+4+len(x)+4+4
