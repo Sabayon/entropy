@@ -202,9 +202,9 @@ def print_exception(returndata = False):
                 data.append("\t%20s = " % key,)
             try:
                 if not returndata:
-                    sys.stdout.write(value + "\n")
+                    sys.stdout.write(repr(value) + "\n")
                 else:
-                    data.append(value)
+                    data.append(repr(value))
             except:
                 if not returndata:
                     sys.stdout.write("<ERROR WHILE PRINTING VALUE>\n")
