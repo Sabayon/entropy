@@ -643,9 +643,10 @@ def print_generic(*args):
     # writechar("\r")
     for msg in args:
         try:
-            sys.stdout.write(msg + "\n")
+            sys.stdout.write(msg + " ")
         except UnicodeEncodeError:
-            sys.stdout.write(msg.encode('utf-8') + "\n")
+            sys.stdout.write(msg.encode('utf-8') + " ")
+    sys.stdout.write("\n")
     _flush_stdouterr()
 
 def writechar(chars):
