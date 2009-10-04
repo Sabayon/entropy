@@ -1337,6 +1337,17 @@ def const_add_entropy_group():
         group_fw.write(app_line)
         group_fw.flush()
 
+def const_get_stringtype():
+    """
+    Return generic string type for usage in isinstance().
+    On Python 2.x, it returns basestring while on Python 3.x it returns
+    (str, bytes,)
+    """
+    if sys.hexversion >= 0x3000000:
+        return (str, bytes,)
+    else:
+        return basestring
+
 def const_isstring(obj):
     """
     Return whether obj is a string (unicode or raw).
@@ -1377,10 +1388,7 @@ def const_convert_to_unicode(obj, enctype = 'raw_unicode_escape'):
     """
     if const_isunicode(obj):
         return obj
-    if sys.hexversion >= 0x3000000:
-        return str(obj, enctype)
-    else:
-        return unicode(obj, enctype)
+    return obj.decode("raw_unicode_escape")
 
 def const_convert_to_rawstring(obj, from_enctype = 'raw_unicode_escape'):
     if not const_isunicode(obj):
