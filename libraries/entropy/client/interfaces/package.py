@@ -1239,7 +1239,7 @@ class Package:
 
                 mytxt = "%s: %s" % (
                     _("file expected, directory found"),
-                    tofile,
+                    const_convert_to_unicode(tofile),
                 )
                 mytxt2 = _("Removing in 20 seconds !!")
                 for txt in (mytxt, mytxt2,):
@@ -1278,8 +1278,8 @@ class Package:
                     ETP_LOGLEVEL_NORMAL,
                     "WARNING!!! Error during file move" \
                     " to system: %s => %s | IGNORED: %s" % (
-                        fromfile,
-                        tofile,
+                        const_convert_to_unicode(fromfile),
+                        const_convert_to_unicode(tofile),
                         err,
                     )
                 )
@@ -1294,8 +1294,8 @@ class Package:
                 )
                 mytxt = "%s: %s => %s, %s" % (
                     _("File move error"),
-                    fromfile,
-                    tofile,
+                    const_convert_to_unicode(fromfile),
+                    const_convert_to_unicode(tofile),
                     _("please report"),
                 )
                 self.Entropy.updateProgress(
