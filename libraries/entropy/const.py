@@ -62,6 +62,7 @@ etpSys = {
     'arch': ETP_ARCH_CONST,
     'rootdir': "",
     'serverside': False,
+    'unittest': False,
 }
 
 etpUi = {
