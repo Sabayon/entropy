@@ -1147,7 +1147,7 @@ class Package:
                 myrc = self._handle_install_collision_protect(tofile,
                     todbfile)
                 if not myrc:
-                    return
+                    return 0
 
             prot_old_tofile = tofile[len(sys_root):]
             pre_tofile = tofile[:]
@@ -1206,7 +1206,7 @@ class Package:
                         tofile = pre_tofile
 
             if do_return:
-                return
+                return 0
 
             if os.path.realpath(fromfile) == os.path.realpath(tofile) and \
                 os.path.islink(tofile):
@@ -1314,6 +1314,7 @@ class Package:
                 # add to disk cache
                 self.Entropy.FileUpdates.add_to_cache(tofile, quiet = True)
 
+            return 0
 
         # merge data into system
         for currentdir, subdirs, files in os.walk(encoded_image_dir):
@@ -1323,7 +1324,9 @@ class Package:
                 workout_subdir(currentdir, subdir)
 
             for item in files:
-                workout_file(currentdir, item)
+                move_st = workout_file(currentdir, item)
+                if move_st != 0:
+                    return move_st
 
         # this is useful to avoid the removal of installed
         # files by __remove_package just because
