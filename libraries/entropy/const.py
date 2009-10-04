@@ -1347,7 +1347,7 @@ def const_isstring(obj):
     @rtype: bool
     """
     if sys.hexversion >= 0x3000000:
-        return isinstance(obj, (str, bytes,))
+        return isinstance(obj, (str, bytes))
     else:
         return isinstance(obj, basestring)
 
