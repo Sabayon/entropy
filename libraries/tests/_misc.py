@@ -23,6 +23,10 @@ def get_test_package3():
     test_pkg = "apache-tools-2.2.11.tbz2"
     return get_test_generic_package(test_pkg)
 
+def get_entrofoo_test_package():
+    test_pkg = "entrofoo-1.tbz2"
+    return get_test_generic_package(test_pkg), "app-misc/entrofoo"
+
 def get_test_entropy_package():
     test_pkg = "sys-libs:zlib-1.2.3-r1~1.tbz2"
     return get_test_generic_package(test_pkg)
