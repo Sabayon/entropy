@@ -11,7 +11,8 @@
 """
 
 import os
-from entropy.const import etpUi, const_convert_to_unicode
+from entropy.const import etpUi, const_convert_to_unicode, \
+    const_convert_to_rawstring
 from entropy.output import darkgreen, darkred, red, blue, \
     brown, purple, bold, print_info, print_error, print_generic
 from entropy.client.interfaces import Client as EquoInterface
