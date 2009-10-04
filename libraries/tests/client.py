@@ -1,15 +1,19 @@
 # -*- coding: utf-8 -*-
 import sys
+sys.path.insert(0,'client')
+sys.path.insert(0,'../../client')
 sys.path.insert(0,'.')
 sys.path.insert(0,'../')
 import unittest
 import os
+import shutil
+import tempfile
 from entropy.client.interfaces import Client
 from entropy.const import etpConst, etpUi
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError
-from . import _misc
+import _misc
 
 class EntropyRepositoryTest(unittest.TestCase):
 
@@ -23,6 +27,7 @@ class EntropyRepositoryTest(unittest.TestCase):
             dbname = etpConst['clientdbid'])
         self.Spm = self.Client.Spm()
         self.SystemSettings = SystemSettings()
+        self.test_pkgs = [_misc.get_entrofoo_test_package()]
 
     def tearDown(self):
         """
@@ -99,6 +104,56 @@ class EntropyRepositoryTest(unittest.TestCase):
             dbconn = self.Client.open_repository(repoid)
             self.assertNotEqual(None, dbconn.getPackageData(idpackage))
             self.assertNotEqual(None, dbconn.retrieveAtom(idpackage))
+
+    def test_package_installation(self):
+        for pkg_path, pkg_atom in self.test_pkgs:
+            self._do_pkg_test(pkg_path, pkg_atom)
+
+    def _do_pkg_test(self, pkg_path, pkg_atom):
+
+        # this test might be considered controversial, for now, let's keep it
+        # here, we use equo stuff to make sure it keeps working
+        import text_smart
+
+        # we need to tweak the default unpack dir to make pkg install available
+        # for uids != 0
+        temp_unpack = tempfile.mkdtemp()
+        etpConst['entropyunpackdir'] = temp_unpack
+
+        fake_root = tempfile.mkdtemp()
+        pkg_dir = tempfile.mkdtemp()
+        inst_dir = tempfile.mkdtemp()
+
+        rc = text_smart.InflateHandler([pkg_path], pkg_dir)
+        self.assert_(rc == 0)
+        self.assert_(os.listdir(pkg_dir))
+
+        etp_pkg = os.path.join(pkg_dir, os.listdir(pkg_dir)[0])
+        self.assert_(os.path.isfile(etp_pkg))
+
+        status, matches = self.Client.add_package_to_repos(etp_pkg)
+        self.assert_(status == 0)
+        self.assert_(matches)
+        for match in matches:
+            my_p = self.Client.Package()
+            my_p.prepare(match, "install", {})
+            # unit testing metadata setting, of course, undocumented
+            my_p.pkgmeta['unittest_root'] = fake_root
+            rc = my_p.run()
+            self.assert_(rc == 0)
+
+        # remove pkg
+        idpackages = self.Client.clientDbconn.listAllIdpackages()
+        for idpackage in idpackages:
+            my_p = self.Client.Package()
+            my_p.prepare((idpackage,), "remove", {})
+            rc = my_p.run()
+            self.assert_(rc == 0)
+
+        # done installing
+        shutil.rmtree(pkg_dir, True)
+        shutil.rmtree(temp_unpack, True)
+        shutil.rmtree(fake_root, True)
 
 
 if __name__ == '__main__':
