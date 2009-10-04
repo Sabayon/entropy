@@ -6,7 +6,7 @@ sys.path.insert(0,'../')
 import unittest
 import entropy.tools as et
 from entropy.client.interfaces import Client
-from . import _misc
+import _misc
 import tempfile
 import subprocess
 import shutil
