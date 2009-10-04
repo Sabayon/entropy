@@ -515,7 +515,7 @@ def ugcDocuments(options):
 
 def showDocument(mydict, repository, pkgkey):
 
-    title = unicode(mydict['title'], 'raw_unicode_escape')
+    title = const_convert_to_unicode(mydict['title'])
     if not title:
         title = _("No title")
     title = darkgreen(title)
@@ -541,11 +541,11 @@ def showDocument(mydict, repository, pkgkey):
             title,
         )
     )
-    if isinstance(mydict['ddata'], basestring):
+    if const_isstring(mydict['ddata']):
         text = mydict['ddata']
     else:
         text = mydict['ddata'].tostring()
-    text = unicode(text,'raw_unicode_escape')
+    text = const_convert_to_unicode(text)
     _my_formatted_print(text,"\t%s: " % (blue(_("Content")),),"\t")
 
     print_info("\t%s: %s" % (

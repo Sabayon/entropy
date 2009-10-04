@@ -1272,7 +1272,7 @@ def configurePackages(packages = None):
         if idpackage == -1:
             mytxt = "## %s: %s %s." % (
                 red(_("ATTENTION")),
-                bold(unicode(package,'raw_unicode_escape')),
+                bold(const_convert_to_unicode(package)),
                 red(_("is not installed")),
             )
             print_warning(mytxt)
@@ -1373,7 +1373,7 @@ def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
                 if idpackage == -1:
                     mytxt = "## %s: %s %s." % (
                         red(_("ATTENTION")),
-                        bold(unicode(package,'raw_unicode_escape')),
+                        bold(const_convert_to_unicode(package)),
                         red(_("is not installed")),
                     )
                     print_warning(mytxt)
