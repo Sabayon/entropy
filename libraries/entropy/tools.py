@@ -28,7 +28,7 @@ import random
 from entropy.output import TextInterface, print_info, print_generic, red, \
     darkgreen, green
 from entropy.const import etpConst, const_kill_threads, const_islive, \
-    const_isunicode
+    const_isunicode, const_convert_to_unicode
 from entropy.exceptions import FileNotFound, InvalidAtom, InvalidDataType, \
     DirectoryNotFound
 
@@ -391,7 +391,7 @@ def is_valid_unicode(string):
 
     # try to convert bytes to unicode
     try:
-        unicode(string, 'raw_unicode_escape')
+        const_convert_to_unicode(string)
     except (UnicodeEncodeError, UnicodeDecodeError,):
         return False
     return True
@@ -3743,7 +3743,7 @@ def xml_from_dict_extended(dictionary):
         item.setAttribute('value', key)
         if isinstance(value, str):
             mytype = "str"
-        elif isinstance(value, unicode):
+        elif const_isunicode(value):
             mytype = "unicode"
         elif isinstance(value, list):
             mytype = "list"
@@ -3787,9 +3787,14 @@ def dict_from_xml_extended(xml_string):
     entropy = entropies[0]
     items = entropy.getElementsByTagName('item')
 
+    def convert_unicode(obj):
+        if const_isunicode(obj):
+            return obj
+        return const_convert_to_unicode(obj)
+
     my_map = {
         "str": str,
-        "unicode": unicode,
+        "unicode": convert_unicode,
         "list": list,
         "set": set,
         "frozenset": frozenset,
@@ -3806,7 +3811,8 @@ def dict_from_xml_extended(xml_string):
         if not key: continue
         mytype = item.getAttribute('type')
         mytype_m = my_map.get(mytype)
-        if mytype_m == None: TypeError
+        if mytype_m == None:
+            raise TypeError()
         try:
             data = item.firstChild.data
         except AttributeError:
