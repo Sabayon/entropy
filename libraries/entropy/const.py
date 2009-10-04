@@ -1365,13 +1365,27 @@ def const_isunicode(obj):
     else:
         return isinstance(obj, unicode)
 
-def const_convert_to_unicode(obj):
+def const_convert_to_unicode(obj, enctype = 'raw_unicode_escape'):
+    """
+    Convert generic string to unicode format, this function supports both
+    Python 2.x and Python 3.x unicode bullshit.
+
+    @param obj: generic string object
+    @type obj: string
+    @return: unicode string object
+    @rtype: unicode object
+    """
     if const_isunicode(obj):
         return obj
     if sys.hexversion >= 0x3000000:
-        return str(obj, 'raw_unicode_escape')
+        return str(obj, enctype)
     else:
-        return unicode(obj, 'raw_unicode_escape')
+        return unicode(obj, enctype)
+
+def const_convert_to_rawstring(obj, from_enctype = 'raw_unicode_escape'):
+    if not const_isunicode(obj):
+        return obj
+    return obj.encode(from_enctype)
 
 def const_islive():
     """
