@@ -547,7 +547,7 @@ def movefile(src, dest, src_basedir = None):
         except Exception as e:
             print_generic("!!! failed to properly create symlink:")
             print_generic("!!!", dest, "->", target)
-            print_generic("!!!", e)
+            print_generic("!!!", repr(e))
             return False
 
     renamefailed = True
@@ -559,7 +559,7 @@ def movefile(src, dest, src_basedir = None):
             if e[0] != errno.EXDEV:
                 # Some random error.
                 print_generic("!!! Failed to move", src, "to", dest)
-                print_generic("!!!", e)
+                print_generic("!!!", repr(e))
                 return False
             # Invalid cross-device-link 'bind' mounted or actually Cross-Device
 
@@ -578,7 +578,7 @@ def movefile(src, dest, src_basedir = None):
                 raise
             except Exception as e:
                 print_generic('!!! copy', src, '->', dest, 'failed.')
-                print_generic("!!!", e)
+                print_generic("!!!", repr(e))
                 return False
         else:
             #we don't yet handle special, so we need to fall back to /bin/mv
@@ -586,7 +586,7 @@ def movefile(src, dest, src_basedir = None):
             if a[0] != 0:
                 print_generic("!!! Failed to move special file:")
                 print_generic("!!! '" + src + "' to '" + dest + "'")
-                print_generic("!!!", a)
+                print_generic("!!!", str(a))
                 return False
         try:
             if didcopy:
@@ -601,7 +601,7 @@ def movefile(src, dest, src_basedir = None):
         except Exception as e:
             print_generic("!!! Failed to chown/chmod/unlink in movefile()")
             print_generic("!!!", dest)
-            print_generic("!!!", e)
+            print_generic("!!!", repr(e))
             return False
 
     try:
@@ -615,7 +615,7 @@ def movefile(src, dest, src_basedir = None):
         except OSError as e:
             print_generic("!!! Failed to stat in movefile()\n")
             print_generic("!!! %s\n" % dest)
-            print_generic("!!! %s\n" % str(e))
+            print_generic("!!! %s\n" % (e,))
             return False
 
     return True
