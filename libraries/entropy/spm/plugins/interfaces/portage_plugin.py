@@ -1775,7 +1775,8 @@ class PortagePlugin(SpmPlugin):
         category = key.split("/")[0]
 
         build = self.get_installed_package_build_script_path(spm_package)
-        pkg_dir = os.path.dirname(build)
+        pkg_dir = package_metadata.get('unittest_root', '') + \
+            os.path.dirname(build)
         cat_dir = os.path.dirname(pkg_dir)
 
         if os.path.isdir(cat_dir):
@@ -1829,19 +1830,22 @@ class PortagePlugin(SpmPlugin):
                     header = darkred("   ## ")
                 )
 
-            try:
-                counter = self.assign_uid_to_installed_package(spm_package)
-            except SPMError as err:
-                mytxt = "%s: %s [%s]" % (
-                    brown(_("SPM uid update error")), pkg_dir, err,
-                )
-                self.updateProgress(
-                    red("QA: ") + mytxt,
-                    importance = 1,
-                    type = "warning",
-                    header = darkred("   ## ")
-                )
-                counter = -1
+            # this is a Unit Testing setting, so it's always not available
+            # unless in unit testing code
+            if not package_metadata.get('unittest_root'):
+                try:
+                    counter = self.assign_uid_to_installed_package(spm_package)
+                except SPMError as err:
+                    mytxt = "%s: %s [%s]" % (
+                        brown(_("SPM uid update error")), pkg_dir, err,
+                    )
+                    self.updateProgress(
+                        red("QA: ") + mytxt,
+                        importance = 1,
+                        type = "warning",
+                        header = darkred("   ## ")
+                    )
+                    counter = -1
 
         user_inst_source = etpConst['install_sources']['user']
         if package_metadata['install_source'] != user_inst_source:
