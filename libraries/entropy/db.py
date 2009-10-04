@@ -36,7 +36,8 @@
 
 import os
 import shutil
-from entropy.const import etpConst, etpCache, const_setup_file, const_isunicode
+from entropy.const import etpConst, etpCache, const_setup_file, \
+    const_isunicode, const_convert_to_unicode
 from entropy.exceptions import IncorrectParameter, InvalidAtom, \
     SystemDatabaseError, OperationNotPermitted
 from entropy.i18n import _
@@ -2980,8 +2981,7 @@ class EntropyRepository:
         if self is dbconn:
             raise AttributeError("cannot diff inside the same db")
 
-        self.connection.text_factory = \
-            lambda x: unicode(x, "raw_unicode_escape")
+        self.connection.text_factory = lambda x: const_convert_to_unicode(x)
 
         # setup random table name
         randomtable = "cdiff%s" % (self.entropyTools.get_random_number(),)
@@ -2994,8 +2994,8 @@ class EntropyRepository:
         )
 
         try:
-            dbconn.connection.text_factory = \
-                lambda x: unicode(x, "raw_unicode_escape")
+            dbconn.connection.text_factory = lambda x: \
+                const_convert_to_unicode(x)
 
             cur = dbconn.cursor.execute("""
             SELECT file FROM content WHERE idpackage = (?)
@@ -3872,7 +3872,8 @@ class EntropyRepository:
         for setname in sorted(sets_data):
             for dependency in sorted(sets_data[setname]):
                 try:
-                    mysets.append((unicode(setname), unicode(dependency),))
+                    mysets.append((const_convert_to_unicode(setname),
+                        const_convert_to_unicode(dependency),))
                 except (UnicodeDecodeError, UnicodeEncodeError,):
                     continue
 
@@ -3980,7 +3981,7 @@ class EntropyRepository:
         if not get_unicode:
             return trigger[0]
         # cross fingers...
-        return unicode(trigger[0], 'raw_unicode_escape')
+        return const_convert_to_unicode(trigger[0])
 
     def retrieveDownloadURL(self, idpackage):
         """
@@ -4684,8 +4685,7 @@ class EntropyRepository:
             self._createAutomergefilesTable()
 
         # like portage does
-        self.connection.text_factory = lambda x: \
-            unicode(x, "raw_unicode_escape")
+        self.connection.text_factory = lambda x: const_convert_to_unicode(x)
 
         cur = self.cursor.execute("""
         SELECT configfile, md5 FROM automergefiles WHERE idpackage = (?)
@@ -4775,7 +4775,7 @@ class EntropyRepository:
                 # FIXME support for old entropy db entries, which were
                 # not inserted in utf-8
                 self.connection.text_factory = lambda x: \
-                    unicode(x, "raw_unicode_escape")
+                    const_convert_to_unicode(x)
                 continue
 
         return fl
@@ -4806,9 +4806,9 @@ class EntropyRepository:
         if changelog:
             changelog = changelog[0]
             try:
-                return unicode(changelog, 'raw_unicode_escape')
+                return const_convert_to_unicode(changelog)
             except UnicodeDecodeError:
-                return unicode(changelog, 'utf-8')
+                return const_convert_to_unicode(changelog, enctype = 'utf-8')
 
     def retrieveChangelogByKey(self, category, name):
         """
@@ -4826,8 +4826,7 @@ class EntropyRepository:
         if not self._doesTableExist('packagechangelogs'):
             return None
 
-        self.connection.text_factory = lambda x: \
-            unicode(x, "raw_unicode_escape")
+        self.connection.text_factory = lambda x: const_convert_to_unicode(x)
 
         cur = self.cursor.execute("""
         SELECT changelog FROM packagechangelogs WHERE category = (?) AND
@@ -4836,7 +4835,7 @@ class EntropyRepository:
 
         changelog = cur.fetchone()
         if changelog:
-            return unicode(changelog[0], 'raw_unicode_escape')
+            return const_convert_to_unicode(changelog[0])
 
     def retrieveSlot(self, idpackage):
         """
@@ -4954,9 +4953,10 @@ class EntropyRepository:
             if lictext is not None:
                 lictext = lictext[0]
                 try:
-                    licdata[licname] = unicode(lictext, 'raw_unicode_escape')
+                    licdata[licname] = const_convert_to_unicode(lictext)
                 except UnicodeDecodeError:
-                    licdata[licname] = unicode(lictext, 'utf-8')
+                    licdata[licname] = \
+                        const_convert_to_unicode(lictext, enctype = 'utf-8')
 
         return licdata
 
@@ -5003,8 +5003,7 @@ class EntropyRepository:
         @rtype: string (raw format) or None
         """
 
-        self.connection.text_factory = lambda x: \
-            unicode(x, "raw_unicode_escape")
+        self.connection.text_factory = lambda x: const_convert_to_unicode(x)
 
         cur = self.cursor.execute("""
         SELECT text FROM licensedata WHERE licensename = (?) LIMIT 1
@@ -6295,8 +6294,7 @@ class EntropyRepository:
         @return: list of files available or their count
         @rtype: int or list or set
         """
-        self.connection.text_factory = \
-            lambda x: unicode(x, "raw_unicode_escape")
+        self.connection.text_factory = lambda x: const_convert_to_unicode(x)
 
         if count:
             cur = self.cursor.execute('SELECT count(file) FROM content')
@@ -6692,7 +6690,7 @@ class EntropyRepository:
             q += ")' FROM '%(tbl_name)s'"
             self.cursor.execute(q % {'tbl_name': name})
             self.connection.text_factory = lambda x: \
-                unicode(x, "raw_unicode_escape")
+                const_convert_to_unicode(x)
             for row in self.cursor:
                 dumpfile.write(
                     "%s;\n" % str(row[0].encode('raw_unicode_escape')))
