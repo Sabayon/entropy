@@ -2561,59 +2561,37 @@ def get_newer_version_stable(versions):
 
     return versionlist
 
-
-def g_e_n_w_cmp(a, b):
-    '''
-    @description: reorder a version list
-    @input versionlist: a list
-    @output: the ordered list
-    '''
-    rc = entropy_compare_versions(a, b)
-    if rc < 0: return -1
-    elif rc > 0: return 1
-    else: return 0
-
 def get_entropy_newer_version(versions):
     """
-    docstring_title
+    Sort a list of entropy package versions.
 
-    @param versions: 
-    @type versions: 
-    @return: 
-    @rtype: 
+    @param versions: list of package versions
+    @type versions: list
+    @return: sorted list
+    @rtype: list
     """
-    return sorted(versions, g_e_n_w_cmp, reverse = True)
+    if len(versions) < 2:
+        return versions[:]
 
-def get_entropy_newer_version_stable(versions):
-    '''
-        descendent order
-        versions = [(version,tag,revision),(version,tag,revision)]
-    '''
-    if len(versions) == 1:
-        return versions
+    vers = versions[:]
+    max_idx = len(vers)
 
-    myversions = versions[:]
-    # ease the work
+    while 1:
+        changed = False
+        for idx in range(max_idx):
+            second_idx = idx+1
+            if second_idx == max_idx:
+                continue
+            str_a = vers[idx]
+            str_b = vers[second_idx]
+            if entropy_compare_versions(str_a, str_b) < 0:
+                vers[idx] = str_b
+                vers[second_idx] = str_a
+                changed = True
+        if not changed:
+            break
 
-    rc = False
-    while not rc:
-        change = False
-        for x in range(len(myversions)):
-            pkgA = myversions[x]
-            try:
-                pkgB = myversions[x+1]
-            except:
-                pkgB = ("0", "", 0)
-            result = entropy_compare_versions(pkgA, pkgB)
-            if result < 0:
-                myversions[x] = pkgB
-                myversions[x+1] = pkgA
-                change = True
-        if not change:
-            rc = True
-
-    return myversions
-
+    return vers
 
 def isnumber(x):
     """
