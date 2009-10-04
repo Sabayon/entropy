@@ -6344,7 +6344,7 @@ class EntropyRepository:
         results = self._cur2set(cur)
         dirs = set()
         for mystr in results:
-            dirs |= set(map(unicode, mystr.split()))
+            dirs.update(mystr.split())
 
         return sorted(dirs)
 
