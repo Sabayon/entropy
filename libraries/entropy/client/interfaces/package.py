@@ -1012,7 +1012,10 @@ class Package:
             self.matched_atom)
         mask = self.Entropy.get_package_match_config_protect(
             self.matched_atom, mask = True)
-        sys_root = etpConst['systemroot']
+
+        # support for unit testing settings
+        sys_root = self.pkgmeta.get('unittest_root', '') + \
+            etpConst['systemroot']
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         misc_data = self.Entropy.SystemSettings[sys_set_plg_id]['misc']
