@@ -11,8 +11,7 @@
 """
 
 import os
-from entropy.compat import *
-from entropy.const import etpUi
+from entropy.const import etpUi, const_convert_to_unicode
 from entropy.output import darkgreen, darkred, red, blue, \
     brown, purple, bold, print_info, print_error, print_generic
 from entropy.client.interfaces import Client as EquoInterface
@@ -533,7 +532,7 @@ def search_orphaned_files(Equo = None):
                 count += 1
                 if not etpUi['quiet'] and ((count == 0) or (count % 500 == 0)):
                     count = 0
-                    fname = unicode(filename[:50], 'raw_unicode_escape')
+                    fname = const_convert_to_unicode(filename[:50])
                     print_info(" %s %s: %s" % (
                             red("@@"),
                             blue(_("Analyzing")),
@@ -542,11 +541,12 @@ def search_orphaned_files(Equo = None):
                         back = True
                     )
                 try:
-                    foundFiles[unicode(filename, 'raw_unicode_escape')] = u"obj"
+                    foundFiles[const_convert_to_unicode(filename)] = \
+                        const_convert_to_unicode("obj")
                 except (UnicodeDecodeError, UnicodeEncodeError,) as e:
                     if etpUi['quiet']:
                         continue
-                    print("!!! error on", filename, "skipping:", e)
+                    print_generic("!!! error on", filename, "skipping:", repr(e))
 
             if foundFiles:
                 tdbconn.insertContent(1, foundFiles)
@@ -622,13 +622,13 @@ def search_orphaned_files(Equo = None):
         print_info(red(" @@ ")+blue("%s: " % (_
             ("Writing file to disk"),)) + bold(fname))
 
-    tdbconn.connection.text_factory = lambda x: unicode(x, "raw_unicode_escape")
+    tdbconn.connection.text_factory = lambda x: const_convert_to_unicode(x)
     myfile = tdbconn.cursor.fetchone()
 
     sizecount = 0
     while myfile:
 
-        myfile = str(myfile[0].encode('raw_unicode_escape'))
+        myfile = const_convert_to_rawstring(myfile[0])
         mysize = 0
         try:
             mysize += os.stat(myfile)[6]
@@ -1200,7 +1200,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
                     darkgreen(" %s:" % (_("Dependencies"),) ))
                 for pdep, p_id in pkgdeps:
                     print_info(darkred("       ## \t\t\t") + blue(" [") + \
-                        unicode(p_id)+blue("] ") + brown(pdep))
+                        str(p_id) + blue("] ") + brown(pdep))
 
             if pkgconflicts:
                 print_info(darkred("       ##") + \
