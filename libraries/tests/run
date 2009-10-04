@@ -1,13 +1,19 @@
 #!/usr/bin/python2
+# -*- coding: utf-8 -*-
 
 import os
+import sys
 locale_dir = os.path.realpath(os.path.join(os.getcwd(), "i18n"))
 os.environ['TEXTDOMAINDIR'] = locale_dir
 
-import sys
 import unittest
+sys.path.insert(0,'../client')
+sys.path.insert(0,'../../client')
 sys.path.insert(0,'.')
 sys.path.insert(0,'../')
+# set unit testing mode
+from entropy.const import etpSys
+etpSys['unittest'] = True
 from tests import db, client, server, misc, transceivers, tools, i18n
 rc = 0
 
