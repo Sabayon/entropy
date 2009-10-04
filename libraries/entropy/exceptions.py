@@ -11,6 +11,7 @@
     This module contains Entropy Framework exceptions classes.
 
 """
+from entropy.const import const_isstring
 
 class EntropyException(Exception):
     """General superclass for Entropy exceptions"""
@@ -19,10 +20,9 @@ class EntropyException(Exception):
         Exception.__init__(self)
 
     def __str__(self):
-        if isinstance(self.value, basestring):
+        if const_isstring(self.value):
             return self.value
-        else:
-            return repr(self.value)
+        return repr(self.value)
 
 class CorruptionError(EntropyException):
     """Corruption indication"""
