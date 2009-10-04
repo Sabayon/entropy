@@ -461,11 +461,17 @@ class RepositoryMixin:
                 type = "warning",
                 header = bold("!!!"),
             )
-            conn = self.open_memory_database(dbname = etpConst['clientdbid'])
-            return conn
+            return self.open_memory_database(dbname = etpConst['clientdbid'])
+
+        # if we are in unit testing mode (triggered by unit testing
+        # code), always use db from ram
+        if etpSys['unittest']:
+            self.clientDbconn = load_db_from_ram()
+            return self.clientDbconn
 
         db_dir = os.path.dirname(etpConst['etpdatabaseclientfilepath'])
-        if not os.path.isdir(db_dir): os.makedirs(db_dir)
+        if not os.path.isdir(db_dir):
+            os.makedirs(db_dir)
 
         db_path = etpConst['etpdatabaseclientfilepath']
         if (not self.noclientdb) and (not os.path.isfile(db_path)):
