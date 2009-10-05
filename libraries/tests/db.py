@@ -5,7 +5,7 @@ sys.path.insert(0,'../')
 import unittest
 import os
 from entropy.client.interfaces import Client
-from entropy.const import etpConst, etpUi
+from entropy.const import etpConst, etpUi, const_convert_to_unicode
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
 import _misc
@@ -45,8 +45,10 @@ class EntropyRepositoryTest(unittest.TestCase):
     def test_db_contentdiff(self):
 
         test_entry = {
-            u'/path/to/foo': u"dir",
-            u'/path/to/foo/foo': u"obj",
+            const_convert_to_unicode("/path/to/foo", "utf-8"): \
+                const_convert_to_unicode("dir", "utf-8"),
+            const_convert_to_unicode("/path/to/foo/foo", "utf-8"): \
+                const_convert_to_unicode("obj", "utf-8"),
         }
 
         test_pkg = _misc.get_test_package()
@@ -76,17 +78,18 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         self.assertEqual(sorted(cont_diff), py_diff)
 
-        orig_diff = [u'/lib64', u'/lib64/libz.so', u'/lib64/libz.so.1',
-            u'/lib64/libz.so.1.2.3', u'/usr/include', u'/usr/include/zconf.h',
-            u'/usr/include/zlib.h', u'/usr/lib64/libz.a',
-            u'/usr/lib64/libz.so', u'/usr/share/doc/zlib-1.2.3-r1',
-            u'/usr/share/doc/zlib-1.2.3-r1/ChangeLog.bz2',
-            u'/usr/share/doc/zlib-1.2.3-r1/FAQ.bz2',
-            u'/usr/share/doc/zlib-1.2.3-r1/README.bz2',
-            u'/usr/share/doc/zlib-1.2.3-r1/algorithm.txt.bz2',
-            u'/usr/share/man', u'/usr/share/man/man3',
-            u'/usr/share/man/man3/zlib.3.bz2'
+        orig_diff = ['/lib64', '/lib64/libz.so', '/lib64/libz.so.1',
+            '/lib64/libz.so.1.2.3', '/usr/include', '/usr/include/zconf.h',
+            '/usr/include/zlib.h', '/usr/lib64/libz.a',
+            '/usr/lib64/libz.so', '/usr/share/doc/zlib-1.2.3-r1',
+            '/usr/share/doc/zlib-1.2.3-r1/ChangeLog.bz2',
+            '/usr/share/doc/zlib-1.2.3-r1/FAQ.bz2',
+            '/usr/share/doc/zlib-1.2.3-r1/README.bz2',
+            '/usr/share/doc/zlib-1.2.3-r1/algorithm.txt.bz2',
+            '/usr/share/man', '/usr/share/man/man3',
+            '/usr/share/man/man3/zlib.3.bz2'
         ]
+        orig_diff = [const_convert_to_unicode(x, 'utf-8') for x in orig_diff]
         self.assertEqual(orig_diff, py_diff)
 
 
@@ -145,10 +148,11 @@ class EntropyRepositoryTest(unittest.TestCase):
         test_pkg = _misc.get_test_package2()
         data = self.Spm.extract_package_metadata(test_pkg)
         # Portage stores them this way
-        data['changelog'] = u"#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"
-        data['license'] = u'GPL-2'
+        data['changelog'] = const_convert_to_unicode("#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel")
+        data['license'] = const_convert_to_unicode('GPL-2')
         data['licensedata'] = {
-            u'GPL-2': u"#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel",
+            const_convert_to_unicode('GPL-2'): \
+                const_convert_to_unicode("#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"),
         }
         idpackage, rev, new_data = self.test_db.handlePackage(data)
         db_data = self.test_db.getPackageData(idpackage)
@@ -224,10 +228,11 @@ class EntropyRepositoryTest(unittest.TestCase):
         test_pkg = _misc.get_test_package2()
         data = self.Spm.extract_package_metadata(test_pkg)
         # Portage stores them this way
-        data['changelog'] = u"#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"
-        data['license'] = u'GPL-2'
+        data['changelog'] = const_convert_to_unicode("#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel")
+        data['license'] = const_convert_to_unicode('GPL-2')
         data['licensedata'] = {
-            u'GPL-2': u"#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel",
+            const_convert_to_unicode('GPL-2'): \
+                const_convert_to_unicode("#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"),
         }
         idpackage, rev, new_data = self.test_db.handlePackage(data)
         db_data = self.test_db.getPackageData(idpackage)
@@ -270,7 +275,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_db_license_data_str_insert(self):
         lic_txt = '[3]\xab foo\n\n'
-        lic_data = {u'CCPL-Attribution-2.0': lic_txt}
+        lic_data = {const_convert_to_unicode('CCPL-Attribution-2.0'): lic_txt}
         self.test_db.insertLicenses(lic_data)
         db_lic_txt = self.test_db.retrieveLicenseText('CCPL-Attribution-2.0')
         self.assertEqual(db_lic_txt, lic_txt)

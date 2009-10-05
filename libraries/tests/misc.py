@@ -3,6 +3,7 @@ import sys
 sys.path.insert(0,'.')
 sys.path.insert(0,'../')
 import unittest
+from entropy.const import const_convert_to_unicode
 from entropy.misc import Lifo, TimeScheduled, ParallelTask, EmailSender
 
 class MiscTest(unittest.TestCase):
@@ -12,7 +13,7 @@ class MiscTest(unittest.TestCase):
         self._lifo_item1 = set([1, 2, 3, 4])
         self._lifo_item2 = set([1, 2, 3, 4])
         self._lifo_item3 = dict(((None,x,) for x in range(0, 20)))
-        self._lifo_item4 = u'èòàèòà'
+        self._lifo_item4 = const_convert_to_unicode('èòàèòà', 'utf-8')
         self._lifo_item5 = (1, 2, 3, 4,)
         self._lifo_item6 = '------'
         self._lifo_items = [self._lifo_item1, self._lifo_item2,

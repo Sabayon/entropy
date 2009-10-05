@@ -6,6 +6,7 @@ sys.path.insert(0,'../')
 import unittest
 import entropy.tools as et
 from entropy.client.interfaces import Client
+from entropy.output import print_generic
 import _misc
 import tempfile
 import subprocess
@@ -119,7 +120,7 @@ class MiscTest(unittest.TestCase):
                 try:
                     self.assertEqual(mystat, path_perms.get(path))
                 except AssertionError:
-                    print("ouch", path, "my:", mystat)
+                    print_generic("ouch", path, "my:", mystat)
                     raise
 
 

@@ -9,6 +9,7 @@ sys.path.insert(0,'../')
 import unittest
 from entropy.i18n import _, change_language
 from entropy.output import print_info
+from entropy.const import const_convert_to_unicode
 
 class MiscTest(unittest.TestCase):
 
@@ -21,41 +22,41 @@ class MiscTest(unittest.TestCase):
         ]
         self._assert_map = {
             'de_DE': {
-                'Exit': u"Schließen",
-                'Yes': u"Ja",
-                'No': u"Nein",
-                'database already exists': u"Datenbank existiert bereits",
-                'no password specified': u'Kein Passwort angegeben',
+                'Exit': const_convert_to_unicode("Schließen", 'utf-8'),
+                'Yes': const_convert_to_unicode("Ja"),
+                'No': const_convert_to_unicode("Nein"),
+                'database already exists': const_convert_to_unicode("Datenbank existiert bereits"),
+                'no password specified': const_convert_to_unicode('Kein Passwort angegeben'),
             },
             'it_IT': {
                 'Yes': u"Si",
-                'database already exists': u'database gi\xe0 esistente',
-                'Install Set': u'Installa Set',
-                'wrong md5': u'md5 errato',
-                'no password specified': u'nessuna password specificata',
-                'Exit': u'Esci',
+                'database already exists': const_convert_to_unicode('database gi\xe0 esistente'),
+                'Install Set': const_convert_to_unicode('Installa Set'),
+                'wrong md5': const_convert_to_unicode('md5 errato'),
+                'no password specified': const_convert_to_unicode('nessuna password specificata'),
+                'Exit': const_convert_to_unicode('Esci'),
             },
             'fr_FR': {
-                'Yes': u'Oui',
-                'wrong md5': u'mauvais md5',
-                'no password specified': u'pas de mot de passe sp\xe9cifi\xe9',
-                'Exit': u'Quitter',
+                'Yes': const_convert_to_unicode('Oui'),
+                'wrong md5': const_convert_to_unicode('mauvais md5'),
+                'no password specified': const_convert_to_unicode('pas de mot de passe sp\xe9cifi\xe9'),
+                'Exit': const_convert_to_unicode('Quitter'),
             },
             'es_ES': {
-                'Yes': u"Si",
-                'database already exists': u'la base de datos ya existe',
-                'Install Set': u'Instalar Set',
-                'no password specified': u'no se ha especificado una contrase\xf1a',
-                'Exit': u'Salir',
+                'Yes': const_convert_to_unicode("Si"),
+                'database already exists': const_convert_to_unicode('la base de datos ya existe'),
+                'Install Set': const_convert_to_unicode('Instalar Set'),
+                'no password specified': const_convert_to_unicode('no se ha especificado una contrase\xf1a'),
+                'Exit': const_convert_to_unicode('Salir'),
             },
             'nl_NL': {
-                'Yes': u"Ja",
-                'No': u"Nee",
-                'database already exists': u'database bestaat al',
-                'Install Set': u'Installeer Set',
-                'wrong md5': u'verkeerde md5',
-                'no password specified': u'geen wachtwoord opgegeven',
-                'Exit': u'Afsluiten',
+                'Yes': const_convert_to_unicode("Ja"),
+                'No': const_convert_to_unicode("Nee"),
+                'database already exists': const_convert_to_unicode('database bestaat al'),
+                'Install Set': const_convert_to_unicode('Installeer Set'),
+                'wrong md5': const_convert_to_unicode('verkeerde md5'),
+                'no password specified': const_convert_to_unicode('geen wachtwoord opgegeven'),
+                'Exit': const_convert_to_unicode('Afsluiten'),
             },
         }
 
