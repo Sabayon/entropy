@@ -298,13 +298,6 @@ class SystemSettings(Singleton):
         with self.__mutex:
             return self.__data.get(mykey, alt_obj)
 
-    def has_key(self, mykey):
-        """
-        dict method. See Python dict API reference.
-        """
-        with self.__mutex:
-            return mykey in self.__data
-
     def copy(self):
         """
         dict method. See Python dict API reference.
