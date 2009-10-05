@@ -1039,12 +1039,12 @@ class LogFile:
         if const_isstring(file_path):
             if not os.path.isfile(file_path) and os.access(
                 os.path.dirname(file_path), os.W_OK):
-                self._logfile = open(file_path, "aw")
+                self._logfile = open(file_path, "a")
             else:
                 if os.access(file_path, os.W_OK) and os.path.isfile(file_path):
-                    self._logfile = open(file_path, "aw")
+                    self._logfile = open(file_path, "a")
                 elif os.path.exists("/dev/null"):
-                    self._logfile = open("/dev/null", "aw")
+                    self._logfile = open("/dev/null", "a")
                 else:
                     self._logfile = sys.stderr
 

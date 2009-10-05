@@ -23,7 +23,7 @@ from threading import RLock
 
 from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, \
-    const_extract_cli_repo_params, etpCache
+    const_extract_cli_repo_params, etpCache, const_isunicode
 from entropy.core import Singleton
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 
@@ -434,10 +434,12 @@ class SystemSettings(Singleton):
                 (os.path.isfile(os.path.join(sets_dir, x)) and \
                 os.access(os.path.join(sets_dir, x), os.R_OK))]
             for set_file in set_files:
-                try:
-                    set_file = set_file.decode('utf-8')
-                except (UnicodeDecodeError,):
-                    set_file = set_file.decode(sys.getfilesystemencoding())
+                if not const_isunicode(set_file):
+                    try:
+                        set_file = set_file.decode('utf-8')
+                    except (UnicodeDecodeError,):
+                        set_file = set_file.decode(sys.getfilesystemencoding())
+
                 pkg_set_data[set_file] = os.path.join(sets_dir, set_file)
         self.__setting_files['system_package_sets'].update(pkg_set_data)
 

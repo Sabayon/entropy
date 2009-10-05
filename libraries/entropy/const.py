@@ -1331,7 +1331,7 @@ def const_add_entropy_group():
         else:
             new_id = 10000
 
-    with open(group_file, "aw") as group_fw:
+    with open(group_file, "a") as group_fw:
         group_fw.seek(0, 2)
         app_line = "entropy:x:%s:\n" % (new_id,)
         group_fw.write(app_line)
