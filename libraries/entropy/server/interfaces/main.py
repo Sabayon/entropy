@@ -17,7 +17,7 @@ from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError
 from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_create_working_dirs, const_extract_srv_repo_params, etpUi, \
-    const_setup_file
+    const_setup_file, const_get_stringtype
 from entropy.output import TextInterface, purple, red, darkgreen, \
     bold, brown, blue, darkred
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
@@ -697,7 +697,7 @@ class Server(Singleton, TextInterface):
 
     def backup_entropy_settings(self):
         for setting in self.__settings_to_backup:
-            if isinstance(setting, basestring):
+            if isinstance(setting, const_get_stringtype()):
                 self.ClientService.backup_constant(setting)
             elif isinstance(setting, dict):
                 self.SystemSettings.set_persistent_setting(setting)
