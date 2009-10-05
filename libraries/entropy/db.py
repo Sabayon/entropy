@@ -4080,7 +4080,10 @@ class EntropyRepository:
         """, (idpackage,))
         size = cur.fetchone()
         if size:
-            return size[0]
+            try:
+                return int(size[0])
+            except ValueError: # wtf?
+                return 0
 
     # in bytes
     def retrieveOnDiskSize(self, idpackage):
