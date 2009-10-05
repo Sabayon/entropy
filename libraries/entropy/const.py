@@ -1346,7 +1346,7 @@ def const_get_stringtype():
     if sys.hexversion >= 0x3000000:
         return (str, bytes,)
     else:
-        return basestring
+        return (basestring,)
 
 def const_isstring(obj):
     """
@@ -1388,7 +1388,7 @@ def const_convert_to_unicode(obj, enctype = 'raw_unicode_escape'):
     """
     if const_isunicode(obj):
         return obj
-    return obj.decode("raw_unicode_escape")
+    return obj.decode(enctype)
 
 def const_convert_to_rawstring(obj, from_enctype = 'raw_unicode_escape'):
     if not const_isunicode(obj):
