@@ -28,7 +28,7 @@ import random
 from entropy.output import TextInterface, print_info, print_generic, red, \
     darkgreen, green
 from entropy.const import etpConst, const_kill_threads, const_islive, \
-    const_isunicode, const_convert_to_unicode
+    const_isunicode, const_convert_to_unicode, const_convert_to_rawstring
 from entropy.exceptions import FileNotFound, InvalidAtom, InvalidDataType, \
     DirectoryNotFound
 
@@ -719,7 +719,7 @@ def md5sum(filepath):
     @rtype: 
     """
     m = hashlib.md5()
-    readfile = open(filepath)
+    readfile = open(filepath, "rb")
     block = readfile.read(1024)
     while block:
         m.update(block)
@@ -737,7 +737,7 @@ def sha512(filepath):
     @rtype: 
     """
     m = hashlib.sha512()
-    readfile = open(filepath)
+    readfile = open(filepath, "rb")
     block = readfile.read(1024)
     while block:
         m.update(block)
@@ -755,7 +755,7 @@ def sha256(filepath):
     @rtype: 
     """
     m = hashlib.sha256()
-    readfile = open(filepath)
+    readfile = open(filepath, "rb")
     block = readfile.read(1024)
     while block:
         m.update(block)
@@ -773,7 +773,7 @@ def sha1(filepath):
     @rtype: 
     """
     m = hashlib.sha1()
-    readfile = open(filepath)
+    readfile = open(filepath, "rb")
     block = readfile.read(1024)
     while block:
         m.update(block)
@@ -800,7 +800,7 @@ def md5sum_directory(directory):
     for currentdir, subdirs, files in os.walk(directory):
         for myfile in files:
             myfile = os.path.join(currentdir, myfile)
-            readfile = open(myfile)
+            readfile = open(myfile, "rb")
             block = readfile.read(1024)
             while block:
                 m.update(block)
@@ -827,7 +827,7 @@ def md5obj_directory(directory):
     for currentdir, subdirs, files in os.walk(directory):
         for myfile in files:
             myfile = os.path.join(currentdir, myfile)
-            readfile = open(myfile)
+            readfile = open(myfile, "rb")
             block = readfile.read(1024)
             while block:
                 m.update(block)
@@ -1336,7 +1336,7 @@ def locate_edb(fileobj):
         fileobj.seek(counter-bytes, os.SEEK_END)
         read_bytes = fileobj.read(max_read_len)
         read_len = len(read_bytes)
-        entry_idx = read_bytes.rfind(entry_point)
+        entry_idx = read_bytes.rfind(const_convert_to_rawstring(entry_point))
         if entry_idx != -1:
             rollback = (read_len - entry_idx) * -1
             fileobj.seek(rollback, os.SEEK_CUR)
