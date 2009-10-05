@@ -464,6 +464,7 @@ def load_conf_cache():
             except KeyboardInterrupt:
                 continue
     except:
+        entropyTools.print_traceback()
         if not etpUi['quiet']:
             print_info(red(" @@ ")+blue(_("Caching not run.")))
         Equo.destroy()
