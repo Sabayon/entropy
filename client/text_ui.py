@@ -1636,9 +1636,7 @@ def unusedPackagesTest(do_size_sort = False):
         Equo.clientDbconn.retrieveAtom(x),) for x in unused]
 
     if do_size_sort:
-        def mycmp(item_a,item_b):
-            return cmp(item_a[0],item_b[0])
-        data = sorted(data, mycmp)
+        data = sorted(data, key = lambda x: x[0])
 
     if etpUi['quiet']:
         print_generic('\n'.join([x[2] for x in data]))
