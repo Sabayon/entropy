@@ -1427,6 +1427,16 @@ def const_get_buffer():
     else:
         return buffer
 
+def const_isfileobj(obj):
+    """
+    Return whether obj is a file object
+    """
+    if sys.hexversion >= 0x3000000:
+        import io
+        return isinstance(obj, io.IOBase)
+    else:
+        return isinstance(obj, file)
+
 def const_islive():
     """
     Live environments (Operating System running off a CD/DVD)
