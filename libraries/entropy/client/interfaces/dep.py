@@ -254,7 +254,7 @@ class CalculatorsMixin:
             # search
             dbconn = self.__atom_match_open_db(repo, serverInstance)
             use_cache = useCache
-            while 1:
+            while True:
                 try:
                     query_data, query_rc = dbconn.atomMatch(
                         atom,
@@ -442,7 +442,7 @@ class CalculatorsMixin:
 
         set_data = []
 
-        while 1:
+        while True:
 
             # check inside SystemSettings
             if not server_repos:
@@ -1492,7 +1492,7 @@ class CalculatorsMixin:
         count = 0
 
         rem_dep_text = _("Calculating inverse dependencies for")
-        while 1:
+        while True:
             treedepth += 1
             tree[treedepth] = set()
             for idpackage in treelevel:
@@ -1734,7 +1734,7 @@ class CalculatorsMixin:
                 continue
             use_match_cache = True
             do_continue = False
-            while 1:
+            while True:
                 try:
                     match = self.atom_match(
                         cl_pkgkey,

@@ -270,7 +270,7 @@ class Server(SocketHost):
             myrevfile = os.path.join(mydbpath, etpConst['etpdatabaserevisionfile'])
             myrev = '0'
             if os.path.isfile(myrevfile):
-                while 1:
+                while True:
                     try:
                         f = open(myrevfile)
                         myrev = f.readline().strip()

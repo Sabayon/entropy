@@ -58,7 +58,7 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True):
     @raise OSError: could be caused by pickle.dump, ignored if
         ignore_exceptions is True
     """
-    while 1: # trap ctrl+C
+    while True: # trap ctrl+C
         try:
             if complete_path:
                 dmpfile = name
@@ -166,7 +166,7 @@ def loadobj(name, complete_path = False):
     @return: object or None
     @rtype: any Python pickable object or None
     """
-    while 1:
+    while True:
         if complete_path:
             dmpfile = name
         else:

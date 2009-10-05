@@ -1080,7 +1080,7 @@ class MiscMixin:
         sleep_seconds = 0.5
 
         # check lock file
-        while 1:
+        while True:
             locked = check_function()
             if not locked:
                 if lock_count > 0:

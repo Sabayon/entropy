@@ -1904,7 +1904,7 @@ class Client:
 
             encode_done = False
             mydata = data[:]
-            while 1:
+            while True:
                 try:
                     if self.ssl and not self.pyopenssl:
                         sent = self.sock_conn.write(mydata)
@@ -1998,7 +1998,7 @@ class Client:
             return data
 
         myeos = self.answers['eos']
-        while 1:
+        while True:
 
             try:
 

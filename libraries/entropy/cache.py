@@ -94,7 +94,7 @@ class EntropyCacher(Singleton):
         thread-safe. It just loops over and over until
         __alive becomes False.
         """
-        while 1:
+        while True:
             if not self.__alive:
                 break
             with self.__cache_lock:

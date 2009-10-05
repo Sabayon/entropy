@@ -250,7 +250,7 @@ def noticeBoardReader(reponame):
     if not data:
         return
     counter = len(data)
-    while 1:
+    while True:
         try:
             sel = show_notice_selector('', data)
         except KeyboardInterrupt:

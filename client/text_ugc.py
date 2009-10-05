@@ -578,9 +578,9 @@ def showVote(vote, repository, pkgkey):
 
 
 def _my_formatted_print(data,header,reset_columns, min_chars = 25, color = None):
-    if type(data) is set:
+    if isinstance(data, set):
         mydata = list(data)
-    elif type(data) is not list:
+    elif not isinstance(data, list):
         mydata = data.split()
     else:
         mydata = data

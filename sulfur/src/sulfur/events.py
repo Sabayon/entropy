@@ -678,7 +678,7 @@ class SulfurApplicationEventsMixin:
             license_text = ''
             if license_identifier:
                 repoid = self.pkgProperties_selected.matched_atom[1]
-                if type(repoid) is int:
+                if isinstance(repoid, int):
                     dbconn = self.Equo.clientDbconn
                 else:
                     dbconn = self.Equo.open_repository(repoid)

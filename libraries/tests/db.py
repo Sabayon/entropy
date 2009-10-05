@@ -134,12 +134,12 @@ class EntropyRepositoryTest(unittest.TestCase):
         idpackage, rev, new_data = self.test_db.addPackage(db_data)
         results, rc = self.test_db.atomMatch(pkg_name, multiMatch = True)
         self.assertEqual(2, len(results))
-        self.assert_(type(results) is set)
+        self.assert_(isinstance(results, set))
         self.assert_(rc == 0)
 
         results, rc = self.test_db.atomMatch(pkg_name+"foo", multiMatch = True)
         self.assertEqual(0, len(results))
-        self.assert_(type(results) is set)
+        self.assert_(isinstance(results, set))
         self.assert_(rc == 1)
 
     def test_db_insert_compare_match_utf(self):

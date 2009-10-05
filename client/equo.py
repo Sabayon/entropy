@@ -457,7 +457,7 @@ def load_conf_cache():
     if not etpUi['quiet']:
         print_info(red(" @@ ")+blue(_("Caching equo conf")), back = True)
     try:
-        while 1:
+        while True:
             try:
                 scandata = Equo.FileUpdates.scanfs(dcache = True, quiet = True)
                 break

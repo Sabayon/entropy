@@ -862,7 +862,7 @@ class EntropyPackageView:
         self.selected_objs = objs
 
         do_show = True
-        while 1:
+        while True:
             queued_u = [x for x in objs if x.queued == "u"]
             if len(queued_u) == objs_len:
                 self.updates_update.hide()
@@ -2008,9 +2008,7 @@ class EntropyQueueView:
                 categories[mycat] = []
             categories[mycat].append(po)
 
-        cats = list(categories.keys())
-        cats.sort()
-
+        cats = sorted(categories.keys())
         grandfather = model.append( None, (label,) )
         for category in cats:
             cat_desc = _("No description")
@@ -2076,8 +2074,7 @@ class EntropyFilesView:
 
     def populate( self, scandata ):
         self.model.clear()
-        keys = list(scandata.keys())
-        keys.sort()
+        keys = sorted(scandata.keys())
         for key in keys:
             self.model.append(None, [key,
                     os.path.basename(scandata[key]['source']),

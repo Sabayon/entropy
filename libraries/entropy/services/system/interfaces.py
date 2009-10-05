@@ -49,7 +49,7 @@ class TaskExecutor:
         t = ParallelTask(data['func'], *args, **kwargs)
         t.start()
         killed = False
-        while 1:
+        while True:
             if not t.isAlive(): break
             time.sleep(2)
             live_item, key = self.SystemInterface.get_item_by_queue_id(queue_id)
@@ -391,7 +391,7 @@ class Server(SocketHost):
             if not key.endswith("_order"):
                 continue
             current_ids |= set(self.ManagerQueue[key])
-        while 1:
+        while True:
             try:
                 queue_id = abs(hash(os.urandom(1)))
             except NotImplementedError:

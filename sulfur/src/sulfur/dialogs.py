@@ -5075,7 +5075,7 @@ class UGCAddMenu(MenuSkel):
         try:
             t = ParallelTask(self.do_send_document_autosense, doc_type, doc_path, title, description, keywords_text)
             t.start()
-            while 1:
+            while True:
                 if not t.isAlive(): break
                 while gtk.events_pending():
                     gtk.main_iteration()
@@ -5404,8 +5404,7 @@ class MaskedPackagesDialog(MenuSkel):
 
         from sulfur.package import DummyEntropyPackage
 
-        cats = list(categories.keys())
-        cats.sort()
+        cats = sorted(categories.keys())
         for category in cats:
             cat_desc = _("No description")
             cat_desc_data = self.Entropy.get_category_description_data(category)

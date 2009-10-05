@@ -57,7 +57,7 @@ def update(cmd = None):
     docmd = False
     if cmd != None:
         docmd = True
-    while 1:
+    while True:
         print_info(brown(" @@ ")+darkgreen("%s ..." % (_("Scanning filesystem"),)))
         scandata = Equo.FileUpdates.scanfs(dcache = cache_status)
         if cache_status:
@@ -159,7 +159,7 @@ def update(cmd = None):
                 print_info(mytxt)
 
                 comeback = False
-                while 1:
+                while True:
                     action = selaction()
                     try:
                         action = int(action)

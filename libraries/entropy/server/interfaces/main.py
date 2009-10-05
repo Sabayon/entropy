@@ -3853,7 +3853,7 @@ class Server(Singleton, TextInterface):
 
         if os.path.isdir(branch_dbdir):
 
-            while 1:
+            while True:
                 rnd_num = self.entropyTools.get_random_number()
                 backup_dbdir = branch_dbdir + str(rnd_num)
                 if not os.path.isdir(backup_dbdir):

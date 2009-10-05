@@ -1085,15 +1085,14 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 licenses.pop(mylic)
     if licenses:
         print_info(red(" @@ ")+blue("%s:" % (_("You need to accept the licenses below"),) ))
-        keys = list(licenses.keys())
-        keys.sort()
+        keys = sorted(licenses.keys())
         for key in keys:
             print_info(red("    :: %s: " % (_("License"),) )+bold(key)+red(", %s:" % (_("needed by"),) ))
             for match in licenses[key]:
                 dbconn = Equo.open_repository(match[1])
                 atom = dbconn.retrieveAtom(match[0])
                 print_info(blue("       ## ")+"["+brown(_("from"))+":"+red(match[1])+"] "+bold(atom))
-            while 1:
+            while True:
                 choice = read_lic_selection()
                 try:
                     choice = int(choice)
@@ -1127,7 +1126,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
         if multifetch > 1:
             myqueue = []
             mystart = 0
-            while 1:
+            while True:
                 mylist = runQueue[mystart:mymultifetch]
                 if not mylist: break
                 myqueue.append(mylist)

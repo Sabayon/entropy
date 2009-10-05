@@ -40,9 +40,8 @@ def sync(options, justTidy = False):
     if sync_all:
         sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
-        repos = list(Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys())
-        repos.sort()
-    old_default = Entropy.default_repository
+        repos = sorted(Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys())
+        old_default = Entropy.default_repository
 
     for repo in repos:
 
@@ -115,9 +114,8 @@ def packages(options):
         if sync_all:
             sys_settings_plugin_id = \
                 etpConst['system_settings_plugins_ids']['server_plugin']
-            repos = list(Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys())
-            repos.sort()
-        old_default = Entropy.default_repository
+            repos = sorted(Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys())
+            old_default = Entropy.default_repository
 
         for repo in repos:
 
@@ -231,7 +229,7 @@ def notice(options):
             print_error(darkred(" * ")+blue("%s" % (_("Notice board not available"),) ))
             return 1
         items, counter = data
-        while 1:
+        while True:
             try:
                 sel = show_notice_selector('', items)
             except KeyboardInterrupt:
@@ -249,7 +247,7 @@ def notice(options):
             return 1
         items, counter = data
         changed = False
-        while 1:
+        while True:
             try:
                 sel = show_notice_selector(darkgreen(_("Choose the one you want to remove")), items)
             except KeyboardInterrupt:
@@ -346,9 +344,8 @@ def database(options):
         if sync_all:
             sys_settings_plugin_id = \
                 etpConst['system_settings_plugins_ids']['server_plugin']
-            repos = list(Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys())
-            repos.sort()
-        old_default = Entropy.default_repository
+            repos = sorted(Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys())
+            old_default = Entropy.default_repository
 
         problems = 0
         for repo in repos:

@@ -194,7 +194,7 @@ class Client:
 
             if login_required:
                 stored_pass = False
-                while 1:
+                while True:
                     # login
                     login_data = self.read_login(repository)
                     if login_data == None:

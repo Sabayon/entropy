@@ -200,7 +200,7 @@ def repositories(options):
             for atom_dep, dep_id in atom_deps:
                 deps_dict[atom_dep] = dep_id
 
-            while 1:
+            while True:
                 try:
                     w_dbconn.removeDependencies(idpackage)
                     w_dbconn.insertDependencies(idpackage, deps_dict)
@@ -682,7 +682,7 @@ def database(options):
             ('db', ('combo', (_('Select the database you want to restore'), mydblist),), fake_cb, True)
         ]
 
-        while 1:
+        while True:
             data = Entropy.inputBox(red(_("Entropy installed packages database restore tool")), input_params, cancel_button = True)
             if data == None:
                 return 1
@@ -750,7 +750,7 @@ def spm_compile_categories(options, do_list = False):
     # --nooldslots support
     oldslots = "--nooldslots" not in options
     if not oldslots:
-        while 1:
+        while True:
             try:
                 options.remove("--nooldslots")
             except ValueError:

@@ -178,7 +178,7 @@ def print_exception(returndata = False):
         traceback.print_exc()
     data = []
     tb = sys.exc_info()[2]
-    while 1:
+    while True:
         if not tb.tb_next:
             break
         tb = tb.tb_next
@@ -331,7 +331,7 @@ def add_proxy_opener(module, data):
     @type data: dict
     """
     import types
-    if type(module) != types.ModuleType:
+    if not isinstance(module, types.ModuleType):
         InvalidDataType("InvalidDataType: not a module")
     if not data:
         return
@@ -567,7 +567,7 @@ def movefile(src, dest, src_basedir = None):
         didcopy = True
         if stat.S_ISREG(sstat[stat.ST_MODE]):
             try: # For safety copy then move it over.
-                while 1:
+                while True:
                     tmp_dest = "%s#entropy_new_%s" % (dest, get_random_number(),)
                     if not os.path.lexists(tmp_dest):
                         break
@@ -850,7 +850,7 @@ def getfd(filespec, readOnly = 0):
     @rtype: 
     """
     import types
-    if type(filespec) == int:
+    if isinstance(filespec, int):
         return filespec
     if filespec == None:
         filespec = "/dev/null"
@@ -1570,8 +1570,7 @@ def sort_update_files(update_list):
             sort_dict[year] = []
             sort_dict[year].append(item)
     new_list = []
-    keys = list(sort_dict.keys())
-    keys.sort()
+    keys = sorted(sort_dict.keys())
     for key in keys:
         sort_dict[key].sort()
         new_list += sort_dict[key]
@@ -1625,7 +1624,7 @@ def allocate_masked_file(file, fromfile):
     newfile = ""
     previousfile = ""
 
-    while 1:
+    while True:
         counter += 1
         txtcounter = str(counter)
         oldtxtcounter = str(counter-1)
@@ -2506,7 +2505,7 @@ def _generic_sorter(inputlist, cmp_func):
         return inputs
     max_idx = len(inputs)
 
-    while 1:
+    while True:
         changed = False
         for idx in range(max_idx):
             second_idx = idx+1
@@ -2643,9 +2642,9 @@ def escape_single(x):
     @return: 
     @rtype: 
     """
-    if type(x) == type(()) or type(x) == type([]):
+    if isinstance(x, type(())) or isinstance(x, type([])):
         return escape(x)
-    if type(x) == type(""):
+    if isinstance(x, type("")):
         tmpstr = ''
         for d in range(len(x)):
             if x[d] in list(mappings.keys()):
@@ -2672,7 +2671,7 @@ def unescape(val):
     @return: 
     @rtype: 
     """
-    if type(val)==type(""):
+    if isinstance(val, type("")):
         tmpstr = ''
         for key, item in list(mappings.items()):
             val = val.replace(item, key)
@@ -3265,8 +3264,7 @@ def save_repository_settings(repodata, remove = False, disable = False, enable =
             repolines_data[repocount]['line'] = line
 
         # inject new repodata
-        keys = list(repolines_data.keys())
-        keys.sort()
+        keys = sorted(repolines_data.keys())
         for cc in keys:
             #repoid = repolines_data[cc]['repoid']
             # write the first

@@ -78,7 +78,7 @@ class Queue:
         blocked = []
         for pkg in queue:
             match = pkg.matched_atom
-            if type(match[1]) is int: # installed package
+            if isinstance(match[1], int): # installed package
                 dbconn = self.Entropy.clientDbconn
             else:
                 dbconn = self.Entropy.open_repository(match[1])
@@ -221,7 +221,7 @@ class Queue:
         self.Sulfur.wait_window.show()
 
         try:
-            if type(pkgs) is not list:
+            if not isinstance(pkgs, list):
                 pkgs = [pkgs]
 
             action = [pkgs[0].action]
@@ -308,7 +308,7 @@ class Queue:
         self.Sulfur.wait_window.show()
 
         try:
-            if type(pkgs) is not list:
+            if not isinstance(pkgs, list):
                 pkgs = [pkgs]
 
             action = [pkgs[0].queued]
@@ -689,7 +689,7 @@ class EntropyPackages:
             return yp
         return [x for x in map(fm,
             self.Entropy.clientDbconn.listAllIdpackages(order_by = 'atom')) if \
-                type(x) is not int]
+                not isinstance(x, int)]
 
     def _pkg_get_queued(self):
         data = []
@@ -708,7 +708,7 @@ class EntropyPackages:
             yp.action = 'i'
             return yp
         return [x for x in map(fm, self.Entropy.calculate_available_packages()) \
-            if type(x) is not int]
+            if not isinstance(x, int)]
 
     def _pkg_get_updates_raw(self):
         return self._pkg_get_updates(critical_updates = False)
@@ -821,7 +821,7 @@ class EntropyPackages:
         filtered = self.filter_reinstallable(
             self.Entropy.clientDbconn.listAllPackages(get_scope = True,
             order_by = 'atom'))
-        return [x for x in map(fm, filtered) if type(x) is not int]
+        return [x for x in map(fm, filtered) if not isinstance(x, int)]
 
     def _pkg_get_masked(self):
         gp_call = self.get_package_item
@@ -844,8 +844,7 @@ class EntropyPackages:
             yp.masked = idreason
             yp.color = SulfurConf.color_install
             return yp
-        return [x for x in map(fm, self.get_masked_packages()) if type(x) is \
-                    not int]
+        return [x for x in map(fm, self.get_masked_packages()) if not isinstance(x, int)]
 
     def _pkg_get_user_masked(self):
         masked_objs = self.get_raw_groups("masked")
@@ -1031,7 +1030,7 @@ class EntropyPackages:
                 if idpackage_filtered == -1:
                     return ((idpackage, repoid,), idreason)
                 return 0
-            maskdata += [x for x in map(fm, repodata) if type(x) is not int]
+            maskdata += [x for x in map(fm, repodata) if not isinstance(x, int)]
 
         return maskdata
 
@@ -1086,7 +1085,7 @@ class EntropyPackages:
                 return 0
 
             matched_data |= set([x for x in map(fm, list(filter(fm_pre, clientdata))) \
-                if type(x) is not int])
+                if not isinstance(x, int)])
 
         return matched_data
 

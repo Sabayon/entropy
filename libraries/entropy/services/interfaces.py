@@ -581,7 +581,7 @@ class SocketHost:
                     if pid > 0: # parent here
                         # pid killer after timeout
                         passed_away = False
-                        while 1:
+                        while True:
                             time.sleep(1)
                             seconds += 1
                             try:
@@ -623,7 +623,7 @@ class SocketHost:
             self.myeos = self.server.processor.HostInterface.answers['eos']
             self.max_command_length = self.server.processor.HostInterface.max_command_length
 
-            while 1:
+            while True:
 
                 try:
                     if self.__DEBUG:
@@ -1763,7 +1763,7 @@ class SocketHost:
         # external authenticator
         if 'sock_auth' in self.kwds:
             authIntf = self.kwds.pop('sock_auth')
-            if type(authIntf) is tuple:
+            if isinstance(authIntf, tuple):
                 if len(authIntf) == 3:
                     auth_inst = authIntf[:]
                 else:
@@ -1884,7 +1884,7 @@ class SocketHost:
 
     def go(self):
         self.socket.setdefaulttimeout(self.timeout)
-        while 1:
+        while True:
             try:
                 self.Server = self.HostServerMixin(
                                                 (self.hostname, self.port),
@@ -1932,7 +1932,7 @@ class SocketHost:
         if self.SSL:
             mydata = self.append_eos(data)
             encode_done = False
-            while 1:
+            while True:
                 try:
                     sent = channel.send(mydata)
                     if sent == len(mydata):

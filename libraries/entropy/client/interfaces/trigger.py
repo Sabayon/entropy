@@ -89,7 +89,7 @@ class Trigger:
         functions = []
 
         if self.spm_support:
-            while 1:
+            while True:
                 if self.pkgdata['spm_phases'] != None:
                     if etpConst['spm']['postinst_phase'] not \
                         in self.pkgdata['spm_phases']:
@@ -117,7 +117,7 @@ class Trigger:
 
         # Portage phases
         if self.spm_support:
-            while 1:
+            while True:
                 if self.pkgdata['spm_phases'] != None:
                     if etpConst['spm']['preinst_phase'] not \
                         in self.pkgdata['spm_phases']:
@@ -157,7 +157,7 @@ class Trigger:
         # Portage hook
         if self.spm_support:
 
-            while 1:
+            while True:
                 if self.pkgdata['spm_phases'] != None:
                     if etpConst['spm']['prerm_phase'] not \
                         in self.pkgdata['spm_phases']:
@@ -167,7 +167,7 @@ class Trigger:
 
             # doing here because we need /var/db/pkg stuff
             # in place and also because doesn't make any difference
-            while 1:
+            while True:
                 if self.pkgdata['spm_phases'] != None:
                     if etpConst['spm']['postrm_phase'] not \
                         in self.pkgdata['spm_phases']:
@@ -385,7 +385,7 @@ class Trigger:
             sys.stderr = stdfile
 
         tg_pfx = "%s/trigger-" % (etpConst['entropyunpackdir'],)
-        while 1:
+        while True:
             triggerfile = "%s%s" % (tg_pfx, self.Entropy.entropyTools.get_random_number(),)
             if not os.path.isfile(triggerfile): break
 
@@ -396,7 +396,7 @@ class Trigger:
         f = open(triggerfile, "w")
         chunk = 1024
         start = 0
-        while 1:
+        while True:
             buf = self.pkgdata['trigger'][start:]
             if not buf: break
             f.write(buf)

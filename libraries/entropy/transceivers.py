@@ -180,7 +180,7 @@ class UrlFetcher:
             req = self.__url
 
         u_agent_error = False
-        while 1:
+        while True:
             # get file size if available
             try:
                 self.__remotefile = urlmod.urlopen(req)
@@ -257,7 +257,7 @@ class UrlFetcher:
             self.__status = "-3"
             return self.__status
 
-        while 1:
+        while True:
             try:
                 rsx = self.__remotefile.read(self.__buffersize)
                 if rsx == '': break
@@ -658,7 +658,7 @@ class FtpInterface:
         self.__ftpuser, self.__ftppassword, self.__ftpport, self.__ftpdir = self.entropyTools.extract_ftp_data(ftpuri)
 
         count = 10
-        while 1:
+        while True:
             count -= 1
             try:
                 self.__ftpconn = self.ftplib.FTP(self.__ftphost)
@@ -714,7 +714,7 @@ class FtpInterface:
         # import FTP modules
         self.socket.setdefaulttimeout(60)
         counter = 10
-        while 1:
+        while True:
             counter -= 1
             try:
                 self.__ftpconn = self.ftplib.FTP(self.__ftphost)
@@ -839,7 +839,7 @@ class FtpInterface:
             ''' Store a file in binary mode. Our version supports a callback function'''
             self.__ftpconn.voidcmd('TYPE I')
             conn = self.__ftpconn.transfercmd(cmd)
-            while 1:
+            while True:
                 buf = fp.readline()
                 if not buf:
                     break

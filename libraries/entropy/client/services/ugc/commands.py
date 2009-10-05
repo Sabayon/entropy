@@ -163,7 +163,7 @@ class Base:
 
         tries = 3
         lasterr = None
-        while 1:
+        while True:
 
             if tries <= 0:
                 return lasterr
@@ -197,7 +197,7 @@ class Base:
 
         self.Service.check_socket_connection()
 
-        while 1:
+        while True:
             try:
                 result = self.retrieve_command_answer(cmd, session_id, compression = compression)
                 if result == None:

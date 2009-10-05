@@ -667,7 +667,7 @@ class Repository:
             fetch_count = 0
             max_fetch_count = 5
 
-            while 1:
+            while True:
 
                 # anti loop protection
                 if fetch_count > max_fetch_count:
@@ -944,7 +944,7 @@ class Repository:
             dbfile_old = dbfile+".sync"
             cmethod = self.__validate_compression_method(repo)
 
-            while 1:
+            while True:
 
                 if do_skip:
                     break
@@ -1807,7 +1807,7 @@ class Repository:
             if item not in objects_to_unpack: continue
             if not (os.path.isfile(mypath) and os.access(mypath, os.R_OK)): continue
 
-            while 1:
+            while True:
                 tmpdir = os.path.join(os.path.dirname(mypath), "meta_unpack_%s" % (random.randint(1, 10000),))
                 if not os.path.lexists(tmpdir): break
             os.makedirs(tmpdir, 0o775)

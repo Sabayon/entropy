@@ -230,7 +230,7 @@ class Repository(SocketCommands):
         if len(myargs) < 6:
             return None
         format_content_for_insert = myargs[0]
-        if type(format_content_for_insert) is not bool:
+        if not isinstance(format_content_for_insert, bool):
             format_content_for_insert = False
         repository = myargs[1]
         arch = myargs[2]
@@ -242,7 +242,7 @@ class Repository(SocketCommands):
         zidpackages = myargs[5:]
         idpackages = []
         for idpackage in zidpackages:
-            if type(idpackage) is int:
+            if isinstance(idpackage, int):
                 idpackages.append(idpackage)
         if not idpackages:
             return None

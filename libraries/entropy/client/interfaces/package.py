@@ -278,7 +278,7 @@ class Package:
                 self.pkgmeta['pkgdbpath'])
 
             unpack_tries = 3
-            while 1:
+            while True:
                 unpack_tries -= 1
                 try:
                     rc = entropy.tools.spawn_function(
@@ -624,7 +624,7 @@ class Package:
 
         # now handle directories
         directories = sorted(directories, reverse = True)
-        while 1:
+        while True:
             taint = False
             for directory, dirtype in directories:
                 mydir = "%s%s" % (sys_root, directory,)

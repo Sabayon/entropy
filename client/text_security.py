@@ -185,8 +185,7 @@ def list_advisories(only_affected = False, only_unaffected = False):
     if not adv_metadata:
         print_info(brown(" :: ")+darkgreen("%s." % (_("No advisories available or applicable"),)))
         return 0
-    adv_keys = list(adv_metadata.keys())
-    adv_keys.sort()
+    adv_keys = sorted(adv_metadata.keys())
     for key in adv_keys:
         affected = securityConn.is_affected(key)
         if only_affected and not affected:

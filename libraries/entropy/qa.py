@@ -500,7 +500,7 @@ class QAInterface:
                         return 0
                     return filepath[sys_root_len:]
 
-                return set([x for x in map(mymf, files) if type(x) != int])
+                return set([x for x in map(mymf, files) if not isinstance(x, int)])
 
             for x in map(mywimf, mywalk_iter):
                 executables |= x

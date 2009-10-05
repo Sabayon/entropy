@@ -2041,7 +2041,7 @@ class Server:
         if repo == None:
             repo = self.Entropy.default_repository
 
-        while 1:
+        while True:
 
             db_locked = False
             if self.is_local_database_locked(repo):

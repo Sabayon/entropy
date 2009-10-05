@@ -1324,7 +1324,7 @@ def const_add_entropy_group():
         if ids:
             # starting from 1000, get the first free
             new_id = 1000
-            while 1:
+            while True:
                 new_id += 1
                 if new_id not in ids:
                     break

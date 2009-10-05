@@ -656,7 +656,7 @@ def database(options):
             ('db', ('combo', (_('Select the database you want to restore'), mydblist),), fake_cb, True)
         ]
 
-        while 1:
+        while True:
             data = Equo.inputBox(red(_("Entropy installed packages database restore tool")), input_params, cancel_button = True)
             if data == None:
                 return 1
@@ -756,19 +756,16 @@ def getinfo(dict = False):
     if (dict):
         return info
 
-    keys = list(info.keys())
-    keys.sort()
+    keys = sorted(info.keys())
     for x in keys:
         #print type(info[x])
-        if type(info[x]) is dict:
+        if isinstance(info[x], dict):
             toptext = x
-            ykeys = list(info[x].keys())
-            ykeys.sort()
+            ykeys = sorted(info[x].keys())
             for y in ykeys:
-                if type(info[x][y]) is dict:
+                if isinstance(info[x][y], dict):
                     topsubtext = y
-                    zkeys = list(info[x][y].keys())
-                    zkeys.sort()
+                    zkeys = sorted(info[x][y].keys())
                     for z in zkeys:
                         sys.stdout.write(red(toptext) + ": " + \
                             blue(topsubtext) + " => " + darkgreen(z) + \

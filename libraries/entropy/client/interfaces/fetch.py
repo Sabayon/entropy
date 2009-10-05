@@ -230,11 +230,11 @@ class FetchersMixin:
         def check_remaining_mirror_failure(repos):
             return [x for x in repos if not remaining.get(x)]
 
-        while 1:
+        while True:
 
             do_resume = True
             timeout_try_count = 50
-            while 1:
+            while True:
 
                 fetch_files_list = []
                 for repo, branch, fname, cksum, signatures in my_download_list:
@@ -406,7 +406,7 @@ class FetchersMixin:
 
             do_resume = True
             timeout_try_count = 50
-            while 1:
+            while True:
                 try:
                     mytxt = mirrorCountText
                     mytxt += blue("%s: ") % (_("Downloading from"),)

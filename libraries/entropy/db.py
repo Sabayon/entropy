@@ -2277,7 +2277,7 @@ class EntropyRepository:
             dcache.add(dep)
             return (idpackage, iddep, deptype,)
 
-        deps = [x for x in map(mymf, depdata) if type(x) is not int]
+        deps = [x for x in map(mymf, depdata) if not isinstance(x, int)]
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into dependencies VALUES (?,?,?)
@@ -4736,7 +4736,7 @@ class EntropyRepository:
             order_by_string = ' order by %s' % (order_by,)
 
         did_try = False
-        while 1:
+        while True:
             try:
 
                 cur = self.cursor.execute("""
@@ -8422,7 +8422,7 @@ class EntropyRepository:
 
         if scan_atom:
 
-            while 1:
+            while True:
                 # check for direction
                 strippedAtom = self.entropyTools.dep_getcpv(scan_atom)
                 if scan_atom[-1] == "*":

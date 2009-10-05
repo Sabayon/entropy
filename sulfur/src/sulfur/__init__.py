@@ -1741,7 +1741,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def load_package_info_menu(self, pkg):
         mymenu = PkgInfoMenu(self.Equo, pkg, self.ui.main)
         load_count = 6
-        while 1:
+        while True:
             try:
                 mymenu.load()
             except:

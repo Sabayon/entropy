@@ -701,7 +701,7 @@ def _my_raw_input(txt = ''):
             sys.stdout.write(darkgreen(txt.encode('utf-8')))
     _flush_stdouterr()
     response = ''
-    while 1:
+    while True:
         y = sys.stdin.read(1)
         if y in ('\n', '\r',): break
         response += y
@@ -811,7 +811,7 @@ class TextInterface:
         _flush_stdouterr()
 
         try:
-            while 1:
+            while True:
 
                 xtermTitle(_("Entropy got a question for you"))
                 _flush_stdouterr()
@@ -885,7 +885,7 @@ class TextInterface:
                 txt = "[%s] %s" % (darkgreen(str(counter)), blue(item),)
                 self.updateProgress(txt)
                 counter += 1
-            while 1:
+            while True:
                 myresult = readtext("%s:" % (_('Selected number'),)).decode('utf-8')
                 try:
                     myresult = int(myresult)
@@ -930,7 +930,7 @@ class TextInterface:
                     txt = "[%s] %s" % (darkgreen(str(key)), blue(mydict[key]),)
                     self.updateProgress(txt)
 
-            while 1:
+            while True:
                 try:
                     action = int(selaction())
                 except (ValueError, TypeError,):
@@ -944,7 +944,7 @@ class TextInterface:
                 elif action == 0:
                     break
                 elif action == 1:
-                    while 1:
+                    while True:
                         try:
                             s_el = readtext(darkred(_("String to add:"))+" ")
                             if not callback(s_el):
@@ -958,7 +958,7 @@ class TextInterface:
                     show_current_list()
                     continue
                 elif action == 2:
-                    while 1:
+                    while True:
                         try:
                             s_el = int(readtext(darkred(_("Element number to remove:"))+" "))
                             if s_el not in mydict:
@@ -979,7 +979,7 @@ class TextInterface:
             return mylist
 
         for identifier, input_text, callback, password in input_parameters:
-            while 1:
+            while True:
                 use_cb = True
                 try:
                     if isinstance(input_text, tuple):
