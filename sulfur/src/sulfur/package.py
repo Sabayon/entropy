@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 
     @author: Fabio Erculiani <lxnay@sabayonlinux.org>
@@ -572,7 +573,7 @@ class EntropyPackage:
     def get_filelist( self ):
         if self.pkgset:
             return []
-        mycont = sorted(list(self.dbconn.retrieveContent(self.matched_id)))
+        mycont = sorted(self.dbconn.retrieveContent(self.matched_id))
         return mycont
 
     def get_filelist_ext( self ):
