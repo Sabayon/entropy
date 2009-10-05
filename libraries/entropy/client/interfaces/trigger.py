@@ -368,7 +368,8 @@ class Trigger:
         def run(self, stage, pkgdata, trigger_file):
             my_ext_status = 1
             if os.path.isfile(trigger_file):
-                exec(compile(open(trigger_file).read(), trigger_file, 'exec'))
+                with open(trigger_file) as trig_f:
+                    exec(compile(trig_f.read(), trigger_file, 'exec'))
             if os.path.isfile(trigger_file):
                 os.remove(trigger_file)
             return my_ext_status
