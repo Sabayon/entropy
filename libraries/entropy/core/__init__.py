@@ -23,39 +23,33 @@ class Singleton(object):
 
     """
     If your class wants to become a sexy Singleton,
-    subclass this and replace __init__ with init_singleton
+    subclass this and replace __init__ with init_singleton.
+    Your subclass can expose a method called "is_destroyed()" that
+    returns a bool stating if singleton instance has been destroyed.
     """
 
-    __is_destroyed = False
-    __is_singleton = True
     def __new__(cls, *args, **kwds):
-        instance = cls.__dict__.get("__it__")
-        if instance is not None:
-            if not instance.is_destroyed():
-                return instance
-        cls.__it__ = instance = object.__new__(cls)
-        instance.init_singleton(*args, **kwds)
-        return instance
 
-    def is_destroyed(self):
+        singleton = getattr(cls, '__singleton__', None)
+        if singleton is not None:
+            destroyed = getattr(singleton, 'is_destroyed', None)
+            if destroyed is not None:
+                if not destroyed():
+                    return singleton
+                cls.__singleton__ = None
+            else:
+                return singleton
+
+        singleton = object.__new__(cls)
+        singleton.init_singleton(*args, **kwds)
+        cls.__singleton__ = singleton
+        return singleton
+
+    def __init__(self, *args, **kwargs):
         """
-        In our world, Singleton instances may be destroyed,
-        this is done by setting a private bool var __is_destroyed
-
-        @rtype: bool
-        @return: instance status, if destroyed or not
+        This is a fake method, necessary for Python 3.
         """
-        return self.__is_destroyed
-
-    def is_singleton(self):
-        """
-        Return if the instance is a singleton
-
-        @rtype: bool
-        @return: class singleton property, if singleton or not
-        """
-        return self.__is_singleton
-
+        pass
 
 class EntropyPluginFactory:
 
