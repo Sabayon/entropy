@@ -37,6 +37,18 @@ class EntropyRepositoryTest(unittest.TestCase):
         sys.stdout.flush()
         self.Client.destroy()
 
+    def test_singleton(self):
+        myclient = Client(noclientdb = 2)
+        self.assert_(myclient is self.Client)
+        myclient.destroy()
+        self.assert_(myclient.is_destroyed())
+        self.assert_(self.Client.is_destroyed())
+        myclient2 = Client(noclientdb = 2, indexing = False, xcache = False,
+            repo_validation = False)
+        self.assert_(myclient is not myclient2)
+        myclient2.destroy()
+        self.assert_(myclient2.is_destroyed())
+
     def test_constant_backup(self):
         const_key = 'foo_foo_foo'
         const_val = set([1, 2, 3])
