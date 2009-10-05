@@ -1376,6 +1376,12 @@ def const_isunicode(obj):
     else:
         return isinstance(obj, unicode)
 
+def const_israwstring(obj):
+    if sys.hexversion >= 0x3000000:
+        return isinstance(obj, bytes)
+    else:
+        return isinstance(obj, str)
+
 def const_convert_to_unicode(obj, enctype = 'raw_unicode_escape'):
     """
     Convert generic string to unicode format, this function supports both
