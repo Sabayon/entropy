@@ -2852,6 +2852,7 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
 
     try:
 
+        encoded_path = extractPath
         if const_isunicode(extractPath):
             encoded_path = extractPath.encode('utf-8')
         entries = []
