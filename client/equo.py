@@ -827,7 +827,7 @@ def main():
             f = open("/tmp/equoerror.txt", "r")
             errorText = f.readlines()
             f.close()
-            ferror = open("/tmp/equoerror.txt", "aw")
+            ferror = open("/tmp/equoerror.txt", "a")
             ferror.write("\n\n")
             for x in exception_data:
                 ferror.write("%s\n" % (e,))
