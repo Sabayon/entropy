@@ -22,7 +22,8 @@ else:
     import urllib2
     UrllibBaseHandler = urllib2.BaseHandler
 import threading
-from entropy.const import etpConst, etpUi, const_isunicode, const_isstring
+from entropy.const import etpConst, etpUi, const_isunicode, const_isstring, \
+    const_isfileobj
 from entropy.core.settings.base import SystemSettings
 
 class Lifo:
@@ -1168,7 +1169,7 @@ class MultipartPostHandler(UrllibBaseHandler):
             v_vars = []
             try:
                 for (key, value) in list(data.items()):
-                    if isinstance(value, file):
+                    if const_isfileobj(value):
                         v_files.append((key, value))
                     else:
                         v_vars.append((key, value))

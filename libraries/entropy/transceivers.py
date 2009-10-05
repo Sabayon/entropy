@@ -20,7 +20,7 @@ else:
     import urllib2 as urlmod_error
 
 import time
-from entropy.const import etpConst, const_isstring
+from entropy.const import etpConst, const_isstring, const_isfileobj
 from entropy.output import TextInterface, darkblue, darkred, purple, blue, \
     brown, darkgreen, red, bold
 from entropy.exceptions import *
@@ -110,7 +110,7 @@ class UrlFetcher:
         # if client uses this instance more than
         # once, make sure we close previously opened
         # files.
-        if isinstance(self.localfile, file):
+        if const_isfileobj(self.localfile):
             try:
                 self.localfile.flush()
                 self.localfile.close()
@@ -315,7 +315,7 @@ class UrlFetcher:
 
     def __close(self, errored):
         try:
-            if isinstance(self.localfile, file):
+            if const_isfileobj(self.localfile):
                 self.localfile.flush()
                 self.localfile.close()
         except IOError:
