@@ -14,7 +14,8 @@ import bz2
 import sys
 import shutil
 import tempfile
-from entropy.const import etpConst, etpUi
+from entropy.const import etpConst, etpUi, const_get_stringtype, \
+    const_convert_to_unicode
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidData
 from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, \
@@ -154,7 +155,7 @@ class PortagePlugin(SpmPlugin):
                 return dest
             i = iter(src)
             for x in i:
-                if isinstance(x, basestring):
+                if isinstance(x, const_get_stringtype()):
                     if x == '||':
                         x = self._zap_parens(next(i), [], disjunction=True)
                         if len(x) == 1:
@@ -272,7 +273,7 @@ class PortagePlugin(SpmPlugin):
         Reimplemented from SpmPlugin class.
         """
         ebuild_path = self.get_package_build_script_path(package)
-        if isinstance(ebuild_path, basestring):
+        if isinstance(ebuild_path, const_get_stringtype()):
 
             clog_path = os.path.join(os.path.dirname(ebuild_path), "ChangeLog")
             if os.access(clog_path, os.R_OK) and os.path.isfile(clog_path):
@@ -715,7 +716,7 @@ class PortagePlugin(SpmPlugin):
                 continue
 
             kernelstuff = True
-            if data['category'] == u"sys-kernel":
+            if data['category'] == "sys-kernel":
                 kernelstuff_kernel = True
 
             # this, if kernelstuff_kernel is False,
@@ -763,8 +764,8 @@ class PortagePlugin(SpmPlugin):
         pkgatom = "%s/%s-%s" % (data['category'], data['name'],
             data['version'],)
         try:
-            data['changelog'] = unicode(self.get_package_changelog(pkgatom),
-                'raw_unicode_escape')
+            data['changelog'] = const_convert_to_unicode(
+                self.get_package_changelog(pkgatom))
         except (UnicodeEncodeError, UnicodeDecodeError,) as e:
             sys.stderr.write("%s: %s, %s\n" % (
                 "changelog string conversion error", e,
@@ -912,7 +913,7 @@ class PortagePlugin(SpmPlugin):
         data['global_use'] = global_useflags.split()
 
         iuse = self.get_package_metadata(package, "IUSE")
-        if not isinstance(iuse, basestring):
+        if not isinstance(iuse, const_get_stringtype()):
             iuse = ''
         data['iuse'] = iuse.split()[:]
         iuse = set()
@@ -1035,7 +1036,7 @@ class PortagePlugin(SpmPlugin):
 
         iuse = self.get_installed_package_metadata(matched_atom, "IUSE",
             root = root)
-        if not isinstance(iuse, basestring):
+        if not isinstance(iuse, const_get_stringtype()):
             iuse = ''
         data['iuse'] = iuse.split()[:]
         iuse = set()
@@ -1891,7 +1892,7 @@ class PortagePlugin(SpmPlugin):
                 brown(_("Cannot update SPM installed pkgs file")), world_file,
             )
             self.updateProgress(
-                red("QA: ") + mytxt + ": " + unicode(e),
+                red("QA: ") + mytxt + ": " + repr(e),
                 importance = 1,
                 type = "warning",
                 header = darkred("   ## ")
@@ -2359,8 +2360,8 @@ class PortagePlugin(SpmPlugin):
 
         metadata['ENABLED_USE'] = enabled_use
         use = raw_use + [x for x in metadata['USE_FORCE'] if x not in raw_use]
-        metadata['USE'] = sorted([unicode(x) for x in use if x not in \
-            metadata['USE_MASK']])
+        metadata['USE'] = sorted([const_convert_to_unicode(x) for x in use if \
+            x not in metadata['USE_MASK']])
 
         for k in "LICENSE", "RDEPEND", "DEPEND", "PDEPEND", "PROVIDE", "SRC_URI":
             try:
@@ -2609,7 +2610,7 @@ class PortagePlugin(SpmPlugin):
                 if head[-1] == "?": # Use reduce next group on fail.
                     # Pull any other use conditions and the following atom or list into a separate array
                     newdeparray = [head]
-                    while isinstance(newdeparray[-1], basestring) and newdeparray[-1][-1] == "?":
+                    while isinstance(newdeparray[-1], const_get_stringtype()) and newdeparray[-1][-1] == "?":
                         if mydeparray:
                             newdeparray.append(mydeparray.pop(0))
                         else:
@@ -2954,13 +2955,13 @@ class PortagePlugin(SpmPlugin):
             entropy.tools.uncompress_tar_bz2(package_path, extractPath = mytempdir, catchEmpty = True)
             tmpdir_len = len(mytempdir)
             for currentdir, subdirs, files in os.walk(mytempdir):
-                pkg_content[currentdir[tmpdir_len:]] = u"dir"
+                pkg_content[currentdir[tmpdir_len:]] = const_convert_to_unicode("dir")
                 for item in files:
                     item = currentdir+"/"+item
                     if os.path.islink(item):
-                        pkg_content[item[tmpdir_len:]] = u"sym"
+                        pkg_content[item[tmpdir_len:]] = const_convert_to_unicode("sym")
                     else:
-                        pkg_content[item[tmpdir_len:]] = u"obj"
+                        pkg_content[item[tmpdir_len:]] = const_convert_to_unicode("obj")
 
             # now remove
             shutil.rmtree(mytempdir,True)
@@ -3069,7 +3070,7 @@ class PortagePlugin(SpmPlugin):
                             try:
                                 pkg_licensedata[mylicense] = content.decode('raw_unicode_escape')
                             except UnicodeDecodeError:
-                                pkg_licensedata[mylicense] = unicode(content,'utf-8')
+                                pkg_licensedata[mylicense] = const_convert_to_unicode(content, 'utf-8')
                         except (UnicodeDecodeError, UnicodeEncodeError,):
                             continue # sorry!
                         f.close()
