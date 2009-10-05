@@ -774,7 +774,7 @@ def spm_compile_categories(options, do_list = False):
             packages.append(slots_data[-1][1])
 
     if do_list:
-        print(' '.join(["="+x for x in packages]))
+        print_generic(' '.join(["="+x for x in packages]))
     else:
         args = [etpConst['spm']['exec'], etpConst['spm']['ask_cmd'],
             etpConst['spm']['verbose_cmd']]

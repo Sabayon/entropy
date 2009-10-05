@@ -86,7 +86,7 @@ def search_tagged_packages(tags, dbconn, entropy):
         results = dbconn.searchTaggedPackages(tag, atoms = True)
         for result in results:
             if etpUi['quiet']:
-                print(dbconn.retrieveAtom(result[1]))
+                print_generic(dbconn.retrieveAtom(result[1]))
             else:
                 text_query.print_package_info(result[1], dbconn, Equo = entropy)
         if not etpUi['quiet']:
