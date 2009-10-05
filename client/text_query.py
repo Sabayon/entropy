@@ -1181,6 +1181,10 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
 
         if extended:
             pkgsize = dbconn.retrieveSize(idpackage)
+            try:
+                pkgsize = int(pkgsize)
+            except ValueError:
+                pkgsize = 0
             pkgsize = Equo.entropyTools.bytes_into_human(pkgsize)
 
             print_info(darkgreen("       %s:\t\t\t" % (_("Size"),) ) + \
