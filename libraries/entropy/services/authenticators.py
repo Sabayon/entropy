@@ -10,7 +10,7 @@
 
 """
 
-
+from entropy.const import const_get_stringtype
 from entropy.services.skel import Authenticator
 from entropy.services.auth_interfaces import phpBB3Auth
 from entropy.services.skel import SocketAuthenticator
@@ -93,7 +93,7 @@ class phpBB3(phpBB3Auth,SocketAuthenticator):
 
         user = myargs[0]
         # filter n00bs
-        if not user or not isinstance(user,basestring):
+        if not user or not isinstance(user, const_get_stringtype()):
             return False,None,"wrong user"
 
         if not self.is_logged_in():

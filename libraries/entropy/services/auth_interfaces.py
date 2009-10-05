@@ -15,7 +15,7 @@ import time
 import random
 from entropy.services.skel import Authenticator, RemoteDatabase
 from entropy.exceptions import *
-from entropy.const import etpConst, const_isstring
+from entropy.const import etpConst, const_isstring, const_convert_to_unicode
 from entropy.i18n import _
 
 class phpBB3Auth(Authenticator,RemoteDatabase):
@@ -102,9 +102,8 @@ class phpBB3Auth(Authenticator,RemoteDatabase):
     def validate_username_string(self, username, username_clean):
 
         try:
-            x = unicode(username.encode('utf-8'),'raw_unicode_escape')
-            del x
-        except (UnicodeDecodeError,UnicodeEncodeError,):
+            const_convert_to_unicode(username.encode('utf-8'))
+        except (UnicodeDecodeError, UnicodeEncodeError,):
             return False,'Invalid username'
         if ("&quot;" in username) or ("'" in username) or ('"' in username) or \
             (" " in username):

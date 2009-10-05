@@ -15,7 +15,7 @@ import select
 import shutil
 import time
 from entropy.const import etpConst, ETP_LOGLEVEL_NORMAL, ETP_LOGPRI_INFO, \
-    const_setup_perms, const_isstring
+    const_setup_perms, const_isstring, const_get_stringtype
 from entropy.exceptions import *
 from entropy.services.skel import SocketAuthenticator, SocketCommands
 from entropy.i18n import _
@@ -1203,7 +1203,9 @@ class SocketHost:
                 return obj
 
             def can_be_streamed(obj):
-                if isinstance(obj,(bool,basestring,int,float,list,tuple,set,dict)):
+                base_objs = (bool, int, float, list, tuple, set, dict) + \
+                    const_get_stringtype()
+                if isinstance(obj, base_objs):
                     return True
                 return False
 
