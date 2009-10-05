@@ -4,7 +4,7 @@ import os
 sys.path.insert(0,'.')
 sys.path.insert(0,'../')
 import unittest
-import _misc
+import tests._misc as _misc
 from entropy.transceivers import UrlFetcher, MultipleUrlFetcher
 from entropy.const import etpUi
 

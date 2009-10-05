@@ -13,7 +13,7 @@ from entropy.const import etpConst, etpUi
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError
-import _misc
+import tests._misc as _misc
 
 class EntropyRepositoryTest(unittest.TestCase):
 

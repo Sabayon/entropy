@@ -8,7 +8,7 @@ from entropy.client.interfaces import Client
 from entropy.const import etpConst, etpUi, const_convert_to_unicode
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
-import _misc
+import tests._misc as _misc
 
 class EntropyRepositoryTest(unittest.TestCase):
 

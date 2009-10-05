@@ -7,7 +7,7 @@ import unittest
 import entropy.tools as et
 from entropy.client.interfaces import Client
 from entropy.output import print_generic
-import _misc
+import tests._misc as _misc
 import tempfile
 import subprocess
 import shutil

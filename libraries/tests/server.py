@@ -10,7 +10,7 @@ from entropy.const import etpConst, const_extract_srv_repo_params
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
 from entropy.exceptions import RepositoryError
-import _misc
+import tests._misc as _misc
 
 class EntropyRepositoryTest(unittest.TestCase):
 
