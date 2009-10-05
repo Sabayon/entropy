@@ -970,16 +970,10 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
 
     try:
 
-        dest_path = dest_path.encode('utf-8')
-        def mymf(tarinfo):
-            """
-            docstring_title
-
-            @param tarinfo: 
-            @type tarinfo: 
-            @return: 
-            @rtype: 
-            """
+        if const_isunicode(dest_path):
+            dest_path = dest_path.encode('utf-8')
+        directories = []
+        for tarinfo in tar:
             if tarinfo.isdir():
                 # Extract directory with a safe mode, so that
                 # all files below can be extracted as well.
@@ -987,36 +981,16 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
                     os.makedirs(os.path.join(dest_path, tarinfo.name), 0o777)
                 except EnvironmentError:
                     pass
-                return tarinfo
+                directories.append(tarinfo)
             tar.extract(tarinfo, dest_path)
             del tar.members[:]
-            return tarinfo
 
-        def mycmp(a, b):
-            """
-            docstring_title
+            directories.append(tarinfo)
 
-            @param a: 
-            @type a: 
-            @param b: 
-            @type b: 
-            @return: 
-            @rtype: 
-            """
-            return cmp(a.name, b.name)
-
-        directories = sorted(map(mymf, tar), mycmp, reverse = True)
+        directories.sort(key = lambda x: x.name, reverse = True)
 
         # Set correct owner, mtime and filemode on directories.
-        def mymf2(tarinfo):
-            """
-            docstring_title
-
-            @param tarinfo: 
-            @type tarinfo: 
-            @return: 
-            @rtype: 
-            """
+        for tarinfo in directories:
             epath = os.path.join(dest_path, tarinfo.name)
             try:
                 tar.chown(tarinfo, epath)
@@ -1047,8 +1021,6 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
             except tarfile.ExtractError:
                 if tar.errorlevel > 1:
                     return False
-        done = list(map(mymf2, directories))
-        del done
 
     except EOFError:
         return False
@@ -2518,48 +2490,38 @@ def g_n_w_cmp(a, b):
 
 def get_newer_version(versions):
     """
-    docstring_title
+    Return a sorted list of versions
 
-    @param versions: 
-    @type versions: 
-    @return: 
-    @rtype: 
+    @param versions: input version list
+    @type versions: list
+    @return: sorted version list
+    @rtype: list
     """
-    return sorted(versions, g_n_w_cmp, reverse = True)
+    return _generic_sorter(versions, compare_versions)
 
-def get_newer_version_stable(versions):
-    """
-    docstring_title
+def _generic_sorter(inputlist, cmp_func):
 
-    @param versions: 
-    @type versions: 
-    @return: 
-    @rtype: 
-    """
+    inputs = inputlist[:]
+    if len(inputs) < 2:
+        return inputs
+    max_idx = len(inputs)
 
-    if len(versions) == 1:
-        return versions
+    while 1:
+        changed = False
+        for idx in range(max_idx):
+            second_idx = idx+1
+            if second_idx == max_idx:
+                continue
+            str_a = inputs[idx]
+            str_b = inputs[second_idx]
+            if cmp_func(str_a, str_b) < 0:
+                inputs[idx] = str_b
+                inputs[second_idx] = str_a
+                changed = True
+        if not changed:
+            break
 
-    versionlist = versions[:]
-
-    rc = False
-    while not rc:
-        change = False
-        for x in range(len(versionlist)):
-            pkgA = versionlist[x]
-            try:
-                pkgB = versionlist[x+1]
-            except:
-                pkgB = "0"
-            result = compare_versions(pkgA, pkgB)
-            if result < 0:
-                versionlist[x] = pkgB
-                versionlist[x+1] = pkgA
-                change = True
-        if not change:
-            rc = True
-
-    return versionlist
+    return inputs
 
 def get_entropy_newer_version(versions):
     """
@@ -2570,28 +2532,7 @@ def get_entropy_newer_version(versions):
     @return: sorted list
     @rtype: list
     """
-    if len(versions) < 2:
-        return versions[:]
-
-    vers = versions[:]
-    max_idx = len(vers)
-
-    while 1:
-        changed = False
-        for idx in range(max_idx):
-            second_idx = idx+1
-            if second_idx == max_idx:
-                continue
-            str_a = vers[idx]
-            str_b = vers[second_idx]
-            if entropy_compare_versions(str_a, str_b) < 0:
-                vers[idx] = str_b
-                vers[second_idx] = str_a
-                changed = True
-        if not changed:
-            break
-
-    return vers
+    return _generic_sorter(versions, entropy_compare_versions)
 
 def isnumber(x):
     """
@@ -2875,8 +2816,7 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
     @return: 
     @rtype: 
     """
-
-    if extractPath == None:
+    if extractPath is None:
         extractPath = os.path.dirname(filepath)
     if not os.path.isfile(filepath):
         FileNotFound('FileNotFound: archive does not exist')
@@ -2891,16 +2831,6 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
         return -1
 
     def fix_uid_gid(tarinfo, epath):
-        """
-        docstring_title
-
-        @param tarinfo: 
-        @type tarinfo: 
-        @param epath: 
-        @type epath: 
-        @return: 
-        @rtype: 
-        """
         # workaround for buggy tar files
         uname = tarinfo.uname
         gname = tarinfo.gname
@@ -2920,31 +2850,12 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
         except OSError:
             pass
 
-    def mycmp(a, b):
-        """
-        docstring_title
-
-        @param a: 
-        @type a: 
-        @param b: 
-        @type b: 
-        @return: 
-        @rtype: 
-        """
-        return cmp(a[0].name, b[0].name)
-
     try:
 
-        encoded_path = extractPath.encode('utf-8')
-        def mymf(tarinfo):
-            """
-            docstring_title
-
-            @param tarinfo: 
-            @type tarinfo: 
-            @return: 
-            @rtype: 
-            """
+        if const_isunicode(extractPath):
+            encoded_path = extractPath.encode('utf-8')
+        entries = []
+        for tarinfo in tar:
             epath = os.path.join(encoded_path, tarinfo.name)
             if tarinfo.isdir():
                 # Extract directory with a safe mode, so that
@@ -2953,28 +2864,16 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
                     os.makedirs(epath, 0o777)
                 except EnvironmentError:
                     pass
-                return tarinfo, epath
+                entries.append((tarinfo, epath,))
 
             tar.extract(tarinfo, encoded_path)
-
             del tar.members[:]
-            return tarinfo, epath
+            entries.append((tarinfo, epath,))
 
-        entries = sorted(map(mymf, tar), mycmp, reverse = True)
-
+        entries.sort(key = lambda x: x[0].name, reverse = True)
         # Set correct owner, mtime and filemode on directories.
-        def mymf2(tardata):
-            """
-            docstring_title
-
-            @param tardata: 
-            @type tardata: 
-            @return: 
-            @rtype: 
-            """
-            tarinfo, epath = tardata
+        for tarinfo, epath in entries:
             try:
-
                 tar.chown(tarinfo, epath)
                 fix_uid_gid(tarinfo, epath)
                 tar.utime(tarinfo, epath)
@@ -2983,13 +2882,9 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
                 # which is setuid. Symlinks don't need chmod. PERIOD!
                 if not os.path.islink(epath):
                     tar.chmod(tarinfo, epath)
-
             except tarfile.ExtractError:
                 if tar.errorlevel > 1:
                     raise
-
-        done = list(map(mymf2, entries))
-        del done
 
     except EOFError:
         return -1
