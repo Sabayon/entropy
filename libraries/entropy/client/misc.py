@@ -16,7 +16,7 @@ import shutil
 import subprocess
 from entropy.client.interfaces import Client
 from entropy.exceptions import *
-from entropy.const import etpConst, etpCache
+from entropy.const import etpConst, etpCache, const_convert_to_rawstring
 from entropy.output import darkred, darkgreen, red, brown, blue
 from entropy.tools import getstatusoutput
 from entropy.i18n import _
@@ -116,7 +116,9 @@ class FileUpdates:
                             continue
 
                     filepath = os.path.join(currentdir, item)
-                    if item.startswith("._cfg"):
+                    # FIXME: with Python 3.x we can remove const_convert...
+                    # and not use path.encode('utf-8')
+                    if item.startswith(const_convert_to_rawstring("._cfg")): 
 
                         # further check then
                         number = item[5:9]
