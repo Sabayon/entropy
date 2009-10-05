@@ -171,7 +171,7 @@ class MagnetoCore(MagnetoCoreUI):
                     dbus_interface = self._dbus_interface
                 )
             except dbus.exceptions.DBusException as e:
-                self._dbus_init_error_msg = unicode(e)
+                self._dbus_init_error_msg = repr(e)
                 # service not avail
                 tries -= 1
                 time.sleep(2)
