@@ -22,7 +22,8 @@ from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
     MatchMixin
 from entropy.client.interfaces.fetch import FetchersMixin
 from entropy.client.interfaces.noticeboard import NoticeBoardMixin
-from entropy.const import etpConst, etpCache, etpUi, const_debug_write
+from entropy.const import etpConst, etpCache, etpUi, const_debug_write, \
+    const_convert_to_unicode
 from entropy.core.settings.base import SystemSettings
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 from entropy.misc import LogFile
@@ -503,7 +504,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 configprotect = split_line[1].strip()
                 for myprot in configprotect.split():
                     data['configprotect'].append(
-                        unicode(myprot,'raw_unicode_escape'))
+                        const_convert_to_unicode(myprot))
 
             elif line.startswith("configprotectmask|") and \
                 (split_line_len == 2):
@@ -511,7 +512,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 configprotect = split_line[1].strip()
                 for myprot in configprotect.split():
                     data['configprotectmask'].append(
-                        unicode(myprot,'raw_unicode_escape'))
+                        const_convert_to_unicode(myprot))
 
             elif line.startswith("configprotectskip|") and \
                 (split_line_len == 2):
@@ -519,8 +520,8 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 configprotect = split_line[1].strip()
                 for myprot in configprotect.split():
                     data['configprotectskip'].append(
-                        etpConst['systemroot']+unicode(myprot,
-                            'raw_unicode_escape'))
+                        etpConst['systemroot'] + \
+                            const_convert_to_unicode(myprot))
 
         return data
 

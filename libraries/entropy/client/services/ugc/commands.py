@@ -12,7 +12,7 @@
 
 import os
 from entropy.exceptions import *
-from entropy.const import etpConst
+from entropy.const import etpConst, const_get_stringtype
 from entropy.output import darkblue, bold, blue, darkgreen, darkred, brown
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
@@ -100,7 +100,7 @@ class Base:
             mytxt = _("received wrong answer")
 
             # do not spam terminal
-            if isinstance(data, basestring):
+            if isinstance(data, const_get_stringtype()):
                 if len(data) > 10:
                     data = data[:10] + "[...]"
 

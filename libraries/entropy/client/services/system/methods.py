@@ -9,12 +9,14 @@
     B{Entropy Client Services Base Mixin Interfaces}.
 
 """
+from entropy.const import const_get_stringtype
 from entropy.i18n import _
 
 class BaseMixin:
 
     def __init__(self, SystemManagerClientInstance):
         self.Manager = SystemManagerClientInstance
+        str_type = const_get_stringtype()
         self.available_commands = {
             'get_available_commands': {
                 'desc': _("Get a list of remotely available commands"),
@@ -84,8 +86,8 @@ class BaseMixin:
             'add_to_pinboard': {
                 'desc': _("Add item to pinboard"),
                 'params': [
-                    ('note',basestring,_('Note'),True,),
-                    ('extended_text',basestring,_('Extended text'),True,)
+                    ('note',str_type,_('Note'),True,),
+                    ('extended_text',str_type,_('Extended text'),True,)
                 ],
                 'call': self.add_to_pinboard,
                 'private': True,
@@ -110,7 +112,7 @@ class BaseMixin:
                 'params': [
                     ('queue_id',int,_('Queue Identifier'),True,),
                     ('write_to_stdout',bool,_('Write to stdout?'),True,),
-                    ('txt',basestring,_('Text'),True,),
+                    ('txt',str_type,_('Text'),True,),
                 ],
                 'call': self.write_to_running_command_pipe,
                 'private': True,
@@ -164,6 +166,7 @@ class Repository(BaseMixin):
 
     def __init__(self, *args, **kwargs):
         BaseMixin.__init__(self, *args, **kwargs)
+        str_type = const_get_stringtype()
         self.available_commands.update({
             'sync_spm': {
                 'desc': _("Update Spm Repository (emerge --sync)"),
@@ -182,9 +185,9 @@ class Repository(BaseMixin):
                     ('fetchonly',bool,_('Fetch only'),False,),
                     ('buildonly',bool,_('Build only'),False,),
                     ('nodeps',bool,_('No dependencies'),False,),
-                    ('custom_use',basestring,_('Custom USE'),False,),
-                    ('ldflags',basestring,_('Custom LDFLAGS'),False,),
-                    ('cflags',basestring,_('Custom CFLAGS'),False,),
+                    ('custom_use',str_type,_('Custom USE'),False,),
+                    ('ldflags',str_type,_('Custom LDFLAGS'),False,),
+                    ('cflags',str_type,_('Custom CFLAGS'),False,),
                 ],
                 'call': self.compile_atoms,
                 'private': False,
@@ -245,7 +248,7 @@ class Repository(BaseMixin):
             'run_custom_shell_command': {
                 'desc': _("Run custom shell command"),
                 'params': [
-                    ('command',basestring,_('Command'),True,)
+                    ('command',str_type,_('Command'),True,)
                 ],
                 'call': self.run_custom_shell_command,
                 'private': False,
@@ -253,7 +256,7 @@ class Repository(BaseMixin):
             'get_spm_glsa_data': {
                 'desc': _("Get Spm security updates information"),
                 'params': [
-                    ('list_type',basestring,_('List type (affected,new,all)'),True,)
+                    ('list_type',str_type,_('List type (affected,new,all)'),True,)
                 ],
                 'call': self.get_spm_glsa_data,
                 'private': False,
@@ -267,7 +270,7 @@ class Repository(BaseMixin):
             'set_default_repository': {
                 'desc': _("Set default Entropy Server repository"),
                 'params': [
-                    ('repoid',basestring,_('Repository Identifier'),True,)
+                    ('repoid',str_type,_('Repository Identifier'),True,)
                 ],
                 'call': self.set_default_repository,
                 'private': False,
@@ -275,7 +278,7 @@ class Repository(BaseMixin):
             'get_available_entropy_packages': {
                 'desc': _("Get available packages inside the specified repository"),
                 'params': [
-                    ('repoid',basestring,_('Repository Identifier'),True,)
+                    ('repoid',str_type,_('Repository Identifier'),True,)
                 ],
                 'call': self.get_available_entropy_packages,
                 'private': False,
@@ -284,7 +287,7 @@ class Repository(BaseMixin):
                 'desc': _("Get idpackage metadata using its idpackage in the specified repository"),
                 'params': [
                     ('idpackage',int,_('Package Identifier'),True,),
-                    ('repoid',basestring,_('Repository Identifier'),True,)
+                    ('repoid',str_type,_('Repository Identifier'),True,)
                 ],
                 'call': self.get_entropy_idpackage_information,
                 'private': False,
@@ -300,9 +303,9 @@ class Repository(BaseMixin):
             'search_entropy_packages': {
                 'desc': _("Search Entropy packages using a defined set of search types in the specified repository"),
                 'params': [
-                    ('search_type',basestring,_('Search type'),True,),
-                    ('search_string',basestring,_('Search string'),True,),
-                    ('repoid',basestring,_('Repository Identifier'),True,)
+                    ('search_type',str_type,_('Search type'),True,),
+                    ('search_string',str_type,_('Search string'),True,),
+                    ('repoid',str_type,_('Repository Identifier'),True,)
                 ],
                 'call': self.search_entropy_packages,
                 'private': False,
@@ -311,8 +314,8 @@ class Repository(BaseMixin):
                 'desc': _("Move or copy a package from a repository to another"),
                 'params': [
                     ('idpackages',list,_('Package identifiers'),True,),
-                    ('from_repo',basestring,_('From repository'),True,),
-                    ('to_repo',basestring,_('To repository'),True,),
+                    ('from_repo',str_type,_('From repository'),True,),
+                    ('to_repo',str_type,_('To repository'),True,),
                     ('do_copy',bool,_('Copy instead of move?'),False,)
                 ],
                 'call': self.search_entropy_packages,
@@ -349,7 +352,7 @@ class Repository(BaseMixin):
             'run_entropy_treeupdates': {
                 'desc': _("Run Entropy tree updates"),
                 'params': [
-                    ('repoid',basestring,_('Repository Identifier'),True,),
+                    ('repoid',str_type,_('Repository Identifier'),True,),
                 ],
                 'call': self.run_entropy_treeupdates,
                 'private': False,
@@ -373,22 +376,22 @@ class Repository(BaseMixin):
             'run_entropy_checksum_test': {
                 'desc': _("Run Entropy packages digest verification test"),
                 'params': [
-                    ('repoid',basestring,_('Repository Identifier'),True,),
-                    ('mode',basestring,_('Check mode'),False,),
+                    ('repoid',str_type,_('Repository Identifier'),True,),
+                    ('mode',str_type,_('Check mode'),False,),
                 ],
                 'call': self.run_entropy_mirror_updates,
                 'private': False,
             },
             'get_notice_board': {
                 'desc': _("Get repository notice board"),
-                'params': [('repoid',basestring,_('Repository Identifier'),True,),],
+                'params': [('repoid',str_type,_('Repository Identifier'),True,),],
                 'call': self.get_notice_board,
                 'private': False,
             },
             'remove_notice_board_entries': {
                 'desc': _("Remove notice board entry"),
                 'params': [
-                    ('repoid',basestring,_('Repository Identifier'),True,),
+                    ('repoid',str_type,_('Repository Identifier'),True,),
                     ('entry_ids',list,_('Entry Identifiers'),True,),
                 ],
                 'call': self.remove_notice_board_entries,
@@ -397,10 +400,10 @@ class Repository(BaseMixin):
             'add_notice_board_entry': {
                 'desc': _("Add notice board entry"),
                 'params': [
-                    ('repoid',basestring,_('Repository Identifier'),True,),
-                    ('title',basestring,_('Title'),True,),
-                    ('notice_text',basestring,_('Text'),True,),
-                    ('link',basestring,_('Notice link'),True,),
+                    ('repoid',str_type,_('Repository Identifier'),True,),
+                    ('title',str_type,_('Title'),True,),
+                    ('notice_text',str_type,_('Text'),True,),
+                    ('link',str_type,_('Notice link'),True,),
                 ],
                 'call': self.add_notice_board_entry,
                 'private': False,
@@ -410,7 +413,10 @@ class Repository(BaseMixin):
     def sync_spm(self):
         return self.Manager.do_cmd(True, "sync_spm", [], {})
 
-    def compile_atoms(self, atoms, pretend = False, oneshot = False, verbose = True, nocolor = True, fetchonly = False, buildonly = False, nodeps = False, custom_use = '', ldflags = '', cflags = ''):
+    def compile_atoms(self, atoms, pretend = False, oneshot = False,
+        verbose = True, nocolor = True, fetchonly = False, buildonly = False,
+        nodeps = False, custom_use = '', ldflags = '', cflags = ''):
+
         return self.Manager.do_cmd(
             True,
             "compile_atoms",
