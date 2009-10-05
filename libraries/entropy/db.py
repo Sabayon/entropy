@@ -37,7 +37,7 @@
 import os
 import shutil
 from entropy.const import etpConst, etpCache, const_setup_file, \
-    const_isunicode, const_convert_to_unicode
+    const_isunicode, const_convert_to_unicode, const_get_buffer
 from entropy.exceptions import IncorrectParameter, InvalidAtom, \
     SystemDatabaseError, OperationNotPermitted
 from entropy.i18n import _
@@ -2455,7 +2455,7 @@ class EntropyRepository:
 
             self.cursor.execute("""
             INSERT INTO packagechangelogs VALUES (?,?,?)
-            """, (category, name, buffer(mytxt),))
+            """, (category, name, const_get_buffer()(mytxt),))
 
     def removeChangelog(self, category, name):
         """
@@ -2495,7 +2495,7 @@ class EntropyRepository:
                 except (UnicodeDecodeError,):
                     lic_data = lic_data.encode('utf-8')
 
-            return (mylicense, buffer(lic_data), 0,)
+            return (mylicense, const_get_buffer()(lic_data), 0,)
 
         with self.__write_mutex:
             # set() used after filter to remove duplicates
@@ -2781,7 +2781,7 @@ class EntropyRepository:
         with self.__write_mutex:
             self.cursor.execute("""
             INSERT into triggers VALUES (?,?)
-            """, (idpackage, buffer(trigger),))
+            """, (idpackage, const_get_buffer()(trigger),))
 
     def insertBranchMigration(self, repository, from_branch, to_branch,
         post_migration_md5sum, post_upgrade_md5sum):
@@ -6951,7 +6951,10 @@ class EntropyRepository:
             return False
 
         cur = self.cursor.execute("SELECT count(*) FROM dependstable")
-        dependstable_count = cur.fetchone()
+        try:
+            dependstable_count = cur.fetchone()[0]
+        except IndexError:
+            dependstable_count = 0
         if dependstable_count < 2:
             return False
         return True
@@ -6968,7 +6971,7 @@ class EntropyRepository:
         """
         with self.__write_mutex:
             self.cursor.execute('INSERT into xpakdata VALUES (?,?)',
-                (int(idpackage), buffer(blob),)
+                (int(idpackage), const_get_buffer()(blob),)
             )
             self.commitChanges()
 
