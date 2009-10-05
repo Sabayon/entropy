@@ -155,7 +155,7 @@ def initconfig_entropy_constants(rootdir):
     etpConst.update(backed_up_settings)
     etpConst['backed_up'] = backed_up_settings.copy()
 
-    if sys.excepthook == sys.__excepthook__:
+    if sys.excepthook is sys.__excepthook__:
         sys.excepthook = __const_handle_exception
 
 def const_default_settings(rootdir):
@@ -1403,9 +1403,29 @@ def const_convert_to_unicode(obj, enctype = 'raw_unicode_escape'):
             return unicode(obj, enctype)
 
 def const_convert_to_rawstring(obj, from_enctype = 'raw_unicode_escape'):
+    """
+    Convert generic string to raw string (str for Python 2.x or bytes for
+    Python 3.x).
+
+    @param obj: input string
+    @type obj: string object
+    @keyword from_enctype: encoding which string is using
+    @type from_enctype: string
+    @return: raw string
+    @rtype: bytes
+    """
     if not const_isunicode(obj):
         return obj
     return obj.encode(from_enctype)
+
+def const_get_buffer():
+    """
+    Return generic buffer object (supporting both Python 2.x and Python 3.x)
+    """
+    if sys.hexversion >= 0x3000000:
+        return memoryview
+    else:
+        return buffer
 
 def const_islive():
     """
