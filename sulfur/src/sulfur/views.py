@@ -1,5 +1,5 @@
 #!/usr/bin/python2 -O
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
@@ -28,6 +28,7 @@ from entropy.misc import ParallelTask
 from entropy.i18n import _, _LOCALE
 from entropy.db import dbapi2
 from entropy.tools import convert_unix_time_to_datetime
+from entropy.output import const_get_stringtype
 
 from sulfur.setup import const, cleanMarkupString, SulfurConf
 from sulfur.core import UI
@@ -2186,7 +2187,7 @@ class EntropyAdvisoriesView:
 
     def atom_search(self, model, column, key, iterator):
         obj = model.get_value( iterator, 2 )
-        if isinstance(obj,basestring):
+        if isinstance(obj, const_get_stringtype()):
             if obj.find(key) != -1:
                 return False
         return True

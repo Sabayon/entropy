@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 
     @author: Fabio Erculiani <lxnay@sabayonlinux.org>
@@ -13,6 +14,7 @@ import os
 import gtk
 import gobject
 from sulfur.setup import const, SulfurConf
+from entropy.const import const_isunicode
 import vte
 
 def hex2float(myhex):
@@ -157,7 +159,7 @@ class SulfurConsole(vte.Terminal):
         # by python, because it does not consider the fact that UTF-8 chars can
         # be long 16bits.
         raw_txt_len = len(txt)
-        if isinstance(txt, unicode):
+        if const_isunicode(txt):
             raw_txt_len = len(txt.encode('utf-8'))
 
         return vte.Terminal.feed(self, txt, raw_txt_len)

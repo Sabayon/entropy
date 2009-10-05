@@ -25,7 +25,8 @@ import time
 from entropy.exceptions import QueueError
 import entropy.tools
 from entropy.const import etpConst, const_extract_cli_repo_params, \
-    initconfig_entropy_constants
+    initconfig_entropy_constants, const_isunicode, const_convert_to_unicode
+from entropy.output import print_generic
 from entropy.i18n import _
 from entropy.misc import TimeScheduled, ParallelTask
 
@@ -716,7 +717,7 @@ class SulfurApplicationEventsMixin:
         rc = questionDialog(self.ui.main, msg)
         if rc:
             if self.do_debug:
-                print("on_abortQueue_clicked: abort is now on")
+                print_generic("on_abortQueue_clicked: abort is now on")
             self.abortQueueNow = True
 
     def on_search_clicked(self,widget):
@@ -828,7 +829,7 @@ class SulfurApplicationEventsMixin:
             #    return False
 
             # does it exist?
-            if not isinstance(s, unicode):
+            if not const_isunicode(s):
                 s = s.decode('utf-8')
             set_match, rc = self.Equo.package_set_match(s)
             if rc:
@@ -885,12 +886,12 @@ class SulfurApplicationEventsMixin:
             return
 
         if edit:
-            rc, msg = self.Equo.remove_user_package_set(unicode(data.get("name")))
+            rc, msg = self.Equo.remove_user_package_set(const_convert_to_unicode(data.get("name")))
             if rc != 0:
                 okDialog(self.ui.main,"%s: %s" % (_("Error"),msg,))
                 return
 
-        rc, msg = self.Equo.add_user_package_set(unicode(data.get("name")),
+        rc, msg = self.Equo.add_user_package_set(const_convert_to_unicode(data.get("name")),
             data.get("atoms"))
         if rc != 0:
             okDialog(self.ui.main,"%s: %s" % (_("Error"),msg,))
@@ -1042,9 +1043,9 @@ class SulfurApplicationEventsMixin:
             self.gtk_loop()
 
         if self.do_debug and self.libtest_abort:
-            print("on_libtestButton_clicked: scan abort")
+            print_generic("on_libtestButton_clicked: scan abort")
         if self.do_debug:
-            print("on_libtestButton_clicked: done scanning")
+            print_generic("on_libtestButton_clicked: done scanning")
 
         if self.libtest_abort:
             do_stop()
@@ -1084,7 +1085,7 @@ class SulfurApplicationEventsMixin:
     def on_ui_color_set(self, widget):
         key = self.colorSettingsReverseMap.get(widget)
         if not hasattr(SulfurConf,key):
-            print("WARNING: no %s in SulfurConf" % (key,))
+            print_generic("WARNING: no %s in SulfurConf" % (key,))
             return
         w_col = widget.get_color().to_string()
         self.on_Preferences_toggled(None,True)

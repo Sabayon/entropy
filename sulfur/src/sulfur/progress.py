@@ -1,5 +1,5 @@
 #!/usr/bin/python2 -O
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
@@ -17,6 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+from entropy.const import const_convert_to_unicode
 import gobject
 import gtk
 from sulfur.setup import cleanMarkupString
@@ -171,7 +172,7 @@ class Base:
 
     def set_subLabel( self, text ):
         def run(text):
-            mytxt = unicode(text)
+            mytxt = const_convert_to_unicode(text)
             if len(mytxt) > 80:
                 mytxt = mytxt[:80].strip()+"..."
             self.ui.progressSubLabel.set_markup( "%s" % (cleanMarkupString(mytxt),) )
@@ -181,7 +182,7 @@ class Base:
 
     def set_extraLabel( self, text ):
         def run(text):
-            mytxt = unicode(text)
+            mytxt = const_convert_to_unicode(text)
             if len(mytxt) > 80:
                 mytxt = mytxt[:80].strip()+"..."
             self.ui.progressExtraLabel.set_markup( "<span size=\"small\">%s</span>" % cleanMarkupString(mytxt) )

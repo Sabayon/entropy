@@ -1,5 +1,5 @@
 #!/usr/bin/python2 -O
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
@@ -39,6 +39,7 @@ from entropy.const import *
 from entropy.i18n import _
 from entropy.misc import TimeScheduled, ParallelTask
 from entropy.cache import EntropyCacher
+from entropy.output import print_generic
 
 # Sulfur Imports
 import gtk, gobject
@@ -624,7 +625,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def spawn_user_generated_content(self):
         self.__ugc_task.set_delay(300)
         if self.do_debug:
-            print("entering UGC")
+            print_generic("entering UGC")
         try:
             self.ugc_update()
             self.Cacher.sync(wait = True)
@@ -633,7 +634,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         except:
             pass
         if self.do_debug:
-            print("quitting UGC")
+            print_generic("quitting UGC")
 
     def ugc_update(self):
 
@@ -642,12 +643,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self._is_working = True
         self._spawning_ugc = True
-        if self.do_debug: print("are we connected?")
+        if self.do_debug: print_generic("are we connected?")
         connected = entropy.tools.get_remote_data(etpConst['conntestlink'])
         if self.do_debug:
             cr = False
             if connected: cr = True
-            print("conn result",cr)
+            print_generic("conn result",cr)
         if (isinstance(connected,bool) and (not connected)) or \
             (self.Equo.UGC == None):
             self._is_working = False
@@ -657,12 +658,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         for repo in self.Equo.validRepositories:
             if self.do_debug:
                 t1 = time.time()
-                print("working UGC update for", repo)
+                print_generic("working UGC update for", repo)
             self.Equo.update_ugc_cache(repo)
             if self.do_debug:
                 t2 = time.time()
                 td = t2 - t1
-                print("completed UGC update for", repo, "took", td)
+                print_generic("completed UGC update for", repo, "took", td)
 
         # emit ugc update signal
         SulfurSignals.emit('ugc_data_update')
@@ -792,7 +793,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             view.expand_all()
 
         def fill_setting(name, mytype, wgwrite, data):
-            if not isinstance(data,mytype):
+            if not isinstance(data, mytype):
                 if data == None: # empty parameter
                     return
                 errorMessage(
@@ -840,7 +841,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             elif isinstance(data,bool):
                 writedata = "disable"
                 if data: writedata = "enable"
-            elif isinstance(data,basestring):
+            elif isinstance(data, const_get_stringtype()):
                 writedata = data
             return save_parameter(config_file, name, writedata)
 
@@ -854,7 +855,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 (
                     'ftp-proxy',
                     self.Equo.SystemSettings['system']['proxy']['ftp'],
-                    basestring,
+                    const_get_stringtype(),
                     fill_setting,
                     saveSetting,
                     self.ui.ftpProxyEntry.set_text,
@@ -863,7 +864,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 (
                     'http-proxy',
                     self.Equo.SystemSettings['system']['proxy']['http'],
-                    basestring,
+                    const_get_stringtype(),
                     fill_setting,
                     saveSetting,
                     self.ui.httpProxyEntry.set_text,
@@ -872,7 +873,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 (
                     'proxy-username',
                     self.Equo.SystemSettings['system']['proxy']['username'],
-                    basestring,
+                    const_get_stringtype(),
                     fill_setting,
                     saveSetting,
                     self.ui.usernameProxyEntry.set_text,
@@ -881,7 +882,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 (
                     'proxy-password',
                     self.Equo.SystemSettings['system']['proxy']['password'],
-                    basestring,
+                    const_get_stringtype(),
                     fill_setting,
                     saveSetting,
                     self.ui.passwordProxyEntry.set_text,
@@ -1178,7 +1179,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         while t.isAlive():
             time.sleep(0.2)
             if self.do_debug:
-                print("update_repositories: update thread still alive")
+                print_generic("update_repositories: update thread still alive")
             self.gtk_loop()
         rc = self.__repo_update_rc
 
@@ -1297,20 +1298,20 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         bootstrap = False
         if (self.Equo.get_world_update_cache(empty_deps = False) == None):
             if self.do_debug:
-                print("show_packages: bootstrap True due to empty world cache")
+                print_generic("show_packages: bootstrap True due to empty world cache")
             bootstrap = True
             self.switch_notebook_page('output')
         elif (self.Equo.get_available_packages_cache() == None) and \
             (('available' in masks) or ('updates' in masks)):
             if self.do_debug:
-                print("show_packages: bootstrap True due to empty avail cache")
+                print_generic("show_packages: bootstrap True due to empty avail cache")
             bootstrap = True
             self.switch_notebook_page('output')
         self.progress.total.hide()
 
         if bootstrap:
             if self.do_debug:
-                print("show_packages: bootstrap is enabled, clearing ALL cache")
+                print_generic("show_packages: bootstrap is enabled, clearing ALL cache")
             self.etpbase.clear_cache()
             self.start_working()
 
@@ -1592,26 +1593,26 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     dbg_count += 1
                     time.sleep(0.2)
                     if self.do_debug and (dbg_count % 500 == 0):
-                        print("process_queue: QueueExecutor thread still alive")
+                        print_generic("process_queue: QueueExecutor thread still alive")
                     self.gtk_loop()
                     if self.do_debug and (dbg_count % 500 == 0):
-                        print("process_queue: after QueueExecutor loop")
+                        print_generic("process_queue: after QueueExecutor loop")
 
                 err = self.my_inst_error
                 if self.do_debug:
-                    print("process_queue: left all")
+                    print_generic("process_queue: left all")
 
                 self.ui.skipMirror.hide()
                 self.ui.abortQueue.hide()
                 if self.do_debug:
-                    print("process_queue: buttons now hidden")
+                    print_generic("process_queue: buttons now hidden")
 
                 # deactivate UI lock
                 if self.do_debug:
-                    print("process_queue: unlocking gui?")
+                    print_generic("process_queue: unlocking gui?")
                 self.ui_lock(False)
                 if self.do_debug:
-                    print("process_queue: gui unlocked")
+                    print_generic("process_queue: gui unlocked")
 
                 if (err == 0) and ((not fetch_only) and (not download_sources)):
                     # this triggers post-branch upgrade function inside
@@ -1644,38 +1645,38 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     raise SystemExit(99)
 
             if self.do_debug:
-                print("process_queue: end_working?")
+                print_generic("process_queue: end_working?")
             self.end_working()
             self.progress.reset_progress()
             if self.do_debug:
-                print("process_queue: end_working")
+                print_generic("process_queue: end_working")
 
             if (not fetch_only) and (not download_sources):
 
                 if self.do_debug:
-                    print("process_queue: cleared caches")
+                    print_generic("process_queue: cleared caches")
 
                 for myrepo in remove_repos:
                     self.Equo.remove_repository(myrepo)
 
                 self.reset_cache_status()
                 if self.do_debug:
-                    print("process_queue: closed repo dbs")
+                    print_generic("process_queue: closed repo dbs")
                 self.Equo.reopen_client_repository()
                 if self.do_debug:
-                    print("process_queue: cleared caches (again)")
+                    print_generic("process_queue: cleared caches (again)")
                 # regenerate packages information
                 if self.do_debug:
-                    print("process_queue: setting up Sulfur")
+                    print_generic("process_queue: setting up Sulfur")
                 self.setup_application()
                 if self.do_debug:
-                    print("process_queue: scanning for new files")
+                    print_generic("process_queue: scanning for new files")
                 self.Equo.FileUpdates.scanfs(dcache = False, quiet = True)
                 if self.Equo.FileUpdates.scandata:
                     if len(self.Equo.FileUpdates.scandata) > 0:
                         switch_back_page = 'filesconf'
                 if self.do_debug:
-                    print("process_queue: all done")
+                    print_generic("process_queue: all done")
 
         else:
             self.set_status_ticker( _( "No packages selected" ) )
@@ -1753,10 +1754,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def queue_bombing(self):
         if self.do_debug:
-            print("queue_bombing: bomb?")
+            print_generic("queue_bombing: bomb?")
         if self.abortQueueNow:
             if self.do_debug:
-                print("queue_bombing: BOMBING !!!")
+                print_generic("queue_bombing: BOMBING !!!")
             self.abortQueueNow = False
             mytxt = _("Aborting queue tasks.")
             raise QueueError('QueueError %s' % (mytxt,))
@@ -1770,7 +1771,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if self.abortQueueNow:
             self.abortQueueNow = False
-            print("mirror_bombing: queue BOMB !!!")
+            print_generic("mirror_bombing: queue BOMB !!!")
             # do not reset self.abortQueueNow here, we need
             # mirror_bombing to keep crashing
             raise QueueError('QueueError %s' % (mytxt,))
@@ -1791,7 +1792,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def load_color_settings(self):
         for key,s_widget in list(self.colorSettingsMap.items()):
             if not hasattr(SulfurConf,key):
-                if self.do_debug: print("WARNING: no %s in SulfurConf" % (key,))
+                if self.do_debug: print_generic("WARNING: no %s in SulfurConf" % (key,))
                 continue
             color = getattr(SulfurConf,key)
             s_widget.set_color(gtk.gdk.color_parse(color))

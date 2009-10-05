@@ -22,6 +22,7 @@ from entropy.i18n import _,_LOCALE
 from entropy.exceptions import *
 from entropy.const import *
 from entropy.misc import TimeScheduled, ParallelTask
+from entropy.output import print_generic
 import entropy.tools as entropyTools
 
 from sulfur.event import SulfurSignals
@@ -725,7 +726,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.sm_ui.repoManagerTermHBox.show_all()
 
     def debug_print(self, f, msg):
-        if self.do_debug: print("repoman debug:",f,msg)
+        if self.do_debug: print_generic("repoman debug:",f,msg)
 
     def clear_console(self):
         self.std_input.text_read = ''
@@ -3970,15 +3971,15 @@ class PkgInfoMenu(MenuSkel):
             else:
                 title = _("N/A")
                 if obj['title']:
-                    title = unicode(obj['title'],'raw_unicode_escape')
+                    title = const_convert_to_unicode(obj['title'])
                 description = _("N/A")
                 if obj['description']:
                     description = obj['description']
                 if obj['iddoctype'] in (etpConst['ugc_doctypes']['comments'], etpConst['ugc_doctypes']['bbcode_doc'],):
                     myddata = obj['ddata']
-                    if not isinstance(obj['ddata'],basestring):
+                    if not isinstance(obj['ddata'], const_get_stringtype()):
                         myddata = myddata.tostring()
-                    description = unicode(myddata,'raw_unicode_escape')
+                    description = const_convert_to_unicode(myddata)
                     if len(description) > 100:
                         description = description[:100].strip()+"..."
                 mytxt = "<small><b>%s</b>: %s, %s: %s\n<b>%s</b>: %s, <i>%s</i>\n<b>%s</b>: %s\n<b>%s</b>: <i>%s</i>\n<b>%s</b>: %s</small>" % (
@@ -4940,11 +4941,11 @@ class UGCInfoMenu(MenuSkel):
                 doc_type_desc,
             )
         )
-        self.ugcinfo_ui.titleContent.set_markup("%s" % (unicode(self.ugc_data['title'],'raw_unicode_escape'),))
-        self.ugcinfo_ui.descriptionContent.set_markup("%s" % (unicode(self.ugc_data['description'],'raw_unicode_escape'),))
-        self.ugcinfo_ui.authorContent.set_markup("<i>%s</i>" % (unicode(self.ugc_data['username'],'raw_unicode_escape'),))
+        self.ugcinfo_ui.titleContent.set_markup("%s" % (const_convert_to_unicode(self.ugc_data['title']),))
+        self.ugcinfo_ui.descriptionContent.set_markup("%s" % (const_convert_to_unicode(self.ugc_data['description']),))
+        self.ugcinfo_ui.authorContent.set_markup("<i>%s</i>" % (const_convert_to_unicode(self.ugc_data['username']),))
         self.ugcinfo_ui.dateContent.set_markup("<u>%s</u>" % (self.ugc_data['ts'],))
-        self.ugcinfo_ui.keywordsContent.set_markup("%s" % (unicode(', '.join(self.ugc_data['keywords']),'raw_unicode_escape'),))
+        self.ugcinfo_ui.keywordsContent.set_markup("%s" % (const_convert_to_unicode(', '.join(self.ugc_data['keywords'])),))
         self.ugcinfo_ui.sizeContent.set_markup("%s" % (entropyTools.bytes_into_human(self.ugc_data['size']),))
 
         bold_items = [
@@ -4980,12 +4981,12 @@ class UGCInfoMenu(MenuSkel):
             ###
             # we need to properly handle raw data coming from ddata dict key
             ###
-            if isinstance(self.ugc_data['ddata'], unicode):
+            if const_isunicode(self.ugc_data['ddata']):
                 buf_text = self.ugc_data['ddata']
-            elif isinstance(self.ugc_data['ddata'], str):
-                buf_text = unicode(self.ugc_data['ddata'], 'raw_unicode_escape')
+            elif const_israwstring(self.ugc_data['ddata']):
+                buf_text = const_convert_to_unicode(self.ugc_data['ddata'])
             else: # mysql shitty type?
-                buf_text = unicode(self.ugc_data['ddata'].tostring(),'raw_unicode_escape')
+                buf_text = const_convert_to_unicode(self.ugc_data['ddata'].tostring())
             mybuf.set_text(buf_text)
             self.ugcinfo_ui.textContent.set_buffer(mybuf)
         else:
@@ -6415,7 +6416,7 @@ class LicenseDialog:
             try:
                 utf_lic_text = license_text.decode('utf-8')
             except UnicodeDecodeError: # old license text stored, will be rm'ed
-                utf_lic_text = unicode(license_text,'raw_unicode_escape')
+                utf_lic_text = const_convert_to_unicode(license_text)
             mybuffer.set_text(utf_lic_text)
             self.licenseView.set_buffer(mybuffer)
             txt = "[%s] %s" % (license_identifier, _("license text"),)

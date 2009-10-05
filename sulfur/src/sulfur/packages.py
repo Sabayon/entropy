@@ -1,5 +1,5 @@
 #!/usr/bin/python2 -O
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
@@ -22,6 +22,7 @@ import time
 from entropy.i18n import _
 from entropy.const import *
 from entropy.exceptions import *
+from entropy.output import print_generic
 
 from sulfur.setup import SulfurConf, cleanMarkupString, const
 from sulfur.package import EntropyPackage, DummyEntropyPackage
@@ -622,7 +623,7 @@ class EntropyPackages:
             t1 = time.time()
         self._packages[mask] = self._get_groups(mask)
         if const.debug:
-            print("populate_single_group: generated group content for %s in %s" % (
+            print_generic("populate_single_group: generated group content for %s in %s" % (
                 mask, time.time() - t1,))
 
     def get_groups(self, flt):
@@ -658,7 +659,7 @@ class EntropyPackages:
             t1 = time.time()
         self.populate_single_group(flt)
         if const.debug:
-            print("get_raw_groups: generated group content for %s in %s" % (
+            print_generic("get_raw_groups: generated group content for %s in %s" % (
                 flt, time.time() - t1,))
         return self._packages[flt]
 
@@ -668,7 +669,7 @@ class EntropyPackages:
         if yp is None:
             new = True
             pkgset = None
-            if isinstance(pkgdata, basestring): # package set
+            if isinstance(pkgdata, const_get_stringtype()): # package set
                 pkgset = True
             yp = EntropyPackage(pkgdata, pkgset = pkgset)
             self.pkgCache[pkgdata] = yp
@@ -763,7 +764,7 @@ class EntropyPackages:
         already_in |= set((x.matched_atom for x in self.get_raw_groups("user_unmasked")))
 
         if const.debug:
-            print("_pkg_get_downgrade: created already_in in %s" % (
+            print_generic("_pkg_get_downgrade: created already_in in %s" % (
                 time.time() - t1,))
             t1 = time.time()
 
@@ -779,7 +780,7 @@ class EntropyPackages:
                 already_in))
 
         if const.debug:
-            print("_pkg_get_downgrade: first iteration in %s" % (
+            print_generic("_pkg_get_downgrade: first iteration in %s" % (
                 time.time() - t1,))
             t1 = time.time()
 
@@ -800,7 +801,7 @@ class EntropyPackages:
             final_matches.append(yp)
 
         if const.debug:
-            print("_pkg_get_downgrade: second iteration in %s" % (
+            print_generic("_pkg_get_downgrade: second iteration in %s" % (
                 time.time() - t1,))
 
         return final_matches

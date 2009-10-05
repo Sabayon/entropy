@@ -1,5 +1,5 @@
 #!/usr/bin/python2 -O
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
@@ -17,6 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+from entropy.output import print_generic
 
 class Filtering:
 
@@ -37,7 +38,7 @@ class Filtering:
 
     def listFilters(self):
         for flt in self.filters:
-            print("%s : %s " % (flt.get_name(),flt._state))
+            print_generic("%s : %s " % (flt.get_name(),flt._state))
 
     def get(self,name):
         for flt in self.filters:

@@ -1,5 +1,5 @@
 #!/usr/bin/python2 -O
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
@@ -25,7 +25,7 @@ from sulfur.dialogs import LicenseDialog, okDialog, choiceDialog, inputDialog
 import gobject
 
 # Entropy Imports
-from entropy.const import etpConst
+from entropy.const import etpConst, print_generic
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.transceivers import UrlFetcher
 from entropy.i18n import _
@@ -333,7 +333,7 @@ class Equo(EquoInterface):
             gobject.timeout_add(0, update_gui)
 
         elif not back:
-            print(count_str+text)
+            print_generic(count_str+text)
 
     def cycleDone(self):
         def update_gui():
