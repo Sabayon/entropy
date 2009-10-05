@@ -784,7 +784,7 @@ class Server:
                 if os.access(revision_localtmppath, os.R_OK) and \
                     os.path.isfile(revision_localtmppath):
 
-                    f_rev = open(revision_localtmppath,"r")
+                    f_rev = open(revision_localtmppath, "r")
                     try:
                         revision = int(f_rev.readline().strip())
                     except ValueError:
@@ -1116,13 +1116,13 @@ class Server:
 
     def compress_file(self, file_path, destination_path, opener):
         f_out = opener(destination_path, "wb")
-        f_in = open(file_path,"rb")
+        f_in = open(file_path, "rb")
         data = f_in.read(8192)
         while data:
             f_out.write(data)
             data = f_in.read(8192)
         f_in.close()
-        if hasattr(f_out,'flush'):
+        if hasattr(f_out, 'flush'):
             f_out.flush()
         f_out.close()
 
@@ -1326,7 +1326,7 @@ class Server:
 
         if os.path.islink(make_profile):
             mylink = os.readlink(make_profile)
-            f_mkp = open(mytmpfile,"w")
+            f_mkp = open(mytmpfile, "w")
             f_mkp.write(mylink)
             f_mkp.flush()
             f_mkp.close()
@@ -1498,7 +1498,7 @@ class Server:
         metafile_not_found_file = \
             self.Entropy.get_local_database_metafiles_not_found_file(repo)
 
-        f_meta = open(metafile_not_found_file,"w")
+        f_meta = open(metafile_not_found_file, "w")
         f_meta.writelines(not_found_file_list)
         f_meta.flush()
         f_meta.close()
@@ -1605,7 +1605,7 @@ class Server:
             repo = self.Entropy.default_repository
         ts_file = self.Entropy.get_local_database_timestamp_file(repo)
         current_ts = self.Entropy.get_current_timestamp()
-        ts_f = open(ts_file,"w")
+        ts_f = open(ts_file, "w")
         ts_f.write(current_ts)
         ts_f.flush()
         ts_f.close()
@@ -3186,7 +3186,7 @@ class Server:
         pkg_path += etpConst['packagesexpirationfileext']
         if gentle and os.path.isfile(pkg_path):
             return
-        f_exp = open(pkg_path,"w")
+        f_exp = open(pkg_path, "w")
         f_exp.flush()
         f_exp.close()
 

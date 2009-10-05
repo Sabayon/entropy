@@ -61,7 +61,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         if not os.access(etpConst['serverconf'], os.R_OK):
             return data
 
-        with open(etpConst['serverconf'],"r") as server_f:
+        with open(etpConst['serverconf'], "r") as server_f:
             serverconf = [x.strip() for x in server_f.readlines() if x.strip()]
 
         for line in serverconf:
@@ -360,14 +360,14 @@ class Server(Singleton, TextInterface):
 
     def destroy(self):
         self.__instance_destroyed = True
-        if hasattr(self,'ClientService'):
+        if hasattr(self, 'ClientService'):
             self.ClientService.destroy()
-        if hasattr(self,'sys_settings_server_plugin'):
+        if hasattr(self, 'sys_settings_server_plugin'):
             try:
                 self.SystemSettings.remove_plugin(self.sys_settings_plugin_id)
             except KeyError:
                 pass
-        if hasattr(self,'sys_settings_fatscope_plugin'):
+        if hasattr(self, 'sys_settings_fatscope_plugin'):
             try:
                 self.SystemSettings.remove_plugin(
                     self.sys_settings_fatscope_plugin)
@@ -435,7 +435,7 @@ class Server(Singleton, TextInterface):
                 shutil.move(repo_file,
                     os.path.join(my_branched_dir, repo_filename))
 
-            f_migrated = open(migrated_filepath,"w")
+            f_migrated = open(migrated_filepath, "w")
             f_migrated.write("done\n")
             f_migrated.flush()
             f_migrated.close()
@@ -491,7 +491,7 @@ class Server(Singleton, TextInterface):
         const_create_working_dirs()
 
     def close_server_databases(self):
-        if hasattr(self,'serverDbCache'):
+        if hasattr(self, 'serverDbCache'):
             for item in self.__server_dbcache:
                 try:
                     self.__server_dbcache[item].closeDB()
@@ -632,7 +632,7 @@ class Server(Singleton, TextInterface):
             return
 
         if os.path.isfile(etpConst['serverconf']):
-            f_srv = open(etpConst['serverconf'],"r")
+            f_srv = open(etpConst['serverconf'], "r")
             content = f_srv.readlines()
             f_srv.close()
             content = [x.strip() for x in content]
@@ -645,7 +645,7 @@ class Server(Singleton, TextInterface):
                 new_content.append(line)
             if not found:
                 new_content.append("officialserverrepositoryid|%s" % (repoid,))
-            f_srv_t = open(etpConst['serverconf']+".save_default_repo_tmp","w")
+            f_srv_t = open(etpConst['serverconf']+".save_default_repo_tmp", "w")
             for line in new_content:
                 f_srv_t.write(line+"\n")
             f_srv_t.flush()
@@ -653,7 +653,7 @@ class Server(Singleton, TextInterface):
             os.rename(etpConst['serverconf']+".save_default_repo_tmp",
                 etpConst['serverconf'])
         else:
-            f_srv = open(etpConst['serverconf'],"w")
+            f_srv = open(etpConst['serverconf'], "w")
             f_srv.write("officialserverrepositoryid|%s\n" % (repoid,))
             f_srv.flush()
             f_srv.close()
@@ -670,7 +670,7 @@ class Server(Singleton, TextInterface):
         tmpfile = etpConst['serverconf']+".switch"
         mycontent = [x.strip() for x in f_srv.readlines()]
         f_srv.close()
-        f_tmp = open(tmpfile,"w")
+        f_tmp = open(tmpfile, "w")
         st = "repository|%s" % (repoid,)
         status = False
         for line in mycontent:
@@ -2718,7 +2718,7 @@ class Server(Singleton, TextInterface):
         wl_file = self.get_missing_dependencies_blacklist_file(repo, branch)
         wl_data = []
         if os.path.isfile(wl_file) and os.access(wl_file, os.R_OK):
-            f_wl = open(wl_file,"r")
+            f_wl = open(wl_file, "r")
             wl_data = [x.strip() for x in f_wl.readlines() if x.strip() and \
                 not x.strip().startswith("#")]
             f_wl.close()
@@ -2737,7 +2737,7 @@ class Server(Singleton, TextInterface):
             return
         if os.path.isfile(wl_file) and not os.access(wl_file, os.W_OK):
             return
-        f_wl = open(wl_file,"a+")
+        f_wl = open(wl_file, "a+")
         f_wl.write('\n'.join(items)+'\n')
         f_wl.flush()
         f_wl.close()
@@ -3105,7 +3105,7 @@ class Server(Singleton, TextInterface):
                     type = "info",
                     header = darkgreen(" * ")
                 )
-                f_rev = open(revisions_file,"w")
+                f_rev = open(revisions_file, "w")
                 f_rev.write(str(revisions_match))
                 f_rev.flush()
                 f_rev.close()
@@ -3123,7 +3123,7 @@ class Server(Singleton, TextInterface):
                     type = "info",
                     header = darkgreen(" * ")
                 )
-                f_tree = open(treeupdates_file,"w")
+                f_tree = open(treeupdates_file, "w")
                 f_tree.write(str(treeupdates_actions))
                 f_tree.flush()
                 f_tree.close()
@@ -3281,9 +3281,9 @@ class Server(Singleton, TextInterface):
         url = srv_set['repositories'][repo]['handler']
 
         # does the package has "#" (== tag) ? hackish thing that works
-        filename = filename.replace("#","%23")
+        filename = filename.replace("#", "%23")
         # "+"
-        filename = filename.replace("+","%2b")
+        filename = filename.replace("+", "%2b")
         request = os.path.join(url, etpConst['handlers']['md5sum'])
         request += filename+"&branch="+branch
 

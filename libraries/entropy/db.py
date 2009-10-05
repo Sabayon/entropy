@@ -1812,7 +1812,7 @@ class EntropyRepository:
         with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM mirrorlinks WHERE mirrorname = (?)
-            """,(mirrorname,))
+            """, (mirrorname,))
 
     def addMirrors(self, mirrorname, mirrorlist):
         """
@@ -1992,7 +1992,7 @@ class EntropyRepository:
         with self.__write_mutex:
             cur = self.cursor.execute("""
             INSERT into flags VALUES (NULL,?,?,?)
-            """, (chost,cflags,cxxflags,))
+            """, (chost, cflags, cxxflags,))
             return cur.lastrowid
 
     def setSystemPackage(self, idpackage, do_commit = True):
@@ -3529,7 +3529,7 @@ class EntropyRepository:
         try:
             atom, name, version, versiontag, \
             description, category, chost, \
-            cflags, cxxflags,homepage, \
+            cflags, cxxflags, homepage, \
             mylicense, branch, download, \
             digest, slot, etpapi, \
             datecreation, size, revision  = self.getBaseData(idpackage)
@@ -3560,7 +3560,7 @@ class EntropyRepository:
             'atom': atom,
             'name': name,
             'version': version,
-            'versiontag':versiontag,
+            'versiontag': versiontag,
             'description': description,
             'category': category,
             'chost': chost,
@@ -3598,7 +3598,7 @@ class EntropyRepository:
             'content': content,
             'dependencies': dict((x, y,) for x, y in \
                 self.retrieveDependencies(idpackage, extended = True)),
-            'mirrorlinks': [[x,self.retrieveMirrorInfo(x)] for x in mirrornames],
+            'mirrorlinks': [[x, self.retrieveMirrorInfo(x)] for x in mirrornames],
             'signatures': signatures,
             'spm_phases': self.retrieveSpmPhases(idpackage),
         }
@@ -4537,7 +4537,7 @@ class EntropyRepository:
             WHERE dependencies.idpackage = (?) AND
             dependencies.iddependency =
             dependenciesreference.iddependency %s %s""" % (
-                depstring,excluded_deptypes_query,), searchdata)
+                depstring, excluded_deptypes_query,), searchdata)
             return cur.fetchall()
         else:
             cur = self.cursor.execute("""
@@ -4546,7 +4546,7 @@ class EntropyRepository:
             WHERE dependencies.idpackage = (?) AND 
             dependencies.iddependency =
             dependenciesreference.iddependency %s %s""" % (
-                depstring,excluded_deptypes_query,), searchdata)
+                depstring, excluded_deptypes_query,), searchdata)
             return self._cur2set(cur)
 
     def retrieveIdDependencies(self, idpackage):
@@ -5943,7 +5943,7 @@ class EntropyRepository:
         SELECT %s baseinfo.idpackage FROM baseinfo,provide 
         WHERE provide.atom = (?) AND 
         provide.idpackage = baseinfo.idpackage %s %s""" % (
-            atomstring,slotstring,tagstring,),
+            atomstring, slotstring, tagstring,),
             searchkeywords
         )
 

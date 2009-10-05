@@ -122,13 +122,13 @@ class CacheMixin:
         status = True
 
         votes_dict, err_msg = self.UGC.get_all_votes(repository)
-        if isinstance(votes_dict,dict):
+        if isinstance(votes_dict, dict):
             self.UGC.UGCCache.save_vote_cache(repository, votes_dict)
         else:
             status = False
 
         downloads_dict, err_msg = self.UGC.get_all_downloads(repository)
-        if isinstance(downloads_dict,dict):
+        if isinstance(downloads_dict, dict):
             self.UGC.UGCCache.save_downloads_cache(repository, downloads_dict)
         else:
             status = False

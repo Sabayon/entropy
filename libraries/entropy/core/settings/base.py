@@ -432,7 +432,7 @@ class SystemSettings(Singleton):
         if (os.path.isdir(sets_dir) and os.access(sets_dir, os.R_OK)):
             set_files = [x for x in os.listdir(sets_dir) if \
                 (os.path.isfile(os.path.join(sets_dir, x)) and \
-                os.access(os.path.join(sets_dir, x),os.R_OK))]
+                os.access(os.path.join(sets_dir, x), os.R_OK))]
             for set_file in set_files:
                 try:
                     set_file = set_file.decode('utf-8')
@@ -752,10 +752,10 @@ class SystemSettings(Singleton):
 
         sock_conf = self.__setting_files['socket_service']
         if not (os.path.isfile(sock_conf) and \
-            os.access(sock_conf,os.R_OK)):
+            os.access(sock_conf, os.R_OK)):
             return data
 
-        socket_f = open(sock_conf,"r")
+        socket_f = open(sock_conf, "r")
         socketconf = [x.strip() for x in socket_f.readlines()  if \
             x.strip() and not x.strip().startswith("#")]
         socket_f.close()
@@ -865,11 +865,11 @@ class SystemSettings(Singleton):
 
         etp_conf = self.__setting_files['system']
         if not os.path.isfile(etp_conf) and \
-            os.access(etp_conf,os.R_OK):
+            os.access(etp_conf, os.R_OK):
             return data
 
         const_secure_config_file(etp_conf)
-        entropy_f = open(etp_conf,"r")
+        entropy_f = open(etp_conf, "r")
         entropyconf = [x.strip() for x in entropy_f.readlines()  if \
             x.strip() and not x.strip().startswith("#")]
         entropy_f.close()
@@ -966,7 +966,7 @@ class SystemSettings(Singleton):
         if not (os.path.isfile(repo_conf) and os.access(repo_conf, os.R_OK)):
             return data
 
-        repo_f = open(repo_conf,"r")
+        repo_f = open(repo_conf, "r")
         repositoriesconf = [x.strip() for x in repo_f.readlines() if x.strip()]
         repo_f.close()
 
@@ -1079,19 +1079,19 @@ class SystemSettings(Singleton):
         self._clear_dump_cache(etpCache['dep_tree'])
         if repoid != None:
             self._clear_dump_cache("%s/%s%s/" % (
-                etpCache['dbMatch'],etpConst['dbnamerepoprefix'],repoid,))
+                etpCache['dbMatch'], etpConst['dbnamerepoprefix'], repoid,))
             self._clear_dump_cache("%s/%s%s/" % (
-                etpCache['dbSearch'],etpConst['dbnamerepoprefix'],repoid,))
+                etpCache['dbSearch'], etpConst['dbnamerepoprefix'], repoid,))
 
     def _clear_dump_cache(self, dump_name, skip = []):
         """
         Internal method, go away!
         """
-        dump_path = os.path.join(etpConst['dumpstoragedir'],dump_name)
+        dump_path = os.path.join(etpConst['dumpstoragedir'], dump_name)
         dump_dir = os.path.dirname(dump_path)
         #dump_file = os.path.basename(dump_path)
         for currentdir, subdirs, files in os.walk(dump_dir):
-            path = os.path.join(dump_dir,currentdir)
+            path = os.path.join(dump_dir, currentdir)
             if skip:
                 found = False
                 for myskip in skip:
@@ -1101,7 +1101,7 @@ class SystemSettings(Singleton):
                 if found: continue
             for item in files:
                 if item.endswith(etpConst['cachedumpext']):
-                    item = os.path.join(path,item)
+                    item = os.path.join(path, item)
                     try:
                         os.remove(item)
                     except (OSError, IOError,):
@@ -1179,7 +1179,7 @@ class SystemSettings(Singleton):
                 return
 
         try:
-            mtime_f = open(tosaveinto,"w")
+            mtime_f = open(tosaveinto, "w")
         except IOError as e: # unable to write?
             if e.errno == 30: # readonly filesystem
                 etpUi['pretend'] = True
@@ -1224,7 +1224,7 @@ class SystemSettings(Singleton):
         else:
             # check mtime
             try:
-                mtime_f = open(mtimefile,"r")
+                mtime_f = open(mtimefile, "r")
                 mtime = mtime_f.readline().strip()
                 mtime_f.close()
                 # compare with current mtime

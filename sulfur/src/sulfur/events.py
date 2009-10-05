@@ -88,10 +88,10 @@ class SulfurApplicationEventsMixin:
         if myiter == None: return
         dbpath = model.get_value(myiter, 0)
         try:
-            if os.path.isfile(dbpath) and os.access(dbpath,os.W_OK):
+            if os.path.isfile(dbpath) and os.access(dbpath, os.W_OK):
                 os.remove(dbpath)
         except OSError as e:
-            okDialog( self.ui.main, "%s: %s" % (_("Error during removal"),e,) )
+            okDialog( self.ui.main, "%s: %s" % (_("Error during removal"), e,) )
             return
         self.fill_pref_db_backup_page()
         self.dbBackupView.queue_draw()
@@ -220,7 +220,7 @@ class SulfurApplicationEventsMixin:
                 self.Equo.shift_repository(repoid, idx)
                 # get next iter
                 prev = iterdata[0].get_iter(path-1)
-                self.repoView.store.swap(iterdata[1],prev)
+                self.repoView.store.swap(iterdata[1], prev)
 
     def on_shiftDown_clicked( self, widget ):
         idx, repoid, iterdata = self._get_selected_repo_index()
@@ -229,7 +229,7 @@ class SulfurApplicationEventsMixin:
             if next:
                 idx += 1
                 self.Equo.shift_repository(repoid, idx)
-                self.repoView.store.swap(iterdata[1],next)
+                self.repoView.store.swap(iterdata[1], next)
 
     def on_addRepo_clicked( self, widget ):
         my = AddRepositoryWindow(self, self.ui.main, self.Equo)
@@ -293,9 +293,9 @@ class SulfurApplicationEventsMixin:
                     if not result:
                         errorMessage(
                             self.ui.main,
-                            cleanMarkupString("%s: %s") % (_("Error saving parameter"),name,),
+                            cleanMarkupString("%s: %s") % (_("Error saving parameter"), name,),
                             _("An issue occured while saving a preference"),
-                            "%s %s: %s" % (_("Parameter"),name,_("not saved"),),
+                            "%s %s: %s" % (_("Parameter"), name, _("not saved"),),
                         )
         initconfig_entropy_constants(etpConst['systemroot'])
         # re-read configprotect
@@ -383,7 +383,7 @@ class SulfurApplicationEventsMixin:
             fn = FileChooser(pattern = mypattern)
         if not fn:
             return
-        elif not os.access(fn,os.R_OK):
+        elif not os.access(fn, os.R_OK):
             return
 
         msg = "%s: %s. %s" % (
@@ -425,7 +425,7 @@ class SulfurApplicationEventsMixin:
 
         pkgs = []
         for idpackage, atom in atomsfound:
-            yp, new = self.etpbase.get_package_item((idpackage,newrepo,))
+            yp, new = self.etpbase.get_package_item((idpackage, newrepo,))
             yp.action = 'i'
             yp.queued = 'i'
             pkgs.append(yp)
@@ -470,7 +470,7 @@ class SulfurApplicationEventsMixin:
         if page == "filesconf":
             self.populate_files_update()
         elif page == "glsa":
-            self.populate_advisories(None,'affected')
+            self.populate_advisories(None, 'affected')
         if do_set:
             self.set_notebook_page(const.PAGES[page])
 
@@ -484,7 +484,7 @@ class SulfurApplicationEventsMixin:
                 new_mode = 0
             self.switch_application_mode(new_mode)
 
-    def on_pkgFilter_toggled(self,rb,action):
+    def on_pkgFilter_toggled(self, rb, action):
 
         if not rb.get_active():
             return
@@ -548,13 +548,13 @@ class SulfurApplicationEventsMixin:
         finally:
             self.ui_lock(False)
 
-    def on_cacheButton_clicked(self,widget):
+    def on_cacheButton_clicked(self, widget):
         self.repoView.get_selected()
         self.switch_notebook_page('output')
         self.clean_entropy_caches(alone = True)
         self.switch_notebook_page('repos')
 
-    def on_repoDeSelect_clicked(self,widget):
+    def on_repoDeSelect_clicked(self, widget):
         self.repoView.deselect_all()
 
     def on_queueProcess_clicked( self, widget ):
@@ -587,12 +587,12 @@ class SulfurApplicationEventsMixin:
 
     def on_queueSave_clicked( self, widget ):
         fn = FileChooser(action = gtk.FILE_CHOOSER_ACTION_SAVE, buttons = (
-            gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_SAVE,gtk.RESPONSE_OK))
+            gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_SAVE, gtk.RESPONSE_OK))
         if fn:
             pkgdata = self.queue.get().copy()
             for key in list(pkgdata.keys()):
                 if pkgdata[key]: pkgdata[key] = [x.matched_atom for x in pkgdata[key]]
-            self.Equo.dumpTools.dumpobj(fn,pkgdata,True)
+            self.Equo.dumpTools.dumpobj(fn, pkgdata, True)
 
     def on_queueOpen_clicked( self, widget ):
         fn = FileChooser()
@@ -603,7 +603,7 @@ class SulfurApplicationEventsMixin:
             except:
                 return
 
-            if not isinstance(pkgdata,dict):
+            if not isinstance(pkgdata, dict):
                 return
 
             collected_items = []
@@ -615,7 +615,7 @@ class SulfurApplicationEventsMixin:
                         okDialog( self.ui.main,
                             _("Queue is too old. Cannot load.") )
                         return
-                    collected_items.append((key,yp))
+                    collected_items.append((key, yp))
 
             for key, pkg in collected_items:
                 pkg.queued = key
@@ -689,7 +689,7 @@ class SulfurApplicationEventsMixin:
                 mytitle = "%s -- %s" % (license_identifier, _("license text"),)
                 TextReadDialog(mytitle, license_text)
 
-    def on_select_clicked(self,widget):
+    def on_select_clicked(self, widget):
         self.wait_window.show()
         self.set_busy()
         self.start_working()
@@ -700,7 +700,7 @@ class SulfurApplicationEventsMixin:
         normal_cursor(self.ui.main)
         self.wait_window.hide()
 
-    def on_deselect_clicked(self,widget):
+    def on_deselect_clicked(self, widget):
         self.on_clear_clicked(widget)
         self.wait_window.show()
         self.set_busy()
@@ -708,11 +708,11 @@ class SulfurApplicationEventsMixin:
         self.wait_window.hide()
         self.unset_busy()
 
-    def on_skipMirror_clicked(self,widget):
+    def on_skipMirror_clicked(self, widget):
         self.Equo.MirrorStatus.add_failing_working_mirror(75)
         self.skipMirrorNow = True
 
-    def on_abortQueue_clicked(self,widget):
+    def on_abortQueue_clicked(self, widget):
         msg = _("You have chosen to interrupt the processing. Are you sure you want to do it ?")
         rc = questionDialog(self.ui.main, msg)
         if rc:
@@ -720,7 +720,7 @@ class SulfurApplicationEventsMixin:
                 print_generic("on_abortQueue_clicked: abort is now on")
             self.abortQueueNow = True
 
-    def on_search_clicked(self,widget):
+    def on_search_clicked(self, widget):
         self.etpbase.set_filter(Filter.processFilters)
         ''' Search entry+button handler'''
         txt = self.ui.pkgFilter.get_text()
@@ -742,7 +742,7 @@ class SulfurApplicationEventsMixin:
             self.pkgView.expand()
 
 
-    def on_clear_clicked(self,widget):
+    def on_clear_clicked(self, widget):
         self.etpbase.set_filter()
         ''' Search Clear button handler'''
         self.ui.pkgFilter.set_text("")
@@ -792,7 +792,7 @@ class SulfurApplicationEventsMixin:
         avail_repos = self.Equo.SystemSettings['repositories']['available']
         for repoid in list(set(list(avail_repos.keys())+list(repo_excluded.keys()))):
             self.Equo.UGC.UGCCache.clear_cache(repoid)
-            self.set_status_ticker("%s: %s ..." % (_("Cleaning UGC cache of"),repoid,))
+            self.set_status_ticker("%s: %s ..." % (_("Cleaning UGC cache of"), repoid,))
         self.set_status_ticker("%s" % (_("UGC cache cleared"),))
 
     def on_ugcClearCredentialsButton_clicked(self, widget):
@@ -868,13 +868,13 @@ class SulfurApplicationEventsMixin:
                 return
             repoid, set_name, set_pkgs_list = set_match
             input_params = [
-                ('name',('filled_text',(_("Package Set name"),set_name,),),fake_callback,False), 
-                ('atoms',('list',(_('Package atoms'),sorted(set_pkgs_list),),),lv_callback,False)
+                ('name', ('filled_text', (_("Package Set name"), set_name,),), fake_callback, False), 
+                ('atoms', ('list', (_('Package atoms'), sorted(set_pkgs_list),),), lv_callback, False)
             ]
         else:
             input_params = [
-                ('name',_("Package Set name"),fake_callback,False),
-                ('atoms',('list',(_('Package atoms'),[],),),lv_callback,False)
+                ('name', _("Package Set name"), fake_callback, False),
+                ('atoms', ('list', (_('Package atoms'), [],),), lv_callback, False)
             ]
 
         data = self.Equo.inputBox(
@@ -888,13 +888,13 @@ class SulfurApplicationEventsMixin:
         if edit:
             rc, msg = self.Equo.remove_user_package_set(const_convert_to_unicode(data.get("name")))
             if rc != 0:
-                okDialog(self.ui.main,"%s: %s" % (_("Error"),msg,))
+                okDialog(self.ui.main, "%s: %s" % (_("Error"), msg,))
                 return
 
         rc, msg = self.Equo.add_user_package_set(const_convert_to_unicode(data.get("name")),
             data.get("atoms"))
         if rc != 0:
-            okDialog(self.ui.main,"%s: %s" % (_("Error"),msg,))
+            okDialog(self.ui.main, "%s: %s" % (_("Error"), msg,))
             return
 
         self.etpbase.clear_single_group("pkgsets")
@@ -911,13 +911,13 @@ class SulfurApplicationEventsMixin:
             x != 0]
 
         if not avail_pkgsets:
-            okDialog(self.ui.main,_("No package sets available for removal."))
+            okDialog(self.ui.main, _("No package sets available for removal."))
             return
 
         def fake_callback(s):
             return s
         input_params = [
-            ('pkgset',('combo', (_('Removable Package Set'), avail_pkgsets),),
+            ('pkgset', ('combo', (_('Removable Package Set'), avail_pkgsets),),
                 fake_callback, False)
         ]
 
@@ -927,11 +927,11 @@ class SulfurApplicationEventsMixin:
             cancel_button = True
         )
         if data == None: return
-        x_id,set_name = data.get("pkgset")
+        x_id, set_name = data.get("pkgset")
 
         rc, msg = self.Equo.remove_user_package_set(set_name)
         if rc != 0:
-            okDialog(self.ui.main,"%s: %s" % (_("Error"),msg,))
+            okDialog(self.ui.main, "%s: %s" % (_("Error"), msg,))
             return
 
         self.etpbase.clear_single_group("pkgsets")
@@ -944,7 +944,7 @@ class SulfurApplicationEventsMixin:
         self.start_working()
         deps_not_matched = self.Equo.dependencies_test()
         if not deps_not_matched:
-            okDialog(self.ui.main,_("No missing dependencies found."))
+            okDialog(self.ui.main, _("No missing dependencies found."))
             self.switch_notebook_page("preferences")
             self.ui_lock(False)
             self.end_working()
@@ -964,7 +964,7 @@ class SulfurApplicationEventsMixin:
                 c_idpackages = self.Equo.clientDbconn.searchIdpackageFromIddependency(iddep)
                 for c_idpackage in c_idpackages:
                     key, slot = self.Equo.clientDbconn.retrieveKeySlot(c_idpackage)
-                    key_slot = "%s:%s" % (key,slot,)
+                    key_slot = "%s:%s" % (key, slot,)
                     match = self.Equo.atom_match(key, matchSlot = slot)
                     cmpstat = 0
                     if match[0] != -1:
@@ -1049,7 +1049,7 @@ class SulfurApplicationEventsMixin:
 
         if self.libtest_abort:
             do_stop()
-            okDialog(self.ui.main,_("Libraries test aborted"))
+            okDialog(self.ui.main, _("Libraries test aborted"))
             return
 
         matches = set()
@@ -1074,22 +1074,22 @@ class SulfurApplicationEventsMixin:
         parent = widget.get_parent()
         if parent == None: return
         col_button = [x for x in parent.get_children() if \
-            isinstance(x,gtk.ColorButton)][0]
+            isinstance(x, gtk.ColorButton)][0]
         setting = self.colorSettingsReverseMap.get(col_button)
         if setting == None: return
         default_color = SulfurConf.default_colors_config.get(setting)
         col_button.set_color(gtk.gdk.color_parse(default_color))
-        self.on_Preferences_toggled(None,True)
-        setattr(SulfurConf,setting,default_color)
+        self.on_Preferences_toggled(None, True)
+        setattr(SulfurConf, setting, default_color)
 
     def on_ui_color_set(self, widget):
         key = self.colorSettingsReverseMap.get(widget)
-        if not hasattr(SulfurConf,key):
+        if not hasattr(SulfurConf, key):
             print_generic("WARNING: no %s in SulfurConf" % (key,))
             return
         w_col = widget.get_color().to_string()
-        self.on_Preferences_toggled(None,True)
-        setattr(SulfurConf,key,w_col)
+        self.on_Preferences_toggled(None, True)
+        setattr(SulfurConf, key, w_col)
 
     def on_notebook_switch_page(self, widget, page_w, page_num):
         page = "packages"

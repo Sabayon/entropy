@@ -72,7 +72,7 @@ def repositories(options):
 def showRepositoryFile(myfile, repos):
 
     if myfile not in ["make.conf", "profile.link", "package.use", \
-        "package.mask", "package.unmask","package.keywords"]:
+        "package.mask", "package.unmask", "package.keywords"]:
             return - 10
 
     if not repos:
@@ -88,21 +88,21 @@ def showRepositoryFile(myfile, repos):
         return 1
 
     for repo in myrepos:
-        mypath = os.path.join(Equo.SystemSettings['repositories']['available'][repo]['dbpath'],myfile)
-        if (not os.path.isfile(mypath)) or (not os.access(mypath,os.R_OK)):
+        mypath = os.path.join(Equo.SystemSettings['repositories']['available'][repo]['dbpath'], myfile)
+        if (not os.path.isfile(mypath)) or (not os.access(mypath, os.R_OK)):
             if not etpUi['quiet']:
-                mytxt = "%s: %s." % (blue(os.path.basename(mypath)),darkred(_("not available")),)
+                mytxt = "%s: %s." % (blue(os.path.basename(mypath)), darkred(_("not available")),)
                 print_error(darkred(" [%s] " % (repo,) )+mytxt)
             continue
-        f = open(mypath,"r")
+        f = open(mypath, "r")
         line = f.readline()
         if not line:
             if not etpUi['quiet']:
-                mytxt = "%s: %s." % (blue(os.path.basename(mypath)),darkred(_("is empty")),)
+                mytxt = "%s: %s." % (blue(os.path.basename(mypath)), darkred(_("is empty")),)
                 print_error(darkred(" [%s] " % (repo,) )+mytxt)
             continue
         if not etpUi['quiet']:
-            mytxt = "%s: %s." % (darkred(_("showing")),blue(os.path.basename(mypath)),)
+            mytxt = "%s: %s." % (darkred(_("showing")), blue(os.path.basename(mypath)),)
             print_info(darkred(" [%s] " % (repo,) )+mytxt)
         while line:
             sys.stdout.write(line)
@@ -119,10 +119,10 @@ def showRepositories():
         sourcecount = 0
         for pkgrepo in Equo.SystemSettings['repositories']['available'][repo]['packages']:
             sourcecount += 1
-            print_info( red("\t\t%s #%s : %s") % (_("Packages Mirror"),sourcecount,darkgreen(pkgrepo),) )
-        print_info( red("\t\t%s: %s") % (_("Database URL"),darkgreen(Equo.SystemSettings['repositories']['available'][repo]['database']),))
-        print_info( red("\t\t%s: %s") % (_("Repository identifier"),bold(repo),) )
-        print_info( red("\t\t%s: %s") % (_("Repository database path"),blue(Equo.SystemSettings['repositories']['available'][repo]['dbpath']),) )
+            print_info( red("\t\t%s #%s : %s") % (_("Packages Mirror"), sourcecount, darkgreen(pkgrepo),) )
+        print_info( red("\t\t%s: %s") % (_("Database URL"), darkgreen(Equo.SystemSettings['repositories']['available'][repo]['database']),))
+        print_info( red("\t\t%s: %s") % (_("Repository identifier"), bold(repo),) )
+        print_info( red("\t\t%s: %s") % (_("Repository database path"), blue(Equo.SystemSettings['repositories']['available'][repo]['dbpath']),) )
     return 0
 
 def showRepositoryInfo(reponame):
@@ -137,18 +137,18 @@ def showRepositoryInfo(reponame):
         status = _("active")
     else:
         status = _("never synced")
-    print_info( darkgreen("\t%s: %s") % (_("Status"),darkred(status),) )
+    print_info( darkgreen("\t%s: %s") % (_("Status"), darkred(status),) )
     urlcount = 0
     for repourl in Equo.SystemSettings['repositories']['available'][reponame]['packages'][::-1]:
         urlcount += 1
-        print_info( red("\t%s #%s: %s") % (_("Packages URL"),urlcount,darkgreen(repourl),) )
-    print_info( red("\t%s: %s") % (_("Database URL"),darkgreen(Equo.SystemSettings['repositories']['available'][reponame]['database']),) )
-    print_info( red("\t%s: %s") % (_("Repository name"),bold(reponame),) )
-    print_info( red("\t%s: %s") % (_("Repository database path"),blue(Equo.SystemSettings['repositories']['available'][reponame]['dbpath']),) )
+        print_info( red("\t%s #%s: %s") % (_("Packages URL"), urlcount, darkgreen(repourl),) )
+    print_info( red("\t%s: %s") % (_("Database URL"), darkgreen(Equo.SystemSettings['repositories']['available'][reponame]['database']),) )
+    print_info( red("\t%s: %s") % (_("Repository name"), bold(reponame),) )
+    print_info( red("\t%s: %s") % (_("Repository database path"), blue(Equo.SystemSettings['repositories']['available'][reponame]['dbpath']),) )
     revision = Equo.get_repository_revision(reponame)
     mhash = Equo.get_repository_db_file_checksum(reponame)
-    print_info( red("\t%s: %s") % (_("Repository database checksum"),mhash,) )
-    print_info( red("\t%s: %s") % (_("Repository revision"),darkgreen(str(revision)),) )
+    print_info( red("\t%s: %s") % (_("Repository database checksum"), mhash,) )
+    print_info( red("\t%s: %s") % (_("Repository revision"), darkgreen(str(revision)),) )
 
     return 0
 
@@ -162,10 +162,10 @@ def do_sync(reponames = [], forceUpdate = False):
         print_error("\t"+mytxt)
         return 1
     except MissingParameter:
-        print_error(darkred(" * ")+red("%s %s" % (_("No repositories specified in"),etpConst['repositoriesconf'],)))
+        print_error(darkred(" * ")+red("%s %s" % (_("No repositories specified in"), etpConst['repositoriesconf'],)))
         return 127
     except Exception as e:
-        print_error(darkred(" @@ ")+red("%s: %s" % (_("Unhandled exception"),e,)))
+        print_error(darkred(" @@ ")+red("%s: %s" % (_("Unhandled exception"), e,)))
         return 2
 
     rc = repoConn.sync()
@@ -209,7 +209,7 @@ def show_notice(key, mydict):
     def fake_callback(s):
         return True
 
-    input_params = [('idx',_('Press Enter to continue'),fake_callback,False)]
+    input_params = [('idx', _('Press Enter to continue'), fake_callback, False)]
     Equo.inputBox('', input_params, cancel_button = True)
     return
 
@@ -235,9 +235,9 @@ def show_notice_selector(title, mydict):
 
     def fake_callback(s):
         return s
-    input_params = [('id',blue(_('Choose one by typing its identifier')),fake_callback,False)]
+    input_params = [('id', blue(_('Choose one by typing its identifier')), fake_callback, False)]
     data = Equo.inputBox(title, input_params, cancel_button = True)
-    if not isinstance(data,dict):
+    if not isinstance(data, dict):
         return -1
     try:
         return int(data['id'])
@@ -263,7 +263,7 @@ def noticeBoardReader(reponame):
 
 def showNoticeBoardSummary(reponame):
 
-    mytxt = "%s %s: %s" % (darkgreen(" @@ "),brown(_("Notice board")),bold(reponame),)
+    mytxt = "%s %s: %s" % (darkgreen(" @@ "), brown(_("Notice board")), bold(reponame),)
     print_info(mytxt)
 
     mydict = check_notice_board_availability(reponame)

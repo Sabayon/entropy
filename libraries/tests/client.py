@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import sys
-sys.path.insert(0,'client')
-sys.path.insert(0,'../../client')
-sys.path.insert(0,'.')
-sys.path.insert(0,'../')
+sys.path.insert(0, 'client')
+sys.path.insert(0, '../../client')
+sys.path.insert(0, '.')
+sys.path.insert(0, '../')
 import unittest
 import os
 import shutil
@@ -39,7 +39,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_constant_backup(self):
         const_key = 'foo_foo_foo'
-        const_val = set([1,2,3])
+        const_val = set([1, 2, 3])
         etpConst[const_key] = const_val
         self.Client.backup_constant(const_key)
         self.Client.reload_constants()
@@ -54,7 +54,7 @@ class EntropyRepositoryTest(unittest.TestCase):
     def test_syssetting_backup(self):
         key1 = 'foo_foo_foo2'
         key2 = 'asdasdadsadas'
-        val1 = set([1,2,3])
+        val1 = set([1, 2, 3])
         val2 = None
         foo_data = {
             key1: val1,
@@ -63,21 +63,21 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.SystemSettings.update(foo_data)
         self.SystemSettings.set_persistent_setting(foo_data)
         self.SystemSettings.clear()
-        self.assertEqual(True,key1 in self.SystemSettings)
-        self.assertEqual(True,key2 in self.SystemSettings)
-        self.assertEqual(val1,self.SystemSettings.get(key1))
-        self.assertEqual(val2,self.SystemSettings.get(key2))
+        self.assertEqual(True, key1 in self.SystemSettings)
+        self.assertEqual(True, key2 in self.SystemSettings)
+        self.assertEqual(val1, self.SystemSettings.get(key1))
+        self.assertEqual(val2, self.SystemSettings.get(key2))
 
         # now remove
         self.SystemSettings.unset_persistent_setting(key1)
         self.SystemSettings.clear()
-        self.assertEqual(False,key1 in self.SystemSettings)
-        self.assertEqual(True,key2 in self.SystemSettings)
+        self.assertEqual(False, key1 in self.SystemSettings)
+        self.assertEqual(True, key2 in self.SystemSettings)
 
         self.SystemSettings.unset_persistent_setting(key2)
         self.SystemSettings.clear()
-        self.assertEqual(False,key1 in self.SystemSettings)
-        self.assertEqual(False,key2 in self.SystemSettings)
+        self.assertEqual(False, key1 in self.SystemSettings)
+        self.assertEqual(False, key2 in self.SystemSettings)
 
     def test_memory_repository(self):
         dbconn = self.Client.init_generic_memory_repository(
@@ -88,7 +88,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(data, new_data)
         self.Client.remove_repository(self.mem_repoid)
         self.assertNotEqual(
-            self.Client._memory_db_instances.get(self.mem_repoid),dbconn)
+            self.Client._memory_db_instances.get(self.mem_repoid), dbconn)
         def test_load():
             etpUi['mute'] = True
             self.Client.open_repository(self.mem_repoid)
@@ -99,7 +99,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         test_pkg = _misc.get_test_entropy_package()
         rc, atoms_contained = self.Client.add_package_to_repos(test_pkg)
         self.assertEqual(0, rc)
-        self.assertNotEqual([],atoms_contained)
+        self.assertNotEqual([], atoms_contained)
         for idpackage, repoid in atoms_contained:
             dbconn = self.Client.open_repository(repoid)
             self.assertNotEqual(None, dbconn.getPackageData(idpackage))

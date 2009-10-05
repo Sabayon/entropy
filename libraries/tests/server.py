@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
-sys.path.insert(0,'.')
-sys.path.insert(0,'../')
+sys.path.insert(0, '.')
+sys.path.insert(0, '../')
 import unittest
 import os
 import shutil
@@ -34,24 +34,24 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.Server.destroy()
 
     def test_server_instance(self):
-        self.assertEqual(self.default_repo,self.Server.default_repository)
+        self.assertEqual(self.default_repo, self.Server.default_repository)
 
     def test_server_repo(self):
         dbconn = self.Server.open_server_repository()
-        self.assertEqual(':memory:',dbconn.dbFile)
+        self.assertEqual(':memory:', dbconn.dbFile)
 
     def test_package_injection(self):
         test_pkg = _misc.get_test_entropy_package()
         tmp_test_pkg = test_pkg+".tmp"
-        shutil.copy2(test_pkg,tmp_test_pkg)
+        shutil.copy2(test_pkg, tmp_test_pkg)
         added = self.Server.add_packages_to_repository([(tmp_test_pkg, False,)],
             ask = False)
-        self.assertEqual(set([1]),added)
+        self.assertEqual(set([1]), added)
         def do_stat():
             os.stat(tmp_test_pkg)
-        self.assertRaises(OSError,do_stat)
+        self.assertRaises(OSError, do_stat)
         dbconn = self.Server.open_server_repository()
-        self.assertNotEqual(None,dbconn.retrieveAtom(1))
+        self.assertNotEqual(None, dbconn.retrieveAtom(1))
 
 if __name__ == '__main__':
     unittest.main()

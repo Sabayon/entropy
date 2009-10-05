@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-sys.path.insert(0,'.')
-sys.path.insert(0,'../')
+sys.path.insert(0, '.')
+sys.path.insert(0, '../')
 import unittest
 import entropy.tools as et
 from entropy.client.interfaces import Client

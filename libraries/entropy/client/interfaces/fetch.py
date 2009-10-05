@@ -24,7 +24,7 @@ class FetchersMixin:
                 return 0
             else:
                 # check digest
-                md5res = self.entropyTools.compare_md5(etpConst['entropyworkdir']+"/"+filepath,checksum)
+                md5res = self.entropyTools.compare_md5(etpConst['entropyworkdir']+"/"+filepath, checksum)
                 if (md5res):
                     return 0
                 else:
@@ -51,13 +51,13 @@ class FetchersMixin:
             count += 1
             filename = os.path.basename(url)
             if dest_path == None:
-                dest_path = os.path.join(pkgs_bindir,branch,filename,)
+                dest_path = os.path.join(pkgs_bindir, branch, filename,)
 
             dest_dir = os.path.dirname(dest_path)
             if not os.path.isdir(dest_dir):
-                os.makedirs(dest_dir,0o755)
+                os.makedirs(dest_dir, 0o755)
 
-            url_path_list.append((url,dest_path,))
+            url_path_list.append((url, dest_path,))
             if cksum != None: checksum_map[count] = cksum
 
         # load class
@@ -71,7 +71,7 @@ class FetchersMixin:
 
         diff_map = {}
         if checksum_map and checksum: # verify checksums
-            diff_map = dict((url_path_list[x-1][0],checksum_map.get(x)) for x in checksum_map \
+            diff_map = dict((url_path_list[x-1][0], checksum_map.get(x)) for x in checksum_map \
                 if checksum_map.get(x) != data.get(x))
 
         data_transfer = fetchConn.get_data_transfer()
@@ -98,7 +98,7 @@ class FetchersMixin:
             @param checksum bool verify checksum?
             @param fetch_abort_function callable method that could raise exceptions
         """
-        repo_uris = dict(((x[0],self.SystemSettings['repositories']['available'][x[0]]['packages'][::-1],) for x in download_list))
+        repo_uris = dict(((x[0], self.SystemSettings['repositories']['available'][x[0]]['packages'][::-1],) for x in download_list))
         remaining = repo_uris.copy()
         my_download_list = download_list[:]
 
@@ -112,10 +112,10 @@ class FetchersMixin:
             newlist = []
             for repo, branch, fname, cksum, signatures in down_list:
                 myuri = get_best_mirror(repo)
-                myuri = os.path.join(myuri,fname)
+                myuri = os.path.join(myuri, fname)
                 if myuri not in failed_down:
                     continue
-                newlist.append((repo,branch,fname,cksum,signatures,))
+                newlist.append((repo, branch, fname, cksum, signatures,))
             return newlist
 
         # return True: for failing, return False: for fine
@@ -138,9 +138,9 @@ class FetchersMixin:
             )
 
             if self.MirrorStatus.get_failing_mirror_status(best_mirror) == 30:
-                self.MirrorStatus.add_failing_mirror(best_mirror,45)
+                self.MirrorStatus.add_failing_mirror(best_mirror, 45)
             elif self.MirrorStatus.get_failing_mirror_status(best_mirror) > 31:
-                self.MirrorStatus.add_failing_mirror(best_mirror,-4)
+                self.MirrorStatus.add_failing_mirror(best_mirror, -4)
             else:
                 self.MirrorStatus.set_failing_mirror_status(best_mirror, 0)
 
@@ -154,7 +154,7 @@ class FetchersMixin:
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
                 basef = os.path.basename(fname)
-                mytxt += "[%s] %s " % (brown(basef),blue("@"),)
+                mytxt += "[%s] %s " % (brown(basef), blue("@"),)
                 mytxt += red(self.entropyTools.spliturl(best_mirror)[1])
                 # now fetch the new one
                 self.updateProgress(
@@ -170,7 +170,7 @@ class FetchersMixin:
                 mirrorcount = repo_uris[repo].index(best_mirror)+1
                 mytxt = "( mirror #%s ) " % (mirrorcount,)
                 basef = os.path.basename(fname)
-                mytxt += "[%s] %s %s " % (brown(basef),darkred(_("success")),blue("@"),)
+                mytxt += "[%s] %s %s " % (brown(basef), darkred(_("success")), blue("@"),)
                 mytxt += red(self.entropyTools.spliturl(best_mirror)[1])
                 self.updateProgress(
                     mytxt,
@@ -203,7 +203,7 @@ class FetchersMixin:
                 if rc == -1:
                     mytxt += " - %s." % (_("data not available on this mirror"),)
                 elif rc == -2:
-                    self.MirrorStatus.add_failing_mirror(best_mirror,1)
+                    self.MirrorStatus.add_failing_mirror(best_mirror, 1)
                     mytxt += " - %s." % (_("wrong checksum"),)
                 elif rc == -3:
                     mytxt += " - %s." % (_("not found"),)
@@ -248,8 +248,8 @@ class FetchersMixin:
                         # at least one package failed to download
                         # properly, give up with everything
                         return 3, my_download_list
-                    myuri = os.path.join(best_mirror,fname)
-                    fetch_files_list.append((myuri,None,cksum,branch,))
+                    myuri = os.path.join(best_mirror, fname)
+                    fetch_files_list.append((myuri, None, cksum, branch,))
 
                 try:
 
@@ -264,8 +264,8 @@ class FetchersMixin:
                         return 0, []
 
                     # update my_download_list
-                    my_download_list = update_download_list(my_download_list,failed_downloads)
-                    if rc not in (-3,-4,-100,) and failed_downloads and do_resume:
+                    my_download_list = update_download_list(my_download_list, failed_downloads)
+                    if rc not in (-3, -4, -100,) and failed_downloads and do_resume:
                         # disable resume
                         do_resume = False
                         continue
@@ -299,10 +299,10 @@ class FetchersMixin:
 
         filename = os.path.basename(url)
         if not filepath:
-            filepath = os.path.join(etpConst['packagesbindir'],branch,filename)
+            filepath = os.path.join(etpConst['packagesbindir'], branch, filename)
         filepath_dir = os.path.dirname(filepath)
         if not os.path.isdir(filepath_dir):
-            os.makedirs(filepath_dir,0o755)
+            os.makedirs(filepath_dir, 0o755)
 
         existed_before = False
         if os.path.isfile(filepath) and os.path.exists(filepath):
@@ -392,11 +392,11 @@ class FetchersMixin:
                 if self.MirrorStatus.get_failing_mirror_status(uri) == 30:
                     # put to 75 then decrement by 4 so we
                     # won't reach 30 anytime soon ahahaha
-                    self.MirrorStatus.add_failing_mirror(uri,45)
+                    self.MirrorStatus.add_failing_mirror(uri, 45)
                 elif self.MirrorStatus.get_failing_mirror_status(uri) > 31:
                     # now decrement each time this point is reached,
                     # if will be back < 30, then equo will try to use it again
-                    self.MirrorStatus.add_failing_mirror(uri,-4)
+                    self.MirrorStatus.add_failing_mirror(uri, -4)
                 else:
                     # put to 0 - reenable mirror, welcome back uri!
                     self.MirrorStatus.set_failing_mirror_status(uri, 0)
@@ -429,7 +429,7 @@ class FetchersMixin:
                         mytxt = mirrorCountText
                         mytxt += blue("%s: ") % (_("Successfully downloaded from"),)
                         mytxt += red(self.entropyTools.spliturl(uri)[1])
-                        mytxt += " %s %s/%s" % (_("at"),self.entropyTools.bytes_into_human(data_transfer),_("second"),)
+                        mytxt += " %s %s/%s" % (_("at"), self.entropyTools.bytes_into_human(data_transfer), _("second"),)
                         self.updateProgress(
                             mytxt,
                             importance = 1,
@@ -439,7 +439,7 @@ class FetchersMixin:
 
                         self.MirrorStatus.set_working_mirror(None)
                         return 0
-                    elif resumed and (rc not in (-3,-4,-100,)):
+                    elif resumed and (rc not in (-3, -4, -100,)):
                         do_resume = False
                         continue
                     else:
@@ -452,7 +452,7 @@ class FetchersMixin:
                         if rc == -1:
                             error_message += " - %s." % (_("file not available on this mirror"),)
                         elif rc == -2:
-                            self.MirrorStatus.add_failing_mirror(uri,1)
+                            self.MirrorStatus.add_failing_mirror(uri, 1)
                             error_message += " - %s." % (_("wrong checksum"),)
                         elif rc == -3:
                             error_message += " - %s." % (_("not found"),)

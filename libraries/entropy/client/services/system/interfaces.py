@@ -25,10 +25,10 @@ class Client:
 
         if not hasattr(OutputInterface, 'updateProgress'):
             mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
+            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
         elif not hasattr(OutputInterface.updateProgress, '__call__'):
             mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
+            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
 
         from entropy.client.services.system.commands import Client as ClientCommands
         if not issubclass(ClientCommandsInterface, ClientCommands):
@@ -76,28 +76,28 @@ class Client:
             self.connection_killer.start()
 
     def __del__(self):
-        if hasattr(self,'shutdown'):
+        if hasattr(self, 'shutdown'):
             self.shutdown = True
-        if hasattr(self,'connection_killer'):
+        if hasattr(self, 'connection_killer'):
             if self.connection_killer != None:
                 self.connection_killer.kill()
 
     def _validate_credentials(self):
         if not const_isstring(self.hostname):
             raise IncorrectParameter("IncorrectParameter: hostname: %s. %s" % (
-                _('not a string'),_('Please use setup_connection() properly'),))
+                _('not a string'), _('Please use setup_connection() properly'),))
         if not const_isstring(self.username):
             raise IncorrectParameter("IncorrectParameter: username: %s. %s" % (
-                _('not a string'),_('Please use setup_connection() properly'),))
+                _('not a string'), _('Please use setup_connection() properly'),))
         if not const_isstring(self.password):
             raise IncorrectParameter("IncorrectParameter: password: %s. %s" % (
-                _('not a string'),_('Please use setup_connection() properly'),))
+                _('not a string'), _('Please use setup_connection() properly'),))
         if not isinstance(self.hostport, int):
             raise IncorrectParameter("IncorrectParameter: port: %s. %s" % (
-                _('not an int'),_('Please use setup_connection() properly'),))
+                _('not an int'), _('Please use setup_connection() properly'),))
         if not isinstance(self.ssl_connection, bool):
             raise IncorrectParameter("IncorrectParameter: ssl_connection: %s. %s" % (
-                _('not a bool'),_('Please use setup_connection() properly'),))
+                _('not a bool'), _('Please use setup_connection() properly'),))
 
     def get_session_cache(self, cmd_tuple):
         if self.do_cache_session:
@@ -201,7 +201,7 @@ class Client:
     def get_service_connection(self, timeout = None):
         try:
             srv = self.connect_to_service(timeout = timeout)
-        except (ConnectionError,self.socket.error,self.struct.error,):
+        except (ConnectionError, self.socket.error, self.struct.error,):
             return None
         return srv
 
@@ -245,7 +245,7 @@ class Client:
             self.set_session_cache(cmd_tuple, session)
 
             self.update_connection_ts()
-            args.insert(0,session)
+            args.insert(0, session)
 
             if login_required and new_session:
                 logged, error = self.login(srv, session)

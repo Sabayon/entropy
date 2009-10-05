@@ -135,7 +135,7 @@ def CommonFlate(mytbz2s, action, savedir = None):
     except Exception as e:
         Equo.entropyTools.print_traceback()
         mytxt = _("Source Package Manager backend not available")
-        print_error(darkred(" * ")+red("%s: %s" % (mytxt,e,)))
+        print_error(darkred(" * ")+red("%s: %s" % (mytxt, e,)))
         return 1
 
     if savedir:
@@ -160,7 +160,7 @@ def CommonFlate(mytbz2s, action, savedir = None):
     elif action == "deflate":
         rc = DeflateHandler(mytbz2s, savedir)
     elif action == "extract":
-        rc = ExtractHandler(mytbz2s,savedir)
+        rc = ExtractHandler(mytbz2s, savedir)
     else:
         rc = -10
     return rc
@@ -179,7 +179,7 @@ def InflateHandler(mytbz2s, savedir):
         print_info(darkgreen(" * ")+darkred("Inflating: ")+tbz2, back = True)
         etptbz2path = savedir+"/"+os.path.basename(tbz2)
         if os.path.realpath(tbz2) != os.path.realpath(etptbz2path): # can convert a file without copying
-            shutil.copy2(tbz2,etptbz2path)
+            shutil.copy2(tbz2, etptbz2path)
         info_package = bold(os.path.basename(etptbz2path)) + ": "
         Equo.updateProgress(
             red(info_package + _("Extracting package metadata") + " ..."),
@@ -200,8 +200,8 @@ def InflateHandler(mytbz2s, savedir):
         mydata['revision'] = 9999
         mydata['download'] = mydata['download'][:-5]+"~9999.tbz2"
         # migrate to the proper format
-        final_tbz2path = os.path.join(os.path.dirname(etptbz2path),os.path.basename(mydata['download']))
-        shutil.move(etptbz2path,final_tbz2path)
+        final_tbz2path = os.path.join(os.path.dirname(etptbz2path), os.path.basename(mydata['download']))
+        shutil.move(etptbz2path, final_tbz2path)
         etptbz2path = final_tbz2path
         # create temp database
         dbpath = etpConst['packagestmpdir']+"/"+str(Equo.entropyTools.get_random_number())
@@ -225,7 +225,7 @@ def DeflateHandler(mytbz2s, savedir):
     # analyze files
     for tbz2 in mytbz2s:
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Deflating"),))+tbz2, back = True)
-        mytbz2 = Equo.entropyTools.remove_edb(tbz2,savedir)
+        mytbz2 = Equo.entropyTools.remove_edb(tbz2, savedir)
         tbz2name = os.path.basename(mytbz2)[:-5] # remove .tbz2
         tbz2name = Equo.entropyTools.remove_tag(tbz2name)+etpConst['packagesext']
         newtbz2 = os.path.dirname(mytbz2)+"/"+tbz2name
@@ -242,7 +242,7 @@ def ExtractHandler(mytbz2s, savedir):
         if os.path.isfile(dbpath):
             os.remove(dbpath)
         # extract
-        out = Equo.entropyTools.extract_edb(tbz2,dbpath = dbpath)
+        out = Equo.entropyTools.extract_edb(tbz2, dbpath = dbpath)
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Extracted Entropy metadata from"),))+out)
 
     return 0
@@ -323,7 +323,7 @@ def smartpackagegenerator(matchedPackages):
     tmpdbfile = dbfile+"--readingdata"
     for package in matchedPackages:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red(_("collecting Entropy metadata")))
-        Equo.entropyTools.extract_edb(etpConst['entropyworkdir']+"/"+matchedAtoms[package]['download'],tmpdbfile)
+        Equo.entropyTools.extract_edb(etpConst['entropyworkdir']+"/"+matchedAtoms[package]['download'], tmpdbfile)
         # read db and add data to mergeDbconn
         mydbconn = Equo.open_generic_database(tmpdbfile)
         idpackages = mydbconn.listAllIdpackages()
@@ -371,9 +371,9 @@ def smartpackagegenerator(matchedPackages):
         print_error(darkred(" * ")+red("%s." % (_("Compressed file does not exist"),)))
         return 1
 
-    Equo.entropyTools.aggregate_edb(smart_package_path,dbfile)
+    Equo.entropyTools.aggregate_edb(smart_package_path, dbfile)
     print_info("\t"+smart_package_path)
-    shutil.rmtree(unpackdir,True)
+    shutil.rmtree(unpackdir, True)
     return 0
 
 
@@ -438,7 +438,7 @@ def smartgenerator(matched_atoms):
     pkgcontent = dbconn.retrieveContent(idpackage)
     pkgbranch = dbconn.retrieveBranch(idpackage)
     pkgfilename = os.path.basename(pkgfilepath)
-    pkgname = pkgfilename.split(etpConst['packagesext'])[0].replace(":","_").replace("~","_")
+    pkgname = pkgfilename.split(etpConst['packagesext'])[0].replace(":", "_").replace("~", "_")
 
     fetchdata = matched_atoms
     # run installPackages with onlyfetch
@@ -464,7 +464,7 @@ def smartgenerator(matched_atoms):
     binary_execs = []
     for item in pkgcontent:
         filepath = pkg_data_dir + item
-        if os.access(filepath,os.X_OK):
+        if os.access(filepath, os.X_OK):
             if getoutput("file %s" % (filepath,)).find("LSB executable") != -1:
                 binary_execs.append(item)
 
@@ -481,14 +481,14 @@ def smartgenerator(matched_atoms):
 
     # now create the bash script for each binary_execs
     os.makedirs(pkg_data_dir+"/wrp")
-    wrapper_file = os.path.join(etpConst['installdir'],"services/smartapp_wrapper")
+    wrapper_file = os.path.join(etpConst['installdir'], "services/smartapp_wrapper")
     if not os.path.isfile(wrapper_file):
         wrapper_file = "../services/smartapp_wrapper"
 
     wrapper_path = pkg_data_dir+"/wrp/wrapper"
     shutil.copy2(wrapper_file, wrapper_path)
     # chmod
-    os.chmod(wrapper_path,0o755)
+    os.chmod(wrapper_path, 0o755)
 
     cc_content = """
 #include <cstdlib>

@@ -117,12 +117,12 @@ class RemoteDatabase:
     def connect(self):
         kwargs = {}
         keys = [
-            ('host',"hostname"),
-            ('user',"username"),
-            ('passwd',"password"),
-            ('db',"dbname"),
-            ('port',"port"),
-            ('conv',"converters"), # mysql type converter dict
+            ('host', "hostname"),
+            ('user', "username"),
+            ('passwd', "password"),
+            ('db', "dbname"),
+            ('port', "port"),
+            ('conv', "converters"), # mysql type converter dict
         ]
         for ckey, dkey in keys:
             if dkey not in self.connection_data:
@@ -141,9 +141,9 @@ class RemoteDatabase:
     def disconnect(self):
         self.check_connection()
         self.escape_string = escape
-        if hasattr(self.cursor,'close'):
+        if hasattr(self.cursor, 'close'):
             self.cursor.close()
-        if hasattr(self.dbconn,'close'):
+        if hasattr(self.dbconn, 'close'):
             self.dbconn.close()
         self.dbconn = None
         self.cursor = None

@@ -20,13 +20,13 @@
 import os, shutil, errno
 from stat import *
 
-def addtolist(mylist,curdir):
+def addtolist(mylist, curdir):
 	"""(list, dir) --- Takes an array(list) and appends all files from dir down
 	the directory tree. Returns nothing. list is modified."""
 	for x in os.listdir("."):
 		if os.path.isdir(x):
 			os.chdir(x)
-			addtolist(mylist,curdir+x+"/")
+			addtolist(mylist, curdir+x+"/")
 			os.chdir("..")
 		else:
 			if curdir+x not in mylist:
@@ -65,7 +65,7 @@ def xpak(rootdir,outfile=None):
 	os.chdir(rootdir)
 	mylist=[]
 
-	addtolist(mylist,"")
+	addtolist(mylist, "")
 	mylist.sort()
 	mydata = {}
 	for x in mylist:
@@ -105,7 +105,7 @@ def xsplit(infile):
 	"""(infile) -- Splits the infile into two files.
 	'infile.index' contains the index segment.
 	'infile.dat' contails the data segment."""
-	myfile=open(infile,"r")
+	myfile=open(infile, "r")
 	mydat=myfile.read()
 	myfile.close()
 	
@@ -113,10 +113,10 @@ def xsplit(infile):
 	if not splits:
 		return False
 	
-	myfile=open(infile+".index","w")
+	myfile=open(infile+".index", "w")
 	myfile.write(splits[0])
 	myfile.close()
-	myfile=open(infile+".dat","w")
+	myfile=open(infile+".dat", "w")
 	myfile.write(splits[1])
 	myfile.close()
 	return True
@@ -132,7 +132,7 @@ def xsplit_mem(mydat):
 
 def getindex(infile):
 	"""(infile) -- grabs the index segment from the infile and returns it."""
-	myfile=open(infile,"r")
+	myfile=open(infile, "r")
 	myheader=myfile.read(16)
 	if myheader[0:8]!="XPAKPACK":
 		myfile.close()
@@ -145,7 +145,7 @@ def getindex(infile):
 def getboth(infile):
 	"""(infile) -- grabs the index and data segments from the infile.
 	Returns an array [indexSegment,dataSegment]"""
-	myfile=open(infile,"r")
+	myfile=open(infile, "r")
 	myheader=myfile.read(16)
 	if myheader[0:8]!="XPAKPACK":
 		myfile.close()
@@ -173,7 +173,7 @@ def getindex_mem(myindex):
 		startpos=startpos+mytestlen+12
 	return myret
 
-def searchindex(myindex,myitem):
+def searchindex(myindex, myitem):
 	"""(index,item) -- Finds the offset and length of the file 'item' in the
 	datasegment via the index 'index' provided."""
 	mylen=len(myitem)
@@ -189,15 +189,15 @@ def searchindex(myindex,myitem):
 				return datapos, datalen
 		startpos=startpos+mytestlen+12
 		
-def getitem(myid,myitem):
+def getitem(myid, myitem):
 	myindex=myid[0]
 	mydata=myid[1]
-	myloc=searchindex(myindex,myitem)
+	myloc=searchindex(myindex, myitem)
 	if not myloc:
 		return None
 	return mydata[myloc[0]:myloc[0]+myloc[1]]
 
-def xpand(myid,mydest):
+def xpand(myid, mydest):
 	myindex=myid[0]
 	mydata=myid[1]
 	try:
@@ -219,14 +219,14 @@ def xpand(myid,mydest):
 		if dirname:
 			if not os.path.exists(dirname):
 				os.makedirs(dirname)
-		mydat=open(myname,"w")
+		mydat=open(myname, "w")
 		mydat.write(mydata[datapos:datapos+datalen])
 		mydat.close()
 		startpos=startpos+namelen+12
 	os.chdir(origdir)
 
 class tbz2:
-	def __init__(self,myfile):
+	def __init__(self, myfile):
 		self.file=myfile
 		self.filestat=None
 		self.index=""
@@ -252,7 +252,7 @@ class tbz2:
 		return self.unpackinfo(datadir)
 	def compose(self,datadir,cleanup=0):
 		"""Alias for recompose()."""
-		return self.recompose(datadir,cleanup)
+		return self.recompose(datadir, cleanup)
 	def recompose(self,datadir,cleanup=0):
 		"""Creates an xpak segment from the datadir provided, truncates the tbz2
 		to the end of regular data if an xpak segment already exists, and adds
@@ -264,10 +264,10 @@ class tbz2:
 
 	def recompose_mem(self, xpdata):
 		self.scan() # Don't care about condition... We'll rewrite the data anyway.
-		myfile=open(self.file,"a+")
+		myfile=open(self.file, "a+")
 		if not myfile:
 			raise IOError
-		myfile.seek(-self.xpaksize,os.SEEK_END) # 0,2 or -0,2 just mean EOF.
+		myfile.seek(-self.xpaksize, os.SEEK_END) # 0,2 or -0,2 just mean EOF.
 		myfile.truncate()
 		myfile.write(xpdata+encodeint(len(xpdata))+"STOP")
 		myfile.flush()
@@ -300,8 +300,8 @@ class tbz2:
 				if not changed:
 					return 1
 			self.filestat=mystat
-			a=open(self.file,"r")
-			a.seek(-16,os.SEEK_END)
+			a=open(self.file, "r")
+			a.seek(-16, os.SEEK_END)
 			trailer=a.read()
 			self.infosize=0
 			self.xpaksize=0
@@ -313,7 +313,7 @@ class tbz2:
 				return 0
 			self.infosize=decodeint(trailer[8:12])
 			self.xpaksize=self.infosize+8
-			a.seek(-(self.xpaksize),os.SEEK_END)
+			a.seek(-(self.xpaksize), os.SEEK_END)
 			header=a.read(16)
 			if header[0:8]!="XPAKPACK":
 				a.close()
@@ -340,23 +340,23 @@ class tbz2:
 		"""Finds 'myfile' in the data segment and returns it."""
 		if not self.scan():
 			return None
-		myresult=searchindex(self.index,myfile)
+		myresult=searchindex(self.index, myfile)
 		if not myresult:
 			return mydefault
-		a=open(self.file,"r")
-		a.seek(self.datapos+myresult[0],0)
+		a=open(self.file, "r")
+		a.seek(self.datapos+myresult[0], 0)
 		myreturn=a.read(myresult[1])
 		a.close()
 		return myreturn
 
-	def getelements(self,myfile):
+	def getelements(self, myfile):
 		"""A split/array representation of tbz2.getfile()"""
 		mydat=self.getfile(myfile)
 		if not mydat:
 			return []
 		return mydat.split()
 
-	def unpackinfo(self,mydest):
+	def unpackinfo(self, mydest):
 		"""Unpacks all the files from the dataSegment into 'mydest'."""
 		if not self.scan():
 			return 0
@@ -367,7 +367,7 @@ class tbz2:
 		except:
 			os.chdir("/")
 			origdir="/"
-		a=open(self.file,"r")
+		a=open(self.file, "r")
 		if not os.path.exists(mydest):
 			os.makedirs(mydest)
 		os.chdir(mydest)
@@ -381,7 +381,7 @@ class tbz2:
 			if dirname:
 				if not os.path.exists(dirname):
 					os.makedirs(dirname)
-			mydat=open(myname,"w")
+			mydat=open(myname, "w")
 			a.seek(self.datapos+datapos)
 			mydat.write(a.read(datalen))
 			mydat.close()
@@ -413,7 +413,7 @@ class tbz2:
 		if not self.scan():
 			return None
 
-		a = open(self.file,"r")
+		a = open(self.file, "r")
 		a.seek(self.datapos)
 		mydata =a.read(self.datasize)
 		a.close()

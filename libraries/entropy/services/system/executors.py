@@ -129,7 +129,7 @@ class Base:
         with self.SystemManagerExecutor.SystemInterface.QueueLock:
             self.SystemManagerExecutor.SystemInterface.load_queue()
             live_item, key = self.SystemManagerExecutor.SystemInterface._get_item_by_queue_id(queue_id)
-            if isinstance(live_item,dict):
+            if isinstance(live_item, dict):
                 live_item['processing_pid'] = process_pid
                 # _get_item_by_queue_id
                 self.SystemManagerExecutor.SystemInterface.store_queue()
@@ -138,9 +138,9 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
 
         cmd = ["emerge", "--sync"]
         try:
@@ -151,7 +151,7 @@ class Base:
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
-        return True,rc
+        return True, rc
 
     def compile_atoms(  self,
                         queue_id, atoms,
@@ -163,18 +163,18 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
 
-        cmd = [etpConst['spm']['env_update_cmd'],"&&"]
+        cmd = [etpConst['spm']['env_update_cmd'], "&&"]
         cmd += etpConst['spm']['source_profile']+["&&"]
         if custom_use:
-            cmd += ['export USE="']+custom_use.strip().split()+['"','&&']
+            cmd += ['export USE="']+custom_use.strip().split()+['"', '&&']
         if ldflags:
-            cmd += ['export LDFLAGS="']+custom_use.strip().split()+['"','&&']
+            cmd += ['export LDFLAGS="']+custom_use.strip().split()+['"', '&&']
         if cflags:
-            cmd += ['export CFLAGS="']+custom_use.strip().split()+['"','&&']
+            cmd += ['export CFLAGS="']+custom_use.strip().split()+['"', '&&']
         cmd += [etpConst['spm']['exec']]+atoms
         if pretend:
             cmd.append(etpConst['spm']['pretend_cmd'])
@@ -202,19 +202,19 @@ class Base:
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
-        return True,rc
+        return True, rc
 
     def spm_remove_atoms(self, queue_id, atoms, pretend = True, verbose = True, nocolor = True):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
 
-        cmd = [etpConst['spm']['env_update_cmd'],"&&"]
+        cmd = [etpConst['spm']['env_update_cmd'], "&&"]
         cmd += etpConst['spm']['source_profile']+["&&"]
-        cmd += [etpConst['spm']['exec'],etpConst['spm']['remove_cmd']]+atoms
+        cmd += [etpConst['spm']['exec'], etpConst['spm']['remove_cmd']]+atoms
         if pretend:
             cmd.append(etpConst['spm']['pretend_cmd'])
         if verbose:
@@ -233,13 +233,13 @@ class Base:
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
-        return True,rc
+        return True, rc
 
     def enable_uses_for_atoms(self, queue_id, atoms, useflags):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
         use_data = {}
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
@@ -259,7 +259,7 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
         use_data = {}
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
@@ -279,7 +279,7 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
         atoms_data = {}
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
@@ -305,7 +305,7 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
         packages = spm.get_packages(categories)
@@ -326,7 +326,7 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
         packages = spm.get_installed_packages(categories = categories)
@@ -347,11 +347,11 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
 
-        cmd = [etpConst['spm']['exec'],etpConst['spm']['info_cmd']]
+        cmd = [etpConst['spm']['exec'], etpConst['spm']['info_cmd']]
 
         stdout_err.write("Preparing to spawn parameter: '%s'. Good luck mate!\n" % (' '.join(cmd),))
         stdout_err.flush()
@@ -364,17 +364,17 @@ class Base:
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
-        return True,rc
+        return True, rc
 
     def run_custom_shell_command(self, queue_id, command):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
 
-        cmd = [etpConst['spm']['env_update_cmd'],"&&"]
+        cmd = [etpConst['spm']['env_update_cmd'], "&&"]
         cmd += etpConst['spm']['source_profile']+[";"]
         cmd += command.split()
 
@@ -390,20 +390,20 @@ class Base:
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
-        return True,rc
+        return True, rc
 
     def move_entropy_packages_to_repository(self, queue_id, from_repo, to_repo, idpackages, do_copy):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
         # run
         matches = []
         for idpackage in idpackages:
-            matches.append((idpackage,from_repo,))
+            matches.append((idpackage, from_repo,))
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
 
         def myfunc():
             sys.stdout = stdout_err
@@ -435,15 +435,15 @@ class Base:
         rc = 1
         if len(switched) == len(idpackages):
             rc = 0
-        return True,rc
+        return True, rc
 
     def scan_entropy_packages_database_changes(self, queue_id):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
         Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
 
         def myfunc():
@@ -465,7 +465,7 @@ class Base:
                 # setup add data
                 mydict['add_data'] = {}
                 for portage_atom, portage_counter in to_add:
-                    mydict['add_data'][(portage_atom, portage_counter,)] = self._get_spm_pkginfo(portage_atom,from_installed = True)
+                    mydict['add_data'][(portage_atom, portage_counter,)] = self._get_spm_pkginfo(portage_atom, from_installed = True)
 
                 mydict['remove_data'] = {}
                 for idpackage, repoid in to_remove:
@@ -479,7 +479,7 @@ class Base:
                     mydict['inject_data'][(idpackage, repoid,)] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
                     dbconn.closeDB()
 
-                return True,mydict
+                return True, mydict
 
             finally:
                 sys.stdout.write("\n### Done ###\n")
@@ -500,9 +500,9 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
         Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
 
         def myfunc():
@@ -519,14 +519,14 @@ class Base:
 
                 # run inject
                 for idpackage, repoid in to_inject:
-                    matches_injected.add((idpackage,repoid,))
+                    matches_injected.add((idpackage, repoid,))
                     Entropy.transform_package_into_injected(idpackage, repo = repoid)
 
                 if to_remove: Entropy.updateProgress(_("Running package removal"))
 
                 # run remove
                 remdata = {}
-                for idpackage,repoid in to_remove:
+                for idpackage, repoid in to_remove:
                     dbconn = Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
                     atoms_removed.append(dbconn.retrieveAtom(idpackage))
                     dbconn.closeDB()
@@ -545,14 +545,14 @@ class Base:
                 if to_add:
                     problems = Entropy.check_config_file_updates()
                     if problems:
-                        return False,mydict
+                        return False, mydict
                     Entropy.updateProgress(_("Running package quickpkg"))
 
                 # run quickpkg
                 for repoid in to_add:
                     store_dir = Entropy.get_local_store_directory(repo = repoid)
                     for atom in to_add[repoid]:
-                        Entropy.quickpkg(atom,store_dir)
+                        Entropy.quickpkg(atom, store_dir)
 
                 # inject new into db
                 avail_repos = Entropy.get_available_repositories()
@@ -563,7 +563,7 @@ class Base:
                     store_dir = Entropy.get_local_store_directory(repo = repoid)
                     package_files = os.listdir(store_dir)
                     if not package_files: continue
-                    package_files = [(os.path.join(store_dir,x),False) for x in package_files]
+                    package_files = [(os.path.join(store_dir, x), False) for x in package_files]
 
                     Entropy.updateProgress( "[%s|%s] %s" % (
                             repoid,
@@ -575,7 +575,7 @@ class Base:
                         Entropy.updateProgress("    %s" % (package_file,))
 
                     idpackages = Entropy.add_packages_to_repository(package_files, ask = False, repo = repoid)
-                    matches_added |= set([(x,repoid,) for x in idpackages])
+                    matches_added |= set([(x, repoid,) for x in idpackages])
 
 
                 Entropy.dependencies_test()
@@ -609,9 +609,9 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
 
         def myfunc():
             sys.stdout = stdout_err
@@ -620,7 +620,7 @@ class Base:
             if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 deps_not_matched = self.SystemManagerExecutor.SystemInterface.Entropy.dependencies_test()
-                return True,deps_not_matched
+                return True, deps_not_matched
             except Exception as e:
                 self.entropyTools.print_traceback()
                 return False, str(e)
@@ -643,9 +643,9 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
 
         def myfunc():
             sys.stdout = stdout_err
@@ -656,7 +656,7 @@ class Base:
                 return self.SystemManagerExecutor.SystemInterface.Entropy.test_shared_objects()
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,str(e)
+                return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -674,15 +674,15 @@ class Base:
         mystatus = False
         if status == 0: mystatus = True
         if not result: result = set()
-        return mystatus,result
+        return mystatus, result
 
     def run_entropy_checksum_test(self, queue_id, repoid, mode):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
 
         def myfunc():
             sys.stdout = stdout_err
@@ -697,7 +697,7 @@ class Base:
                 return True, data
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,str(e)
+                return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -717,9 +717,9 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
 
         def myfunc():
             sys.stdout = stdout_err
@@ -735,7 +735,7 @@ class Base:
                 dbconn.closeDB()
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,str(e)
+                return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -755,9 +755,9 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
         import socket
         Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
 
@@ -817,14 +817,14 @@ class Base:
                             'current_revision': current_revision,
                             'remote_revision': remote_revision,
                             'download_latest': download_latest,
-                            'upload_queue': [(self.entropyTools.extract_ftp_host_from_uri(x[0]),x[1],) for x in upload_queue]
+                            'upload_queue': [(self.entropyTools.extract_ftp_host_from_uri(x[0]), x[1],) for x in upload_queue]
                         }
 
                 return True, repo_data
 
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,str(e)
+                return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -844,9 +844,9 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
         Entropy = self.SystemManagerExecutor.SystemInterface.Entropy
 
         def sync_remote_databases(repoid, pretend):
@@ -857,19 +857,19 @@ class Base:
                 header = " * "
             )
             for myuri, myrev in rdb_status:
-                Entropy.updateProgress("\t %s:\t %s" % (_("Host"),self.entropyTools.extract_ftp_host_from_uri(myuri),))
-                Entropy.updateProgress("\t  * %s: %s" % (_("Database revision"),myrev,))
+                Entropy.updateProgress("\t %s:\t %s" % (_("Host"), self.entropyTools.extract_ftp_host_from_uri(myuri),))
+                Entropy.updateProgress("\t  * %s: %s" % (_("Database revision"), myrev,))
             local_revision = Entropy.get_local_database_revision(repoid)
-            Entropy.updateProgress("\t  * %s: %s" % (_("Database local revision currently at"),local_revision,))
+            Entropy.updateProgress("\t  * %s: %s" % (_("Database local revision currently at"), local_revision,))
             if pretend:
-                return 0,set(),set()
+                return 0, set(), set()
 
             errors, fine_uris, broken_uris = Entropy.MirrorsService.sync_databases(no_upload = False)
             remote_status = Entropy.MirrorsService.get_remote_databases_status(repoid)
             Entropy.updateProgress(" * %s: " % (_("Remote Entropy Database Repository Status"),))
             for myuri, myrev in remote_status:
-                Entropy.updateProgress("\t %s:\t%s" % (_("Host"),Entropy.entropyTools.extract_ftp_host_from_uri(myuri),))
-                Entropy.updateProgress("\t  * %s: %s" % (_("Database revision"),myrev,) )
+                Entropy.updateProgress("\t %s:\t%s" % (_("Host"), Entropy.entropyTools.extract_ftp_host_from_uri(myuri),))
+                Entropy.updateProgress("\t  * %s: %s" % (_("Database revision"), myrev,) )
 
             return errors, fine_uris, broken_uris
 
@@ -944,7 +944,7 @@ class Base:
 
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,str(e)
+                return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -964,7 +964,7 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
         data = {}
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
@@ -973,15 +973,15 @@ class Base:
             return False, data
         for myid in glsa_ids:
             data[myid] = spm.get_security_advisory_metadata(myid)
-        return True,data
+        return True, data
 
     def get_notice_board(self, queue_id, repoid):
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
 
         def myfunc():
             sys.stdout = stdout_err
@@ -991,11 +991,11 @@ class Base:
             try:
                 data = self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.read_notice_board(repo = repoid)
                 if data == None:
-                    return False,None
-                return True,data
+                    return False, None
+                return True, data
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,str(e)
+                return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -1015,9 +1015,9 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
 
         def myfunc():
             sys.stdout = stdout_err
@@ -1028,10 +1028,10 @@ class Base:
                 for entry_id in entry_ids:
                     data = self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.remove_from_notice_board(entry_id, repo = repoid)
                 self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.upload_notice_board(repo = repoid)
-                return True,data
+                return True, data
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,str(e)
+                return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -1051,9 +1051,9 @@ class Base:
 
         queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
-            return False,'no item in queue'
+            return False, 'no item in queue'
 
-        stdout_err = open(queue_data['stdout'],"a+")
+        stdout_err = open(queue_data['stdout'], "a+")
 
         def myfunc():
             sys.stdout = stdout_err
@@ -1062,10 +1062,10 @@ class Base:
             if mystdin: sys.stdin = os.fdopen(mystdin, 'rb')
             try:
                 data = self.SystemManagerExecutor.SystemInterface.Entropy.MirrorsService.update_notice_board(title, notice_text, link = link, repo = repoid)
-                return True,data
+                return True, data
             except Exception as e:
                 self.entropyTools.print_traceback()
-                return False,str(e)
+                return False, str(e)
             finally:
                 sys.stdout.write("\n### Done ###\n")
                 sys.stdout.flush()
@@ -1101,13 +1101,13 @@ class Base:
         if count:
             if len(count) > 1:
                 if percent:
-                    count_str = " ("+str(round((float(count[0])/count[1])*100,1))+"%) "
+                    count_str = " ("+str(round((float(count[0])/count[1])*100, 1))+"%) "
                 else:
-                    count_str = " (%s/%s) " % (red(str(count[0])),blue(str(count[1])),)
+                    count_str = " (%s/%s) " % (red(str(count[0])), blue(str(count[1])),)
 
         def is_last_newline(f):
             try:
-                f.seek(-1,os.SEEK_END)
+                f.seek(-1, os.SEEK_END)
                 last = f.read(1)
                 if last == "\n":
                     return True
@@ -1131,7 +1131,7 @@ class Base:
         try:
             data['atom'], data['name'], data['version'], data['versiontag'], \
             data['description'], data['category'], data['chost'], \
-            data['cflags'], data['cxxflags'],data['homepage'], \
+            data['cflags'], data['cxxflags'], data['homepage'], \
             data['license'], data['branch'], data['download'], \
             data['digest'], data['slot'], data['etpapi'], \
             data['datecreation'], data['size'], data['revision']  = dbconn.getBaseData(idpackage)
@@ -1162,7 +1162,7 @@ class Base:
             else:
                 data['slot'] = spm.get_package_metadata(matched_atom, "SLOT")
                 data['use'] = spm.get_package_compile_options(matched_atom)
-                data['installed_atom'] = spm.match_installed_package("%s:%s" % (data['key'],data['slot'],))
+                data['installed_atom'] = spm.match_installed_package("%s:%s" % (data['key'], data['slot'],))
                 data['description'] = spm.get_package_metadata(matched_atom, "DESCRIPTION")
         except KeyError:
             pass

@@ -181,86 +181,86 @@ class Base(SocketCommands):
     def docmd_get_queue_item_by_id(self, myargs):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
         queue_id = myargs[0]
         try:
             queue_id = int(queue_id)
         except ValueError:
-            return False,'wrong argument: queue_id'
+            return False, 'wrong argument: queue_id'
 
         item, key = self.HostInterface.get_item_by_queue_id(queue_id, copy = True)
         if item == None:
-            return False,'wrong queue id'
+            return False, 'wrong queue id'
 
-        return True,item
+        return True, item
 
     def docmd_get_queue_id_stdout(self, myargs):
 
         if len(myargs) < 1:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
         queue_id = myargs[0]
         bytes_from_tail = myargs[1]
 
         try:
             queue_id = int(queue_id)
         except ValueError:
-            return False,'wrong argument: queue_id'
+            return False, 'wrong argument: queue_id'
         try:
             bytes_from_tail = int(bytes_from_tail)
         except ValueError:
-            return False,'wrong argument: lines from tail'
+            return False, 'wrong argument: lines from tail'
 
         item, key = self.HostInterface.get_item_by_queue_id(queue_id, copy = True)
         if item == None:
-            return False,'wrong queue id'
+            return False, 'wrong queue id'
 
         file_path = item['stdout']
-        if not (os.path.isfile(file_path) and os.access(file_path,os.R_OK)):
+        if not (os.path.isfile(file_path) and os.access(file_path, os.R_OK)):
             text = ''
         else:
-            f = open(file_path,"r")
-            f.seek(0,os.SEEK_END)
+            f = open(file_path, "r")
+            f.seek(0, os.SEEK_END)
             tell_me = f.tell()
             if bytes_from_tail < 1:
                 bytes_from_tail = tell_me
             if bytes_from_tail > tell_me:
                 bytes_from_tail = tell_me
-            f.seek(-1*bytes_from_tail,os.SEEK_END)
+            f.seek(-1*bytes_from_tail, os.SEEK_END)
             text = f.read()
             f.close()
 
-        return True,text
+        return True, text
 
     def docmd_get_queue_id_result(self, myargs):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
         queue_id = myargs[0]
         try:
             queue_id = int(queue_id)
         except ValueError:
-            return False,'wrong argument: queue_id'
+            return False, 'wrong argument: queue_id'
 
         item, key = self.HostInterface.get_item_by_queue_id(queue_id, copy = True)
         if item == None:
-            return False,'wrong queue id'
+            return False, 'wrong queue id'
 
         if key not in self.HostInterface.done_queue_keys:
-            return False,'process not completed yet'
+            return False, 'process not completed yet'
 
         if 'result' not in item:
-            return False,'result not available'
+            return False, 'result not available'
 
         ext_result = None
         if 'extended_result' in item:
             ext_result = self.HostInterface.load_queue_ext_rc(queue_id)
 
-        return True,(item['result'],ext_result,)
+        return True, (item['result'], ext_result,)
 
     def docmd_remove_queue_ids(self, myargs):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         valid_queue_ids = set()
         for queue_id in myargs:
@@ -269,17 +269,17 @@ class Base(SocketCommands):
                 valid_queue_ids.add(queue_id)
 
         if not valid_queue_ids:
-            return False,'no valid queue ids'
+            return False, 'no valid queue ids'
 
         # remove
         self.HostInterface.remove_from_queue(valid_queue_ids)
 
-        return True,'ok'
+        return True, 'ok'
 
     def docmd_pause_queue(self, myargs):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         do = myargs[0]
         if do:
@@ -287,56 +287,56 @@ class Base(SocketCommands):
         else:
             self.HostInterface.play_queue()
 
-        return self.HostInterface.ManagerQueue['pause'],'ok'
+        return self.HostInterface.ManagerQueue['pause'], 'ok'
 
     def docmd_kill_processing_queue_id(self, myargs):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         queue_id = myargs[0]
         self.HostInterface.kill_processing_queue_id(queue_id)
-        return True,'ok'
+        return True, 'ok'
 
     def docmd_swap_items_in_queue(self, myargs):
 
         if len(myargs) < 2:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         queue_id1 = myargs[0]
         queue_id2 = myargs[1]
-        status = self.HostInterface.swap_items_in_queue(queue_id1,queue_id2)
+        status = self.HostInterface.swap_items_in_queue(queue_id1, queue_id2)
         if status:
-            return True,'ok'
-        return False,'not done'
+            return True, 'ok'
+        return False, 'not done'
 
     def docmd_get_pinboard_data(self):
         data = self.HostInterface.get_pinboard_data()
-        return True,data.copy()
+        return True, data.copy()
 
     def docmd_add_to_pinboard(self, myargs):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         xml_string = ' '.join(myargs)
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
         except Exception as e:
-            return None,"error: %s" % (e,)
+            return None, "error: %s" % (e,)
 
         if not ('note' in mydict and 'extended_text' in mydict):
-            return None,'wrong dict arguments, xml must have 2 items with attr value -> note, extended_text'
+            return None, 'wrong dict arguments, xml must have 2 items with attr value -> note, extended_text'
         note = mydict.get('note')
         extended_text = mydict.get('extended_text')
 
         self.HostInterface.add_to_pinboard(note, extended_text)
-        return True,'ok'
+        return True, 'ok'
 
     def docmd_remove_from_pinboard(self, myargs):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         for pinboard_id in myargs:
             try:
@@ -344,12 +344,12 @@ class Base(SocketCommands):
             except ValueError:
                 continue
             self.HostInterface.remove_from_pinboard(pinboard_id)
-        return True,'ok'
+        return True, 'ok'
 
     def docmd_set_pinboard_items_done(self, myargs):
 
         if len(myargs) < 2:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         status = myargs[-1]
         pinboard_ids = myargs[:-1]
@@ -360,7 +360,7 @@ class Base(SocketCommands):
             except ValueError:
                 continue
             self.HostInterface.set_pinboard_item_status(pinboard_id, status)
-        return True,'ok'
+        return True, 'ok'
 
     def docmd_write_to_running_command_pipe(self, myargs):
 
@@ -370,7 +370,7 @@ class Base(SocketCommands):
         try:
             queue_id = int(myargs[0])
         except ValueError:
-            return False,'invalid queue id'
+            return False, 'invalid queue id'
 
         try:
             write_stdout = bool(myargs[1])
@@ -380,33 +380,33 @@ class Base(SocketCommands):
         txt = ' '.join(myargs[2:])+'\n'
         item, key = self.HostInterface.get_item_by_queue_id(queue_id, copy = True)
         if key not in self.HostInterface.processing_queue_keys:
-            return False,'not running'
+            return False, 'not running'
         mypipe = self.HostInterface.ManagerQueueStdInOut.get(queue_id)
         if mypipe == None:
-            return False,'pipe not available'
+            return False, 'pipe not available'
         try:
             w_fd = mypipe[1]
         except (IndexError, ValueError,):
-            return False,'pipe vanished'
-        if not isinstance(w_fd,int):
-            return False,'stdout fd not an int'
+            return False, 'pipe vanished'
+        if not isinstance(w_fd, int):
+            return False, 'stdout fd not an int'
 
         if write_stdout:
-            stdout = open(item['stdout'],"a+")
+            stdout = open(item['stdout'], "a+")
         try:
-            os.write(w_fd,txt)
+            os.write(w_fd, txt)
             if write_stdout:
                 stdout.write(txt)
         except OSError as e:
-            return False,'OSError: %s' % (e,)
+            return False, 'OSError: %s' % (e,)
         except IOError as e:
-            return False,'IOError: %s' % (e,)
+            return False, 'IOError: %s' % (e,)
         finally:
             if write_stdout:
                 stdout.flush()
                 stdout.close()
 
-        return True,'ok'
+        return True, 'ok'
 
 class Repository(SocketCommands):
 
@@ -432,7 +432,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_sync_spm,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "spawn portage sync (emerge --sync)",
                 'syntax': "<SESSION_ID> srvrepo:sync_spm",
@@ -442,7 +442,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_compile_atoms,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "compile specified atoms using Spm (Portage?)",
                 'syntax': "<SESSION_ID> srvrepo:compile_atoms <xml string containing atoms and compile options>",
@@ -452,7 +452,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_spm_remove_atoms,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "remove specified atoms using Spm (Portage?)",
                 'syntax': "<SESSION_ID> srvrepo:spm_remove_atoms <xml string containing atoms and remove options>",
@@ -462,7 +462,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_get_spm_categories_updates,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "get SPM updates for the specified package categories",
                 'syntax': "<SESSION_ID> srvrepo:get_spm_categories_updates <category 1> <category 2> <...>",
@@ -472,7 +472,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_get_spm_categories_installed,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "get SPM installed packages for the specified package categories",
                 'syntax': "<SESSION_ID> srvrepo:get_spm_categories_installed <category 1> <category 2> <...>",
@@ -482,7 +482,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_enable_uses_for_atoms,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "enable use flags for the specified atom",
                 'syntax': "<SESSION_ID> srvrepo:enable_uses_for_atom <xml string containing atoms and use flags>",
@@ -492,7 +492,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_disable_uses_for_atoms,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "enable use flags for the specified atom",
                 'syntax': "<SESSION_ID> srvrepo:disable_uses_for_atom <xml string containing atoms and use flags>",
@@ -502,7 +502,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_get_spm_atoms_info,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "get info from SPM for the specified atoms",
                 'syntax': "<SESSION_ID> srvrepo:get_spm_atoms_info <atom1> <atom2> <atom3>",
@@ -512,7 +512,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_run_spm_info,
-                'args': ["cmd","authenticator"],
+                'args': ["cmd", "authenticator"],
                 'as_user': False,
                 'desc': "run SPM info command",
                 'syntax': "<SESSION_ID> srvrepo:run_spm_info",
@@ -522,7 +522,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_run_custom_shell_command,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "run custom shell command",
                 'syntax': "<SESSION_ID> srvrepo:run_custom_shell_command <shell command blah blah>",
@@ -532,7 +532,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_get_spm_glsa_data,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "get SPM security updates info",
                 'syntax': "<SESSION_ID> srvrepo:get_spm_glsa_data <list_type string (affected,new,all)>",
@@ -602,7 +602,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_move_entropy_packages_to_repository,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "move or copy Entropy packages from a repository to another",
                 'syntax': "<SESSION_ID> srvrepo:move_entropy_packages_to_repository <from_repo> <to_repo> <do_copy (True: copy, False: move)> <idpackages...>",
@@ -612,7 +612,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_scan_entropy_packages_database_changes,
-                'args': ["cmd","authenticator"],
+                'args': ["cmd", "authenticator"],
                 'as_user': False,
                 'desc': "scan Spm package changes to retrieve a list of action that should be run on the repositories",
                 'syntax': "<SESSION_ID> srvrepo:scan_entropy_packages_database_changes",
@@ -622,7 +622,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_run_entropy_database_updates,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "run Entropy database updates",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_database_updates <to_add: atom:counter:repoid,atom:counter:repoid,...> <to_remove: idpackage:repoid,idpackage:repoid,...> <to_inject: idpackage:repoid,idpackage:repoid,...>",
@@ -632,7 +632,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_run_entropy_dependency_test,
-                'args': ["cmd","authenticator"],
+                'args': ["cmd", "authenticator"],
                 'as_user': False,
                 'desc': "run Entropy dependency test",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_dependency_test",
@@ -642,7 +642,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_run_entropy_library_test,
-                'args': ["cmd","authenticator"],
+                'args': ["cmd", "authenticator"],
                 'as_user': False,
                 'desc': "run Entropy dependency test",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_library_test",
@@ -652,7 +652,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_run_entropy_treeupdates,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "run Entropy database treeupdates",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_treeupdates <repoid>",
@@ -662,7 +662,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_scan_entropy_mirror_updates,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "scan mirror updates for the specified repository identifiers",
                 'syntax': "<SESSION_ID> srvrepo:scan_entropy_mirror_updates <repoid 1> <repoid 2> <...>",
@@ -672,7 +672,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_run_entropy_mirror_updates,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "run mirror updates for the provided repositories",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_mirror_updates <xml data, properly formatted>",
@@ -682,7 +682,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_run_entropy_checksum_test,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "run Entropy packages checksum verification tool",
                 'syntax': "<SESSION_ID> srvrepo:run_entropy_checksum_test <repoid> <mode>",
@@ -692,7 +692,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_get_notice_board,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "get repository notice board",
                 'syntax': "<SESSION_ID> srvrepo:get_notice_board <repoid>",
@@ -702,7 +702,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_remove_notice_board_entries,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "remove notice board entries",
                 'syntax': "<SESSION_ID> srvrepo:remove_notice_board_entries <repoid> <entry_id1> <entry_id2> <...>",
@@ -712,7 +712,7 @@ class Repository(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_add_notice_board_entry,
-                'args': ["cmd","myargs","authenticator"],
+                'args': ["cmd", "myargs", "authenticator"],
                 'as_user': False,
                 'desc': "remove notice board entry",
                 'syntax': "<SESSION_ID> srvrepo:add_notice_board_entry <xml formatted data>",
@@ -733,14 +733,14 @@ class Repository(SocketCommands):
     def docmd_compile_atoms(self, cmd, myargs, authenticator):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         xml_string = ' '.join(myargs)
 
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
         except Exception as e:
-            return None,"error: %s" % (e,)
+            return None, "error: %s" % (e,)
 
         if not ( 'atoms' in mydict and 'pretend' in mydict and \
                  'oneshot' in mydict and  'verbose' in mydict and \
@@ -748,7 +748,7 @@ class Repository(SocketCommands):
                  'nodeps' in mydict and \
                  'nocolor' in mydict and  'custom_use' in mydict and \
                  'ldflags' in mydict and  'cflags' in mydict ):
-            return None,'wrong dict arguments, xml must have 10 items with attr value' + \
+            return None, 'wrong dict arguments, xml must have 10 items with attr value' + \
                         ' -> atoms, pretend, oneshot, verbose, nocolor, fetchonly, ' + \
                         'buildonly, nodeps, custom_use, ldflags, cflags'
 
@@ -804,18 +804,18 @@ class Repository(SocketCommands):
 
     def docmd_spm_remove_atoms(self, cmd, myargs, authenticator):
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         xml_string = ' '.join(myargs)
 
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
         except Exception as e:
-            return None,"error: %s" % (e,)
+            return None, "error: %s" % (e,)
 
         if not ( 'atoms' in mydict and 'pretend' in mydict and \
                  'verbose' in mydict and 'nocolor' in mydict ):
-            return None,'wrong dict arguments, xml must have 4 items with attr value -> atoms, pretend, verbose, nocolor'
+            return None, 'wrong dict arguments, xml must have 4 items with attr value -> atoms, pretend, verbose, nocolor'
 
         atoms = mydict.get('atoms')
         if atoms: atoms = atoms.split()
@@ -846,7 +846,7 @@ class Repository(SocketCommands):
 
     def docmd_get_spm_categories_updates(self, cmd, myargs, authenticator):
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
@@ -868,15 +868,15 @@ class Repository(SocketCommands):
 
     def docmd_enable_uses_for_atoms(self, cmd, myargs, authenticator):
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         xml_string = ' '.join(myargs)
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
         except Exception as e:
-            return None,"error: %s" % (e,)
+            return None, "error: %s" % (e,)
         if not ('atoms' in mydict and 'useflags' in mydict):
-            return None,'wrong dict arguments, xml must have 2 items with attr value -> atoms, useflags'
+            return None, 'wrong dict arguments, xml must have 2 items with attr value -> atoms, useflags'
 
         atoms = mydict.get('atoms')
         useflags = mydict.get('useflags')
@@ -887,21 +887,21 @@ class Repository(SocketCommands):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'enable_uses_for_atoms', [atoms,useflags], {}, True, True)
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'enable_uses_for_atoms', [atoms, useflags], {}, True, True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
     def docmd_disable_uses_for_atoms(self, cmd, myargs, authenticator):
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         xml_string = ' '.join(myargs)
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
         except Exception as e:
-            return None,"error: %s" % (e,)
+            return None, "error: %s" % (e,)
         if not ('atoms' in mydict and 'useflags' in mydict):
-            return None,'wrong dict arguments, xml must have 2 items with attr value -> atoms, useflags'
+            return None, 'wrong dict arguments, xml must have 2 items with attr value -> atoms, useflags'
 
         atoms = mydict.get('atoms')
         useflags = mydict.get('useflags')
@@ -912,13 +912,13 @@ class Repository(SocketCommands):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'disable_uses_for_atoms', [atoms,useflags], {}, True, True)
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'disable_uses_for_atoms', [atoms, useflags], {}, True, True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
     def docmd_get_spm_atoms_info(self, cmd, myargs, authenticator):
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
@@ -940,7 +940,7 @@ class Repository(SocketCommands):
 
     def docmd_run_custom_shell_command(self, cmd, myargs, authenticator):
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
@@ -953,7 +953,7 @@ class Repository(SocketCommands):
 
     def docmd_get_spm_glsa_data(self, cmd, myargs, authenticator):
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
@@ -976,10 +976,10 @@ class Repository(SocketCommands):
     def docmd_set_default_repository(self, myargs):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
         repoid = myargs[0]
         if repoid not in self.HostInterface.Entropy.get_available_repositories():
-            return False,'repository id not available'
+            return False, 'repository id not available'
 
         status = True
         msg = 'ok'
@@ -993,10 +993,10 @@ class Repository(SocketCommands):
     def docmd_get_available_entropy_packages(self, myargs):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
         repoid = myargs[0]
         if repoid not in self.HostInterface.Entropy.get_available_repositories():
-            return False,'repository id not available'
+            return False, 'repository id not available'
 
         dbconn = self.HostInterface.Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
         idpackages = dbconn.listAllIdpackages(order_by = 'atom')
@@ -1011,34 +1011,34 @@ class Repository(SocketCommands):
             if not data: continue
             package_data['data'][idpackage] = data.copy()
         dbconn.closeDB()
-        return True,package_data
+        return True, package_data
 
     def docmd_get_entropy_idpackage_information(self, myargs):
 
         if len(myargs) < 2:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
         idpackage = myargs[0]
         repoid = myargs[1]
 
         dbconn = self.HostInterface.Entropy.open_server_repository(repo = repoid, just_reading = True, warnings = False, do_cache = False)
         package_data = dbconn.getPackageData(idpackage)
         dbconn.closeDB()
-        return True,package_data
+        return True, package_data
 
     def docmd_remove_entropy_packages(self, myargs):
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
         string = myargs[0].split(",")
         matched_atoms = []
         try:
             for item in string:
                 mysplit = item.split(":")
-                matched_atoms.append((int(mysplit[0]),mysplit[1],))
+                matched_atoms.append((int(mysplit[0]), mysplit[1],))
         except:
-            return False,'cannot eval() string correctly'
+            return False, 'cannot eval() string correctly'
 
         repo_data = {}
-        for idpackage,repoid in matched_atoms:
+        for idpackage, repoid in matched_atoms:
             if repoid not in repo_data:
                 repo_data[repoid] = []
             repo_data[repoid].append(idpackage)
@@ -1047,7 +1047,7 @@ class Repository(SocketCommands):
         msg = 'ok'
         try:
             for repoid in repo_data:
-                self.HostInterface.Entropy.remove_packages(repo_data[repoid],repo = repoid)
+                self.HostInterface.Entropy.remove_packages(repo_data[repoid], repo = repoid)
         except Exception as e:
             status = False
             msg = str(e)
@@ -1057,7 +1057,7 @@ class Repository(SocketCommands):
     def docmd_move_entropy_packages_to_repository(self, cmd, myargs, authenticator):
 
         if len(myargs) < 4:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
@@ -1071,7 +1071,7 @@ class Repository(SocketCommands):
         queue_id = self.HostInterface.add_to_queue(
             cmd, ' '.join([str(x) for x in myargs]),
             uid, gid, 'move_entropy_packages_to_repository',
-            [from_repo,to_repo,idpackages,do_copy], {}, False, True,
+            [from_repo, to_repo, idpackages, do_copy], {}, False, True,
             interactive = True
         )
         if queue_id < 0: return False, queue_id
@@ -1109,7 +1109,7 @@ class Repository(SocketCommands):
 
     def docmd_run_entropy_checksum_test(self, cmd, myargs, authenticator):
         if len(myargs) < 2:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
         repoid = myargs[0]
         mode = myargs[1]
 
@@ -1117,14 +1117,14 @@ class Repository(SocketCommands):
         uid = userdata.get('uid')
         gid = userdata.get('gid')
 
-        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'run_entropy_checksum_test', [repoid,mode], {}, True, False, interactive = True)
+        queue_id = self.HostInterface.add_to_queue(cmd, ' '.join(myargs), uid, gid, 'run_entropy_checksum_test', [repoid, mode], {}, True, False, interactive = True)
         if queue_id < 0: return False, queue_id
         return True, queue_id
 
     def docmd_run_entropy_treeupdates(self, cmd, myargs, authenticator):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
@@ -1137,7 +1137,7 @@ class Repository(SocketCommands):
     def docmd_scan_entropy_mirror_updates(self, cmd, myargs, authenticator):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
@@ -1150,13 +1150,13 @@ class Repository(SocketCommands):
     def docmd_run_entropy_mirror_updates(self, cmd, myargs, authenticator):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         serialized_string = '\n'.join(myargs)
         try:
             mydict = self.dumpTools.unserialize_string(serialized_string)
         except Exception as e:
-            return False,'cannot parse data: %s' % (e,)
+            return False, 'cannot parse data: %s' % (e,)
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
@@ -1197,7 +1197,7 @@ class Repository(SocketCommands):
                 to_inject.append((idpackage, repoid,))
 
         except Exception as e:
-            return False,'cannot run database updates properly: %s' % (e,)
+            return False, 'cannot run database updates properly: %s' % (e,)
 
         status, userdata, err_str = authenticator.docmd_userdata()
         uid = userdata.get('uid')
@@ -1205,7 +1205,7 @@ class Repository(SocketCommands):
 
         queue_id = self.HostInterface.add_to_queue(
             cmd, ' '.join(myargs), uid, gid,
-            'run_entropy_database_updates', [to_add,to_remove,to_inject],
+            'run_entropy_database_updates', [to_add, to_remove, to_inject],
             {}, False, True, interactive = True
         )
         if queue_id < 0: return False, queue_id
@@ -1214,12 +1214,12 @@ class Repository(SocketCommands):
 
     def docmd_search_entropy_packages(self, myargs):
         if len(myargs) < 3:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         repoid = myargs[0]
         search_type = myargs[1]
         search_string = ' '.join(myargs[2:])
-        avail_search_types = ['atom','needed','depends','tag','file','description']
+        avail_search_types = ['atom', 'needed', 'depends', 'tag', 'file', 'description']
 
         if search_type not in avail_search_types:
             return False, 'available search types: %s' % (avail_search_types,)
@@ -1276,7 +1276,7 @@ class Repository(SocketCommands):
 
             like = False
             if search_string.find("*") != -1:
-                search_string.replace("*","%")
+                search_string.replace("*", "%")
                 like = True
             idpackages = dbconn.searchBelongs(search_string, like)
             for idpackage in idpackages:
@@ -1306,7 +1306,7 @@ class Repository(SocketCommands):
     def docmd_get_notice_board(self, cmd, myargs, authenticator):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
         repoid = myargs[0]
 
         status, userdata, err_str = authenticator.docmd_userdata()
@@ -1320,7 +1320,7 @@ class Repository(SocketCommands):
     def docmd_remove_notice_board_entries(self, cmd, myargs, authenticator):
 
         if len(myargs) < 2:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
         repoid = myargs[0]
         entry_ids = myargs[1:]
 
@@ -1330,7 +1330,7 @@ class Repository(SocketCommands):
 
         queue_id = self.HostInterface.add_to_queue(
             cmd, ' '.join([str(x) for x in myargs]), uid, gid,
-            'remove_notice_board_entries', [repoid,entry_ids], {}, True, False, interactive = True
+            'remove_notice_board_entries', [repoid, entry_ids], {}, True, False, interactive = True
         )
         if queue_id < 0: return False, queue_id
         return True, queue_id
@@ -1338,16 +1338,16 @@ class Repository(SocketCommands):
     def docmd_add_notice_board_entry(self, cmd, myargs, authenticator):
 
         if not myargs:
-            return False,'wrong arguments'
+            return False, 'wrong arguments'
 
         xml_string = ' '.join(myargs)
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
         except Exception as e:
-            return None,"error: %s" % (e,)
+            return None, "error: %s" % (e,)
         if not ('repoid' in mydict and 'title' in mydict and \
                 'notice_text' in mydict and 'link' in mydict):
-            return None,'wrong dict arguments, xml must have 4 items with attr value -> repoid, title, notice_text, link'
+            return None, 'wrong dict arguments, xml must have 4 items with attr value -> repoid, title, notice_text, link'
 
         repoid = mydict.get('repoid')
         title = mydict.get('title')
@@ -1360,7 +1360,7 @@ class Repository(SocketCommands):
 
         queue_id = self.HostInterface.add_to_queue(
             cmd, ' '.join(myargs), uid, gid,
-            'add_notice_board_entry', [repoid,title,notice_text,link], {}, True, False, interactive = True
+            'add_notice_board_entry', [repoid, title, notice_text, link], {}, True, False, interactive = True
         )
         if queue_id < 0: return False, queue_id
         return True, queue_id
@@ -1370,7 +1370,7 @@ class Repository(SocketCommands):
         try:
             data['atom'], data['name'], data['version'], data['versiontag'], \
             data['description'], data['category'], data['chost'], \
-            data['cflags'], data['cxxflags'],data['homepage'], \
+            data['cflags'], data['cxxflags'], data['homepage'], \
             data['license'], data['branch'], data['download'], \
             data['digest'], data['slot'], data['etpapi'], \
             data['datecreation'], data['size'], data['revision']  = dbconn.getBaseData(idpackage)

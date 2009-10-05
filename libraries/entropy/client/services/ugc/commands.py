@@ -21,17 +21,17 @@ class Base:
 
     def __init__(self, OutputInterface, Service):
 
-        if not hasattr(OutputInterface,'updateProgress'):
+        if not hasattr(OutputInterface, 'updateProgress'):
             mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
+            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
         elif not hasattr(OutputInterface.updateProgress, '__call__'):
             mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
+            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
 
         from entropy.services.ugc.interfaces import Client as Cl
         if not isinstance(Service, Cl):
                 mytxt = _("A valid entropy.services.ugc.interfaces.Client based instance is needed")
-                raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (Service,mytxt,))
+                raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (Service, mytxt,))
 
         import socket, zlib, struct
         import entropy.tools as entropyTools
@@ -139,7 +139,7 @@ class Base:
         error = False
         try:
             data = self.Service.stream_to_object(data, gzipped)
-        except (EOFError,IOError,self.zlib.error,self.dumpTools.pickle.UnpicklingError,):
+        except (EOFError, IOError, self.zlib.error, self.dumpTools.pickle.UnpicklingError,):
             mytxt = _("cannot convert stream into object")
             self.Output.updateProgress(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
@@ -201,9 +201,9 @@ class Base:
             try:
                 result = self.retrieve_command_answer(cmd, session_id, compression = compression)
                 if result == None:
-                    return False,'command not supported' # untranslated on purpose
+                    return False, 'command not supported' # untranslated on purpose
                 return result
-            except (self.socket.error,self.struct.error,):
+            except (self.socket.error, self.struct.error,):
                 self.Service.reconnect_socket()
                 tries -= 1
                 if tries < 1:
@@ -392,8 +392,8 @@ class Client(Base):
 
             release_string = '--N/A--'
             rel_file = etpConst['systemreleasefile']
-            if os.path.isfile(rel_file) and os.access(rel_file,os.R_OK):
-                with open(rel_file,"r") as f:
+            if os.path.isfile(rel_file) and os.access(rel_file, os.R_OK):
+                with open(rel_file, "r") as f:
                     release_string = f.read(512)
 
             hw_hash = self.SystemSettings['hw_hash']
@@ -591,8 +591,8 @@ class Client(Base):
 
     def ugc_send_file_stream(self, session_id, file_path):
 
-        if not (os.path.isfile(file_path) and os.access(file_path,os.R_OK)):
-            return False,False,'cannot read file_path'
+        if not (os.path.isfile(file_path) and os.access(file_path, os.R_OK)):
+            return False, False, 'cannot read file_path'
 
         import zlib
         # enable stream
@@ -603,7 +603,7 @@ class Client(Base):
         )
         status, msg = self.do_generic_handler(cmd, session_id)
         if not status:
-            return False,status,msg
+            return False, status, msg
 
         # enable zlib compression
         compression = self.set_gzip_compression(session_id, True)
@@ -611,7 +611,7 @@ class Client(Base):
         # start streamer
         stream_status = True
         stream_msg = 'ok'
-        f = open(file_path,"rb")
+        f = open(file_path, "rb")
         chunk = f.read(8192)
         base_path = os.path.basename(file_path)
         transferred = len(chunk)
@@ -629,7 +629,7 @@ class Client(Base):
                     type = "info",
                     header = brown(" @@ "),
                     back = True,
-                    count = (transferred,max_size,),
+                    count = (transferred, max_size,),
                     percent = True
                 )
 
@@ -660,22 +660,22 @@ class Client(Base):
         )
         status, msg = self.do_generic_handler(cmd, session_id)
         if not status:
-            return False,status,msg
+            return False, status, msg
 
-        return True,stream_status,stream_msg
+        return True, stream_status, stream_msg
 
     def ugc_send_file(self, session_id, pkgkey, file_path, doc_type, title, description, keywords):
 
         status, rem_status, err_msg = self.ugc_send_file_stream(session_id, file_path)
         if not (status and rem_status):
-            return False,err_msg
+            return False, err_msg
 
         mydict = {
             'doc_type': str(doc_type),
             'title': title,
             'description': description,
             'keywords': keywords,
-            'file_name': os.path.join(pkgkey,os.path.basename(file_path)),
+            'file_name': os.path.join(pkgkey, os.path.basename(file_path)),
             'real_filename': os.path.basename(file_path),
         }
         xml_string = self.entropyTools.xml_from_dict(mydict)

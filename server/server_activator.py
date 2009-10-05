@@ -166,7 +166,7 @@ def notice(options):
         def fake_callback(s):
             return True
 
-        input_params = [('idx',_('Press Enter to continue'),fake_callback,False)]
+        input_params = [('idx', _('Press Enter to continue'), fake_callback, False)]
         data = Entropy.inputBox('', input_params, cancel_button = True)
         return
 
@@ -194,9 +194,9 @@ def notice(options):
 
         def fake_callback(s):
             return s
-        input_params = [('id',blue(_('Choose one by typing its identifier')),fake_callback,False)]
+        input_params = [('id', blue(_('Choose one by typing its identifier')), fake_callback, False)]
         data = Entropy.inputBox(title, input_params, cancel_button = True)
-        if not isinstance(data,dict):
+        if not isinstance(data, dict):
             return -1
         try:
             return int(data['id'])
@@ -212,9 +212,9 @@ def notice(options):
             return True
 
         input_params = [
-            ('title',_('Title'),fake_callback,False),
-            ('text',_('Notice text'),fake_callback,False),
-            ('url',_('Relevant URL (optional)'),fake_callback_tr,False),
+            ('title', _('Title'), fake_callback, False),
+            ('text', _('Notice text'), fake_callback, False),
+            ('url', _('Relevant URL (optional)'), fake_callback_tr, False),
         ]
 
         data = Entropy.inputBox(blue("%s") % (_("Repository notice board, new item insertion"),), input_params, cancel_button = True)
@@ -384,7 +384,7 @@ def sync_remote_databases(noUpload = False, justStats = False):
     print_info(red("\t  * %s: " % (_("Database local revision currently at"),) )+blue(str(local_revision)))
 
     if justStats:
-        return 0,set(),set()
+        return 0, set(), set()
 
     # do the rest
     errors, fine_uris, broken_uris = Entropy.MirrorsService.sync_databases(no_upload = noUpload)

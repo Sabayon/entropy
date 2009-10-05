@@ -53,7 +53,7 @@ class Server(SocketHost):
         etpConst['socketloglevel'] = 1
         if 'external_cmd_classes' not in kwargs:
             kwargs['external_cmd_classes'] = []
-        kwargs['external_cmd_classes'].insert(0,self.RepositoryCommands)
+        kwargs['external_cmd_classes'].insert(0, self.RepositoryCommands)
         SocketHost.__init__(
             self,
             self.ServiceInterface,
@@ -79,7 +79,7 @@ class Server(SocketHost):
 
     def set_repository_db_availability(self, repo_tuple):
         self.repositories[repo_tuple]['enabled'] = False
-        mydbpath = os.path.join(self.repositories[repo_tuple]['dbpath'],etpConst['etpdatabasefile'])
+        mydbpath = os.path.join(self.repositories[repo_tuple]['dbpath'], etpConst['etpdatabasefile'])
         if os.path.isfile(mydbpath) and os.access(mydbpath, os.W_OK):
             self.syscache['dbs_not_available'].discard(repo_tuple)
             self.repositories[repo_tuple]['enabled'] = True
@@ -100,7 +100,7 @@ class Server(SocketHost):
     def lock_scan(self):
         do_clear = set()
         for repository, arch, product, branch in self.repositories:
-            x = (repository,arch,product,branch,)
+            x = (repository, arch, product, branch,)
             self.set_repository_db_availability(x)
             if not self.repositories[x]['enabled']:
                 if x in self.syscache['dbs_not_available']:
@@ -120,7 +120,7 @@ class Server(SocketHost):
             if os.path.isfile(self.repositories[x]['download_lock']) and \
                 not self.repositories[x]['locked']:
                     self.repositories[x]['locked'] = True
-                    mydbpath = os.path.join(self.repositories[x]['dbpath'],etpConst['etpdatabasefile'])
+                    mydbpath = os.path.join(self.repositories[x]['dbpath'], etpConst['etpdatabasefile'])
                     self.close_db(mydbpath)
                     self.eapi3_lock_repo(*x)
                     do_clear.add(repository)
@@ -217,15 +217,15 @@ class Server(SocketHost):
             self.Entropy.clear_dump_cache(etpCache['repository_server']+"/"+repo+"/")
 
     def eapi3_lock_repo(self, repository, arch, product, branch):
-        lock_file = os.path.join(self.repositories[(repository, arch, product, branch,)]['dbpath'],etpConst['etpdatabaseeapi3lockfile'])
+        lock_file = os.path.join(self.repositories[(repository, arch, product, branch,)]['dbpath'], etpConst['etpdatabaseeapi3lockfile'])
         if not os.path.lexists(lock_file):
-            f = open(lock_file,"w")
+            f = open(lock_file, "w")
             f.write("this repository is EAPI3 locked")
             f.flush()
             f.close()
 
     def eapi3_unlock_repo(self, repository, arch, product, branch):
-        lock_file = os.path.join(self.repositories[(repository, arch, product, branch,)]['dbpath'],etpConst['etpdatabaseeapi3lockfile'])
+        lock_file = os.path.join(self.repositories[(repository, arch, product, branch,)]['dbpath'], etpConst['etpdatabaseeapi3lockfile'])
         if os.path.isfile(lock_file):
             os.remove(lock_file)
 
@@ -233,7 +233,7 @@ class Server(SocketHost):
         return self.dumpTools.loadobj(etpCache['repository_server']+"/"+repo+"/"+str(hash(item)))
 
     def set_dcache(self, item, data, repo = '_norepo_'):
-        self.dumpTools.dumpobj(etpCache['repository_server']+"/"+repo+"/"+str(hash(item)),data)
+        self.dumpTools.dumpobj(etpCache['repository_server']+"/"+repo+"/"+str(hash(item)), data)
 
     def close_db(self, dbpath):
         try:
@@ -263,11 +263,11 @@ class Server(SocketHost):
     def expand_repositories(self):
 
         for repository, arch, product, branch in self.repositories:
-            x = (repository,arch,product,branch,)
+            x = (repository, arch, product, branch,)
             self.repositories[x]['locked'] = True # loading locked
             self.set_repository_db_availability(x)
             mydbpath = self.repositories[x]['dbpath']
-            myrevfile = os.path.join(mydbpath,etpConst['etpdatabaserevisionfile'])
+            myrevfile = os.path.join(mydbpath, etpConst['etpdatabaserevisionfile'])
             myrev = '0'
             if os.path.isfile(myrevfile):
                 while 1:

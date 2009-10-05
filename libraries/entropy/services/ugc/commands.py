@@ -35,7 +35,7 @@ class UGC(SocketCommands):
         ]
         self.raw_commands = [
             'ugc:add_comment', 'ugc:edit_comment',
-            'ugc:register_stream','ugc:do_download_stats',
+            'ugc:register_stream', 'ugc:do_download_stats',
             'ugc:report_error'
         ]
 
@@ -144,7 +144,7 @@ class UGC(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_do_vote,
-                'args': ["authenticator","myargs"],
+                'args': ["authenticator", "myargs"],
                 'as_user': False,
                 'desc': "vote the specified application (from 0 to 5)",
                 'syntax': "<SESSION_ID> ugc:do_vote app-foo/foo <0..5>",
@@ -154,7 +154,7 @@ class UGC(SocketCommands):
                 'auth': False,
                 'built_in': False,
                 'cb': self.docmd_do_downloads,
-                'args': ["authenticator","myargs"],
+                'args': ["authenticator", "myargs"],
                 'as_user': False,
                 'desc': "inform the system of downloaded applications",
                 'syntax': "<SESSION_ID> ugc:do_downloads app-foo/foo1 app-foo/foo2 <...>",
@@ -164,7 +164,7 @@ class UGC(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_add_comment,
-                'args': ["authenticator","myargs"],
+                'args': ["authenticator", "myargs"],
                 'as_user': False,
                 'desc': "insert a comment related to a package key",
                 'syntax': "<SESSION_ID> ugc:add_comment app-foo/foo <valid xml formatted data>",
@@ -174,7 +174,7 @@ class UGC(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_remove_comment,
-                'args': ["authenticator","myargs"],
+                'args': ["authenticator", "myargs"],
                 'as_user': False,
                 'desc': "remove a comment (you need its iddoc and mod/admin privs)",
                 'syntax': "<SESSION_ID> ugc:remove_comment <iddoc>",
@@ -184,7 +184,7 @@ class UGC(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_edit_comment,
-                'args': ["authenticator","myargs"],
+                'args': ["authenticator", "myargs"],
                 'as_user': False,
                 'desc': "edit a comment related to a package key (you need its iddoc, mod/admin privs or being the author)",
                 'syntax': "<SESSION_ID> ugc:edit_comment <iddoc> <valid xml formatted data>",
@@ -194,7 +194,7 @@ class UGC(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_register_stream,
-                'args': ["authenticator","myargs"],
+                'args': ["authenticator", "myargs"],
                 'as_user': False,
                 'desc': "register an uploaded file (through stream cmd) to the relative place (image, file, videos)",
                 'syntax': "<SESSION_ID> ugc:register_stream app-foo/foo <valid xml formatted data>",
@@ -204,7 +204,7 @@ class UGC(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_remove_image,
-                'args': ["authenticator","myargs"],
+                'args': ["authenticator", "myargs"],
                 'as_user': False,
                 'desc': "remove an image (you need its iddoc and mod/admin privs)",
                 'syntax': "<SESSION_ID> ugc:remove_image <iddoc>",
@@ -214,7 +214,7 @@ class UGC(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_remove_file,
-                'args': ["authenticator","myargs"],
+                'args': ["authenticator", "myargs"],
                 'as_user': False,
                 'desc': "remove a file (you need its iddoc and mod/admin privs)",
                 'syntax': "<SESSION_ID> ugc:remove_file <iddoc>",
@@ -224,7 +224,7 @@ class UGC(SocketCommands):
                 'auth': True,
                 'built_in': False,
                 'cb': self.docmd_remove_youtube_video,
-                'args': ["authenticator","myargs"],
+                'args': ["authenticator", "myargs"],
                 'as_user': False,
                 'desc': "remove a youtube video (you need its iddoc and mod/admin privs)",
                 'syntax': "<SESSION_ID> ugc:remove_youtube_video <iddoc>",
@@ -234,7 +234,7 @@ class UGC(SocketCommands):
                 'auth': False,
                 'built_in': False,
                 'cb': self.docmd_do_download_stats,
-                'args': ["authenticator","myargs"],
+                'args': ["authenticator", "myargs"],
                 'as_user': False,
                 'desc': "send information regarding downloads and distribution used",
                 'syntax': "<SESSION_ID> ugc:do_download_stats <valid xml formatted data>",
@@ -244,7 +244,7 @@ class UGC(SocketCommands):
                 'auth': False,
                 'built_in': False,
                 'cb': self.docmd_do_report_error,
-                'args': ["authenticator","myargs"],
+                'args': ["authenticator", "myargs"],
                 'as_user': False,
                 'desc': "submit an Entropy Error Report",
                 'syntax': "<SESSION_ID> ugc:report_error <valid xml formatted data>",
@@ -275,7 +275,7 @@ class UGC(SocketCommands):
         elif not session_data['stream_path']:
             return False
         mypath = session_data['stream_path']
-        if not (os.path.isfile(mypath) and os.access(mypath,os.R_OK)):
+        if not (os.path.isfile(mypath) and os.access(mypath, os.R_OK)):
             return False
         return mypath
 
@@ -290,20 +290,20 @@ class UGC(SocketCommands):
     def docmd_register_stream(self, authenticator, myargs):
 
         if len(myargs) < 3:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
         pkgkey = myargs[0]
 
         xml_string = ' '.join(myargs[1:])
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
         except Exception as e:
-            return None,"error: %s" % (e,)
+            return None, "error: %s" % (e,)
         if not ('doc_type' in mydict \
                 and 'title' in mydict \
                 and 'description' in mydict \
                 and 'keywords' in mydict \
                 and 'file_name' in mydict ):
-            return None,'wrong dict arguments, xml must have 5 items with attr value -> doc_type, title, description, keywords, file_name'
+            return None, 'wrong dict arguments, xml must have 5 items with attr value -> doc_type, title, description, keywords, file_name'
         doc_type = mydict.get('doc_type')
         title = mydict.get('title')
         description = mydict.get('description')
@@ -314,9 +314,9 @@ class UGC(SocketCommands):
         try:
             doc_type = int(doc_type)
         except (ValueError,):
-            return None,'wrong arguments (doc_type)'
+            return None, 'wrong arguments (doc_type)'
         if doc_type not in self.SUPPORTED_DOCFILE_TYPES:
-            return None,'unsupported doc type (SUPPORTED_DOCFILE_TYPES)'
+            return None, 'unsupported doc type (SUPPORTED_DOCFILE_TYPES)'
 
         if not title: title = 'No title'
         if not description: description = 'No description'
@@ -324,15 +324,15 @@ class UGC(SocketCommands):
 
         userid = self._get_userid(authenticator)
         if userid == None:
-            return False,'no session userid available'
-        elif isinstance(userid,bool) and not userid:
-            return False,'no session data available'
+            return False, 'no session userid available'
+        elif isinstance(userid, bool) and not userid:
+            return False, 'no session data available'
         username = self._get_username(authenticator)
 
         # get file path
         stream_path = self._get_session_file(authenticator)
         if not stream_path:
-            return False,'no stream path available'
+            return False, 'no stream path available'
         orig_stream_path = os.path.dirname(stream_path)
         new_stream_path = orig_stream_path
 
@@ -340,11 +340,11 @@ class UGC(SocketCommands):
         while os.path.lexists(new_stream_path):
             scount += 1
             b_name = os.path.basename(stream_path)
-            b_name = "%s.%s" % (scount,b_name,)
-            new_stream_path = os.path.join(os.path.dirname(orig_stream_path),b_name)
+            b_name = "%s.%s" % (scount, b_name,)
+            new_stream_path = os.path.join(os.path.dirname(orig_stream_path), b_name)
             if scount > 1000000:
-                return False,'while loop interrupted while looking for new_stream_path'
-        shutil.move(stream_path,new_stream_path)
+                return False, 'while loop interrupted while looking for new_stream_path'
+        shutil.move(stream_path, new_stream_path)
         stream_path = new_stream_path
 
         ugc = self._load_ugc_interface()
@@ -361,245 +361,245 @@ class UGC(SocketCommands):
     def docmd_add_comment(self, authenticator, myargs):
 
         if len(myargs) < 2:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
         pkgkey = myargs[0]
         xml_string = ' '.join(myargs[1:])
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
         except Exception as e:
-            return None,"error: %s" % (e,)
+            return None, "error: %s" % (e,)
         if not ('comment' in mydict and 'title' in mydict and 'keywords' in mydict):
-            return None,'wrong dict arguments, xml must have 3 items with attr value -> comment, title, keywords'
+            return None, 'wrong dict arguments, xml must have 3 items with attr value -> comment, title, keywords'
         comment = mydict.get('comment')
         title = mydict.get('title')
         keywords = mydict.get('keywords')
 
         userid = self._get_userid(authenticator)
         if userid == None:
-            return False,'no session userid available'
-        elif isinstance(userid,bool) and not userid:
-            return False,'no session data available'
+            return False, 'no session userid available'
+        elif isinstance(userid, bool) and not userid:
+            return False, 'no session data available'
         username = self._get_username(authenticator)
 
         ugc = self._load_ugc_interface()
         status, iddoc = ugc.insert_comment(pkgkey, userid, username, comment, title, keywords)
         if not status:
             t = 'unable to add comment'
-            if isinstance(iddoc,const_get_stringtype()):
+            if isinstance(iddoc, const_get_stringtype()):
                 t = iddoc
-            return False,t
-        return iddoc,'ok'
+            return False, t
+        return iddoc, 'ok'
 
     def docmd_remove_comment(self, authenticator, myargs):
 
         if not myargs:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
         try:
             iddoc = int(myargs[0])
         except (ValueError,):
-            return False,'not a valid iddoc'
+            return False, 'not a valid iddoc'
 
         userid = self._get_userid(authenticator)
         if userid == None:
-            return False,'no session userid available'
-        elif isinstance(userid,bool) and not userid:
-            return False,'no session data available'
+            return False, 'no session userid available'
+        elif isinstance(userid, bool) and not userid:
+            return False, 'no session data available'
 
         ugc = self._load_ugc_interface()
         iddoc_userid = ugc.get_iddoc_userid(iddoc)
         if iddoc_userid == None:
-            return False,'document not available'
+            return False, 'document not available'
 
         # check if admin/mod or author
         if authenticator.is_user() and (userid != iddoc_userid):
-            return False,'permission denied'
+            return False, 'permission denied'
 
         ugc = self._load_ugc_interface()
         status, iddoc = ugc.remove_comment(iddoc)
         if not status:
-            return False,'document not removed or not available'
+            return False, 'document not removed or not available'
 
-        return iddoc,'ok'
+        return iddoc, 'ok'
 
     def docmd_edit_comment(self, authenticator, myargs):
 
         if len(myargs) < 2:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
         try:
             iddoc = int(myargs[0])
         except (ValueError,):
-            return False,'not a valid iddoc'
+            return False, 'not a valid iddoc'
 
         xml_string = ' '.join(myargs[1:])
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
         except Exception as e:
-            return None,"error: %s" % (e,)
+            return None, "error: %s" % (e,)
         if not ('comment' in mydict and 'title' in mydict and 'keywords' in mydict):
-            return None,'wrong dict arguments, xml must have two item with attr value -> comment, title'
+            return None, 'wrong dict arguments, xml must have two item with attr value -> comment, title'
         new_comment = mydict.get('comment')
         new_title = mydict.get('title')
         new_keywords = mydict.get('keywords')
 
         userid = self._get_userid(authenticator)
         if userid == None:
-            return False,'no session userid available'
-        elif isinstance(userid,bool) and not userid:
-            return False,'no session data available'
+            return False, 'no session userid available'
+        elif isinstance(userid, bool) and not userid:
+            return False, 'no session data available'
 
         ugc = self._load_ugc_interface()
         iddoc_userid = ugc.get_iddoc_userid(iddoc)
         if iddoc_userid == None:
-            return False,'document not available'
+            return False, 'document not available'
 
         # check if admin/mod or author
         if authenticator.is_user() and (userid != iddoc_userid):
-            return False,'permission denied'
+            return False, 'permission denied'
 
         status, iddoc = ugc.edit_comment(iddoc, new_comment, new_title, new_keywords)
         if not status:
-            return False,'document not removed or not available'
+            return False, 'document not removed or not available'
 
-        return iddoc,'ok'
+        return iddoc, 'ok'
 
     def docmd_remove_image(self, authenticator, myargs):
 
         if not myargs:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
         try:
             iddoc = int(myargs[0])
         except (ValueError,):
-            return False,'not a valid iddoc'
+            return False, 'not a valid iddoc'
 
         userid = self._get_userid(authenticator)
         if userid == None:
-            return False,'no session userid available'
-        elif isinstance(userid,bool) and not userid:
-            return False,'no session data available'
+            return False, 'no session userid available'
+        elif isinstance(userid, bool) and not userid:
+            return False, 'no session data available'
 
         ugc = self._load_ugc_interface()
         iddoc_userid = ugc.get_iddoc_userid(iddoc)
         if iddoc_userid == None:
-            return False,'document not available'
+            return False, 'document not available'
 
         # check if admin/mod or author
         if authenticator.is_user() and (userid != iddoc_userid):
-            return False,'permission denied'
+            return False, 'permission denied'
 
         ugc = self._load_ugc_interface()
         status, iddoc = ugc.delete_image(iddoc)
         if not status:
-            return False,'document not removed or not available'
+            return False, 'document not removed or not available'
 
-        return iddoc,'ok'
+        return iddoc, 'ok'
 
     def docmd_remove_file(self, authenticator, myargs):
 
         if not myargs:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
         try:
             iddoc = int(myargs[0])
         except (ValueError,):
-            return False,'not a valid iddoc'
+            return False, 'not a valid iddoc'
 
         userid = self._get_userid(authenticator)
         if userid == None:
-            return False,'no session userid available'
-        elif isinstance(userid,bool) and not userid:
-            return False,'no session data available'
+            return False, 'no session userid available'
+        elif isinstance(userid, bool) and not userid:
+            return False, 'no session data available'
 
         ugc = self._load_ugc_interface()
         iddoc_userid = ugc.get_iddoc_userid(iddoc)
         if iddoc_userid == None:
-            return False,'document not available'
+            return False, 'document not available'
 
         # check if admin/mod or author
         if authenticator.is_user() and (userid != iddoc_userid):
-            return False,'permission denied'
+            return False, 'permission denied'
 
         ugc = self._load_ugc_interface()
         status, iddoc = ugc.delete_file(iddoc)
         if not status:
-            return False,'document not removed or not available'
+            return False, 'document not removed or not available'
 
-        return iddoc,'ok'
+        return iddoc, 'ok'
 
     def docmd_remove_youtube_video(self, authenticator, myargs):
 
         if not myargs:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
         try:
             iddoc = int(myargs[0])
         except (ValueError,):
-            return False,'not a valid iddoc'
+            return False, 'not a valid iddoc'
 
         userid = self._get_userid(authenticator)
         if userid == None:
-            return False,'no session userid available'
-        elif isinstance(userid,bool) and not userid:
-            return False,'no session data available'
+            return False, 'no session userid available'
+        elif isinstance(userid, bool) and not userid:
+            return False, 'no session data available'
 
         ugc = self._load_ugc_interface()
         iddoc_userid = ugc.get_iddoc_userid(iddoc)
         if iddoc_userid == None:
-            return False,'document not available'
+            return False, 'document not available'
 
         # check if admin/mod or author
         if authenticator.is_user() and (userid != iddoc_userid):
-            return False,'permission denied'
+            return False, 'permission denied'
 
         ugc = self._load_ugc_interface()
         status, iddoc = ugc.remove_youtube_video(iddoc)
         if not status:
-            return False,'document not removed or not available'
+            return False, 'document not removed or not available'
 
-        return iddoc,'ok'
+        return iddoc, 'ok'
 
     def docmd_do_vote(self, authenticator, myargs):
 
         if len(myargs) < 2:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
         pkgkey = myargs[0]
         vote = myargs[1]
 
         userid = self._get_userid(authenticator)
         if userid == None:
-            return False,'no session userid available'
-        elif isinstance(userid,bool) and not userid:
-            return userid,'no session data available'
+            return False, 'no session userid available'
+        elif isinstance(userid, bool) and not userid:
+            return userid, 'no session data available'
 
         ugc = self._load_ugc_interface()
         voted = ugc.do_vote(pkgkey, userid, vote)
         if not voted:
-            return voted,'already voted'
-        return voted,'ok'
+            return voted, 'already voted'
+        return voted, 'ok'
 
     def docmd_do_downloads(self, authenticator, myargs):
 
         if not myargs:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
 
         ip_addr = self._get_session_ip_address(authenticator)
         ugc = self._load_ugc_interface()
         done = ugc.do_downloads(myargs, ip_addr = ip_addr)
         if not done:
-            return done,'download not stored'
-        return done,'ok'
+            return done, 'download not stored'
+        return done, 'ok'
 
     def docmd_do_download_stats(self, authenticator, myargs):
 
         if not myargs:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
 
         xml_string = ' '.join(myargs)
         try:
             mydict = self.entropyTools.dict_from_xml(xml_string)
         except Exception as e:
-            return None,"error: %s" % (e,)
+            return None, "error: %s" % (e,)
         if not ('branch' in mydict and \
             'release_string' in mydict and \
             'pkgkeys' in mydict):
-            return None,'wrong dict arguments, xml must have 3 items with attr value -> branch, release_string, pkgkeys'
+            return None, 'wrong dict arguments, xml must have 3 items with attr value -> branch, release_string, pkgkeys'
 
         branch = mydict.get('branch')
         release_string = mydict.get('release_string')
@@ -611,8 +611,8 @@ class UGC(SocketCommands):
         done = ugc.do_download_stats(branch, release_string, hw_hash, pkgkeys,
             ip_addr)
         if not done:
-            return done,'stats not stored'
-        return done,'ok'
+            return done, 'stats not stored'
+        return done, 'ok'
 
     def _get_generic_doctypes(self, pkgkey, doctypes):
         ugc = self._load_ugc_interface()
@@ -638,19 +638,19 @@ class UGC(SocketCommands):
     def docmd_get_comments(self, myargs):
 
         if not myargs:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
         pkgkey = myargs[0]
 
         metadata = self._get_generic_doctypes(pkgkey, [self.DOC_TYPES['comments']])
         if metadata == None:
-            return None,'no metadata available'
+            return None, 'no metadata available'
 
-        return metadata,'ok'
+        return metadata, 'ok'
 
     def docmd_get_comments_by_identifiers(self, myargs):
 
         if not myargs:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
 
         identifiers = []
         for myarg in myargs:
@@ -660,18 +660,18 @@ class UGC(SocketCommands):
                 pass
 
         if not identifiers:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
 
         metadata = self._get_generic_doctypes_by_identifiers(identifiers, [self.DOC_TYPES['comments']])
         if metadata == None:
-            return None,'no metadata available'
+            return None, 'no metadata available'
 
-        return metadata,'ok'
+        return metadata, 'ok'
 
     def docmd_get_documents_by_identifiers(self, myargs):
 
         if not myargs:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
 
         identifiers = []
         for myarg in myargs:
@@ -681,64 +681,64 @@ class UGC(SocketCommands):
                 pass
 
         if not identifiers:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
 
         metadata = self._get_generic_documents_by_identifiers(identifiers)
         if metadata == None:
-            return None,'no metadata available'
+            return None, 'no metadata available'
 
-        return metadata,'ok'
+        return metadata, 'ok'
 
     def docmd_get_allvotes(self):
         ugc = self._load_ugc_interface()
         metadata = ugc.get_ugc_allvotes()
         if not metadata:
-            return None,'no metadata available'
-        return metadata,'ok'
+            return None, 'no metadata available'
+        return metadata, 'ok'
 
     def docmd_get_alldownloads(self):
         ugc = self._load_ugc_interface()
         metadata = ugc.get_ugc_alldownloads()
         if not metadata:
-            return None,'no metadata available'
-        return metadata,'ok'
+            return None, 'no metadata available'
+        return metadata, 'ok'
 
     def docmd_get_vote(self, myargs):
 
         if not myargs:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
         pkgkey = myargs[0]
 
         ugc = self._load_ugc_interface()
         vote = ugc.get_ugc_vote(pkgkey)
-        return vote,'ok'
+        return vote, 'ok'
 
     def docmd_get_downloads(self, myargs):
 
         if not myargs:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
         pkgkey = myargs[0]
 
         ugc = self._load_ugc_interface()
         downloads = ugc.get_ugc_downloads(pkgkey)
-        return downloads,'ok'
+        return downloads, 'ok'
 
     def docmd_get_textdocs(self, myargs):
 
         if not myargs:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
         pkgkey = myargs[0]
 
-        metadata = self._get_generic_doctypes(pkgkey, [self.DOC_TYPES['comments'],self.DOC_TYPES['bbcode_doc']])
+        metadata = self._get_generic_doctypes(pkgkey, [self.DOC_TYPES['comments'], self.DOC_TYPES['bbcode_doc']])
         if metadata == None:
-            return None,'no metadata available'
+            return None, 'no metadata available'
 
-        return metadata,'ok'
+        return metadata, 'ok'
 
     def docmd_get_textdocs_by_identifiers(self, myargs):
 
         if not myargs:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
 
         identifiers = []
         for myarg in myargs:
@@ -748,25 +748,25 @@ class UGC(SocketCommands):
                 pass
 
         if not identifiers:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
 
-        metadata = self._get_generic_doctypes_by_identifiers(identifiers, [self.DOC_TYPES['comments'],self.DOC_TYPES['bbcode_doc']])
+        metadata = self._get_generic_doctypes_by_identifiers(identifiers, [self.DOC_TYPES['comments'], self.DOC_TYPES['bbcode_doc']])
         if metadata == None:
-            return None,'no metadata available'
+            return None, 'no metadata available'
 
-        return metadata,'ok'
+        return metadata, 'ok'
 
     def docmd_get_alldocs(self, myargs):
 
         if not myargs:
-            return None,'wrong arguments'
+            return None, 'wrong arguments'
         pkgkey = myargs[0]
 
         metadata = self._get_generic_doctypes(pkgkey, [self.DOC_TYPES[x] for x in self.DOC_TYPES])
         if metadata == None:
-            return None,'no metadata available'
+            return None, 'no metadata available'
 
-        return metadata,'ok'
+        return metadata, 'ok'
 
     def docmd_do_report_error(self, authenticator, myargs):
 
@@ -813,7 +813,7 @@ class UGC(SocketCommands):
             fd, path = tempfile.mkstemp(suffix = "__%s.txt" % (key,))
             try:
                 f_path = open(path, "w")
-                f_path.write(mydict.get(key,''))
+                f_path.write(mydict.get(key, ''))
                 f_path.flush()
                 f_path.close()
             except IOError:
@@ -830,4 +830,4 @@ class UGC(SocketCommands):
         for rm_path in rm_paths:
             os.remove(rm_path)
 
-        return True,'ok'
+        return True, 'ok'

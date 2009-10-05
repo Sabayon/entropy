@@ -18,7 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 import time, gtk, gobject, pango, _thread, pty, sys
-from entropy.i18n import _,_LOCALE
+from entropy.i18n import _, _LOCALE
 from entropy.exceptions import *
 from entropy.const import *
 from entropy.misc import TimeScheduled, ParallelTask
@@ -63,7 +63,7 @@ class AddRepositoryWindow(MenuSkel):
     def __init__(self, application, window, entropy):
 
         from sulfur.views import EntropyRepositoryMirrorsView
-        self.addrepo_ui = UI( const.GLADE_FILE , 'addRepoWin', 'entropy' )
+        self.addrepo_ui = UI( const.GLADE_FILE, 'addRepoWin', 'entropy' )
         self.addrepo_ui.signal_autoconnect(self._getAllMethods())
         self.repoMirrorsView = EntropyRepositoryMirrorsView(
             self.addrepo_ui.mirrorsView)
@@ -160,7 +160,7 @@ class AddRepositoryWindow(MenuSkel):
         if urldata[1] != None:
             next = urldata[0].iter_next(urldata[1])
             if next:
-                self.repoMirrorsView.store.swap(urldata[1],next)
+                self.repoMirrorsView.store.swap(urldata[1], next)
 
     def on_mirrorUp_clicked( self, widget ):
         selection = self.repoMirrorsView.view.get_selection()
@@ -171,7 +171,7 @@ class AddRepositoryWindow(MenuSkel):
             if path > 0:
                 # get next iter
                 prev = urldata[0].get_iter(path-1)
-                self.repoMirrorsView.store.swap(urldata[1],prev)
+                self.repoMirrorsView.store.swap(urldata[1], prev)
 
     def on_repoMirrorEdit_clicked( self, widget ):
         selection = self.repoMirrorsView.view.get_selection()
@@ -236,14 +236,14 @@ class AddRepositoryWindow(MenuSkel):
                 _("Update Repositories"), _("now"))
             okDialog( self.window, msg )
         else:
-            msg = "%s: %s" % (_("Wrong entries, errors"),', '.join(errors),)
+            msg = "%s: %s" % (_("Wrong entries, errors"), ', '.join(errors),)
             okDialog( self.addrepo_ui.addRepoWin, msg )
 
     def on_repoSubmitEdit_clicked( self, widget ):
         repodata = self._get_repo_data()
         errors = self._validate_repo_submit(repodata, edit = True)
         if errors:
-            msg = "%s: %s" % (_("Wrong entries, errors"),', '.join(errors),)
+            msg = "%s: %s" % (_("Wrong entries, errors"), ', '.join(errors),)
             okDialog( self.addrepo_ui.addRepoWin, msg )
             return True
         else:
@@ -312,15 +312,15 @@ class NoticeBoardWindow(MenuSkel):
         obj = model.get_value(iterator, 0)
         if obj:
             if 'is_repo' in obj:
-                cell.set_property('markup',"<big><b>%s</b></big>\n<small>%s</small>" % (cleanMarkupString(obj['name']),cleanMarkupString(obj['desc']),))
+                cell.set_property('markup', "<big><b>%s</b></big>\n<small>%s</small>" % (cleanMarkupString(obj['name']), cleanMarkupString(obj['desc']),))
             else:
                 mytxt = '<b><u>%s</u></b>\n<small><b>%s</b>: %s</small>' % (
                     cleanMarkupString(obj['pubDate']),
                     _("Title"),
                     cleanMarkupString(obj['title']),
                 )
-                cell.set_property('markup',mytxt)
-            cell.set_property('cell-background',obj['color'])
+                cell.set_property('markup', mytxt)
+            cell.set_property('cell-background', obj['color'])
 
     def status_pixbuf( self, column, cell, model, myiter ):
         obj = model.get_value( myiter, 0 ) or {}
@@ -330,7 +330,7 @@ class NoticeBoardWindow(MenuSkel):
             cell.set_property('stock-id', 'gtk-apply')
         else:
             cell.set_property('stock-id', 'gtk-cancel')
-        cell.set_property('cell-background',obj['color'])
+        cell.set_property('cell-background', obj['color'])
 
     def create_text_column( self, hdr, size = None, expand = False, set_height = 0 ):
         cell = gtk.CellRendererText()
@@ -379,7 +379,7 @@ class NoticeBoardWindow(MenuSkel):
 
     def show_data(self):
         self.model.clear()
-        colors = ["#CDEEFF","#AFCBDA"]
+        colors = ["#CDEEFF", "#AFCBDA"]
         avail_repos = self.Entropy.SystemSettings['repositories']['available']
         for repoid in self.repoids:
             counter = 0
@@ -437,11 +437,11 @@ class RemoteConnectionMenu(MenuSkel):
             return True
 
         input_params = [
-            ('name',_("Connection name"),fake_callback,False),
-            ('hostname',_("Hostname"),fake_callback,False),
-            ('port',_("Port"),fake_callback,False),
-            ('user',_("Username"),fake_callback,False),
-            ('ssl',('checkbox',_('SSL Connection'),),fake_callback_cb,False),
+            ('name', _("Connection name"), fake_callback, False),
+            ('hostname', _("Hostname"), fake_callback, False),
+            ('port', _("Port"), fake_callback, False),
+            ('user', _("Username"), fake_callback, False),
+            ('ssl', ('checkbox', _('SSL Connection'),), fake_callback_cb, False),
         ]
         data = self.Entropy.inputBox(
             _('Choose what kind of test you would like to run'),
@@ -535,7 +535,7 @@ class RemoteConnectionMenu(MenuSkel):
 
     def get_data_text( self, column, cell, model, myiter, property ):
         obj = model.get_value( myiter, 0 )
-        if obj: cell.set_property('markup',obj[property])
+        if obj: cell.set_property('markup', obj[property])
 
     def create_text_column( self, view, hdr, property, size, sortcol = None, expand = False, set_height = 0, cell_data_func = None, sort_col_id = -1):
         if cell_data_func == None: cell_data_func = self.get_data_text
@@ -660,7 +660,7 @@ class RepositoryManagerMenu(MenuSkel):
             'data': 2,
             'output': 3
         }
-        self.dict_queue_keys = ['queue','processing','processed','errored']
+        self.dict_queue_keys = ['queue', 'processing', 'processed', 'errored']
         self.DataScroll = self.sm_ui.dataViewScrollWin
         self.DataViewBox = self.sm_ui.repoManagerDataViewBox
         self.DataViewButtons = {}
@@ -684,7 +684,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.setup_available_repositories()
 
     def __del__(self):
-        if hasattr(self,'connection_done'):
+        if hasattr(self, 'connection_done'):
             if self.connection_done:
                 self.Service.kill_all_connections()
 
@@ -704,7 +704,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.std_input = fakeinfile(self.pty[1])
 
         # setup add repository window
-        self.console_menu_xml = gtk.glade.XML( const.GLADE_FILE, "terminalMenu",domain="entropy" )
+        self.console_menu_xml = gtk.glade.XML( const.GLADE_FILE, "terminalMenu", domain="entropy" )
         self.console_menu = self.console_menu_xml.get_widget( "terminalMenu" )
         self.console_menu_xml.signal_autoconnect(self)
 
@@ -719,21 +719,21 @@ class RepositoryManagerMenu(MenuSkel):
 
         self.console.set_pty(self.pty[0])
         self.console.connect("button-press-event", self.on_console_click)
-        self.console.connect("commit",self.on_console_commit)
+        self.console.connect("commit", self.on_console_commit)
         termScroll = gtk.VScrollbar(self.console.get_adjustment())
         self.sm_ui.repoManagerVteBox.pack_start(self.console, True, True)
         self.sm_ui.repoManagerTermScrollBox.pack_start(termScroll, False)
         self.sm_ui.repoManagerTermHBox.show_all()
 
     def debug_print(self, f, msg):
-        if self.do_debug: print_generic("repoman debug:",f,msg)
+        if self.do_debug: print_generic("repoman debug:", f, msg)
 
     def clear_console(self):
         self.std_input.text_read = ''
         self.console.reset()
 
     def clear_data_store_and_view(self):
-        self.debug_print("clear_data_store_and_view","enter")
+        self.debug_print("clear_data_store_and_view", "enter")
         self.reset_data_view()
         self.hide_all_data_view_buttons()
         self.DataViewVbox.queue_draw()
@@ -742,12 +742,12 @@ class RepositoryManagerMenu(MenuSkel):
 
     def reset_data_view(self):
         if self.DataView != None:
-            self.debug_print("reset_data_view","removing old DataView")
+            self.debug_print("reset_data_view", "removing old DataView")
             self.DataScroll.remove(self.DataView)
             self.DataScroll.queue_draw()
             self.DataView.destroy()
             self.DataView = None
-            self.debug_print("reset_data_view","removal of old DataView done")
+            self.debug_print("reset_data_view", "removal of old DataView done")
 
     def on_repoManagerConsoleEvent_enter_notify_event(self, widget, event):
         self.console.grab_focus()
@@ -868,7 +868,7 @@ class RepositoryManagerMenu(MenuSkel):
             'glsa': {
                 'package_info_button': glsa_package_info_button,
                 'adv_info_button': glsa_adv_info_button,
-                'order': ['package_info_button','adv_info_button'],
+                'order': ['package_info_button', 'adv_info_button'],
                 'handler_ids': [],
             },
             'mirror_updates': {
@@ -880,21 +880,21 @@ class RepositoryManagerMenu(MenuSkel):
                 'package_info_button': database_updates_package_info_button,
                 'change_repo_button': database_updates_change_repo_button,
                 'execute_button': database_updates_execute_button,
-                'order': ['package_info_button','change_repo_button','execute_button'],
+                'order': ['package_info_button', 'change_repo_button', 'execute_button'],
                 'handler_ids': [],
             },
             'available_packages': {
                 'package_info_button': available_packages_package_info_button,
                 'remove_package_button': available_packages_remove_package_button,
                 'move_package_button': available_packages_move_package_button,
-                'order': ['package_info_button','remove_package_button','move_package_button'],
+                'order': ['package_info_button', 'remove_package_button', 'move_package_button'],
                 'handler_ids': [],
             },
             'categories_updates': {
                 'compile_button': categories_updates_compile_button,
                 'add_use_button': categories_updates_add_use_button,
                 'remove_use_button': categories_updates_remove_use_button,
-                'order': ['compile_button','add_use_button','remove_use_button'],
+                'order': ['compile_button', 'add_use_button', 'remove_use_button'],
                 'handler_ids': [],
             },
             'notice_board': {
@@ -902,7 +902,7 @@ class RepositoryManagerMenu(MenuSkel):
                 'remove_button': notice_board_remove_button,
                 'refresh_button': notice_board_refresh_button,
                 'view_button': notice_board_view_button,
-                'order': ['view_button','add_button','remove_button','refresh_button'],
+                'order': ['view_button', 'add_button', 'remove_button', 'refresh_button'],
                 'handler_ids': [],
             }
         }
@@ -922,12 +922,12 @@ class RepositoryManagerMenu(MenuSkel):
             del self.DataViewButtons[cat]['handler_ids'][:]
 
     def hide_all_data_view_buttons(self):
-        self.debug_print("hide_all_data_view_buttons","enter")
+        self.debug_print("hide_all_data_view_buttons", "enter")
         for cat in self.DataViewButtons:
             for w_id in self.DataViewButtons[cat]['order']:
-                self.debug_print("hide_all_data_view_buttons","hiding button %s,%s" % (cat,w_id,))
+                self.debug_print("hide_all_data_view_buttons", "hiding button %s,%s" % (cat, w_id,))
                 self.DataViewButtons[cat][w_id].hide()
-        self.debug_print("hide_all_data_view_buttons","quit")
+        self.debug_print("hide_all_data_view_buttons", "quit")
 
     def setup_available_repositories(self):
         self.EntropyRepositories = {
@@ -1000,21 +1000,21 @@ class RepositoryManagerMenu(MenuSkel):
     def setup_data_view(self):
 
         store = gtk.TreeStore( gobject.TYPE_PYOBJECT )
-        self.debug_print("setup_data_view","enter")
+        self.debug_print("setup_data_view", "enter")
         self.reset_data_view()
-        self.debug_print("setup_data_view","creating new DataView")
+        self.debug_print("setup_data_view", "creating new DataView")
         dv = gtk.TreeView()
         dv.set_model(store)
         self.data_tree_selection_mode = dv.get_selection().get_mode()
         self.DataStore = store
         self.DataView = dv
-        self.debug_print("setup_data_view","quit")
+        self.debug_print("setup_data_view", "quit")
 
     def show_data_view(self):
         self.DataScroll.add(self.DataView)
-        self.debug_print("show_data_view","adding to DataScroll")
+        self.debug_print("show_data_view", "adding to DataScroll")
         self.DataView.show()
-        self.debug_print("show_data_view","showing DataView")
+        self.debug_print("show_data_view", "showing DataView")
 
     def setup_pinboard_view(self):
 
@@ -1055,18 +1055,18 @@ class RepositoryManagerMenu(MenuSkel):
 
     def queue_pixbuf( self, column, cell, model, myiter ):
         obj = model.get_value( myiter, 0 )
-        if isinstance(obj,dict):
+        if isinstance(obj, dict):
             st = self.get_status_from_queue_item(obj.copy())
             if st != None:
-                cell.set_property('stock-id',st)
+                cell.set_property('stock-id', st)
 
     def pinboard_pixbuf( self, column, cell, model, myiter ):
         obj = model.get_value( myiter, 0 )
-        if isinstance(obj,dict):
+        if isinstance(obj, dict):
             if obj['done']:
-                cell.set_property('stock-id','gtk-apply')
+                cell.set_property('stock-id', 'gtk-apply')
             else:
-                cell.set_property('stock-id','gtk-cancel')
+                cell.set_property('stock-id', 'gtk-cancel')
 
     def spm_package_obj_to_cell(self, obj, cell):
         use_data = []
@@ -1085,9 +1085,9 @@ class RepositoryManagerMenu(MenuSkel):
         installed_string = ''
         available_string = ''
         if 'installed_atom' in obj:
-            installed_string = '<b>%s</b>: %s\n' % (_("Installed"),cleanMarkupString(str(obj['installed_atom'])),)
+            installed_string = '<b>%s</b>: %s\n' % (_("Installed"), cleanMarkupString(str(obj['installed_atom'])),)
         if 'available_atom' in obj:
-            available_string = '<b>%s</b>: %s\n' % (_("Available"),cleanMarkupString(str(obj['available_atom'])),)
+            available_string = '<b>%s</b>: %s\n' % (_("Available"), cleanMarkupString(str(obj['available_atom'])),)
 
         atom = obj.get('atom')
         key = obj.get('key')
@@ -1111,7 +1111,7 @@ class RepositoryManagerMenu(MenuSkel):
             _("USE Flags"),
             cleanMarkupString(use_string),
         )
-        cell.set_property('markup',txt)
+        cell.set_property('markup', txt)
 
     def entropy_package_obj_to_cell(self, obj, cell):
         mytxt = '<small><i>%s</i>\n%s\n<b>%s</b>: %s | <b>%s</b>: %s | <b>%s</b>: %s | <b>%s</b>: %s | <b>%s</b>: %s\n<b>%s</b>: %s</small>' % (
@@ -1130,7 +1130,7 @@ class RepositoryManagerMenu(MenuSkel):
             _("Homepage"),
             cleanMarkupString(obj['homepage']),
         )
-        cell.set_property('markup',mytxt)
+        cell.set_property('markup', mytxt)
 
     def get_status_from_queue_item(self, item):
         if 'errored_ts' in item:
@@ -1156,21 +1156,21 @@ class RepositoryManagerMenu(MenuSkel):
 
     def get_data_text( self, column, cell, model, myiter, property ):
         obj = model.get_value( myiter, 0 )
-        if isinstance(obj,dict):
+        if isinstance(obj, dict):
             if property == "queue:ts":
-                cell.set_property('markup',self.get_ts_from_queue_item(obj))
+                cell.set_property('markup', self.get_ts_from_queue_item(obj))
             elif property == "queue:command_text":
-                cell.set_property('markup',cleanMarkupString(obj['command_text']))
+                cell.set_property('markup', cleanMarkupString(obj['command_text']))
             elif property == "queue:command_name":
-                cell.set_property('markup',cleanMarkupString(obj['command_name']))
+                cell.set_property('markup', cleanMarkupString(obj['command_name']))
             elif property == "commands:command":
-                cell.set_property('markup',obj['key'])
+                cell.set_property('markup', obj['key'])
             elif property == "commands:desc":
-                cell.set_property('markup',obj['myinfo'])
+                cell.set_property('markup', obj['myinfo'])
             elif property == "pinboard:date":
                 cell.set_property('markup', str(obj['ts']))
             elif property == "pinboard:note":
-                cell.set_property('markup',cleanMarkupString(obj['note']))
+                cell.set_property('markup', cleanMarkupString(obj['note']))
 
     def connection_verification_callback(self, host, port, username, password, ssl):
         self.Service.setup_connection(
@@ -1194,13 +1194,13 @@ class RepositoryManagerMenu(MenuSkel):
                     return False, _("Login failed. Please retry.")
             except Exception as e:
                 entropyTools.print_traceback()
-                return False, "%s: %s" % (_("Connection Error"),e,)
+                return False, "%s: %s" % (_("Connection Error"), e,)
             srv.close_session(session)
             srv.disconnect()
             self.connection_done = True
             return True, None
         except SSLError:
-            return False,_("SSL Error, are you sure the server supports SSL?")
+            return False, _("SSL Error, are you sure the server supports SSL?")
 
     def load(self):
 
@@ -1257,7 +1257,7 @@ class RepositoryManagerMenu(MenuSkel):
             repo_info = self.get_available_repositories()
             if not repo_info: return
 
-        if isinstance(repo_info,dict):
+        if isinstance(repo_info, dict):
 
             def task(repo_info):
 
@@ -1322,7 +1322,7 @@ class RepositoryManagerMenu(MenuSkel):
                 if item == None: continue
                 item = item.copy()
                 item['from'] = "processing"
-                self.QueueStore.append((item,item['queue_ts'],))
+                self.QueueStore.append((item, item['queue_ts'],))
             if not queue['processing']:
                 self.is_processing = None
                 self.is_writing_output = False
@@ -1338,7 +1338,7 @@ class RepositoryManagerMenu(MenuSkel):
                 if item == None: continue
                 item = item.copy()
                 item['from'] = "processed"
-                self.QueueStore.append((item,item['queue_ts'],))
+                self.QueueStore.append((item, item['queue_ts'],))
 
         if "queue_order" in keys:
             for queue_id in queue['queue_order']:
@@ -1346,7 +1346,7 @@ class RepositoryManagerMenu(MenuSkel):
                 if item == None: continue
                 item = item.copy()
                 item['from'] = "queue"
-                self.QueueStore.append((item,item['queue_ts'],))
+                self.QueueStore.append((item, item['queue_ts'],))
 
         if "errored_order" in keys:
             mylist = queue['errored_order'][:]
@@ -1356,7 +1356,7 @@ class RepositoryManagerMenu(MenuSkel):
                 if item == None: continue
                 item = item.copy()
                 item['from'] = "errored"
-                self.QueueStore.append((item,item['queue_ts'],))
+                self.QueueStore.append((item, item['queue_ts'],))
 
         return False
 
@@ -1372,7 +1372,7 @@ class RepositoryManagerMenu(MenuSkel):
         if (pindata == self.PinboardData) and (not force):
             return
 
-        if isinstance(pindata,dict):
+        if isinstance(pindata, dict):
             def task(pindata):
                 self.fill_pinboard_view(pindata)
                 self.PinboardData = pindata.copy()
@@ -1380,14 +1380,14 @@ class RepositoryManagerMenu(MenuSkel):
             gobject.idle_add(task, pindata)
 
     def fill_pinboard_view(self, pinboard_data):
-        if isinstance(pinboard_data,dict):
+        if isinstance(pinboard_data, dict):
             gtk.gdk.threads_enter()
             self.PinboardStore.clear()
             identifiers = sorted(pinboard_data.keys())
             for identifier in identifiers:
                 item = pinboard_data[identifier].copy()
                 item['pinboard_id'] = identifier
-                self.PinboardStore.append((item,item['ts'],))
+                self.PinboardStore.append((item, item['ts'],))
             gtk.gdk.threads_leave()
 
     def update_output_view(self, force = False, queue_id = None, n_bytes = 40000):
@@ -1434,48 +1434,48 @@ class RepositoryManagerMenu(MenuSkel):
         my.load(obj)
 
     def clear_data_view(self):
-        self.debug_print("clear_data_view","enter")
+        self.debug_print("clear_data_view", "enter")
         self.setup_data_view()
         ts_mode = self.DataView.get_selection().get_mode()
         if ts_mode != self.data_tree_selection_mode:
             self.DataView.get_selection().set_mode(self.data_tree_selection_mode)
-        self.debug_print("clear_data_view","ts_mode set")
+        self.debug_print("clear_data_view", "ts_mode set")
         self.DataView.set_rubber_banding(False)
-        self.debug_print("clear_data_view","rubber banding set")
-        self.debug_print("clear_data_view","exit")
+        self.debug_print("clear_data_view", "rubber banding set")
+        self.debug_print("clear_data_view", "exit")
 
     def collect_data_view_iters(self):
-        self.debug_print("collect_data_view_iters","enter")
+        self.debug_print("collect_data_view_iters", "enter")
         model, paths = self.DataView.get_selection().get_selected_rows()
         if not model:
-            self.debug_print("collect_data_view_iters","quit (nothing)")
+            self.debug_print("collect_data_view_iters", "quit (nothing)")
             return [], model
         data = []
         for path in paths:
             myiter = model.get_iter(path)
             data.append(myiter)
-        self.debug_print("collect_data_view_iters","quit")
+        self.debug_print("collect_data_view_iters", "quit")
         return data, model
 
     def wait_queue_id_to_complete(self, queue_id):
 
-        self.debug_print("wait_queue_id_to_complete","waiting for queue id %s" % (queue_id,))
+        self.debug_print("wait_queue_id_to_complete", "waiting for queue id %s" % (queue_id,))
 
         key = None
-        while key not in ("processed","errored",):
+        while key not in ("processed", "errored",):
             item, key = self.get_item_by_queue_id(queue_id)
             time.sleep(0.5)
 
         with self.BufferLock:
             try:
-                status, (result,extended_result,) = self.Service.Methods.get_queue_id_result(queue_id)
+                status, (result, extended_result,) = self.Service.Methods.get_queue_id_result(queue_id)
                 if not status:
                     return
             except Exception as e:
                 self.service_status_message(e)
                 return
 
-        self.debug_print("wait_queue_id_to_complete","done waiting for queue id %s" % (queue_id,))
+        self.debug_print("wait_queue_id_to_complete", "done waiting for queue id %s" % (queue_id,))
 
         item = item.copy()
 
@@ -1488,19 +1488,19 @@ class RepositoryManagerMenu(MenuSkel):
 
     def glsa_data_view(self, data):
 
-        self.debug_print("glsa_data_view","enter")
+        self.debug_print("glsa_data_view", "enter")
 
         self.clear_data_view()
-        self.debug_print("glsa_data_view","setting GFX")
+        self.debug_print("glsa_data_view", "setting GFX")
 
-        self.debug_print("glsa_data_view","all buttons hidden")
+        self.debug_print("glsa_data_view", "all buttons hidden")
         self.show_data_view_buttons_cat('glsa')
-        self.debug_print("glsa_data_view","all glsa buttons shown")
+        self.debug_print("glsa_data_view", "all glsa buttons shown")
         self.DataView.get_selection().set_mode(gtk.SELECTION_MULTIPLE)
         self.DataView.set_rubber_banding(True)
-        self.debug_print("glsa_data_view","done setting DataView rb")
+        self.debug_print("glsa_data_view", "done setting DataView rb")
 
-        self.debug_print("glsa_data_view","done setting GFX")
+        self.debug_print("glsa_data_view", "done setting GFX")
 
         def is_affected(obj):
             if obj['status'] == "[A]":
@@ -1514,10 +1514,10 @@ class RepositoryManagerMenu(MenuSkel):
             obj = model.get_value( myiter, 0 )
             if obj:
                 if property == "glsa_id":
-                    cell.set_property('markup',cleanMarkupString(obj['number']))
+                    cell.set_property('markup', cleanMarkupString(obj['number']))
                 elif property == "title":
-                    cell.set_property('markup',cleanMarkupString(obj['title']))
-                cell.set_property('cell-background',obj['color'])
+                    cell.set_property('markup', cleanMarkupString(obj['title']))
+                cell.set_property('cell-background', obj['color'])
 
         def my_data_pix( column, cell, model, myiter ):
             obj = model.get_value( myiter, 0 )
@@ -1527,7 +1527,7 @@ class RepositoryManagerMenu(MenuSkel):
                     cell.set_property( 'stock-id', 'gtk-cancel' )
                 else:
                     cell.set_property( 'stock-id', 'gtk-apply' )
-                cell.set_property('cell-background',obj['color'])
+                cell.set_property('cell-background', obj['color'])
 
         def package_info_clicked(widget):
             myiters, model = self.collect_data_view_iters()
@@ -1551,13 +1551,13 @@ class RepositoryManagerMenu(MenuSkel):
                 item = obj['number'], is_affected(obj), obj
                 my.load(item)
 
-        self.debug_print("glsa_data_view","done setting functions")
+        self.debug_print("glsa_data_view", "done setting functions")
         # Package information
-        h1 = self.DataViewButtons['glsa']['package_info_button'].connect('clicked',package_info_clicked)
+        h1 = self.DataViewButtons['glsa']['package_info_button'].connect('clicked', package_info_clicked)
         # GLSA information button
-        h2 = self.DataViewButtons['glsa']['adv_info_button'].connect('clicked',adv_info_button_clicked)
-        self.DataViewButtons['glsa']['handler_ids'].extend([h1,h2])
-        self.debug_print("glsa_data_view","done connecting buttons")
+        h2 = self.DataViewButtons['glsa']['adv_info_button'].connect('clicked', adv_info_button_clicked)
+        self.DataViewButtons['glsa']['handler_ids'].extend([h1, h2])
+        self.debug_print("glsa_data_view", "done connecting buttons")
 
         # selection pixmap
         cell = gtk.CellRendererPixbuf()
@@ -1566,19 +1566,19 @@ class RepositoryManagerMenu(MenuSkel):
         column.set_sizing( gtk.TREE_VIEW_COLUMN_FIXED )
         column.set_fixed_width( 80 )
         column.set_sort_column_id( -1 )
-        self.debug_print("glsa_data_view","appending status img to DataView")
+        self.debug_print("glsa_data_view", "appending status img to DataView")
         self.DataView.append_column( column )
 
-        self.debug_print("glsa_data_view","creating glsa column")
+        self.debug_print("glsa_data_view", "creating glsa column")
         # glsa id
         self.create_text_column( self.DataView, _( "GLSA Id." ), 'glsa_id', size = 80, cell_data_func = my_data_text)
-        self.debug_print("glsa_data_view","creating title column")
+        self.debug_print("glsa_data_view", "creating title column")
         # glsa title
         self.create_text_column( self.DataView, _( "Title" ), 'title', size = 300, cell_data_func = my_data_text, expand = True)
 
-        self.debug_print("glsa_data_view","done setting DataView columns")
+        self.debug_print("glsa_data_view", "done setting DataView columns")
 
-        colors = ["#CDEEFF","#AFCBDA"]
+        colors = ["#CDEEFF", "#AFCBDA"]
         counter = 0
         for myid in data:
             counter += 1
@@ -1586,21 +1586,21 @@ class RepositoryManagerMenu(MenuSkel):
             obj['color'] = colors[counter%len(colors)]
             self.DataStore.append( None, (obj,) )
 
-        self.debug_print("glsa_data_view","done adding to DataStore")
+        self.debug_print("glsa_data_view", "done adding to DataStore")
         self.set_notebook_page(self.notebook_pages['data'])
-        self.debug_print("glsa_data_view","done switching page")
+        self.debug_print("glsa_data_view", "done switching page")
         self.show_data_view()
-        self.debug_print("glsa_data_view","done unmasking widgets")
-        self.debug_print("glsa_data_view","exit")
+        self.debug_print("glsa_data_view", "done unmasking widgets")
+        self.debug_print("glsa_data_view", "exit")
         return False
 
     def retrieve_entropy_idpackage_data_and_show(self, idpackage, repoid):
 
         with self.BufferLock:
             try:
-                self.debug_print("retrieve_entropy_idpackage_data_and_show","called for: %s, %s" % (idpackage,repoid,))
+                self.debug_print("retrieve_entropy_idpackage_data_and_show", "called for: %s, %s" % (idpackage, repoid,))
                 status, package_data = self.Service.Methods.get_entropy_idpackage_information(idpackage, repoid)
-                self.debug_print("retrieve_entropy_idpackage_data_and_show","done for: %s, %s" % (idpackage,repoid,))
+                self.debug_print("retrieve_entropy_idpackage_data_and_show", "done for: %s, %s" % (idpackage, repoid,))
                 if not status: return
             except Exception as e:
                 self.service_status_message(e)
@@ -1608,7 +1608,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         if not package_data: return
         from sulfur.packages import EntropyPackage
-        pkg = EntropyPackage((idpackage,repoid,), remote = package_data)
+        pkg = EntropyPackage((idpackage, repoid,), remote = package_data)
         mymenu = PkgInfoMenu(self.Entropy, pkg, self.window)
         mymenu.load(remote = True)
 
@@ -1646,9 +1646,9 @@ class RepositoryManagerMenu(MenuSkel):
         data['atoms'] = atoms
         data['use'] = use
         if not atoms:
-            input_params.append(('atoms',_('Atoms, space separated'),fake_callback,False),)
+            input_params.append(('atoms', _('Atoms, space separated'), fake_callback, False),)
         if not use:
-            input_params.append(('use',_('USE flags, space separated'),fake_callback,False),)
+            input_params.append(('use', _('USE flags, space separated'), fake_callback, False),)
         if input_params:
             mydata = self.Entropy.inputBox(
                 _('Insert command parameters'),
@@ -1708,7 +1708,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         with self.BufferLock:
             try:
-                status, err_msg = self.Service.Methods.add_to_pinboard(note,extended_text)
+                status, err_msg = self.Service.Methods.add_to_pinboard(note, extended_text)
             except Exception as e:
                 self.service_status_message(e)
                 return
@@ -2075,8 +2075,8 @@ class RepositoryManagerMenu(MenuSkel):
             return True
 
         input_params = [
-            ('to_repo',('combo',(_('To repository'),avail_repos),),fake_callback_repos,False),
-            ('do_copy',('checkbox',_('Execute copy'),),fake_callback_cb,False),
+            ('to_repo', ('combo', (_('To repository'), avail_repos),), fake_callback_repos, False),
+            ('do_copy', ('checkbox', _('Execute copy'),), fake_callback_cb, False),
         ]
         data = self.Entropy.inputBox(
             _('Entropy packages move/copy'),
@@ -2227,8 +2227,8 @@ class RepositoryManagerMenu(MenuSkel):
                     _("Title"),
                     cleanMarkupString(obj['title']),
                 )
-                cell.set_property('markup',mytxt)
-                cell.set_property('cell-background',obj['color'])
+                cell.set_property('markup', mytxt)
+                cell.set_property('cell-background', obj['color'])
 
         def add_button_clicked(widget):
 
@@ -2236,9 +2236,9 @@ class RepositoryManagerMenu(MenuSkel):
                 return s
 
             input_params = [
-                ('title',_('Notice title'),fake_callback,False),
-                ('link',_('Link (URL)'),fake_callback,False),
-                ('notice_text',("text",_('Notice text'),),fake_callback,False),
+                ('title', _('Notice title'), fake_callback, False),
+                ('link', _('Link (URL)'), fake_callback, False),
+                ('notice_text', ("text", _('Notice text'),), fake_callback, False),
             ]
             data = self.Entropy.inputBox(
                 _('Insert your new notice board entry'),
@@ -2276,11 +2276,11 @@ class RepositoryManagerMenu(MenuSkel):
                 my = RmNoticeBoardMenu(self.window)
                 my.load(obj)
 
-        h1 = self.DataViewButtons['notice_board']['add_button'].connect('clicked',add_button_clicked)
-        h2 = self.DataViewButtons['notice_board']['remove_button'].connect('clicked',remove_button_clicked)
-        h3 = self.DataViewButtons['notice_board']['refresh_button'].connect('clicked',refresh_button_clicked)
-        h4 = self.DataViewButtons['notice_board']['view_button'].connect('clicked',view_button_clicked)
-        self.DataViewButtons['notice_board']['handler_ids'].extend([h1,h2,h3,h4])
+        h1 = self.DataViewButtons['notice_board']['add_button'].connect('clicked', add_button_clicked)
+        h2 = self.DataViewButtons['notice_board']['remove_button'].connect('clicked', remove_button_clicked)
+        h3 = self.DataViewButtons['notice_board']['refresh_button'].connect('clicked', refresh_button_clicked)
+        h4 = self.DataViewButtons['notice_board']['view_button'].connect('clicked', view_button_clicked)
+        self.DataViewButtons['notice_board']['handler_ids'].extend([h1, h2, h3, h4])
 
         self.create_text_column( self.DataView, _( "Notice board" ), 'nb', size = 300, cell_data_func = my_data_text, expand = True, set_height = 36)
         self.fill_notice_board_view(repo_data)
@@ -2289,7 +2289,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.show_data_view()
 
     def fill_notice_board_view(self, repo_data):
-        colors = ["#CDEEFF","#AFCBDA"]
+        colors = ["#CDEEFF", "#AFCBDA"]
         counter = 0
         items, lenght = repo_data
         keys = sorted(items.keys())
@@ -2313,11 +2313,11 @@ class RepositoryManagerMenu(MenuSkel):
             if obj:
                 if 'is_master' in obj:
                     if obj['from'] == "repoid":
-                        cell.set_property('markup',"<big><b>%s</b>: <i>%s</i></big>" % (_("Repository"),cleanMarkupString(obj['text']),))
+                        cell.set_property('markup', "<big><b>%s</b>: <i>%s</i></big>" % (_("Repository"), cleanMarkupString(obj['text']),))
                     elif obj['from'] == "pkg_master":
-                        cell.set_property('markup',"<b>%s</b>: <i>%s</i>" % (_("Action"),cleanMarkupString(obj['text']),))
+                        cell.set_property('markup', "<b>%s</b>: <i>%s</i>" % (_("Action"), cleanMarkupString(obj['text']),))
                     elif obj['from'] == "uri":
-                        cell.set_property('markup',"<b>%s</b>: <u>%s</u>" % (_("Server"),cleanMarkupString(obj['text']),))
+                        cell.set_property('markup', "<b>%s</b>: <u>%s</u>" % (_("Server"), cleanMarkupString(obj['text']),))
                     elif obj['from'] == "db":
                         yes = _("Yes")
                         no = _("No")
@@ -2325,7 +2325,7 @@ class RepositoryManagerMenu(MenuSkel):
                         if not obj['upload_queue']: up_action = no
                         down_action = yes
                         if not obj['download_latest']: down_action = no
-                        cell.set_property('markup',"<b>%s</b>: %s: %s, %s: %s, %s: %s, %s: %s" % (
+                        cell.set_property('markup', "<b>%s</b>: %s: %s, %s: %s, %s: %s, %s: %s" % (
                                 _("Database"),
                                 _("current revision"),
                                 obj['current_revision'],
@@ -2339,9 +2339,9 @@ class RepositoryManagerMenu(MenuSkel):
                         )
                 else:
                     if obj['from'] == "pkg":
-                        cell.set_property('markup',"%s [%s]" % (cleanMarkupString(obj['filename']),cleanMarkupString(obj['size']),))
+                        cell.set_property('markup', "%s [%s]" % (cleanMarkupString(obj['filename']), cleanMarkupString(obj['size']),))
 
-                cell.set_property('cell-background',obj['color'])
+                cell.set_property('cell-background', obj['color'])
 
         def execute_button_clicked(widget):
 
@@ -2349,7 +2349,7 @@ class RepositoryManagerMenu(MenuSkel):
                 return s
 
             input_params = [
-                ('exec_type',('combo',(_('Execution mode'),[_("Execute all"),_("Execute only selected")]),),fake_callback,False)
+                ('exec_type', ('combo', (_('Execution mode'), [_("Execute all"), _("Execute only selected")]),), fake_callback, False)
             ]
             mydata = self.Entropy.inputBox(
                 _('Choose the execution mode'),
@@ -2391,13 +2391,13 @@ class RepositoryManagerMenu(MenuSkel):
             for repoid in list(run_data.keys()):
 
                 input_params = [
-                    ('commit_msg',_("Commit message"),fake_callback,False,),
-                    ('do_pretend',('checkbox',_("Pretend mode"),),fake_callback_cb,False,),
-                    ('pkg_check',('checkbox',_("Packages check"),),fake_callback_cb,False,),
+                    ('commit_msg', _("Commit message"), fake_callback, False,),
+                    ('do_pretend', ('checkbox', _("Pretend mode"),), fake_callback_cb, False,),
+                    ('pkg_check', ('checkbox', _("Packages check"),), fake_callback_cb, False,),
                 ]
 
                 data = self.Entropy.inputBox(
-                    "[%s] %s" % (repoid,_('Choose sync options'),),
+                    "[%s] %s" % (repoid, _('Choose sync options'),),
                     input_params,
                     cancel_button = True
                 )
@@ -2414,7 +2414,7 @@ class RepositoryManagerMenu(MenuSkel):
                 t = ParallelTask(self.execute_entropy_mirror_updates, run_data)
                 t.start()
 
-        h1 = self.DataViewButtons['mirror_updates']['execute_button'].connect('clicked',execute_button_clicked)
+        h1 = self.DataViewButtons['mirror_updates']['execute_button'].connect('clicked', execute_button_clicked)
         self.DataViewButtons['mirror_updates']['handler_ids'].extend([h1])
 
         self.create_text_column( self.DataView, _( "Mirror updates information" ), 'info', size = 300, cell_data_func = my_data_text, expand = True)
@@ -2439,22 +2439,22 @@ class RepositoryManagerMenu(MenuSkel):
                         is_cat = True
                     if is_cat:
                         mytxt = "<big><b>%s</b></big>" % (obj['text'],)
-                        cell.set_property('markup',mytxt)
+                        cell.set_property('markup', mytxt)
                     elif obj['from'] == "add":
-                        self.spm_package_obj_to_cell(obj,cell)
+                        self.spm_package_obj_to_cell(obj, cell)
                     else:
                         self.entropy_package_obj_to_cell(obj, cell)
 
                 elif property == "repoid":
                     if 'repoid' in obj:
-                        cell.set_property('markup',"<small>%s</small>" % (cleanMarkupString(obj['repoid']),))
+                        cell.set_property('markup', "<small>%s</small>" % (cleanMarkupString(obj['repoid']),))
                     else:
-                        cell.set_property('markup','')
+                        cell.set_property('markup', '')
 
                 elif property == "toggle":
                     cell.set_active(obj['select'])
 
-                cell.set_property('cell-background',obj['color'])
+                cell.set_property('cell-background', obj['color'])
 
         def package_info_clicked(widget):
             myiters, model = self.collect_data_view_iters()
@@ -2476,7 +2476,7 @@ class RepositoryManagerMenu(MenuSkel):
                 return s
 
             input_params = [
-                ('repoid',('combo',(_('Repository'),avail_repos),),fake_callback,False)
+                ('repoid', ('combo', (_('Repository'), avail_repos),), fake_callback, False)
             ]
 
             objects = []
@@ -2505,7 +2505,7 @@ class RepositoryManagerMenu(MenuSkel):
                 return s
 
             input_params = [
-                ('exec_type',('combo',(_('Execution mode'),[_("Execute all"),_("Execute only selected")]),),fake_callback,False)
+                ('exec_type', ('combo', (_('Execution mode'), [_("Execute all"), _("Execute only selected")]),), fake_callback, False)
             ]
             mydata = self.Entropy.inputBox(
                 _('Choose the execution mode'),
@@ -2543,10 +2543,10 @@ class RepositoryManagerMenu(MenuSkel):
                 self.run_entropy_database_updates(to_add, to_remove, to_inject, reload_func)
 
 
-        h1 = self.DataViewButtons['database_updates']['change_repo_button'].connect('clicked',change_repo_clicked)
-        h2 = self.DataViewButtons['database_updates']['package_info_button'].connect('clicked',package_info_clicked)
-        h3 = self.DataViewButtons['database_updates']['execute_button'].connect('clicked',execute_button_clicked)
-        self.DataViewButtons['database_updates']['handler_ids'].extend([h1,h2,h3])
+        h1 = self.DataViewButtons['database_updates']['change_repo_button'].connect('clicked', change_repo_clicked)
+        h2 = self.DataViewButtons['database_updates']['package_info_button'].connect('clicked', package_info_clicked)
+        h3 = self.DataViewButtons['database_updates']['execute_button'].connect('clicked', execute_button_clicked)
+        self.DataViewButtons['database_updates']['handler_ids'].extend([h1, h2, h3])
 
         cell_height = 80
 
@@ -2621,7 +2621,7 @@ class RepositoryManagerMenu(MenuSkel):
                 inject_cats_data[cat] = []
             inject_cats_data[cat].append(item)
 
-        colors = ["#CDEEFF","#AFCBDA"]
+        colors = ["#CDEEFF", "#AFCBDA"]
         cat_counter = 0
         counter = 0
         add_cat_keys = sorted(add_cats_data.keys())
@@ -2706,7 +2706,7 @@ class RepositoryManagerMenu(MenuSkel):
                 'from': "repoid",
                 'color': color,
                 'repoid': repoid,
-                'run': (repoid,True,True,) # repoid, dbsync, pkgsync
+                'run': (repoid, True, True,) # repoid, dbsync, pkgsync
             }
             parent = self.DataStore.append( None, (master,))
 
@@ -2722,7 +2722,7 @@ class RepositoryManagerMenu(MenuSkel):
                     'from': "uri",
                     'color': color,
                     'repoid': repoid,
-                    'run': (repoid,True,True,) # repoid, dbsync, pkgsync
+                    'run': (repoid, True, True,) # repoid, dbsync, pkgsync
                 }
                 uri_parent = self.DataStore.append( parent, (uri_master,))
 
@@ -2735,7 +2735,7 @@ class RepositoryManagerMenu(MenuSkel):
                 db_item['from'] = "db"
                 db_item['is_master'] = True
                 db_item['repoid'] = repoid
-                db_item['run'] = (repoid,True,True,) # repoid, dbsync, pkgsync
+                db_item['run'] = (repoid, True, True,) # repoid, dbsync, pkgsync
 
                 self.DataStore.append( uri_parent, (db_item,))
                 if 'packages' in data[repoid][uri]:
@@ -2749,7 +2749,7 @@ class RepositoryManagerMenu(MenuSkel):
                                 'from': "pkg_master",
                                 'color': color,
                                 'repoid': repoid,
-                                'run': (repoid,False,True,)
+                                'run': (repoid, False, True,)
                             }
                             pkg_parent = self.DataStore.append( uri_parent, (pkgmaster,))
 
@@ -2760,7 +2760,7 @@ class RepositoryManagerMenu(MenuSkel):
                                 'size': entropyTools.bytes_into_human(mysize),
                                 'color': color,
                                 'repoid': repoid,
-                                'run': (repoid,False,True,)
+                                'run': (repoid, False, True,)
                             }
                             self.DataStore.append( pkg_parent, (pkg_item,))
 
@@ -2769,7 +2769,7 @@ class RepositoryManagerMenu(MenuSkel):
 
     def entropy_available_packages_data_view(self, packages_data, repoid, reload_func = None):
 
-        if not isinstance(packages_data,dict):
+        if not isinstance(packages_data, dict):
             return
 
         if reload_func == None:
@@ -2790,12 +2790,12 @@ class RepositoryManagerMenu(MenuSkel):
                         is_cat = True
                     if is_cat:
                         mytxt = "<big><b>%s</b></big>" % (obj['name'],)
-                        cell.set_property('markup',mytxt)
+                        cell.set_property('markup', mytxt)
                     else:
                         self.entropy_package_obj_to_cell(obj, cell)
                 elif property == "repoid":
-                    cell.set_property('markup',"<small>%s</small>" % (cleanMarkupString(obj['repoid']),))
-                cell.set_property('cell-background',obj['color'])
+                    cell.set_property('markup', "<small>%s</small>" % (cleanMarkupString(obj['repoid']),))
+                cell.set_property('cell-background', obj['color'])
 
         def package_info_clicked(widget):
             myiters, model = self.collect_data_view_iters()
@@ -2812,7 +2812,7 @@ class RepositoryManagerMenu(MenuSkel):
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
                 if 'is_cat' in obj: continue
-                items.append((obj['idpackage'],obj['repoid'],))
+                items.append((obj['idpackage'], obj['repoid'],))
             if items:
                 self.remove_entropy_packages(items, reload_func = reload_func)
 
@@ -2823,15 +2823,15 @@ class RepositoryManagerMenu(MenuSkel):
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
                 if 'is_cat' in obj: continue
-                items.append((obj['idpackage'],obj['repoid'],))
+                items.append((obj['idpackage'], obj['repoid'],))
             if items:
                 self.move_entropy_packages(items, reload_func)
 
 
-        h1 = self.DataViewButtons['available_packages']['package_info_button'].connect('clicked',package_info_clicked)
-        h2 = self.DataViewButtons['available_packages']['remove_package_button'].connect('clicked',remove_package_button_clicked)
-        h3 = self.DataViewButtons['available_packages']['move_package_button'].connect('clicked',move_package_button_clicked)
-        self.DataViewButtons['available_packages']['handler_ids'].extend([h1,h2,h3])
+        h1 = self.DataViewButtons['available_packages']['package_info_button'].connect('clicked', package_info_clicked)
+        h2 = self.DataViewButtons['available_packages']['remove_package_button'].connect('clicked', remove_package_button_clicked)
+        h3 = self.DataViewButtons['available_packages']['move_package_button'].connect('clicked', move_package_button_clicked)
+        self.DataViewButtons['available_packages']['handler_ids'].extend([h1, h2, h3])
 
         # glsa id
         self.create_text_column( self.DataView, _( "Package" ), 'package', size = 300, set_height = 60, cell_data_func = my_data_text, expand = True)
@@ -2848,7 +2848,7 @@ class RepositoryManagerMenu(MenuSkel):
                 cats_data[mycat] = []
             cats_data[mycat].append(item)
 
-        colors = ["#CDEEFF","#AFCBDA"]
+        colors = ["#CDEEFF", "#AFCBDA"]
         counter = 0
         cat_keys = sorted(cats_data.keys())
 
@@ -2889,10 +2889,10 @@ class RepositoryManagerMenu(MenuSkel):
             if obj:
                 if 'is_cat' in obj:
                     txt = "<big><b>%s</b></big>" % (obj['name'],)
-                    cell.set_property('markup',txt)
+                    cell.set_property('markup', txt)
                 else:
                     self.spm_package_obj_to_cell(obj, cell)
-                cell.set_property('cell-background',obj['color'])
+                cell.set_property('cell-background', obj['color'])
 
         def compile_button_clicked(widget):
             myiters, model = self.collect_data_view_iters()
@@ -2908,7 +2908,7 @@ class RepositoryManagerMenu(MenuSkel):
                         atom = obj['atom']
                     atoms.append("="+atom)
             if atoms:
-                self.on_compileAtom_clicked(None,atoms)
+                self.on_compileAtom_clicked(None, atoms)
 
         def add_use_button_clicked(widget):
             myiters, model = self.collect_data_view_iters()
@@ -2916,7 +2916,7 @@ class RepositoryManagerMenu(MenuSkel):
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
                 if 'key' in obj and 'slot' in obj:
-                    atom_string = "%s:%s" % (obj['key'],obj['slot'],)
+                    atom_string = "%s:%s" % (obj['key'], obj['slot'],)
                     atoms.append(atom_string)
             if atoms:
                 status = self.on_addUseAtom_clicked(None, atoms = atoms, load_view = False, parallel = False)
@@ -2929,22 +2929,22 @@ class RepositoryManagerMenu(MenuSkel):
             for myiter in myiters:
                 obj = model.get_value(myiter, 0)
                 if 'key' in obj and 'slot' in obj:
-                    atom_string = "%s:%s" % (obj['key'],obj['slot'],)
+                    atom_string = "%s:%s" % (obj['key'], obj['slot'],)
                     atoms.append(atom_string)
             if atoms:
                 status = self.on_removeUseAtom_clicked(None, atoms = atoms, load_view = False, parallel = False)
                 if status:
                     gobject.idle_add(reload_function)
 
-        h1 = self.DataViewButtons['categories_updates']['compile_button'].connect('clicked',compile_button_clicked)
-        h2 = self.DataViewButtons['categories_updates']['add_use_button'].connect('clicked',add_use_button_clicked)
-        h3 = self.DataViewButtons['categories_updates']['remove_use_button'].connect('clicked',remove_use_button_clicked)
-        self.DataViewButtons['categories_updates']['handler_ids'].extend([h1,h2,h3])
+        h1 = self.DataViewButtons['categories_updates']['compile_button'].connect('clicked', compile_button_clicked)
+        h2 = self.DataViewButtons['categories_updates']['add_use_button'].connect('clicked', add_use_button_clicked)
+        h3 = self.DataViewButtons['categories_updates']['remove_use_button'].connect('clicked', remove_use_button_clicked)
+        self.DataViewButtons['categories_updates']['handler_ids'].extend([h1, h2, h3])
 
         # atom
         self.create_text_column( self.DataView, _( "Atom" ), 'atom', size = 220, cell_data_func = my_data_text, set_height = 150, expand = True)
 
-        colors = ["#D2FFB9","#B0D69B"]
+        colors = ["#D2FFB9", "#B0D69B"]
 
         counter = 0
         for category in data:
@@ -2979,11 +2979,11 @@ class RepositoryManagerMenu(MenuSkel):
                 def task():
                     with self.BufferLock:
                         try:
-                            status, msg = self.Service.Methods.swap_items_in_queue(item1['queue_id'],item2['queue_id'])
-                            self.debug_print("on_repoManagerQueueDown_clicked","%s, %s" % (status,msg,))
-                            self.debug_print("on_repoManagerQueueDown_clicked","%s, %s" % (item1,item2,))
+                            status, msg = self.Service.Methods.swap_items_in_queue(item1['queue_id'], item2['queue_id'])
+                            self.debug_print("on_repoManagerQueueDown_clicked", "%s, %s" % (status, msg,))
+                            self.debug_print("on_repoManagerQueueDown_clicked", "%s, %s" % (item1, item2,))
                             if status:
-                                self.QueueStore.swap(iterator,next_iterator)
+                                self.QueueStore.swap(iterator, next_iterator)
                         except Exception as e:
                             self.service_status_message(e)
                             return
@@ -3008,11 +3008,11 @@ class RepositoryManagerMenu(MenuSkel):
                 def task():
                     with self.BufferLock:
                         try:
-                            status, msg = self.Service.Methods.swap_items_in_queue(item1['queue_id'],item2['queue_id'])
-                            self.debug_print("on_repoManagerQueueUp_clicked","%s, %s" % (status,msg,))
-                            self.debug_print("on_repoManagerQueueUp_clicked","%s, %s" % (item1,item2,))
+                            status, msg = self.Service.Methods.swap_items_in_queue(item1['queue_id'], item2['queue_id'])
+                            self.debug_print("on_repoManagerQueueUp_clicked", "%s, %s" % (status, msg,))
+                            self.debug_print("on_repoManagerQueueUp_clicked", "%s, %s" % (item1, item2,))
                             if status:
-                                self.QueueStore.swap(iterator,next_iterator)
+                                self.QueueStore.swap(iterator, next_iterator)
                         except Exception as e:
                             self.service_status_message(e)
                             return
@@ -3028,7 +3028,7 @@ class RepositoryManagerMenu(MenuSkel):
         input_params = []
         if not categories:
             input_params += [
-                ('categories',_('Categories, space separated'),fake_callback,False),
+                ('categories', _('Categories, space separated'), fake_callback, False),
             ]
         data = {}
         data['categories'] = categories
@@ -3061,7 +3061,7 @@ class RepositoryManagerMenu(MenuSkel):
         input_params = []
         if not world:
             input_params += [
-                ('categories',_('Categories, space separated'),fake_callback_true,False),
+                ('categories', _('Categories, space separated'), fake_callback_true, False),
             ]
         data = {}
         data['categories'] = categories
@@ -3115,7 +3115,7 @@ class RepositoryManagerMenu(MenuSkel):
             try:
                 cmd_data['call'](*evalued_params)
             except Exception as e:
-                okDialog(self.window, "%s: %s" % (_("Error executing call"),e,), title = _("Custom command Error"))
+                okDialog(self.window, "%s: %s" % (_("Error executing call"), e,), title = _("Custom command Error"))
 
     def on_repoManagerPauseQueueButton_toggled(self, widget):
         with self.BufferLock:
@@ -3136,7 +3136,7 @@ class RepositoryManagerMenu(MenuSkel):
 
     def on_repoManagerOutputPauseButton_toggled(self, widget):
         if not self.output_pause:
-            if isinstance(self.is_processing,dict):
+            if isinstance(self.is_processing, dict):
                 try:
                     self.paused_queue_id = self.is_processing['queue_id']
                 except:
@@ -3160,7 +3160,7 @@ class RepositoryManagerMenu(MenuSkel):
         clear_ids = set()
         for item in self.QueueStore:
             obj = item[0]
-            if obj['from'] not in ("processed","errored"):
+            if obj['from'] not in ("processed", "errored"):
                 continue
             clear_ids.add(obj['queue_id'])
         if clear_ids: self.run_remove_queue_ids(clear_ids)
@@ -3190,11 +3190,11 @@ class RepositoryManagerMenu(MenuSkel):
         data['verbose'] = verbose
         data['nocolor'] = nocolor
         if not atoms:
-            input_params.append(('atoms',_('Atoms, space separated'),fake_callback,False),)
+            input_params.append(('atoms', _('Atoms, space separated'), fake_callback, False),)
         input_params += [
-            ('pretend',('checkbox',_('Pretend'),),fake_bool_cb,pretend,),
-            ('verbose',('checkbox',_('Verbose'),),fake_bool_cb,verbose,),
-            ('nocolor',('checkbox',_('No color'),),fake_bool_cb,nocolor,),
+            ('pretend', ('checkbox', _('Pretend'),), fake_bool_cb, pretend,),
+            ('verbose', ('checkbox', _('Verbose'),), fake_bool_cb, verbose,),
+            ('nocolor', ('checkbox', _('No color'),), fake_bool_cb, nocolor,),
         ]
         mydata = self.Entropy.inputBox(
             _('Insert packages removal parameters'),
@@ -3233,18 +3233,18 @@ class RepositoryManagerMenu(MenuSkel):
         data['ldflags'] = ldflags
         data['cflags'] = cflags
         if not atoms:
-            input_params.append(('atoms',_('Atoms, space separated'),fake_callback,False),)
+            input_params.append(('atoms', _('Atoms, space separated'), fake_callback, False),)
         input_params += [
-            ('pretend',('checkbox',_('Pretend'),),fake_bool_cb,pretend,),
-            ('oneshot',('checkbox',_('Oneshot'),),fake_bool_cb,oneshot,),
-            ('verbose',('checkbox',_('Verbose'),),fake_bool_cb,verbose,),
-            ('nocolor',('checkbox',_('No color'),),fake_bool_cb,nocolor,),
-            ('fetchonly',('checkbox',_('Fetch only'),),fake_bool_cb,fetchonly,),
-            ('buildonly',('checkbox',_('Build only'),),fake_bool_cb,buildonly,),
-            ('nodeps',('checkbox',_('No dependencies'),),fake_bool_cb,nodeps,),
-            ('custom_use',_('Custom USE flags'),fake_true_callback,False),
-            ('ldflags',_('Custom LDFLAGS'),fake_true_callback,False),
-            ('cflags',_('Custom CFLAGS'),fake_true_callback,False),
+            ('pretend', ('checkbox', _('Pretend'),), fake_bool_cb, pretend,),
+            ('oneshot', ('checkbox', _('Oneshot'),), fake_bool_cb, oneshot,),
+            ('verbose', ('checkbox', _('Verbose'),), fake_bool_cb, verbose,),
+            ('nocolor', ('checkbox', _('No color'),), fake_bool_cb, nocolor,),
+            ('fetchonly', ('checkbox', _('Fetch only'),), fake_bool_cb, fetchonly,),
+            ('buildonly', ('checkbox', _('Build only'),), fake_bool_cb, buildonly,),
+            ('nodeps', ('checkbox', _('No dependencies'),), fake_bool_cb, nodeps,),
+            ('custom_use', _('Custom USE flags'), fake_true_callback, False),
+            ('ldflags', _('Custom LDFLAGS'), fake_true_callback, False),
+            ('cflags', _('Custom CFLAGS'), fake_true_callback, False),
         ]
         mydata = self.Entropy.inputBox(
             _('Insert compilation parameters'),
@@ -3297,7 +3297,7 @@ class RepositoryManagerMenu(MenuSkel):
         data = {}
         data['atoms'] = atoms
         if not atoms:
-            input_params.append(('atoms',_('Atoms, space separated'),fake_callback,False),)
+            input_params.append(('atoms', _('Atoms, space separated'), fake_callback, False),)
         if input_params:
             mydata = self.Entropy.inputBox(
                 _('Insert Package Information parameters'),
@@ -3345,10 +3345,10 @@ class RepositoryManagerMenu(MenuSkel):
         if not queue_id: return
 
         input_params = [
-            ('full',("checkbox",_('Full output'),),fake_callback_cb,False),
+            ('full', ("checkbox", _('Full output'),), fake_callback_cb, False),
         ]
         if myfrom == "processing":
-            input_params.append(('autorefresh', ("checkbox",_('Auto refresh'),),fake_callback_cb,True))
+            input_params.append(('autorefresh', ("checkbox", _('Auto refresh'),), fake_callback_cb, True))
         data = self.Entropy.inputBox(
             _('Insert output parameters'),
             input_params,
@@ -3377,8 +3377,8 @@ class RepositoryManagerMenu(MenuSkel):
             return s
 
         input_params = [
-            ('note',_('Note'),fake_callback,False),
-            ('extended_text',("text",_('Extended note'),),fake_callback,False),
+            ('note', _('Note'), fake_callback, False),
+            ('extended_text', ("text", _('Extended note'),), fake_callback, False),
         ]
         data = self.Entropy.inputBox(
             _('Insert your new pinboard item'),
@@ -3455,7 +3455,7 @@ class RepositoryManagerMenu(MenuSkel):
             return s
 
         input_params = [
-            ('list_type',('combo',(_('List type'),['affected', 'new', 'all']),),fake_callback,False),
+            ('list_type', ('combo', (_('List type'), ['affected', 'new', 'all']),), fake_callback, False),
         ]
         data = self.Entropy.inputBox(
             _('Choose what kind of list you want to see'),
@@ -3526,7 +3526,7 @@ class RepositoryManagerMenu(MenuSkel):
         if not avail_repos: return
         input_params = []
         if not repoid:
-            input_params.append(('repoid',('combo',(_('Repository'),avail_repos),),fake_callback,False))
+            input_params.append(('repoid', ('combo', (_('Repository'), avail_repos),), fake_callback, False))
 
         if input_params:
             mydata = self.Entropy.inputBox(
@@ -3578,12 +3578,12 @@ class RepositoryManagerMenu(MenuSkel):
             6: 'eclass',
         }
         search_types = [
-            _("Atom"), _("Needed Libraries") , _("Reverse dependencies"), _("Tag"), _("File"), _("Description"), _("Eclass")
+            _("Atom"), _("Needed Libraries"), _("Reverse dependencies"), _("Tag"), _("File"), _("Description"), _("Eclass")
         ]
         input_params = [
-            ('repoid',('combo',(_('Repository'),avail_repos),),fake_callback,False),
-            ('search_type',('combo',(_('Search type'),search_types),),fake_callback,False),
-            ('search_string',_('Search string'),fake_callback,False)
+            ('repoid', ('combo', (_('Repository'), avail_repos),), fake_callback, False),
+            ('search_type', ('combo', (_('Search type'), search_types),), fake_callback, False),
+            ('search_string', _('Search string'), fake_callback, False)
         ]
         data = self.Entropy.inputBox(
             _('Entropy Search'),
@@ -3615,7 +3615,7 @@ class RepositoryManagerMenu(MenuSkel):
             return True
 
         input_params = [
-            ('repoid',('combo',(_('Repository'),avail_repos),),fake_callback_cb,False),
+            ('repoid', ('combo', (_('Repository'), avail_repos),), fake_callback_cb, False),
         ]
 
         data = self.Entropy.inputBox(
@@ -3638,7 +3638,7 @@ class RepositoryManagerMenu(MenuSkel):
 
         input_params = []
         for repo in avail_repos:
-            input_params.append((repo,('checkbox',"%s: %s" % (_('Repository'),repo,),),fake_callback_cb,False))
+            input_params.append((repo, ('checkbox', "%s: %s" % (_('Repository'), repo,),), fake_callback_cb, False))
 
         data = self.Entropy.inputBox(
             _('Choose the repositories you want to scan'),
@@ -3664,8 +3664,8 @@ class RepositoryManagerMenu(MenuSkel):
             return s
 
         input_params = [
-            ('repoid',('combo',(_('Repository'),avail_repos),),fake_callback,False),
-            ('mode',('combo',(_('Choose mode'),[_("Server check"),_("Mirrors check")]),),fake_callback,False),
+            ('repoid', ('combo', (_('Repository'), avail_repos),), fake_callback, False),
+            ('mode', ('combo', (_('Choose mode'), [_("Server check"), _("Mirrors check")]),), fake_callback, False),
         ]
         data = self.Entropy.inputBox(
             _('Choose what kind of test you would like to run'),
@@ -3704,7 +3704,7 @@ class RepositoryManagerMenu(MenuSkel):
         input_params = []
         if not repoid:
             input_params += [
-                ('repoid',('combo',(_('Repository'),avail_repos),),fake_callback,False),
+                ('repoid', ('combo', (_('Repository'), avail_repos),), fake_callback, False),
             ]
         if input_params:
             data = self.Entropy.inputBox(
@@ -3786,8 +3786,8 @@ class RmNoticeBoardMenu(MenuSkel):
 
     def load_url(self, widget, url, extra):
         import subprocess
-        f = open("/dev/null","w")
-        subprocess.call(['xdg-open',url], stdout = f, stderr = f)
+        f = open("/dev/null", "w")
+        subprocess.call(['xdg-open', url], stdout = f, stderr = f)
         f.close()
 
     def on_rmNoticeBoardCloseButton_clicked(self, widget):
@@ -3825,12 +3825,12 @@ class RmNoticeBoardMenu(MenuSkel):
         ]
         for xitem in bold_items:
             t = xitem.get_text()
-            xitem.set_markup("<span foreground='%s'><small><b>%s</b></small></span>" % (SulfurConf.color_title,t,))
+            xitem.set_markup("<span foreground='%s'><small><b>%s</b></small></span>" % (SulfurConf.color_title, t,))
         for xitem in small_items:
             t = xitem.get_text()
-            xitem.set_markup("<span foreground='%s'><small>%s</small></span>" % (SulfurConf.color_pkgsubtitle,t,))
+            xitem.set_markup("<span foreground='%s'><small>%s</small></span>" % (SulfurConf.color_pkgsubtitle, t,))
         t = self.rm_ui.rmNoticeBoardTextLabel.get_text()
-        self.rm_ui.rmNoticeBoardTextLabel.set_markup("<span foreground='%s'><small>%s</small></span>" % (SulfurConf.color_subdesc,t,))
+        self.rm_ui.rmNoticeBoardTextLabel.set_markup("<span foreground='%s'><small>%s</small></span>" % (SulfurConf.color_subdesc, t,))
         self.rm_ui.rmNoticeBoardInfo.show_all()
         self.item = item
 
@@ -3861,7 +3861,7 @@ class SmQueueMenu(MenuSkel):
             args = ' '.join([x for x in item['args']])
         self.sm_ui.smCommandArgsL.set_text(args)
         self.sm_ui.smCallL.set_text(item['call'])
-        self.sm_ui.smUserGroupL.set_text("%s / %s " % (item.get('user_id'),item.get('group_id'),))
+        self.sm_ui.smUserGroupL.set_text("%s / %s " % (item.get('user_id'), item.get('group_id'),))
         self.sm_ui.smQueuedAtL.set_text(item['queue_ts'])
         self.sm_ui.smProcessingAtL.set_text(item.get('processing_ts'))
         self.sm_ui.smCompletedAtL.set_text(item.get('completed_ts'))
@@ -3954,20 +3954,20 @@ class PkgInfoMenu(MenuSkel):
 
     def ugc_pixbuf( self, column, cell, model, myiter ):
         obj = model.get_value( myiter, 0 )
-        if isinstance(obj,dict):
+        if isinstance(obj, dict):
             if 'preview_path' in obj:
-                self.set_pixbuf_to_cell(cell,obj['preview_path'])
+                self.set_pixbuf_to_cell(cell, obj['preview_path'])
             else:
-                self.set_pixbuf_to_cell(cell,obj['image_path'])
+                self.set_pixbuf_to_cell(cell, obj['image_path'])
             self.set_colors_to_cell(cell, obj)
 
     def ugc_content( self, column, cell, model, myiter ):
         obj = model.get_value( myiter, 0 )
-        if isinstance(obj,dict):
-            self.set_colors_to_cell(cell,obj)
+        if isinstance(obj, dict):
+            self.set_colors_to_cell(cell, obj)
 
             if 'is_cat' in obj:
-                cell.set_property('markup',"<b>%s</b>\n<small>%s</small>" % (obj['parent_desc'],_("Expand to browse"),))
+                cell.set_property('markup', "<b>%s</b>\n<small>%s</small>" % (obj['parent_desc'], _("Expand to browse"),))
             else:
                 title = _("N/A")
                 if obj['title']:
@@ -3997,21 +3997,21 @@ class PkgInfoMenu(MenuSkel):
                     _("Keywords"),
                     ', '.join(obj['keywords']),
                 )
-                cell.set_property('markup',mytxt)
+                cell.set_property('markup', mytxt)
 
     def set_colors_to_cell(self, cell, obj):
         odd = 0
         if 'counter' in obj:
             odd = obj['counter']%2
         if 'background' in obj:
-            cell.set_property('cell-background',obj['background'][odd])
+            cell.set_property('cell-background', obj['background'][odd])
         else:
-            cell.set_property('cell-background',None)
+            cell.set_property('cell-background', None)
         try:
             if 'foreground' in obj:
-                cell.set_property('foreground',obj['foreground'])
+                cell.set_property('foreground', obj['foreground'])
             else:
-                cell.set_property('foreground',None)
+                cell.set_property('foreground', None)
         except TypeError:
             pass
 
@@ -4026,7 +4026,7 @@ class PkgInfoMenu(MenuSkel):
     def on_showContentButton_clicked( self, widget ):
         content = self.pkg.contentExt
         for x in content:
-            self.contentModel.append(None,[x[0],x[1]])
+            self.contentModel.append(None, [x[0], x[1]])
 
     def disconnect_event_signals(self):
         # disconnect signals
@@ -4055,7 +4055,7 @@ class PkgInfoMenu(MenuSkel):
         model, myiter = self.ugcView.get_selection().get_selected()
         if myiter == None: return
         obj = model.get_value( myiter, 0 )
-        if not isinstance(obj,dict): return
+        if not isinstance(obj, dict): return
         if 'is_cat' in obj: return
         self.show_loading()
         self.Entropy.UGC.remove_document_autosense(self.repository, int(obj['iddoc']), obj['iddoctype'])
@@ -4073,7 +4073,7 @@ class PkgInfoMenu(MenuSkel):
         model, myiter = self.ugcView.get_selection().get_selected()
         if myiter == None: return
         obj = model.get_value( myiter, 0 )
-        if not isinstance(obj,dict): return
+        if not isinstance(obj, dict): return
         if 'is_cat' in obj: return
         my = UGCInfoMenu(self.Entropy, obj, self.repository, self.pkginfo_ui.pkgInfo)
         my.load()
@@ -4178,7 +4178,7 @@ class PkgInfoMenu(MenuSkel):
                 if store_path == None:
                     self.Entropy.UGC.UGCCache.store_document(mydoc['iddoc'], self.repository, mydoc['store_url'])
                     store_path = self.Entropy.UGC.UGCCache.get_stored_document(mydoc['iddoc'], self.repository, mydoc['store_url'])
-                if (store_path != None) and os.access(store_path,os.R_OK):
+                if (store_path != None) and os.access(store_path, os.R_OK):
                     try:
                         preview_path = store_path+".preview"
                         if not os.path.isfile(preview_path) and (os.stat(store_path)[6] < 1024000):
@@ -4186,10 +4186,10 @@ class PkgInfoMenu(MenuSkel):
                             img = gtk.Image()
                             img.set_from_file(store_path)
                             img_buf = img.get_pixbuf()
-                            w, h = img_buf.get_width(),img_buf.get_height()
+                            w, h = img_buf.get_width(), img_buf.get_height()
                             new_w = 64.0
                             new_h = new_w*h/w
-                            img_buf = img_buf.scale_simple(int(new_w),int(new_h),gtk.gdk.INTERP_BILINEAR)
+                            img_buf = img_buf.scale_simple(int(new_w), int(new_h), gtk.gdk.INTERP_BILINEAR)
                             img_buf.save(preview_path, "png")
                             del img, img_buf
                         if os.path.isfile(preview_path):
@@ -4211,18 +4211,18 @@ class PkgInfoMenu(MenuSkel):
             5: const.ugc_video_pix,
         }
         doc_type_background_map = {
-            1:('#67AB6F','#599360'),
-            2:('#67AB6F','#599360'),
-            3:('#AB8158','#CA9968'),
-            4:('#BBD5B0','#99AE90'),
-            5:('#A5C0D5','#8EA5B7'),
+            1: ('#67AB6F', '#599360'),
+            2: ('#67AB6F', '#599360'),
+            3: ('#AB8158', '#CA9968'),
+            4: ('#BBD5B0', '#99AE90'),
+            5: ('#A5C0D5', '#8EA5B7'),
         }
         doc_type_foreground_map = {
-            1:'#FFFFFF',
-            2:'#FFFFFF',
-            3:'#FFFFFF',
-            4:'#FFFFFF',
-            5:'#FFFFFF',
+            1: '#FFFFFF',
+            2: '#FFFFFF',
+            3: '#FFFFFF',
+            4: '#FFFFFF',
+            5: '#FFFFFF',
         }
         counter = 1
         for doc_type in doc_types:
@@ -4231,7 +4231,7 @@ class PkgInfoMenu(MenuSkel):
             cat_dict = {
                 'is_cat': True,
                 'image_path': image_path,
-                'parent_desc': "%s (%s)" % (etpConst['ugc_doctypes_description'].get(int(doc_type)),len(self.ugc_data[doc_type]),),
+                'parent_desc': "%s (%s)" % (etpConst['ugc_doctypes_description'].get(int(doc_type)), len(self.ugc_data[doc_type]),),
                 'foreground': doc_type_foreground_map.get(int(doc_type)),
                 'background': doc_type_background_map.get(int(doc_type)),
             }
@@ -4258,8 +4258,8 @@ class PkgInfoMenu(MenuSkel):
         #search_col = 0
         #self.view.set_search_column( search_col )
         #self.view.set_search_equal_func(self.atom_search)
-        self.ugcView.set_property('headers-visible',True)
-        self.ugcView.set_property('enable-search',True)
+        self.ugcView.set_property('headers-visible', True)
+        self.ugcView.set_property('enable-search', True)
         self.ugcView.show_all()
 
     def on_infoBook_switch_page(self, widget, page, page_num):
@@ -4275,7 +4275,7 @@ class PkgInfoMenu(MenuSkel):
             return
         mybuffer = gtk.TextBuffer()
         mybuffer.set_text(self.changelog)
-        xml_clread = gtk.glade.XML( const.GLADE_FILE, 'textReadWindow',domain="entropy" )
+        xml_clread = gtk.glade.XML( const.GLADE_FILE, 'textReadWindow', domain="entropy" )
         read_dialog = xml_clread.get_widget( "textReadWindow" )
         okReadButton = xml_clread.get_widget( "okReadButton" )
         self.changelog_read_dialog = read_dialog
@@ -4336,9 +4336,9 @@ class PkgInfoMenu(MenuSkel):
         status, err_msg = self.Entropy.UGC.add_vote(self.repository, self.pkgkey, vote)
         if status:
             self.set_stars_from_repository()
-            msg = "<small><span foreground='%s'>%s</span>: %s</small>" % (SulfurConf.color_good,_("Vote registered successfully"),vote,)
+            msg = "<small><span foreground='%s'>%s</span>: %s</small>" % (SulfurConf.color_good, _("Vote registered successfully"), vote,)
         else:
-            msg = "<small><span foreground='%s'>%s</span>: %s</small>" % (SulfurConf.color_error,_("Error registering vote"),err_msg,)
+            msg = "<small><span foreground='%s'>%s</span>: %s</small>" % (SulfurConf.color_error, _("Error registering vote"), err_msg,)
 
         self.pkginfo_ui.ugcMessageBox.set_markup(msg)
 
@@ -4468,8 +4468,8 @@ class PkgInfoMenu(MenuSkel):
         self.ugcView.append_column( column )
         self.ugcView.set_model( self.ugcModel )
 
-        self.ugcView.set_property('headers-visible',True)
-        self.ugcView.set_property('enable-search',True)
+        self.ugcView.set_property('headers-visible', True)
+        self.ugcView.set_property('enable-search', True)
 
     def __update_ugc_event(self, event):
         self.set_stars_from_repository()
@@ -4526,7 +4526,7 @@ class PkgInfoMenu(MenuSkel):
         if not avail:
             return
         from_repo = True
-        if isinstance(pkg.matched_atom[1],int): from_repo = False
+        if isinstance(pkg.matched_atom[1], int): from_repo = False
         if from_repo and (pkg.matched_atom[1] not in self.Entropy.validRepositories) and (not remote):
             return
 
@@ -4583,7 +4583,7 @@ class PkgInfoMenu(MenuSkel):
             repo = pkg.repoid
 
         if remote:
-            self.pkginfo_ui.location.set_markup("%s: %s" % (_("Remotely"),pkg.repoid,))
+            self.pkginfo_ui.location.set_markup("%s: %s" % (_("Remotely"), pkg.repoid,))
         else:
             self.pkginfo_ui.location.set_markup("%s" % (cleanMarkupString(avail_repos[repo]['description']),))
 
@@ -4603,7 +4603,7 @@ class PkgInfoMenu(MenuSkel):
         licenses = pkg.lic
         licenses = licenses.split()
         for x in licenses:
-            self.licenseModel.append(None,[x])
+            self.licenseModel.append(None, [x])
 
         self.pkginfo_ui.download.set_markup( "%s" % (pkg.binurl,) )
         self.pkginfo_ui.checksum.set_markup( "%s" % (pkg.digest,) )
@@ -4629,7 +4629,7 @@ class PkgInfoMenu(MenuSkel):
 
         # package changelog
         self.changelog = pkg.changelog
-        if not isinstance(self.changelog,basestring):
+        if not isinstance(self.changelog, basestring):
             self.pkginfo_ui.showChangeLogButtonAlign.hide()
             self.pkginfo_ui.changeLogLabel.hide()
 
@@ -4641,7 +4641,7 @@ class PkgInfoMenu(MenuSkel):
         for x in sources:
             if x.startswith("mirror://"):
                 mirrors.add(x.split("/")[2])
-            self.sourcesModel.append(None,[x])
+            self.sourcesModel.append(None, [x])
 
         # mirrors view
         self.mirrorsReferenceModel.clear()
@@ -4650,15 +4650,15 @@ class PkgInfoMenu(MenuSkel):
             mirrorinfo = dbconn.retrieveMirrorInfo(mirror)
             if mirrorinfo:
                 # add parent
-                parent = self.mirrorsReferenceModel.append(None,[mirror])
+                parent = self.mirrorsReferenceModel.append(None, [mirror])
                 for info in mirrorinfo:
-                    self.mirrorsReferenceModel.append(parent,[info])
+                    self.mirrorsReferenceModel.append(parent, [info])
 
         # keywords view
         self.keywordsModel.clear()
         self.keywordsView.set_model( self.keywordsModel )
         for x in pkg.keywords:
-            self.keywordsModel.append(None,[x])
+            self.keywordsModel.append(None, [x])
 
         # useflags view
         self.useflagsModel.clear()
@@ -4678,23 +4678,23 @@ class PkgInfoMenu(MenuSkel):
         deps = pkg.dependencies
         conflicts = pkg.conflicts
         for x in deps:
-            self.dependenciesModel.append(None,[cleanMarkupString(x)])
+            self.dependenciesModel.append(None, [cleanMarkupString(x)])
         for x in conflicts:
-            self.dependenciesModel.append(None,[cleanMarkupString("!"+x)])
+            self.dependenciesModel.append(None, [cleanMarkupString("!"+x)])
 
         # depends view
         self.dependsModel.clear()
         self.dependsView.set_model( self.dependsModel )
         depends = pkg.dependsFmt
         for x in depends:
-            self.dependsModel.append(None,[cleanMarkupString(x)])
+            self.dependsModel.append(None, [cleanMarkupString(x)])
 
         # needed view
         self.neededModel.clear()
         self.neededView.set_model( self.neededModel )
         neededs = pkg.needed
         for x in neededs:
-            self.neededModel.append(None,[cleanMarkupString(x)])
+            self.neededModel.append(None, [cleanMarkupString(x)])
 
         # content view
         self.contentModel.clear()
@@ -4710,9 +4710,9 @@ class PkgInfoMenu(MenuSkel):
         protect = pkg.protect
         protect_mask = pkg.protect_mask
         for item in protect.split():
-            self.configProtectModel.append(None,[item,'protect'])
+            self.configProtectModel.append(None, [item, 'protect'])
         for item in protect_mask.split():
-            self.configProtectModel.append(None,[item,'mask'])
+            self.configProtectModel.append(None, [item, 'mask'])
 
         # connect events
         self.ugc_update_event_handler_id = \
@@ -4725,7 +4725,7 @@ class SecurityAdvisoryMenu(MenuSkel):
     def __init__(self, window):
 
         self.window = window
-        self.advinfo_ui = UI( const.GLADE_FILE , 'advInfo', 'entropy' )
+        self.advinfo_ui = UI( const.GLADE_FILE, 'advInfo', 'entropy' )
         self.advinfo_ui.signal_autoconnect(self._getAllMethods())
         self.advinfo_ui.advInfo.set_transient_for(self.window)
         self.advinfo_ui.advInfo.add_events(gtk.gdk.BUTTON_PRESS_MASK)
@@ -4764,7 +4764,7 @@ class SecurityAdvisoryMenu(MenuSkel):
         adv_pixmap = const.PIXMAPS_PATH+'/button-glsa.png'
         self.advinfo_ui.advImage.set_from_file(adv_pixmap)
 
-        glsa_idtext = "<b>GLSA</b>#<span foreground='%s' weight='bold'>%s</span>" % (SulfurConf.color_title,key,)
+        glsa_idtext = "<b>GLSA</b>#<span foreground='%s' weight='bold'>%s</span>" % (SulfurConf.color_title, key,)
         self.advinfo_ui.labelIdentifier.set_markup(glsa_idtext)
 
         bold_items = [
@@ -4807,22 +4807,22 @@ class SecurityAdvisoryMenu(MenuSkel):
         if 'description_items' in data:
             if data['description_items']:
                 for item in data['description_items']:
-                    desc_text += '\n\t%s %s' % ("<span foreground='%s'>(*)</span>" % (SulfurConf.color_title,),item,)
-        desc_text = desc_text.replace('!;\\n','')
+                    desc_text += '\n\t%s %s' % ("<span foreground='%s'>(*)</span>" % (SulfurConf.color_title,), item,)
+        desc_text = desc_text.replace('!;\\n', '')
         b = gtk.TextBuffer()
         b.set_text(desc_text)
         self.advinfo_ui.descriptionTextLabel.set_buffer(b)
 
         # background
         back_text = ' '.join([x.strip() for x in data['background'].split("\n")]).strip()
-        back_text = back_text.replace('!;\\n','')
+        back_text = back_text.replace('!;\\n', '')
         b = gtk.TextBuffer()
         b.set_text(back_text)
         self.advinfo_ui.backgroundTextLabel.set_buffer(b)
 
         # impact
         impact_text = ' '.join([x.strip() for x in data['impact'].split("\n")]).strip()
-        impact_text = impact_text.replace('!;\\n','')
+        impact_text = impact_text.replace('!;\\n', '')
         b = gtk.TextBuffer()
         b.set_text(back_text)
         self.advinfo_ui.impactTextLabel.set_buffer(b)
@@ -4847,15 +4847,15 @@ class SecurityAdvisoryMenu(MenuSkel):
             affected_data = packages_data[key][0]
             vul_atoms = affected_data['vul_atoms']
             unaff_atoms = affected_data['unaff_atoms']
-            parent = self.affectedModel.append(None,[key])
+            parent = self.affectedModel.append(None, [key])
             if vul_atoms:
-                myparent = self.affectedModel.append(parent,[_('Vulnerables')])
+                myparent = self.affectedModel.append(parent, [_('Vulnerables')])
                 for atom in vul_atoms:
-                    self.affectedModel.append(myparent,[cleanMarkupString(atom)])
+                    self.affectedModel.append(myparent, [cleanMarkupString(atom)])
             if unaff_atoms:
-                myparent = self.affectedModel.append(parent,[_('Unaffected')])
+                myparent = self.affectedModel.append(parent, [_('Unaffected')])
                 for atom in unaff_atoms:
-                    self.affectedModel.append(myparent,[cleanMarkupString(atom)])
+                    self.affectedModel.append(myparent, [cleanMarkupString(atom)])
 
         # bugs
         self.bugsModel.clear()
@@ -4881,20 +4881,20 @@ class SecurityAdvisoryMenu(MenuSkel):
 
         # workaround
         workaround_text = ' '.join([x.strip() for x in data['workaround'].split("\n")]).strip()
-        workaround_text = workaround_text.replace('!;\\n','')
+        workaround_text = workaround_text.replace('!;\\n', '')
         b = gtk.TextBuffer()
         b.set_text(workaround_text)
         self.advinfo_ui.workaroundTextLabel.set_buffer(b)
 
         # resolution
 
-        if isinstance(data['resolution'],list):
+        if isinstance(data['resolution'], list):
             resolution_text = []
             for resolution in data['resolution']:
                 resolution_text.append(' '.join([x.strip() for x in resolution.split("\n")]).strip())
             resolution_text = '\n'.join(resolution_text)
         else:
-            resolution_text = data['resolution'].replace('!;\\n','')
+            resolution_text = data['resolution'].replace('!;\\n', '')
             resolution_text = '\n'.join([x for x in resolution_text.strip().split("\n")])
 
         b = gtk.TextBuffer()
@@ -4924,13 +4924,13 @@ class UGCInfoMenu(MenuSkel):
 
     def on_getButton_clicked(self, widget):
         if self.ugc_data['store_url'] != None:
-            self.subprocess.call(['xdg-open',self.ugc_data['store_url']])
+            self.subprocess.call(['xdg-open', self.ugc_data['store_url']])
 
     def load(self):
 
         pix_path = self.ugc_data['image_path']
         if 'preview_path' in self.ugc_data:
-            if os.path.isfile(self.ugc_data['preview_path']) and os.access(self.ugc_data['preview_path'],os.R_OK):
+            if os.path.isfile(self.ugc_data['preview_path']) and os.access(self.ugc_data['preview_path'], os.R_OK):
                 pix_path = self.ugc_data['preview_path']
         self.ugcinfo_ui.ugcImage.set_from_file(pix_path)
         self.ugcinfo_ui.labelKey.set_markup("<b>%s</b>" % (self.ugc_data['pkgkey'],))
@@ -5011,7 +5011,7 @@ class UGCAddMenu(MenuSkel):
         self.ugcadd_ui.ugcAdd.add_events(gtk.gdk.BUTTON_PRESS_MASK)
         self.store = None
         self.refresh_cb = refresh_cb
-        self.text_types = (etpConst['ugc_doctypes']['comments'],etpConst['ugc_doctypes']['bbcode_doc'],)
+        self.text_types = (etpConst['ugc_doctypes']['comments'], etpConst['ugc_doctypes']['bbcode_doc'],)
         self.file_selected = None
 
     def on_closeAdd_clicked(self, widget, path = None):
@@ -5022,10 +5022,10 @@ class UGCAddMenu(MenuSkel):
         myiter = widget.get_active_iter()
         idx = self.store.get_value( myiter, 0 )
         if idx in self.text_types:
-            txt = "%s %s" % (_("Write your"),etpConst['ugc_doctypes_description_singular'][idx],) # write your <document type>
+            txt = "%s %s" % (_("Write your"), etpConst['ugc_doctypes_description_singular'][idx],) # write your <document type>
             self.setup_text_insert()
         else:
-            txt = "%s %s" % (_("Select your"),etpConst['ugc_doctypes_description_singular'][idx],) # select your <document type>
+            txt = "%s %s" % (_("Select your"), etpConst['ugc_doctypes_description_singular'][idx],) # select your <document type>
             self.setup_file_insert(txt)
 
     def on_ugcAddFileChooser_file_set(self, widget):
@@ -5088,12 +5088,12 @@ class UGCAddMenu(MenuSkel):
 
         self.hide_loading()
         if not rslt:
-            txt = "<small><span foreground='%s'><b>%s</b></span>: %s | %s</small>" % (SulfurConf.color_error,_("UGC Error"),rslt,data,)
+            txt = "<small><span foreground='%s'><b>%s</b></span>: %s | %s</small>" % (SulfurConf.color_error, _("UGC Error"), rslt, data,)
             self.ugcadd_ui.ugcAddStatusLabel.set_markup(txt)
             return False
         else:
             okDialog(self.ugcadd_ui.ugcAdd, _("Document added successfully. Thank you"), title = _("Success!"))
-            self.on_closeAdd_clicked(None,None)
+            self.on_closeAdd_clicked(None, None)
             self.refresh_cb()
             return True
 
@@ -5107,9 +5107,9 @@ class UGCAddMenu(MenuSkel):
         if count:
             if len(count) > 1:
                 if percent:
-                    count_str = " ("+str(round((float(count[0])/count[1])*100,1))+"%) "
+                    count_str = " ("+str(round((float(count[0])/count[1])*100, 1))+"%) "
                 else:
-                    count_str = " (%s/%s) " % (str(count[0]),str(count[1]),)
+                    count_str = " (%s/%s) " % (str(count[0]), str(count[1]),)
 
         txt = count_str+text
         gtk.gdk.threads_enter()
@@ -5167,7 +5167,7 @@ class UGCAddMenu(MenuSkel):
 
         self.ugcadd_ui.ugcAddImage.set_from_file(self.pix_path)
         self.ugcadd_ui.labelAddKey.set_markup("<b>%s</b>" % (self.pkgkey,))
-        self.ugcadd_ui.labelAddRepo.set_markup("<small>%s: <b>%s</b></small>" % (_("On repository"),self.repository,))
+        self.ugcadd_ui.labelAddRepo.set_markup("<small>%s: <b>%s</b></small>" % (_("On repository"), self.repository,))
 
         # add types to combo
         doc_types_list = sorted(etpConst['ugc_doctypes_description_singular'].keys())
@@ -5227,7 +5227,7 @@ class MaskedPackagesDialog(MenuSkel):
         self.rc = self.cancel_button_reply
 
         self.okbutton.connect("clicked", self.do_ok)
-        self.cancelbutton.connect("clicked",self.do_cancel)
+        self.cancelbutton.connect("clicked", self.do_cancel)
         self.enableButton.connect("clicked", self.enablePackage)
         self.enableAllButton.connect("clicked", self.enableAllPackages)
         self.propertiesButton.connect("clicked", self.openPackageProperties)
@@ -5236,7 +5236,7 @@ class MaskedPackagesDialog(MenuSkel):
         if top_text == None:
             top_text = _("These are the packages that must be enabled to satisfy your request")
 
-        tit = "<b><span foreground='%s' size='large'>%s</span></b>\n" % (SulfurConf.color_title,_("Some packages are masked"),)
+        tit = "<b><span foreground='%s' size='large'>%s</span></b>\n" % (SulfurConf.color_title, _("Some packages are masked"),)
         tit += top_text
         self.action.set_markup( tit )
         if sub_text != None: self.subaction.set_markup( sub_text )
@@ -5266,7 +5266,7 @@ class MaskedPackagesDialog(MenuSkel):
         if not obj:
             obj = self.get_obj()
         if not obj: return
-        if obj.matched_atom == (0,0): return
+        if obj.matched_atom == (0, 0): return
         result = self.Entropy.unmask_match(obj.matched_atom, dry_run = True)
         if result:
             self.etpbase.unmaskingPackages.add(obj.matched_atom)
@@ -5284,7 +5284,7 @@ class MaskedPackagesDialog(MenuSkel):
                         continue
                     if obj.dummy_type != None:
                         continue
-                    self.enablePackage(None,obj,False)
+                    self.enablePackage(None, obj, False)
         self.refresh()
 
     def refresh(self):
@@ -5347,7 +5347,7 @@ class MaskedPackagesDialog(MenuSkel):
     def set_pixbuf_to_cell(self, cell, do):
         if do:
             cell.set_property( 'stock-id', 'gtk-apply' )
-        elif (not do) and isinstance(do,bool):
+        elif (not do) and isinstance(do, bool):
             cell.set_property( 'stock-id', 'gtk-cancel' )
         else:
             cell.set_property( 'stock-id', None )
@@ -5374,17 +5374,17 @@ class MaskedPackagesDialog(MenuSkel):
 
     def set_line_status(self, obj, cell, stype = "cell-background"):
         if obj.queued == "r":
-            cell.set_property(stype,'#FFE2A3')
+            cell.set_property(stype, '#FFE2A3')
         elif obj.queued == "u":
-            cell.set_property(stype,'#B7BEFF')
+            cell.set_property(stype, '#B7BEFF')
         elif obj.queued == "i":
-            cell.set_property(stype,'#D895FF')
+            cell.set_property(stype, '#D895FF')
         elif obj.queued == "rr":
-            cell.set_property(stype,'#B7BEFF')
+            cell.set_property(stype, '#B7BEFF')
         elif obj.queued == "d":
-            cell.set_property(stype,'#A7D0FF')
+            cell.set_property(stype, '#A7D0FF')
         elif not obj.queued:
-            cell.set_property(stype,None)
+            cell.set_property(stype, None)
 
     def show_data( self, model, pkgs ):
 
@@ -5413,7 +5413,7 @@ class MaskedPackagesDialog(MenuSkel):
                 cat_desc = cat_desc_data[_LOCALE]
             elif 'en' in cat_desc_data:
                 cat_desc = cat_desc_data['en']
-            cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category,cleanMarkupString(cat_desc),)
+            cat_text = "<b><big>%s</big></b>\n<small>%s</small>" % (category, cleanMarkupString(cat_desc),)
             mydummy = DummyEntropyPackage(
                     namedesc = cat_text,
                     dummy_type = SulfurConf.dummy_category,
@@ -5426,8 +5426,8 @@ class MaskedPackagesDialog(MenuSkel):
 
         self.pkg.set_search_column( search_col )
         self.pkg.set_search_equal_func(self.atom_search)
-        self.pkg.set_property('headers-visible',True)
-        self.pkg.set_property('enable-search',True)
+        self.pkg.set_property('headers-visible', True)
+        self.pkg.set_property('enable-search', True)
 
     def atom_search(self, model, column, key, iterator):
         obj = model.get_value( iterator, 0 )
@@ -5481,7 +5481,7 @@ class TextReadDialog(MenuSkel):
         return self.txt_buffer.get_text(start, end)
 
     def ok_save_button(self, widget):
-        source_f = open(self.rw_save_path+".etp_tmp","w")
+        source_f = open(self.rw_save_path+".etp_tmp", "w")
         cont = self.get_content()
         source_f.write(cont)
         source_f.flush()
@@ -5641,8 +5641,8 @@ class ConfirmationDialog:
                 desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
-                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SulfurConf.color_pkgdesc,desc,)
-                mypkg = "<span foreground='%s'>%s</span>" % (SulfurConf.color_remove,str(pkg),)
+                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SulfurConf.color_pkgdesc, desc,)
+                mypkg = "<span foreground='%s'>%s</span>" % (SulfurConf.color_remove, str(pkg),)
                 model.append( level1, [mypkg+mydesc] )
         if downgrade:
             label = "<b>%s</b>" % _("To be downgraded")
@@ -5663,8 +5663,8 @@ class ConfirmationDialog:
                 desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
-                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SulfurConf.color_pkgdesc,desc,)
-                mypkg = "<span foreground='%s'>%s</span>" % (SulfurConf.color_reinstall,str(pkg),)
+                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SulfurConf.color_pkgdesc, desc,)
+                mypkg = "<span foreground='%s'>%s</span>" % (SulfurConf.color_reinstall, str(pkg),)
                 model.append( level1, [mypkg+mydesc] )
         if install:
             label = "<b>%s</b>" % _("To be installed")
@@ -5674,8 +5674,8 @@ class ConfirmationDialog:
                 desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
-                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SulfurConf.color_pkgdesc,desc,)
-                mypkg = "<span foreground='%s'>%s</span>" % (SulfurConf.color_install,str(pkg),)
+                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SulfurConf.color_pkgdesc, desc,)
+                mypkg = "<span foreground='%s'>%s</span>" % (SulfurConf.color_install, str(pkg),)
                 model.append( level1, [mypkg+mydesc] )
         if update:
             label = "<b>%s</b>" % _("To be updated")
@@ -5685,8 +5685,8 @@ class ConfirmationDialog:
                 desc = cleanMarkupString(desc)
                 if not desc.strip():
                     desc = _("No description")
-                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SulfurConf.color_pkgdesc,desc,)
-                mypkg = "<span foreground='%s'>%s</span>" % (SulfurConf.color_update,str(pkg),)
+                mydesc = "\n<small><span foreground='%s'>%s</span></small>" % (SulfurConf.color_pkgdesc, desc,)
+                mypkg = "<span foreground='%s'>%s</span>" % (SulfurConf.color_update, str(pkg),)
                 model.append( level1, [mypkg+mydesc] )
 
     def destroy( self ):
@@ -5695,7 +5695,7 @@ class ConfirmationDialog:
 class ErrorDialog:
 
     def __init__( self, parent, title, text, longtext, modal ):
-        self.xml = gtk.glade.XML( const.GLADE_FILE, "errDialog",domain="entropy" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, "errDialog", domain="entropy" )
         self.dialog = self.xml.get_widget( "errDialog" )
         self.parent = parent
         if parent:
@@ -5747,14 +5747,14 @@ class ErrorDialog:
         mail = self.mailInput.get_text()
         name = self.nameInput.get_text()
         desc = self.actionInput.get_text()
-        return name,mail,desc
+        return name, mail, desc
 
     def destroy( self ):
         return self.dialog.destroy()
 
 class infoDialog:
     def __init__( self, parent, title, text ):
-        self.xml = gtk.glade.XML( const.GLADE_FILE, "msg",domain="entropy" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, "msg", domain="entropy" )
         self.dialog = self.xml.get_widget( "msg" )
         self.parent = parent
         self.dialog.set_transient_for( parent )
@@ -5777,7 +5777,7 @@ class infoDialog:
 
 class EntryDialog:
     def __init__( self, parent, title, text ):
-        self.xml = gtk.glade.XML( const.GLADE_FILE, "EntryDialog",domain="entropy" )
+        self.xml = gtk.glade.XML( const.GLADE_FILE, "EntryDialog", domain="entropy" )
         self.dialog = self.xml.get_widget( "EntryDialog" )
         self.parent = parent
         #self.dialog.set_transient_for( parent )
@@ -5815,7 +5815,7 @@ class AboutDialog(gtk.Window):
         self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_DIALOG)
         self.set_position(gtk.WIN_POS_CENTER)
         self.set_resizable(False)
-        self.set_title("%s %s" % (_("About"),title,))
+        self.set_title("%s %s" % (_("About"), title,))
         self.connect("button-press-event", self.__on_close)
         self.connect("key-press-event", self.__on_close)
         self.connect("delete-event", self.__on_close)
@@ -5898,7 +5898,7 @@ def inputBox( parent, title, text, input_text = None):
     dlg.destroy()
     return rc
 
-def FileChooser(basedir = None, pattern = None, action = gtk.FILE_CHOOSER_ACTION_OPEN, buttons = (gtk.STOCK_CANCEL,gtk.RESPONSE_CANCEL,gtk.STOCK_OPEN,gtk.RESPONSE_OK)):
+def FileChooser(basedir = None, pattern = None, action = gtk.FILE_CHOOSER_ACTION_OPEN, buttons = (gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL, gtk.STOCK_OPEN, gtk.RESPONSE_OK)):
     # open file selector
     chooser_title = _("Sulfur file chooser")
     dialog = gtk.FileChooserDialog(
@@ -6000,7 +6000,7 @@ class InputDialog:
         row_count = 0
         for input_id, input_text, input_cb, passworded in input_parameters:
 
-            if isinstance(input_text,tuple):
+            if isinstance(input_text, tuple):
 
                 input_type, text = input_text
                 combo_options = []
@@ -6009,13 +6009,13 @@ class InputDialog:
 
                 input_label = gtk.Label()
                 input_label.set_line_wrap(True)
-                input_label.set_alignment(0.0,0.5)
+                input_label.set_alignment(0.0, 0.5)
                 input_label.set_markup(text)
 
                 if input_type == "checkbox":
 
                     input_widget = gtk.CheckButton(text)
-                    input_widget.set_alignment(0.0,0.5)
+                    input_widget.set_alignment(0.0, 0.5)
                     input_widget.set_active(passworded)
 
                 elif input_type == "combo":
@@ -6057,7 +6057,7 @@ class InputDialog:
 
                     def on_add_button(widget):
                         mydata = inputDialog(mywin, _("Add atom"),
-                            [('atom',_('Atom'), input_cb, False)], True)
+                            [('atom', _('Atom'), input_cb, False)], True)
                         if mydata == None:
                             return
                         atom = mydata.get('atom')
@@ -6069,8 +6069,8 @@ class InputDialog:
                             return
                         model.remove(iterator)
 
-                    add_button.connect("clicked",on_add_button)
-                    rm_button.connect("clicked",on_remove_button)
+                    add_button.connect("clicked", on_add_button)
+                    rm_button.connect("clicked", on_remove_button)
 
                     myhbox_l.pack_start(myvbox_l, expand = False, fill = False)
                     mytable.attach(myhbox_l, 0, 2, row_count, row_count+1)
@@ -6095,7 +6095,7 @@ class InputDialog:
                     # textview
                     input_widget = gtk.TextBuffer()
                     output_scroll_vadj = scrolled_win.get_vadjustment()
-                    output_scroll_vadj.connect('changed', lambda a, s=scrolled_win: rescroll_output(a,s))
+                    output_scroll_vadj.connect('changed', lambda a, s=scrolled_win: rescroll_output(a, s))
 
                     my_tv = gtk.TextView()
                     my_tv.set_buffer(input_widget)
@@ -6122,7 +6122,7 @@ class InputDialog:
                     self.cb_table[input_widget] = my_input_cb
 
 
-                if input_type not in ["text","list"]:
+                if input_type not in ["text", "list"]:
                     mytable.attach(input_widget, 1, 2, row_count, row_count+1)
 
 
@@ -6130,7 +6130,7 @@ class InputDialog:
 
                 input_label = gtk.Label()
                 input_label.set_line_wrap(True)
-                input_label.set_alignment(0.0,0.5)
+                input_label.set_alignment(0.0, 0.5)
                 input_label.set_markup(input_text)
                 self.entry_text_table[input_id] = input_text
                 mytable.attach(input_label, 0, 1, row_count, row_count+1)
@@ -6168,7 +6168,7 @@ class InputDialog:
         else:
             mywin.set_transient_for(parent)
             mywin.set_position(gtk.WIN_POS_CENTER_ON_PARENT)
-        mywin.set_default_size(350,-1)
+        mywin.set_default_size(350, -1)
         mywin.show_all()
 
 
@@ -6176,15 +6176,15 @@ class InputDialog:
         # fill self.parameters
         for input_id in self.identifiers_table:
             mywidget = self.identifiers_table.get(input_id)
-            if isinstance(mywidget,gtk.Entry):
+            if isinstance(mywidget, gtk.Entry):
                 content = mywidget.get_text()
-            elif isinstance(mywidget,gtk.CheckButton):
+            elif isinstance(mywidget, gtk.CheckButton):
                 content = mywidget.get_active()
-            elif isinstance(mywidget,gtk.ComboBox):
-                content = mywidget.get_active(),mywidget.get_active_text()
-            elif isinstance(mywidget,gtk.TextBuffer):
-                content = mywidget.get_text(mywidget.get_start_iter(),mywidget.get_end_iter(), True)
-            elif isinstance(mywidget,(gtk.ListStore,gtk.TreeStore)):
+            elif isinstance(mywidget, gtk.ComboBox):
+                content = mywidget.get_active(), mywidget.get_active_text()
+            elif isinstance(mywidget, gtk.TextBuffer):
+                content = mywidget.get_text(mywidget.get_start_iter(), mywidget.get_end_iter(), True)
+            elif isinstance(mywidget, (gtk.ListStore, gtk.TreeStore)):
                 myiter = mywidget.get_iter_first()
                 content = []
                 while myiter:
@@ -6365,7 +6365,7 @@ class LicenseDialog:
     def set_pixbuf_to_cell(self, cell, do):
         if do:
             cell.set_property( 'stock-id', 'gtk-apply' )
-        elif (not do) and isinstance(do,bool):
+        elif (not do) and isinstance(do, bool):
             cell.set_property( 'stock-id', 'gtk-cancel' )
         else:
             cell.set_property( 'stock-id', None )
@@ -6442,18 +6442,18 @@ class LicenseDialog:
     def show_data( self, licenses ):
         self.model.clear()
         for lic in licenses:
-            parent = self.model.append( None, [lic,True] )
+            parent = self.model.append( None, [lic, True] )
             packages = licenses[lic]
             for match in packages:
                 dbconn = self.Entropy.open_repository(match[1])
                 atom = dbconn.retrieveAtom(match[0])
-                self.model.append( parent, [atom,None] )
+                self.model.append( parent, [atom, None] )
 
 class WaitWindow(MenuSkel):
 
     def __init__(self, window):
 
-        self.wait_ui = UI( const.GLADE_FILE , 'waitWindow', 'entropy' )
+        self.wait_ui = UI( const.GLADE_FILE, 'waitWindow', 'entropy' )
         self.wait_ui.signal_autoconnect(self._getAllMethods())
         self.wait_ui.waitWindow.set_transient_for(window)
         self.window = window
@@ -6481,7 +6481,7 @@ class ExceptionDialog:
 
         errmsg = entropy.tools.get_traceback()
         conntest = entropy.tools.get_remote_data(etpConst['conntestlink'])
-        rc, (name,mail,description) = errorMessage(
+        rc, (name, mail, description) = errorMessage(
             None,
             _( "Exception caught" ),
             _( "Sulfur crashed! An unexpected error occured." ),
@@ -6502,7 +6502,7 @@ class ExceptionDialog:
             error.prepare(errmsg, name, mail, description = description)
             result = error.submit()
             if result:
-                okDialog(None,_("Your report has been submitted successfully! Thanks a lot."))
+                okDialog(None, _("Your report has been submitted successfully! Thanks a lot."))
             else:
-                okDialog(None,_("Cannot submit your report. Not connected to Internet?"))
+                okDialog(None, _("Cannot submit your report. Not connected to Internet?"))
         raise SystemExit(1)

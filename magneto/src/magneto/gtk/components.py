@@ -100,8 +100,8 @@ class AppletNoticeWindow(GladeWindow):
 
         self.xml.signal_autoconnect (
             {
-            "on_launch_sulfur_clicked" : self.on_sulfur,
-            "on_close_clicked" : self.on_close,
+            "on_launch_sulfur_clicked": self.on_sulfur,
+            "on_close_clicked": self.on_close,
             })
 
         message_label = gtk.Label()

@@ -225,16 +225,16 @@ class Queue:
                 pkgs = [pkgs]
 
             action = [pkgs[0].action]
-            if action[0] in ("u","i","rr","d"): # update/install/downgrade
+            if action[0] in ("u", "i", "rr", "d"): # update/install/downgrade
 
-                action = ["u","i","rr","d"]
+                action = ["u", "i", "rr", "d"]
                 pkgs_matches = [x.matched_atom for x in pkgs]
                 myq = [x.matched_atom for x in self.packages['u'] + \
                     self.packages['i'] + self.packages['rr'] + self.packages['d']]
                 xlist = [x for x in myq if x not in pkgs_matches]
 
                 xlist, abort = self.elaborate_undo_remove(pkgs_matches, xlist)
-                if abort: return -10,0
+                if abort: return -10, 0
 
                 self.before = self.packages['u'][:] + self.packages['i'][:] + \
                     self.packages['rr'][:] + self.packages['d'][:]
@@ -251,10 +251,10 @@ class Queue:
                     status = self.elaborate_install(xlist, action, False,
                         accept, always_ask)
                     del self.before[:]
-                    return status,0
+                    return status, 0
 
                 del self.before[:]
-                return 0,0
+                return 0, 0
 
             else:
 
@@ -284,16 +284,16 @@ class Queue:
 
                 if xlist:
 
-                    status = self.elaborate_removal(xlist,False,accept,always_ask)
+                    status = self.elaborate_removal(xlist, False, accept, always_ask)
                     if status == -10:
                         del self.packages[action[0]][:]
                         self.packages[action[0]] = self.before[:]
 
                     del self.before[:]
-                    return status,1
+                    return status, 1
 
                 del self.before[:]
-                return 0,1
+                return 0, 1
         finally:
             items = [x for x in list(self.packages.values()) if x]
             if items:
@@ -313,15 +313,15 @@ class Queue:
 
             action = [pkgs[0].queued]
 
-            if action[0] in ("u","i","rr","d"): # update/install
+            if action[0] in ("u", "i", "rr", "d"): # update/install
 
                 self._keyslotFilter.clear()
                 blocked = self.key_slot_filtering(pkgs)
                 if blocked:
                     self.show_key_slot_error_message(blocked)
-                    return 1,0
+                    return 1, 0
 
-                action = ["u","i","rr","d"]
+                action = ["u", "i", "rr", "d"]
                 myq = [x.matched_atom for x in self.packages['u'] + \
                     self.packages['i'] + self.packages['rr'] + self.packages['d']]
                 xlist = myq+[x.matched_atom for x in pkgs if x.matched_atom not in myq]
@@ -329,7 +329,7 @@ class Queue:
                     always_ask)
                 if status == 0:
                     self.keyslotFilter |= self._keyslotFilter
-                return status,0
+                return status, 0
 
             else: # remove
 
@@ -338,13 +338,13 @@ class Queue:
                         return False
                     return True
 
-                pkgs = list(filter(myfilter,pkgs))
-                if not pkgs: return -2,1
+                pkgs = list(filter(myfilter, pkgs))
+                if not pkgs: return -2, 1
                 myq = [x.matched_atom[0] for x in self.packages['r']]
                 pkgs = [x.matched_atom[0] for x in pkgs if x.matched_atom[0] \
                     not in myq] + myq
-                status = self.elaborate_removal(pkgs,False,accept,always_ask)
-                return status,1
+                status = self.elaborate_removal(pkgs, False, accept, always_ask)
+                return status, 1
 
         finally:
             items = [x for x in list(self.packages.values()) if x]
@@ -457,7 +457,7 @@ class Queue:
                     my_rcache.add(idpackage)
                     if idpackage in rcache:
                         continue
-                    mymatch = (idpackage,0)
+                    mymatch = (idpackage, 0)
                     rem_pkg, new = self.etpbase.get_package_item(mymatch)
                     if not rem_pkg:
                         continue
@@ -525,7 +525,7 @@ class Queue:
         def r_cache_map(x):
             return x.matched_atom[0]
 
-        r_cache = set(map(r_cache_map,self.packages['r']))
+        r_cache = set(map(r_cache_map, self.packages['r']))
         removalQueue = self.Entropy.get_removal_queue(mylist)
 
         if removalQueue:
@@ -538,7 +538,7 @@ class Queue:
                 my_rcache.add(idpackage)
                 if idpackage in r_cache:
                     continue
-                rem_pkg, new = self.etpbase.get_package_item((idpackage,0))
+                rem_pkg, new = self.etpbase.get_package_item((idpackage, 0))
                 if not rem_pkg:
                     continue
                 todo.append(rem_pkg)
@@ -649,9 +649,9 @@ class EntropyPackages:
     def set_filter(self,fn = None):
         self.filterCallback = fn
 
-    def do_filtering(self,pkgs):
+    def do_filtering(self, pkgs):
         if self.filterCallback:
-            return list(filter(self.filterCallback,pkgs))
+            return list(filter(self.filterCallback, pkgs))
         return pkgs
 
     def get_raw_groups(self, flt):
@@ -680,7 +680,7 @@ class EntropyPackages:
         gp_call = self.get_package_item
         def fm(idpackage):
             try:
-                yp, new = gp_call((idpackage,0))
+                yp, new = gp_call((idpackage, 0))
             except RepositoryError:
                 return 0
             yp.action = 'r'
@@ -707,7 +707,7 @@ class EntropyPackages:
                 return 0
             yp.action = 'i'
             return yp
-        return [x for x in map(fm,self.Entropy.calculate_available_packages()) \
+        return [x for x in map(fm, self.Entropy.calculate_available_packages()) \
             if type(x) is not int]
 
     def _pkg_get_updates_raw(self):
@@ -814,7 +814,7 @@ class EntropyPackages:
             except RepositoryError:
                 return 0
             # added for reliability
-            yp.installed_match = (idpackage,0)
+            yp.installed_match = (idpackage, 0)
             yp.action = 'rr'
             yp.color = SulfurConf.color_install
             return yp
@@ -840,11 +840,11 @@ class EntropyPackages:
                 if idpackage == None: # wtf!?
                     yp.installed_match = None
                 else:
-                    yp.installed_match = (idpackage,0)
+                    yp.installed_match = (idpackage, 0)
             yp.masked = idreason
             yp.color = SulfurConf.color_install
             return yp
-        return [x for x in map(fm,self.get_masked_packages()) if type(x) is \
+        return [x for x in map(fm, self.get_masked_packages()) if type(x) is \
                     not int]
 
     def _pkg_get_user_masked(self):
@@ -865,8 +865,8 @@ class EntropyPackages:
         pkgset_pfx = etpConst['packagesetprefix']
         for set_dep in set_deps:
             if set_dep.startswith(pkgset_pfx):
-                set_matches.append((set_dep,None,))
-                set_installed_matches.append((set_dep,None,))
+                set_matches.append((set_dep, None,))
+                set_installed_matches.append((set_dep, None,))
             else:
                 set_match = self.Entropy.atom_match(set_dep)
                 if set_match[0] != -1:
@@ -887,7 +887,7 @@ class EntropyPackages:
             set_from_desc = avail_repos[set_from]['description']
         elif set_from == etpConst['userpackagesetsid']:
             set_from_desc = _("User configuration")
-        return "%s: %s" % (my_set_from,set_from_desc,)
+        return "%s: %s" % (my_set_from, set_from_desc,)
 
     def _pkg_get_pkgsets(self):
 
@@ -987,7 +987,7 @@ class EntropyPackages:
             dummy_type = SulfurConf.dummy_empty)
         return myobj
 
-    def _get_groups(self,mask):
+    def _get_groups(self, mask):
 
         calls_dict = {
             "installed": self._pkg_get_installed,
@@ -1013,7 +1013,7 @@ class EntropyPackages:
                 revision)
             if idpackage == -1:
                 continue
-            return (repoid,idpackage,)
+            return (repoid, idpackage,)
         return None
 
     def get_package_sets(self):
@@ -1029,9 +1029,9 @@ class EntropyPackages:
                 idpackage_filtered, idreason = dbconn.idpackageValidator(
                     idpackage)
                 if idpackage_filtered == -1:
-                    return ((idpackage,repoid,),idreason)
+                    return ((idpackage, repoid,), idreason)
                 return 0
-            maskdata += [x for x in map(fm,repodata) if type(x) is not int]
+            maskdata += [x for x in map(fm, repodata) if type(x) is not int]
 
         return maskdata
 
@@ -1062,7 +1062,7 @@ class EntropyPackages:
     def filter_reinstallable(self, client_scope_data):
         clientdata = {}
         for idpackage, atom, slot, revision in client_scope_data:
-            clientdata[(atom,slot,revision,)] = idpackage
+            clientdata[(atom, slot, revision,)] = idpackage
         del client_scope_data
 
         matched_data = set()
@@ -1082,10 +1082,10 @@ class EntropyPackages:
                 idpackage = mydata[item]
                 idpackage, idreason = dbconn.idpackageValidator(idpackage)
                 if idpackage != -1:
-                    return (clientdata[item],(mydata[item],repoid,))
+                    return (clientdata[item], (mydata[item], repoid,))
                 return 0
 
-            matched_data |= set([x for x in map(fm,list(filter(fm_pre,clientdata))) \
+            matched_data |= set([x for x in map(fm, list(filter(fm_pre, clientdata))) \
                 if type(x) is not int])
 
         return matched_data

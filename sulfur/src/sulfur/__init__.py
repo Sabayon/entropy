@@ -23,15 +23,15 @@ import time
 
 # Entropy Imports
 if "../../libraries" not in sys.path:
-    sys.path.insert(0,"../../libraries")
+    sys.path.insert(0, "../../libraries")
 if "../../client" not in sys.path:
-    sys.path.insert(1,"../../client")
+    sys.path.insert(1, "../../client")
 if "/usr/lib/entropy/libraries" not in sys.path:
-    sys.path.insert(2,"/usr/lib/entropy/libraries")
+    sys.path.insert(2, "/usr/lib/entropy/libraries")
 if "/usr/lib/entropy/client" not in sys.path:
-    sys.path.insert(3,"/usr/lib/entropy/client")
+    sys.path.insert(3, "/usr/lib/entropy/client")
 if "/usr/lib/entropy/sulfur" not in sys.path:
-    sys.path.insert(4,"/usr/lib/entropy/sulfur")
+    sys.path.insert(4, "/usr/lib/entropy/sulfur")
 
 from entropy.exceptions import OnlineMirrorError, QueueError
 import entropy.tools
@@ -85,7 +85,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.etpbase = EntropyPackages(self.Equo)
 
         # Create and ui object contains the widgets.
-        ui = UI( const.GLADE_FILE , 'main', 'entropy' )
+        ui = UI( const.GLADE_FILE, 'main', 'entropy' )
         ui.main.hide()
         # init the Controller Class to connect signals.
         Controller.__init__( self, ui )
@@ -110,12 +110,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.packages_install()
 
     def quit(self, widget = None, event = None, sysexit = True ):
-        if hasattr(self,'ugcTask'):
+        if hasattr(self, 'ugcTask'):
             if self.__ugc_task != None:
                 self.__ugc_task.kill()
                 while self.__ugc_task.isAlive():
                     time.sleep(0.2)
-        if hasattr(self,'Equo'):
+        if hasattr(self, 'Equo'):
             self.Equo.destroy()
 
         if sysexit:
@@ -474,7 +474,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if packages_install:
 
             fn = packages_install[0]
-            self.on_installPackageItem_activate(None,fn)
+            self.on_installPackageItem_activate(None, fn)
 
         elif atoms_install: # --install <atom1> <atom2> ... support
 
@@ -507,12 +507,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def setup_advisories_filter(self):
         self.advisoryRB = {}
         widgets = [
-                    (self.ui.rbAdvisories,'affected'),
-                    (self.ui.rbAdvisoriesApplied,'applied'),
-                    (self.ui.rbAdvisoriesAll,'all')
+                    (self.ui.rbAdvisories, 'affected'),
+                    (self.ui.rbAdvisoriesApplied, 'applied'),
+                    (self.ui.rbAdvisoriesAll, 'all')
         ]
-        for w,tag in widgets:
-            w.connect('toggled',self.populate_advisories,tag)
+        for w, tag in widgets:
+            w.connect('toggled', self.populate_advisories, tag)
             w.set_mode(False)
             self.advisoryRB[tag] = w
 
@@ -524,10 +524,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.setup_package_radio_buttons(self.ui.rbMasked, "masked")
         self.setup_package_radio_buttons(self.ui.rbAll, "all")
         self.setup_package_radio_buttons(self.ui.rbPkgSets, "pkgsets")
-        self.setup_package_radio_buttons(self.ui.rbPkgQueued,"queued")
+        self.setup_package_radio_buttons(self.ui.rbPkgQueued, "queued")
 
     def setup_package_radio_buttons(self, widget, tag):
-        widget.connect('toggled',self.on_pkgFilter_toggled, tag)
+        widget.connect('toggled', self.on_pkgFilter_toggled, tag)
 
         #widget.set_relief( gtk.RELIEF_NONE )
         widget.set_mode( False )
@@ -597,8 +597,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         """ setup misc application images """
 
         # progressImage
-        iconpath = os.path.join(const.PIXMAPS_PATH,"sabayon.png")
-        if os.path.isfile(iconpath) and os.access(iconpath,os.R_OK):
+        iconpath = os.path.join(const.PIXMAPS_PATH, "sabayon.png")
+        if os.path.isfile(iconpath) and os.access(iconpath, os.R_OK):
             try:
                 p = gtk.gdk.pixbuf_new_from_file( iconpath )
                 self.ui.progressImage.set_from_pixbuf(p)
@@ -648,8 +648,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if self.do_debug:
             cr = False
             if connected: cr = True
-            print_generic("conn result",cr)
-        if (isinstance(connected,bool) and (not connected)) or \
+            print_generic("conn result", cr)
+        if (isinstance(connected, bool) and (not connected)) or \
             (self.Equo.UGC == None):
             self._is_working = False
             self._spawning_ugc = False
@@ -678,7 +678,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             mymtime = entropy.tools.get_file_unix_mtime(mypath)
             mytime = entropy.tools.convert_unix_time_to_human_time(mymtime)
             self.dbBackupStore.append(
-                (mypath,os.path.basename(mypath), mytime,) )
+                (mypath, os.path.basename(mypath), mytime,) )
 
     def setup_preferences(self):
 
@@ -730,8 +730,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         def get_ugc_repo_text( column, cell, model, myiter ):
             obj = model.get_value( myiter, 0 )
             if obj:
-                t = "[<b>%s</b>] %s" % (obj['repoid'],obj['description'],)
-                cell.set_property('markup',t)
+                t = "[<b>%s</b>] %s" % (obj['repoid'], obj['description'],)
+                cell.set_property('markup', t)
 
         def get_ugc_logged_text( column, cell, model, myiter ):
             obj = model.get_value( myiter, 0 )
@@ -741,7 +741,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     logged_data = self.Equo.UGC.read_login(obj['repoid'])
                     if logged_data != None:
                         t = "<i>%s</i>" % (logged_data[0],)
-                cell.set_property('markup',t)
+                cell.set_property('markup', t)
 
         def get_ugc_status_pix( column, cell, model, myiter ):
             if self.Equo.UGC == None:
@@ -787,7 +787,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         def fill_setting_view(model, view, data):
             model.clear()
             view.set_model(model)
-            view.set_property('headers-visible',False)
+            view.set_property('headers-visible', False)
             for item in data:
                 model.append([item])
             view.expand_all()
@@ -823,7 +823,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         def saveSetting(config_file, name, myvariable, mytype, data):
             # saving setting
             writedata = ''
-            if (not isinstance(data,mytype)) and (data != None):
+            if (not isinstance(data, mytype)) and (data != None):
                 errorMessage(
                     self.ui.main,
                     cleanMarkupString("%s: %s") % (_("Error setting parameter"),
@@ -834,11 +834,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 )
                 return False
 
-            if isinstance(data,int):
+            if isinstance(data, int):
                 writedata = str(data)
-            elif isinstance(data,list):
+            elif isinstance(data, list):
                 writedata = ' '.join(data)
-            elif isinstance(data,bool):
+            elif isinstance(data, bool):
                 writedata = "disable"
                 if data: writedata = "enable"
             elif isinstance(data, const_get_stringtype()):
@@ -846,7 +846,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             return save_parameter(config_file, name, writedata)
 
         def save_parameter(config_file, name, data):
-            return entropy.tools.write_parameter_to_file(config_file,name,data)
+            return entropy.tools.write_parameter_to_file(config_file, name, data)
 
         sys_settings_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
@@ -964,14 +964,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self._preferences[config_file]:
 
                 if mytype == list:
-                    fillfunc(wgwrite,wgread,setting)
+                    fillfunc(wgwrite, wgread, setting)
                 else:
                     fillfunc(name, mytype, wgwrite, setting)
 
         rc, e = SulfurConf.save()
         if not rc:
-            okDialog( self.ui.main, "%s: %s" % (_("Error saving preferences"),e) )
-        self.on_Preferences_toggled(None,False)
+            okDialog( self.ui.main, "%s: %s" % (_("Error saving preferences"), e) )
+        self.on_Preferences_toggled(None, False)
 
     def setup_masked_pkgs_warning_box(self):
         mytxt = "<b><big><span foreground='#FF0000'>%s</span></big></b>\n%s" % (
@@ -1003,24 +1003,24 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         de_session = os.getenv('DESKTOP_SESSION')
         if de_session == None: de_session = ''
         path = os.getenv('PATH').split(":")
-        if os.access("/usr/bin/xdg-open",os.X_OK):
+        if os.access("/usr/bin/xdg-open", os.X_OK):
             self._file_editor = "/usr/bin/xdg-open"
         if de_session.find("kde") != -1:
             for item in path:
-                itempath = os.path.join(item,'kwrite')
-                itempath2 = os.path.join(item,'kedit')
-                itempath3 = os.path.join(item,'kate')
-                if os.access(itempath,os.X_OK):
+                itempath = os.path.join(item, 'kwrite')
+                itempath2 = os.path.join(item, 'kedit')
+                itempath3 = os.path.join(item, 'kate')
+                if os.access(itempath, os.X_OK):
                     self._file_editor = itempath
                     break
-                elif os.access(itempath2,os.X_OK):
+                elif os.access(itempath2, os.X_OK):
                     self._file_editor = itempath2
                     break
-                elif os.access(itempath3,os.X_OK):
+                elif os.access(itempath3, os.X_OK):
                     self._file_editor = itempath3
                     break
         else:
-            if os.access('/usr/bin/gedit',os.X_OK):
+            if os.access('/usr/bin/gedit', os.X_OK):
                 self._file_editor = '/usr/bin/gedit'
 
     def start_working(self, do_busy = True):
@@ -1109,7 +1109,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             avail_repos = self.Equo.SystemSettings['repositories']['available']
             board_file = avail_repos[repoid]['local_notice_board']
             if not (os.path.isfile(board_file) and \
-                os.access(board_file,os.R_OK)):
+                os.access(board_file, os.R_OK)):
                 continue
             if entropy.tools.get_file_size(board_file) < 10:
                 continue
@@ -1164,7 +1164,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.show_notebook_tabs_after_install()
             return 126
         except Exception as e:
-            msg = "%s: %s" % (_('Unhandled exception'),e,)
+            msg = "%s: %s" % (_('Unhandled exception'), e,)
             self.progress_log(msg, extra = "repositories")
             self.disable_ugc = False
             self.show_notebook_tabs_after_install()
@@ -1247,7 +1247,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         widget = self.packageRB[tag]
         widget.set_active( True )
 
-    def set_notebook_page(self,page):
+    def set_notebook_page(self, page):
         ''' Switch to Page in GUI'''
         self.ui.notebook.set_current_page(page)
 
@@ -1289,7 +1289,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui_lock(True)
         action = self.lastPkgPB
         if action == 'all':
-            masks = ['installed','available','masked','updates']
+            masks = ['installed', 'available', 'masked', 'updates']
         else:
             masks = [action]
 
@@ -1323,7 +1323,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.progress.set_extraLabel(
             _('While you are waiting, take a break and look outside. Is it rainy?'))
         for flt in masks:
-            msg = "%s: %s" % (_('Calculating'),flt,)
+            msg = "%s: %s" % (_('Calculating'), flt,)
             self.set_status_ticker(msg)
             allpkgs += self.etpbase.get_groups(flt)
         if self.doProgress: next(self.progress.total) # -> Sort Lists
@@ -1342,7 +1342,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             empty = True
 
         #if bootstrap: time.sleep(1)
-        self.set_status_ticker("%s: %s %s" % (_("Showing"),len(allpkgs),_("items"),))
+        self.set_status_ticker("%s: %s %s" % (_("Showing"), len(allpkgs), _("items"),))
 
         show_pkgsets = False
         if action == "pkgsets":
@@ -1711,13 +1711,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         return None, None, None
 
     def run_editor(self, filename, delete = False):
-        cmd = ' '.join([self._file_editor,filename])
+        cmd = ' '.join([self._file_editor, filename])
         task = ParallelTask(self.__run_editor, cmd, delete, filename)
         task.start()
 
     def __run_editor(self, cmd, delete, filename):
         os.system(cmd+"&> /dev/null")
-        if delete and os.path.isfile(filename) and os.access(filename,os.W_OK):
+        if delete and os.path.isfile(filename) and os.access(filename, os.W_OK):
             try:
                 os.remove(filename)
             except OSError:
@@ -1730,9 +1730,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             identifier = model.get_value( iterator, 0 )
             destination = model.get_value( iterator, 2 )
             source = model.get_value( iterator, 1 )
-            source = os.path.join(os.path.dirname(destination),source)
+            source = os.path.join(os.path.dirname(destination), source)
             return identifier, source, destination
-        return 0,None,None
+        return 0, None, None
 
     def load_advisory_info_menu(self, item):
         my = SecurityAdvisoryMenu(self.ui.main)
@@ -1790,11 +1790,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.ugcRepositoriesModel.append([repodata])
 
     def load_color_settings(self):
-        for key,s_widget in list(self.colorSettingsMap.items()):
-            if not hasattr(SulfurConf,key):
+        for key, s_widget in list(self.colorSettingsMap.items()):
+            if not hasattr(SulfurConf, key):
                 if self.do_debug: print_generic("WARNING: no %s in SulfurConf" % (key,))
                 continue
-            color = getattr(SulfurConf,key)
+            color = getattr(SulfurConf, key)
             s_widget.set_color(gtk.gdk.color_parse(color))
 
 

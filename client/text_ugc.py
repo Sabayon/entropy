@@ -51,7 +51,7 @@ def ugc(options):
 def ugcLogin(repository, force = False):
 
     if repository not in Equo.validRepositories:
-        print_error(red("%s: %s." % (_("Invalid repository"),repository,)))
+        print_error(red("%s: %s." % (_("Invalid repository"), repository,)))
         Equo.UGC.remove_login(repository)
         return 1
 
@@ -95,7 +95,7 @@ def ugcLogin(repository, force = False):
 def ugcLogout(repository):
 
     if repository not in Equo.validRepositories:
-        print_error(red("%s: %s." % (_("Invalid repository"),repository,)))
+        print_error(red("%s: %s." % (_("Invalid repository"), repository,)))
         return 1
 
     login_data = Equo.UGC.read_login(repository)
@@ -134,7 +134,7 @@ def ugcVotes(options):
     if cmd == "get":
 
         data, err_string = Equo.UGC.get_vote(repository, pkgkey)
-        if not isinstance(data,float):
+        if not isinstance(data, float):
             print_error(
                 "[%s:%s] %s: %s, %s" % (
                     darkgreen(repository),
@@ -158,13 +158,13 @@ def ugcVotes(options):
         )
         def mycb(s):
             return s
-        input_data = [('vote',darkred(_("Insert your vote (from 1 to 5)")),mycb,False)]
+        input_data = [('vote', darkred(_("Insert your vote (from 1 to 5)")), mycb, False)]
 
         data = Equo.inputBox(blue("%s") % (_("Entropy UGC vote submission"),), input_data, cancel_button = True)
 
         if not data:
             return 1
-        elif not isinstance(data,dict):
+        elif not isinstance(data, dict):
             return 1
         elif 'vote' not in data:
             return 1
@@ -235,7 +235,7 @@ def ugcVotes(options):
                     blue(_("Vote added, thank you!")),
                 )
             )
-            ugcVotes([repository,"get",pkgkey])
+            ugcVotes([repository, "get", pkgkey])
 
 def ugcDocuments(options):
 
@@ -252,7 +252,7 @@ def ugcDocuments(options):
 
     if cmd == "get":
         data, err_string = Equo.UGC.get_docs(repository, pkgkey)
-        if not isinstance(data,(list,tuple)):
+        if not isinstance(data, (list, tuple)):
             print_error(
                 "[%s:%s] %s: %s, %s" % (
                     darkgreen(repository),
@@ -293,10 +293,10 @@ def ugcDocuments(options):
             )
         )
         valid_types = {
-            ('c',_('text comment')): etpConst['ugc_doctypes']['comments'],
-            ('f',_('simple file')): etpConst['ugc_doctypes']['generic_file'],
-            ('i',_('simple image')): etpConst['ugc_doctypes']['image'],
-            ('y',_('youtube video')): etpConst['ugc_doctypes']['youtube_video']
+            ('c', _('text comment')): etpConst['ugc_doctypes']['comments'],
+            ('f', _('simple file')): etpConst['ugc_doctypes']['generic_file'],
+            ('i', _('simple image')): etpConst['ugc_doctypes']['image'],
+            ('y', _('youtube video')): etpConst['ugc_doctypes']['youtube_video']
         }
         upload_needed_types = [
             etpConst['ugc_doctypes']['generic_file'],
@@ -307,37 +307,37 @@ def ugcDocuments(options):
         def mycb(s):
             return s
         def path_cb(s):
-            return os.access(s,os.R_OK)
+            return os.access(s, os.R_OK)
         def types_cb(s):
             return s in my_quick_types
 
         input_data = [
-            ('title',darkred(_("Insert document title")),mycb,False),
-            ('description',darkred(_("Insert document description/comment")),mycb,False),
-            ('keywords',darkred(_("Insert document's keywords (space separated)")),mycb,False),
-            ('type',"%s [%s]" % (darkred(_("Choose document type")),', '.join(["(%s) %s" % (brown(x[0]),darkgreen(x[1]),) for x in valid_types])),types_cb,False),
+            ('title', darkred(_("Insert document title")), mycb, False),
+            ('description', darkred(_("Insert document description/comment")), mycb, False),
+            ('keywords', darkred(_("Insert document's keywords (space separated)")), mycb, False),
+            ('type', "%s [%s]" % (darkred(_("Choose document type")), ', '.join(["(%s) %s" % (brown(x[0]), darkgreen(x[1]),) for x in valid_types])), types_cb, False),
         ]
         data = Equo.inputBox(blue("%s") % (_("Entropy UGC document submission"),), input_data, cancel_button = True)
 
         if not data:
             return 1
-        elif not isinstance(data,dict):
+        elif not isinstance(data, dict):
             return 1
 
         doc_type = None
-        for myshort,mylong in valid_types:
+        for myshort, mylong in valid_types:
             if data['type'] == myshort:
-                doc_type = (myshort,mylong)
-                data['type'] = valid_types.get((myshort,mylong,))
+                doc_type = (myshort, mylong)
+                data['type'] = valid_types.get((myshort, mylong,))
                 break
 
         data['path'] = None
         if data['type'] in upload_needed_types:
-            input_data = [('path',darkred(_("Insert document path")),path_cb,False)]
+            input_data = [('path', darkred(_("Insert document path")), path_cb, False)]
             u_data = Equo.inputBox(blue("%s") % (_("Entropy UGC document submission"),), input_data, cancel_button = True)
             if not u_data:
                 return 1
-            elif not isinstance(data,dict):
+            elif not isinstance(data, dict):
                 return 1
             data['path'] = u_data['path']
 
@@ -403,7 +403,7 @@ def ugcDocuments(options):
             )
             return 1
         else:
-            if isinstance(data,tuple):
+            if isinstance(data, tuple):
                 iddoc, r_content = data
             else:
                 iddoc = rslt
@@ -456,7 +456,7 @@ def ugcDocuments(options):
         rc = Equo.askQuestion("Would you like to review them?")
         if rc == _("Yes"):
             data, err_msg = Equo.UGC.get_documents_by_identifiers(repository, identifiers)
-            if not isinstance(data,tuple):
+            if not isinstance(data, tuple):
                 print_error(
                     "[%s:%s] %s: %s, %s" % (
                         darkgreen(repository),
@@ -476,7 +476,7 @@ def ugcDocuments(options):
 
         for identifier in identifiers:
             doc_data, err_msg = Equo.UGC.get_documents_by_identifiers(repository, [identifier])
-            if not isinstance(doc_data,tuple):
+            if not isinstance(doc_data, tuple):
                 print_error(
                     "[%s:%s] %s: %s, %s" % (
                         darkgreen(repository),
@@ -546,7 +546,7 @@ def showDocument(mydict, repository, pkgkey):
     else:
         text = mydict['ddata'].tostring()
     text = const_convert_to_unicode(text)
-    _my_formatted_print(text,"\t%s: " % (blue(_("Content")),),"\t")
+    _my_formatted_print(text, "\t%s: " % (blue(_("Content")),), "\t")
 
     print_info("\t%s: %s" % (
             blue(_("Keywords")),

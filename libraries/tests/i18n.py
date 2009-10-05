@@ -3,8 +3,8 @@ import os
 locale_dir = os.path.realpath(os.path.join(os.getcwd(), "i18n"))
 os.environ['TEXTDOMAINDIR'] = locale_dir
 import sys
-sys.path.insert(0,'.')
-sys.path.insert(0,'../')
+sys.path.insert(0, '.')
+sys.path.insert(0, '../')
 
 import unittest
 from entropy.i18n import _, change_language

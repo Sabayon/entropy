@@ -92,10 +92,10 @@ class Repository(SocketCommands):
         product = myargs[2]
         try:
             branch = str(myargs[3])
-        except (UnicodeEncodeError,UnicodeDecodeError,):
+        except (UnicodeEncodeError, UnicodeDecodeError,):
             return None
         foreign_idpackages = myargs[4:]
-        x = (repository,arch,product,branch,)
+        x = (repository, arch, product, branch,)
 
         valid = self.HostInterface.is_repository_available(x)
         if not valid:
@@ -124,10 +124,10 @@ class Repository(SocketCommands):
         product = myargs[2]
         try:
             branch = str(myargs[3])
-        except (UnicodeEncodeError,UnicodeDecodeError,):
+        except (UnicodeEncodeError, UnicodeDecodeError,):
             return None
 
-        x = (repository,arch,product,branch,)
+        x = (repository, arch, product, branch,)
         valid = self.HostInterface.is_repository_available(x)
         if not valid:
             return valid
@@ -162,10 +162,10 @@ class Repository(SocketCommands):
         product = myargs[2]
         try:
             branch = str(myargs[3])
-        except (UnicodeEncodeError,UnicodeDecodeError,):
+        except (UnicodeEncodeError, UnicodeDecodeError,):
             return None
 
-        x = (repository,arch,product,branch,)
+        x = (repository, arch, product, branch,)
         valid = self.HostInterface.is_repository_available(x)
         if not valid:
             return valid
@@ -197,10 +197,10 @@ class Repository(SocketCommands):
         product = myargs[2]
         try:
             branch = str(myargs[3])
-        except (UnicodeEncodeError,UnicodeDecodeError,):
+        except (UnicodeEncodeError, UnicodeDecodeError,):
             return None
 
-        x = (repository,arch,product,branch,)
+        x = (repository, arch, product, branch,)
         valid = self.HostInterface.is_repository_available(x)
         if not valid:
             return valid
@@ -237,7 +237,7 @@ class Repository(SocketCommands):
         product = myargs[3]
         try:
             branch = str(myargs[4])
-        except (UnicodeEncodeError,UnicodeDecodeError,):
+        except (UnicodeEncodeError, UnicodeDecodeError,):
             return None
         zidpackages = myargs[5:]
         idpackages = []
@@ -247,7 +247,7 @@ class Repository(SocketCommands):
         if not idpackages:
             return None
         idpackages = tuple(sorted(idpackages))
-        x = (repository,arch,product,branch,)
+        x = (repository, arch, product, branch,)
 
         valid = self.HostInterface.is_repository_available(x)
         if not valid:
@@ -288,7 +288,7 @@ class Repository(SocketCommands):
         return result
 
     def get_database_path(self, repository, arch, product, branch):
-        repoitems = (repository,arch,product,branch,)
+        repoitems = (repository, arch, product, branch,)
         mydbroot = self.HostInterface.repositories[repoitems]['dbpath']
-        dbpath = os.path.join(mydbroot,etpConst['etpdatabasefile'])
+        dbpath = os.path.join(mydbroot, etpConst['etpdatabasefile'])
         return dbpath

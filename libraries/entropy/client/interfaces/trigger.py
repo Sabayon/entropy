@@ -293,19 +293,19 @@ class Trigger:
 
             # Not mandatory variables
 
-            eclasses = ' '.join(pkgdata.get('eclasses',[]))
+            eclasses = ' '.join(pkgdata.get('eclasses', []))
             if const_isunicode(eclasses):
                 eclasses = eclasses.encode('utf-8')
 
-            unpackdir = pkgdata.get('unpackdir','')
+            unpackdir = pkgdata.get('unpackdir', '')
             if const_isunicode(unpackdir):
                 unpackdir = unpackdir.encode('utf-8')
 
-            imagedir = pkgdata.get('imagedir','')
+            imagedir = pkgdata.get('imagedir', '')
             if const_isunicode(imagedir):
                 imagedir = imagedir.encode('utf-8')
 
-            sb_dirs = [unpackdir,imagedir]
+            sb_dirs = [unpackdir, imagedir]
             sb_write = ':'.join(sb_dirs)
 
             myenv = {
@@ -380,20 +380,20 @@ class Trigger:
         if etpUi['mute']:
             oldsystderr = sys.stderr
             oldsysstdout = sys.stdout
-            stdfile = open("/dev/null","w")
+            stdfile = open("/dev/null", "w")
             sys.stdout = stdfile
             sys.stderr = stdfile
 
         tg_pfx = "%s/trigger-" % (etpConst['entropyunpackdir'],)
         while 1:
-            triggerfile = "%s%s" % (tg_pfx,self.Entropy.entropyTools.get_random_number(),)
+            triggerfile = "%s%s" % (tg_pfx, self.Entropy.entropyTools.get_random_number(),)
             if not os.path.isfile(triggerfile): break
 
         triggerdir = os.path.dirname(triggerfile)
         if not os.path.isdir(triggerdir):
             os.makedirs(triggerdir)
 
-        f = open(triggerfile,"w")
+        f = open(triggerfile, "w")
         chunk = 1024
         start = 0
         while 1:
@@ -410,12 +410,12 @@ class Trigger:
             sys.stdout = oldsysstdout
             stdfile.close()
 
-        f = open(triggerfile,"r")
+        f = open(triggerfile, "r")
         interpreter = f.readline().strip()
         f.close()
         entropy_sh = etpConst['trigger_sh_interpreter']
         if interpreter == "#!%s" % (entropy_sh,):
-            os.chmod(triggerfile,0o775)
+            os.chmod(triggerfile, 0o775)
             my = self.EntropyShSandbox(self.Entropy)
         else:
             my = self.EntropyPySandbox(self.Entropy)

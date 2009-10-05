@@ -171,7 +171,7 @@ def search_belongs(files, idreturn = False, dbconn = None, Equo = None):
     for xfile in files:
         like = False
         if xfile.find("*") != -1:
-            xfile.replace("*","%")
+            xfile.replace("*", "%")
             like = True
         results[xfile] = set()
         idpackages = clientDbconn.searchBelongs(xfile, like)
@@ -267,7 +267,7 @@ def search_inverse_dependencies(atoms, dbconn = None, Equo = None):
             darkgreen("%s..." % (_("Inverse Dependencies Search"),) ))
 
     match_repo = True
-    if not hasattr(Equo,'atom_match'):
+    if not hasattr(Equo, 'atom_match'):
         match_repo = False
 
     clientDbconn = dbconn
@@ -379,7 +379,7 @@ def search_required_libraries(libraries, dbconn = None, Equo = None):
         clientDbconn = Equo.clientDbconn
 
     for library in libraries:
-        search_lib = library.replace("*","%")
+        search_lib = library.replace("*", "%")
         results = clientDbconn.searchNeeded(search_lib, like = True)
         for result in results:
 
@@ -619,7 +619,7 @@ def search_orphaned_files(Equo = None):
     tdbconn.cursor.execute('select file from content order by file desc')
     if not etpUi['quiet']:
         fname = "/tmp/equo-orphans.txt"
-        f_out = open(fname,"w")
+        f_out = open(fname, "w")
         print_info(red(" @@ ")+blue("%s: " % (_
             ("Writing file to disk"),)) + bold(fname))
 

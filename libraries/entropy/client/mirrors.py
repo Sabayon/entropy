@@ -23,7 +23,7 @@ class StatusInterface(dict):
         return self[mirrorname]
 
     def get_failing_mirror_status(self, mirrorname):
-        return self.get(mirrorname,0)
+        return self.get(mirrorname, 0)
 
     def set_failing_mirror_status(self, mirrorname, value):
         self[mirrorname] = value

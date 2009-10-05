@@ -44,7 +44,7 @@ class TaskExecutor:
         elif len(args)+1 < data['args']:
             return False, 'not enough args'
 
-        args.insert(0,queue_id)
+        args.insert(0, queue_id)
         self.task_result = None
         t = ParallelTask(data['func'], *args, **kwargs)
         t.start()
@@ -53,9 +53,9 @@ class TaskExecutor:
             if not t.isAlive(): break
             time.sleep(2)
             live_item, key = self.SystemInterface.get_item_by_queue_id(queue_id)
-            if isinstance(live_item,dict) and (key == "processing") and (not killed):
+            if isinstance(live_item, dict) and (key == "processing") and (not killed):
                 if live_item['kill'] and (live_item['processing_pid'] != None):
-                    os.kill(live_item['processing_pid'],signal.SIGKILL)
+                    os.kill(live_item['processing_pid'], signal.SIGKILL)
                     killed = True
         if killed:
             return False, 'killed by user'
@@ -80,13 +80,13 @@ class Server(SocketHost):
 
         def hello_world(self):
             rc = subprocess.call('echo hello world', shell = True)
-            return True,rc
+            return True, rc
 
 
     queue_file = 'system_manager_queue'
     pinboard_file = "system_manager_pinboard"
     queue_ext_rc_dir = "system_manager_rc"
-    STDOUT_STORAGE_DIR = os.path.join(etpConst['dumpstoragedir'],'system_manager_stdout')
+    STDOUT_STORAGE_DIR = os.path.join(etpConst['dumpstoragedir'], 'system_manager_stdout')
     def __init__(self, EntropyInterface, do_ssl = False, stdout_logging = True, entropy_interface_kwargs = {}, **kwargs):
 
         self.queue_loaded = False
@@ -106,13 +106,13 @@ class Server(SocketHost):
 
         if 'external_cmd_classes' not in kwargs:
             kwargs['external_cmd_classes'] = []
-        kwargs['external_cmd_classes'].insert(0,Base)
+        kwargs['external_cmd_classes'].insert(0, Base)
 
         self.Entropy = EntropyInterface(**entropy_interface_kwargs)
         self.Text = TextInterface()
         self.SystemExecutor = TaskExecutor(self, self.Entropy)
 
-        self.ExecutorCommandClasses = [(self.BuiltInSystemManagerExecutorCommands,[],{},)]
+        self.ExecutorCommandClasses = [(self.BuiltInSystemManagerExecutorCommands, [], {},)]
         self.ExecutorCommandInstances = []
         if 'external_executor_cmd_classes' in kwargs:
             self.ExecutorCommandClasses += kwargs.pop('external_executor_cmd_classes')
@@ -127,10 +127,10 @@ class Server(SocketHost):
         self.PinboardData = {}
         self.load_pinboard()
 
-        self.done_queue_keys = ['processed','errored']
-        self.removable_queue_keys = ['processed','errored','queue']
+        self.done_queue_keys = ['processed', 'errored']
+        self.removable_queue_keys = ['processed', 'errored', 'queue']
         self.processing_queue_keys = ['processing']
-        self.dict_queue_keys = ['queue','processing','processed','errored']
+        self.dict_queue_keys = ['queue', 'processing', 'processed', 'errored']
         self.ManagerQueueStdInOut = {}
         self.ManagerQueue = {
             'queue': {},
@@ -166,14 +166,14 @@ class Server(SocketHost):
         self.play_queue()
 
     def __del__(self):
-        if hasattr(self,'queue_loaded'):
+        if hasattr(self, 'queue_loaded'):
             if self.queue_loaded:
                 self.store_queue()
 
     def handle_executor_command_classes_initialization(self):
         for myclass, args, kwargs in self.ExecutorCommandClasses:
             myintf = myclass(self.SystemExecutor, *args,**kwargs)
-            if hasattr(myintf,'available_commands'):
+            if hasattr(myintf, 'available_commands'):
                 self.SystemExecutor.register(myintf.available_commands)
                 self.ExecutorCommandInstances.append(myintf)
             else:
@@ -183,13 +183,13 @@ class Server(SocketHost):
         if os.path.isfile(self.STDOUT_STORAGE_DIR) or os.path.islink(self.STDOUT_STORAGE_DIR):
             os.remove(self.STDOUT_STORAGE_DIR)
         if not os.path.isdir(self.STDOUT_STORAGE_DIR):
-            os.makedirs(self.STDOUT_STORAGE_DIR,0o775)
+            os.makedirs(self.STDOUT_STORAGE_DIR, 0o775)
             if etpConst['entropygid'] != None:
-                const_setup_perms(self.STDOUT_STORAGE_DIR,etpConst['entropygid'])
+                const_setup_perms(self.STDOUT_STORAGE_DIR, etpConst['entropygid'])
 
     def load_pinboard(self):
         obj = self.get_stored_pinboard()
-        if isinstance(obj,dict):
+        if isinstance(obj, dict):
             self.PinboardData = obj
             return True
         return False
@@ -249,7 +249,7 @@ class Server(SocketHost):
 
     def load_queue(self):
         obj = self.get_stored_queue()
-        if isinstance(obj,dict):
+        if isinstance(obj, dict):
             self.ManagerQueue = obj
             return True
         return False
@@ -258,13 +258,13 @@ class Server(SocketHost):
         self.dumpTools.dumpobj(self.queue_file, self.ManagerQueue)
 
     def load_queue_ext_rc(self, queue_id):
-        return self.dumpTools.loadobj(os.path.join(self.queue_ext_rc_dir,str(queue_id)))
+        return self.dumpTools.loadobj(os.path.join(self.queue_ext_rc_dir, str(queue_id)))
 
     def store_queue_ext_rc(self, queue_id, rc):
-        return self.dumpTools.dumpobj(os.path.join(self.queue_ext_rc_dir,str(queue_id)), rc)
+        return self.dumpTools.dumpobj(os.path.join(self.queue_ext_rc_dir, str(queue_id)), rc)
 
     def remove_queue_ext_rc(self, queue_id):
-        return self.dumpTools.removeobj(os.path.join(self.queue_ext_rc_dir,str(queue_id)))
+        return self.dumpTools.removeobj(os.path.join(self.queue_ext_rc_dir, str(queue_id)))
 
     def get_ts(self):
         return self.datetime.fromtimestamp(time.time())
@@ -361,11 +361,11 @@ class Server(SocketHost):
         self.store_queue()
 
     def flush_item(self, item, queue_id):
-        if not isinstance(item,dict):
+        if not isinstance(item, dict):
             return False
         if 'stdout' in item:
             stdout = item['stdout']
-            if (os.path.isfile(stdout) and os.access(stdout,os.W_OK)):
+            if (os.path.isfile(stdout) and os.access(stdout, os.W_OK)):
                 os.remove(stdout)
         if 'interactive' in item:
             if item['interactive'] and (queue_id in self.ManagerQueueStdInOut):
@@ -375,14 +375,14 @@ class Server(SocketHost):
         return True
 
     def assign_unique_stdout_file(self, queue_id):
-        stdout = os.path.join(self.STDOUT_STORAGE_DIR,"%d.%s" % (queue_id,"stdout",))
+        stdout = os.path.join(self.STDOUT_STORAGE_DIR, "%d.%s" % (queue_id, "stdout",))
         if os.path.isfile(stdout):
             os.remove(stdout)
         count = 0
         orig_stdout = stdout
         while os.path.lexists(stdout):
             count += 1
-            stdout = "%s.%d" % (orig_stdout,count,)
+            stdout = "%s.%d" % (orig_stdout, count,)
         return stdout
 
     def generate_unique_queue_id(self):
@@ -396,7 +396,7 @@ class Server(SocketHost):
                 queue_id = abs(hash(os.urandom(1)))
             except NotImplementedError:
                 random.seed()
-                queue_id = random.randint(1000000000000000000,9999999999999999999)
+                queue_id = random.randint(1000000000000000000, 9999999999999999999)
             if queue_id not in current_ids:
                 return queue_id
 
@@ -418,14 +418,14 @@ class Server(SocketHost):
             if self.ManagerQueue['queue_order']:
                 queue_id = self.ManagerQueue['queue_order'].pop(0)
                 return self.ManagerQueue['queue'].pop(queue_id), queue_id
-        except (IndexError,KeyError,):
+        except (IndexError, KeyError,):
             self.entropyTools.print_traceback()
         return None, None
 
     def _queue_copy_obj(self, obj):
-        if isinstance(obj,(dict,set,frozenset)):
+        if isinstance(obj, (dict, set, frozenset)):
             return obj.copy()
-        elif isinstance(obj,(list,tuple)):
+        elif isinstance(obj, (list, tuple)):
             return obj[:]
         return obj
 

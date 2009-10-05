@@ -24,7 +24,7 @@ from entropy.i18n import _
 class FileUpdates:
 
     def __init__(self, EquoInstance):
-        if not isinstance(EquoInstance,Client):
+        if not isinstance(EquoInstance, Client):
             mytxt = _("A valid Client instance or subclass is needed")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
@@ -108,14 +108,14 @@ class FileUpdates:
                 path = os.path.dirname(path)
                 scanfile = True
 
-            for currentdir,subdirs,files in os.walk(path):
+            for currentdir, subdirs, files in os.walk(path):
                 for item in files:
 
                     if scanfile:
                         if path != item:
                             continue
 
-                    filepath = os.path.join(currentdir,item)
+                    filepath = os.path.join(currentdir, item)
                     if item.startswith("._cfg"):
 
                         # further check then
@@ -177,13 +177,13 @@ class FileUpdates:
                             except:
                                 pass # possible encoding issues
         # store data
-        self.Cacher.push(etpCache['configfiles'],scandata)
+        self.Cacher.push(etpCache['configfiles'], scandata)
         self.scandata = scandata.copy()
         return scandata
 
     def load_cache(self):
         sd = self.Cacher.pop(etpCache['configfiles'])
-        if not isinstance(sd,dict):
+        if not isinstance(sd, dict):
             raise CacheCorruptionError("CacheCorruptionError")
         # quick test if data is reliable
         try:
@@ -200,7 +200,7 @@ class FileUpdates:
                 name_cache.add(mysource)
 
             return sd
-        except (KeyError,EOFError,IOError,):
+        except (KeyError, EOFError, IOError,):
             raise CacheCorruptionError("CacheCorruptionError")
 
     def add_to_cache(self, filepath, quiet = False):
@@ -221,7 +221,7 @@ class FileUpdates:
         index += 1
         mydata = self.generate_dict(filepath)
         self.scandata[index] = mydata.copy()
-        self.Cacher.push(etpCache['configfiles'],self.scandata)
+        self.Cacher.push(etpCache['configfiles'], self.scandata)
 
     def remove_from_cache(self, key):
         self.scanfs(dcache = True)
@@ -229,7 +229,7 @@ class FileUpdates:
             del self.scandata[key]
         except:
             pass
-        self.Cacher.push(etpCache['configfiles'],self.scandata)
+        self.Cacher.push(etpCache['configfiles'], self.scandata)
         return self.scandata
 
     def generate_dict(self, filepath):
@@ -260,7 +260,7 @@ class FileUpdates:
                     # if it's broken, skip diff and automerge
                     if not os.path.exists(filepath):
                         return mydict
-                result = getstatusoutput('diff -Nua "%s" "%s" | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'' % (filepath,tofilepath,))[1]
+                result = getstatusoutput('diff -Nua "%s" "%s" | grep "^[+-][^+-]" | grep -v \'# .Header:.*\'' % (filepath, tofilepath,))[1]
                 if not result:
                     mydict['automerge'] = True
             except:
@@ -274,7 +274,7 @@ class FileUpdates:
                         # if it's broken, skip diff and automerge
                         if not os.path.exists(filepath):
                             return mydict
-                    result = subprocess.call('diff -Bbua "%s" "%s" | egrep \'^[+-]\' | egrep -v \'^[+-][\t ]*#|^--- |^\+\+\+ \' | egrep -qv \'^[-+][\t ]*$\'' % (filepath,tofilepath,), shell = True)
+                    result = subprocess.call('diff -Bbua "%s" "%s" | egrep \'^[+-]\' | egrep -v \'^[+-][\t ]*#|^--- |^\+\+\+ \' | egrep -qv \'^[-+][\t ]*$\'' % (filepath, tofilepath,), shell = True)
                     if result == 1:
                         mydict['automerge'] = True
                 except:

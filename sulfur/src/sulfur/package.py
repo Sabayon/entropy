@@ -19,7 +19,7 @@ EquoIntf = Equo()
 class DummyEntropyPackage:
 
     def __init__(self, namedesc = None, dummy_type = -1, onlyname = ''):
-        self.matched_atom = (0,0)
+        self.matched_atom = (0, 0)
         self.namedesc = namedesc
         self.queued = None
         self.repoid = ''
@@ -143,7 +143,7 @@ class EntropyPackage:
     """
 
     def __del__(self):
-        if hasattr(self,'remote'):
+        if hasattr(self, 'remote'):
             if self.remote:
                 self.dbconn.closeDB()
 
@@ -206,7 +206,7 @@ class EntropyPackage:
             t = self.matched_atom
             desc = _("Recursive Package Set")
             t += '\n<small><span foreground=\'%s\'>%s</span></small>' % (
-                SulfurConf.color_pkgdesc,cleanMarkupString(desc),)
+                SulfurConf.color_pkgdesc, cleanMarkupString(desc),)
             return t
 
         ugc_string = ''
@@ -426,7 +426,7 @@ class EntropyPackage:
 
     def get_key_slot(self):
         if self.pkgset:
-            return self.set_name,"0"
+            return self.set_name, "0"
         return self.dbconn.retrieveKeySlot(self.matched_id)
 
     def get_description_no_markup(self):
@@ -537,7 +537,7 @@ class EntropyPackage:
         return EquoIntf.UGC.UGCCache.get_package_downloads(
             self.get_repository_clean(), key)
 
-    def get_attribute(self,attr):
+    def get_attribute(self, attr):
         x = None
         if attr == "description":
             x = cleanMarkupString(self.dbconn.retrieveDescription(self.matched_id))

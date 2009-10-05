@@ -110,9 +110,9 @@ class PortagePackageGroups(dict):
 class PortagePlugin(SpmPlugin):
 
     builtin_pkg_sets = [
-        "system","world","installed","module-rebuild",
-        "security","preserved-rebuild","live-rebuild",
-        "downgrade","unavailable"
+        "system", "world", "installed", "module-rebuild",
+        "security", "preserved-rebuild", "live-rebuild",
+        "downgrade", "unavailable"
     ]
 
     package_phases_map = {
@@ -182,7 +182,7 @@ class PortagePlugin(SpmPlugin):
     def init_singleton(self, OutputInterface):
 
         mytxt = _("OutputInterface does not have an updateProgress method")
-        if not hasattr(OutputInterface,'updateProgress'):
+        if not hasattr(OutputInterface, 'updateProgress'):
             raise AttributeError(mytxt)
         elif not hasattr(OutputInterface.updateProgress, '__call__'):
             raise AttributeError(mytxt)
@@ -224,7 +224,7 @@ class PortagePlugin(SpmPlugin):
         except ImportError:
             self.glsa = None
 
-        if hasattr(self.portage,'exception'):
+        if hasattr(self.portage, 'exception'):
             self.portage_exception = self.portage.exception
         else: # portage <2.2 workaround
             self.portage_exception = Exception
@@ -250,7 +250,7 @@ class PortagePlugin(SpmPlugin):
         return ["CHOST", "COUNTER", "DEPEND", "DESCRIPTION",
             "EAPI", "HOMEPAGE", "IUSE", "KEYWORDS",
             "LICENSE", "PDEPEND", "PROPERTIES", "PROVIDE", "RDEPEND",
-            "repository", "RESTRICT" , "SLOT", "USE"
+            "repository", "RESTRICT", "SLOT", "USE"
         ]
 
     def get_cache_directory(self, root = None):
@@ -326,8 +326,8 @@ class PortagePlugin(SpmPlugin):
         from xml.dom import minidom
         data = {}
         portdir = self.portage.settings['PORTDIR']
-        myfile = os.path.join(portdir,category,"metadata.xml")
-        if os.access(myfile,os.R_OK) and os.path.isfile(myfile):
+        myfile = os.path.join(portdir, category, "metadata.xml")
+        if os.access(myfile, os.R_OK) and os.path.isfile(myfile):
             doc = minidom.parse(myfile)
             longdescs = doc.getElementsByTagName("longdescription")
             for longdesc in longdescs:
@@ -342,7 +342,7 @@ class PortagePlugin(SpmPlugin):
         """
         if not self.glsa:
             return []
-        if security_property not in ['new','all','affected']:
+        if security_property not in ['new', 'all', 'affected']:
             return []
 
         glsaconfig = self.glsa.checkconfig(
@@ -757,7 +757,7 @@ class PortagePlugin(SpmPlugin):
         trigger_file = os.path.join(etpConst['triggersdir'], data['category'],
             data['name'], etpConst['triggername'])
         if os.access(trigger_file, os.R_OK) and os.path.isfile(trigger_file):
-            with open(trigger_file,"rb") as trig_f:
+            with open(trigger_file, "rb") as trig_f:
                 data['trigger'] = trig_f.read()
 
         # Get Spm ChangeLog
@@ -801,19 +801,19 @@ class PortagePlugin(SpmPlugin):
         data['dependencies'] = {}
 
         for x in portage_metadata['RDEPEND'].split():
-            if x.startswith("!") or (x in ("(","||",")","")):
+            if x.startswith("!") or (x in ("(", "||", ")", "")):
                 continue
             data['dependencies'][x] = etpConst['spm']['(r)depend_id']
 
         for x in portage_metadata['PDEPEND'].split():
-            if x.startswith("!") or (x in ("(","||",")","")):
+            if x.startswith("!") or (x in ("(", "||", ")", "")):
                 continue
             data['dependencies'][x] = etpConst['spm']['pdepend_id']
 
-        data['conflicts'] = [x.replace("!","") for x in \
+        data['conflicts'] = [x.replace("!", "") for x in \
             portage_metadata['RDEPEND'].split() + \
             portage_metadata['PDEPEND'].split() if \
-            x.startswith("!") and not x in ("(","||",")","")]
+            x.startswith("!") and not x in ("(", "||", ")", "")]
 
         if kern_dep_key is not None:
             data['dependencies'][kern_dep_key] = etpConst['spm']['(r)depend_id']
@@ -1235,7 +1235,7 @@ class PortagePlugin(SpmPlugin):
             licenses = []
 
         oldsystderr = sys.stderr
-        dev_null = open("/dev/null","w")
+        dev_null = open("/dev/null", "w")
         if not etpUi['debug']:
             sys.stderr = dev_null
 
@@ -1258,9 +1258,9 @@ class PortagePlugin(SpmPlugin):
         metadata = {}
 
         for key in keys:
-            mykeypath = os.path.join(myebuilddir,key)
-            if os.path.isfile(mykeypath) and os.access(mykeypath,os.R_OK):
-                f = open(mykeypath,"r")
+            mykeypath = os.path.join(myebuilddir, key)
+            if os.path.isfile(mykeypath) and os.access(mykeypath, os.R_OK):
+                f = open(mykeypath, "r")
                 metadata[key] = f.readline().strip()
                 f.close()
 
@@ -1483,8 +1483,8 @@ class PortagePlugin(SpmPlugin):
             os.path.isfile(bz2envfile) and package_metadata['versiontag']:
 
             envfile = entropy.tools.unpack_bzip2(bz2envfile)
-            bzf = bz2.BZ2File(bz2envfile,"w")
-            f = open(envfile,"r")
+            bzf = bz2.BZ2File(bz2envfile, "w")
+            f = open(envfile, "r")
             line = f.readline()
             while line:
                 if line == "KV_OUT_DIR=/usr/src/linux\n":
@@ -1823,7 +1823,7 @@ class PortagePlugin(SpmPlugin):
             except (IOError,) as e:
                 mytxt = "%s: %s: %s: %s" % (red(_("QA")),
                     brown(_("Cannot update Portage database to destination")),
-                    purple(pkg_dir),e,)
+                    purple(pkg_dir), e,)
                 self.updateProgress(
                     mytxt,
                     importance = 1,
@@ -1970,8 +1970,8 @@ class PortagePlugin(SpmPlugin):
         world_file_tmp = world_file + ".entropy.tmp"
         if os.access(world_file, os.W_OK) and os.path.isfile(world_file):
 
-            new = open(world_file_tmp,"w")
-            old = open(world_file,"r")
+            new = open(world_file_tmp, "w")
+            old = open(world_file, "r")
             line = old.readline()
 
             while line:
@@ -2113,7 +2113,7 @@ class PortagePlugin(SpmPlugin):
         try:
             mytree = self.portage.vartree(root=root)
         except Exception as e:
-            raise SPMError("SPMError: %s: %s" % (Exception,e,))
+            raise SPMError("SPMError: %s: %s" % (Exception, e,))
         PortagePlugin.CACHE['vartree'][root] = mytree
         return mytree
 
@@ -2126,7 +2126,7 @@ class PortagePlugin(SpmPlugin):
         try:
             mytree = self.portage.portagetree(root=root)
         except Exception as e:
-            raise SPMError("SPMError: %s: %s" % (Exception,e,))
+            raise SPMError("SPMError: %s: %s" % (Exception, e,))
         PortagePlugin.CACHE['portagetree'][root] = mytree
         return mytree
 
@@ -2138,16 +2138,16 @@ class PortagePlugin(SpmPlugin):
 
         pkgdir = root+self.portage.settings['PKGDIR']
         try:
-            mytree = self.portage.binarytree(root,pkgdir)
+            mytree = self.portage.binarytree(root, pkgdir)
         except Exception as e:
-            raise SPMError("SPMError: %s: %s" % (Exception,e,))
+            raise SPMError("SPMError: %s: %s" % (Exception, e,))
         PortagePlugin.CACHE['binarytree'][root] = mytree
         return mytree
 
     def _get_portage_config(self, config_root, root, use_cache = True):
 
         if use_cache:
-            cached = PortagePlugin.CACHE['config'].get((config_root,root))
+            cached = PortagePlugin.CACHE['config'].get((config_root, root))
             if cached is not None:
                 return cached
 
@@ -2156,14 +2156,14 @@ class PortagePlugin(SpmPlugin):
                 target_root = root,
                 config_incrementals = self.portage_const.INCREMENTALS)
         except Exception as e:
-            raise SPMError("SPMError: %s: %s" % (Exception,e,))
+            raise SPMError("SPMError: %s: %s" % (Exception, e,))
         if use_cache:
-            PortagePlugin.CACHE['config'][(config_root,root)] = mysettings
+            PortagePlugin.CACHE['config'][(config_root, root)] = mysettings
 
         return mysettings
 
     def _get_package_use_file(self):
-        return os.path.join(self.portage_const.USER_CONFIG_PATH,'package.use')
+        return os.path.join(self.portage_const.USER_CONFIG_PATH, 'package.use')
 
     def _handle_new_useflags(self, atom, useflags, mark):
         matched_atom = self.match_package(atom)
@@ -2171,9 +2171,9 @@ class PortagePlugin(SpmPlugin):
             return False
         use_file = self._get_package_use_file()
 
-        if not (os.path.isfile(use_file) and os.access(use_file,os.W_OK)):
+        if not (os.path.isfile(use_file) and os.access(use_file, os.W_OK)):
             return False
-        f = open(use_file,"r")
+        f = open(use_file, "r")
         content = [x.strip() for x in f.readlines()]
         f.close()
 
@@ -2222,7 +2222,7 @@ class PortagePlugin(SpmPlugin):
             new_content.append(myline)
 
 
-        f = open(use_file+".tmp","w")
+        f = open(use_file+".tmp", "w")
         for line in new_content:
             f.write(line+"\n")
         f.flush()
@@ -2236,7 +2236,7 @@ class PortagePlugin(SpmPlugin):
             return False
 
         use_file = self._get_package_use_file()
-        if not (os.path.isfile(use_file) and os.access(use_file,os.W_OK)):
+        if not (os.path.isfile(use_file) and os.access(use_file, os.W_OK)):
             return False
 
         with open(use_file, "r") as f:
@@ -2296,7 +2296,7 @@ class PortagePlugin(SpmPlugin):
             return data
 
         use_file = self._get_package_use_file()
-        if not (os.path.isfile(use_file) and os.access(use_file,os.W_OK)):
+        if not (os.path.isfile(use_file) and os.access(use_file, os.W_OK)):
             return data
 
         use_data = self.portage_util.grabdict(use_file)
@@ -2417,7 +2417,7 @@ class PortagePlugin(SpmPlugin):
             myuse = xuse[:]
             if myuse[0] == "!":
                 myuse = myuse[1:]
-            if myuse[-1] in ("=","?",):
+            if myuse[-1] in ("=", "?",):
                 myuse = myuse[:-1]
             return myuse
 
@@ -2429,7 +2429,7 @@ class PortagePlugin(SpmPlugin):
                     """
                     explicitly support only specific types
                     """
-                    if (use[0] == "!") and (use[-1] not in ("=","?",)):
+                    if (use[0] == "!") and (use[-1] not in ("=", "?",)):
                         # this does not exist atm
                         continue
                     elif use[-1] == "=":
@@ -2508,17 +2508,17 @@ class PortagePlugin(SpmPlugin):
                 subsec = None
                 tail = ""
             elif mystr[0] == ")":
-                return [mylist,mystr[1:]]
+                return [mylist, mystr[1:]]
             elif has_left_paren and not has_right_paren:
                 raise InvalidDependString(
-                        "InvalidDependString: %s: '%s'" % (_("missing right parenthesis"),mystr,))
+                        "InvalidDependString: %s: '%s'" % (_("missing right parenthesis"), mystr,))
             elif has_left_paren and left_paren < right_paren:
-                freesec,subsec = mystr.split("(",1)
-                subsec,tail = self._paren_reduce(subsec)
+                freesec, subsec = mystr.split("(", 1)
+                subsec, tail = self._paren_reduce(subsec)
             else:
-                subsec,tail = mystr.split(")",1)
+                subsec, tail = mystr.split(")", 1)
                 subsec = self._strip_empty(subsec.split(" "))
-                return [mylist+subsec,tail]
+                return [mylist+subsec, tail]
             mystr = tail
             if freesec:
                 mylist = mylist + self._strip_empty(freesec.split(" "))
@@ -2579,7 +2579,7 @@ class PortagePlugin(SpmPlugin):
 
         # Quick validity checks
         for x in range(len(deparray)):
-            if deparray[x] in ["||","&&"]:
+            if deparray[x] in ["||", "&&"]:
                 if len(deparray) - 1 == x or not isinstance(deparray[x+1], list):
                     mytxt = _("missing atom list in")
                     raise InvalidDependString(deparray[x]+" "+mytxt+" \""+str(deparray)+"\"")
@@ -2598,7 +2598,7 @@ class PortagePlugin(SpmPlugin):
         while mydeparray:
             head = mydeparray.pop(0)
 
-            if isinstance(head,list):
+            if isinstance(head, list):
                 additions = self._use_reduce(head, uselist, masklist, matchall, excludeall)
                 if additions:
                     rlist.append(additions)
@@ -2619,7 +2619,7 @@ class PortagePlugin(SpmPlugin):
                     # Deprecation checks
                     warned = 0
                     if len(newdeparray[-1]) == 0:
-                        mytxt = "%s. (%s)" % (_("Empty target in string"),_("Deprecated"),)
+                        mytxt = "%s. (%s)" % (_("Empty target in string"), _("Deprecated"),)
                         self.updateProgress(
                             darkred("PortagePlugin._use_reduce(): %s" % (mytxt,)),
                             importance = 0,
@@ -2628,7 +2628,7 @@ class PortagePlugin(SpmPlugin):
                         )
                         warned = 1
                     if len(newdeparray) != 2:
-                        mytxt = "%s. (%s)" % (_("Nested use flags without parenthesis"),_("Deprecated"),)
+                        mytxt = "%s. (%s)" % (_("Nested use flags without parenthesis"), _("Deprecated"),)
                         self.updateProgress(
                             darkred("PortagePlugin._use_reduce(): %s" % (mytxt,)),
                             importance = 0,
@@ -2638,7 +2638,7 @@ class PortagePlugin(SpmPlugin):
                         warned = 1
                     if warned:
                         self.updateProgress(
-                            darkred("PortagePlugin._use_reduce(): "+" ".join(map(str,[head]+newdeparray))),
+                            darkred("PortagePlugin._use_reduce(): "+" ".join(map(str, [head]+newdeparray))),
                             importance = 0,
                             type = "error",
                             header = bold(" !!! ")
@@ -2910,7 +2910,7 @@ class PortagePlugin(SpmPlugin):
 
         if os.path.isfile(content_file):
 
-            f = open(content_file,"r")
+            f = open(content_file, "r")
             content = [x.decode('raw_unicode_escape') for x in f.readlines()]
             f.close()
             outcontent = set()
@@ -2934,7 +2934,7 @@ class PortagePlugin(SpmPlugin):
                             _("Probably Portage API has changed"),
                         )
                         raise InvalidData(myexc)
-                    outcontent.add((datafile,datatype))
+                    outcontent.add((datafile, datatype))
                 except:
                     pass
 
@@ -2964,7 +2964,7 @@ class PortagePlugin(SpmPlugin):
                         pkg_content[item[tmpdir_len:]] = const_convert_to_unicode("obj")
 
             # now remove
-            shutil.rmtree(mytempdir,True)
+            shutil.rmtree(mytempdir, True)
             try:
                 os.rmdir(mytempdir)
             except (OSError,):
@@ -2978,7 +2978,7 @@ class PortagePlugin(SpmPlugin):
         lines = []
 
         try:
-            f = open(needed_file,"r")
+            f = open(needed_file, "r")
             lines = [x.decode('raw_unicode_escape').strip() for x in f.readlines() if x.strip()]
             f.close()
         except IOError:
@@ -2989,11 +2989,11 @@ class PortagePlugin(SpmPlugin):
             if len(needed) == 2:
                 ownlib = needed[0]
                 ownelf = -1
-                if os.access(ownlib,os.R_OK):
+                if os.access(ownlib, os.R_OK):
                     ownelf = entropy.tools.read_elf_class(ownlib)
                 for lib in needed[1].split(","):
                     #if lib.find(".so") != -1:
-                    pkg_needed.add((lib,ownelf))
+                    pkg_needed.add((lib, ownelf))
 
         return sorted(pkg_needed)
 
@@ -3041,12 +3041,12 @@ class PortagePlugin(SpmPlugin):
             if len(foundfiles) > 1:
                 # get the latest
                 mtimes = []
-                for item in foundfiles: mtimes.append((entropy.tools.get_file_unix_mtime(os.path.join(log_dir,item)),item))
+                for item in foundfiles: mtimes.append((entropy.tools.get_file_unix_mtime(os.path.join(log_dir, item)), item))
                 mtimes = sorted(mtimes)
                 elogfile = mtimes[-1][1]
-            messages = entropy.tools.extract_elog(os.path.join(log_dir,elogfile))
+            messages = entropy.tools.extract_elog(os.path.join(log_dir, elogfile))
             for message in messages:
-                message = message.replace("emerge","install")
+                message = message.replace("emerge", "install")
                 pkg_messages.append(message.decode('raw_unicode_escape'))
 
         return pkg_messages
@@ -3057,8 +3057,8 @@ class PortagePlugin(SpmPlugin):
         if licenses_dir and os.path.isdir(licenses_dir):
             licdata = [x.strip() for x in license_string.split() if x.strip() and entropy.tools.is_valid_string(x.strip())]
             for mylicense in licdata:
-                licfile = os.path.join(licenses_dir,mylicense)
-                if os.access(licfile,os.R_OK):
+                licfile = os.path.join(licenses_dir, mylicense)
+                if os.access(licfile, os.R_OK):
                     if entropy.tools.istextfile(licfile):
                         f = open(licfile)
                         content = ''
@@ -3086,7 +3086,7 @@ class PortagePlugin(SpmPlugin):
                 # parse what mirror I need
                 mirrorURI = i.split("/")[2]
                 mirrorlist = set(self.get_download_mirrors(mirrorURI))
-                pkg_links.append([mirrorURI,mirrorlist])
+                pkg_links.append([mirrorURI, mirrorlist])
                 # mirrorURI = openoffice and mirrorlist = [link1, link2, link3]
 
         return pkg_links
@@ -3094,7 +3094,7 @@ class PortagePlugin(SpmPlugin):
     def _extract_pkg_metadata_ebuild_entropy_tag(self, ebuild):
         search_tag = etpConst['spm']['ebuild_pkg_tag_var']
         ebuild_tag = ''
-        f = open(ebuild,"r")
+        f = open(ebuild, "r")
         tags = [x.strip().decode('raw_unicode_escape') for x in f.readlines() if x.strip() and x.strip().startswith(search_tag)]
         f.close()
         if not tags: return ebuild_tag

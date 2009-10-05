@@ -78,7 +78,7 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True):
                         const_setup_file(d_path, E_GID, 0o775)
 
                 dmpfile = dump_path+D_EXT
-            with open(dmpfile,"wb") as dmp_f:
+            with open(dmpfile, "wb") as dmp_f:
                 pickle.dump(my_object, dmp_f)
                 dmp_f.flush()
             const_setup_file(dmpfile, E_GID, 0o664)
@@ -176,7 +176,7 @@ def loadobj(name, complete_path = False):
             dmpfile = dump_path+D_EXT
         if os.path.isfile(dmpfile) and os.access(dmpfile, os.R_OK):
             try:
-                with open(dmpfile,"rb") as dmp_f:
+                with open(dmpfile, "rb") as dmp_f:
                     obj = None
                     try:
                         obj = pickle.load(dmp_f)

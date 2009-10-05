@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import sys
 import os
-sys.path.insert(0,'.')
-sys.path.insert(0,'../')
+sys.path.insert(0, '.')
+sys.path.insert(0, '../')
 import unittest
 import tests._misc as _misc
 from entropy.transceivers import UrlFetcher, MultipleUrlFetcher

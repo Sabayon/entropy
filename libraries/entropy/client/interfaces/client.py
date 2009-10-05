@@ -429,7 +429,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             filepath = self.__repos_files['conflicting_tagged_packages'].get(
                 repoid)
             if os.access(filepath, os.R_OK) and os.path.isfile(filepath):
-                confl_f = open(filepath,"r")
+                confl_f = open(filepath, "r")
                 content = confl_f.readlines()
                 confl_f.close()
                 content = [x.strip().rsplit("#", 1)[0].strip().split() for x \
@@ -463,7 +463,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         if not (os.path.isfile(cli_conf) and os.access(cli_conf, os.R_OK)):
             return data
 
-        client_f = open(cli_conf,"r")
+        client_f = open(cli_conf, "r")
         clientconf = [x.strip() for x in client_f.readlines() if \
             x.strip() and not x.strip().startswith("#")]
         client_f.close()
@@ -475,13 +475,13 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             if line.startswith("filesbackup|") and (split_line_len == 2):
 
                 compatopt = split_line[1].strip().lower()
-                if compatopt in ("disable", "disabled","false", "0", "no",):
+                if compatopt in ("disable", "disabled", "false", "0", "no",):
                     data['filesbackup'] = False
 
             if line.startswith("forcedupdates|") and (split_line_len == 2):
 
                 compatopt = split_line[1].strip().lower()
-                if compatopt in ("disable", "disabled","false", "0", "no",):
+                if compatopt in ("disable", "disabled", "false", "0", "no",):
                     data['forcedupdates'] = False
                 else:
                     data['forcedupdates'] = True
@@ -597,9 +597,9 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         # mirror status interface
         self.MirrorStatus = StatusInterface()
 
-        if noclientdb in (False,0):
+        if noclientdb in (False, 0):
             self.noclientdb = False
-        elif noclientdb in (True,1):
+        elif noclientdb in (True, 1):
             self.noclientdb = True
         elif noclientdb == 2:
             self.noclientdb = True
@@ -666,18 +666,18 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
 
     def destroy(self):
         self.__instance_destroyed = True
-        if hasattr(self,'clientDbconn'):
+        if hasattr(self, 'clientDbconn'):
             if self.clientDbconn != None:
                 self.clientDbconn.closeDB()
                 del self.clientDbconn
-        if hasattr(self,'FileUpdates'):
+        if hasattr(self, 'FileUpdates'):
             del self.FileUpdates
-        if hasattr(self,'clientLog'):
+        if hasattr(self, 'clientLog'):
             self.clientLog.close()
-        if hasattr(self,'SystemSettings') and \
-            hasattr(self,'sys_settings_client_plugin_id'):
+        if hasattr(self, 'SystemSettings') and \
+            hasattr(self, 'sys_settings_client_plugin_id'):
 
-            if hasattr(self.SystemSettings,'remove_plugin'):
+            if hasattr(self.SystemSettings, 'remove_plugin'):
                 try:
                     self.SystemSettings.remove_plugin(
                         self.sys_settings_client_plugin_id)

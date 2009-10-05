@@ -63,13 +63,13 @@ class phpBB3(SocketCommands):
         }
 
     def docmd_is_user(self, authenticator):
-        return authenticator.is_user(),'ok'
+        return authenticator.is_user(), 'ok'
 
     def docmd_is_developer(self, authenticator):
-        return authenticator.is_developer(),'ok'
+        return authenticator.is_developer(), 'ok'
 
     def docmd_is_administrator(self, authenticator):
-        return authenticator.is_administrator(),'ok'
+        return authenticator.is_administrator(), 'ok'
 
     def docmd_is_moderator(self, authenticator):
-        return authenticator.is_moderator(),'ok'
+        return authenticator.is_moderator(), 'ok'

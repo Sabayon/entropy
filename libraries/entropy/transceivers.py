@@ -74,7 +74,7 @@ class UrlFetcher:
         self.__Output = OutputInterface
         if self.__Output == None:
             self.__Output = TextInterface()
-        elif not hasattr(self.__Output,'updateProgress'):
+        elif not hasattr(self.__Output, 'updateProgress'):
             mytxt = _("Output interface passed doesn't have the updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         elif not hasattr(self.__Output.updateProgress, '__call__'):
@@ -119,10 +119,10 @@ class UrlFetcher:
 
         # resume support
         if os.path.isfile(self.__path_to_save) and \
-            os.access(self.__path_to_save,os.W_OK) and self.__resume:
+            os.access(self.__path_to_save, os.W_OK) and self.__resume:
 
-            self.localfile = open(self.__path_to_save,"awb")
-            self.localfile.seek(0,os.SEEK_END)
+            self.localfile = open(self.__path_to_save, "awb")
+            self.localfile.seek(0, os.SEEK_END)
             self.__startingposition = int(self.localfile.tell())
             self.__resumed = True
 
@@ -132,7 +132,7 @@ class UrlFetcher:
                 os.remove(self.__path_to_save)
             except OSError: # I won't stop you here
                 pass
-            self.localfile = open(self.__path_to_save,"wb")
+            self.localfile = open(self.__path_to_save, "wb")
 
     def _setup_proxy(self):
         # setup proxy, doing here because config is dynamic
@@ -237,7 +237,7 @@ class UrlFetcher:
                 self.__close(False)
                 return self.__prepare_return()
             else:
-                self.localfile = open(self.__path_to_save,"wb")
+                self.localfile = open(self.__path_to_save, "wb")
             self.__remotefile = urlmod.urlopen(request)
         except KeyboardInterrupt:
             self.__close(False)
@@ -340,10 +340,10 @@ class UrlFetcher:
         if self.__datatransfer < 0:
             self.__datatransfer = 0
         try:
-            rounded_remote = int(round(self.__remotesize*1024,0))
-            rounded_downloaded = int(round(self.__downloadedsize,0))
+            rounded_remote = int(round(self.__remotesize*1024, 0))
+            rounded_downloaded = int(round(self.__downloadedsize, 0))
             x_delta = rounded_remote - rounded_downloaded
-            tx_round = int(round(x_delta/self.__datatransfer,0))
+            tx_round = int(round(x_delta/self.__datatransfer, 0))
             self.__time_remaining_secs = tx_round
             self.__time_remaining = self.entropyTools.convert_seconds_to_fancy_output(self.__time_remaining_secs)
         except:
@@ -367,8 +367,8 @@ class UrlFetcher:
         sec_txt = _("sec") # as in XX kb/sec
 
         currentText = darkred("    %s: " % (mytxt,)) + \
-            darkgreen(str(round(float(self.__downloadedsize)/1024,1))) + "/" + \
-            red(str(round(self.__remotesize,1))) + " kB"
+            darkgreen(str(round(float(self.__downloadedsize)/1024, 1))) + "/" + \
+            red(str(round(self.__remotesize, 1))) + " kB"
         # create progress bar
         barsize = 10
         bartext = "["
@@ -386,7 +386,7 @@ class UrlFetcher:
                 diffbarsize -= 1
             if self.__show_speed:
                 bartext += "] => %s" % (self.entropyTools.bytes_into_human(self.__datatransfer),)
-                bartext += "/%s : %s: %s" % (sec_txt,eta_txt,self.__time_remaining,)
+                bartext += "/%s : %s: %s" % (sec_txt, eta_txt, self.__time_remaining,)
             else:
                 bartext += "]"
             average = str(self.__average)
@@ -431,7 +431,7 @@ class MultipleUrlFetcher:
         self.__Output = OutputInterface
         if self.__Output == None:
             self.__Output = TextInterface()
-        elif not hasattr(self.__Output,'updateProgress'):
+        elif not hasattr(self.__Output, 'updateProgress'):
             mytxt = _("Output interface passed doesn't have the updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         elif not hasattr(self.__Output.updateProgress, '__call__'):
@@ -581,12 +581,12 @@ class MultipleUrlFetcher:
         # calculation
         for th_id in sorted(pd):
             data = pd.get(th_id)
-            downloaded_size += data.get('downloaded_size',0)
-            total_size += data.get('total_size',0)
-            data_transfer += data.get('data_transfer',0)
-            tr = data.get('time_remaining_secs',0)
+            downloaded_size += data.get('downloaded_size', 0)
+            total_size += data.get('total_size', 0)
+            data_transfer += data.get('data_transfer', 0)
+            tr = data.get('time_remaining_secs', 0)
             if tr > 0: time_remaining += tr
-            update_step += data.get('update_step',0)
+            update_step += data.get('update_step', 0)
 
         # total_size is in kbytes
         # downloaded_size is in bytes
@@ -602,8 +602,8 @@ class MultipleUrlFetcher:
             (self.__first_refreshes > 0)) and self.__show_progress:
 
             self.__first_refreshes -= 1
-            currentText = darkgreen(str(round(float(downloaded_size)/1024,1))) + "/" + \
-                red(str(round(total_size,1))) + " kB"
+            currentText = darkgreen(str(round(float(downloaded_size)/1024, 1))) + "/" + \
+                red(str(round(total_size, 1))) + " kB"
             # create progress bar
             barsize = 10
             bartext = "["
@@ -620,7 +620,7 @@ class MultipleUrlFetcher:
                 diffbarsize -= 1
             if self.__show_speed:
                 bartext += "] => %s" % (self.entropyTools.bytes_into_human(data_transfer),)
-                bartext += "/%s : %s: %s" % (sec_txt,eta_txt,time_remaining,)
+                bartext += "/%s : %s: %s" % (sec_txt, eta_txt, time_remaining,)
             else:
                 bartext += "]"
             myavg = str(average)
@@ -637,12 +637,12 @@ class FtpInterface:
     # this must be run before calling the other functions
     def __init__(self, ftpuri, OutputInterface, verbose = True):
 
-        if not hasattr(OutputInterface,'updateProgress'):
+        if not hasattr(OutputInterface, 'updateProgress'):
             mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
+            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
         elif not hasattr(OutputInterface.updateProgress, '__call__'):
             mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
+            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
 
         import socket, ftplib
         import entropy.tools as entropyTools
@@ -676,19 +676,19 @@ class FtpInterface:
         if self.__verbose:
             mytxt = _("connecting with user")
             self.Entropy.updateProgress(
-                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost),mytxt,blue(self.__ftpuser),),
+                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost), mytxt, blue(self.__ftpuser),),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
             )
         try:
-            self.__ftpconn.login(self.__ftpuser,self.__ftppassword)
+            self.__ftpconn.login(self.__ftpuser, self.__ftppassword)
         except self.ftplib.error_perm as e:
             raise FtpError('FtpError: %s' % (e,))
         if self.__verbose:
             mytxt = _("switching to")
             self.Entropy.updateProgress(
-                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost),mytxt,blue(self.__ftpdir),),
+                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost), mytxt, blue(self.__ftpdir),),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -726,16 +726,16 @@ class FtpInterface:
         if self.__verbose:
             mytxt = _("reconnecting with user")
             self.Entropy.updateProgress(
-                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost),mytxt,blue(self.__ftpuser),),
+                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost), mytxt, blue(self.__ftpuser),),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
             )
-        self.__ftpconn.login(self.__ftpuser,self.__ftppassword)
+        self.__ftpconn.login(self.__ftpuser, self.__ftppassword)
         if self.__verbose:
             mytxt = _("switching to")
             self.Entropy.updateProgress(
-                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost),mytxt,blue(self.__ftpdir),),
+                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost), mytxt, blue(self.__ftpdir),),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -765,7 +765,7 @@ class FtpInterface:
         if self.__verbose:
             mytxt = _("switching to")
             self.Entropy.updateProgress(
-                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost),mytxt,blue(mydir),),
+                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost), mytxt, blue(mydir),),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -780,17 +780,17 @@ class FtpInterface:
                 raise
         self.__currentdir = self.get_cwd()
 
-    def set_pasv(self,bool):
+    def set_pasv(self, bool):
         self.__ftpconn.set_pasv(bool)
 
-    def set_chmod(self,chmodvalue,file):
+    def set_chmod(self, chmodvalue, file):
         return self.__ftpconn.voidcmd("SITE CHMOD "+str(chmodvalue)+" "+str(file))
 
-    def get_file_mtime(self,path):
+    def get_file_mtime(self, path):
         rc = self.__ftpconn.sendcmd("mdtm "+path)
         return rc.split()[-1]
 
-    def send_cmd(self,cmd):
+    def send_cmd(self, cmd):
         return self.__ftpconn.sendcmd(cmd)
 
     def list_dir(self):
@@ -800,11 +800,11 @@ class FtpInterface:
         xx = []
         def cb(x):
             if x == filename: xx.append(x)
-        self.__ftpconn.retrlines('NLST',cb)
+        self.__ftpconn.retrlines('NLST', cb)
         if xx: return True
         return False
 
-    def delete_file(self,file):
+    def delete_file(self, file):
         try:
             rc = self.__ftpconn.delete(file)
         except self.ftplib.error_perm as e:
@@ -819,7 +819,7 @@ class FtpInterface:
         mydirs = [x for x in mypath.split("/") if x]
         mycurpath = ""
         for mydir in mydirs:
-            mycurpath = os.path.join(mycurpath,mydir)
+            mycurpath = os.path.join(mycurpath, mydir)
             if not self.is_file_available(mycurpath):
                 try:
                     self.mkdir(mycurpath)
@@ -829,7 +829,7 @@ class FtpInterface:
                     elif e[0][:3] != '550':
                         raise
 
-    def mkdir(self,directory):
+    def mkdir(self, directory):
         return self.__ftpconn.mkd(directory)
 
     def upload_file(self, file, ascii = False):
@@ -865,21 +865,21 @@ class FtpInterface:
             self.__start_speed_counter()
             try:
 
-                with open(file,"r") as f:
+                with open(file, "r") as f:
 
-                    self.__filesize = round(float(self.entropyTools.get_file_size(file))/1024,1)
+                    self.__filesize = round(float(self.entropyTools.get_file_size(file))/1024, 1)
                     self.__filekbcount = 0
 
                     # delete old one, if exists
                     self.delete_file(filename+".tmp")
 
                     if ascii:
-                        rc = self.__ftpconn.storlines("STOR "+filename+".tmp",f)
+                        rc = self.__ftpconn.storlines("STOR "+filename+".tmp", f)
                     else:
                         rc = advanced_stor("STOR "+filename+".tmp", f)
 
                     # now we can rename the file with its original name
-                    self.rename_file(filename+".tmp",filename)
+                    self.rename_file(filename+".tmp", filename)
 
                 if rc.find("226") != -1: # upload complete
                     return True
@@ -926,7 +926,7 @@ class FtpInterface:
                 # get the file size
                 self.__filesize = self.get_file_size_compat(filename)
                 if (self.__filesize):
-                    self.__filesize = round(float(int(self.__filesize))/1024,1)
+                    self.__filesize = round(float(int(self.__filesize))/1024, 1)
                     if (self.__filesize == 0):
                         self.__filesize = 1
                 elif not self.is_file_available(filename):
@@ -934,10 +934,10 @@ class FtpInterface:
                 else:
                     self.__filesize = 0
                 if not ascii:
-                    f = open(downloaddir+"/"+filename,"wb")
+                    f = open(downloaddir+"/"+filename, "wb")
                     rc = self.__ftpconn.retrbinary('RETR '+filename, df_up, 1024)
                 else:
-                    f = open(downloaddir+"/"+filename,"w")
+                    f = open(downloaddir+"/"+filename, "w")
                     rc = self.__ftpconn.retrlines('RETR '+filename, f.write)
                 f.flush()
                 f.close()
@@ -967,7 +967,7 @@ class FtpInterface:
 
     # also used to move files
     def rename_file(self, fromfile, tofile):
-        rc = self.__ftpconn.rename(fromfile,tofile)
+        rc = self.__ftpconn.rename(fromfile, tofile)
         return rc
 
     def get_file_md5(self, filename):
@@ -1004,7 +1004,7 @@ class FtpInterface:
     def close(self):
         try:
             self.__ftpconn.quit()
-        except (EOFError,AttributeError,self.socket.timeout,self.ftplib.error_reply,):
+        except (EOFError, AttributeError, self.socket.timeout, self.ftplib.error_reply,):
             # AttributeError is raised when socket gets trashed
             # EOFError is raised when the connection breaks
             # timeout, who cares!
@@ -1028,7 +1028,7 @@ class FtpInterface:
         if self.__datatransfer < 0:
             self.__datatransfer = 0
         try:
-            self.__time_remaining_secs = int(round((int(round(self.__filesize*1024,0))-int(round(self.__transfersize,0)))/self.__datatransfer,0))
+            self.__time_remaining_secs = int(round((int(round(self.__filesize*1024, 0))-int(round(self.__transfersize, 0)))/self.__datatransfer, 0))
             self.__time_remaining = self.entropyTools.convert_seconds_to_fancy_output(self.__time_remaining_secs)
         except:
             self.__time_remaining = "(%s)" % (_("infinite"),)
@@ -1040,9 +1040,9 @@ class FtpInterface:
         # create percentage
         myUploadPercentage = 100.0
         if self.__filesize >= 1:
-            myUploadPercentage = round((round(self.__filekbcount,1)/self.__filesize)*100,1)
+            myUploadPercentage = round((round(self.__filekbcount, 1)/self.__filesize)*100, 1)
         currentprogress = myUploadPercentage
-        myUploadSize = round(self.__filekbcount,1)
+        myUploadSize = round(self.__filekbcount, 1)
         if (currentprogress > self.__oldprogress+1.0) and \
             (myUploadPercentage < 100.1) and \
             (myUploadSize <= self.__filesize):
@@ -1071,7 +1071,7 @@ class FtpServerHandler:
         self.Entropy = entropy_interface
         if not isinstance(uris, list):
             raise InvalidDataType("InvalidDataType: %s" % (_("uris must be a list instance"),))
-        if not isinstance(files_to_upload,(list, dict)):
+        if not isinstance(files_to_upload, (list, dict)):
             raise InvalidDataType("InvalidDataType: %s" % (
                     _("files_to_upload must be a list or dict instance"),
                 )
@@ -1226,7 +1226,7 @@ class FtpServerHandler:
             return False
         elif self.entropyTools.is_valid_md5(checksum):
             # valid? checking
-            ckres = self.entropyTools.compare_md5(local_filepath,checksum)
+            ckres = self.entropyTools.compare_md5(local_filepath, checksum)
             if ckres:
                 self.Entropy.updateProgress(
                     "[%s|#%s|(%s/%s)] %s: %s: %s" % (
@@ -1304,7 +1304,7 @@ class FtpServerHandler:
                 ftp = self.FtpInterface(uri, self.Entropy)
             except ConnectionError:
                 self.entropyTools.print_traceback()
-                return True,fine_uris,broken_uris # issues
+                return True, fine_uris, broken_uris # issues
             branch = self.Entropy.SystemSettings['repositories']['branch']
             my_path = os.path.join(self.Entropy.get_remote_database_relative_path(self.repo), branch)
             self.Entropy.updateProgress(
@@ -1339,7 +1339,7 @@ class FtpServerHandler:
                 myargs = [mypath]
                 if self.download:
                     syncer = ftp.download_file
-                    myargs = [os.path.basename(mypath),self.local_basedir]
+                    myargs = [os.path.basename(mypath), self.local_basedir]
                 elif self.remove:
                     syncer = ftp.delete_file
 
@@ -1440,7 +1440,7 @@ class FtpServerHandler:
 
                     ftp.close()
                     errors = True
-                    broken_uris.add((uri,lastrc))
+                    broken_uris.add((uri, lastrc))
                     # next mirror
                     break
 

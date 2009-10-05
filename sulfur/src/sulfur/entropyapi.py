@@ -55,7 +55,7 @@ class QueueExecutor:
                 dialog = LicenseDialog(self.Sulfur, self.Entropy, licenses)
                 accept = dialog.run()
                 dialog.destroy()
-                self.__on_lic_rc = accept,licenses
+                self.__on_lic_rc = accept, licenses
                 self.__on_lic_request = False
                 return False
             gobject.timeout_add(0, do_handle)
@@ -102,7 +102,7 @@ class QueueExecutor:
             runQueue, conflicts_queue, status = self.Entropy.get_install_queue(
                 install_queue, False, False)
         if removal_queue:
-            removalQueue += [(x,False) for x in removal_queue if x \
+            removalQueue += [(x, False) for x in removal_queue if x \
                 not in conflicts_queue]
 
         rc, licenses = self.handle_licenses(runQueue)
@@ -155,7 +155,7 @@ class QueueExecutor:
             Package = self.Entropy.Package()
             metaopts = {}
             metaopts['fetch_abort_function'] = self.Sulfur.mirror_bombing
-            Package.prepare(packageInfo,fetch_action,metaopts)
+            Package.prepare(packageInfo, fetch_action, metaopts)
 
             myrepo = Package.pkgmeta['repository']
             if myrepo not in mykeys:
@@ -166,7 +166,7 @@ class QueueExecutor:
             self.Entropy.updateProgress(
                 fetch_string+Package.pkgmeta['atom'],
                 importance = 2,
-                count = (fetchqueue,totalqueue)
+                count = (fetchqueue, totalqueue)
             )
             rc = Package.run()
             if rc != 0:
@@ -211,13 +211,13 @@ class QueueExecutor:
             if idpackage in do_purge_cache:
                 metaopts['removeconfig'] = True
             Package = self.Entropy.Package()
-            Package.prepare((idpackage,),"remove", metaopts)
+            Package.prepare((idpackage,), "remove", metaopts)
 
             if 'remove_installed_vanished' not in Package.pkgmeta:
                 self.Entropy.updateProgress(
                     "Removing: "+Package.pkgmeta['removeatom'],
                     importance = 2,
-                    count = (currentremovalqueue,totalremovalqueue)
+                    count = (currentremovalqueue, totalremovalqueue)
                 )
 
                 rc = Package.run()
@@ -255,12 +255,12 @@ class QueueExecutor:
                     etpConst['install_sources']['automatic_dependency']
 
             Package = self.Entropy.Package()
-            Package.prepare(packageInfo,"install", metaopts)
+            Package.prepare(packageInfo, "install", metaopts)
 
             self.Entropy.updateProgress(
                 "Installing: "+Package.pkgmeta['atom'],
                 importance = 2,
-                count = (currentqueue,totalqueue)
+                count = (currentqueue, totalqueue)
             )
 
             rc = Package.run()
@@ -307,14 +307,14 @@ class Equo(EquoInterface):
         count_str = ""
         if self.progress:
             if count:
-                count_str = "(%s/%s) " % (str(count[0]),str(count[1]),)
+                count_str = "(%s/%s) " % (str(count[0]), str(count[1]),)
                 if importance == 0:
                     progress_text = text
                 else:
-                    percent_int = int(round((float(count[0])/count[1])*100,1))
+                    percent_int = int(round((float(count[0])/count[1])*100, 1))
                     progress_text = str(percent_int) + "%"
                 self.progress.set_progress(
-                    round((float(count[0])/count[1]),1), progress_text )
+                    round((float(count[0])/count[1]), 1), progress_text )
             if importance == 1:
                 myfunc = self.progress.set_subLabel
             elif importance == 2:
@@ -407,18 +407,18 @@ class GuiUrlFetcher(UrlFetcher):
         if self.progress == None:
             return
 
-        myavg = abs(int(round(float(self.__average),1)))
+        myavg = abs(int(round(float(self.__average), 1)))
         if abs((myavg - GuiUrlFetcher.gui_last_avg)) < 1:
             return
 
         if (myavg > GuiUrlFetcher.gui_last_avg) or (myavg < 2) or (myavg > 97):
 
-            self.progress.set_progress(round(float(self.__average)/100,1),
+            self.progress.set_progress(round(float(self.__average)/100, 1),
                 str(myavg)+"%")
             human_dt = self.entropyTools.bytes_into_human(self.__datatransfer)
             self.progress.set_extraLabel("%s/%s kB @ %s" % (
-                    str(round(float(self.__downloadedsize)/1024,1)),
-                    str(round(self.__remotesize,1)),
+                    str(round(float(self.__downloadedsize)/1024, 1)),
+                    str(round(self.__remotesize, 1)),
                     str(human_dt) + "/sec",
                 )
             )

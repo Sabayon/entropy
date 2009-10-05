@@ -63,7 +63,7 @@ class Magneto(MagnetoCore):
 
     def __setup_kde_app(self):
         # setup Systray application
-        qpix = self.icons.best_match("okay",22)
+        qpix = self.icons.best_match("okay", 22)
         qicon = QIcon(qpix)
         self.status_icon = KIcon(qicon)
         self._window = KSystemTrayIcon(self.status_icon)
@@ -161,9 +161,9 @@ class Magneto(MagnetoCore):
                 flags = KNotification.CloseOnTimeout)
             notification.setText("<b>%s</b><br/>%s" % (title, text,))
             if urgency == 'critical':
-                notification.setPixmap(self.icons.best_match("critical",22))
+                notification.setPixmap(self.icons.best_match("critical", 22))
             else:
-                notification.setPixmap(self.icons.best_match("okay",22))
+                notification.setPixmap(self.icons.best_match("okay", 22))
             #print "sending event: %s: %s" % (title, text,)
             notification.sendEvent()
             self.last_alert = (title, text)

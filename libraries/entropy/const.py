@@ -345,11 +345,11 @@ def const_default_settings(rootdir):
             "bz2": (bz2.BZ2File, "unpack_bzip2", "etpdatabasefilebzip2",
                 "etpdatabasedumpbzip2", "etpdatabasedumphashfilebz2",
                 "etpdatabasedumplightbzip2", "etpdatabasedumplighthashfilebz2",
-                "etpdatabasefilebzip2light","etpdatabasefilehashbzip2light",),
+                "etpdatabasefilebzip2light", "etpdatabasefilehashbzip2light",),
             "gz": (gzip.GzipFile, "unpack_gzip", "etpdatabasefilegzip",
                 "etpdatabasedumpgzip", "etpdatabasedumphashfilegzip",
                 "etpdatabasedumplightgzip", "etpdatabasedumplighthashfilegzip",
-                "etpdatabasefilegziplight","etpdatabasefilehashgziplight",)
+                "etpdatabasefilegziplight", "etpdatabasefilehashgziplight",)
         },
         # enable/disable packages RSS feed feature
         'rss-feed': True,
@@ -519,7 +519,7 @@ def const_default_settings(rootdir):
             'global_package_mask': rootdir+"/etc/portage/package.mask",
             'global_package_unmask': rootdir+"/etc/portage/package.unmask",
             'global_make_profile': rootdir+"/etc/make.profile",
-            'global_make_profile_link_name' : "profile.link",
+            'global_make_profile_link_name': "profile.link",
             # source package manager executable
             'exec': rootdir+"/usr/bin/emerge",
             'env_dir_reference': "/etc/env.d",
@@ -831,7 +831,7 @@ def const_extract_cli_repo_params(repostring, branch = None, product = None):
     for repo_package in repopackages:
         try:
             repo_package = str(repo_package)
-        except (UnicodeDecodeError,UnicodeEncodeError,):
+        except (UnicodeDecodeError, UnicodeEncodeError,):
             continue
         mydata['plain_packages'].append(repo_package)
         mydata['packages'].append(repo_package + "/" + product + "/" + reponame)
@@ -851,7 +851,7 @@ def const_read_entropy_release():
         revision_file = os.path.join(etpConst['installdir'],
             'libraries/revision')
     if os.path.isfile(revision_file) and \
-        os.access(revision_file,os.R_OK):
+        os.access(revision_file, os.R_OK):
 
         with open(revision_file, "r") as rev_f:
             myrev = rev_f.readline().strip()
@@ -904,7 +904,7 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
     if os.path.isfile(pid_file) and os.access(pid_file, os.R_OK):
 
         try:
-            with open(pid_file,"r") as pid_f:
+            with open(pid_file, "r") as pid_f:
                 found_pid = str(pid_f.readline().strip())
         except (IOError, OSError, UnicodeEncodeError, UnicodeDecodeError,):
             found_pid = "0000" # which is always invalid
@@ -920,7 +920,7 @@ def const_setup_entropy_pid(just_read = False, force_handling = False):
                 etpConst['applicationlock'] = True
             elif (not just_read) and os.access(pid_file, os.W_OK):
                 try:
-                    with open(pid_file,"w") as pid_f:
+                    with open(pid_file, "w") as pid_f:
                         pid_f.write(str(pid))
                         pid_f.flush()
                 except IOError as err:
@@ -977,7 +977,7 @@ def const_remove_entropy_pid():
 
     # open file
     try:
-        with open(pid_file,"r") as pid_f:
+        with open(pid_file, "r") as pid_f:
             found_pid = str(pid_f.readline().strip())
     except (IOError, OSError, UnicodeEncodeError, UnicodeDecodeError,):
         found_pid = "0000" # which is always invalid
@@ -1289,7 +1289,7 @@ def const_get_entropy_gid():
     if not os.path.isfile(group_file):
         raise KeyError
 
-    with open(group_file,"r") as group_f:
+    with open(group_file, "r") as group_f:
         for line in group_f.readlines():
             if line.startswith('%s:' % (etpConst['sysgroup'],)):
                 try:
@@ -1313,7 +1313,7 @@ def const_add_entropy_group():
         raise KeyError
     ids = set()
 
-    with open(group_file,"r") as group_f:
+    with open(group_file, "r") as group_f:
         for line in group_f.readlines():
             if line and line.split(":"):
                 try:
@@ -1331,7 +1331,7 @@ def const_add_entropy_group():
         else:
             new_id = 10000
 
-    with open(group_file,"aw") as group_fw:
+    with open(group_file, "aw") as group_fw:
         group_fw.seek(0, 2)
         app_line = "entropy:x:%s:\n" % (new_id,)
         group_fw.write(app_line)
@@ -1463,7 +1463,7 @@ def const_kill_threads():
         # do not join current thread
         if running_t.getName() == 'MainThread':
             continue
-        if hasattr(running_t,'kill'):
+        if hasattr(running_t, 'kill'):
             running_t.kill()
         running_t.join(120.0) # wait 2 minutes?
 

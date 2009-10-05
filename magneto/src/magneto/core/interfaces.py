@@ -119,9 +119,9 @@ class MagnetoCore(MagnetoCoreUI):
         self.icons.add_file("busy", "applet-busy.png")
         self.icons.add_file("critical", "applet-critical.png")
         self.icons.add_file("disable", "applet-disable.png")
-        self.icons.add_file("sulfur","sulfur.png")
-        self.icons.add_file("web","applet-web.png")
-        self.icons.add_file("configuration","applet-configuration.png")
+        self.icons.add_file("sulfur", "sulfur.png")
+        self.icons.add_file("web", "applet-web.png")
+        self.icons.add_file("configuration", "applet-configuration.png")
         self.applet_size = 22
 
         # Dbus variables
@@ -320,17 +320,17 @@ class MagnetoCore(MagnetoCoreUI):
     def get_menu_image(self, name):
 
         if name == "update_now":
-            pix = self.icons.best_match("sulfur",22)
-        elif name in ["web_panel","web_site"]:
-            pix = self.icons.best_match("web",22)
+            pix = self.icons.best_match("sulfur", 22)
+        elif name in ["web_panel", "web_site"]:
+            pix = self.icons.best_match("web", 22)
         elif name == "configure_applet":
-            pix = self.icons.best_match("configuration",22)
+            pix = self.icons.best_match("configuration", 22)
         elif name == "disable_applet":
-            pix = self.icons.best_match("disable",22)
+            pix = self.icons.best_match("disable", 22)
         elif name == "enable_applet":
-            pix = self.icons.best_match("okay",22)
+            pix = self.icons.best_match("okay", 22)
         else:
-            pix = self.icons.best_match("busy",22)
+            pix = self.icons.best_match("busy", 22)
 
         return pix
 
@@ -408,9 +408,9 @@ class Entropy(Client):
         count_str = ""
         if count:
             if percent:
-                count_str = str(int(round((float(count[0])/count[1])*100,1)))+"% "
+                count_str = str(int(round((float(count[0])/count[1])*100, 1)))+"% "
             else:
-                count_str = "(%s/%s) " % (str(count[0]),str(count[1]),)
+                count_str = "(%s/%s) " % (str(count[0]), str(count[1]),)
 
         message = count_str+_(text)
         #if importance in (1,2):

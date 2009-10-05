@@ -334,7 +334,7 @@ class SecurityInterface:
             count += 1
             if not etpUi['quiet']:
                 self.Entropy.updateProgress(":: " + \
-                    str(round((float(count)/maxlen)*100,1)) + "% ::",
+                    str(round((float(count)/maxlen)*100, 1)) + "% ::",
                     importance = 0, type = "info", back = True)
 
             xml_metadata = None

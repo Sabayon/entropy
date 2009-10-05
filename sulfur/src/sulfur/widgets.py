@@ -46,7 +46,7 @@ class CellRendererStars(gtk.GenericCellRenderer):
 
         (x_offset, y_offset, width, height) = self.on_get_size(widget,
             cell_area)
-        if isinstance(window,gtk.gdk.Window):
+        if isinstance(window, gtk.gdk.Window):
             widget.style.paint_box(window,
                                 gtk.STATE_NORMAL,
                                 gtk.SHADOW_IN,
@@ -78,12 +78,12 @@ class CellRendererStars(gtk.GenericCellRenderer):
             star_empty_buf = star_empty.get_pixbuf()
             star_half_buf = star_half.get_pixbuf()
 
-            w, h = star_buf.get_width(),star_buf.get_height()
+            w, h = star_buf.get_width(), star_buf.get_height()
             myval = self.value
             if self.value_voted:
                 myval = self.value_voted
-            empty_buf = empty_buf.scale_simple(w*5,h+12,gtk.gdk.INTERP_BILINEAR)
-            myvals = [0,w,w*2,w*3,w*4]
+            empty_buf = empty_buf.scale_simple(w*5, h+12, gtk.gdk.INTERP_BILINEAR)
+            myvals = [0, w, w*2, w*3, w*4]
             cnt = 0
             while myval > 0:
                 if (myval < 0.6):

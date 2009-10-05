@@ -143,7 +143,7 @@ def update(cmd = None):
                     continue
                 # end check
 
-                diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],etpConst['systemroot']+scandata[cmd]['source'])
+                diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'], etpConst['systemroot']+scandata[cmd]['source'])
                 if (not diff):
                     print_info(darkred("%s " % (_("Automerging file"),) )+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 
@@ -209,7 +209,7 @@ def update(cmd = None):
                         print_info(darkred("%s " % (_("Edited file"),) ) + darkgreen(etpConst['systemroot'] + \
                             scandata[cmd]['source']) + darkred(" - %s:" % (_("showing differencies"),) )
                         )
-                        diff = showdiff(etpConst['systemroot'] + scandata[cmd]['destination'],etpConst['systemroot'] + \
+                        diff = showdiff(etpConst['systemroot'] + scandata[cmd]['destination'], etpConst['systemroot'] + \
                             scandata[cmd]['source'])
                         if not diff:
                             print_info(darkred("%s " % (_("Automerging file"),) ) + darkgreen(scandata[cmd]['source']))
@@ -263,7 +263,7 @@ def selaction():
     action = readtext(_("Your choice (type a number and press enter):")+" ")
     return action
 
-def showdiff(fromfile,tofile):
+def showdiff(fromfile, tofile):
     # run diff
     diffcmd = "diff -Nu "+fromfile+" "+tofile #+" | less --no-init --QUIT-AT-EOF"
     output = getoutput(diffcmd).split("\n")
@@ -280,7 +280,7 @@ def showdiff(fromfile,tofile):
 	elif line.startswith("+"):
 	    line = darkgreen(line)
 	coloured.append(line+"\n")
-    f = open("/tmp/"+os.path.basename(fromfile),"w")
+    f = open("/tmp/"+os.path.basename(fromfile), "w")
     f.writelines(coloured)
     f.flush()
     f.close()

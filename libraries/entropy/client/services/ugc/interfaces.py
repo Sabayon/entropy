@@ -22,7 +22,7 @@ class Client:
     def __init__(self, EquoInstance, quiet = True, show_progress = False):
 
         from entropy.client.interfaces import Client as Cl
-        if not isinstance(EquoInstance,Cl):
+        if not isinstance(EquoInstance, Cl):
             mytxt = _("A valid Client based instance is needed")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
@@ -45,7 +45,7 @@ class Client:
             url = self.Entropy.SystemSettings['repositories']['available'][repository]['plain_database'].split("/")[2]
             port = self.Entropy.SystemSettings['repositories']['available'][repository]['service_port']
             if self.ssl_connection: port = self.Entropy.SystemSettings['repositories']['available'][repository]['ssl_service_port']
-        except (IndexError,KeyError,):
+        except (IndexError, KeyError,):
             raise RepositoryError("RepositoryError: %s" % (_('repository metadata is malformed'),))
 
         from entropy.services.ugc.interfaces import Client
@@ -69,9 +69,9 @@ class Client:
                 return None
         try:
             srv = self.connect_to_service(repository, timeout = timeout)
-        except (RepositoryError,ConnectionError,):
+        except (RepositoryError, ConnectionError,):
             return None
-        except (self.socket.error,self.struct.error,):
+        except (self.socket.error, self.struct.error,):
             return None
         return srv
 
@@ -107,11 +107,11 @@ class Client:
 
         login_data = self.read_login(repository)
         if (login_data != None) and not force:
-            return True,_('ok')
+            return True, _('ok')
 
         aware = self.is_repository_eapi3_aware(repository)
         if not aware:
-            return False,_('repository does not support EAPI3')
+            return False, _('repository does not support EAPI3')
 
         def fake_callback(*args,**kwargs):
             return True
@@ -121,28 +121,28 @@ class Client:
 
             # use input box to read login
             input_params = [
-                ('username',_('Username'),fake_callback,False),
-                ('password',_('Password'),fake_callback,True)
+                ('username', _('Username'), fake_callback, False),
+                ('password', _('Password'), fake_callback, True)
             ]
             login_data = self.Entropy.inputBox(
-                "%s %s %s" % (_('Please login against'),repository,_('repository'),),
+                "%s %s %s" % (_('Please login against'), repository, _('repository'),),
                 input_params,
                 cancel_button = True
             )
             if not login_data:
-                return False,_('login abort')
+                return False, _('login abort')
 
             # now verify
             srv = self.get_service_connection(repository)
             if srv == None:
-                return False,_('connection issues')
+                return False, _('connection issues')
             session = srv.open_session()
             login_status, login_msg = srv.CmdInterface.service_login(login_data['username'], login_data['password'], session)
             if not login_status:
                 srv.close_session(session)
                 srv.disconnect()
                 self.Entropy.askQuestion("%s: %s" % (
-                    _("Access denied. Login failed"),login_msg,),
+                    _("Access denied. Login failed"), login_msg,),
                     responses = [_("Ok")])
                 attempts -= 1
                 continue
@@ -182,15 +182,15 @@ class Client:
             if login_required:
                 status, err_msg = self.do_login(repository)
                 if not status:
-                    return False,err_msg
+                    return False, err_msg
 
             srv = self.get_service_connection(repository)
             if srv == None:
-                return False,'no connection'
+                return False, 'no connection'
             session = srv.open_session()
             if session == None:
-                return False,'no session'
-            args.insert(0,session)
+                return False, 'no session'
+            args.insert(0, session)
 
             if login_required:
                 stored_pass = False
@@ -251,21 +251,21 @@ class Client:
 
     def add_vote(self, repository, pkgkey, vote):
         data = self.do_cmd(repository, True, "ugc_do_vote", [pkgkey, vote], {})
-        if isinstance(data,tuple): voted, add_err_msg = data
-        else: return False,'wrong server answer'
+        if isinstance(data, tuple): voted, add_err_msg = data
+        else: return False, 'wrong server answer'
         if voted: self.get_vote(repository, pkgkey)
         return voted, add_err_msg
 
     def get_vote(self, repository, pkgkey):
         vote, err_msg = self.do_cmd(repository, False, "ugc_get_vote", [pkgkey], {})
-        if isinstance(vote,float):
+        if isinstance(vote, float):
             mydict = {pkgkey: vote}
             self.UGCCache.update_vote_cache(repository, mydict)
         return vote, err_msg
 
     def get_all_votes(self, repository):
         votes_dict, err_msg = self.do_cmd(repository, False, "ugc_get_allvotes", [], {})
-        if isinstance(votes_dict,dict):
+        if isinstance(votes_dict, dict):
             self.UGCCache.update_vote_cache(repository, votes_dict)
         return votes_dict, err_msg
 
@@ -274,8 +274,8 @@ class Client:
 
     def get_downloads(self, repository, pkgkey):
         data = self.do_cmd(repository, False, "ugc_get_downloads", [pkgkey], {})
-        if isinstance(data,tuple): downloads, err_msg = data
-        else: return False,'wrong server answer'
+        if isinstance(data, tuple): downloads, err_msg = data
+        else: return False, 'wrong server answer'
         if downloads:
             mydict = {pkgkey: downloads}
             self.UGCCache.update_downloads_cache(repository, mydict)
@@ -283,7 +283,7 @@ class Client:
 
     def get_all_downloads(self, repository):
         down_dict, err_msg = self.do_cmd(repository, False, "ugc_get_alldownloads", [], {})
-        if isinstance(down_dict,dict):
+        if isinstance(down_dict, dict):
             self.UGCCache.update_downloads_cache(repository, down_dict)
         return down_dict, err_msg
 
@@ -316,8 +316,8 @@ class Client:
 
     def get_docs(self, repository, pkgkey):
         data = self.do_cmd(repository, False, "ugc_get_docs", [pkgkey], {})
-        if isinstance(data,tuple): docs_data, err_msg = data
-        else: return False,'wrong server answer'
+        if isinstance(data, tuple): docs_data, err_msg = data
+        else: return False, 'wrong server answer'
         if err_msg == 'ok':
             self.UGCCache.update_alldocs_cache(pkgkey, repository, docs_data)
         return docs_data, err_msg
@@ -331,7 +331,7 @@ class Client:
             return self.send_youtube_video(repository, pkgkey, data, title, description, keywords)
         elif ugc_type == etpConst['ugc_doctypes']['comments']:
             return self.add_comment(repository, pkgkey, description, title, keywords)
-        return None,'type not supported locally'
+        return None, 'type not supported locally'
 
     def remove_document_autosense(self, repository, iddoc, ugc_type):
         if ugc_type == etpConst['ugc_doctypes']['generic_file']:
@@ -342,7 +342,7 @@ class Client:
             return self.remove_youtube_video(repository, iddoc)
         elif ugc_type == etpConst['ugc_doctypes']['comments']:
             return self.remove_comment(repository, iddoc)
-        return None,'type not supported locally'
+        return None, 'type not supported locally'
 
     def report_error(self, repository, error_data):
         return self.do_cmd(repository, False, "report_error", [error_data], {})
@@ -365,7 +365,7 @@ class AuthStore(Singleton):
         self.store = {}
         try:
             self.xmldoc = self.minidom.parse(self.access_file)
-        except (self.expat.ExpatError,IOError,):
+        except (self.expat.ExpatError, IOError,):
             self.xmldoc = None
         if self.xmldoc != None:
             try:
@@ -377,8 +377,8 @@ class AuthStore(Singleton):
     def setup_store_paths(self):
         myhome = os.getenv("HOME")
         if myhome != None:
-            if os.path.isdir(myhome) and os.access(myhome,os.W_OK):
-                self.access_file = os.path.join(myhome,".config/entropy",
+            if os.path.isdir(myhome) and os.access(myhome, os.W_OK):
+                self.access_file = os.path.join(myhome, ".config/entropy",
                     os.path.basename(self.access_file))
         self.access_dir = os.path.dirname(self.access_file)
 
@@ -424,7 +424,7 @@ class AuthStore(Singleton):
 
         for repository in self.store:
             repo = self.xmldoc.createElement("repository")
-            repo.setAttribute('id',repository)
+            repo.setAttribute('id', repository)
             # username
             username = self.xmldoc.createElement("username")
             username_value = self.xmldoc.createTextNode(self.store[repository]['username'])
@@ -438,7 +438,7 @@ class AuthStore(Singleton):
             store.appendChild(repo)
 
         self.xmldoc.appendChild(store)
-        f = open(self.access_file,"w")
+        f = open(self.access_file, "w")
         f.writelines(self.xmldoc.toprettyxml(indent="    "))
         f.flush()
         f.close()
@@ -453,13 +453,13 @@ class AuthStore(Singleton):
 
     def read_login(self, repository):
         if repository in self.store:
-            return self.store[repository]['username'],self.store[repository]['password']
+            return self.store[repository]['username'], self.store[repository]['password']
 
 class Cache:
 
     def __init__(self, UGCClientInstance):
 
-        if not isinstance(UGCClientInstance,Client):
+        if not isinstance(UGCClientInstance, Client):
             mytxt = _("A valid UGC Client interface based instance is needed")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
@@ -478,9 +478,9 @@ class Cache:
     def _set_live_cache_item(self, repository, item, obj):
         if repository not in self.xcache:
             self.xcache[repository] = {}
-        if type(obj) in (list,tuple,):
+        if type(obj) in (list, tuple,):
             my_obj = obj[:]
-        elif type(obj) in (set,frozenset,dict,):
+        elif type(obj) in (set, frozenset, dict,):
             my_obj = obj.copy()
         else:
             my_obj = obj
@@ -524,43 +524,43 @@ class Cache:
         return 'get_package_alldocs_cache_'+repository
 
     def store_document(self, iddoc, repository, doc_url):
-        cache_file = os.path.join(etpConst['dumpstoragedir'],self._get_store_cache_file(iddoc, repository, doc_url))
+        cache_file = os.path.join(etpConst['dumpstoragedir'], self._get_store_cache_file(iddoc, repository, doc_url))
         cache_dir = os.path.dirname(cache_file)
 
         try:
             if not os.path.isdir(cache_dir):
-                os.makedirs(cache_dir,0o775)
+                os.makedirs(cache_dir, 0o775)
                 if etpConst['entropygid'] != None:
-                    const_setup_perms(cache_dir,etpConst['entropygid'])
+                    const_setup_perms(cache_dir, etpConst['entropygid'])
         except OSError:
-            raise PermissionDenied("PermissionDenied: %s %s" % (_("Cannot setup cache directory"),cache_dir,))
-        if not os.access(cache_dir,os.W_OK):
-            raise PermissionDenied("PermissionDenied: %s %s" % (_("Cannot write to cache directory"),cache_dir,))
+            raise PermissionDenied("PermissionDenied: %s %s" % (_("Cannot setup cache directory"), cache_dir,))
+        if not os.access(cache_dir, os.W_OK):
+            raise PermissionDenied("PermissionDenied: %s %s" % (_("Cannot write to cache directory"), cache_dir,))
 
         if os.path.isfile(cache_file) or os.path.islink(cache_file):
             try:
                 os.remove(cache_file)
             except OSError:
-                raise PermissionDenied("PermissionDenied: %s %s" % (_("Cannot remove cache file"),cache_file,))
+                raise PermissionDenied("PermissionDenied: %s %s" % (_("Cannot remove cache file"), cache_file,))
 
         fetcher = self.Service.Entropy.urlFetcher(doc_url, cache_file, resume = False)
         rc = fetcher.download()
-        if rc in ("-1","-2","-3","-4"): return None
+        if rc in ("-1", "-2", "-3", "-4"): return None
         if not os.path.isfile(cache_file): return None
 
         try:
-            os.chmod(cache_file,0o664)
+            os.chmod(cache_file, 0o664)
             if etpConst['entropygid'] != None:
-                os.chown(cache_file,-1,etpConst['entropygid'])
+                os.chown(cache_file, -1, etpConst['entropygid'])
         except OSError:
-            raise PermissionDenied("PermissionDenied: %s %s" % (_("Cannot write to cache file"),cache_file,))
+            raise PermissionDenied("PermissionDenied: %s %s" % (_("Cannot write to cache file"), cache_file,))
 
         del fetcher
         return cache_file
 
     def get_stored_document(self, iddoc, repository, doc_url):
-        cache_file = os.path.join(etpConst['dumpstoragedir'],self._get_store_cache_file(iddoc, repository, doc_url))
-        if os.path.isfile(cache_file) and os.access(cache_file,os.R_OK):
+        cache_file = os.path.join(etpConst['dumpstoragedir'], self._get_store_cache_file(iddoc, repository, doc_url))
+        if os.path.isfile(cache_file) and os.access(cache_file, os.R_OK):
             return cache_file
 
     def update_vote_cache(self, repository, vote_dict):
@@ -569,7 +569,7 @@ class Cache:
             cached = vote_dict.copy()
         else:
             cached.update(vote_dict)
-        self.save_vote_cache(repository,cached)
+        self.save_vote_cache(repository, cached)
 
     def update_downloads_cache(self, repository, down_dict):
         cached = self.get_downloads_cache(repository)
@@ -577,7 +577,7 @@ class Cache:
             cached = down_dict.copy()
         else:
             cached.update(down_dict)
-        self.save_downloads_cache(repository,cached)
+        self.save_downloads_cache(repository, cached)
 
     def update_alldocs_cache(self, pkgkey, repository, alldocs_dict):
         self.save_alldocs_cache(pkgkey, repository, alldocs_dict)
@@ -614,7 +614,7 @@ class Cache:
                 data = self.dumpTools.loadobj(cache_file)
                 if data != None:
                     self._set_live_cache_item(repository, cache_key, data)
-            except (IOError,EOFError,OSError):
+            except (IOError, EOFError, OSError):
                 data = None
         return data
 
@@ -629,14 +629,14 @@ class Cache:
                 data = self.dumpTools.loadobj(cache_file)
                 if data != None:
                     self._set_live_cache_item(repository, cache_key, data)
-            except (IOError,EOFError,OSError):
+            except (IOError, EOFError, OSError):
                 data = None
         return data
 
     def get_alldocs_cache(self, pkgkey, repository):
         cache_key = self._get_alldocs_cache_key(repository)
         cached = self._get_live_cache_item(repository, cache_key)
-        if isinstance(cached,dict):
+        if isinstance(cached, dict):
             if pkgkey in cached: return cached[pkgkey]
         else:
             cached = {}
@@ -647,7 +647,7 @@ class Cache:
                 if data != None:
                     cached[pkgkey] = data
                     self._set_live_cache_item(repository, cache_key, cached)
-            except (IOError,EOFError,OSError):
+            except (IOError, EOFError, OSError):
                 data = None
         return data
 
@@ -670,7 +670,7 @@ class Cache:
         cache = self.get_vote_cache(repository)
         if not cache:
             return 0.0
-        elif not isinstance(cache,dict):
+        elif not isinstance(cache, dict):
             return 0.0
         elif pkgkey not in cache:
             return 0.0
@@ -680,7 +680,7 @@ class Cache:
         cache = self.get_downloads_cache(repository)
         if not cache:
             return 0
-        elif not isinstance(cache,dict):
+        elif not isinstance(cache, dict):
             return 0
         elif pkgkey not in cache:
             return 0

@@ -32,13 +32,13 @@ class Repository:
 
         self.LockScanner = None
         from entropy.client.interfaces import Client
-        if not isinstance(EquoInstance,Client):
+        if not isinstance(EquoInstance, Client):
             mytxt = _("A valid Equo instance or subclass is needed")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         self.supported_download_items = (
             "db", "dblight", "rev", "ck", "cklight", "compck",
-            "lock","mask", "system_mask", "dbdump", "conflicting_tagged",
+            "lock", "mask", "system_mask", "dbdump", "conflicting_tagged",
             "dbdumplight", "dbdumplightck", "dbdumpck", "lic_whitelist",
             "make.conf", "package.mask", "package.unmask", "package.keywords",
             "profile.link", "package.use", "server.cert", "ca.cert",
@@ -58,7 +58,7 @@ class Repository:
         self.noEquoCheck = noEquoCheck
         self.alreadyUpdated = 0
         self.notAvailable = 0
-        self.valid_eapis = [1,2,3]
+        self.valid_eapis = [1, 2, 3]
         self.reset_dbformat_eapi(None)
         self.current_repository_got_locked = False
         self.updated_repos = set()
@@ -92,7 +92,7 @@ class Repository:
                 output_header = "\t", socket_timeout = self.big_socket_timeout)
             eapi3_socket.connect(dburl, port)
             return eapi3_socket
-        except (ConnectionError,self.socket.error,):
+        except (ConnectionError, self.socket.error,):
             return None
 
     def check_eapi3_availability(self, repository):
@@ -100,7 +100,7 @@ class Repository:
         if conn == None: return False
         try:
             conn.disconnect()
-        except (self.socket.error,AttributeError,):
+        except (self.socket.error, AttributeError,):
             return False
         return True
 
@@ -113,7 +113,7 @@ class Repository:
                 self.dbformat_eapi = 3
 
         # FIXME, find a way to do that without needing sqlite3 exec.
-        if not os.access("/usr/bin/sqlite3",os.X_OK) or self.entropyTools.islive():
+        if not os.access("/usr/bin/sqlite3", os.X_OK) or self.entropyTools.islive():
             self.dbformat_eapi = 1
         else:
             rc = subprocess.call("/usr/bin/sqlite3 -version &> /dev/null", shell = True)
@@ -123,7 +123,7 @@ class Repository:
         if eapi_env != None:
             try:
                 myeapi = int(eapi_env)
-            except (ValueError,TypeError,):
+            except (ValueError, TypeError,):
                 return
             if myeapi in self.valid_eapis:
                 self.dbformat_eapi = myeapi
@@ -153,9 +153,9 @@ class Repository:
 
         # create dir if it doesn't exist
         if not os.path.isdir(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']):
-            os.makedirs(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'],0o775)
+            os.makedirs(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'], 0o775)
 
-        const_setup_perms(etpConst['etpdatabaseclientdir'],etpConst['entropygid'])
+        const_setup_perms(etpConst['etpdatabaseclientdir'], etpConst['entropygid'])
 
     def _construct_paths(self, item, repo, cmethod):
 
@@ -210,33 +210,33 @@ class Repository:
             ec_cm8 = etpConst[cmethod[8]]
 
         mymap = {
-            'db': ("%s/%s" % (repo_db,ec_cm2,),"%s/%s" % (repo_dbpath,ec_cm2,),),
-            'dblight': ("%s/%s" % (repo_db,ec_cm7,),"%s/%s" % (repo_dbpath,ec_cm7,),),
-            'dbdump': ("%s/%s" % (repo_db,ec_cm3,),"%s/%s" % (repo_dbpath,ec_cm3,),),
-            'dbdumplight': ("%s/%s" % (repo_db,ec_cm5,),"%s/%s" % (repo_dbpath,ec_cm5,),),
-            'rev': ("%s/%s" % (repo_db,ec_rev,),"%s/%s" % (repo_dbpath,ec_rev,),),
-            'ck': ("%s/%s" % (repo_db,ec_hash,),"%s/%s" % (repo_dbpath,ec_hash,),),
-            'cklight': ("%s/%s" % (repo_db,ec_cm8,),"%s/%s" % (repo_dbpath,ec_cm8,),),
-            'compck': ("%s/%s%s" % (repo_db, ec_cm2, md5_ext,),"%s/%s%s" % (repo_dbpath, ec_cm2, md5_ext,),),
-            'dbdumpck': ("%s/%s" % (repo_db,ec_cm4,),"%s/%s" % (repo_dbpath,ec_cm4,),),
-            'dbdumplightck': ("%s/%s" % (repo_db,ec_cm6,),"%s/%s" % (repo_dbpath,ec_cm6,),),
-            'mask': ("%s/%s" % (repo_db,ec_maskfile,),"%s/%s" % (repo_dbpath,ec_maskfile,),),
-            'keywords': ("%s/%s" % (repo_db,ec_keywords,),"%s/%s" % (repo_dbpath,ec_keywords,),),
-            'system_mask': ("%s/%s" % (repo_db,ec_sysmaskfile,),"%s/%s" % (repo_dbpath,ec_sysmaskfile,),),
-            'conflicting_tagged': ("%s/%s" % (repo_db,ec_confl_taged,),"%s/%s" % (repo_dbpath,ec_confl_taged,),),
-            'critical_updates': ("%s/%s" % (repo_db,ec_crit_updates,),"%s/%s" % (repo_dbpath,ec_crit_updates,),),
-            'make.conf': ("%s/%s" % (repo_db,make_conf_file,),"%s/%s" % (repo_dbpath,make_conf_file,),),
-            'package.mask': ("%s/%s" % (repo_db,pkg_mask_file,),"%s/%s" % (repo_dbpath,pkg_mask_file,),),
-            'package.unmask': ("%s/%s" % (repo_db,pkg_unmask_file,),"%s/%s" % (repo_dbpath,pkg_unmask_file,),),
-            'package.keywords': ("%s/%s" % (repo_db,pkg_keywords_file,),"%s/%s" % (repo_dbpath,pkg_keywords_file,),),
-            'package.use': ("%s/%s" % (repo_db,pkg_use_file,),"%s/%s" % (repo_dbpath,pkg_use_file,),),
-            'profile.link': ("%s/%s" % (repo_db,sys_profile_lnk,),"%s/%s" % (repo_dbpath,sys_profile_lnk,),),
-            'lic_whitelist': ("%s/%s" % (repo_db,pkg_lic_wl_file,),"%s/%s" % (repo_dbpath,pkg_lic_wl_file,),),
-            'lock': ("%s/%s" % (repo_db,repo_lock_file,),"%s/%s" % (repo_dbpath,repo_lock_file,),),
-            'server.cert': ("%s/%s" % (repo_db,server_cert_file,),"%s/%s" % (repo_dbpath,server_cert_file,),),
-            'ca.cert': ("%s/%s" % (repo_db,ca_cert_file,),"%s/%s" % (repo_dbpath,ca_cert_file,),),
-            'notice_board': (self.Entropy.SystemSettings['repositories']['available'][repo]['notice_board'],"%s/%s" % (repo_dbpath,notice_board_filename,),),
-            'meta_file': ("%s/%s" % (repo_db,meta_file,),"%s/%s" % (repo_dbpath,meta_file,),),
+            'db': ("%s/%s" % (repo_db, ec_cm2,), "%s/%s" % (repo_dbpath, ec_cm2,),),
+            'dblight': ("%s/%s" % (repo_db, ec_cm7,), "%s/%s" % (repo_dbpath, ec_cm7,),),
+            'dbdump': ("%s/%s" % (repo_db, ec_cm3,), "%s/%s" % (repo_dbpath, ec_cm3,),),
+            'dbdumplight': ("%s/%s" % (repo_db, ec_cm5,), "%s/%s" % (repo_dbpath, ec_cm5,),),
+            'rev': ("%s/%s" % (repo_db, ec_rev,), "%s/%s" % (repo_dbpath, ec_rev,),),
+            'ck': ("%s/%s" % (repo_db, ec_hash,), "%s/%s" % (repo_dbpath, ec_hash,),),
+            'cklight': ("%s/%s" % (repo_db, ec_cm8,), "%s/%s" % (repo_dbpath, ec_cm8,),),
+            'compck': ("%s/%s%s" % (repo_db, ec_cm2, md5_ext,), "%s/%s%s" % (repo_dbpath, ec_cm2, md5_ext,),),
+            'dbdumpck': ("%s/%s" % (repo_db, ec_cm4,), "%s/%s" % (repo_dbpath, ec_cm4,),),
+            'dbdumplightck': ("%s/%s" % (repo_db, ec_cm6,), "%s/%s" % (repo_dbpath, ec_cm6,),),
+            'mask': ("%s/%s" % (repo_db, ec_maskfile,), "%s/%s" % (repo_dbpath, ec_maskfile,),),
+            'keywords': ("%s/%s" % (repo_db, ec_keywords,), "%s/%s" % (repo_dbpath, ec_keywords,),),
+            'system_mask': ("%s/%s" % (repo_db, ec_sysmaskfile,), "%s/%s" % (repo_dbpath, ec_sysmaskfile,),),
+            'conflicting_tagged': ("%s/%s" % (repo_db, ec_confl_taged,), "%s/%s" % (repo_dbpath, ec_confl_taged,),),
+            'critical_updates': ("%s/%s" % (repo_db, ec_crit_updates,), "%s/%s" % (repo_dbpath, ec_crit_updates,),),
+            'make.conf': ("%s/%s" % (repo_db, make_conf_file,), "%s/%s" % (repo_dbpath, make_conf_file,),),
+            'package.mask': ("%s/%s" % (repo_db, pkg_mask_file,), "%s/%s" % (repo_dbpath, pkg_mask_file,),),
+            'package.unmask': ("%s/%s" % (repo_db, pkg_unmask_file,), "%s/%s" % (repo_dbpath, pkg_unmask_file,),),
+            'package.keywords': ("%s/%s" % (repo_db, pkg_keywords_file,), "%s/%s" % (repo_dbpath, pkg_keywords_file,),),
+            'package.use': ("%s/%s" % (repo_db, pkg_use_file,), "%s/%s" % (repo_dbpath, pkg_use_file,),),
+            'profile.link': ("%s/%s" % (repo_db, sys_profile_lnk,), "%s/%s" % (repo_dbpath, sys_profile_lnk,),),
+            'lic_whitelist': ("%s/%s" % (repo_db, pkg_lic_wl_file,), "%s/%s" % (repo_dbpath, pkg_lic_wl_file,),),
+            'lock': ("%s/%s" % (repo_db, repo_lock_file,), "%s/%s" % (repo_dbpath, repo_lock_file,),),
+            'server.cert': ("%s/%s" % (repo_db, server_cert_file,), "%s/%s" % (repo_dbpath, server_cert_file,),),
+            'ca.cert': ("%s/%s" % (repo_db, ca_cert_file,), "%s/%s" % (repo_dbpath, ca_cert_file,),),
+            'notice_board': (self.Entropy.SystemSettings['repositories']['available'][repo]['notice_board'], "%s/%s" % (repo_dbpath, notice_board_filename,),),
+            'meta_file': ("%s/%s" % (repo_db, meta_file,), "%s/%s" % (repo_dbpath, meta_file,),),
         }
 
         return mymap.get(item)
@@ -271,7 +271,7 @@ class Repository:
 
         if self.dbformat_eapi == 1:
             remove_eapi1()
-        elif self.dbformat_eapi in (2,3,):
+        elif self.dbformat_eapi in (2, 3,):
             remove_eapi1()
             if os.path.isfile(repo_dbpath+"/"+cmethod[6]):
                 os.remove(repo_dbpath+"/"+cmethod[6])
@@ -405,8 +405,8 @@ class Repository:
 
     def clear_repository_cache(self, repo):
         self.__validate_repository_id(repo)
-        self.Entropy.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'],etpConst['dbnamerepoprefix'],repo,))
-        self.Entropy.clear_dump_cache("%s/%s%s/" % (etpCache['dbSearch'],etpConst['dbnamerepoprefix'],repo,))
+        self.Entropy.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'], etpConst['dbnamerepoprefix'], repo,))
+        self.Entropy.clear_dump_cache("%s/%s%s/" % (etpCache['dbSearch'], etpConst['dbnamerepoprefix'], repo,))
 
     # this function can be reimplemented
     def download_item(self, item, repo, cmethod = None, lock_status_func = None, disallow_redirect = True):
@@ -421,7 +421,7 @@ class Repository:
             os.remove(filepath)
         filepath_dir = os.path.dirname(filepath)
         if not os.path.isdir(filepath_dir) and not os.path.lexists(filepath_dir):
-            os.makedirs(filepath_dir,0o775)
+            os.makedirs(filepath_dir, 0o775)
             const_setup_perms(filepath_dir, etpConst['entropygid'])
 
         fetchConn = self.Entropy.urlFetcher(
@@ -435,7 +435,7 @@ class Repository:
 
         rc = fetchConn.download()
         del fetchConn
-        if rc in ("-1","-2","-3","-4"):
+        if rc in ("-1", "-2", "-3", "-4"):
             return False
         self.Entropy.setup_default_file_perms(filepath)
         return True
@@ -515,21 +515,21 @@ class Repository:
             count = count_info,
             header = blue("  # ")
         )
-        mytxt = "%s: %s" % (red(_("Database URL")),darkgreen(self.Entropy.SystemSettings['repositories']['available'][repo]['database']),)
+        mytxt = "%s: %s" % (red(_("Database URL")), darkgreen(self.Entropy.SystemSettings['repositories']['available'][repo]['database']),)
         self.Entropy.updateProgress(
             mytxt,
             importance = 1,
             type = "info",
             header = blue("  # ")
         )
-        mytxt = "%s: %s" % (red(_("Database local path")),darkgreen(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']),)
+        mytxt = "%s: %s" % (red(_("Database local path")), darkgreen(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']),)
         self.Entropy.updateProgress(
             mytxt,
             importance = 0,
             type = "info",
             header = blue("  # ")
         )
-        mytxt = "%s: %s" % (red(_("Database EAPI")),darkgreen(str(self.dbformat_eapi)),)
+        mytxt = "%s: %s" % (red(_("Database EAPI")), darkgreen(str(self.dbformat_eapi)),)
         self.Entropy.updateProgress(
             mytxt,
             importance = 0,
@@ -539,7 +539,7 @@ class Repository:
 
     def get_eapi3_local_database(self, repo):
 
-        dbfile = os.path.join(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'],etpConst['etpdatabasefile'])
+        dbfile = os.path.join(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'], etpConst['etpdatabasefile'])
         mydbconn = None
         try:
             mydbconn = self.Entropy.open_generic_database(dbfile, xcache = False, indexing_override = False)
@@ -559,15 +559,15 @@ class Repository:
         data = eapi3_interface.CmdInterface.differential_packages_comparison(
             session, idpackages, repo, etpConst['currentarch'], product
         )
-        if isinstance(data,bool): # then it's probably == False
-            return False,False,False
-        elif not isinstance(data,dict):
-            return None,None,None
+        if isinstance(data, bool): # then it's probably == False
+            return False, False, False
+        elif not isinstance(data, dict):
+            return None, None, None
         elif 'added' not in data or \
             'removed' not in data or \
             'checksum' not in data:
-                return None,None,None
-        return data['added'],data['removed'],data['checksum']
+                return None, None, None
+        return data['added'], data['removed'], data['checksum']
 
     def get_eapi3_repository_metadata(self, eapi3_interface, repo, session):
         product = self.Entropy.SystemSettings['repositories']['product']
@@ -575,7 +575,7 @@ class Repository:
         data = eapi3_interface.CmdInterface.get_repository_metadata(
             session, repo, etpConst['currentarch'], product
         )
-        if not isinstance(data,dict): return {}
+        if not isinstance(data, dict): return {}
         return data
 
     def handle_eapi3_database_sync(self, repo, threshold = 1500, chunk_size = 12):
@@ -597,7 +597,7 @@ class Repository:
         try:
             mydbconn = self.get_eapi3_local_database(repo)
             myidpackages = mydbconn.listAllIdpackages()
-        except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,AttributeError,):
+        except (self.dbapi2.DatabaseError, self.dbapi2.IntegrityError, self.dbapi2.OperationalError, AttributeError,):
             prepare_exit(eapi3_interface, session)
             return False
 
@@ -605,7 +605,7 @@ class Repository:
             eapi3_interface, repo,
             myidpackages, session
         )
-        if (None in (added_ids,removed_ids,checksum)) or \
+        if (None in (added_ids, removed_ids, checksum)) or \
             (not added_ids and not removed_ids and self.forceUpdate):
                 mydbconn.closeDB()
                 prepare_exit(eapi3_interface, session)
@@ -662,7 +662,7 @@ class Repository:
             mytxt = "%s %s" % (blue(_("Fetching segments")), "...",)
             self.Entropy.updateProgress(
                 mytxt, importance = 0, type = "info",
-                header = "\t", back = True, count = (count,maxcount,)
+                header = "\t", back = True, count = (count, maxcount,)
             )
             fetch_count = 0
             max_fetch_count = 5
@@ -684,7 +684,7 @@ class Repository:
                         darkred(str(segment)),)
                     self.Entropy.updateProgress(
                         mytxt, importance = 1, type = "warning",
-                        header = "\t", count = (count,maxcount,)
+                        header = "\t", count = (count, maxcount,)
                     )
                     continue
                 elif not pkgdata: # pkgdata == False
@@ -694,12 +694,12 @@ class Repository:
                     )
                     self.Entropy.updateProgress(
                         mytxt, importance = 1, type = "info",
-                        header = "\t", count = (count,maxcount,)
+                        header = "\t", count = (count, maxcount,)
                     )
                     mydbconn.closeDB()
                     prepare_exit(eapi3_interface, session)
                     return None
-                elif isinstance(pkgdata,tuple):
+                elif isinstance(pkgdata, tuple):
                     mytxt = "%s: %s, %s. %s" % (
                         blue(_("Service status")),
                         pkgdata[0], pkgdata[1],
@@ -707,7 +707,7 @@ class Repository:
                     )
                     self.Entropy.updateProgress(
                         mytxt, importance = 1, type = "info",
-                        header = "\t", count = (count,maxcount,)
+                        header = "\t", count = (count, maxcount,)
                     )
                     mydbconn.closeDB()
                     prepare_exit(eapi3_interface, session)
@@ -716,11 +716,11 @@ class Repository:
                 try:
                     for idpackage in pkgdata:
                         self.dumpTools.dumpobj(
-                            "%s%s" % (etpCache['eapi3_fetch'],idpackage,),
+                            "%s%s" % (etpCache['eapi3_fetch'], idpackage,),
                             pkgdata[idpackage],
                             ignore_exceptions = False
                         )
-                except (IOError,EOFError,OSError,) as e:
+                except (IOError, EOFError, OSError,) as e:
                     mytxt = "%s: %s: %s." % (
                         blue(_("Local status")),
                         darkred("Error storing data"),
@@ -728,7 +728,7 @@ class Repository:
                     )
                     self.Entropy.updateProgress(
                         mytxt, importance = 1, type = "info",
-                        header = "\t", count = (count,maxcount,)
+                        header = "\t", count = (count, maxcount,)
                     )
                     mydbconn.closeDB()
                     prepare_exit(eapi3_interface, session)
@@ -807,7 +807,7 @@ class Repository:
         maxcount = len(added_ids)
         for idpackage in added_ids:
             count += 1
-            mydata = self.Cacher.pop("%s%s" % (etpCache['eapi3_fetch'],idpackage,))
+            mydata = self.Cacher.pop("%s%s" % (etpCache['eapi3_fetch'], idpackage,))
             if mydata == None:
                 mytxt = "%s: %s" % (
                     blue(_("Fetch error on segment while adding")),
@@ -815,7 +815,7 @@ class Repository:
                 )
                 self.Entropy.updateProgress(
                     mytxt, importance = 1, type = "warning",
-                    header = "\t", count = (count,maxcount,)
+                    header = "\t", count = (count, maxcount,)
                 )
                 mydbconn.closeDB()
                 return False
@@ -823,7 +823,7 @@ class Repository:
             mytxt = "%s %s" % (blue(_("Injecting package")), darkgreen(mydata['atom']),)
             self.Entropy.updateProgress(
                 mytxt, importance = 0, type = "info",
-                header = "\t", back = True, count = (count,maxcount,)
+                header = "\t", back = True, count = (count, maxcount,)
             )
             try:
                 mydbconn.addPackage(
@@ -854,7 +854,7 @@ class Repository:
             mytxt = "%s: %s" % (blue(_("Removing package")), darkred(str(myatom)),)
             self.Entropy.updateProgress(
                 mytxt, importance = 0, type = "info",
-                header = "\t", back = True, count = (count,maxcount,)
+                header = "\t", back = True, count = (count, maxcount,)
             )
             try:
                 mydbconn.removePackage(idpackage, do_cleanup = False,
@@ -910,7 +910,7 @@ class Repository:
 
             repocount += 1
             self.reset_dbformat_eapi(repo)
-            self.show_repository_information(repo, (repocount,repolength))
+            self.show_repository_information(repo, (repocount, repolength))
 
             if not self.forceUpdate:
                 updated = self.handle_repository_update(repo)
@@ -940,7 +940,7 @@ class Repository:
             dumpfile = os.path.join(
                 self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'],
                 etpConst['etpdatabasedumplight'])
-            dbfile = os.path.join(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'],etpConst['etpdatabasefile'])
+            dbfile = os.path.join(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'], etpConst['etpdatabasefile'])
             dbfile_old = dbfile+".sync"
             cmethod = self.__validate_compression_method(repo)
 
@@ -963,7 +963,7 @@ class Repository:
                     break
 
                 elif self.dbformat_eapi == 3 and not \
-                    (os.path.isfile(dbfile) and os.access(dbfile,os.W_OK)):
+                    (os.path.isfile(dbfile) and os.access(dbfile, os.W_OK)):
 
                     do_db_update_transfer = None
                     self.dbformat_eapi -= 1
@@ -1082,7 +1082,7 @@ class Repository:
                     os.remove(dbfile_old)
                 continue
 
-            if os.path.isfile(dbfile) and os.access(dbfile,os.W_OK):
+            if os.path.isfile(dbfile) and os.access(dbfile, os.W_OK):
                 try:
                     self.Entropy.setup_default_file_perms(dbfile)
                 except OSError: # notification applet
@@ -1175,11 +1175,11 @@ class Repository:
         system_make_conf = etpConst['spm']['global_make_conf']
         make_conf_variables_check = ["CHOST"]
 
-        if os.path.isfile(repo_make_conf) and os.access(repo_make_conf,os.R_OK):
+        if os.path.isfile(repo_make_conf) and os.access(repo_make_conf, os.R_OK):
 
             if not os.path.isfile(system_make_conf):
                 self.Entropy.updateProgress(
-                    "%s %s. %s." % (red(system_make_conf),blue(_("does not exist")),blue(_("Overwriting")),),
+                    "%s %s. %s." % (red(system_make_conf), blue(_("does not exist")), blue(_("Overwriting")),),
                     importance = 1,
                     type = "info",
                     header = blue(" @@ ")
@@ -1187,14 +1187,14 @@ class Repository:
                 if os.path.lexists(system_make_conf):
                     shutil.move(
                         system_make_conf,
-                        "%s.backup_%s" % (system_make_conf,self.entropyTools.get_random_number(),)
+                        "%s.backup_%s" % (system_make_conf, self.entropyTools.get_random_number(),)
                     )
-                shutil.copy2(repo_make_conf,system_make_conf)
+                shutil.copy2(repo_make_conf, system_make_conf)
 
-            elif os.access(system_make_conf,os.W_OK):
+            elif os.access(system_make_conf, os.W_OK):
 
-                repo_f = open(repo_make_conf,"r")
-                sys_f = open(system_make_conf,"r")
+                repo_f = open(repo_make_conf, "r")
+                sys_f = open(system_make_conf, "r")
                 repo_make_c = [x.strip() for x in repo_f.readlines()]
                 sys_make_c = [x.strip() for x in sys_f.readlines()]
                 repo_f.close()
@@ -1238,7 +1238,7 @@ class Repository:
                         header = blue(" @@ ")
                     )
                     # backup user make.conf
-                    shutil.copy2(system_make_conf,"%s.entropy_backup" % (system_make_conf,))
+                    shutil.copy2(system_make_conf, "%s.entropy_backup" % (system_make_conf,))
 
                     self.Entropy.updateProgress(
                         "%s: %s." % (
@@ -1250,19 +1250,19 @@ class Repository:
                     )
                     # write to disk, safely
                     tmp_make_conf = "%s.entropy_write" % (system_make_conf,)
-                    f = open(tmp_make_conf,"w")
+                    f = open(tmp_make_conf, "w")
                     for line in sys_make_c: f.write(line+"\n")
                     f.flush()
                     f.close()
-                    shutil.move(tmp_make_conf,system_make_conf)
+                    shutil.move(tmp_make_conf, system_make_conf)
 
                 # update environment
                 for var in differences:
                     try:
                         myval = '='.join(differences[var].strip().split("=")[1:])
                         if myval:
-                            if myval[0] in ("'",'"',): myval = myval[1:]
-                            if myval[-1] in ("'",'"',): myval = myval[:-1]
+                            if myval[0] in ("'", '"',): myval = myval[1:]
+                            if myval[-1] in ("'", '"',): myval = myval[:-1]
                     except IndexError:
                         myval = ''
                     os.environ[var] = myval
@@ -1272,15 +1272,15 @@ class Repository:
             repo, None)
         system_make_profile = etpConst['spm']['global_make_profile']
         if not (os.path.isfile(repo_make_profile) and \
-            os.access(repo_make_profile,os.R_OK)):
+            os.access(repo_make_profile, os.R_OK)):
             return
 
-        f = open(repo_make_profile,"r")
+        f = open(repo_make_profile, "r")
         repo_profile_link_data = f.readline().strip()
         f.close()
         current_profile_link = ''
         if os.path.islink(system_make_profile) and \
-            os.access(system_make_profile,os.R_OK):
+            os.access(system_make_profile, os.R_OK):
 
             current_profile_link = os.readlink(system_make_profile)
 
@@ -1297,9 +1297,9 @@ class Repository:
                 header = blue(" @@ ")
             )
             merge_sfx = ".entropy_merge"
-            os.symlink(repo_profile_link_data,system_make_profile+merge_sfx)
+            os.symlink(repo_profile_link_data, system_make_profile+merge_sfx)
             if self.entropyTools.is_valid_path(system_make_profile+merge_sfx):
-                os.rename(system_make_profile+merge_sfx,system_make_profile)
+                os.rename(system_make_profile+merge_sfx, system_make_profile)
             else:
                 # revert change, link does not exist yet
                 self.Entropy.updateProgress(
@@ -1473,7 +1473,7 @@ class Repository:
                 return False
 
         if not down_status:
-            mytxt = "%s: %s." % (bold(_("Attention")),red(_("database does not exist online")),)
+            mytxt = "%s: %s." % (bold(_("Attention")), red(_("database does not exist online")),)
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 1,
@@ -1488,7 +1488,7 @@ class Repository:
         # check if database is already updated to the latest revision
         update = self.is_repository_updatable(repo)
         if not update:
-            mytxt = "%s: %s." % (bold(_("Attention")),red(_("database is already up to date")),)
+            mytxt = "%s: %s." % (bold(_("Attention")), red(_("database is already up to date")),)
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 1,
@@ -1500,7 +1500,7 @@ class Repository:
         if self.dbformat_eapi == 3:
             locked = self.is_repository_eapi3_locked(repo)
             if locked:
-                mytxt = "%s: %s." % (bold(_("Attention")),red(_("database will be ready soon")),)
+                mytxt = "%s: %s." % (bold(_("Attention")), red(_("database will be ready soon")),)
                 self.Entropy.updateProgress(
                     mytxt,
                     importance = 1,
@@ -1576,7 +1576,7 @@ class Repository:
             securityConn.fetch_advisories()
         except Exception as e:
             self.entropyTools.print_traceback(f = self.Entropy.clientLog)
-            mytxt = "%s: %s" % (red(_("Advisories fetch error")),e,)
+            mytxt = "%s: %s" % (red(_("Advisories fetch error")), e,)
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 1,
@@ -1777,7 +1777,7 @@ class Repository:
 
         def my_show_file_unpack(fp):
             self.Entropy.updateProgress(
-                "%s: %s" % (darkgreen(_("unpacked meta file")),brown(fp),),
+                "%s: %s" % (darkgreen(_("unpacked meta file")), brown(fp),),
                 header = blue("\t  << ")
             )
 
@@ -1794,23 +1794,23 @@ class Repository:
             # download failed, is it critical?
             if not mystatus:
                 if ignorable:
-                    message = "%s: %s." % (blue(myfile),red(_("not available, it's ok")))
+                    message = "%s: %s." % (blue(myfile), red(_("not available, it's ok")))
                 else:
                     mytype = 'warning'
-                    message = "%s: %s." % (blue(myfile),darkred(_("not available, not much ok!")))
+                    message = "%s: %s." % (blue(myfile), darkred(_("not available, not much ok!")))
                 my_show_down_status(message, mytype)
                 continue
 
             myurl, mypath = self._construct_paths(item, repo, None)
-            message = "%s: %s." % (blue(myfile),darkgreen(_("available, w00t!")))
+            message = "%s: %s." % (blue(myfile), darkgreen(_("available, w00t!")))
             my_show_down_status(message, mytype)
             if item not in objects_to_unpack: continue
-            if not (os.path.isfile(mypath) and os.access(mypath,os.R_OK)): continue
+            if not (os.path.isfile(mypath) and os.access(mypath, os.R_OK)): continue
 
             while 1:
-                tmpdir = os.path.join(os.path.dirname(mypath),"meta_unpack_%s" % (random.randint(1,10000),))
+                tmpdir = os.path.join(os.path.dirname(mypath), "meta_unpack_%s" % (random.randint(1, 10000),))
                 if not os.path.lexists(tmpdir): break
-            os.makedirs(tmpdir,0o775)
+            os.makedirs(tmpdir, 0o775)
 
             repo_dir = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']
             try:
@@ -1823,17 +1823,17 @@ class Repository:
                 if files_not_found_file in myfiles_to_move:
                     myfiles_to_move.remove(files_not_found_file)
                     try:
-                        with open(os.path.join(tmpdir,files_not_found_file),"r") as f:
+                        with open(os.path.join(tmpdir, files_not_found_file), "r") as f:
                             f_nf = [x.strip() for x in f.readlines()]
                             downloaded_by_unpack |= set(f_nf)
                     except IOError:
                         pass
 
                 for myfile in sorted(myfiles_to_move):
-                    from_mypath = os.path.join(tmpdir,myfile)
-                    to_mypath = os.path.join(repo_dir,myfile)
+                    from_mypath = os.path.join(tmpdir, myfile)
+                    to_mypath = os.path.join(repo_dir, myfile)
                     try:
-                        os.rename(from_mypath,to_mypath)
+                        os.rename(from_mypath, to_mypath)
                         downloaded_by_unpack.add(myfile)
                         my_show_file_unpack(myfile)
                     except OSError:
@@ -1841,7 +1841,7 @@ class Repository:
 
             finally:
 
-                shutil.rmtree(tmpdir,True)
+                shutil.rmtree(tmpdir, True)
                 try: os.rmdir(tmpdir)
                 except OSError: pass
 

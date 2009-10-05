@@ -39,7 +39,7 @@ class SocketHost:
 
             # filter n00bs
             if not arguments or (len(arguments) != 3):
-                return False,None,None,'wrong arguments'
+                return False, None, None, 'wrong arguments'
 
             user = arguments[0]
             auth_type = arguments[1]
@@ -47,27 +47,27 @@ class SocketHost:
 
             # check auth type validity
             if auth_type not in self.valid_auth_types:
-                return False,user,None,'invalid auth type'
+                return False, user, None, 'invalid auth type'
 
             udata = self.__get_user_data(user)
             if udata == None:
-                return False,user,None,'invalid user'
+                return False, user, None, 'invalid user'
 
             uid = udata[2]
             # check if user is in the Entropy group
             if not self.entropyTools.is_user_in_entropy_group(uid):
-                return False,user,uid,'user not in %s group' % (etpConst['sysgroup'],)
+                return False, user, uid, 'user not in %s group' % (etpConst['sysgroup'],)
 
             # now validate password
-            valid = self.__validate_auth(user,auth_type,auth_string)
+            valid = self.__validate_auth(user, auth_type, auth_string)
             if not valid:
-                return False,user,uid,'auth failed'
+                return False, user, uid, 'auth failed'
 
             if not uid:
                 self.HostInterface.sessions[self.session]['admin'] = True
             else:
                 self.HostInterface.sessions[self.session]['user'] = True
-            return True,user,uid,"ok"
+            return True, user, uid, "ok"
 
         # it we get here is because user is logged in
         def docmd_userdata(self):
@@ -82,7 +82,7 @@ class SocketHost:
                 mydata['references'] = udata[4]
                 mydata['home'] = udata[5]
                 mydata['shell'] = udata[6]
-            return True,mydata,'ok'
+            return True, mydata, 'ok'
 
         def __get_uid_data(self, user_id):
             import pwd
@@ -142,14 +142,14 @@ class SocketHost:
 
             # filter n00bs
             if (len(myargs) < 1) or (len(myargs) > 1):
-                return False,None,'wrong arguments'
+                return False, None, 'wrong arguments'
 
             user = myargs[0]
             # filter n00bs
             if not user or not const_isstring(user):
-                return False,None,"wrong user"
+                return False, None, "wrong user"
 
-            return True,user,"ok"
+            return True, user, "ok"
 
         def set_exc_permissions(self, uid, gid):
             if gid != None:
@@ -310,7 +310,7 @@ class SocketHost:
                     )
                     return False
                 elif conn_data > max_conn_per_ip_barrier:
-                    times = [5,6,7,8]
+                    times = [5, 6, 7, 8]
                     self.HostInterface.updateProgress(
                         '[from: %s] ------- :EEEK: !! connection warning simultaneous connection barrier reached from host (current: %s | soft limit: %s) -------' % (
                             ip_address,
@@ -558,15 +558,15 @@ class SocketHost:
                 return False
 
         def fork_lock_acquire(self):
-            if hasattr(self.server.processor.HostInterface,'ForkLock'):
-                x = getattr(self.server.processor.HostInterface,'ForkLock')
-                if hasattr(x,'acquire') and hasattr(x,'release') and hasattr(x,'locked'):
+            if hasattr(self.server.processor.HostInterface, 'ForkLock'):
+                x = getattr(self.server.processor.HostInterface, 'ForkLock')
+                if hasattr(x, 'acquire') and hasattr(x, 'release') and hasattr(x, 'locked'):
                     x.acquire()
 
         def fork_lock_release(self):
-            if hasattr(self.server.processor.HostInterface,'ForkLock'):
-                x = getattr(self.server.processor.HostInterface,'ForkLock')
-                if hasattr(x,'acquire') and hasattr(x,'release') and hasattr(x,'locked'):
+            if hasattr(self.server.processor.HostInterface, 'ForkLock'):
+                x = getattr(self.server.processor.HostInterface, 'ForkLock')
+                if hasattr(x, 'acquire') and hasattr(x, 'release') and hasattr(x, 'locked'):
                     if x.locked(): x.release()
 
         def handle(self):
@@ -602,7 +602,7 @@ class SocketHost:
                                 )
                                 if not dead:
                                     import signal
-                                    os.kill(pid,signal.SIGKILL)
+                                    os.kill(pid, signal.SIGKILL)
                                     passed_away = True # in this way, the process table should be clean
                                     continue
                                 break
@@ -701,13 +701,13 @@ class SocketHost:
             if stream_enabled and (cmd not in self.HostInterface.config_commands):
                 session_len = 0
                 if session: session_len = len(session)+1
-                return cmd,[string[session_len+len(cmd)+1:]],session
+                return cmd, [string[session_len+len(cmd)+1:]], session
             else:
                 myargs = []
                 if len(args) > 1:
                     myargs = args[1:]
 
-                return cmd,myargs,session
+                return cmd, myargs, session
 
         def handle_end_answer(self, cmd, whoops, valid_cmd):
             if not valid_cmd:
@@ -721,13 +721,13 @@ class SocketHost:
 
             # answer to invalid commands
             if (cmd not in self.HostInterface.valid_commands):
-                return False,"not a valid command"
+                return False, "not a valid command"
 
             if session == None:
                 if cmd not in self.HostInterface.no_session_commands:
-                    return False,"need a valid session"
+                    return False, "need a valid session"
             elif session not in self.HostInterface.sessions:
-                return False,"session is not alive"
+                return False, "session is not alive"
 
             # check if command needs authentication
             if session != None:
@@ -737,14 +737,14 @@ class SocketHost:
                     authed = self.HostInterface.sessions[session]['auth_uid']
                     if authed == None:
                         # nope
-                        return False,"not authenticated"
+                        return False, "not authenticated"
 
             # keep session alive
             if session != None:
                 self.HostInterface.set_session_running(session)
                 self.HostInterface.update_session_time(session)
 
-            return True,"all good"
+            return True, "all good"
 
         def load_authenticator(self):
             f, args, kwargs = self.HostInterface.AuthenticatorInst
@@ -777,7 +777,7 @@ class SocketHost:
             # decide if we need to load authenticator or Entropy
             authenticator = None
             cmd_data = self.HostInterface.valid_commands.get(cmd)
-            if not isinstance(cmd_data,dict):
+            if not isinstance(cmd_data, dict):
                 self.HostInterface.updateProgress(
                     '[from: %s] command error: invalid command: %s' % (
                         self.client_address,
@@ -886,7 +886,7 @@ class SocketHost:
                         )
                     )
                     if session != None:
-                        self.HostInterface.store_rc(str(e),session)
+                        self.HostInterface.store_rc(str(e), session)
                     whoops = True
 
                 del Entropy
@@ -897,7 +897,7 @@ class SocketHost:
             rcmd = None
             try:
                 self.handle_end_answer(cmd, whoops, valid_cmd)
-            except (self.socket.error, self.socket.timeout,self.HostInterface.SSL_exceptions['SysCallError'],):
+            except (self.socket.error, self.socket.timeout, self.HostInterface.SSL_exceptions['SysCallError'],):
                 rcmd = "close"
 
             if authenticator != None:
@@ -952,12 +952,12 @@ class SocketHost:
                     x = arg.split("=")
                     a = x[0]
                     b = ''.join(x[1:])
-                    if (b in ("True","False",)) or is_int(b):
+                    if (b in ("True", "False",)) or is_int(b):
                         mykwargs[a] = eval(b)
                     else:
                         myargs.append(arg)
                 else:
-                    if (arg in ("True","False",)) or is_int(arg):
+                    if (arg in ("True", "False",)) or is_int(arg):
                         myargs.append(eval(arg))
                     else:
                         myargs.append(arg)
@@ -1010,7 +1010,7 @@ class SocketHost:
             return self.entropyTools.spawn_function(self._do_fork, f, authenticator, uid, gid, *args, **kwargs)
 
         def _do_fork(self, f, authenticator, uid, gid, *args, **kwargs):
-            authenticator.set_exc_permissions(uid,gid)
+            authenticator.set_exc_permissions(uid, gid)
             rc = f(*args,**kwargs)
             return rc
 
@@ -1049,7 +1049,7 @@ class SocketHost:
                                 'auth': False,
                                 'built_in': True,
                                 'cb': self.docmd_session_config,
-                                'args': ["session","myargs"],
+                                'args': ["session", "myargs"],
                                 'as_user': False,
                                 'desc': "set session configuration options",
                                 'syntax': "<SESSION_ID> session_config <option> [parameters]",
@@ -1059,7 +1059,7 @@ class SocketHost:
                                 'auth': False,
                                 'built_in': True,
                                 'cb': self.docmd_rc,
-                                'args': ["self.transmit","session"],
+                                'args': ["self.transmit", "session"],
                                 'as_user': False,
                                 'desc': "get data returned by the last valid command (streamed python object)",
                                 'syntax': "<SESSION_ID> rc",
@@ -1079,7 +1079,7 @@ class SocketHost:
                                 'auth': True,
                                 'built_in': True,
                                 'cb': self.docmd_alive,
-                                'args': ["self.transmit","self.client_address","myargs"],
+                                'args': ["self.transmit", "self.client_address", "myargs"],
                                 'as_user': False,
                                 'desc': "check if a session is still alive",
                                 'syntax': "alive <SESSION_ID>",
@@ -1147,18 +1147,18 @@ class SocketHost:
                             },
             }
 
-            self.no_acked_commands = ["rc", "begin", "end", "hello", "alive", "login", "logout","help"]
-            self.termination_commands = ["quit","close"]
+            self.no_acked_commands = ["rc", "begin", "end", "hello", "alive", "login", "logout", "help"]
+            self.termination_commands = ["quit", "close"]
             self.initialization_commands = ["begin"]
             self.login_pass_commands = ["login"]
-            self.no_session_commands = ["begin","hello","alive","help"]
+            self.no_session_commands = ["begin", "hello", "alive", "help"]
             self.raw_commands = ["stream"]
             self.config_commands = ["session_config"]
 
         def docmd_session_config(self, session, myargs):
 
             if not myargs:
-                return False,"not enough parameters"
+                return False, "not enough parameters"
 
             option = myargs[0]
             myopts = myargs[1:]
@@ -1169,7 +1169,7 @@ class SocketHost:
                 if "zlib" in myopts:
                     do_zlib = True
                 if myopts:
-                    if isinstance(myopts[0],bool):
+                    if isinstance(myopts[0], bool):
                         docomp = myopts[0]
                     else:
                         try:
@@ -1183,22 +1183,22 @@ class SocketHost:
                 else:
                     docomp = None
                 self.HostInterface.sessions[session]['compression'] = docomp
-                return True,"compression now: %s" % (docomp,)
+                return True, "compression now: %s" % (docomp,)
             elif option == "stream":
                 dostream = True
                 if "off" in myopts:
                     dostream = False
                 self.HostInterface.sessions[session]['stream_mode'] = dostream
-                return True,'stream mode: %s' % (dostream,)
+                return True, 'stream mode: %s' % (dostream,)
             else:
-                return False,"invalid config option"
+                return False, "invalid config option"
 
         def docmd_available_commands(self, host_interface):
 
             def copy_obj(obj):
-                if isinstance(obj,set) or isinstance(obj,dict):
+                if isinstance(obj, set) or isinstance(obj, dict):
                     return obj.copy()
-                elif isinstance(obj,list) or isinstance(obj,tuple):
+                elif isinstance(obj, list) or isinstance(obj, tuple):
                     return obj[:]
                 return obj
 
@@ -1227,9 +1227,9 @@ class SocketHost:
         def docmd_stream(self, session, myargs):
 
             if not self.HostInterface.sessions[session]['stream_mode']:
-                return False,'not in stream mode'
+                return False, 'not in stream mode'
             if not myargs:
-                return False,'no stream sent'
+                return False, 'no stream sent'
 
             compression = self.HostInterface.sessions[session]['compression']
 
@@ -1240,25 +1240,25 @@ class SocketHost:
                 try:
                     os.makedirs(stream_dir)
                     if etpConst['entropygid'] != None:
-                        const_setup_perms(stream_dir,etpConst['entropygid'])
+                        const_setup_perms(stream_dir, etpConst['entropygid'])
                 except OSError:
-                    return False,'cannot initialize stream directory'
+                    return False, 'cannot initialize stream directory'
 
-            f = open(stream_path,'abw')
+            f = open(stream_path, 'abw')
             if compression:
                 stream = self.zlib.decompress(stream)
             f.write(stream)
             f.flush()
             f.close()
 
-            return True,'ok'
+            return True, 'ok'
 
         def docmd_login(self, transmitter, authenticator, session, client_address, myargs):
 
             # is already auth'd?
             auth_uid = self.HostInterface.sessions[session]['auth_uid']
             if auth_uid != None:
-                return False,"already authenticated"
+                return False, "already authenticated"
 
             status, user, uid, reason = authenticator.docmd_login(myargs)
             if status:
@@ -1271,7 +1271,7 @@ class SocketHost:
                 )
                 self.HostInterface.sessions[session]['auth_uid'] = uid
                 transmitter(self.HostInterface.answers['ok'])
-                return True,reason
+                return True, reason
             elif user == None:
                 self.HostInterface.updateProgress(
                     '[from: %s] user -not specified- login failed, session: %s, reason: %s' % (
@@ -1281,7 +1281,7 @@ class SocketHost:
                     )
                 )
                 transmitter(self.HostInterface.answers['no'])
-                return False,reason
+                return False, reason
             else:
                 self.HostInterface.updateProgress(
                     '[from: %s] user %s login failed, session: %s, reason: %s' % (
@@ -1292,13 +1292,13 @@ class SocketHost:
                     )
                 )
                 transmitter(self.HostInterface.answers['no'])
-                return False,reason
+                return False, reason
 
         def docmd_userdata(self, transmitter, authenticator, session):
 
             auth_uid = self.HostInterface.sessions[session]['auth_uid']
             if auth_uid == None:
-                return False,None,"not authenticated"
+                return False, None, "not authenticated"
 
             return authenticator.docmd_userdata()
 
@@ -1315,7 +1315,7 @@ class SocketHost:
                 )
                 self.HostInterface.sessions[session]['auth_uid'] = None
                 transmitter(self.HostInterface.answers['ok'])
-                return True,reason
+                return True, reason
             elif user == None:
                 self.HostInterface.updateProgress(
                     '[from: %s] user -not specified- logout failed, session: %s, args: %s, reason: %s' % (
@@ -1326,7 +1326,7 @@ class SocketHost:
                     )
                 )
                 transmitter(self.HostInterface.answers['no'])
-                return False,reason
+                return False, reason
             else:
                 self.HostInterface.updateProgress(
                     '[from: %s] user %s logout failed, session: %s, args: %s, reason: %s' % (
@@ -1338,7 +1338,7 @@ class SocketHost:
                     )
                 )
                 transmitter(self.HostInterface.answers['no'])
-                return False,reason
+                return False, reason
 
         def docmd_alive(self, transmitter, client_address, myargs):
             cmd = self.HostInterface.answers['no']
@@ -1535,7 +1535,7 @@ class SocketHost:
         self.start_python_garbage_collector()
 
     def killall(self):
-        if hasattr(self,'socketLog'):
+        if hasattr(self, 'socketLog'):
             self.socketLog.close()
         if self.Server != None:
             self.Server.alive = False
@@ -1596,25 +1596,25 @@ class SocketHost:
                     self.SSL['key'],
                     self.SSL['cert']
                 )
-                os.chmod(self.SSL['ca_cert'],0o644)
+                os.chmod(self.SSL['ca_cert'], 0o644)
                 try:
-                    os.chown(self.SSL['ca_cert'],-1,0)
+                    os.chown(self.SSL['ca_cert'], -1, 0)
                 except OSError:
                     pass
-                os.chmod(self.SSL['ca_pkey'],0o600)
+                os.chmod(self.SSL['ca_pkey'], 0o600)
                 try:
-                    os.chown(self.SSL['ca_pkey'],-1,0)
+                    os.chown(self.SSL['ca_pkey'], -1, 0)
                 except OSError:
                     pass
 
-        os.chmod(self.SSL['key'],0o600)
+        os.chmod(self.SSL['key'], 0o600)
         try:
-            os.chown(self.SSL['key'],-1,0)
+            os.chown(self.SSL['key'], -1, 0)
         except OSError:
             pass
-        os.chmod(self.SSL['cert'],0o644)
+        os.chmod(self.SSL['cert'], 0o644)
         try:
-            os.chown(self.SSL['cert'],-1,0)
+            os.chown(self.SSL['cert'], -1, 0)
         except OSError:
             pass
 
@@ -1645,28 +1645,28 @@ class SocketHost:
 
         # write CA
         if os.path.isfile(ca_pkey_dest):
-            shutil.move(ca_pkey_dest,ca_pkey_dest+".moved")
-        f = open(ca_pkey_dest,"w")
+            shutil.move(ca_pkey_dest, ca_pkey_dest+".moved")
+        f = open(ca_pkey_dest, "w")
         f.write(self.SSL['crypto'].dump_privatekey(self.SSL['crypto'].FILETYPE_PEM, cakey))
         f.flush()
         f.close()
         if os.path.isfile(ca_cert_dest):
-            shutil.move(ca_cert_dest,ca_cert_dest+".moved")
-        f = open(ca_cert_dest,"w")
+            shutil.move(ca_cert_dest, ca_cert_dest+".moved")
+        f = open(ca_cert_dest, "w")
         f.write(self.SSL['crypto'].dump_certificate(self.SSL['crypto'].FILETYPE_PEM, cert))
         f.flush()
         f.close()
 
         if os.path.isfile(server_key):
-            shutil.move(server_key,server_key+".moved")
+            shutil.move(server_key, server_key+".moved")
         # write server
-        f = open(server_key,"w")
+        f = open(server_key, "w")
         f.write(self.SSL['crypto'].dump_privatekey(self.SSL['crypto'].FILETYPE_PEM, s_pkey))
         f.flush()
         f.close()
         if os.path.isfile(server_cert):
-            shutil.move(server_cert,server_cert+".moved")
-        f = open(server_cert,"w")
+            shutil.move(server_cert, server_cert+".moved")
+        f = open(server_cert, "w")
         f.write(self.SSL['crypto'].dump_certificate(self.SSL['crypto'].FILETYPE_PEM, s_cert))
         f.flush()
         f.close()
@@ -1679,7 +1679,7 @@ class SocketHost:
     def create_ssl_certificate_request(self, pkey, digest, **name):
         req = self.SSL['crypto'].X509Req()
         subj = req.get_subject()
-        for (key,value) in list(name.items()):
+        for (key, value) in list(name.items()):
             setattr(subj, key, value)
         req.set_pubkey(pkey)
         req.sign(pkey, digest)
@@ -1689,7 +1689,7 @@ class SocketHost:
 
         if 'external_cmd_classes' in self.kwds:
             ext_commands = self.kwds.pop('external_cmd_classes')
-            if not isinstance(ext_commands,list):
+            if not isinstance(ext_commands, list):
                 raise InvalidDataType("InvalidDataType: external_cmd_classes must be a list")
             self.command_classes += ext_commands
 
@@ -1700,7 +1700,7 @@ class SocketHost:
 
             myargs = []
             mykwargs = {}
-            if isinstance(myclass,tuple) or isinstance(myclass,list):
+            if isinstance(myclass, tuple) or isinstance(myclass, list):
                 if len(myclass) > 2:
                     mykwargs = myclass[2]
                 if len(myclass) > 1:
@@ -1771,7 +1771,7 @@ class SocketHost:
             else:
                 raise IncorrectParameter("IncorrectParameter: wront authentication interface specified")
             # initialize authenticator
-        self.AuthenticatorInst = (auth_inst[0],[self]+auth_inst[1],auth_inst[2],)
+        self.AuthenticatorInst = (auth_inst[0], [self]+auth_inst[1], auth_inst[2],)
 
     def start_python_garbage_collector(self):
         self.PythonGarbageCollector = self.TimeScheduled(3600, self.python_garbage_collect)
@@ -1804,7 +1804,7 @@ class SocketHost:
                 ttl = self.session_ttl
                 check_time = sess_time + ttl
                 if cur_time > check_time:
-                    self.updateProgress('killing session %s, ttl: %ss: no activity' % (session_id,ttl,) )
+                    self.updateProgress('killing session %s, ttl: %ss: no activity' % (session_id, ttl,) )
                     self._destroy_session(session_id)
 
     def setup_hostname(self):
@@ -1846,7 +1846,7 @@ class SocketHost:
             self.sessions[rng]['stream_mode'] = False
             try:
                 self.sessions[rng]['stream_path'] = self.entropyTools.get_random_temp_file()
-            except (IOError,OSError,):
+            except (IOError, OSError,):
                 self.sessions[rng]['stream_path'] = ''
             self.sessions[rng]['t'] = time.time()
             self.sessions[rng]['ip_address'] = ip_address
@@ -1876,7 +1876,7 @@ class SocketHost:
         if session in self.sessions:
             stream_path = self.sessions[session]['stream_path']
             del self.sessions[session]
-            if os.path.isfile(stream_path) and os.access(stream_path,os.W_OK) and not os.path.islink(stream_path):
+            if os.path.isfile(stream_path) and os.access(stream_path, os.W_OK) and not os.path.islink(stream_path):
                 try: os.remove(stream_path)
                 except OSError: pass
             return True
@@ -1896,21 +1896,21 @@ class SocketHost:
             except self.socket.error as e:
                 if e[0] == 98:
                     # Address already in use
-                    self.updateProgress('address already in use (%s, port: %s), waiting 5 seconds...' % (self.hostname,self.port,))
+                    self.updateProgress('address already in use (%s, port: %s), waiting 5 seconds...' % (self.hostname, self.port,))
                     time.sleep(5)
                     continue
                 else:
                     raise
-        self.updateProgress('server connected, listening on: %s, port: %s, timeout: %s' % (self.hostname,self.port,self.timeout,))
+        self.updateProgress('server connected, listening on: %s, port: %s, timeout: %s' % (self.hostname, self.port, self.timeout,))
         self.Server.serve_forever()
         self.Gc.kill()
 
     def store_rc(self, rc, session):
         with self.SessionsLock:
             if session in self.sessions:
-                if type(rc) in (list,tuple,):
+                if type(rc) in (list, tuple,):
                     rc_item = rc[:]
-                elif type(rc) in (set,frozenset,dict,):
+                elif type(rc) in (set, frozenset, dict,):
                     rc_item = rc.copy()
                 else:
                     rc_item = rc
@@ -1954,7 +1954,7 @@ class SocketHost:
     def updateProgress(self, *args, **kwargs):
         message = args[0]
         if message != self.last_print:
-            self.socketLog.log(ETP_LOGPRI_INFO,ETP_LOGLEVEL_NORMAL,str(args[0]))
+            self.socketLog.log(ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL, str(args[0]))
             if self.__output != None and self.stdout_logging:
                 self.__output.updateProgress(*args,**kwargs)
             self.last_print = message

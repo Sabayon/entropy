@@ -229,7 +229,7 @@ class Server(RemoteDatabase):
             self.dumpTools.dumpobj(key, r)
 
     def get_cache_item_key(self, cache_item):
-        return os.path.join(etpCache['ugc_srv_cache'],cache_item)
+        return os.path.join(etpCache['ugc_srv_cache'], cache_item)
 
     def cache_result(self, cache_item, r):
         if not self.cached_results.get(cache_item): return None
@@ -237,8 +237,8 @@ class Server(RemoteDatabase):
         self.dumpTools.dumpobj(key, r)
 
     def _get_geoip_data_from_ip_address(self, ip_address):
-        geoip_dbpath = self.connection_data.get('geoip_dbpath','')
-        if os.path.isfile(geoip_dbpath) and os.access(geoip_dbpath,os.R_OK):
+        geoip_dbpath = self.connection_data.get('geoip_dbpath', '')
+        if os.path.isfile(geoip_dbpath) and os.access(geoip_dbpath, os.R_OK):
             try:
                 geo = self.EntropyGeoIP(geoip_dbpath)
                 return geo.get_geoip_record_from_ip(ip_address)
@@ -269,7 +269,7 @@ class Server(RemoteDatabase):
             except OSError as e:
                 raise PermissionDenied('PermissionDenied: %s' % (e,))
             if etpConst['entropygid'] != None:
-                const_setup_perms(path,etpConst['entropygid'])
+                const_setup_perms(path, etpConst['entropygid'])
         self.STORE_PATH = path
 
     def initialize_tables(self):
@@ -286,7 +286,7 @@ class Server(RemoteDatabase):
         for mydoctype in self.DOC_TYPES:
             if self.is_iddoctype_available(self.DOC_TYPES[mydoctype]):
                 continue
-            self.insert_iddoctype(self.DOC_TYPES[mydoctype],mydoctype)
+            self.insert_iddoctype(self.DOC_TYPES[mydoctype], mydoctype)
 
     def is_iddoctype_available(self, iddoctype):
         self.check_connection()
@@ -311,12 +311,12 @@ class Server(RemoteDatabase):
 
     def insert_iddoctype(self, iddoctype, description, do_commit = False):
         self.check_connection()
-        self.execute_query('INSERT INTO entropy_doctypes VALUES (%s,%s)', (iddoctype,description,))
+        self.execute_query('INSERT INTO entropy_doctypes VALUES (%s,%s)', (iddoctype, description,))
         if do_commit: self.commit()
 
     def insert_pkgkey(self, key, do_commit = False):
         self.check_connection()
-        self.execute_query('INSERT INTO entropy_base VALUES (%s,%s)', (None,key,))
+        self.execute_query('INSERT INTO entropy_base VALUES (%s,%s)', (None, key,))
         myid = self.lastrowid()
         if do_commit: self.commit()
         return myid
@@ -324,28 +324,28 @@ class Server(RemoteDatabase):
     def insert_download(self, key, ddate, count = 0, do_commit = False):
         self.check_connection()
         idkey = self.handle_pkgkey(key)
-        self.execute_query('INSERT INTO entropy_downloads VALUES (%s,%s,%s,%s)', (None,idkey,ddate,count))
+        self.execute_query('INSERT INTO entropy_downloads VALUES (%s,%s,%s,%s)', (None, idkey, ddate, count))
         myid = self.lastrowid()
         if do_commit: self.commit()
         return myid
 
     def insert_entropy_branch(self, branch, do_commit = False):
         self.check_connection()
-        self.execute_query('INSERT INTO entropy_branches VALUES (%s,%s)', (None,branch,))
+        self.execute_query('INSERT INTO entropy_branches VALUES (%s,%s)', (None, branch,))
         myid = self.lastrowid()
         if do_commit: self.commit()
         return myid
 
     def insert_entropy_release_string(self, release_string, do_commit = False):
         self.check_connection()
-        self.execute_query('INSERT INTO entropy_release_strings VALUES (%s,%s)', (None,release_string,))
+        self.execute_query('INSERT INTO entropy_release_strings VALUES (%s,%s)', (None, release_string,))
         myid = self.lastrowid()
         if do_commit: self.commit()
         return myid
 
     def insert_entropy_ip_locations_id(self, ip_latitude, ip_longitude, do_commit = False):
         self.check_connection()
-        self.execute_query('INSERT INTO entropy_ip_locations VALUES (%s,%s,%s)', (None,ip_latitude,ip_longitude,))
+        self.execute_query('INSERT INTO entropy_ip_locations VALUES (%s,%s,%s)', (None, ip_latitude, ip_longitude,))
         myid = self.lastrowid()
         if do_commit: self.commit()
         return myid
@@ -353,12 +353,12 @@ class Server(RemoteDatabase):
     def handle_entropy_ip_locations_id(self, ip_addr):
         entropy_ip_locations_id = 0
         geo_data = self._get_geoip_data_from_ip_address(ip_addr)
-        if isinstance(geo_data,dict):
+        if isinstance(geo_data, dict):
             ip_lat = geo_data.get('latitude')
             ip_long = geo_data.get('longitude')
-            if isinstance(ip_lat,float) and isinstance(ip_long,float):
-                ip_lat = round(ip_lat,5)
-                ip_long = round(ip_long,5)
+            if isinstance(ip_lat, float) and isinstance(ip_long, float):
+                ip_lat = round(ip_lat, 5)
+                ip_long = round(ip_long, 5)
                 entropy_ip_locations_id = self.get_entropy_ip_locations_id(ip_lat, ip_long)
                 if entropy_ip_locations_id == -1:
                     entropy_ip_locations_id = self.insert_entropy_ip_locations_id(ip_lat, ip_long)
@@ -372,26 +372,26 @@ class Server(RemoteDatabase):
 
     def store_download_data(self, iddownloads, ip_addr, do_commit = False):
         entropy_ip_locations_id = self.handle_entropy_ip_locations_id(ip_addr)
-        mydata = [(x,ip_addr,entropy_ip_locations_id,) for x in iddownloads]
+        mydata = [(x, ip_addr, entropy_ip_locations_id,) for x in iddownloads]
         self.execute_many('INSERT INTO entropy_downloads_data VALUES (%s,%s,%s)', mydata)
         if do_commit: self.commit()
 
     def get_date(self):
         mytime = time.time()
         mydate = self.datetime.fromtimestamp(mytime)
-        mydate = self.datetime(mydate.year,mydate.month,mydate.day)
+        mydate = self.datetime(mydate.year, mydate.month, mydate.day)
         return mydate
 
     def get_datetime(self):
         mytime = time.time()
         mydate = self.datetime.fromtimestamp(mytime)
-        mydate = self.datetime(mydate.year,mydate.month,mydate.day,mydate.hour,mydate.minute,mydate.second)
+        mydate = self.datetime(mydate.year, mydate.month, mydate.day, mydate.hour, mydate.minute, mydate.second)
         return mydate
 
     def get_iddownload(self, key, ddate):
         self.check_connection()
         idkey = self.handle_pkgkey(key)
-        self.execute_query('SELECT `iddownload` FROM entropy_downloads WHERE `idkey` = %s AND `ddate` = %s', (idkey,ddate,))
+        self.execute_query('SELECT `iddownload` FROM entropy_downloads WHERE `idkey` = %s AND `ddate` = %s', (idkey, ddate,))
         data = self.fetchone()
         if data:
             return data['iddownload']
@@ -434,7 +434,7 @@ class Server(RemoteDatabase):
         self.execute_query("""
         SELECT `entropy_ip_locations_id` FROM 
         entropy_ip_locations WHERE 
-        `ip_latitude` = %s AND `ip_longitude` = %s""", (ip_latitude,ip_longitude,))
+        `ip_latitude` = %s AND `ip_longitude` = %s""", (ip_latitude, ip_longitude,))
         data = self.fetchone()
         if data:
             return data['entropy_ip_locations_id']
@@ -481,7 +481,7 @@ class Server(RemoteDatabase):
         typeslist = list(typeslist)
         if len(typeslist) < 2:
             typeslist += [0]
-        self.execute_query('SELECT * FROM entropy_docs WHERE `iddoc` IN %s AND `iddoctype` IN %s', (identifiers,typeslist,))
+        self.execute_query('SELECT * FROM entropy_docs WHERE `iddoc` IN %s AND `iddoctype` IN %s', (identifiers, typeslist,))
         return [self._get_ugc_extra_metadata(x) for x in self.fetchall()]
 
     def get_ugc_metadata_by_identifiers(self, identifiers):
@@ -506,7 +506,7 @@ class Server(RemoteDatabase):
             if not isinstance(myfilename, const_get_stringtype()):
                 myfilename = myfilename.tostring()
             mypath = os.path.join(self.STORE_PATH, myfilename)
-            if os.path.isfile(mypath) and os.access(mypath,os.R_OK):
+            if os.path.isfile(mypath) and os.access(mypath, os.R_OK):
                 try:
                     mydict['size'] = self.entropyTools.get_file_size(mypath)
                 except OSError:
@@ -688,14 +688,14 @@ class Server(RemoteDatabase):
         avail = self.is_user_score_available(userid)
         myscore = self.calculate_user_score(userid)
         if avail:
-            self.execute_query('UPDATE entropy_user_scores SET score = %s WHERE `userid` = %s', (myscore,userid,))
+            self.execute_query('UPDATE entropy_user_scores SET score = %s WHERE `userid` = %s', (myscore, userid,))
         else:
-            self.execute_query('INSERT INTO entropy_user_scores VALUES (%s,%s)', (userid,myscore,))
+            self.execute_query('INSERT INTO entropy_user_scores VALUES (%s,%s)', (userid, myscore,))
         return myscore
 
     def get_user_score(self, userid):
         self.check_connection()
-        self.execute_query('SELECT score FROM entropy_user_scores WHERE userid = %s',(userid,))
+        self.execute_query('SELECT score FROM entropy_user_scores WHERE userid = %s', (userid,))
         data = self.fetchone() or {}
         myscore = data.get('score')
         if myscore == None:
@@ -706,7 +706,7 @@ class Server(RemoteDatabase):
         self.check_connection()
         limit_string = ''
         if count:
-            limit_string += ' LIMIT %s,%s' % (offset,count,)
+            limit_string += ' LIMIT %s,%s' % (offset, count,)
         self.execute_query('SELECT SQL_CALC_FOUND_ROWS *, userid, score FROM entropy_user_scores ORDER BY score DESC' + limit_string)
         data = self.fetchall()
 
@@ -748,12 +748,12 @@ class Server(RemoteDatabase):
 
     def get_user_generic_doctype(self, userid, doctype, doctype_sql_cmp = "="):
         self.check_connection()
-        self.execute_query('SELECT * FROM entropy_docs WHERE `userid` = %s AND `iddoctype` '+doctype_sql_cmp+' %s', (userid,doctype,))
+        self.execute_query('SELECT * FROM entropy_docs WHERE `userid` = %s AND `iddoctype` '+doctype_sql_cmp+' %s', (userid, doctype,))
         return self.fetchall()
 
     def get_user_generic_doctype_count(self, userid, doctype, doctype_sql_cmp = "="):
         self.check_connection()
-        self.execute_query('SELECT count(`iddoc`) as docs FROM entropy_docs WHERE `userid` = %s AND `iddoctype` '+doctype_sql_cmp+' %s', (userid,doctype,))
+        self.execute_query('SELECT count(`iddoc`) as docs FROM entropy_docs WHERE `userid` = %s AND `iddoctype` '+doctype_sql_cmp+' %s', (userid, doctype,))
         data = self.fetchone() or {}
         docs = data.get('docs', 0)
         if docs is None:
@@ -820,7 +820,7 @@ class Server(RemoteDatabase):
 
         myterm = "%"+pkgkey_string+"%"
 
-        search_params = [myterm,results_offset,results_limit]
+        search_params = [myterm, results_offset, results_limit]
 
         order_by_string = ''
         if order_by == "key":
@@ -884,7 +884,7 @@ class Server(RemoteDatabase):
 
         myterm = "%"+pkgkey_string+"%"
 
-        search_params = [myterm,results_offset,results_limit]
+        search_params = [myterm, results_offset, results_limit]
 
         order_by_string = ''
         if order_by == "key":
@@ -948,7 +948,7 @@ class Server(RemoteDatabase):
             iddoctypes_str = "IN ("+', '.join([str(x) for x in iddoctypes])+")"
 
         myterm = "%"+pkgkey_string+"%"
-        search_params = [myterm,myterm,myterm,results_offset,results_limit]
+        search_params = [myterm, myterm, myterm, results_offset, results_limit]
 
         order_by_string = ''
         if order_by == "key":
@@ -1013,7 +1013,7 @@ class Server(RemoteDatabase):
 
         myterm = "%"+keyword_string+"%"
 
-        search_params = [myterm,results_offset,results_limit]
+        search_params = [myterm, results_offset, results_limit]
 
         order_by_string = ''
         if order_by == "key":
@@ -1082,7 +1082,7 @@ class Server(RemoteDatabase):
         except ValueError:
             return [], 0
 
-        search_params = [myterm,results_offset,results_limit]
+        search_params = [myterm, results_offset, results_limit]
 
         order_by_string = ''
         if order_by == "key":
@@ -1166,7 +1166,7 @@ class Server(RemoteDatabase):
         if flood_risk:
             return 'flooding detected'
 
-        self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)',(
+        self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)', (
                 None,
                 idkey,
                 userid,
@@ -1209,7 +1209,7 @@ class Server(RemoteDatabase):
         self.execute_many('INSERT INTO entropy_docs_keywords VALUES (%s,%s)', mydata)
 
     def remove_keywords(self, iddoc):
-        self.execute_query('DELETE FROM entropy_docs_keywords WHERE `iddoc` = %s',(iddoc,))
+        self.execute_query('DELETE FROM entropy_docs_keywords WHERE `iddoc` = %s', (iddoc,))
 
     def insert_comment(self, pkgkey, userid, username, comment, title, keywords, do_commit = False):
         self.check_connection()
@@ -1227,7 +1227,7 @@ class Server(RemoteDatabase):
         if not self.is_iddoc_available(iddoc):
             return False
         new_title = new_title[:self.entropy_docs_title_len]
-        self.execute_query('UPDATE entropy_docs SET `ddata` = %s, `title` = %s WHERE `iddoc` = %s AND `iddoctype` = %s',(
+        self.execute_query('UPDATE entropy_docs SET `ddata` = %s, `title` = %s WHERE `iddoc` = %s AND `iddoctype` = %s', (
                 new_comment,
                 new_title,
                 iddoc,
@@ -1244,7 +1244,7 @@ class Server(RemoteDatabase):
         self.check_connection()
         userid = self.get_iddoc_userid(iddoc)
         self.remove_keywords(iddoc)
-        self.execute_query('DELETE FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
+        self.execute_query('DELETE FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s', (
                 iddoc,
                 self.DOC_TYPES['comments'],
             )
@@ -1263,7 +1263,7 @@ class Server(RemoteDatabase):
         mydate = self.get_date()
         if self.has_user_already_voted(pkgkey, userid):
             return False
-        self.execute_query('INSERT INTO entropy_votes VALUES (%s,%s,%s,%s,%s,%s)',(
+        self.execute_query('INSERT INTO entropy_votes VALUES (%s,%s,%s,%s,%s,%s)', (
                 None,
                 idkey,
                 userid,
@@ -1280,7 +1280,7 @@ class Server(RemoteDatabase):
     def has_user_already_voted(self, pkgkey, userid):
         self.check_connection()
         idkey = self.handle_pkgkey(pkgkey)
-        self.execute_query('SELECT `idvote` FROM entropy_votes WHERE `idkey` = %s AND `userid` = %s', (idkey,userid,))
+        self.execute_query('SELECT `idvote` FROM entropy_votes WHERE `idkey` = %s AND `userid` = %s', (idkey, userid,))
         data = self.fetchone()
         if data:
             return True
@@ -1327,7 +1327,7 @@ class Server(RemoteDatabase):
             hits = 0
         if entropy_distribution_usage_id == -1:
             entropy_ip_locations_id = self.handle_entropy_ip_locations_id(ip_addr)
-            self.execute_query('INSERT INTO entropy_distribution_usage VALUES (%s,%s,%s,%s,%s,%s,%s,%s)',(
+            self.execute_query('INSERT INTO entropy_distribution_usage VALUES (%s,%s,%s,%s,%s,%s,%s,%s)', (
                     None,
                     branch_id,
                     rel_strings_id,
@@ -1345,7 +1345,7 @@ class Server(RemoteDatabase):
             `entropy_release_strings_id` = %s, 
             `hits` = `hits`+%s 
             WHERE `entropy_distribution_usage_id` = %s
-            """,(
+            """, (
                     branch_id,
                     rel_strings_id,
                     hits,
@@ -1374,7 +1374,7 @@ class Server(RemoteDatabase):
 
     def is_entropy_hardware_usage_stats_available(self, entropy_distribution_usage_id):
         self.check_connection()
-        self.execute_query('SELECT entropy_hardware_usage_id  FROM entropy_hardware_usage WHERE `entropy_distribution_usage_id` = %s',(entropy_distribution_usage_id,))
+        self.execute_query('SELECT entropy_hardware_usage_id  FROM entropy_hardware_usage WHERE `entropy_distribution_usage_id` = %s', (entropy_distribution_usage_id,))
         data = self.fetchone()
         if data:
             return True
@@ -1382,7 +1382,7 @@ class Server(RemoteDatabase):
 
     def is_user_ip_available_in_entropy_distribution_usage(self, ip_address):
         self.check_connection()
-        self.execute_query('SELECT entropy_distribution_usage_id FROM entropy_distribution_usage WHERE `ip_address` = %s',(ip_address,))
+        self.execute_query('SELECT entropy_distribution_usage_id FROM entropy_distribution_usage WHERE `ip_address` = %s', (ip_address,))
         data = self.fetchone() or {}
         myid = data.get('entropy_distribution_usage_id')
         if myid is None:
@@ -1409,7 +1409,7 @@ class Server(RemoteDatabase):
 
         new_title = new_title[:self.entropy_docs_title_len]
 
-        self.execute_query('UPDATE entropy_docs SET `ddata` = %s, `title` = %s  WHERE `iddoc` = %s AND `iddoctype` = %s',(
+        self.execute_query('UPDATE entropy_docs SET `ddata` = %s, `title` = %s  WHERE `iddoc` = %s AND `iddoctype` = %s', (
                 new_document,
                 new_title,
                 iddoc,
@@ -1426,7 +1426,7 @@ class Server(RemoteDatabase):
         self.check_connection()
         userid = self.get_iddoc_userid(iddoc)
         self.remove_keywords(iddoc)
-        self.execute_query('DELETE FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
+        self.execute_query('DELETE FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s', (
                 iddoc,
                 self.DOC_TYPES['bbcode_doc'],
             )
@@ -1437,13 +1437,13 @@ class Server(RemoteDatabase):
 
     def scan_for_viruses(self, filepath):
 
-        if not os.access(filepath,os.R_OK):
-            return False,None
+        if not os.access(filepath, os.R_OK):
+            return False, None
 
         args = [self.VIRUS_CHECK_EXEC]
         args += self.VIRUS_CHECK_ARGS
         args += [filepath]
-        f = open("/dev/null","w")
+        f = open("/dev/null", "w")
         p = subprocess.Popen(args, stdout = f, stderr = f)
         rc = p.wait()
         f.close()
@@ -1469,12 +1469,12 @@ class Server(RemoteDatabase):
         # validity check
         if doc_type == self.DOC_TYPES['image']:
             valid = False
-            if os.path.isfile(file_path) and os.access(file_path,os.R_OK):
+            if os.path.isfile(file_path) and os.access(file_path, os.R_OK):
                 valid = self.entropyTools.is_supported_image_file(file_path)
             if not valid:
                 return False, 'not a valid image'
 
-        dest_path = os.path.join(self.STORE_PATH,file_name)
+        dest_path = os.path.join(self.STORE_PATH, file_name)
 
         # create dir if not exists
         dest_dir = os.path.dirname(dest_path)
@@ -1484,14 +1484,14 @@ class Server(RemoteDatabase):
             except OSError as e:
                 raise PermissionDenied('PermissionDenied: %s' % (e,))
             if etpConst['entropygid'] != None:
-                const_setup_perms(dest_dir,etpConst['entropygid'])
+                const_setup_perms(dest_dir, etpConst['entropygid'])
 
         orig_dest_path = dest_path
         dcount = 0
         while os.path.isfile(dest_path):
             dcount += 1
-            dest_path_name = "%s_%s" % (dcount,os.path.basename(orig_dest_path),)
-            dest_path = os.path.join(os.path.dirname(orig_dest_path),dest_path_name)
+            dest_path_name = "%s_%s" % (dcount, os.path.basename(orig_dest_path),)
+            dest_path = os.path.join(os.path.dirname(orig_dest_path), dest_path_name)
 
         if os.path.dirname(file_path) != dest_dir:
             try:
@@ -1506,7 +1506,7 @@ class Server(RemoteDatabase):
                 pass
             # at least set chmod
             try:
-                const_set_chmod(dest_path,0o664)
+                const_set_chmod(dest_path, 0o664)
             except OSError:
                 pass
 
@@ -1515,7 +1515,7 @@ class Server(RemoteDatabase):
 
         # now store in db
         idkey = self.handle_pkgkey(pkgkey)
-        self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)',(
+        self.execute_query('INSERT INTO entropy_docs VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)', (
                 None,
                 idkey,
                 userid,
@@ -1531,7 +1531,7 @@ class Server(RemoteDatabase):
         self.insert_keywords(iddoc, keywords)
         store_url = os.path.basename(dest_path)
         if self.store_url:
-            store_url = os.path.join(self.store_url,store_url)
+            store_url = os.path.join(self.store_url, store_url)
         self.update_user_score(userid)
         return True, (iddoc, store_url)
 
@@ -1556,7 +1556,7 @@ class Server(RemoteDatabase):
         self.check_connection()
 
         userid = self.get_iddoc_userid(iddoc)
-        self.execute_query('SELECT `ddata` FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
+        self.execute_query('SELECT `ddata` FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s', (
                 iddoc,
                 doc_type,
             )
@@ -1566,12 +1566,12 @@ class Server(RemoteDatabase):
         if not isinstance(mypath, const_get_stringtype()) and (mypath is not None):
             mypath = mypath.tostring()
         if mypath is not None:
-            mypath = os.path.join(self.STORE_PATH,mypath)
-            if os.path.isfile(mypath) and os.access(mypath,os.W_OK):
+            mypath = os.path.join(self.STORE_PATH, mypath)
+            if os.path.isfile(mypath) and os.access(mypath, os.W_OK):
                 os.remove(mypath)
 
         self.remove_keywords(iddoc)
-        self.execute_query('DELETE FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
+        self.execute_query('DELETE FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s', (
                 iddoc,
                 doc_type,
             )
@@ -1587,7 +1587,7 @@ class Server(RemoteDatabase):
 
         idkey = self.handle_pkgkey(pkgkey)
         video_path = os.path.realpath(video_path)
-        if not (os.access(video_path,os.R_OK) and os.path.isfile(video_path)):
+        if not (os.access(video_path, os.R_OK) and os.path.isfile(video_path)):
             return False
         virus_found, virus_type = self.scan_for_viruses(video_path)
         if virus_found:
@@ -1597,13 +1597,13 @@ class Server(RemoteDatabase):
         new_video_path = video_path
         if isinstance(file_name, const_get_stringtype()):
             # move file to the new filename
-            new_video_path = os.path.join(os.path.dirname(video_path),os.path.basename(file_name)) # force basename
+            new_video_path = os.path.join(os.path.dirname(video_path), os.path.basename(file_name)) # force basename
             scount = 0
             while os.path.lexists(new_video_path):
                 scount += 1
                 bpath = "%s.%s" % (str(scount), os.path.basename(file_name),)
-                new_video_path = os.path.join(os.path.dirname(video_path),bpath)
-            shutil.move(video_path,new_video_path)
+                new_video_path = os.path.join(os.path.dirname(video_path), bpath)
+            shutil.move(video_path, new_video_path)
 
         yt_service = self.get_youtube_service()
         if yt_service == None:
@@ -1614,8 +1614,8 @@ class Server(RemoteDatabase):
                 (len(x.strip()) > 4))])
         gd_keywords = self.gdata.media.Keywords(text = mykeywords)
 
-        mydescription = "%s: %s" % (pkgkey,description,)
-        mytitle = "%s: %s" % (self.system_name,title,)
+        mydescription = "%s: %s" % (pkgkey, description,)
+        mytitle = "%s: %s" % (self.system_name, title,)
         my_media_group = self.gdata.media.Group(
             title = self.gdata.media.Title(text = mytitle),
             description = self.gdata.media.Description(
@@ -1658,13 +1658,13 @@ class Server(RemoteDatabase):
 
         def do_remove():
             self.remove_keywords(iddoc)
-            self.execute_query('DELETE FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
+            self.execute_query('DELETE FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s', (
                     iddoc,
                     self.DOC_TYPES['youtube_video'],
                 )
             )
 
-        self.execute_query('SELECT `ddata` FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s',(
+        self.execute_query('SELECT `ddata` FROM entropy_docs WHERE `iddoc` = %s AND `iddoctype` = %s', (
                 iddoc,
                 self.DOC_TYPES['youtube_video'],
             )
@@ -1718,17 +1718,17 @@ class Client:
     def __init__(self, OutputInterface, ClientCommandsClass, quiet = False, show_progress = True, output_header = '', ssl = False, socket_timeout = 25):
         #, server_ca_cert = None, server_cert = None):
 
-        if not hasattr(OutputInterface,'updateProgress'):
+        if not hasattr(OutputInterface, 'updateProgress'):
             mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
+            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
         elif not hasattr(OutputInterface.updateProgress, '__call__'):
             mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface,mytxt,))
+            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
 
         from entropy.client.services.ugc.commands import Base
         if not issubclass(ClientCommandsClass, (Base,)):
             mytxt = _("A valid entropy.client.services.ugc.commands.Base interface is needed")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (ClientCommandsClass,mytxt,))
+            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (ClientCommandsClass, mytxt,))
 
         self.ssl_mod = None
         self.setup_ssl(ssl) #, server_ca_cert, server_cert)
@@ -1897,7 +1897,7 @@ class Client:
 
     def transmit(self, data):
         self.check_socket_connection()
-        if hasattr(self.sock_conn,'settimeout'):
+        if hasattr(self.sock_conn, 'settimeout'):
             self.sock_conn.settimeout(self.socket_timeout)
         data = self.append_eos(data)
         try:
@@ -1979,7 +1979,7 @@ class Client:
     def receive(self):
 
         self.check_socket_connection()
-        if hasattr(self.sock_conn,'settimeout'):
+        if hasattr(self.sock_conn, 'settimeout'):
             self.sock_conn.settimeout(self.socket_timeout)
         self.ssl_prepending = True
 
@@ -2141,7 +2141,7 @@ class Client:
                 type = "info",
                 header = self.output_header
             )
-        self.connect(self.hostname,self.hostport)
+        self.connect(self.hostname, self.hostport)
 
     def check_socket_connection(self):
         if not self.sock_conn:
@@ -2151,7 +2151,7 @@ class Client:
 
         if self.ssl:
             self.real_sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
-            if hasattr(self.real_sock_conn,'settimeout'):
+            if hasattr(self.real_sock_conn, 'settimeout'):
                 self.real_sock_conn.settimeout(self.socket_timeout)
             if self.pyopenssl:
                 self.sock_conn = self.SSL['m'].Connection(self.context, self.real_sock_conn)
@@ -2159,7 +2159,7 @@ class Client:
                 self.sock_conn = self.real_sock_conn
         else:
             self.sock_conn = self.socket.socket(self.socket.AF_INET, self.socket.SOCK_STREAM)
-            if hasattr(self.sock_conn,'settimeout'):
+            if hasattr(self.sock_conn, 'settimeout'):
                 self.sock_conn.settimeout(self.socket_timeout)
             self.real_sock_conn = self.sock_conn
 
@@ -2200,7 +2200,7 @@ class Client:
                     )
         except self.socket.error as e:
             if e[0] == 111:
-                mytxt = "%s: %s, %s: %s" % (_("Cannot connect to"),host,_("on port"),port,)
+                mytxt = "%s: %s, %s: %s" % (_("Cannot connect to"), host, _("on port"), port,)
                 raise ConnectionError("ConnectionError: %s" % (mytxt,))
             else:
                 raise
@@ -2216,7 +2216,7 @@ class Client:
             # re-set timeout again, this workarounds the famous bug
             # that caused UGC to not being able to send large amount
             # of data
-            if hasattr(self.real_sock_conn,'settimeout'):
+            if hasattr(self.real_sock_conn, 'settimeout'):
                 self.real_sock_conn.settimeout(self.socket_timeout)
 
         if not self.quiet:

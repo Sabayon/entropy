@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
-sys.path.insert(0,'.')
-sys.path.insert(0,'../')
+sys.path.insert(0, '.')
+sys.path.insert(0, '../')
 import unittest
 import os
 from entropy.client.interfaces import Client
@@ -38,7 +38,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
     def test_db_creation(self):
         self.assert_(isinstance(self.test_db, EntropyRepository))
-        self.assertEqual(self.test_db_name,self.test_db.dbname)
+        self.assertEqual(self.test_db_name, self.test_db.dbname)
         self.assert_(self.test_db._doesTableExist('baseinfo'))
         self.assert_(self.test_db._doesTableExist('extrainfo'))
 
@@ -123,12 +123,12 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.SystemSettings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
         masking_validation.clear()
-        self.assertEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
+        self.assertEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
         self.SystemSettings['live_packagemasking']['mask_matches'].discard(
             f_match_mask)
         masking_validation.clear()
-        self.assertNotEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
+        self.assertNotEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
         # now test multimatch
         idpackage, rev, new_data = self.test_db.addPackage(db_data)
@@ -179,12 +179,12 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.SystemSettings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
         masking_validation.clear()
-        self.assertEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
+        self.assertEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
         self.SystemSettings['live_packagemasking']['mask_matches'].discard(
             f_match_mask)
         masking_validation.clear()
-        self.assertNotEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
+        self.assertNotEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
     def test_db_insert_compare_match_utf2(self):
 
@@ -216,12 +216,12 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.SystemSettings['live_packagemasking']['mask_matches'].add(
             f_match_mask)
         masking_validation.clear()
-        self.assertEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
+        self.assertEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
         self.SystemSettings['live_packagemasking']['mask_matches'].discard(
             f_match_mask)
         masking_validation.clear()
-        self.assertNotEqual((-1, 1),self.test_db.atomMatch(pkg_atom))
+        self.assertNotEqual((-1, 1), self.test_db.atomMatch(pkg_atom))
 
     def test_db_import_export(self):
 
@@ -242,7 +242,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         # export
         buf_file = "dbtst.txt"
-        buf = open(buf_file,"w")
+        buf = open(buf_file, "w")
         self.test_db.doDatabaseExport(buf)
         buf.flush()
         buf.close()
@@ -261,9 +261,9 @@ class EntropyRepositoryTest(unittest.TestCase):
     def test_db_package_sets(self):
 
         set_name = 'my_test_set'
-        set_deps = ["app-foo/foo","app-pling/plong","media-foo/ajez"]
+        set_deps = ["app-foo/foo", "app-pling/plong", "media-foo/ajez"]
         set_name2 = 'my_test_set2'
-        set_deps2 = ["app-foo/foo2","app-pling/plong2","media-foo/ajez2"]
+        set_deps2 = ["app-foo/foo2", "app-pling/plong2", "media-foo/ajez2"]
         pkgsets = {
             set_name: set(set_deps),
             set_name2: set(set_deps2),
@@ -271,7 +271,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.test_db.insertPackageSets(pkgsets)
         self.assertEqual(self.test_db.retrievePackageSets(), pkgsets)
         set_search = self.test_db.searchSets(set_name2)
-        self.assertEqual(set([set_name2]),set_search)
+        self.assertEqual(set([set_name2]), set_search)
 
     def test_db_license_data_str_insert(self):
         lic_txt = '[3]\xab foo\n\n'

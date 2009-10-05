@@ -475,7 +475,7 @@ class QAInterface:
                 blue("Tree: ")+red(etpConst['systemroot'] + ldpath),
                 importance = 0,
                 type = "info",
-                count = (count,total),
+                count = (count, total),
                 back = True,
                 percent = True,
                 header = "  "
@@ -491,7 +491,7 @@ class QAInterface:
                 currentdir, subdirs, files = dt
 
                 def mymf(item):
-                    filepath = os.path.join(currentdir,item)
+                    filepath = os.path.join(currentdir, item)
                     if not os.access(filepath, os.R_OK):
                         return 0
                     if not os.path.isfile(filepath):
@@ -502,7 +502,7 @@ class QAInterface:
 
                 return set([x for x in map(mymf, files) if type(x) != int])
 
-            for x in map(mywimf,mywalk_iter):
+            for x in map(mywimf, mywalk_iter):
                 executables |= x
 
         self.Output.updateProgress(
@@ -544,7 +544,7 @@ class QAInterface:
                     scan_txt,
                     importance = 0,
                     type = "info",
-                    count = (count,total),
+                    count = (count, total),
                     back = True,
                     percent = True,
                     header = "  "
@@ -629,7 +629,7 @@ class QAInterface:
                     importance = 1,
                     type = "info",
                     percent = True,
-                    count = (count,total),
+                    count = (count, total),
                     header = "  "
                 )
             elif broken_sym_found:
@@ -648,7 +648,7 @@ class QAInterface:
                     importance = 1,
                     type = "info",
                     percent = True,
-                    count = (count,total),
+                    count = (count, total),
                     header = "  "
                 )
 

@@ -26,13 +26,13 @@ APPLET_MENUS = [ "about", "update_now", "web_panel", "web_site",
     "configure_applet", "check_now" ]
 
 APPLET_SENSITIVE_MENU = {
-    "STARTUP"     : [ "" ],
-    "NOCONSENT"   : [ "about", "configure_applet", "update_now", "busy" ],
-    "CONFIGURING" : [ "about", "update_now" ],
-    "OKAY"        : APPLET_MENUS,
-    "CRITICAL"    : APPLET_MENUS,
-    "BUSY"        : [ ],
-    "ERROR"       : [ "about", "update_now", "check_now" ],
+    "STARTUP": [ "" ],
+    "NOCONSENT": [ "about", "configure_applet", "update_now", "busy" ],
+    "CONFIGURING": [ "about", "update_now" ],
+    "OKAY": APPLET_MENUS,
+    "CRITICAL": APPLET_MENUS,
+    "BUSY": [ ],
+    "ERROR": [ "about", "update_now", "check_now" ],
     "DISCONNECTED": [ "about", "update_now", "check_now" ],
     "DISABLE": [ "about", "update_now", "check_now" ],
 }
@@ -64,16 +64,16 @@ if settings == None:
     settings = {}
 
 myconst = [
-            ['ERROR_THRESHOLD',int],
-            ['ANIMATION_TOTAL_TIME',float],
-            ['APPLET_ENABLED',int],
+            ['ERROR_THRESHOLD', int],
+            ['ANIMATION_TOTAL_TIME', float],
+            ['APPLET_ENABLED', int],
           ]
 
 for x in myconst:
     if x[0] not in settings:
         settings[x[0]] = eval(x[0])
     else:
-        if not isinstance(settings[x[0]],x[1]):
+        if not isinstance(settings[x[0]], x[1]):
             settings[x[0]] = eval(x[0])
 
 save_settings(settings)

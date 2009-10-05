@@ -17,7 +17,7 @@ from entropy.services.skel import SocketAuthenticator
 from entropy.exceptions import *
 
 # Authenticator that can be used by SocketHostInterface based instances
-class phpBB3(phpBB3Auth,SocketAuthenticator):
+class phpBB3(phpBB3Auth, SocketAuthenticator):
 
     import entropy.tools as entropyTools
     def __init__(self, HostInterface, *args, **kwargs):
@@ -44,7 +44,7 @@ class phpBB3(phpBB3Auth,SocketAuthenticator):
 
         # filter n00bs
         if not arguments or (len(arguments) != 2):
-            return False,None,None,'wrong arguments'
+            return False, None, None, 'wrong arguments'
 
         ip_address = None
         session_data = self.HostInterface.sessions.get(self.session)
@@ -55,7 +55,7 @@ class phpBB3(phpBB3Auth,SocketAuthenticator):
 
         if ip_address:
             if self._is_ip_banned(ip_address):
-                return False,user,None,"banned IP"
+                return False, user, None, "banned IP"
 
         login_data = {'username': user, 'password': password}
         self.set_login_data(login_data)
@@ -63,7 +63,7 @@ class phpBB3(phpBB3Auth,SocketAuthenticator):
         try:
             rc = self.login()
         except PermissionDenied as e:
-            return rc,user,None,e.value
+            return rc, user, None, e.value
 
         if rc:
             uid = self.get_user_id()
@@ -77,8 +77,8 @@ class phpBB3(phpBB3Auth,SocketAuthenticator):
             self.HostInterface.sessions[self.session]['user'] = is_user
             if ip_address and uid and self.do_update_session_table:
                 self._update_session_table(uid, ip_address)
-            return True,user,uid,"ok"
-        return rc,user,None,"login failed"
+            return True, user, uid, "ok"
+        return rc, user, None, "login failed"
 
     # if we get here it means we are logged in
     def docmd_userdata(self):
@@ -89,17 +89,17 @@ class phpBB3(phpBB3Auth,SocketAuthenticator):
 
         # filter n00bs
         if (len(myargs) < 1) or (len(myargs) > 1):
-            return False,None,'wrong arguments'
+            return False, None, 'wrong arguments'
 
         user = myargs[0]
         # filter n00bs
         if not user or not isinstance(user, const_get_stringtype()):
-            return False,None,"wrong user"
+            return False, None, "wrong user"
 
         if not self.is_logged_in():
-            return False,user,"already logged out"
+            return False, user, "already logged out"
 
-        return True,user,"ok"
+        return True, user, "ok"
 
     def set_exc_permissions(self, *args, **kwargs):
         pass

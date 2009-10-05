@@ -22,7 +22,7 @@ def query(myopts):
         return 10
     cmd = myopts[0]
     myopts = myopts[1:]
-    if not myopts and cmd not in ["list","sets"]:
+    if not myopts and cmd not in ["list", "sets"]:
         return 10
 
     rc = 0

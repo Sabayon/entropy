@@ -66,7 +66,7 @@ class Magneto(MagnetoCore):
         self.menu.show_all()
 
         self.status_icon = gtk.status_icon_new_from_pixbuf(
-            self.icons.best_match("okay",22))
+            self.icons.best_match("okay", 22))
         self.status_icon.connect("popup-menu", self.applet_context_menu)
         self.status_icon.connect("activate", self.applet_doubleclick)
 
@@ -134,7 +134,7 @@ class Magneto(MagnetoCore):
     def show_alert(self, title, text, urgency = None, force = False):
 
         def do_show():
-            if ((title,text) == self.last_alert) and not force:
+            if ((title, text) == self.last_alert) and not force:
                 return False
             pynotify.init("XY")
             n = pynotify.Notification(title, text)
@@ -142,7 +142,7 @@ class Magneto(MagnetoCore):
                 n.set_urgency(pynotify.URGENCY_CRITICAL)
             elif urgency == 'low':
                 n.set_urgency(pynotify.URGENCY_LOW)
-            self.last_alert = (title,text)
+            self.last_alert = (title, text)
             n.attach_to_status_icon(self.status_icon)
             n.show()
             return False

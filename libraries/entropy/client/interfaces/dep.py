@@ -39,14 +39,14 @@ class CalculatorsMixin:
                     importance = 0,
                     type = "info",
                     back = True,
-                    count = (count,length),
+                    count = (count, length),
                     header = darkred(" @@ ")
                 )
 
             xdeps = dbconn.retrieveDependencies(idpackage,
                 exclude_deptypes = (pdepend_id,))
-            needed_deps = [(x,dbconn.atomMatch(x),) for x in xdeps]
-            deps_not_matched |= set([x for x,(y,z,) in needed_deps if y == -1])
+            needed_deps = [(x, dbconn.atomMatch(x),) for x in xdeps]
+            deps_not_matched |= set([x for x, (y, z,) in needed_deps if y == -1])
 
         return deps_not_matched
 
@@ -59,11 +59,11 @@ class CalculatorsMixin:
                 if riddep != -1:
                     ridpackages = rdbconn.searchIdpackageFromIddependency(riddep)
                     for i in ridpackages:
-                        i,r = rdbconn.idpackageValidator(i)
+                        i, r = rdbconn.idpackageValidator(i)
                         if i == -1:
                             continue
                         iatom = rdbconn.retrieveAtom(i)
-                        crying_atoms.add((iatom,repo))
+                        crying_atoms.add((iatom, repo))
         return crying_atoms
 
     def __handle_multi_repo_matches(self, results, extended_results, valid_repos, server_inst):
@@ -104,7 +104,7 @@ class CalculatorsMixin:
         # if no duplicates are found or newer version is not in duplicates we're done
         if (not version_duplicates) or (newerVersion not in version_duplicates):
             reponame = versionInformation.get(newerVersion)
-            return (results[reponame],reponame)
+            return (results[reponame], reponame)
 
         # we have two repositories with >two packages with the same version
         # check package tag
@@ -129,7 +129,7 @@ class CalculatorsMixin:
         newerTag = sorted(tags, reverse = True)[0]
         if newerTag not in tags_duplicates:
             reponame = tagsInfo.get(newerTag)
-            return (results[reponame],reponame)
+            return (results[reponame], reponame)
 
         # in this case, we have >two packages with the same version and tag
         # check package revision
@@ -151,14 +151,14 @@ class CalculatorsMixin:
         newerRevision = max(revisions)
         if newerRevision not in revisions_duplicates:
             reponame = revisionInfo.get(newerRevision)
-            return (results[reponame],reponame)
+            return (results[reponame], reponame)
 
         # final step, in this case we have >two packages with the same version, tag and revision
         # get the repository with the biggest priority
 
         for reponame in valid_repos:
             if reponame in conflictingRevisions:
-                return (results[reponame],reponame)
+                return (results[reponame], reponame)
 
     def __validate_atom_match_cache(self, cached_obj, multiMatch, extendedResults, multiRepo, server_inst):
 
@@ -169,7 +169,7 @@ class CalculatorsMixin:
             matches = data # set([(14789, 'sabayonlinux.org'), (14479, 'sabayonlinux.org')])
             if extendedResults:
                 # set([((14789, u'3.3.8b', u'', 0), 'sabayonlinux.org')])
-                matches = [(x[0][0],x[1],) for x in data]
+                matches = [(x[0][0], x[1],) for x in data]
             for m_id, m_repo in matches:
                 m_db = self.__atom_match_open_db(m_repo, server_inst)
                 if not m_db.isIdpackageAvailable(m_id):
@@ -178,7 +178,7 @@ class CalculatorsMixin:
             m_id, m_repo = cached_obj # (14479, 'sabayonlinux.org')
             if extendedResults:
                 # ((14479, u'4.4.2', u'', 0), 'sabayonlinux.org')
-                m_id, m_repo = cached_obj[0][0],cached_obj[1]
+                m_id, m_repo = cached_obj[0][0], cached_obj[1]
             m_db = self.__atom_match_open_db(m_repo, server_inst)
             if not m_db.isIdpackageAvailable(m_id):
                 return None
@@ -209,7 +209,7 @@ class CalculatorsMixin:
         k_ms = "//"
         k_mt = "@#@"
         k_mr = "-1"
-        if isinstance(matchRepo,(list,tuple,set)):
+        if isinstance(matchRepo, (list, tuple, set)):
             u_hash = hash(frozenset(matchRepo))
         if const_isstring(matchSlot):
             k_ms = matchSlot
@@ -219,21 +219,21 @@ class CalculatorsMixin:
             k_mr = matchRevision
 
         c_hash = "|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
-            atom,k_ms,k_mt,hash(packagesFilter),
+            atom, k_ms, k_mt, hash(packagesFilter),
             hash(frozenset(self.validRepositories)),
             hash(frozenset(self.SystemSettings['repositories']['available'])),
-            hash(multiMatch),hash(multiRepo),hash(caseSensitive),
-            k_mr,hash(extendedResults),
+            hash(multiMatch), hash(multiRepo), hash(caseSensitive),
+            k_mr, hash(extendedResults),
             u_hash,
         )
-        c_hash = "%s%s" % (self.atomMatchCacheKey,hash(c_hash),)
+        c_hash = "%s%s" % (self.atomMatchCacheKey, hash(c_hash),)
 
         if self.xcache and useCache:
             cached = self.Cacher.pop(c_hash)
             if cached != None:
                 try:
                     cached = self.__validate_atom_match_cache(cached, multiMatch, extendedResults, multiRepo, serverInstance)
-                except (TypeError,ValueError,IndexError,KeyError,):
+                except (TypeError, ValueError, IndexError, KeyError,):
                     cached = None
             if cached != None:
                 return cached
@@ -245,7 +245,7 @@ class CalculatorsMixin:
             valid_repos = server_repos[:]
         else:
             valid_repos = self.validRepositories
-        if matchRepo and (type(matchRepo) in (list,tuple,set)):
+        if matchRepo and (type(matchRepo) in (list, tuple, set)):
             valid_repos = list(matchRepo)
 
         repoResults = {}
@@ -269,7 +269,7 @@ class CalculatorsMixin:
                     if query_rc == 0:
                         # package found, add to our dictionary
                         if extendedResults:
-                            repoResults[repo] = (query_data[0],query_data[2],query_data[3],query_data[4])
+                            repoResults[repo] = (query_data[0], query_data[2], query_data[3], query_data[4])
                         else:
                             repoResults[repo] = query_data
                 except TypeError:
@@ -282,21 +282,21 @@ class CalculatorsMixin:
                     break
                 break
 
-        dbpkginfo = (-1,1)
+        dbpkginfo = (-1, 1)
         if extendedResults:
-            dbpkginfo = ((-1,None,None,None),1)
+            dbpkginfo = ((-1, None, None, None), 1)
 
         if multiRepo and repoResults:
 
             data = set()
             for repoid in repoResults:
-                data.add((repoResults[repoid],repoid))
-            dbpkginfo = (data,0)
+                data.add((repoResults[repoid], repoid))
+            dbpkginfo = (data, 0)
 
         elif len(repoResults) == 1:
             # one result found
             repo = list(repoResults.keys())[0]
-            dbpkginfo = (repoResults[repo],repo)
+            dbpkginfo = (repoResults[repo], repo)
 
         elif len(repoResults) > 1:
 
@@ -312,7 +312,7 @@ class CalculatorsMixin:
             else: # can be "0" or a string, but 1 means failure
                 if multiRepo:
                     data = set()
-                    for q_id,q_repo in dbpkginfo[0]:
+                    for q_id, q_repo in dbpkginfo[0]:
                         dbconn = self.__atom_match_open_db(q_repo, serverInstance)
                         query_data, query_rc = dbconn.atomMatch(
                             atom,
@@ -325,10 +325,10 @@ class CalculatorsMixin:
                         )
                         if extendedResults:
                             for item in query_data:
-                                data.add(((item[0],item[2],item[3],item[4]),q_repo))
+                                data.add(((item[0], item[2], item[3], item[4]), q_repo))
                         else:
-                            for x in query_data: data.add((x,q_repo))
-                    dbpkginfo = (data,0)
+                            for x in query_data: data.add((x, q_repo))
+                    dbpkginfo = (data, 0)
                 else:
                     dbconn = self.__atom_match_open_db(dbpkginfo[1], serverInstance)
                     query_data, query_rc = dbconn.atomMatch(
@@ -341,12 +341,12 @@ class CalculatorsMixin:
                         extendedResults = extendedResults
                     )
                     if extendedResults:
-                        dbpkginfo = (set([((x[0],x[2],x[3],x[4]),dbpkginfo[1]) for x in query_data]),0)
+                        dbpkginfo = (set([((x[0], x[2], x[3], x[4]), dbpkginfo[1]) for x in query_data]), 0)
                     else:
-                        dbpkginfo = (set([(x,dbpkginfo[1]) for x in query_data]),0)
+                        dbpkginfo = (set([(x, dbpkginfo[1]) for x in query_data]), 0)
 
         if self.xcache and useCache:
-            self.Cacher.push(c_hash,dbpkginfo)
+            self.Cacher.push(c_hash, dbpkginfo)
 
         return dbpkginfo
 
@@ -390,7 +390,7 @@ class CalculatorsMixin:
             return mypkgs
 
         if not package_set.startswith(etpConst['packagesetprefix']):
-            package_set = "%s%s" % (etpConst['packagesetprefix'],package_set,)
+            package_set = "%s%s" % (etpConst['packagesetprefix'], package_set,)
 
         try:
             mylist = do_expand(package_set, recursion_level, max_recursion_level)
@@ -434,7 +434,7 @@ class CalculatorsMixin:
         else:
             valid_repos = self.validRepositories
 
-        if matchRepo and (type(matchRepo) in (list,tuple,set)):
+        if matchRepo and (type(matchRepo) in (list, tuple, set)):
             valid_repos = list(matchRepo)
 
         # if we search, we return all the matches available
@@ -480,20 +480,20 @@ class CalculatorsMixin:
             break
 
         if not set_data:
-            return (),False
+            return (), False
 
         if multiMatch:
-            return set_data,True
+            return set_data, True
 
-        return set_data.pop(0),True
+        return set_data.pop(0), True
 
     def get_unsatisfied_dependencies(self, dependencies, deep_deps = False, depcache = None):
 
         if self.xcache:
             c_data = sorted(dependencies)
             client_checksum = self.clientDbconn.checksum()
-            c_hash = hash("%s|%s|%s" % (c_data,deep_deps,client_checksum,))
-            c_hash = "%s%s" % (etpCache['filter_satisfied_deps'],c_hash,)
+            c_hash = hash("%s|%s|%s" % (c_data, deep_deps, client_checksum,))
+            c_hash = "%s%s" % (etpCache['filter_satisfied_deps'], c_hash,)
             cached = self.Cacher.pop(c_hash)
             if cached != None: return cached
 
@@ -501,7 +501,7 @@ class CalculatorsMixin:
             "get_unsatisfied_dependencies (not cached, deep: %s) for => %s" % (
                 deep_deps, dependencies,))
 
-        if not isinstance(depcache,dict):
+        if not isinstance(depcache, dict):
             depcache = {}
 
         # satisfied dependencies filter support
@@ -541,7 +541,7 @@ class CalculatorsMixin:
 
             ### conflict
             if dependency.startswith("!"):
-                idpackage,rc = cdb_am(dependency[1:])
+                idpackage, rc = cdb_am(dependency[1:])
                 if idpackage != -1:
                     depcache[dependency] = dependency
                     const_debug_write(__name__,
@@ -615,8 +615,8 @@ class CalculatorsMixin:
             # and when people mix Entropy and Portage
             for installedVer, installedTag, installedRev, cdigest in client_data:
 
-                vcmp = etp_cmp((repo_pkgver,repo_pkgtag,repo_pkgrev,),
-                    (installedVer,installedTag,installedRev,))
+                vcmp = etp_cmp((repo_pkgver, repo_pkgtag, repo_pkgrev,),
+                    (installedVer, installedTag, installedRev,))
 
                 # check if both pkgs share the same branch and digest, this must
                 # be done to avoid system inconsistencies across branch upgrades
@@ -653,17 +653,17 @@ class CalculatorsMixin:
             const_debug_write(__name__, "...")
             return dependency
 
-        unsatisfied = list(map(fm_dep,dependencies))
+        unsatisfied = list(map(fm_dep, dependencies))
         unsatisfied = set([x for x in unsatisfied if x != 0])
 
         if self.xcache:
-            self.Cacher.push(c_hash,unsatisfied)
+            self.Cacher.push(c_hash, unsatisfied)
 
         return unsatisfied
 
     def get_masked_packages_tree(self, match, atoms = False, flat = False, matchfilter = None):
 
-        if not isinstance(matchfilter,set):
+        if not isinstance(matchfilter, set):
             matchfilter = set()
 
         maskedtree = {}
@@ -731,7 +731,7 @@ class CalculatorsMixin:
                     if atoms:
                         mydict = {dbconn.retrieveAtom(idpackage): idreason}
                     else:
-                        mydict = {(idpackage,repoid): idreason}
+                        mydict = {(idpackage, repoid): idreason}
                     if flat: maskedtree.update(mydict)
                     else: maskedtree[treelevel].update(mydict)
 
@@ -755,13 +755,13 @@ class CalculatorsMixin:
         matched_atom, empty_deps = False, deep_deps = False, matchfilter = None,
         flat = False, filter_unsat_cache = None, treecache = None, keyslotcache = None):
 
-        if not isinstance(matchfilter,set):
+        if not isinstance(matchfilter, set):
             matchfilter = set()
-        if not isinstance(filter_unsat_cache,dict):
+        if not isinstance(filter_unsat_cache, dict):
             filter_unsat_cache = {}
-        if not isinstance(treecache,set):
+        if not isinstance(treecache, set):
             treecache = set()
-        if not isinstance(keyslotcache,set):
+        if not isinstance(keyslotcache, set):
             keyslotcache = set()
 
         mydbconn = self.open_repository(matched_atom[1])
@@ -772,11 +772,11 @@ class CalculatorsMixin:
         deps_not_found = set()
         conflicts = set()
 
-        mydep = (1,myatom)
+        mydep = (1, myatom)
         mybuffer = Lifo()
         deptree = set()
         if matched_atom not in matchfilter:
-            deptree.add((1,matched_atom))
+            deptree.add((1, matched_atom))
 
         virgin = True
         open_repo = self.open_repository
@@ -838,7 +838,7 @@ class CalculatorsMixin:
                             myreplacement,))
 
                     if (myreplacement != None) and (myreplacement not in treecache):
-                        mybuffer.push((dep_level+1,myreplacement))
+                        mybuffer.push((dep_level+1, myreplacement))
                     else:
                         conflicts.add(c_idpackage)
                 try:
@@ -946,7 +946,7 @@ class CalculatorsMixin:
             # all checks passed, well done
             matchfilter.add(match)
             treedepth = dep_level+1
-            deptree.add((dep_level,match)) # add match
+            deptree.add((dep_level, match)) # add match
 
             # extra hooks
             cm_idpackage, cm_result = cdb_atom_match(matchkey,
@@ -969,13 +969,13 @@ class CalculatorsMixin:
                         matchkey+":"+matchslot, inverse_deps,))
 
                 if inverse_deps:
-                    deptree.remove((dep_level,match))
-                    for ikey,islot in inverse_deps:
-                        iks_str = '%s:%s' % (ikey,islot,)
-                        if ((ikey,islot) not in keyslotcache) and (iks_str not in treecache):
-                            mybuffer.push((dep_level,iks_str))
-                            keyslotcache.add((ikey,islot))
-                    deptree.add((treedepth,match))
+                    deptree.remove((dep_level, match))
+                    for ikey, islot in inverse_deps:
+                        iks_str = '%s:%s' % (ikey, islot,)
+                        if ((ikey, islot) not in keyslotcache) and (iks_str not in treecache):
+                            mybuffer.push((dep_level, iks_str))
+                            keyslotcache.add((ikey, islot))
+                    deptree.add((treedepth, match))
                     treedepth += 1
 
                 # broken children atoms can be added to broken atoms
@@ -984,7 +984,7 @@ class CalculatorsMixin:
                 for x in broken_atoms:
                     if (tuple(x.split(":")) not in keyslotcache) and \
                         (x not in treecache):
-                        mybuffer.push((treedepth,x))
+                        mybuffer.push((treedepth, x))
 
             m_deplist = matchdb.retrieveDependenciesList(m_idpackage)
 
@@ -1063,7 +1063,7 @@ class CalculatorsMixin:
         # conflicts
         newdeptree[0] = conflicts
 
-        return newdeptree,0 # note: newtree[0] contains possible conflicts
+        return newdeptree, 0 # note: newtree[0] contains possible conflicts
 
 
     def _lookup_system_mask_repository_deps(self):
@@ -1100,7 +1100,7 @@ class CalculatorsMixin:
         action = self.get_package_action(new_match)
         if (action == 0) and (not deep_deps):
             return None
-        return "%s:%s" % (mykey,myslot,)
+        return "%s:%s" % (mykey, myslot,)
 
     def _lookup_inverse_dependencies(self, match, clientmatch):
 
@@ -1121,9 +1121,9 @@ class CalculatorsMixin:
                 key, slot = cdb_rks(idpackage)
             except TypeError:
                 continue
-            if (key,slot) in keyslots_cache: continue
-            keyslots_cache.add((key,slot))
-            if (key,slot) in keyslots: continue
+            if (key, slot) in keyslots_cache: continue
+            keyslots_cache.add((key, slot))
+            if (key, slot) in keyslots: continue
             # grab its deps
             mydeps = cdb_rdeps(idpackage)
             found = False
@@ -1140,7 +1140,7 @@ class CalculatorsMixin:
                 if mymatch[0] == -1: continue
                 cmpstat = gpa(mymatch)
                 if cmpstat == 0: continue
-                keyslots.add((key,slot))
+                keyslots.add((key, slot))
 
         return keyslots
 
@@ -1249,14 +1249,14 @@ class CalculatorsMixin:
             if ks is None:
                 return 0
             return ks
-        client_keyslots = set([x for x in map(mymf,client_idpackages) \
+        client_keyslots = set([x for x in map(mymf, client_idpackages) \
             if x != 0])
 
         # all the packages in repo_side should be pulled in too
         repodata = {}
         for needed in repo_side:
             repodata[needed] = reponeeded[needed]
-        del repo_side,reponeeded
+        del repo_side, reponeeded
 
         repo_dependencies = matchdb.retrieveDependencies(match[0])
         matched_deps = set()
@@ -1286,8 +1286,8 @@ class CalculatorsMixin:
                 if found:
                     break
 
-        for idpackage,repo in found_matches:
-            cmpstat = self.get_package_action((idpackage,repo))
+        for idpackage, repo in found_matches:
+            cmpstat = self.get_package_action((idpackage, repo))
             if cmpstat == 0:
                 continue
             mydbc = self.open_repository(repo)
@@ -1306,7 +1306,7 @@ class CalculatorsMixin:
         client_atoms |= repo_atoms
 
         if self.xcache:
-            self.Cacher.push(c_hash,client_atoms)
+            self.Cacher.push(c_hash, client_atoms)
 
         return client_atoms
 
@@ -1406,7 +1406,7 @@ class CalculatorsMixin:
                 if (count%10 == 0) or (count == atomlen) or (count == 1):
                     self.updateProgress(sort_dep_text, importance = 0, type = "info",
                         back = True, header = ":: ", footer = " ::",
-                        percent = True, count = (count,atomlen))
+                        percent = True, count = (count, atomlen))
 
             if matched_atom in matchfilter:
                 continue
@@ -1441,7 +1441,7 @@ class CalculatorsMixin:
         deptree = self.__deptree_prioritize_systempkgs(deptree)
 
         if self.xcache:
-            self.Cacher.push(c_hash,(deptree, 0))
+            self.Cacher.push(c_hash, (deptree, 0))
 
         return deptree, 0
 
@@ -1566,10 +1566,10 @@ class CalculatorsMixin:
                 x += 1
 
         if self.xcache:
-            self.Cacher.push(c_hash,(tree,0))
+            self.Cacher.push(c_hash, (tree, 0))
         # treeview is used to show deps while
         # tree is used to run the dependency code.
-        return tree,0
+        return tree, 0
 
     def calculate_available_packages(self, use_cache = True):
 
@@ -1611,7 +1611,7 @@ class CalculatorsMixin:
                         type = "info",
                         back = True,
                         header = "::",
-                        count = (count,maxlen),
+                        count = (count, maxlen),
                         percent = True,
                         footer = " ::"
                     )
@@ -1619,11 +1619,11 @@ class CalculatorsMixin:
                 try:
                     key, slot = dbconn.retrieveKeySlot(idpackage)
                     matches = self.clientDbconn.searchKeySlot(key, slot)
-                except (self.dbapi2.DatabaseError,self.dbapi2.IntegrityError,self.dbapi2.OperationalError,):
+                except (self.dbapi2.DatabaseError, self.dbapi2.IntegrityError, self.dbapi2.OperationalError,):
                     self.cycleDone()
                     do_break = True
                     continue
-                if not matches: myavailable.append((idpackage,repo))
+                if not matches: myavailable.append((idpackage, repo))
             available += myavailable[:]
             self.cycleDone()
 
@@ -1720,7 +1720,7 @@ class CalculatorsMixin:
                     type = "info",
                     back = True,
                     header = ":: ",
-                    count = (count,maxlen),
+                    count = (count, maxlen),
                     percent = True,
                     footer = " ::"
                 )
@@ -1764,30 +1764,30 @@ class CalculatorsMixin:
                 tag = match[0][2]
                 revision = match[0][3]
                 if empty_deps:
-                    if (m_idpackage,repoid) not in update:
-                        update.append((m_idpackage,repoid))
+                    if (m_idpackage, repoid) not in update:
+                        update.append((m_idpackage, repoid))
                     continue
                 elif (cl_revision != revision):
                     # different revision
                     if cl_revision == 9999 and ignore_spm_downgrades:
                         # no difference, we're ignoring revision 9999
                         fine.append(cl_atom)
-                        if (m_idpackage,repoid) not in update:
-                            spm_fine.append((m_idpackage,repoid))
+                        if (m_idpackage, repoid) not in update:
+                            spm_fine.append((m_idpackage, repoid))
                         continue
                     else:
-                        if (m_idpackage,repoid) not in update:
-                            update.append((m_idpackage,repoid))
+                        if (m_idpackage, repoid) not in update:
+                            update.append((m_idpackage, repoid))
                         continue
                 elif (cl_version != version):
                     # different versions
-                    if (m_idpackage,repoid) not in update:
-                        update.append((m_idpackage,repoid))
+                    if (m_idpackage, repoid) not in update:
+                        update.append((m_idpackage, repoid))
                     continue
                 elif (cl_tag != tag):
                     # different tags
-                    if (m_idpackage,repoid) not in update:
-                        update.append((m_idpackage,repoid))
+                    if (m_idpackage, repoid) not in update:
+                        update.append((m_idpackage, repoid))
                     continue
                 else:
 
@@ -1802,8 +1802,8 @@ class CalculatorsMixin:
 
                         if (r_digest != c_digest) and (r_digest is not None) \
                             and (c_digest is not None):
-                            if (m_idpackage,repoid) not in update:
-                                update.append((m_idpackage,repoid))
+                            if (m_idpackage, repoid) not in update:
+                                update.append((m_idpackage, repoid))
                             continue
 
                     # no difference
@@ -1827,7 +1827,7 @@ class CalculatorsMixin:
             c_hash = self.get_world_update_cache_hash(db_digest, empty_deps,
                 ignore_spm_downgrades)
             data = (update, remove, fine, spm_fine,)
-            self.Cacher.push("%s%s" % (etpCache['world_update'],c_hash,),
+            self.Cacher.push("%s%s" % (etpCache['world_update'], c_hash,),
                 data, async = False)
 
         if not update:
@@ -1873,7 +1873,7 @@ class CalculatorsMixin:
         del match
 
         if self.xcache:
-            self.Cacher.push(c_hash,(found, matched))
+            self.Cacher.push(c_hash, (found, matched))
         return found, matched
 
     def validate_package_removal(self, idpackage):
@@ -1917,7 +1917,7 @@ class CalculatorsMixin:
             empty_deps, deep_deps, quiet = quiet)
 
         if result == -2:
-            return treepackages,removal,result
+            return treepackages, removal, result
 
         # format
         removal = treepackages.pop(0, set())

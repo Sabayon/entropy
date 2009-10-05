@@ -120,7 +120,7 @@ class const:
 
     CREDITS = (
            (('Sulfur Package Manager - %s' % __sulfur_version__),
-           ('Copyright 2007-2009','Fabio Erculiani')),
+           ('Copyright 2007-2009', 'Fabio Erculiani')),
 
            (_("Programming:"),
            ("Fabio Erculiani",)),
@@ -262,8 +262,8 @@ class SulfurConf:
                 os.makedirs(os.path.dirname(const.SETTINGS_FILE), 0o755)
             myxml = entropyTools.xml_from_dict_extended(SulfurConf.getconf())
             try:
-                f = open(const.SETTINGS_FILE,"w")
-            except (IOError,OSError,) as e:
+                f = open(const.SETTINGS_FILE, "w")
+            except (IOError, OSError,) as e:
                 return False, e
             f.write(myxml+"\n")
             f.flush()
@@ -274,15 +274,15 @@ class SulfurConf:
             return do_save()
         except Exception as e:
             entropyTools.print_traceback()
-            return False,e
-        return True,None
+            return False, e
+        return True, None
 
     @staticmethod
     def read():
 
         def do_read():
-            if os.path.isfile(const.SETTINGS_FILE) and os.access(const.SETTINGS_FILE,os.R_OK):
-                f = open(const.SETTINGS_FILE,"r")
+            if os.path.isfile(const.SETTINGS_FILE) and os.access(const.SETTINGS_FILE, os.R_OK):
+                f = open(const.SETTINGS_FILE, "r")
                 xml_string = f.read()
                 f.close()
                 return entropyTools.dict_from_xml_extended(xml_string)
@@ -299,16 +299,16 @@ class SulfurConf:
         saved_conf = SulfurConf.read()
         validators = SulfurConf.getconf_validators()
         if not saved_conf: return
-        if not isinstance(saved_conf,dict): return
+        if not isinstance(saved_conf, dict): return
         for key, val in list(saved_conf.items()):
-            if not hasattr(SulfurConf,key): continue
+            if not hasattr(SulfurConf, key): continue
             vf = validators.get(key)
             if not hasattr(vf, '__call__'):
                 sys.stderr.write("WARNING: SulfurConf, no callable validator for %s" % (key,))
                 continue
             valid = vf(val)
             if not valid: continue
-            setattr(SulfurConf,key,val)
+            setattr(SulfurConf, key, val)
 
 SulfurConf.default_colors_config = SulfurConf.getconf()
 SulfurConf.update()
@@ -405,7 +405,7 @@ class fakeinfile:
         return self.readline(count = a)
 
     def readline(self, count = 2048):
-        x = os.read(self.fn,count)
+        x = os.read(self.fn, count)
         self.text_read += x
         return x
 

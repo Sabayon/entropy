@@ -73,7 +73,7 @@ class RepositoryMixin:
                 )
                 continue # repo not available
             except (self.dbapi2.OperationalError,
-                self.dbapi2.DatabaseError,SystemDatabaseError,):
+                self.dbapi2.DatabaseError, SystemDatabaseError,):
 
                 if quiet:
                     continue
@@ -130,7 +130,7 @@ class RepositoryMixin:
 
 
     def is_repository_connection_cached(self, repoid):
-        if (repoid,etpConst['systemroot'],) in self.__repodb_cache:
+        if (repoid, etpConst['systemroot'],) in self.__repodb_cache:
             return True
         return False
 
@@ -211,8 +211,8 @@ class RepositoryMixin:
     def get_repository_revision(self, reponame):
         fname = self.SystemSettings['repositories']['available'][reponame]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']
         revision = -1
-        if os.path.isfile(fname) and os.access(fname,os.R_OK):
-            with open(fname,"r") as f:
+        if os.path.isfile(fname) and os.access(fname, os.R_OK):
+            with open(fname, "r") as f:
                 try:
                     revision = int(f.readline().strip())
                 except (OSError, IOError, ValueError,):
@@ -228,8 +228,8 @@ class RepositoryMixin:
     def get_repository_db_file_checksum(self, reponame):
         fname = self.SystemSettings['repositories']['available'][reponame]['dbpath']+"/"+etpConst['etpdatabasehashfile']
         mhash = "-1"
-        if os.path.isfile(fname) and os.access(fname,os.R_OK):
-            with open(fname,"r") as f:
+        if os.path.isfile(fname) and os.access(fname, os.R_OK):
+            with open(fname, "r") as f:
                 try:
                     mhash = f.readline().strip().split()[0]
                 except (OSError, IOError, IndexError,):
@@ -521,7 +521,7 @@ class RepositoryMixin:
                                     importance = 0,
                                     type = "info",
                                     back = True,
-                                    count = (count,length),
+                                    count = (count, length),
                                     percent = True
                                 )
             try:
@@ -530,7 +530,7 @@ class RepositoryMixin:
                 self.entropyTools.print_traceback()
                 errors = True
                 self.updateProgress(
-                    darkred(_("Errors on idpackage %s, error: %s")) % (x,str(e)),
+                    darkred(_("Errors on idpackage %s, error: %s")) % (x, str(e)),
                     importance = 0,
                     type = "warning"
                 )
@@ -591,18 +591,18 @@ class RepositoryMixin:
 
     def backup_database(self, dbpath, backup_dir = None, silent = False, compress_level = 9):
 
-        if compress_level not in list(range(1,10)):
+        if compress_level not in list(range(1, 10)):
             compress_level = 9
 
         backup_dir = os.path.dirname(dbpath)
         if not backup_dir: backup_dir = os.path.dirname(dbpath)
         dbname = os.path.basename(dbpath)
         bytes_required = 1024000*300
-        if not (os.access(backup_dir,os.W_OK) and \
+        if not (os.access(backup_dir, os.W_OK) and \
                 os.path.isdir(backup_dir) and os.path.isfile(dbpath) and \
-                os.access(dbpath,os.R_OK) and self.entropyTools.check_required_space(backup_dir, bytes_required)):
+                os.access(dbpath, os.R_OK) and self.entropyTools.check_required_space(backup_dir, bytes_required)):
             if not silent:
-                mytxt = "%s: %s, %s" % (darkred(_("Cannot backup selected database")),blue(dbpath),darkred(_("permission denied")),)
+                mytxt = "%s: %s, %s" % (darkred(_("Cannot backup selected database")), blue(dbpath), darkred(_("permission denied")),)
                 self.updateProgress(
                     mytxt,
                     importance = 1,
@@ -614,12 +614,12 @@ class RepositoryMixin:
         def get_ts():
             from datetime import datetime
             ts = datetime.fromtimestamp(time.time())
-            return "%s%s%s_%sh%sm%ss" % (ts.year,ts.month,ts.day,ts.hour,ts.minute,ts.second)
+            return "%s%s%s_%sh%sm%ss" % (ts.year, ts.month, ts.day, ts.hour, ts.minute, ts.second)
 
-        comp_dbname = "%s%s.%s.bz2" % (etpConst['dbbackupprefix'],dbname,get_ts(),)
-        comp_dbpath = os.path.join(backup_dir,comp_dbname)
+        comp_dbname = "%s%s.%s.bz2" % (etpConst['dbbackupprefix'], dbname, get_ts(),)
+        comp_dbpath = os.path.join(backup_dir, comp_dbname)
         if not silent:
-            mytxt = "%s: %s ..." % (darkgreen(_("Backing up database to")),blue(comp_dbpath),)
+            mytxt = "%s: %s ..." % (darkgreen(_("Backing up database to")), blue(comp_dbpath),)
             self.updateProgress(
                 mytxt,
                 importance = 1,
@@ -636,7 +636,7 @@ class RepositoryMixin:
             return False, _("Unable to compress")
 
         if not silent:
-            mytxt = "%s: %s" % (darkgreen(_("Database backed up successfully")),blue(comp_dbpath),)
+            mytxt = "%s: %s" % (darkgreen(_("Database backed up successfully")), blue(comp_dbpath),)
             self.updateProgress(
                 mytxt,
                 importance = 1,
@@ -650,13 +650,13 @@ class RepositoryMixin:
 
         bytes_required = 1024000*300
         db_dir = os.path.dirname(db_destination)
-        if not (os.access(db_dir,os.W_OK) and os.path.isdir(db_dir) and \
-            os.path.isfile(backup_path) and os.access(backup_path,os.R_OK) and \
+        if not (os.access(db_dir, os.W_OK) and os.path.isdir(db_dir) and \
+            os.path.isfile(backup_path) and os.access(backup_path, os.R_OK) and \
             self.entropyTools.check_required_space(db_dir, bytes_required)):
 
                 if not silent:
                     mytxt = "%s: %s, %s" % (darkred(_("Cannot restore selected backup")),
-                        blue(backup_path),darkred(_("permission denied")),)
+                        blue(backup_path), darkred(_("permission denied")),)
                     self.updateProgress(
                         mytxt,
                         importance = 1,
@@ -667,7 +667,7 @@ class RepositoryMixin:
 
         if not silent:
             mytxt = "%s: %s => %s ..." % (darkgreen(_("Restoring backed up database")),
-                blue(os.path.basename(backup_path)),blue(db_destination),)
+                blue(os.path.basename(backup_path)), blue(db_destination),)
             self.updateProgress(
                 mytxt,
                 importance = 1,
@@ -700,9 +700,9 @@ class RepositoryMixin:
     def list_backedup_client_databases(self, client_dbdir = None):
         if not client_dbdir:
             client_dbdir = os.path.dirname(etpConst['etpdatabaseclientfilepath'])
-        return [os.path.join(client_dbdir,x) for x in os.listdir(client_dbdir) \
+        return [os.path.join(client_dbdir, x) for x in os.listdir(client_dbdir) \
                     if x.startswith(etpConst['dbbackupprefix']) and \
-                    os.access(os.path.join(client_dbdir,x),os.R_OK)
+                    os.access(os.path.join(client_dbdir, x), os.R_OK)
         ]
 
     def run_repositories_post_branch_switch_hooks(self, old_branch, new_branch):
@@ -975,9 +975,9 @@ class MiscMixin:
 
     def setup_default_file_perms(self, filepath):
         # setup file permissions
-        os.chmod(filepath,0o664)
+        os.chmod(filepath, 0o664)
         if etpConst['entropygid'] != None:
-            os.chown(filepath,-1,etpConst['entropygid'])
+            os.chown(filepath, -1, etpConst['entropygid'])
 
     def resources_create_lock(self):
         acquired = self.create_pid_file_lock(
@@ -1037,8 +1037,8 @@ class MiscMixin:
 
         lockdir = os.path.dirname(pidfile)
         if not os.path.isdir(lockdir):
-            os.makedirs(lockdir,0o775)
-        const_setup_perms(lockdir,etpConst['entropygid'])
+            os.makedirs(lockdir, 0o775)
+        const_setup_perms(lockdir, etpConst['entropygid'])
         if mypid == None:
             mypid = os.getpid()
 
@@ -1121,9 +1121,9 @@ class MiscMixin:
     def backup_constant(self, constant_name):
         if constant_name in etpConst:
             myinst = etpConst[constant_name]
-            if type(etpConst[constant_name]) in (list,tuple):
+            if type(etpConst[constant_name]) in (list, tuple):
                 myinst = etpConst[constant_name][:]
-            elif type(etpConst[constant_name]) in (dict,set):
+            elif type(etpConst[constant_name]) in (dict, set):
                 myinst = etpConst[constant_name].copy()
             else:
                 myinst = etpConst[constant_name]
@@ -1166,9 +1166,9 @@ class MiscMixin:
 
     def get_file_viewer(self):
         viewer = None
-        if os.access("/usr/bin/less",os.X_OK):
+        if os.access("/usr/bin/less", os.X_OK):
             viewer = "/usr/bin/less"
-        elif os.access("/bin/more",os.X_OK):
+        elif os.access("/bin/more", os.X_OK):
             viewer = "/bin/more"
         if not viewer:
             viewer = self.get_file_editor()
@@ -1178,15 +1178,15 @@ class MiscMixin:
         editor = None
         if os.getenv("EDITOR"):
             editor = "$EDITOR"
-        elif os.access("/bin/nano",os.X_OK):
+        elif os.access("/bin/nano", os.X_OK):
             editor = "/bin/nano"
-        elif os.access("/bin/vi",os.X_OK):
+        elif os.access("/bin/vi", os.X_OK):
             editor = "/bin/vi"
-        elif os.access("/usr/bin/vi",os.X_OK):
+        elif os.access("/usr/bin/vi", os.X_OK):
             editor = "/usr/bin/vi"
-        elif os.access("/usr/bin/emacs",os.X_OK):
+        elif os.access("/usr/bin/emacs", os.X_OK):
             editor = "/usr/bin/emacs"
-        elif os.access("/bin/emacs",os.X_OK):
+        elif os.access("/bin/emacs", os.X_OK):
             editor = "/bin/emacs"
         return editor
 
@@ -1197,59 +1197,59 @@ class MiscMixin:
             if not os.path.isdir(sets_dir):
                 if os.path.lexists(sets_dir):
                     os.remove(sets_dir)
-                os.makedirs(sets_dir,0o775)
+                os.makedirs(sets_dir, 0o775)
                 const_setup_perms(sets_dir, etpConst['entropygid'])
 
         try:
             set_name = str(set_name)
-        except (UnicodeEncodeError,UnicodeDecodeError,):
-            raise InvalidPackageSet("InvalidPackageSet: %s %s" % (set_name,_("must be an ASCII string"),))
+        except (UnicodeEncodeError, UnicodeDecodeError,):
+            raise InvalidPackageSet("InvalidPackageSet: %s %s" % (set_name, _("must be an ASCII string"),))
 
         if set_name.startswith(etpConst['packagesetprefix']):
-            raise InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (set_name,_("cannot start with"),etpConst['packagesetprefix'],))
+            raise InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (set_name, _("cannot start with"), etpConst['packagesetprefix'],))
         set_match, rc = self.package_set_match(set_name)
-        if rc: return -1,_("Name already taken")
+        if rc: return -1, _("Name already taken")
 
         _ensure_package_sets_dir()
-        set_file = os.path.join(etpConst['confsetsdir'],set_name)
-        if os.path.isfile(set_file) and os.access(set_file,os.W_OK):
+        set_file = os.path.join(etpConst['confsetsdir'], set_name)
+        if os.path.isfile(set_file) and os.access(set_file, os.W_OK):
             try:
                 os.remove(set_file)
             except OSError:
-                return -2,_("Cannot remove the old element")
-        if not os.access(os.path.dirname(set_file),os.W_OK):
-            return -3,_("Cannot create the element")
+                return -2, _("Cannot remove the old element")
+        if not os.access(os.path.dirname(set_file), os.W_OK):
+            return -3, _("Cannot create the element")
 
-        f = open(set_file,"w")
+        f = open(set_file, "w")
         for x in set_atoms: f.write("%s\n" % (x,))
         f.flush()
         f.close()
         self.SystemSettings['system_package_sets'][set_name] = set(set_atoms)
-        return 0,_("All fine")
+        return 0, _("All fine")
 
     def remove_user_package_set(self, set_name):
 
         try:
             set_name = str(set_name)
-        except (UnicodeEncodeError,UnicodeDecodeError,):
-            raise InvalidPackageSet("InvalidPackageSet: %s %s" % (set_name,_("must be an ASCII string"),))
+        except (UnicodeEncodeError, UnicodeDecodeError,):
+            raise InvalidPackageSet("InvalidPackageSet: %s %s" % (set_name, _("must be an ASCII string"),))
 
         if set_name.startswith(etpConst['packagesetprefix']):
-            raise InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (set_name,_("cannot start with"),etpConst['packagesetprefix'],))
+            raise InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (set_name, _("cannot start with"), etpConst['packagesetprefix'],))
 
         set_match, rc = self.package_set_match(set_name)
-        if not rc: return -1,_("Already removed")
+        if not rc: return -1, _("Already removed")
         set_id, set_x, set_y = set_match
 
         if set_id != etpConst['userpackagesetsid']:
-            return -2,_("Not defined by user")
-        set_file = os.path.join(etpConst['confsetsdir'],set_name)
-        if os.path.isfile(set_file) and os.access(set_file,os.W_OK):
+            return -2, _("Not defined by user")
+        set_file = os.path.join(etpConst['confsetsdir'], set_name)
+        if os.path.isfile(set_file) and os.access(set_file, os.W_OK):
             os.remove(set_file)
             if set_name in self.SystemSettings['system_package_sets']:
                 del self.SystemSettings['system_package_sets'][set_name]
-            return 0,_("All fine")
-        return -3,_("Set not found or unable to remove")
+            return 0, _("All fine")
+        return -3, _("Set not found or unable to remove")
 
     def is_installed_idpackage_in_system_mask(self, idpackage):
         client_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
@@ -1298,7 +1298,7 @@ class MiscMixin:
         dbconn = self.open_repository(repoid)
         text = dbconn.retrieveLicenseText(license_name)
         tempfile = self.entropyTools.get_random_temp_file()
-        f = open(tempfile,"w")
+        f = open(tempfile, "w")
         f.write(text)
         f.flush()
         f.close()
@@ -1364,7 +1364,7 @@ class MiscMixin:
                 dbconn = repo
             else:
                 continue
-            pkg_data.extend([(x,repo,) for x in \
+            pkg_data.extend([(x, repo,) for x in \
                 dbconn.searchSimilarPackages(search_term, atom = atom_srch)])
 
         return pkg_data
@@ -1407,7 +1407,7 @@ class MiscMixin:
             dbconn = self.open_repository(repo)
             branch = self.SystemSettings['repositories']['branch']
             catsdata = dbconn.searchPackagesByCategory(category, branch = branch)
-            pkg_matches.extend([(x[1],repo,) for x in catsdata if (x[1],repo,) not in pkg_matches])
+            pkg_matches.extend([(x[1], repo,) for x in catsdata if (x[1], repo,) not in pkg_matches])
         return pkg_matches
 
     def get_category_description_data(self, category):
@@ -1511,21 +1511,21 @@ class MiscMixin:
         # match package
         match = self.clientDbconn.atomMatch(atomstring)
         if match[0] == -1:
-            return -1,None,None
+            return -1, None, None
         atom = self.clientDbconn.atomMatch(match[0])
         pkgdata = self.clientDbconn.getPackageData(match[0])
         resultfile = self.quickpkg_handler(pkgdata = pkgdata, dirpath = savedir)
         if resultfile == None:
-            return -1,atom,None
+            return -1, atom, None
         else:
-            return 0,atom,resultfile
+            return 0, atom, resultfile
 
     def quickpkg_handler(self, pkgdata, dirpath, edb = True,
            portdbPath = None, fake = False, compression = "bz2", shiftpath = ""):
 
         import tarfile
 
-        if compression not in ("bz2","","gz"):
+        if compression not in ("bz2", "", "gz"):
             compression = "bz2"
 
         # getting package info
@@ -1537,7 +1537,7 @@ class MiscMixin:
         dirpath += "/"+pkgname+etpConst['packagesext']
         if os.path.isfile(dirpath):
             os.remove(dirpath)
-        tar = tarfile.open(dirpath,"w:"+compression)
+        tar = tarfile.open(dirpath, "w:"+compression)
 
         if not fake:
 
@@ -1623,7 +1623,7 @@ class MatchMixin:
         installed_idpackage = results[0][0]
         pkgver, pkgtag, pkgrev = dbconn.getVersioningData(match[0])
         installedVer, installedTag, installedRev = self.clientDbconn.getVersioningData(installed_idpackage)
-        pkgcmp = self.entropyTools.entropy_compare_versions((pkgver,pkgtag,pkgrev),(installedVer,installedTag,installedRev))
+        pkgcmp = self.entropyTools.entropy_compare_versions((pkgver, pkgtag, pkgrev), (installedVer, installedTag, installedRev))
         if pkgcmp == 0:
             # check digest, if it differs, we should mark pkg as update
             # we don't want users to think that they are "reinstalling" stuff
@@ -1676,7 +1676,7 @@ class MatchMixin:
         idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
         if idpackage != -1: return False #,False
         myr = self.SystemSettings['pkg_masking_reference']
-        user_masks = [myr['user_package_mask'],myr['user_license_mask'],myr['user_live_mask']]
+        user_masks = [myr['user_package_mask'], myr['user_license_mask'], myr['user_live_mask']]
         if idreason in user_masks:
             return True #,True
         return False #,True
@@ -1690,7 +1690,7 @@ class MatchMixin:
         if idpackage == -1: return False #,False
         myr = self.SystemSettings['pkg_masking_reference']
         user_masks = [
-            myr['user_package_unmask'],myr['user_live_unmask'],myr['user_package_keywords'],
+            myr['user_package_unmask'], myr['user_live_unmask'], myr['user_package_keywords'],
             myr['user_repo_package_keywords_all'], myr['user_repo_package_keywords']
         ]
         if idreason in user_masks:
@@ -1725,7 +1725,7 @@ class MatchMixin:
 
         f = methods_reference.get(method)
         if not hasattr(f, '__call__'):
-            raise IncorrectParameter('IncorrectParameter: %s: %s' % (_("not a valid method"),method,) )
+            raise IncorrectParameter('IncorrectParameter: %s: %s' % (_("not a valid method"), method,) )
 
         self.Cacher.discard()
         done = f(match, dry_run)
@@ -1742,8 +1742,8 @@ class MatchMixin:
         self.clear_dump_cache(etpCache['filter_satisfied_deps'])
         self.clear_dump_cache(self.atomMatchCacheKey)
         self.clear_dump_cache(etpCache['dep_tree'])
-        self.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'],etpConst['dbnamerepoprefix'],match[1],))
-        self.clear_dump_cache("%s/%s%s/" % (etpCache['dbSearch'],etpConst['dbnamerepoprefix'],match[1],))
+        self.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'], etpConst['dbnamerepoprefix'], match[1],))
+        self.clear_dump_cache("%s/%s%s/" % (etpCache['dbSearch'], etpConst['dbnamerepoprefix'], match[1],))
 
         cl_id = self.sys_settings_client_plugin_id
         self.SystemSettings[cl_id]['masking_validation']['cache'].clear()
@@ -1786,7 +1786,7 @@ class MatchMixin:
     def _mask_unmask_match_generic(self, keyword, m_file, dry_run = False):
         exist = False
         if not os.path.isfile(m_file):
-            if not os.access(os.path.dirname(m_file),os.W_OK):
+            if not os.access(os.path.dirname(m_file), os.W_OK):
                 return False # cannot write
         elif not os.access(m_file, os.W_OK):
             return False
@@ -1798,22 +1798,22 @@ class MatchMixin:
 
         content = []
         if exist:
-            f = open(m_file,"r")
+            f = open(m_file, "r")
             content = [x.strip() for x in f.readlines()]
             f.close()
         content.append(keyword)
         m_file_tmp = m_file+".tmp"
-        f = open(m_file_tmp,"w")
+        f = open(m_file_tmp, "w")
         for line in content:
             f.write(line+"\n")
         f.flush()
         f.close()
-        shutil.move(m_file_tmp,m_file)
+        shutil.move(m_file_tmp, m_file)
         return True
 
     def clear_match_mask(self, match, dry_run = False):
         setting_data = self.SystemSettings.get_setting_files_data()
-        masking_list = [setting_data['mask'],setting_data['unmask']]
+        masking_list = [setting_data['mask'], setting_data['unmask']]
         return self._clear_match_generic(match, masking_list = masking_list, dry_run = dry_run)
 
     def _clear_match_generic(self, match, masking_list = [], dry_run = False):
@@ -1824,8 +1824,8 @@ class MatchMixin:
         if dry_run: return
 
         for mask_file in masking_list:
-            if not (os.path.isfile(mask_file) and os.access(mask_file,os.W_OK)): continue
-            f = open(mask_file,"r")
+            if not (os.path.isfile(mask_file) and os.access(mask_file, os.W_OK)): continue
+            f = open(mask_file, "r")
             newf = self.entropyTools.open_buffer()
             line = f.readline()
             while line:
@@ -1846,9 +1846,9 @@ class MatchMixin:
                 line = f.readline()
             f.close()
             tmpfile = mask_file+".w_tmp"
-            f = open(tmpfile,"w")
+            f = open(tmpfile, "w")
             f.write(newf.getvalue())
             f.flush()
             f.close()
             newf.close()
-            shutil.move(tmpfile,mask_file)
+            shutil.move(tmpfile, mask_file)

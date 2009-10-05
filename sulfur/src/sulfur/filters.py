@@ -24,11 +24,11 @@ class Filtering:
     def __init__(self):
         self.filters = []
 
-    def registerFilter(self,klass):
+    def registerFilter(self, klass):
         if not klass in self.filters:
             self.filters.append(klass)
 
-    def processFilters(self,po):
+    def processFilters(self, po):
         for flt in self.filters:
             if flt.process(po):
                 continue
@@ -38,9 +38,9 @@ class Filtering:
 
     def listFilters(self):
         for flt in self.filters:
-            print_generic("%s : %s " % (flt.get_name(),flt._state))
+            print_generic("%s : %s " % (flt.get_name(), flt._state))
 
-    def get(self,name):
+    def get(self, name):
         for flt in self.filters:
             if flt.get_name() == name:
                 return flt
@@ -56,7 +56,7 @@ class BaseFilter:
     def get_name(self):
         return "BaseFilter"
 
-    def process(self,po):
+    def process(self, po):
         raise NotImplementedError()
 
     def activate(self,state=True):

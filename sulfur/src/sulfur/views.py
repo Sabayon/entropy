@@ -453,7 +453,7 @@ class EntropyPackageView:
         self.do_refresh_view = False
         self.main_window = main_window
         self.empty_mode = False
-        self.event_click_pos = 0,0
+        self.event_click_pos = 0, 0
         # default for installed packages
         self.pkg_install_ok = "package-installed-updated.png"
         self.pkg_install_updatable = "package-installed-outdated.png"
@@ -467,56 +467,56 @@ class EntropyPackageView:
         self.pkg_undoinstall = "package-undoinstall.png"
 
         self.img_pkg_install_ok = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_install_ok,self.pkg_install_ok)
+        self.set_pixbuf_to_image(self.img_pkg_install_ok, self.pkg_install_ok)
         self.img_pkg_install_updatable = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_install_updatable,self.pkg_install_updatable)
+        self.set_pixbuf_to_image(self.img_pkg_install_updatable, self.pkg_install_updatable)
         self.img_pkg_update = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_update,self.pkg_update)
+        self.set_pixbuf_to_image(self.img_pkg_update, self.pkg_update)
         self.img_pkg_downgrade = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_downgrade,self.pkg_downgrade)
+        self.set_pixbuf_to_image(self.img_pkg_downgrade, self.pkg_downgrade)
 
         self.img_pkg_install_new = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_install_new,self.pkg_install_new)
+        self.set_pixbuf_to_image(self.img_pkg_install_new, self.pkg_install_new)
 
         self.img_pkg_remove = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_remove,self.pkg_remove)
+        self.set_pixbuf_to_image(self.img_pkg_remove, self.pkg_remove)
         self.img_pkg_undoremove = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_undoremove,self.pkg_remove)
+        self.set_pixbuf_to_image(self.img_pkg_undoremove, self.pkg_remove)
         self.img_pkg_purge = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_purge,self.pkg_purge)
+        self.set_pixbuf_to_image(self.img_pkg_purge, self.pkg_purge)
         self.img_pkg_undopurge = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_undopurge,self.pkg_purge)
+        self.set_pixbuf_to_image(self.img_pkg_undopurge, self.pkg_purge)
         self.img_pkg_reinstall = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_reinstall,self.pkg_reinstall)
+        self.set_pixbuf_to_image(self.img_pkg_reinstall, self.pkg_reinstall)
         self.img_pkg_undoreinstall = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_undoreinstall,self.pkg_reinstall)
+        self.set_pixbuf_to_image(self.img_pkg_undoreinstall, self.pkg_reinstall)
 
         self.img_pkg_install = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_install,self.pkg_install)
+        self.set_pixbuf_to_image(self.img_pkg_install, self.pkg_install)
         self.img_pkg_undoinstall = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_undoinstall,self.pkg_undoinstall)
+        self.set_pixbuf_to_image(self.img_pkg_undoinstall, self.pkg_undoinstall)
 
         self.img_pkgset_install = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkgset_install,self.pkg_install_ok)
+        self.set_pixbuf_to_image(self.img_pkgset_install, self.pkg_install_ok)
         self.img_pkgset_undoinstall = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkgset_undoinstall,self.pkg_undoinstall)
+        self.set_pixbuf_to_image(self.img_pkgset_undoinstall, self.pkg_undoinstall)
         self.img_pkgset_remove = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkgset_remove,self.pkg_remove)
+        self.set_pixbuf_to_image(self.img_pkgset_remove, self.pkg_remove)
         self.img_pkgset_undoremove = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkgset_undoremove,self.pkg_remove)
+        self.set_pixbuf_to_image(self.img_pkgset_undoremove, self.pkg_remove)
         self.img_pkg_updateinstall = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_updateinstall,self.pkg_update)
+        self.set_pixbuf_to_image(self.img_pkg_updateinstall, self.pkg_update)
         self.img_pkg_undoupdateinstall = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_undoupdateinstall,self.pkg_downgrade)
+        self.set_pixbuf_to_image(self.img_pkg_undoupdateinstall, self.pkg_downgrade)
 
         self.img_pkg_update_remove = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_update_remove,self.pkg_remove)
+        self.set_pixbuf_to_image(self.img_pkg_update_remove, self.pkg_remove)
         self.img_pkg_update_undoremove = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_update_undoremove,self.pkg_remove)
+        self.set_pixbuf_to_image(self.img_pkg_update_undoremove, self.pkg_remove)
         self.img_pkg_update_purge = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_update_purge,self.pkg_purge)
+        self.set_pixbuf_to_image(self.img_pkg_update_purge, self.pkg_purge)
         self.img_pkg_update_undopurge = gtk.Image()
-        self.set_pixbuf_to_image(self.img_pkg_update_undopurge,self.pkg_purge)
+        self.set_pixbuf_to_image(self.img_pkg_update_undopurge, self.pkg_purge)
 
         treeview.set_fixed_height_mode(True)
         self.view_expanded = True
@@ -559,7 +559,7 @@ class EntropyPackageView:
         self.installed_undoupdate.set_image(self.img_pkg_undoupdateinstall)
 
         # updates right click menu
-        self.updates_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageUpdates",domain="entropy" )
+        self.updates_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageUpdates", domain="entropy" )
         self.updates_menu = self.updates_menu_xml.get_widget( "packageUpdates" )
         self.updates_menu_xml.signal_autoconnect(self)
 
@@ -580,7 +580,7 @@ class EntropyPackageView:
         self.updates_undoupdate.set_image(self.img_pkg_downgrade)
 
         # install right click menu
-        self.install_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageInstall",domain="entropy" )
+        self.install_menu_xml = gtk.glade.XML( const.GLADE_FILE, "packageInstall", domain="entropy" )
         self.install_menu = self.install_menu_xml.get_widget( "packageInstall" )
         self.install_menu_xml.signal_autoconnect(self)
         self.install_install = self.install_menu_xml.get_widget( "install" )
@@ -739,14 +739,14 @@ class EntropyPackageView:
     def on_view_button_press(self, widget, event):
 
         try:
-            row, column, x, y = widget.get_path_at_pos(int(event.x),int(event.y))
+            row, column, x, y = widget.get_path_at_pos(int(event.x), int(event.y))
         except TypeError:
             return True
 
         objs = self.collect_selected_items(widget)
         col_title = column.get_title()
         if (col_title == self.pkgcolumn_text_rating) and len(objs) < 2:
-            self.load_menu(widget,event, objs = objs)
+            self.load_menu(widget, event, objs = objs)
             self.last_row = row
             return False
 
@@ -754,7 +754,7 @@ class EntropyPackageView:
             if (len(objs) == 1) and (row != self.last_row):
                 self.last_row = row
                 return False
-            did_something = self.load_menu(widget,event,objs = objs)
+            did_something = self.load_menu(widget, event, objs = objs)
             self.last_row = row
             return did_something
 
@@ -772,24 +772,24 @@ class EntropyPackageView:
             return False
 
         try:
-            row, column, x, y = widget.get_path_at_pos(int(event_x),int(event.y))
+            row, column, x, y = widget.get_path_at_pos(int(event_x), int(event.y))
         except TypeError:
             return False
 
-        self.event_click_pos = x,y
+        self.event_click_pos = x, y
         if column.get_title() == self.pkgcolumn_text:
 
             #if event.button != 3:
             #    return False
 
             # filter dummy objs
-            objs = [obj for obj in objs if (not isinstance(obj,DummyEntropyPackage)) or obj.set_category]
+            objs = [obj for obj in objs if (not isinstance(obj, DummyEntropyPackage)) or obj.set_category]
             if objs:
 
                 objs_len = len(objs)
                 set_categories = [obj for obj in objs if obj.set_category]
-                pkgsets = [obj for obj in objs if (obj.pkgset and obj.action in ("i","r"))]
-                installed_objs = [obj for obj in objs if obj.action in ("r","rr")]
+                pkgsets = [obj for obj in objs if (obj.pkgset and obj.action in ("i", "r"))]
+                installed_objs = [obj for obj in objs if obj.action in ("r", "rr")]
                 updatable_objs = [obj for obj in objs if obj.action == "u"]
                 installable_objs = [obj for obj in objs if obj.action == "i"]
 
@@ -831,7 +831,7 @@ class EntropyPackageView:
         while event_y > self.selection_width+5:
             event_y -= self.selection_width+5
         abs_y += (self.selection_width-event_y)
-        return int(abs_x),int(abs_y),True
+        return int(abs_x), int(abs_y), True
 
     def run_install_menu_stuff(self, objs):
         self.reset_install_menu()
@@ -1037,7 +1037,7 @@ class EntropyPackageView:
 
         q_cache = {}
         for obj in just_show_objs+new_objs:
-            q_cache[obj.matched_atom] = (obj.queued,obj.do_purge,)
+            q_cache[obj.matched_atom] = (obj.queued, obj.do_purge,)
             obj.queued = action
             if action:
                 obj.do_purge = do_purge
@@ -1060,7 +1060,7 @@ class EntropyPackageView:
         return self.do_remove("r", do_purge)
 
     def on_undoremove_activate(self, widget):
-        return self.do_remove(None,None)
+        return self.do_remove(None, None)
 
     def do_reinstall(self, action):
 
@@ -1091,7 +1091,7 @@ class EntropyPackageView:
 
     def remove_queued(self, objs):
 
-        if not isinstance(objs,list):
+        if not isinstance(objs, list):
             objs = [objs]
 
         q_cache = {}
@@ -1172,18 +1172,18 @@ class EntropyPackageView:
         realpkgs = set()
         if remove_action:
             for item in items:
-                for mid,mrep in item.set_installed_matches:
+                for mid, mrep in item.set_installed_matches:
                     if mrep == None:
                         pkgsets.add(mid)
                     elif mid != -1:
-                        realpkgs.add((mid,mrep,))
+                        realpkgs.add((mid, mrep,))
         else:
             for item in items:
-                for mid,mrep in item.set_matches:
+                for mid, mrep in item.set_matches:
                     if mrep == None:
                         pkgsets.add(mid)
                     else:
-                        realpkgs.add((mid,mrep,))
+                        realpkgs.add((mid, mrep,))
 
         # check for set depends :-)
         selected_sets = set()
@@ -1191,7 +1191,7 @@ class EntropyPackageView:
             sets_categories = [x.set_category for x in items]
             selected_sets = [self.dummyCats.get(x) for x in self.dummyCats if x not in sets_categories]
             selected_sets = set([x.set_category for x in selected_sets])
-            selected_sets = set(["%s%s" % (etpConst['packagesetprefix'],x,) for x in selected_sets])
+            selected_sets = set(["%s%s" % (etpConst['packagesetprefix'], x,) for x in selected_sets])
         pkgsets.update(selected_sets)
 
         exp_atoms = set()
@@ -1311,7 +1311,7 @@ class EntropyPackageView:
         if not objs+set_objs: return
 
         repo_objs = []
-        for idpackage,rid in exp_matches:
+        for idpackage, rid in exp_matches:
             key, slot = self.Equo.clientDbconn.retrieveKeySlot(idpackage)
             if not self.Equo.validate_package_removal(idpackage):
                 continue
@@ -1546,7 +1546,7 @@ class EntropyPackageView:
         self.view.append_column( column1 )
         column1.set_clickable( True )
 
-        self.create_text_column( _( "Package" ), 'namedesc' , size = 300,
+        self.create_text_column( _( "Package" ), 'namedesc', size = 300,
             expand = True, set_height = myheight, clickable = True,
             click_cb = self.on_package_column_clicked)
 
@@ -1693,8 +1693,8 @@ class EntropyPackageView:
 
             widget.set_search_column(search_col)
             widget.set_search_equal_func(self.atom_search)
-            widget.set_property('headers-visible',True)
-            widget.set_property('enable-search',True)
+            widget.set_property('headers-visible', True)
+            widget.set_property('enable-search', True)
 
         if self.Injector.expand:
             widget.expand_all()
@@ -1763,12 +1763,12 @@ class EntropyPackageView:
 
             try:
                 mydata = getattr( obj, property )
-                cell.set_property('markup',mydata)
+                cell.set_property('markup', mydata)
             except self.Equo.dbapi2.ProgrammingError:
                 self.do_refresh_view = True
             if obj.color:
                 self.set_line_status(obj, cell)
-                cell.set_property('foreground',obj.color)
+                cell.set_property('foreground', obj.color)
 
     def new_pixbuf( self, column, cell, model, myiter ):
         """ 
@@ -1795,7 +1795,7 @@ class EntropyPackageView:
 
             if not pkg.queued:
 
-                if pkg.action in ["r","rr"]:
+                if pkg.action in ["r", "rr"]:
 
                     # grab install status to determine what pixmap showing
                     # for installed packages, this could be slow, but let'see
@@ -1839,17 +1839,17 @@ class EntropyPackageView:
 
     def set_line_status(self, obj, cell, stype = "cell-background"):
         if obj.queued == "r":
-            cell.set_property(stype,'#FFE2A3')
+            cell.set_property(stype, '#FFE2A3')
         elif obj.queued == "u":
-            cell.set_property(stype,'#B7BEFF')
+            cell.set_property(stype, '#B7BEFF')
         elif obj.queued == "d":
-            cell.set_property(stype,'#A7D0FF')
+            cell.set_property(stype, '#A7D0FF')
         elif obj.queued == "i":
-            cell.set_property(stype,'#E9C8FF')
+            cell.set_property(stype, '#E9C8FF')
         elif obj.queued == "rr":
-            cell.set_property(stype,'#B7BEFF')
+            cell.set_property(stype, '#B7BEFF')
         elif not obj.queued:
-            cell.set_property(stype,None)
+            cell.set_property(stype, None)
 
     def select_all(self):
 
@@ -1934,21 +1934,21 @@ class EntropyQueueView:
 
     def get_data_text( self, column, cell, model, iter ):
         namedesc = model.get_value( iter, 0 )
-        cell.set_property('markup',namedesc)
+        cell.set_property('markup', namedesc)
 
     def set_line_status(self, obj, cell, stype = "cell-background"):
         if obj.queued == "r":
-            cell.set_property(stype,'#FFE2A3')
+            cell.set_property(stype, '#FFE2A3')
         elif obj.queued == "u":
-            cell.set_property(stype,'#B7BEFF')
+            cell.set_property(stype, '#B7BEFF')
         elif obj.queued == "i":
-            cell.set_property(stype,'#D895FF')
+            cell.set_property(stype, '#D895FF')
         elif obj.queued == "rr":
-            cell.set_property(stype,'#B7BEFF')
+            cell.set_property(stype, '#B7BEFF')
         elif obj.queued == "d":
-            cell.set_property(stype,'#A7D0FF')
+            cell.set_property(stype, '#A7D0FF')
         elif not obj.queued:
-            cell.set_property(stype,None)
+            cell.set_property(stype, None)
 
     def __ugc_refresh(self, event):
         try:
@@ -2148,7 +2148,7 @@ class EntropyAdvisoriesView:
         if myiter:
             key, affected, data = model.get_value( myiter, 0 )
             if key != None:
-                self.enable_properties_menu((key,affected,data))
+                self.enable_properties_menu((key, affected, data))
                 return
         self.enable_properties_menu(None)
 
@@ -2221,7 +2221,7 @@ class EntropyAdvisoriesView:
         if not identifiers:
             self.model.append(
                 [
-                    (None,None,None),
+                    (None, None, None),
                     "---------",
                     "<b>%s</b>" % (_("No advisories"),),
                     "<small>%s</small>" % (_("There are no items to show"),)
@@ -2238,7 +2238,7 @@ class EntropyAdvisoriesView:
                 mydata = adv_metadata[key]
                 self.model.append(
                     [
-                        (key,identifiers[key],adv_metadata[key].copy(),),
+                        (key, identifiers[key], adv_metadata[key].copy(),),
                         key,
                         "<b>%s</b>" % (a_key,),
                         "<small>%s</small>" % (
@@ -2248,15 +2248,15 @@ class EntropyAdvisoriesView:
 
         self.view.set_search_column( 2 )
         self.view.set_search_equal_func(self.atom_search)
-        self.view.set_property('headers-visible',True)
-        self.view.set_property('enable-search',True)
+        self.view.set_property('headers-visible', True)
+        self.view.set_property('enable-search', True)
 
 
 class EntropyRepoView:
 
     def __init__( self, widget, ui, application):
         self.view = widget
-        self.headers = [_('Repository'),_('Filename')]
+        self.headers = [_('Repository'), _('Filename')]
         self.store = self.setup_view()
         self.Equo = Equo()
         self.ui = ui
@@ -2266,11 +2266,11 @@ class EntropyRepoView:
     def on_active_toggled( self, widget, path):
 
         myiter = self.store.get_iter( path )
-        state = self.store.get_value(myiter,0)
-        repoid = self.store.get_value(myiter,3)
+        state = self.store.get_value(myiter, 0)
+        repoid = self.store.get_value(myiter, 3)
         if repoid != self.Equo.SystemSettings['repositories']['default_repository']:
             if state:
-                self.store.set_value(myiter,1, not state)
+                self.store.set_value(myiter, 1, not state)
                 self.Equo.disable_repository(repoid)
                 initconfig_entropy_constants(etpSys['rootdir'])
             else:
@@ -2278,15 +2278,15 @@ class EntropyRepoView:
                 initconfig_entropy_constants(etpSys['rootdir'])
             self.Sulfur.reset_cache_status()
             self.Sulfur.show_packages(back_to_page = "repos")
-            self.store.set_value(myiter,0, not state)
+            self.store.set_value(myiter, 0, not state)
 
     def on_update_toggled( self, widget, path):
         """ Repo select/unselect handler """
         myiter = self.store.get_iter( path )
-        state = self.store.get_value(myiter,1)
-        active = self.store.get_value(myiter,0)
+        state = self.store.get_value(myiter, 1)
+        active = self.store.get_value(myiter, 0)
         if active:
-            self.store.set_value(myiter,1, not state)
+            self.store.set_value(myiter, 1, not state)
 
     def setup_view( self ):
 
@@ -2315,16 +2315,16 @@ class EntropyRepoView:
         cell2.connect( "toggled", self.on_update_toggled )
 
         # Setup revision column
-        self.create_text_column( _('Revision'),2 )
+        self.create_text_column( _('Revision'), 2 )
 
         # Setup reponame & repofile column's
-        self.create_text_column( _('Repository Identifier'),3 )
-        self.create_text_column( _('Description'),4 )
+        self.create_text_column( _('Repository Identifier'), 3 )
+        self.create_text_column( _('Description'), 4 )
         self.view.set_search_column( 1 )
         self.view.set_reorderable( False )
         return store
 
-    def create_text_column( self, hdr,colno):
+    def create_text_column( self, hdr, colno):
         cell = gtk.CellRendererText()
         column = gtk.TreeViewColumn( hdr, cell, text=colno )
         column.set_resizable( True )
@@ -2349,7 +2349,7 @@ class EntropyRepoView:
         if gpg:
             cell.set_property( 'visible', True )
         else:
-            cell.set_property( 'visible',False)
+            cell.set_property( 'visible', False)
 
     def get_selected( self ):
         selected = []

@@ -14,12 +14,12 @@
 import sys
 import gtk
 import gobject
-sys.path.insert(0,"../../libraries")
-sys.path.insert(1,"../../client")
-sys.path.insert(2,"./")
-sys.path.insert(3,"/usr/lib/entropy/libraries")
-sys.path.insert(4,"/usr/lib/entropy/client")
-sys.path.insert(5,"/usr/lib/entropy/sulfur")
+sys.path.insert(0, "../../libraries")
+sys.path.insert(1, "../../client")
+sys.path.insert(2, "./")
+sys.path.insert(3, "/usr/lib/entropy/libraries")
+sys.path.insert(4, "/usr/lib/entropy/client")
+sys.path.insert(5, "/usr/lib/entropy/sulfur")
 import entropy.tools
 from sulfur import SulfurApplication
 from sulfur.dialogs import ExceptionDialog

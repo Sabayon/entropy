@@ -166,7 +166,7 @@ def xtermTitle(mystr, raw = False):
     """
     if dotitles and "TERM" in os.environ and sys.stderr.isatty():
         myt = os.environ["TERM"]
-        legal_terms = ["xterm","Eterm","aterm","rxvt","screen","kterm","rxvt-unicode","gnome"]
+        legal_terms = ["xterm", "Eterm", "aterm", "rxvt", "screen", "kterm", "rxvt-unicode", "gnome"]
         if myt in legal_terms:
             if not raw:
                 mystr = "\x1b]0;%s\x07" % mystr
@@ -191,7 +191,7 @@ def xtermTitleReset():
             from entropy.tools import getstatusoutput
             default_xterm_title = getstatusoutput(prompt_command)[1]
         else:
-            pwd = os.getenv('PWD','')
+            pwd = os.getenv('PWD', '')
             home = os.getenv('HOME', '')
             if home != '' and pwd.startswith(home):
                 pwd = '~' + pwd[len(home):]
@@ -703,7 +703,7 @@ def _my_raw_input(txt = ''):
     response = ''
     while 1:
         y = sys.stdin.read(1)
-        if y in ('\n','\r',): break
+        if y in ('\n', '\r',): break
         response += y
         _flush_stdouterr()
     return response
@@ -771,7 +771,7 @@ class TextInterface:
         if count:
             if len(count) > 1:
                 if percent:
-                    percent_str = str(round((float(count[0])/count[1])*100,1))
+                    percent_str = str(round((float(count[0])/count[1])*100, 1))
                     count_str = " ("+percent_str+"%) "
                 else:
                     count_str = " (%s/%s) " % (red(str(count[0])),
@@ -913,8 +913,8 @@ class TextInterface:
 
             mydict = {}
             counter = 1
-            valid_actions = [0,1,2,3]
-            if can_cancel: valid_actions.insert(0,-1)
+            valid_actions = [0, 1, 2, 3]
+            if can_cancel: valid_actions.insert(0, -1)
             option_text, option_list = option_data
             txt = "%s:" % (blue(option_text),)
             self.updateProgress(txt)
@@ -933,7 +933,7 @@ class TextInterface:
             while 1:
                 try:
                     action = int(selaction())
-                except (ValueError,TypeError,):
+                except (ValueError, TypeError,):
                     self.updateProgress(_("You don't have typed a number."), type = "warning")
                     continue
                 if action not in valid_actions:
@@ -964,7 +964,7 @@ class TextInterface:
                             if s_el not in mydict:
                                 raise ValueError
                             del mydict[s_el]
-                        except (ValueError,TypeError,):
+                        except (ValueError, TypeError,):
                             self.updateProgress(_("Invalid element."), type = "warning")
                             continue
                         break
@@ -982,7 +982,7 @@ class TextInterface:
             while 1:
                 use_cb = True
                 try:
-                    if isinstance(input_text,tuple):
+                    if isinstance(input_text, tuple):
                         myresult = False
                         input_type, data = input_text
                         if input_type == "checkbox":
@@ -995,7 +995,7 @@ class TextInterface:
                             myresult = list_editor(data, cancel_button, callback)
                     else:
                         myresult = readtext(input_text+":", password = password).decode('utf-8')
-                except (KeyboardInterrupt,EOFError,):
+                except (KeyboardInterrupt, EOFError,):
                     if not cancel_button: # use with care
                         continue
                     return None
