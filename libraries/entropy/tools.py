@@ -1281,7 +1281,6 @@ def extract_edb(tbz2file, dbpath = None):
     @return: 
     @rtype: 
     """
-
     old = open(tbz2file, "rb")
     if not dbpath:
         dbpath = tbz2file[:-5] + ".db"
@@ -1318,30 +1317,33 @@ def locate_edb(fileobj):
     # position old to the end
     fileobj.seek(0, os.SEEK_END)
     # read backward until we find
-    bytes = fileobj.tell()
-    counter = bytes - 1
+    xbytes = fileobj.tell()
+    counter = xbytes - 1
 
     db_tag = etpConst['databasestarttag']
+    # for Python 3.x
+    raw_db_tag = const_convert_to_rawstring(db_tag)
     db_tag_len = len(db_tag)
     give_up_threshold = 1024000 * 30 # 30Mb
-    entry_point = db_tag[::-1][0]
+    # cannot index a bytes object in Python3, it returns int !
+    entry_point = const_convert_to_rawstring(db_tag[::-1][0])
     max_read_len = 8
     start_position = None
 
     while counter >= 0:
-        cur_threshold = abs((counter-bytes))
+        cur_threshold = abs((counter-xbytes))
         if cur_threshold >= give_up_threshold:
             start_position = None
             break
-        fileobj.seek(counter-bytes, os.SEEK_END)
+        fileobj.seek(counter-xbytes, os.SEEK_END)
         read_bytes = fileobj.read(max_read_len)
         read_len = len(read_bytes)
-        entry_idx = read_bytes.rfind(const_convert_to_rawstring(entry_point))
+        entry_idx = read_bytes.rfind(entry_point)
         if entry_idx != -1:
             rollback = (read_len - entry_idx) * -1
             fileobj.seek(rollback, os.SEEK_CUR)
             chunk = fileobj.read(db_tag_len)
-            if chunk == db_tag:
+            if chunk == raw_db_tag:
                 start_position = fileobj.tell()
                 break
         counter -= read_len
@@ -1380,9 +1382,9 @@ def remove_edb(tbz2file, savedir):
         delta = start_position - counter
         if delta < max_read_len:
             max_read_len = delta
-        bytes = old.read(max_read_len)
-        read_bytes = len(bytes)
-        new.write(bytes)
+        xbytes = old.read(max_read_len)
+        read_bytes = len(xbytes)
+        new.write(xbytes)
         counter += read_bytes
 
     new.flush()
@@ -2895,21 +2897,21 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
         return 0
     return -1
 
-def bytes_into_human(bytes):
+def bytes_into_human(xbytes):
     """
     docstring_title
 
-    @param bytes: 
-    @type bytes: 
+    @param xbytes: 
+    @type xbytes: 
     @return: 
     @rtype: 
     """
-    size = str(round(float(bytes)/1024, 1))
-    if bytes < 1024:
-        size = str(round(float(bytes)))+"b"
-    elif bytes < 1023999:
+    size = str(round(float(xbytes)/1024, 1))
+    if xbytes < 1024:
+        size = str(round(float(xbytes)))+"b"
+    elif xbytes < 1023999:
         size += "kB"
-    elif bytes > 1023999:
+    elif xbytes > 1023999:
         size = str(round(float(size)/1024, 1))
         size += "MB"
     return size
