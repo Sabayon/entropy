@@ -9,7 +9,8 @@
     B{Entropy Services Stub Interfaces}.
 
 """
-
+from entropy.const import const_convert_to_unicode
+from entropy.tools import escape
 from entropy.exceptions import *
 from entropy.i18n import _
 
@@ -66,6 +67,7 @@ class RemoteDatabase:
         self.dbconn = None
         self.cursor = None
         self.plain_cursor = None
+        self.escape_string = escape
         self.connection_data = {}
         try:
             import MySQLdb, _mysql_exceptions
@@ -133,10 +135,12 @@ class RemoteDatabase:
             raise ConnectionError('ConnectionError: %s' % (e,))
         self.plain_cursor = self.dbconn.cursor()
         self.cursor = self.mysql.cursors.DictCursor(self.dbconn)
+        self.escape_string = self.dbconn.escape_string
         return True
 
     def disconnect(self):
         self.check_connection()
+        self.escape_string = escape
         if hasattr(self.cursor,'close'):
             self.cursor.close()
         if hasattr(self.dbconn,'close'):
@@ -216,24 +220,28 @@ class RemoteDatabase:
         return set(item)
 
     def _generate_sql(self, action, table, data, where = ''):
-        sql = u''
+        sql = ''
         keys = sorted(data.keys())
         if action == "update":
-            sql += 'UPDATE %s SET ' % (self.dbconn.escape_string(table),)
+            sql += 'UPDATE %s SET ' % (self.escape_string(table),)
             keys_data = []
             for key in keys:
                 keys_data.append("%s = '%s'" % (
-                        self.dbconn.escape_string(key),
-                        self.dbconn.escape_string(unicode(data[key]).encode('utf-8')).decode('utf-8')
+                        self.escape_string(key),
+                        self.escape_string(
+                            const_convert_to_unicode(data[key], 'utf-8').encode('utf-8')).decode('utf-8')
                     )
                 )
             sql += ', '.join(keys_data)
             sql += ' WHERE %s' % (where,)
         elif action == "insert":
             sql = u'INSERT INTO %s (%s) VALUES (%s)' % (
-                self.dbconn.escape_string(table),
-                u', '.join([self.dbconn.escape_string(x) for x in keys]),
-                u', '.join([u"'"+self.dbconn.escape_string(unicode(data[x]).encode('utf-8')).decode('utf-8')+"'" for x in keys])
+                self.escape_string(table),
+                ', '.join([self.escape_string(x) for x in keys]),
+                ', '.join(["'" + \
+                    self.escape_string(
+                    const_convert_to_unicode(data[x], 'utf-8').encode('utf-8')).decode('utf-8') + \
+                    "'" for x in keys])
             )
         return sql
 
