@@ -126,7 +126,7 @@ class CalculatorsMixin:
             conflictingEntries[repo]['revision'] = packageInformation[repo]['revision']
 
         # tags will always be != []
-        newerTag = sorted(list(tags), reverse = True)[0]
+        newerTag = sorted(tags, reverse = True)[0]
         if newerTag not in tags_duplicates:
             reponame = tagsInfo.get(newerTag)
             return (results[reponame],reponame)
@@ -359,7 +359,7 @@ class CalculatorsMixin:
 
             # expand package sets
             if package.startswith(etpConst['packagesetprefix']):
-                set_pkgs = sorted(list(self.package_set_expand(package, raise_exceptions = False)))
+                set_pkgs = sorted(self.package_set_expand(package, raise_exceptions = False))
                 new_packages.extend([x for x in set_pkgs if x not in packages]) # atomMatch below will filter dupies
             else:
                 new_packages.append(package)
@@ -1430,7 +1430,7 @@ class CalculatorsMixin:
                 max_parent_key = max(deptree)
                 deptree[0] |= newtree.pop(0)
                 levelcount = 0
-                for mylevel in sorted(list(newtree.keys()), reverse = True):
+                for mylevel in sorted(newtree.keys(), reverse = True):
                     levelcount += 1
                     deptree[max_parent_key+levelcount] = newtree.get(mylevel)
 
@@ -1559,7 +1559,7 @@ class CalculatorsMixin:
                 break
 
         # now filter newtree
-        for count in sorted(list(tree.keys()), reverse = True):
+        for count in sorted(tree.keys(), reverse = True):
             x = 0
             while x < count:
                 tree[x] -= tree[count]
