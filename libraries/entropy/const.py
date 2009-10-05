@@ -1394,7 +1394,13 @@ def const_convert_to_unicode(obj, enctype = 'raw_unicode_escape'):
     """
     if const_isunicode(obj):
         return obj
-    return obj.decode(enctype)
+    if hasattr(obj, 'decode'):
+        return obj.decode(enctype)
+    else:
+        if sys.hexversion >= 0x3000000:
+            return str(obj, enctype)
+        else:
+            return unicode(obj, enctype)
 
 def const_convert_to_rawstring(obj, from_enctype = 'raw_unicode_escape'):
     if not const_isunicode(obj):
