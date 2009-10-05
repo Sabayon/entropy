@@ -475,10 +475,9 @@ def check_required_space(mountpoint, bytes_required):
     @return: if True, required space is available
     @rtype: bool
     """
-    import statvfs
     st = os.statvfs(mountpoint)
-    freeblocks = st[statvfs.F_BFREE]
-    blocksize = st[statvfs.F_BSIZE]
+    freeblocks = st.f_bfree
+    blocksize = st.f_bsize
     freespace = freeblocks*blocksize
     if bytes_required > freespace:
         # it's NOT fine
