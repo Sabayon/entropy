@@ -19,7 +19,7 @@ import shutil
 from entropy.services.skel import RemoteDatabase
 from entropy.exceptions import *
 from entropy.const import etpConst, etpUi, etpCache, const_setup_perms, \
-    const_set_chmod, const_setup_file
+    const_set_chmod, const_setup_file, const_get_stringtype
 from entropy.output import brown, bold, blue
 from entropy.i18n import _
 
@@ -503,7 +503,7 @@ class Server(RemoteDatabase):
         mydict['size'] = 0
         if mydict['iddoctype'] in self.UPLOADED_DOC_TYPES:
             myfilename = mydict['ddata']
-            if not isinstance(myfilename, basestring):
+            if not isinstance(myfilename, const_get_stringtype()):
                 myfilename = myfilename.tostring()
             mypath = os.path.join(self.STORE_PATH, myfilename)
             if os.path.isfile(mypath) and os.access(mypath,os.R_OK):
@@ -514,7 +514,7 @@ class Server(RemoteDatabase):
             mydict['store_url'] = os.path.join(self.store_url, myfilename)
         else:
             mydata = mydict['ddata']
-            if not isinstance(mydata,basestring):
+            if not isinstance(mydata, const_get_stringtype()):
                 mydata = mydata.tostring()
             try:
                 mydict['size'] = len(mydata)
@@ -1216,7 +1216,7 @@ class Server(RemoteDatabase):
         idkey = self.handle_pkgkey(pkgkey)
         iddoc = self.insert_generic_doc(idkey, userid, username,
             self.DOC_TYPES['comments'], comment, title, '', keywords)
-        if isinstance(iddoc, basestring):
+        if isinstance(iddoc, const_get_stringtype()):
             return False, iddoc
         if do_commit:
             self.commit()
@@ -1297,7 +1297,7 @@ class Server(RemoteDatabase):
                 iddownload = self.insert_download(pkgkey, mydate, count = 1)
             else:
                 self.update_download(iddownload)
-            if (iddownload > 0) and isinstance(ip_addr,basestring):
+            if (iddownload > 0) and isinstance(ip_addr, const_get_stringtype()):
                 iddownloads.add(iddownload)
 
         if iddownloads:
@@ -1396,7 +1396,7 @@ class Server(RemoteDatabase):
         if doc_type == None: doc_type = self.DOC_TYPES['bbcode_doc']
         iddoc = self.insert_generic_doc(idkey, userid, username, doc_type,
             text, title, description, keywords)
-        if isinstance(iddoc, basestring):
+        if isinstance(iddoc, const_get_stringtype()):
             return False, iddoc
         if do_commit:
             self.commit()
@@ -1563,7 +1563,7 @@ class Server(RemoteDatabase):
         )
         data = self.fetchone() or {}
         mypath = data.get('ddata')
-        if not isinstance(mypath, basestring) and (mypath is not None):
+        if not isinstance(mypath, const_get_stringtype()) and (mypath is not None):
             mypath = mypath.tostring()
         if mypath is not None:
             mypath = os.path.join(self.STORE_PATH,mypath)
@@ -1595,13 +1595,13 @@ class Server(RemoteDatabase):
             return False, None
 
         new_video_path = video_path
-        if isinstance(file_name,basestring):
+        if isinstance(file_name, const_get_stringtype()):
             # move file to the new filename
             new_video_path = os.path.join(os.path.dirname(video_path),os.path.basename(file_name)) # force basename
             scount = 0
             while os.path.lexists(new_video_path):
                 scount += 1
-                bpath = "%s.%s" % (unicode(scount),os.path.basename(file_name),)
+                bpath = "%s.%s" % (str(scount), os.path.basename(file_name),)
                 new_video_path = os.path.join(os.path.dirname(video_path),bpath)
             shutil.move(video_path,new_video_path)
 
@@ -1640,7 +1640,7 @@ class Server(RemoteDatabase):
         iddoc = self.insert_generic_doc(idkey, userid, username,
             self.DOC_TYPES['youtube_video'], video_id, title, description,
             keywords)
-        if isinstance(iddoc,basestring):
+        if isinstance(iddoc, const_get_stringtype()):
             return False, (iddoc, None,)
         return True, (iddoc, video_id,)
 
@@ -2133,8 +2133,8 @@ class Client:
             mytxt = _("Reconnecting to socket")
             self.Output.updateProgress(
                 "[%s:%s] %s" % (
-                        brown(unicode(self.hostname)),
-                        bold(unicode(self.hostport)),
+                        brown(str(self.hostname)),
+                        bold(str(self.hostport)),
                         blue(mytxt),
                 ),
                 importance = 1,

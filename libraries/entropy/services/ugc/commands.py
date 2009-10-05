@@ -13,7 +13,7 @@
 import os
 import shutil
 from entropy.services.skel import SocketCommands
-from entropy.const import etpConst
+from entropy.const import etpConst, const_get_stringtype
 from entropy.services.ugc.interfaces import Server
 from entropy.misc import EmailSender
 
@@ -385,7 +385,7 @@ class UGC(SocketCommands):
         status, iddoc = ugc.insert_comment(pkgkey, userid, username, comment, title, keywords)
         if not status:
             t = 'unable to add comment'
-            if isinstance(iddoc,basestring):
+            if isinstance(iddoc,const_get_stringtype()):
                 t = iddoc
             return False,t
         return iddoc,'ok'
@@ -793,7 +793,7 @@ class UGC(SocketCommands):
         for key in sorted(mydict):
             if key in keys_to_file:
                 continue
-            mail_txt += u'%s: %s\n' % (key, mydict.get(key),)
+            mail_txt += '%s: %s\n' % (key, mydict.get(key),)
 
         from datetime import datetime
         import time
@@ -802,8 +802,8 @@ class UGC(SocketCommands):
 
         # add ip address
         ip_addr = self._get_session_ip_address(authenticator)
-        mail_txt += u'ip_address: %s\n' % (ip_addr,)
-        mail_txt += u'date: %s\n' % (date,)
+        mail_txt += 'ip_address: %s\n' % (ip_addr,)
+        mail_txt += 'date: %s\n' % (date,)
 
         files = []
         rm_paths = []
