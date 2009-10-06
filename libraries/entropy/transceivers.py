@@ -70,7 +70,6 @@ class UrlFetcher:
             uname[4],
             uname[2],
         )
-        self.__extra_header_data = {}
         self.__Output = OutputInterface
         if self.__Output == None:
             self.__Output = TextInterface()
@@ -175,7 +174,7 @@ class UrlFetcher:
 
         if self.__url.startswith("http://"):
             headers = { 'User-Agent' : self.user_agent }
-            req = urlmod.Request(self.__url, self.__extra_header_data, headers)
+            req = urlmod.Request(self.__url, headers = headers)
         else:
             req = self.__url
 
@@ -197,9 +196,8 @@ class UrlFetcher:
                 self.__status = "-3"
                 return self.__status
             except:
-                self.__close(True)
-                self.__status = "-3"
-                return self.__status
+                self.entropyTools.print_traceback()
+                raise
             break
 
         try:
