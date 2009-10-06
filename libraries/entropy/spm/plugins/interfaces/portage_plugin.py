@@ -636,8 +636,9 @@ class PortagePlugin(SpmPlugin):
 
                 item_path = os.path.join(meta_dir, portage_entries[item]['path'])
                 with open(item_path, "r") as item_f:
-                    value = item_f.readline().strip().decode(
-                        'raw_unicode_escape')
+                    value = item_f.readline().strip()
+                    if sys.hexversion < 0x3000000:
+                        value = const_convert_to_unicode(value)
 
             except IOError:
                 if portage_entries[item]['critical']:
@@ -2911,8 +2912,11 @@ class PortagePlugin(SpmPlugin):
         if os.path.isfile(content_file):
 
             f = open(content_file, "r")
-            content = [x.decode('raw_unicode_escape') for x in f.readlines()]
+            content = [x for x in f.readlines()]
+            if sys.hexversion < 0x3000000:
+                content = [const_convert_to_unicode(x) for x in content]
             f.close()
+
             outcontent = set()
             for line in content:
                 line = line.strip().split()
@@ -2944,24 +2948,31 @@ class PortagePlugin(SpmPlugin):
 
         else:
 
-            # CONTENTS is not generated when a package is emerged with portage and the option -B
+            # CONTENTS is not generated when a package is emerged with
+            # portage and the option -B
             # we have to unpack the tbz2 and generate content dict
-            mytempdir = etpConst['packagestmpdir']+"/"+os.path.basename(package_path)+".inject"
+            mytempdir = os.path.join(etpConst['packagestmpdir'],
+                os.path.basename(package_path) + ".inject")
             if os.path.isdir(mytempdir):
                 shutil.rmtree(mytempdir)
             if not os.path.isdir(mytempdir):
                 os.makedirs(mytempdir)
 
-            entropy.tools.uncompress_tar_bz2(package_path, extractPath = mytempdir, catchEmpty = True)
+            obj_t = const_convert_to_unicode("obj")
+            sym_t = const_convert_to_unicode("sym")
+            dir_t = const_convert_to_unicode("dir")
+
+            entropy.tools.uncompress_tar_bz2(package_path, extractPath = mytempdir,
+                catchEmpty = True)
             tmpdir_len = len(mytempdir)
             for currentdir, subdirs, files in os.walk(mytempdir):
-                pkg_content[currentdir[tmpdir_len:]] = const_convert_to_unicode("dir")
+                pkg_content[currentdir[tmpdir_len:]] = dir_t
                 for item in files:
                     item = currentdir+"/"+item
                     if os.path.islink(item):
-                        pkg_content[item[tmpdir_len:]] = const_convert_to_unicode("sym")
+                        pkg_content[item[tmpdir_len:]] = sym_t
                     else:
-                        pkg_content[item[tmpdir_len:]] = const_convert_to_unicode("obj")
+                        pkg_content[item[tmpdir_len:]] = obj_t
 
             # now remove
             shutil.rmtree(mytempdir, True)
@@ -2979,7 +2990,8 @@ class PortagePlugin(SpmPlugin):
 
         try:
             f = open(needed_file, "r")
-            lines = [x.decode('raw_unicode_escape').strip() for x in f.readlines() if x.strip()]
+            lines = [x.strip() for x in f.readlines() if x.strip()]
+            lines = [const_convert_to_unicode(x) for x in lines]
             f.close()
         except IOError:
             return lines
@@ -3047,7 +3059,7 @@ class PortagePlugin(SpmPlugin):
             messages = entropy.tools.extract_elog(os.path.join(log_dir, elogfile))
             for message in messages:
                 message = message.replace("emerge", "install")
-                pkg_messages.append(message.decode('raw_unicode_escape'))
+                pkg_messages.append(const_convert_to_unicode(message))
 
         return pkg_messages
 
@@ -3058,22 +3070,29 @@ class PortagePlugin(SpmPlugin):
             licdata = [x.strip() for x in license_string.split() if x.strip() and entropy.tools.is_valid_string(x.strip())]
             for mylicense in licdata:
                 licfile = os.path.join(licenses_dir, mylicense)
-                if os.access(licfile, os.R_OK):
-                    if entropy.tools.istextfile(licfile):
-                        f = open(licfile)
-                        content = ''
-                        line = f.readline()
-                        while line:
-                            content += line
-                            line = f.readline()
-                        try:
-                            try:
-                                pkg_licensedata[mylicense] = content.decode('raw_unicode_escape')
-                            except UnicodeDecodeError:
-                                pkg_licensedata[mylicense] = const_convert_to_unicode(content, 'utf-8')
-                        except (UnicodeDecodeError, UnicodeEncodeError,):
-                            continue # sorry!
-                        f.close()
+                if not (os.access(licfile, os.R_OK) and os.path.isfile(licfile)):
+                    continue
+                if not entropy.tools.istextfile(licfile):
+                    continue
+
+                f = open(licfile, "r")
+                content = ''
+                line = f.readline()
+                while line:
+                    content += line
+                    line = f.readline()
+                try:
+
+                    try:
+                        pkg_licensedata[mylicense] = const_convert_to_unicode(content)
+                    except UnicodeDecodeError:
+                        pkg_licensedata[mylicense] = const_convert_to_unicode(content, 'raw_unicode_escape')
+
+                except (UnicodeDecodeError, UnicodeEncodeError,):
+                    f.close()
+                    continue # sorry!
+
+                f.close()
 
         return pkg_licensedata
 
@@ -3095,7 +3114,8 @@ class PortagePlugin(SpmPlugin):
         search_tag = etpConst['spm']['ebuild_pkg_tag_var']
         ebuild_tag = ''
         f = open(ebuild, "r")
-        tags = [x.strip().decode('raw_unicode_escape') for x in f.readlines() if x.strip() and x.strip().startswith(search_tag)]
+        tags = [const_convert_to_unicode(x.strip()) for x in f.readlines() \
+            if x.strip() and x.strip().startswith(search_tag)]
         f.close()
         if not tags: return ebuild_tag
         tag = tags[-1]
