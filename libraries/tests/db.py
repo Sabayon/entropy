@@ -5,7 +5,8 @@ sys.path.insert(0, '../')
 import unittest
 import os
 from entropy.client.interfaces import Client
-from entropy.const import etpConst, etpUi, const_convert_to_unicode
+from entropy.const import etpConst, etpUi, const_convert_to_unicode, \
+    const_convert_to_rawstring
 from entropy.core.settings.base import SystemSettings
 from entropy.db import EntropyRepository
 import tests._misc as _misc
@@ -242,7 +243,7 @@ class EntropyRepositoryTest(unittest.TestCase):
 
         # export
         buf_file = "dbtst.txt"
-        buf = open(buf_file, "w")
+        buf = open(buf_file, "wb")
         self.test_db.doDatabaseExport(buf)
         buf.flush()
         buf.close()
@@ -274,10 +275,11 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertEqual(set([set_name2]), set_search)
 
     def test_db_license_data_str_insert(self):
-        lic_txt = '[3]\xab foo\n\n'
-        lic_data = {const_convert_to_unicode('CCPL-Attribution-2.0'): lic_txt}
+        lic_txt = const_convert_to_rawstring('[3]\xab foo\n\n', 'utf-8')
+        lic_name = const_convert_to_unicode('CCPL-Attribution-2.0')
+        lic_data = {lic_name: lic_txt}
         self.test_db.insertLicenses(lic_data)
-        db_lic_txt = self.test_db.retrieveLicenseText('CCPL-Attribution-2.0')
+        db_lic_txt = self.test_db.retrieveLicenseText(lic_name)
         self.assertEqual(db_lic_txt, lic_txt)
 
     # XXX complete
