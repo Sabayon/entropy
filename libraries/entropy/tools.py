@@ -937,7 +937,8 @@ def compress_files(dest_file, files_to_compress, compressor = "bz2"):
             tarinfo = tar.gettarinfo(path, os.path.basename(path))
             tarinfo.uname = id_strings.setdefault(tarinfo.uid, str(tarinfo.uid))
             tarinfo.gname = id_strings.setdefault(tarinfo.gid, str(tarinfo.gid))
-            if not stat.S_ISREG(exist.st_mode): continue
+            if not stat.S_ISREG(exist.st_mode):
+                continue
             tarinfo.type = tarfile.REGTYPE
             with open(path) as f:
                 tar.addfile(tarinfo, f)
@@ -1173,9 +1174,10 @@ def suck_xpak(tbz2file, outputpath):
     # read backward until we find
     bytes = old.tell()
     counter = bytes - 1
-    xpak_end = "XPAKSTOP"
-    xpak_start = "XPAKPACK"
-    xpak_entry_point = "X"
+    # FIXME: when Python 2.x will phase out, use b"XPAKSTOP"...
+    xpak_end = const_convert_to_rawstring("XPAKSTOP")
+    xpak_start = const_convert_to_rawstring("XPAKPACK")
+    xpak_entry_point = const_convert_to_rawstring("X")
     xpak_tag_len = len(xpak_start)
     chunk_len = 3
     data_start_position = None
@@ -2764,7 +2766,7 @@ def spawn_function(f, *args, **kwds):
         kwds.pop('write_pid_func')
 
     try:
-        import pickle as pickle
+        import cPickle as pickle
     except ImportError:
         import pickle
     pread, pwrite = os.pipe()
@@ -2779,8 +2781,7 @@ def spawn_function(f, *args, **kwds):
         f.close()
         if status == 0:
             return result
-        else:
-            result
+        raise result
     else:
         os.close(pread)
         if gid != None:
@@ -2819,7 +2820,7 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
     if extractPath is None:
         extractPath = os.path.dirname(filepath)
     if not os.path.isfile(filepath):
-        FileNotFound('FileNotFound: archive does not exist')
+        raise FileNotFound('FileNotFound: archive does not exist')
 
     try:
         tar = tarfile.open(filepath, "r")
@@ -2853,10 +2854,12 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
     try:
 
         encoded_path = extractPath
-        if const_isunicode(extractPath):
-            encoded_path = extractPath.encode('utf-8')
+        # FIXME: Python 2.x support
+        if sys.hexversion < 0x3000000:
+            encoded_path = encoded_path.encode('utf-8')
         entries = []
         for tarinfo in tar:
+
             epath = os.path.join(encoded_path, tarinfo.name)
             if tarinfo.isdir():
                 # Extract directory with a safe mode, so that
