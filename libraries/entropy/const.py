@@ -1392,6 +1392,11 @@ def const_convert_to_unicode(obj, enctype = 'raw_unicode_escape'):
     @return: unicode string object
     @rtype: unicode object
     """
+    if isinstance(obj, const_get_buffer()):
+        if sys.hexversion >= 0x3000000:
+            return str(obj.tobytes(), enctype)
+        else:
+            return unicode(obj, enctype)
     if const_isunicode(obj):
         return obj
     if hasattr(obj, 'decode'):
@@ -1414,6 +1419,11 @@ def const_convert_to_rawstring(obj, from_enctype = 'raw_unicode_escape'):
     @return: raw string
     @rtype: bytes
     """
+    if isinstance(obj, const_get_buffer()):
+        if sys.hexversion >= 0x3000000:
+            return obj.tobytes()
+        else:
+            return str(obj)
     if not const_isunicode(obj):
         return obj
     return obj.encode(from_enctype)
