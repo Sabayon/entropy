@@ -1145,12 +1145,11 @@ def unpack_xpak(xpakfile, tmpdir = None):
         os.makedirs(tmpdir)
         xpakdata = xpak.getboth(xpakfile)
         xpak.xpand(xpakdata, tmpdir)
-        del xpakdata
         try:
             os.remove(xpakfile)
         except OSError:
             pass
-    except:
+    except TypeError:
         return None
     return tmpdir
 
@@ -1268,8 +1267,8 @@ def aggregate_edb(tbz2file, dbfile):
     @return: 
     @rtype: 
     """
-    f = open(tbz2file, "abw")
-    f.write(etpConst['databasestarttag'])
+    f = open(tbz2file, "ab")
+    f.write(const_convert_to_rawstring(etpConst['databasestarttag']))
     g = open(dbfile, "rb")
     chunk = g.read(8192)
     while chunk:
@@ -2570,12 +2569,12 @@ def istextfile(filename, blocksize = 512):
     @return: 
     @rtype: 
     """
-    f = open(filename)
+    f = open(filename, "r")
     r = istext(f.read(blocksize))
     f.close()
     return r
 
-def istext(s):
+def istext(mystring):
     """
     docstring_title
 
@@ -2584,25 +2583,38 @@ def istext(s):
     @return: 
     @rtype: 
     """
-    import string
-    _null_trans = string.maketrans("", "")
-    text_characters = "".join(list(map(chr, list(range(32, 127)))) + list("\n\r\t\b"))
 
-    if "\0" in s:
+    if sys.hexversion >= 0x3000000:
+        char_map = list(map(chr, list(range(32, 127))))
+        text_characters = "".join(char_map + list("\n\r\t\b"))
+        _null_trans = str.maketrans(text_characters, text_characters)
+    else:
+        import string
+        _null_trans = string.maketrans("", "")
+        text_characters = "".join(list(map(chr, list(range(32, 127)))) + list("\n\r\t\b"))
+
+    if "\0" in mystring:
         return False
 
-    if not s:  # Empty files are considered text
+    if not mystring:  # Empty files are considered text
         return True
 
     # Get the non-text characters (maps a character to itself then
     # use the 'remove' option to get rid of the text characters.)
-    t = s.translate(_null_trans, text_characters)
-
-    # If more than 30% non-text characters, then
-    # this is considered a binary file
-    if len(t)/len(s) > 0.30:
+    if sys.hexversion >= 0x3000000:
+        t = mystring.translate(_null_trans)
+        # If more than 30% non-text characters, then
+        # this is considered a binary file
+        if float(len(t))/len(mystring) > 0.70:
+            return True
         return False
-    return True
+    else:
+        t = mystring.translate(_null_trans, text_characters)
+        # If more than 30% non-text characters, then
+        # this is considered a binary file
+        if float(len(t))/len(mystring) > 0.30:
+            return False
+        return True
 
 # this functions removes duplicates without breaking the list order
 # nameslist: a list that contains duplicated names
