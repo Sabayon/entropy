@@ -2965,7 +2965,7 @@ def extract_ftp_data(ftpuri):
     @rtype: 
     """
     ftpuser = ftpuri.split("ftp://")[-1].split(":")[0]
-    if (ftpuser == ""):
+    if (not ftpuser):
         ftpuser = "anonymous@"
         ftppassword = "anonymous"
     else:
@@ -2973,12 +2973,12 @@ def extract_ftp_data(ftpuri):
         if len(ftppassword) > 1:
             ftppassword = '@'.join(ftppassword)
             ftppassword = ftppassword.split(":")[-1]
-            if (ftppassword == ""):
+            if (not ftppassword):
                 ftppassword = "anonymous"
         else:
             ftppassword = ftppassword[0]
             ftppassword = ftppassword.split(":")[-1]
-            if (ftppassword == ""):
+            if (not ftppassword):
                 ftppassword = "anonymous"
 
     ftpport = ftpuri.split(":")[-1]

@@ -185,7 +185,7 @@ def xtermTitleReset():
     global default_xterm_title
     if default_xterm_title is None:
         prompt_command = os.getenv('PROMPT_COMMAND')
-        if prompt_command == "":
+        if not prompt_command:
             default_xterm_title = ""
         elif prompt_command is not None:
             from entropy.tools import getstatusoutput

@@ -433,7 +433,7 @@ class SocketHost:
                             data += self.request.recv(1024)
 
                     if self.__data_counter is None:
-                        if data == '': # client wants to close
+                        if not data: # client wants to close
                             return True
                         elif data == self.server.processor.HostInterface.answers['noop']:
                             return False

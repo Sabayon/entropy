@@ -2005,7 +2005,7 @@ class Client:
                 data = do_receive()
                 if self.buffer_length == None:
                     self.buffered_data = ''
-                    if (data == '') or (data == self.answers['cl']):
+                    if (not data) or (data == self.answers['cl']):
                         # nein! no support, KAPUTT!
                         # RAUSS!
                         if not self.quiet:

@@ -258,7 +258,8 @@ class UrlFetcher:
         while True:
             try:
                 rsx = self.__remotefile.read(self.__buffersize)
-                if rsx == '': break
+                if not rsx:
+                    break
                 if self.__abort_check_func != None:
                     self.__abort_check_func()
                 if self.__thread_stop_func != None:
@@ -498,8 +499,10 @@ class MultipleUrlFetcher:
             t = ParallelTask(do_download, self.__download_statuses, th_id, downloader)
             self.__thread_pool[th_id] = t
             t.start()
+
         self.show_download_files_info()
         self.__show_progress = True
+
         while len(self.__url_path_list) != len(self.__download_statuses):
             try:
                 time.sleep(0.5)

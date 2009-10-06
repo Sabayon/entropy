@@ -2644,7 +2644,7 @@ class EntropyRepository:
         """
         def mymf(source):
 
-            if (not source) or (source == "") or \
+            if (not source) or \
             (not self.entropyTools.is_valid_string(source)):
                 return 0
 
@@ -8672,12 +8672,12 @@ class EntropyRepository:
 
             if (not justname) and \
                 ((direction == "~") or (direction == "=") or \
-                (direction == '' and not justname) or (direction == '' and \
+                ((not direction) and (not justname)) or ((not direction) and \
                     not justname and strippedAtom.endswith("*"))):
                 # any revision within the version specified
                 # OR the specified version
 
-                if (direction == '' and not justname):
+                if ((not direction) and (not justname)):
                     direction = "="
 
                 # remove gentoo revision (-r0 if none)
