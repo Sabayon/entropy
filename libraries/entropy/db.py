@@ -3170,6 +3170,16 @@ class EntropyRepository:
         """
         return get_spm(self).get_package_category_description_metadata(category)
 
+    def getSystemPackages(self):
+        """
+        Obtain a list of system packages on this repository.
+
+        @return: list (set) of system package identifiers
+        @rtype: set
+        """
+        cur = self.cursor.execute("SELECT idpackage FROM systempackages")
+        return self._cur2set(cur)
+
     def getIDPackages(self, atom):
         """
         Obtain repository package identifiers from atom string.

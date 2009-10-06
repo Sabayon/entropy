@@ -525,6 +525,8 @@ class CalculatorsMixin:
         open_repo = self.open_repository
         intf_error = self.dbapi2.InterfaceError
         cdb_getversioning = self.clientDbconn.getVersioningData
+        cdb_retrieveBranch = self.clientDbconn.retrieveBranch
+        cdb_retrieveDigest = self.clientDbconn.retrieveDigest
         etp_cmp = self.entropyTools.entropy_compare_versions
         etp_get_rev = self.entropyTools.dep_get_entropy_revision
 
@@ -578,7 +580,10 @@ class CalculatorsMixin:
             dbconn = open_repo(r_repo)
             try:
                 repo_pkgver, repo_pkgtag, repo_pkgrev = dbconn.getVersioningData(r_id)
-            except (intf_error,TypeError,):
+                # note: read rationale below
+                repo_branch = dbconn.retrieveBranch(r_id)
+                repo_digest = dbconn.retrieveDigest(r_id)
+            except (intf_error, TypeError,):
                 # package entry is broken
                 const_debug_write(__name__,
                     "get_unsatisfied_dependencies repository entry broken for match => %s" % (
@@ -590,11 +595,17 @@ class CalculatorsMixin:
             for c_id in c_ids:
                 try:
                     installedVer, installedTag, installedRev = cdb_getversioning(c_id)
+                    # note: read rationale below
+                    installedBranch = cdb_retrieveBranch(c_id)
+                    installedDigest = cdb_retrieveDigest(c_id)
                 except TypeError: # corrupted entry?
                     installedVer = "0"
                     installedTag = ''
                     installedRev = 0
-                client_data.add((installedVer, installedTag, installedRev,))
+                    installedBranch = None
+                    installedDigest = None
+                client_data.add((installedVer, installedTag, installedRev,
+                    installedBranch, installedDigest,))
 
             # support for app-foo/foo-123~-1
             # -1 revision means, always pull the latest
@@ -606,16 +617,25 @@ class CalculatorsMixin:
 
             # this is required for multi-slotted packages (like python)
             # and when people mix Entropy and Portage
-            for installedVer, installedTag, installedRev in client_data:
+            for installedVer, installedTag, installedRev, cbranch, cdigest in client_data:
+
                 vcmp = etp_cmp((repo_pkgver,repo_pkgtag,repo_pkgrev,),
                     (installedVer,installedTag,installedRev,))
-                if vcmp == 0:
+
+                # check if both pkgs share the same branch and digest, this must
+                # be done to avoid system inconsistencies across branch upgrades
+                if (vcmp == 0) and (cbranch != repo_branch) and \
+                    (cdigest != repo_digest):
+                    vcmp = 1
+
+                if (vcmp == 0):
                     const_debug_write(__name__,
                         "get_unsatisfied_dependencies SATISFIED equals (not cached, deep: %s) => %s" % (
                             deep_deps, dependency,))
                     depcache[dependency] = 0
                     const_debug_write(__name__, "...")
                     return 0
+
                 ver_tag_repo = (repo_pkgver, repo_pkgtag,)
                 ver_tag_inst = (installedVer, installedTag,)
                 rev_match = repo_pkgrev != installedRev
@@ -1295,6 +1315,51 @@ class CalculatorsMixin:
 
         return client_atoms
 
+    def __deptree_prioritize_systempkgs(self, deptree):
+
+
+        conflicts_key = 0
+        # save list of conflicts, actually at key 0
+        conflicts = deptree.get(conflicts_key, set()).copy()
+
+        system_tree = {}
+        normal_tree = {}
+        system_pkgs_cache = {}
+
+
+        for deplevel in deptree:
+
+            if deplevel == conflicts_key: # skip conflicts
+                continue
+
+            for idpackage, repoid in deptree[deplevel]:
+
+                if repoid not in system_pkgs_cache:
+                    repodb = self.open_repository(repoid)
+                    system_pkgs_cache[repoid] = repodb.getSystemPackages()
+
+                if idpackage in system_pkgs_cache[repoid]:
+                    obj = system_tree.setdefault(deplevel, set())
+                    obj.add((idpackage, repoid,))
+                else:
+                    obj = normal_tree.setdefault(deplevel, set())
+                    obj.add((idpackage, repoid,))
+
+        # now create new deptree
+        min_deplevel = conflicts_key
+        if system_tree:
+            min_deplevel = max(system_tree)
+
+        for deplevel in normal_tree:
+
+            # start from the next available
+            min_deplevel += 1
+            system_tree[min_deplevel] = normal_tree[deplevel]
+
+        # add conflicts back
+        system_tree[conflicts_key] = conflicts
+
+        return system_tree
 
     def get_required_packages(self, matched_atoms, empty_deps = False, deep_deps = False, quiet = False):
 
@@ -1311,7 +1376,8 @@ class CalculatorsMixin:
         )),)
         if self.xcache:
             cached = self.Cacher.pop(c_hash)
-            if cached != None: return cached
+            if cached is not None:
+                return cached
 
         deptree = {}
         deptree[0] = set()
@@ -1344,7 +1410,8 @@ class CalculatorsMixin:
                         back = True, header = ":: ", footer = " ::",
                         percent = True, count = (count,atomlen))
 
-            if matched_atom in matchfilter: continue
+            if matched_atom in matchfilter:
+                continue
             newtree, result = self.generate_dependency_tree(
                 matched_atom, empty_deps, deep_deps,
                 matchfilter = matchfilter, filter_unsat_cache = filter_unsat_cache, treecache = treecache,
@@ -1358,7 +1425,7 @@ class CalculatorsMixin:
             if result == -2: # deps not found
                 error_generated = -2
                 error_tree |= set(newtree) # it is a list, we convert it into set and update error_tree
-            elif (result != 0):
+            elif result != 0:
                 return newtree, result
             elif newtree:
                 # add conflicts
@@ -1370,12 +1437,15 @@ class CalculatorsMixin:
                     deptree[max_parent_key+levelcount] = newtree.get(mylevel)
 
         if error_generated != 0:
-            return error_tree,error_generated
+            return error_tree, error_generated
+
+        # now we need to move system packages at the top
+        deptree = self.__deptree_prioritize_systempkgs(deptree)
 
         if self.xcache:
-            self.Cacher.push(c_hash,(deptree,0))
+            self.Cacher.push(c_hash,(deptree, 0))
 
-        return deptree,0
+        return deptree, 0
 
     def _filter_depends_multimatched_atoms(self, idpackage, depends, monotree):
         remove_depends = set()
@@ -1722,6 +1792,29 @@ class CalculatorsMixin:
                         update.append((m_idpackage,repoid))
                     continue
                 else:
+
+                    # Note: this is a bugfix to improve branch migration
+                    # and really check if pkg has been repackaged and branch
+                    # changed.
+                    # first check branch
+                    if idpackage is not None:
+
+                        c_branch = self.clientDbconn.retrieveBranch(idpackage)
+                        c_repodb = self.open_repository(repoid)
+                        r_branch = c_repodb.retrieveBranch(m_idpackage)
+
+                        if (c_branch != r_branch) and (c_branch is not None) \
+                            and (r_branch is not None):
+
+                            c_digest = self.clientDbconn.retrieveDigest(idpackage)
+                            r_digest = c_repodb.retrieveDigest(m_idpackage)
+
+                            if (r_digest != c_digest) and (r_digest is not None) \
+                                and (c_digest is not None):
+                                if (m_idpackage,repoid) not in update:
+                                    update.append((m_idpackage,repoid))
+                                continue
+
                     # no difference
                     fine.append(cl_atom)
                     continue
