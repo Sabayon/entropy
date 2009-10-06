@@ -3396,7 +3396,7 @@ def is_entropy_package_file(tbz2file):
     if not os.path.exists(tbz2file):
         return False
     try:
-        obj = open(tbz2file, "r")
+        obj = open(tbz2file, "rb")
         entry_point = locate_edb(obj)
         if entry_point is None:
             obj.close()
@@ -3828,7 +3828,10 @@ def extract_packages_from_set_file(filepath):
     @return: 
     @rtype: 
     """
-    f = open(filepath, "r")
+    if sys.hexversion >= 0x3000000:
+        f = open(filepath, "r", encoding = 'raw_unicode_escape')
+    else:
+        f = open(filepath, "r")
     items = set()
     line = f.readline()
     while line:
@@ -3882,22 +3885,3 @@ def collect_paths():
         path |= paths
     return path
 
-def list_to_utf8(mylist):
-    """
-    docstring_title
-
-    @param mylist: 
-    @type mylist: 
-    @return: 
-    @rtype: 
-    """
-    mynewlist = []
-    for item in mylist:
-        try:
-            mynewlist.append(item.decode("utf-8"))
-        except UnicodeDecodeError:
-            try:
-                mynewlist.append(item.decode("latin1").decode("utf-8"))
-            except:
-                raise
-    return mynewlist
