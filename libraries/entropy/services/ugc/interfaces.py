@@ -19,7 +19,8 @@ import shutil
 from entropy.services.skel import RemoteDatabase
 from entropy.exceptions import *
 from entropy.const import etpConst, etpUi, etpCache, const_setup_perms, \
-    const_set_chmod, const_setup_file, const_get_stringtype
+    const_set_chmod, const_setup_file, const_get_stringtype, \
+    const_convert_to_rawstring
 from entropy.output import brown, bold, blue
 from entropy.i18n import _
 
@@ -1900,6 +1901,11 @@ class Client:
         if hasattr(self.sock_conn, 'settimeout'):
             self.sock_conn.settimeout(self.socket_timeout)
         data = self.append_eos(data)
+
+        if sys.hexversion >= 0x3000000:
+            # convert to raw string
+            data = const_convert_to_rawstring(data)
+
         try:
 
             encode_done = False
@@ -1997,15 +2003,16 @@ class Client:
                 data = self.sock_conn.recv(1024)
             return data
 
-        myeos = self.answers['eos']
+        myeos = const_convert_to_rawstring(self.answers['eos'])
         while True:
 
             try:
 
+                cl_answer = const_convert_to_rawstring(self.answers['cl'])
                 data = do_receive()
                 if self.buffer_length == None:
-                    self.buffered_data = ''
-                    if (not data) or (data == self.answers['cl']):
+                    self.buffered_data = const_convert_to_rawstring('')
+                    if (not data) or (data == cl_answer):
                         # nein! no support, KAPUTT!
                         # RAUSS!
                         if not self.quiet:
@@ -2039,12 +2046,15 @@ class Client:
                             import pdb
                             pdb.set_trace()
                         return None
+
                     mystrlen = data.split(myeos)[0]
                     self.buffer_length = int(mystrlen)
                     data = data[len(mystrlen)+1:]
                     self.buffer_length -= len(data)
                     self.buffered_data = data
+
                 else:
+
                     self.buffer_length -= len(data)
                     self.buffered_data += data
 
