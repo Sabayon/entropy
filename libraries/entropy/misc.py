@@ -424,10 +424,16 @@ class EmailSender:
         @rtype: None
         """
         # Create a text/plain message
-        if const_isunicode(content):
-            content = content.encode('utf-8')
-        if const_isunicode(subject):
-            subject = subject.encode('utf-8')
+        if sys.hexversion < 0x3000000:
+            if const_isunicode(content):
+                content = content.encode('utf-8')
+            if const_isunicode(subject):
+                subject = subject.encode('utf-8')
+        else:
+            if not const_isunicode(content):
+                raise AttributeError("content must be unicode (str)")
+            if not const_isunicode(subject):
+                raise AttributeError("subject must be unicode (str)")
 
         msg = self.text(content)
         msg['Subject'] = subject
