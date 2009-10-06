@@ -39,7 +39,7 @@ class TransceiversTest(unittest.TestCase):
     def test_multiple_urlfetcher_file_fetch(self):
 
         file_path = "file://" + os.path.realpath(self._random_file)
-        ck_f = open(self._random_file_md5)
+        ck_f = open(self._random_file_md5, "r")
         ck_sum = ck_f.readline().strip().split()[0]
         ck_f.close()
         path_to_save = os.path.join(os.path.dirname(self._random_file),
