@@ -1138,7 +1138,8 @@ def unpack_xpak(xpakfile, tmpdir = None):
     try:
         import entropy.xpak as xpak
         if tmpdir is None:
-            tmpdir = etpConst['packagestmpdir']+"/"+os.path.basename(xpakfile)[:-5]+"/"
+            tmpdir = os.path.join(etpConst['packagestmpdir'],
+                os.path.basename(xpakfile)[:-5])
         if os.path.isdir(tmpdir):
             shutil.rmtree(tmpdir, True)
         os.makedirs(tmpdir)
@@ -1175,9 +1176,15 @@ def suck_xpak(tbz2file, outputpath):
     bytes = old.tell()
     counter = bytes - 1
     # FIXME: when Python 2.x will phase out, use b"XPAKSTOP"...
-    xpak_end = const_convert_to_rawstring("XPAKSTOP")
-    xpak_start = const_convert_to_rawstring("XPAKPACK")
-    xpak_entry_point = const_convert_to_rawstring("X")
+    if sys.hexversion >= 0x3000000:
+        xpak_end = b"XPAKSTOP"
+        xpak_start = b"XPAKPACK"
+        xpak_entry_point = b"X"
+    else:
+        xpak_end = "XPAKSTOP"
+        xpak_start = "XPAKPACK"
+        xpak_entry_point = "X"
+
     xpak_tag_len = len(xpak_start)
     chunk_len = 3
     data_start_position = None
@@ -2854,7 +2861,6 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
     try:
 
         encoded_path = extractPath
-        # FIXME: Python 2.x support
         if sys.hexversion < 0x3000000:
             encoded_path = encoded_path.encode('utf-8')
         entries = []
