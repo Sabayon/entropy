@@ -1505,11 +1505,11 @@ class SocketHost:
         self.__output = None
         self.SSL = {}
         self.SSL_exceptions = {}
-        self.SSL_exceptions['WantReadError'] = None
-        self.SSL_exceptions['WantWriteError'] = None
-        self.SSL_exceptions['WantX509LookupError'] = None
-        self.SSL_exceptions['ZeroReturnError'] = None
-        self.SSL_exceptions['SysCallError'] = None
+        self.SSL_exceptions['WantReadError'] = DumbException
+        self.SSL_exceptions['WantWriteError'] = DumbException
+        self.SSL_exceptions['WantX509LookupError'] = DumbException
+        self.SSL_exceptions['ZeroReturnError'] = DumbException
+        self.SSL_exceptions['SysCallError'] = DumbException
         self.SSL_exceptions['Error'] = []
         self.last_print = ''
         self.valid_commands = {}

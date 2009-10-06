@@ -1754,12 +1754,12 @@ class Client:
         # SSL Support
         self.SSL = {}
         self.SSL_exceptions = {
-            'WantReadError': None,
-            'WantWriteError': None,
-            'WantX509LookupError': None,
-            'ZeroReturnError': None,
-            'Error': None,
-            'SysCallError': None
+            'WantReadError': DumbException,
+            'WantWriteError': DumbException,
+            'WantX509LookupError': DumbException,
+            'ZeroReturnError': DumbException,
+            'Error': DumbException,
+            'SysCallError': DumbException,
         }
         self.ssl = ssl
         self.pyopenssl = True
