@@ -28,7 +28,8 @@ import random
 from entropy.output import TextInterface, print_info, print_generic, red, \
     darkgreen, green
 from entropy.const import etpConst, const_kill_threads, const_islive, \
-    const_isunicode, const_convert_to_unicode, const_convert_to_rawstring
+    const_isunicode, const_convert_to_unicode, const_convert_to_rawstring, \
+    const_cmp
 from entropy.exceptions import FileNotFound, InvalidAtom, InvalidDataType, \
     DirectoryNotFound
 
@@ -2449,7 +2450,7 @@ def compare_versions(ver1, ver2):
     return r1 - r2
 
 def entropy_compare_versions(listA, listB):
-    '''
+    """
     @description: compare two lists composed by
         [version,tag,revision] and [version,tag,revision]
         if listA > listB --> positive number
@@ -2457,29 +2458,31 @@ def entropy_compare_versions(listA, listB):
         if listA < listB --> negative number	
     @input package: listA[version,tag,rev] and listB[version,tag,rev]
     @output: integer number
-    '''
+    """
+    a_ver, a_tag, a_rev = listA
+    b_ver, b_tag, b_rev = listB
 
     # if both are tagged, check tag first
     rc = 0
-    if listA[1] and listB[1]:
-        rc = cmp(listA[1], listB[1])
+    if a_tag and b_tag:
+        rc = const_cmp(a_tag, b_tag)
     if rc == 0:
-        rc = compare_versions(listA[0], listB[0])
+        rc = compare_versions(a_ver, b_ver)
 
     if rc == 0:
         # check tag
-        if listA[1] > listB[1]:
+        if a_tag > b_tag:
             return 1
-        elif listA[1] < listB[1]:
+        elif a_tag < b_tag:
             return -1
         else:
             # check rev
-            if listA[2] > listB[2]:
+            if a_rev > b_rev:
                 return 1
-            elif listA[2] < listB[2]:
+            elif a_rev < b_rev:
                 return -1
-            else:
-                return 0
+            return 0
+
     return rc
 
 def g_n_w_cmp(a, b):

@@ -270,13 +270,6 @@ class SystemSettings(Singleton):
         with self.__mutex:
             return item in self.__data
 
-    def __cmp__(self, other):
-        """
-        dict method. See Python dict API reference.
-        """
-        with self.__mutex:
-            return cmp(self.__data, other)
-
     def __hash__(self):
         """
         dict method. See Python dict API reference.

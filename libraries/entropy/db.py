@@ -38,7 +38,7 @@ import os
 import shutil
 from entropy.const import etpConst, etpCache, const_setup_file, \
     const_isunicode, const_convert_to_unicode, const_get_buffer, \
-    const_convert_to_rawstring
+    const_convert_to_rawstring, const_cmp
 from entropy.exceptions import IncorrectParameter, InvalidAtom, \
     SystemDatabaseError, OperationNotPermitted
 from entropy.i18n import _
@@ -8276,7 +8276,7 @@ class EntropyRepository:
         if tag is None:
             return idpackage
         dbtag = self.retrieveVersionTag(idpackage)
-        compare = cmp(tag, dbtag)
+        compare = const_cmp(tag, dbtag)
         if not operators or operators == "=":
             if compare == 0:
                 return idpackage
@@ -8728,11 +8728,11 @@ class EntropyRepository:
                         tagcmp = 0
                         if matchRevision != None:
                             dbrev = self.retrieveRevision(idpackage)
-                            revcmp = cmp(matchRevision, dbrev)
+                            revcmp = const_cmp(matchRevision, dbrev)
 
                         if matchTag != None:
                             dbtag = self.retrieveVersionTag(idpackage)
-                            tagcmp = cmp(matchTag, dbtag)
+                            tagcmp = const_cmp(matchTag, dbtag)
 
                         dbver = self.retrieveVersion(idpackage)
                         pkgcmp = self.entropyTools.compare_versions(
