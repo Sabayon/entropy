@@ -235,7 +235,7 @@ class RemoteDatabase:
             sql += ', '.join(keys_data)
             sql += ' WHERE %s' % (where,)
         elif action == "insert":
-            sql = u'INSERT INTO %s (%s) VALUES (%s)' % (
+            sql = 'INSERT INTO %s (%s) VALUES (%s)' % (
                 self.escape_string(table),
                 ', '.join([self.escape_string(x) for x in keys]),
                 ', '.join(["'" + \

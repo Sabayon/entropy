@@ -168,7 +168,7 @@ class CalculatorsMixin:
         if multiRepo or multiMatch:
             matches = data # set([(14789, 'sabayonlinux.org'), (14479, 'sabayonlinux.org')])
             if extendedResults:
-                # set([((14789, u'3.3.8b', u'', 0), 'sabayonlinux.org')])
+                # set([((14789, '3.3.8b', '', 0), 'sabayonlinux.org')])
                 matches = [(x[0][0], x[1],) for x in data]
             for m_id, m_repo in matches:
                 m_db = self.__atom_match_open_db(m_repo, server_inst)
@@ -177,7 +177,7 @@ class CalculatorsMixin:
         else:
             m_id, m_repo = cached_obj # (14479, 'sabayonlinux.org')
             if extendedResults:
-                # ((14479, u'4.4.2', u'', 0), 'sabayonlinux.org')
+                # ((14479, '4.4.2', '', 0), 'sabayonlinux.org')
                 m_id, m_repo = cached_obj[0][0], cached_obj[1]
             m_db = self.__atom_match_open_db(m_repo, server_inst)
             if not m_db.isIdpackageAvailable(m_id):
