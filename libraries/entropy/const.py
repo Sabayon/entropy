@@ -1447,6 +1447,12 @@ def const_isfileobj(obj):
     else:
         return isinstance(obj, file)
 
+def const_cmp(a, b):
+    """
+    cmp() is gone in Python 3.x provide our own implementation.
+    """
+    return (a > b) - (a < b)
+
 def const_islive():
     """
     Live environments (Operating System running off a CD/DVD)
