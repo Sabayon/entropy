@@ -33,11 +33,12 @@
     @todo: migrate to "_" (underscore) convention
 
 """
-
+import sys
 import os
 import shutil
 from entropy.const import etpConst, etpCache, const_setup_file, \
-    const_isunicode, const_convert_to_unicode, const_get_buffer
+    const_isunicode, const_convert_to_unicode, const_get_buffer, \
+    const_convert_to_rawstring
 from entropy.exceptions import IncorrectParameter, InvalidAtom, \
     SystemDatabaseError, OperationNotPermitted
 from entropy.i18n import _
@@ -614,7 +615,7 @@ class EntropyRepository:
         @param size: new size
         @type size: int
         """
-        self.cursor.execute('PRAGMA cache_size = '+str(size))
+        self.cursor.execute('PRAGMA cache_size = %s' % (size,))
 
     def setDefaultCacheSize(self, size):
         """
@@ -623,7 +624,7 @@ class EntropyRepository:
         @param size: new default size
         @type size: int
         """
-        self.cursor.execute('PRAGMA default_cache_size = '+str(size))
+        self.cursor.execute('PRAGMA default_cache_size = %s' % (size,))
 
 
     def __del__(self):
@@ -1026,7 +1027,7 @@ class EntropyRepository:
 
             # look for packages we need to quickpkg again
             # note: quickpkg_queue is simply ignored if self.clientDatabase
-            quickpkg_queue.add(key_to+":"+str(slot))
+            quickpkg_queue.add(key_to+":"+slot)
 
             if not self.clientDatabase:
 
@@ -1114,7 +1115,7 @@ class EntropyRepository:
 
             # look for packages we need to quickpkg again
             # note: quickpkg_queue is simply ignored if self.clientDatabase
-            quickpkg_queue.add(atom+":"+str(slot_to))
+            quickpkg_queue.add(atom+":"+slot_to)
 
             if not self.clientDatabase:
 
@@ -3460,7 +3461,7 @@ class EntropyRepository:
         return data
 
     def getPackageData(self, idpackage, get_content = True,
-            content_insert_formatted = False, trigger_unicode = True):
+            content_insert_formatted = False, trigger_unicode = False):
         """
         Reconstruct all the package metadata belonging to provided package
         identifier into a dict object.
@@ -3579,7 +3580,8 @@ class EntropyRepository:
             # risky to add to the sql above, still
             'counter': self.retrieveSpmUid(idpackage),
             'messages': self.retrieveMessages(idpackage),
-            'trigger': self.retrieveTrigger(idpackage, get_unicode = trigger_unicode),
+            'trigger': self.retrieveTrigger(idpackage,
+                get_unicode = trigger_unicode),
             'disksize': self.retrieveOnDiskSize(idpackage),
             'changelog': self.retrieveChangelog(idpackage),
             'injected': self.isInjected(idpackage),
@@ -3977,9 +3979,12 @@ class EntropyRepository:
         """, (idpackage,))
         trigger = cur.fetchone()
         if not trigger:
-            return '' # backward compatibility with <=0.52.x
+            # backward compatibility with <=0.52.x
+            if get_unicode:
+                return const_convert_to_unicode('')
+            return const_convert_to_rawstring('')
         if not get_unicode:
-            return trigger[0]
+            return const_convert_to_rawstring(trigger[0])
         # cross fingers...
         return const_convert_to_unicode(trigger[0])
 
@@ -5014,7 +5019,7 @@ class EntropyRepository:
 
         text = cur.fetchone()
         if text:
-            return str(text[0])
+            return const_convert_to_rawstring(text[0])
 
     def retrieveLicense(self, idpackage):
         """
@@ -6654,7 +6659,9 @@ class EntropyRepository:
         if not exclude_tables:
             exclude_tables = []
 
-        dumpfile.write("BEGIN TRANSACTION;\n")
+        toraw = const_convert_to_rawstring
+
+        dumpfile.write(toraw("BEGIN TRANSACTION;\n"))
         self.cursor.execute("""
         SELECT name, type, sql FROM sqlite_master
         WHERE sql NOT NULL AND type=='table'
@@ -6672,22 +6679,22 @@ class EntropyRepository:
             )
 
             if name == "sqlite_sequence":
-                dumpfile.write("DELETE FROM sqlite_sequence;\n")
+                dumpfile.write(toraw("DELETE FROM sqlite_sequence;\n"))
             elif name == "sqlite_stat1":
-                dumpfile.write("ANALYZE sqlite_master;\n")
+                dumpfile.write(toraw("ANALYZE sqlite_master;\n"))
             elif name.startswith("sqlite_"):
                 continue
             else:
                 t_cmd = "CREATE TABLE"
                 if sql.startswith(t_cmd) and gentle_with_tables:
                     sql = "CREATE TABLE IF NOT EXISTS"+sql[len(t_cmd):]
-                dumpfile.write("%s;\n" % sql)
+                dumpfile.write(toraw("%s;\n" % sql))
 
             if name in exclude_tables:
                 continue
 
             self.cursor.execute("PRAGMA table_info('%s')" % name)
-            cols = [str(r[1]) for r in self.cursor.fetchall()]
+            cols = [r[1] for r in self.cursor.fetchall()]
             q = "SELECT 'INSERT INTO \"%(tbl_name)s\" VALUES("
             q += ", ".join(["'||quote(" + x + ")||'" for x in cols])
             q += ")' FROM '%(tbl_name)s'"
@@ -6695,17 +6702,16 @@ class EntropyRepository:
             self.connection.text_factory = lambda x: \
                 const_convert_to_unicode(x)
             for row in self.cursor:
-                dumpfile.write(
-                    "%s;\n" % str(row[0].encode('raw_unicode_escape')))
+                dumpfile.write(toraw("%s;\n" % (row[0],)))
 
         self.cursor.execute("""
         SELECT name, type, sql FROM sqlite_master
         WHERE sql NOT NULL AND type!='table' AND type!='meta'
         """)
         for name, x, sql in self.cursor.fetchall():
-            dumpfile.write("%s;\n" % sql)
+            dumpfile.write(toraw("%s;\n" % sql))
 
-        dumpfile.write("COMMIT;\n")
+        dumpfile.write(toraw("COMMIT;\n"))
         try:
             dumpfile.flush()
         except:
@@ -6782,7 +6788,7 @@ class EntropyRepository:
             mydata = cursor.fetchall()
             for record in mydata:
                 for item in record:
-                    m.update(str(item))
+                    m.update(const_convert_to_rawstring(item))
 
         if strings:
             import hashlib

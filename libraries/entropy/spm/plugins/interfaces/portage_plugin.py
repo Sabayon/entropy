@@ -15,7 +15,7 @@ import sys
 import shutil
 import tempfile
 from entropy.const import etpConst, etpUi, const_get_stringtype, \
-    const_convert_to_unicode
+    const_convert_to_unicode, const_convert_to_rawstring
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidData
 from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, \
@@ -277,7 +277,7 @@ class PortagePlugin(SpmPlugin):
 
             clog_path = os.path.join(os.path.dirname(ebuild_path), "ChangeLog")
             if os.access(clog_path, os.R_OK) and os.path.isfile(clog_path):
-                with open(clog_path, "r") as clog_f:
+                with open(clog_path, "rb") as clog_f:
                     return clog_f.read()
 
     def get_package_build_script_path(self, package):
@@ -356,7 +356,7 @@ class PortagePlugin(SpmPlugin):
             checklist = []
             if os.access(glsaconfig["CHECKFILE"], os.R_OK) and \
                 os.path.isfile(glsaconfig["CHECKFILE"]):
-                with open(glsaconfig["CHECKFILE"], "r") as check_f:
+                with open(glsaconfig["CHECKFILE"], "rb") as check_f:
                     checklist.extend([x.strip() for x in check_f.readlines()])
             glsalist = [x for x in completelist if x not in checklist]
 
@@ -567,7 +567,7 @@ class PortagePlugin(SpmPlugin):
             if stat.S_ISREG(exist.st_mode):
                 tarinfo.mode = stat.S_IMODE(exist.st_mode)
                 tarinfo.type = tarfile.REGTYPE
-                f = open(path)
+                f = open(path, "rb")
                 try:
                     tar.addfile(tarinfo, f)
                 finally:
@@ -635,10 +635,9 @@ class PortagePlugin(SpmPlugin):
             try:
 
                 item_path = os.path.join(meta_dir, portage_entries[item]['path'])
-                with open(item_path, "r") as item_f:
+                with open(item_path, "rb") as item_f:
                     value = item_f.readline().strip()
-                    if sys.hexversion < 0x3000000:
-                        value = const_convert_to_unicode(value)
+                    value = const_convert_to_unicode(value)
 
             except IOError:
                 if portage_entries[item]['critical']:
@@ -754,7 +753,7 @@ class PortagePlugin(SpmPlugin):
         data['download'] += entropy.tools.create_package_filename(
             data['category'], data['name'], data['version'], data['versiontag'])
 
-        data['trigger'] = ""
+        data['trigger'] = const_convert_to_rawstring("")
         trigger_file = os.path.join(etpConst['triggersdir'], data['category'],
             data['name'], etpConst['triggername'])
         if os.access(trigger_file, os.R_OK) and os.path.isfile(trigger_file):
@@ -1181,9 +1180,9 @@ class PortagePlugin(SpmPlugin):
         if not os.access(counter_dir, os.W_OK):
             raise SPMError("SPM package directory not found")
 
-        with open(counter_path, "w") as count_f:
+        with open(counter_path, "wb") as count_f:
             new_counter = vartree.dbapi.counter_tick(root, mycpv = package)
-            count_f.write(str(new_counter))
+            count_f.write(const_convert_to_rawstring(new_counter))
             count_f.flush()
 
         return new_counter
@@ -1261,7 +1260,7 @@ class PortagePlugin(SpmPlugin):
         for key in keys:
             mykeypath = os.path.join(myebuilddir, key)
             if os.path.isfile(mykeypath) and os.access(mykeypath, os.R_OK):
-                f = open(mykeypath, "r")
+                f = open(mykeypath, "rb")
                 metadata[key] = f.readline().strip()
                 f.close()
 
@@ -1339,7 +1338,7 @@ class PortagePlugin(SpmPlugin):
         for lic in licenses:
             lic_path = os.path.join(portdir_lic, lic)
             if os.access(portdir_lic, os.W_OK | os.R_OK):
-                lic_f = open(lic_path, "w")
+                lic_f = open(lic_path, "wb")
                 lic_f.close()
 
         cpv = str(cpv)
@@ -1420,11 +1419,15 @@ class PortagePlugin(SpmPlugin):
         if os.path.isfile(bz2envfile) and os.path.isdir(myroot):
             envfile = entropy.tools.unpack_bzip2(bz2envfile)
             bzf = bz2.BZ2File(bz2envfile, "w")
-            f = open(envfile, "r")
+            f = open(envfile, "rb")
             line = f.readline()
             while line:
-                if line.startswith("ROOT="):
-                    line = "ROOT=%s\n" % (myroot,)
+                if sys.hexversion >= 0x3000000:
+                    if line.startswith(b"ROOT="):
+                        line = b"ROOT=%s\n" % (myroot,)
+                else:
+                    if line.startswith("ROOT="):
+                        line = "ROOT=%s\n" % (myroot,)
                 bzf.write(line)
                 line = f.readline()
 
@@ -1485,12 +1488,20 @@ class PortagePlugin(SpmPlugin):
 
             envfile = entropy.tools.unpack_bzip2(bz2envfile)
             bzf = bz2.BZ2File(bz2envfile, "w")
-            f = open(envfile, "r")
+            f = open(envfile, "rb")
             line = f.readline()
             while line:
-                if line == "KV_OUT_DIR=/usr/src/linux\n":
-                    line = "KV_OUT_DIR=/lib/modules/%s/build\n" % (
-                        package_metadata['versiontag'],)
+
+                if sys.hexversion >= 0x3000000:
+                    if line == b"KV_OUT_DIR=/usr/src/linux\n":
+                        line = b"KV_OUT_DIR=/lib/modules/"
+                        line += const_convert_to_rawstring(
+                            package_metadata['versiontag'])
+                        line += "/build\n"
+                else:
+                    if line == "KV_OUT_DIR=/usr/src/linux\n":
+                        line = "KV_OUT_DIR=/lib/modules/%s/build\n" % (
+                            package_metadata['versiontag'],)
                 bzf.write(line)
                 line = f.readline()
             f.close()
@@ -1513,7 +1524,7 @@ class PortagePlugin(SpmPlugin):
     def _pkg_fooinst(self, package_metadata, phase):
 
         tmp_file = tempfile.mktemp()
-        stdfile = open(tmp_file, "w")
+        stdfile = open(tmp_file, "wb")
         oldstderr = sys.stderr
         oldstdout = sys.stdout
         sys.stderr = stdfile
@@ -1595,7 +1606,7 @@ class PortagePlugin(SpmPlugin):
     def _pkg_foorm(self, package_metadata, phase):
 
         tmp_file = tempfile.mktemp()
-        stdfile = open(tmp_file, "w")
+        stdfile = open(tmp_file, "wb")
         oldstderr = sys.stderr
         oldstdout = sys.stdout
         sys.stderr = stdfile
@@ -1860,13 +1871,14 @@ class PortagePlugin(SpmPlugin):
             # usually kernel packages
             myslot = "0"
 
-        keyslot = key+":"+myslot
+        keyslot = const_convert_to_rawstring(key+":"+myslot)
+        key = const_convert_to_rawstring(key)
         world_file = self.get_user_installed_packages_file()
         world_dir = os.path.dirname(world_file)
         world_atoms = set()
 
         if os.access(world_file, os.R_OK) and os.path.isfile(world_file):
-            with open(world_file, "r") as world_f:
+            with open(world_file, "rb") as world_f:
                 world_atoms |= set((x.strip() for x in world_f.readlines() if \
                     x.strip()))
 
@@ -1880,9 +1892,11 @@ class PortagePlugin(SpmPlugin):
                     world_atoms.add(keyslot)
                     world_file_tmp = world_file+".entropy_inst"
 
-                    with open(world_file_tmp, "w") as world_f:
+                    newline = const_convert_to_rawstring("\n")
+                    with open(world_file_tmp, "wb") as world_f:
                         for item in sorted(world_atoms):
-                            world_f.write(item + "\n")
+                            world_f.write(
+                                const_convert_to_rawstring(item + newline))
                         world_f.flush()
 
                     os.rename(world_file_tmp, world_file)
@@ -1971,16 +1985,18 @@ class PortagePlugin(SpmPlugin):
         world_file_tmp = world_file + ".entropy.tmp"
         if os.access(world_file, os.W_OK) and os.path.isfile(world_file):
 
-            new = open(world_file_tmp, "w")
-            old = open(world_file, "r")
+            new = open(world_file_tmp, "wb")
+            old = open(world_file, "rb")
             line = old.readline()
+            key = const_convert_to_rawstring(key)
+            keyslot = const_convert_to_rawstring(key+":"+slot)
 
             while line:
 
                 if line.find(key) != -1:
                     line = old.readline()
                     continue
-                if line.find(key+":"+slot) != -1:
+                if line.find(keyslot) != -1:
                     line = old.readline()
                     continue
                 new.write(line)
@@ -2174,7 +2190,7 @@ class PortagePlugin(SpmPlugin):
 
         if not (os.path.isfile(use_file) and os.access(use_file, os.W_OK)):
             return False
-        f = open(use_file, "r")
+        f = open(use_file, "rb")
         content = [x.strip() for x in f.readlines()]
         f.close()
 
@@ -2188,14 +2204,18 @@ class PortagePlugin(SpmPlugin):
             if matched_atom != self.match_package(myatom):
                 return False, line
 
+            plus = const_convert_to_rawstring("+")
+            minus = const_convert_to_rawstring("-")
+            myatom = const_convert_to_rawstring(myatom)
+
             flags = data[1:]
             base_flags = []
             added_flags = []
             for flag in flags:
                 myflag = flag
-                if myflag.startswith("+"):
+                if myflag.startswith(plus):
                     myflag = myflag[1:]
-                elif myflag.startswith("-"):
+                elif myflag.startswith(minus):
                     myflag = myflag[1:]
                 if not myflag:
                     continue
@@ -2206,7 +2226,11 @@ class PortagePlugin(SpmPlugin):
                     continue
                 added_flags.append(mark+useflag)
 
-            new_line = "%s %s" % (myatom, ' '.join(flags+added_flags))
+            if sys.hexversion >= 0x3000000:
+                new_line = myatom + b" " + b" ".join(flags+added_flags)
+            else:
+                new_line = myatom + " " + " ".join(flags+added_flags)
+
             return True, new_line
 
 
@@ -2219,16 +2243,20 @@ class PortagePlugin(SpmPlugin):
             new_content.append(elaborated_line)
 
         if not atom_found:
-            myline = "%s %s" % (atom, ' '.join([mark+x for x in useflags]))
+            if sys.hexversion >= 0x3000000:
+                myline = atom + b" " + b' '.join([mark+x for x in useflags])
+            else:
+                myline = "%s %s" % (atom, ' '.join([mark+x for x in useflags]))
             new_content.append(myline)
 
 
-        f = open(use_file+".tmp", "w")
+        f = open(use_file+".tmp", "wb")
+        newline = const_convert_to_rawstring("\n")
         for line in new_content:
-            f.write(line+"\n")
+            f.write(line + newline)
         f.flush()
         f.close()
-        os.rename(use_file+".tmp", use_file)
+        os.rename(use_file + ".tmp", use_file)
         return True
 
     def _unset_package_useflags(self, atom, useflags):
@@ -2240,7 +2268,7 @@ class PortagePlugin(SpmPlugin):
         if not (os.path.isfile(use_file) and os.access(use_file, os.W_OK)):
             return False
 
-        with open(use_file, "r") as f:
+        with open(use_file, "rb") as f:
             content = [x.strip() for x in f.readlines()]
 
         new_content = []
@@ -2256,14 +2284,18 @@ class PortagePlugin(SpmPlugin):
                 new_content.append(line)
                 continue
 
+            plus = const_convert_to_rawstring("+")
+            minus = const_convert_to_rawstring("-")
+            myatom = const_convert_to_rawstring(myatom)
+
             flags = data[1:]
             new_flags = []
             for flag in flags:
                 myflag = flag
 
-                if myflag.startswith("+"):
+                if myflag.startswith(plus):
                     myflag = myflag[1:]
-                elif myflag.startswith("-"):
+                elif myflag.startswith(minus):
                     myflag = myflag[1:]
 
                 if myflag in useflags:
@@ -2274,15 +2306,18 @@ class PortagePlugin(SpmPlugin):
                 new_flags.append(flag)
 
             if new_flags:
-                new_line = "%s %s" % (myatom, ' '.join(new_flags))
+                if sys.hexversion >= 0x3000000:
+                    new_line = myatom + b" " + b" ".join(new_flags)
+                else:
+                    new_line = myatom + " " + " ".join(new_flags)
                 new_content.append(new_line)
 
-        with open(use_file+".tmp", "w") as f:
+        with open(use_file+".tmp", "wb") as f:
             for line in new_content:
-                f.write(line+"\n")
+                f.write(line + newline)
             f.flush()
 
-        os.rename(use_file+".tmp", use_file)
+        os.rename(use_file + ".tmp", use_file)
         return True
 
     def _get_package_use_useflags(self, atom):
@@ -2300,19 +2335,21 @@ class PortagePlugin(SpmPlugin):
         if not (os.path.isfile(use_file) and os.access(use_file, os.W_OK)):
             return data
 
+        plus = const_convert_to_rawstring("+")
+        minus = const_convert_to_rawstring("-")
         use_data = self.portage_util.grabdict(use_file)
         for myatom in use_data:
             mymatch = self.match_package(myatom)
             if mymatch != matched_atom:
                 continue
             for flag in use_data[myatom]:
-                if flag.startswith("-"):
+                if flag.startswith(minus):
                     myflag = flag[1:]
                     data['enabled'].discard(myflag)
                     data['disabled'].add(myflag)
                 else:
                     myflag = flag
-                    if myflag.startswith("+"):
+                    if myflag.startswith(plus):
                         myflag = myflag[1:]
                     data['disabled'].discard(myflag)
                     data['enabled'].add(myflag)
@@ -2332,8 +2369,10 @@ class PortagePlugin(SpmPlugin):
         use = set()
         use_mask = self._get_useflags_mask()
         use_force = self._get_useflags_force()
+        plus = const_convert_to_rawstring("+")
+        minus = const_convert_to_rawstring("-")
         for myiuse in iuse_list:
-            if myiuse[0] in ("+", "-",):
+            if myiuse[0] in (plus, minus,):
                 myiuse = myiuse[1:]
             if ((myiuse in use_list) or (myiuse in use_force)) and \
                 (myiuse not in use_mask):
@@ -2908,14 +2947,14 @@ class PortagePlugin(SpmPlugin):
     def _extract_pkg_metadata_content(self, content_file, package_path):
 
         pkg_content = {}
+        obj_t = const_convert_to_unicode("obj")
+        sym_t = const_convert_to_unicode("sym")
+        dir_t = const_convert_to_unicode("dir")
 
         if os.path.isfile(content_file):
 
-            f = open(content_file, "r")
-            content = [x for x in f.readlines()]
-            if sys.hexversion < 0x3000000:
-                content = [const_convert_to_unicode(x) for x in content]
-            f.close()
+            with open(content_file, "rb") as f:
+                content = [const_convert_to_unicode(x) for x in f.readlines()]
 
             outcontent = set()
             for line in content:
@@ -2923,12 +2962,12 @@ class PortagePlugin(SpmPlugin):
                 try:
                     datatype = line[0]
                     datafile = line[1:]
-                    if datatype == 'obj':
+                    if datatype == obj_t:
                         datafile = datafile[:-2]
                         datafile = ' '.join(datafile)
-                    elif datatype == 'dir':
+                    elif datatype == dir_t:
                         datafile = ' '.join(datafile)
-                    elif datatype == 'sym':
+                    elif datatype == sym_t:
                         datafile = datafile[:-3]
                         datafile = ' '.join(datafile)
                     else:
@@ -2958,17 +2997,13 @@ class PortagePlugin(SpmPlugin):
             if not os.path.isdir(mytempdir):
                 os.makedirs(mytempdir)
 
-            obj_t = const_convert_to_unicode("obj")
-            sym_t = const_convert_to_unicode("sym")
-            dir_t = const_convert_to_unicode("dir")
-
             entropy.tools.uncompress_tar_bz2(package_path, extractPath = mytempdir,
                 catchEmpty = True)
             tmpdir_len = len(mytempdir)
             for currentdir, subdirs, files in os.walk(mytempdir):
                 pkg_content[currentdir[tmpdir_len:]] = dir_t
                 for item in files:
-                    item = currentdir+"/"+item
+                    item = currentdir + "/" + item
                     if os.path.islink(item):
                         pkg_content[item[tmpdir_len:]] = sym_t
                     else:
@@ -2989,7 +3024,7 @@ class PortagePlugin(SpmPlugin):
         lines = []
 
         try:
-            f = open(needed_file, "r")
+            f = open(needed_file, "rb")
             lines = [x.strip() for x in f.readlines() if x.strip()]
             lines = [const_convert_to_unicode(x) for x in lines]
             f.close()
@@ -3067,7 +3102,8 @@ class PortagePlugin(SpmPlugin):
 
         pkg_licensedata = {}
         if licenses_dir and os.path.isdir(licenses_dir):
-            licdata = [x.strip() for x in license_string.split() if x.strip() and entropy.tools.is_valid_string(x.strip())]
+            licdata = [x.strip() for x in license_string.split() if x.strip() \
+                and entropy.tools.is_valid_string(x.strip())]
             for mylicense in licdata:
                 licfile = os.path.join(licenses_dir, mylicense)
                 if not (os.access(licfile, os.R_OK) and os.path.isfile(licfile)):
@@ -3075,8 +3111,8 @@ class PortagePlugin(SpmPlugin):
                 if not entropy.tools.istextfile(licfile):
                     continue
 
-                f = open(licfile, "r")
-                content = ''
+                f = open(licfile, "rb")
+                content = const_convert_to_rawstring('')
                 line = f.readline()
                 while line:
                     content += line
@@ -3084,9 +3120,11 @@ class PortagePlugin(SpmPlugin):
                 try:
 
                     try:
-                        pkg_licensedata[mylicense] = const_convert_to_unicode(content)
+                        pkg_licensedata[mylicense] = \
+                            const_convert_to_unicode(content)
                     except UnicodeDecodeError:
-                        pkg_licensedata[mylicense] = const_convert_to_unicode(content, 'raw_unicode_escape')
+                        pkg_licensedata[mylicense] = \
+                            const_convert_to_unicode(content, 'utf-8')
 
                 except (UnicodeDecodeError, UnicodeEncodeError,):
                     f.close()
@@ -3113,12 +3151,13 @@ class PortagePlugin(SpmPlugin):
     def _extract_pkg_metadata_ebuild_entropy_tag(self, ebuild):
         search_tag = etpConst['spm']['ebuild_pkg_tag_var']
         ebuild_tag = ''
+        # open in unicode fmt
         f = open(ebuild, "r")
         tags = [const_convert_to_unicode(x.strip()) for x in f.readlines() \
             if x.strip() and x.strip().startswith(search_tag)]
         f.close()
-        if not tags: return ebuild_tag
+        if not tags:
+            return ebuild_tag
         tag = tags[-1]
         tag = tag.split("=")[-1].strip('"').strip("'").strip()
         return tag
-
