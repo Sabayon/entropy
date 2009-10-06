@@ -1693,7 +1693,7 @@ class Server:
                         red(crippled_uri),
                         darkgreen(_("upload")),
                         darkred(_("disabled EAPI")),
-                        bold(', '.join(disabled_eapis)),
+                        bold(', '.join([str(x) for x in disabled_eapis])),
                     ),
                     importance = 1,
                     type = "warning",

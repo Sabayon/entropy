@@ -1163,6 +1163,8 @@ class CalculatorsMixin:
         for c_idpackage in idpackages:
 
             keyslot = self.clientDbconn.retrieveKeySlotAggregated(c_idpackage)
+            if keyslot is None:
+                continue
             idpackage, repo = self.atom_match(keyslot)
             if idpackage == -1:
                 continue
