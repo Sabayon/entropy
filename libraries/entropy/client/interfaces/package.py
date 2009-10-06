@@ -9,6 +9,7 @@
     B{Entropy Package Manager Client Package Interface}.
 
 """
+import sys
 import os
 import errno
 import stat
@@ -284,7 +285,7 @@ class Package:
                     rc = entropy.tools.spawn_function(
                         entropy.tools.uncompress_tar_bz2,
                         self.pkgmeta['pkgpath'],
-                        self.pkgmeta['imagedir'],
+                        extractPath = self.pkgmeta['imagedir'],
                         catchEmpty = True
                     )
                 except EOFError:
@@ -1023,14 +1024,15 @@ class Package:
         items_installed = set()
 
         # setup image_dir properly
-        image_dir = self.pkgmeta['imagedir']
-        encoded_image_dir = image_dir.encode('utf-8')
+        image_dir = self.pkgmeta['imagedir'][:]
+        if sys.hexversion < 0x3000000:
+            image_dir = image_dir.encode('utf-8')
         movefile = entropy.tools.movefile
 
         def workout_subdir(currentdir, subdir):
 
-            imagepath_dir = "%s/%s" % (currentdir, subdir,)
-            rootdir = "%s%s" % (sys_root, imagepath_dir[len(image_dir):],)
+            imagepath_dir = os.path.join(currentdir, subdir)
+            rootdir = sys_root + imagepath_dir[len(image_dir):]
 
             # handle broken symlinks
             if os.path.islink(rootdir) and not os.path.exists(rootdir):
@@ -1142,8 +1144,8 @@ class Package:
 
         def workout_file(currentdir, item):
 
-            fromfile = "%s/%s" % (currentdir, item,)
-            tofile = "%s%s" % (sys_root, fromfile[len(image_dir):],)
+            fromfile = os.path.join(currentdir, item)
+            tofile = sys_root + fromfile[len(image_dir):]
 
             if col_protect > 1:
                 todbfile = fromfile[len(image_dir):]
@@ -1269,7 +1271,7 @@ class Package:
             # moving file using the raw format
             try:
                 done = movefile(fromfile, tofile,
-                    src_basedir = encoded_image_dir)
+                    src_basedir = image_dir)
             except (IOError,) as err:
                 # try to move forward, sometimes packages might be
                 # fucked up and contain broken things
@@ -1320,7 +1322,7 @@ class Package:
             return 0
 
         # merge data into system
-        for currentdir, subdirs, files in os.walk(encoded_image_dir):
+        for currentdir, subdirs, files in os.walk(image_dir):
 
             # create subdirs
             for subdir in subdirs:
