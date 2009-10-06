@@ -29,7 +29,7 @@ class MiscTest(unittest.TestCase):
                 'no password specified': const_convert_to_unicode('Kein Passwort angegeben'),
             },
             'it_IT': {
-                'Yes': u"Si",
+                'Yes': const_convert_to_unicode("Si"),
                 'database already exists': const_convert_to_unicode('database gi\xe0 esistente'),
                 'Install Set': const_convert_to_unicode('Installa Set'),
                 'wrong md5': const_convert_to_unicode('md5 errato'),
