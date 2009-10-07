@@ -624,13 +624,20 @@ def const_default_settings(rootdir):
             'ssl_ca_cert': default_etp_confdir+"/socket_server.CA.crt",
             'ssl_ca_pkey': default_etp_confdir+"/socket_server.CA.key",
             'answers': {
-                'ok': chr(0)+"OK"+chr(0), # command run
-                'er': chr(0)+"ER"+chr(1), # execution error
-                'no': chr(0)+"NO"+chr(2), # not allowed
-                'cl': chr(0)+"CL"+chr(3), # close connection
-                'mcr': chr(0)+"MCR"+chr(4), # max connections reached
-                'eos': chr(0), # end of size,
-                'noop': chr(0)+"NOOP"+chr(0)
+                # command run
+                'ok': const_convert_to_rawstring(chr(0)+"OK"+chr(0)),
+                # execution error
+                'er': const_convert_to_rawstring(chr(0)+"ER"+chr(1)),
+                # not allowed
+                'no': const_convert_to_rawstring(chr(0)+"NO"+chr(2)),
+                # close connection
+                'cl': const_convert_to_rawstring(chr(0)+"CL"+chr(3)),
+                # max connections reached
+                'mcr': const_convert_to_rawstring(chr(0)+"MCR"+chr(4)),
+                # end of size
+                'eos': const_convert_to_rawstring(chr(0)),
+                # no operation
+                'noop': const_convert_to_rawstring(chr(0)+"NOOP"+chr(0)),
             },
         },
 
@@ -1392,6 +1399,11 @@ def const_convert_to_unicode(obj, enctype = 'raw_unicode_escape'):
     @return: unicode string object
     @rtype: unicode object
     """
+    if isinstance(obj, int):
+        if sys.hexversion >= 0x3000000:
+            return str(obj)
+        else:
+            return unicode(obj)
     if isinstance(obj, const_get_buffer()):
         if sys.hexversion >= 0x3000000:
             return str(obj.tobytes(), enctype)
@@ -1419,6 +1431,11 @@ def const_convert_to_rawstring(obj, from_enctype = 'raw_unicode_escape'):
     @return: raw string
     @rtype: bytes
     """
+    if const_isnumber(obj):
+        if sys.hexversion >= 0x3000000:
+            return bytes(str(obj), from_enctype)
+        else:
+            return str(obj)
     if isinstance(obj, const_get_buffer()):
         if sys.hexversion >= 0x3000000:
             return obj.tobytes()
@@ -1446,6 +1463,15 @@ def const_isfileobj(obj):
         return isinstance(obj, io.IOBase)
     else:
         return isinstance(obj, file)
+
+def const_isnumber(obj):
+    """
+    Return whether obj is an int, long object.
+    """
+    if sys.hexversion >= 0x3000000:
+        return isinstance(obj, int)
+    else:
+        return isinstance(obj, (int, long,))
 
 def const_cmp(a, b):
     """
