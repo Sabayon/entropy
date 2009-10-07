@@ -13,7 +13,7 @@
 """
 import sys, os
 import curses
-from entropy.const import etpUi
+from entropy.const import etpUi, const_convert_to_rawstring, const_isstring
 from entropy.exceptions import IncorrectParameter
 from entropy.i18n import _
 stuff = {}
@@ -495,20 +495,16 @@ def print_menu(data, args = None):
             elif n_ident == 3:
                 myfunc = darkblue
                 myfunc_desc = purple
-            try:
-                sys.stdout.write(myfunc(name))
-            except UnicodeEncodeError:
-                    sys.stdout.write(myfunc(name.encode('utf-8')))
+            func_out = myfunc(name)
+            print_generic(func_out, end = "")
 
             # write desc
             if desc:
                 while n_d_ident > 0:
                     n_d_ident -= 1
                     writechar("\t")
-                try:
-                    sys.stdout.write(myfunc_desc(desc))
-                except UnicodeEncodeError:
-                    sys.stdout.write(myfunc_desc(desc.encode('utf-8')))
+                desc = myfunc_desc(desc)
+                print_generic(desc, end = "")
             writechar("\n")
 
 def reset_cursor():
@@ -524,7 +520,35 @@ def _flush_stdouterr():
     sys.stdout.flush()
     sys.stderr.flush()
 
-def print_error(msg, back = False, flush = True):
+def _stdout_write(msg):
+    if not const_isstring(msg):
+        msg = repr(msg)
+    try:
+        sys.stdout.write(msg)
+    except UnicodeEncodeError:
+        msg = msg.encode('utf-8')
+        if sys.hexversion >= 0x3000000:
+            sys.stdout.buffer.write(msg)
+        else:
+            sys.stdout.write(msg)
+
+def _print_prio(msg, color_func, back = False, flush = True, end = '\n'):
+    if etpUi['mute']:
+        return
+    if not back:
+        setcols()
+    reset_cursor()
+    writechar("\r")
+    if back:
+        msg = color_func(">>") + " " + msg
+    else:
+        msg = color_func(">>") + " " + msg + end
+
+    _stdout_write(msg)
+    if flush:
+        _flush_stdouterr()
+
+def print_error(msg, back = False, flush = True, end = '\n'):
     """
     Service function used by Entropy text client (will be moved from here)
     to write error messages to stdout (not stderr, atm).
@@ -539,26 +563,9 @@ def print_error(msg, back = False, flush = True):
     @return: None
     @rtype: None
     """
-    if etpUi['mute']:
-        return
-    if not back:
-        setcols()
-    reset_cursor()
-    writechar("\r")
-    if back:
-        try:
-            sys.stdout.write(darkred(">>") + " " + msg)
-        except UnicodeEncodeError:
-            sys.stdout.write(darkred(">>") + " " + msg.encode('utf-8'))
-    else:
-        try:
-            sys.stdout.write(darkred(">>") + " " + msg + "\n")
-        except UnicodeEncodeError:
-            sys.stdout.write(darkred(">>") + " " + msg.encode('utf-8') + "\n")
-    if flush:
-        _flush_stdouterr()
+    return _print_prio(msg, darkred, back = back, flush = flush, end = end)
 
-def print_info(msg, back = False, flush = True):
+def print_info(msg, back = False, flush = True, end = '\n'):
     """
     Service function used by Entropy text client (will be moved from here)
     to write info messages to stdout (not stderr, atm).
@@ -573,26 +580,9 @@ def print_info(msg, back = False, flush = True):
     @return: None
     @rtype: None
     """
-    if etpUi['mute']:
-        return
-    if not back:
-        setcols()
-    reset_cursor()
-    writechar("\r")
-    if back:
-        try:
-            sys.stdout.write(darkgreen(">>") + " " + msg)
-        except UnicodeEncodeError:
-            sys.stdout.write(darkgreen(">>") + " " + msg.encode('utf-8'))
-    else:
-        try:
-            sys.stdout.write(darkgreen(">>") + " " + msg + "\n")
-        except UnicodeEncodeError:
-            sys.stdout.write(darkgreen(">>") + " " + msg.encode('utf-8') + "\n")
-    if flush:
-        _flush_stdouterr()
+    return _print_prio(msg, darkgreen, back = back, flush = flush, end = end)
 
-def print_warning(msg, back = False, flush = True):
+def print_warning(msg, back = False, flush = True, end = '\n'):
     """
     Service function used by Entropy text client (will be moved from here)
     to write warning messages to stdout (not stderr, atm).
@@ -607,46 +597,24 @@ def print_warning(msg, back = False, flush = True):
     @return: None
     @rtype: None
     """
-    if etpUi['mute']:
-        return
-    if not back:
-        setcols()
-    reset_cursor()
-    writechar("\r")
-    if back:
-        try:
-            sys.stdout.write(red(">>") + " " + msg)
-        except UnicodeEncodeError:
-            sys.stdout.write(red(">>") + " " + msg.encode('utf-8'))
-    else:
-        try:
-            sys.stdout.write(red(">>") + " " + msg + "\n")
-        except UnicodeEncodeError:
-            sys.stdout.write(red(">>") + " " + msg.encode('utf-8') + "\n")
-    if flush:
-        _flush_stdouterr()
+    return _print_prio(msg, brown, back = back, flush = flush, end = end)
 
-def print_generic(*args):
+def print_generic(*args, **kwargs):
     """
     Service function used by Entropy text client (will be moved from here)
     to write generic messages to stdout (not stderr, atm).
     NOTE: don't use this directly but rather subclass TextInterface class.
-
-    @param msg: text message to print
-    @type msg: string
-    @return: None
-    @rtype: None
     """
     if etpUi['mute']:
         return
     # disabled, because it causes quite a mess when writing to files
     # writechar("\r")
     for msg in args:
-        try:
-            sys.stdout.write(msg + " ")
-        except UnicodeEncodeError:
-            sys.stdout.write(msg.encode('utf-8') + " ")
-    sys.stdout.write("\n")
+        _stdout_write(msg)
+        sys.stdout.write(" ")
+
+    end = kwargs.get('end', '\n')
+    _stdout_write(end)
     _flush_stdouterr()
 
 def writechar(chars):
