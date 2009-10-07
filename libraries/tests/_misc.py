@@ -19,6 +19,10 @@ def get_test_package2():
     test_pkg = "aspell-es-0.50.2.tbz2"
     return get_test_generic_package(test_pkg)
 
+def get_footar_package():
+    test_pkg = "footar.tar.bz2"
+    return get_test_generic_package(test_pkg)
+
 def get_test_package3():
     test_pkg = "apache-tools-2.2.11.tbz2"
     return get_test_generic_package(test_pkg)
