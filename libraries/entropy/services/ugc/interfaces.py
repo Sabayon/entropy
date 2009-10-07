@@ -20,7 +20,7 @@ from entropy.services.skel import RemoteDatabase
 from entropy.exceptions import *
 from entropy.const import etpConst, etpUi, etpCache, const_setup_perms, \
     const_set_chmod, const_setup_file, const_get_stringtype, \
-    const_convert_to_rawstring
+    const_convert_to_rawstring, const_convert_to_unicode
 from entropy.output import brown, bold, blue
 from entropy.i18n import _
 
@@ -1740,7 +1740,7 @@ class Client:
         self.real_sock_conn = None
         self.hostname = None
         self.hostport = None
-        self.buffered_data = ''
+        self.buffered_data = const_convert_to_rawstring('')
         self.buffer_length = None
         self.quiet = quiet
         self.show_progress = show_progress
@@ -1894,17 +1894,19 @@ class Client:
         return obj
 
     def append_eos(self, data):
-        return str(len(data))+self.answers['eos']+data
+        return const_convert_to_rawstring(len(data)) + \
+            self.answers['eos'] + data
 
     def transmit(self, data):
-        self.check_socket_connection()
-        if hasattr(self.sock_conn, 'settimeout'):
-            self.sock_conn.settimeout(self.socket_timeout)
-        data = self.append_eos(data)
 
         if sys.hexversion >= 0x3000000:
             # convert to raw string
             data = const_convert_to_rawstring(data)
+
+        self.check_socket_connection()
+        if hasattr(self.sock_conn, 'settimeout'):
+            self.sock_conn.settimeout(self.socket_timeout)
+        data = self.append_eos(data)
 
         try:
 
@@ -1971,7 +1973,7 @@ class Client:
         self.socket.setdefaulttimeout(self.socket_timeout)
         self.transmit('alive %s' % (session,))
         data = self.receive()
-        if data == self.answers['ok']:
+        if data == const_convert_to_unicode(self.answers['ok']):
             return True
         return False
 
@@ -1990,7 +1992,7 @@ class Client:
         self.ssl_prepending = True
 
         def do_receive():
-            data = ''
+            data = const_convert_to_rawstring('')
             if self.ssl and not self.pyopenssl:
                 data = self.sock_conn.read(1024)
             elif self.ssl:
@@ -2003,12 +2005,12 @@ class Client:
                 data = self.sock_conn.recv(1024)
             return data
 
-        myeos = const_convert_to_rawstring(self.answers['eos'])
+        myeos = self.answers['eos']
         while True:
 
             try:
 
-                cl_answer = const_convert_to_rawstring(self.answers['cl'])
+                cl_answer = self.answers['cl']
                 data = do_receive()
                 if self.buffer_length == None:
                     self.buffered_data = const_convert_to_rawstring('')
@@ -2136,7 +2138,7 @@ class Client:
                     )
                 return None
 
-        return self.buffered_data
+        return const_convert_to_rawstring(self.buffered_data)
 
     def reconnect_socket(self):
         if not self.quiet:

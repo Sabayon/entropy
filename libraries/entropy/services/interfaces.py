@@ -9,13 +9,14 @@
     B{Entropy Services Base Interfaces}.
 
 """
-
+import sys
 import os
 import select
 import shutil
 import time
 from entropy.const import etpConst, ETP_LOGLEVEL_NORMAL, ETP_LOGPRI_INFO, \
-    const_setup_perms, const_isstring, const_get_stringtype
+    const_setup_perms, const_isstring, const_get_stringtype, \
+    const_convert_to_rawstring
 from entropy.exceptions import *
 from entropy.services.skel import SocketAuthenticator, SocketCommands
 from entropy.i18n import _
@@ -447,7 +448,7 @@ class SocketHost:
                                     self.__data_counter,
                                 )
                             )
-                            self.__buffered_data = ''
+                            self.__buffered_data = const_convert_to_rawstring('')
                             return True
                         mystrlen = data.split(self.myeos)[0]
                         self.__data_counter = int(mystrlen)
@@ -489,8 +490,8 @@ class SocketHost:
                     print(tb)
                     self.server.processor.HostInterface.socketLog.write(tb)
                     self.server.processor.HostInterface.socketLog.write(repr(data))
-                    self.server.processor.HostInterface.socketLog.write(str(self))
-                    self.server.processor.HostInterface.socketLog.write(str(self.__inst_token))
+                    self.server.processor.HostInterface.socketLog.write(repr(self))
+                    self.server.processor.HostInterface.socketLog.write(repr(self.__inst_token))
                     self.server.processor.HostInterface.updateProgress(
                         'interrupted: %s, reason: %s - from client: %s' % (
                             self.server.server_address,
@@ -554,7 +555,7 @@ class SocketHost:
                     # send KAPUTT signal JA!
                     self.server.processor.transmit(self.server.processor.HostInterface.answers['cl'])
                     return True
-                self.__buffered_data = ''
+                self.__buffered_data = const_convert_to_rawstring('')
                 return False
 
         def fork_lock_acquire(self):
@@ -587,11 +588,13 @@ class SocketHost:
                             try:
                                 dead = os.waitpid(pid, os.WNOHANG)[0]
                             except OSError as e:
-                                if e.errno != 10: raise
+                                if e.errno != 10:
+                                    raise
                                 dead = True
                             if passed_away:
                                 break
-                            if dead: break
+                            if dead:
+                                break
                             if seconds > my_timeout:
                                 self.server.processor.HostInterface.updateProgress(
                                     'interrupted: forked request timeout: %s,%s from client: %s' % (
@@ -640,7 +643,8 @@ class SocketHost:
                                 dobreak,
                             )
                         )
-                    if dobreak: break
+                    if dobreak:
+                        break
                 except Exception as e:
                     self.server.processor.HostInterface.updateProgress(
                         'interrupted: Unhandled exception: %s, error: %s - from client: %s' % (
@@ -1403,7 +1407,8 @@ class SocketHost:
         def docmd_end(self, transmitter, session):
             rc = self.HostInterface.destroy_session(session)
             cmd = self.HostInterface.answers['no']
-            if rc: cmd = self.HostInterface.answers['ok']
+            if rc:
+                cmd = self.HostInterface.answers['ok']
             transmitter(cmd)
             return rc
 
@@ -1545,7 +1550,7 @@ class SocketHost:
             self.PythonGarbageCollector.kill()
 
     def append_eos(self, data):
-        return str(len(data)) + \
+        return const_convert_to_rawstring(len(data)) + \
             self.answers['eos'] + \
                 data
 
@@ -1930,6 +1935,8 @@ class SocketHost:
 
     def transmit(self, channel, data):
         if self.SSL:
+            if sys.hexversion >= 0x3000000:
+                data = const_convert_to_rawstring(data)
             mydata = self.append_eos(data)
             encode_done = False
             while True:
