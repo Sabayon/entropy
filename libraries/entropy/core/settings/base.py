@@ -446,7 +446,13 @@ class SystemSettings(Singleton):
                     set_file = set_file.decode('utf-8')
                 except (UnicodeDecodeError,):
                     set_file = set_file.decode(sys.getfilesystemencoding())
-                pkg_set_data[set_file] = os.path.join(sets_dir, set_file)
+                path = os.path.join(sets_dir, set_file)
+                if isinstance(path, unicode):
+                    # this fix prevents Entropy for not being able
+                    # to load when non-ascii files are in dir and
+                    # LC_* is set to C (non utf-8)
+                    path = path.encode('utf-8')
+                pkg_set_data[set_file] = path
         self.__setting_files['system_package_sets'].update(pkg_set_data)
 
     def __parse(self):
