@@ -941,7 +941,7 @@ def compress_files(dest_file, files_to_compress, compressor = "bz2"):
             if not stat.S_ISREG(exist.st_mode):
                 continue
             tarinfo.type = tarfile.REGTYPE
-            with open(path) as f:
+            with open(path, "rb") as f:
                 tar.addfile(tarinfo, f)
     finally:
         tar.close()
@@ -971,7 +971,7 @@ def universal_uncompress(compressed_file, dest_path, catch_empty = False):
 
     try:
 
-        if const_isunicode(dest_path):
+        if sys.hexversion < 0x3000000:
             dest_path = dest_path.encode('utf-8')
         directories = []
         for tarinfo in tar:
@@ -2913,10 +2913,9 @@ def uncompress_tar_bz2(filepath, extractPath = None, catchEmpty = False):
 
     except EOFError:
         return -1
-
     finally:
+        del tar.members[:]
         tar.close()
-
     if os.listdir(extractPath):
         return 0
     return -1
