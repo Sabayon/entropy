@@ -13,7 +13,7 @@ import subprocess
 import shutil
 import stat
 
-class MiscTest(unittest.TestCase):
+class ToolsTest(unittest.TestCase):
 
     def setUp(self):
         self.Client = Client(noclientdb = 2, indexing = False, xcache = False,
@@ -81,7 +81,13 @@ class MiscTest(unittest.TestCase):
 
     def test_uncompress_tar_bz2(self):
 
-        pkg_path = _misc.get_test_entropy_package4()
+        pkgs = [_misc.get_test_entropy_package4(),
+            ] #_misc.get_footar_package() disabled for now
+        for pkg in pkgs:
+            self._do_uncompress_tar_bz2(pkg)
+
+    def _do_uncompress_tar_bz2(self, pkg_path):
+
         tmp_dir = tempfile.mkdtemp()
         fd, tmp_file = tempfile.mkstemp()
 
@@ -95,14 +101,15 @@ class MiscTest(unittest.TestCase):
         os.close(fd)
 
         for currentdir, subdirs, files in os.walk(tmp_dir):
-            for file in files:
-                path = os.path.join(currentdir, file)
+            for xfile in files:
+                path = os.path.join(currentdir, xfile)
                 fstat = os.lstat(path)
                 mode = stat.S_IMODE(fstat.st_mode)
                 uid, gid = fstat.st_uid, fstat.st_gid
                 path_perms[path] = (mode, uid, gid,)
 
         self.assert_(path_perms)
+
         shutil.rmtree(tmp_dir)
         os.makedirs(tmp_dir)
 
@@ -110,20 +117,18 @@ class MiscTest(unittest.TestCase):
         rc = et.uncompress_tar_bz2(pkg_path, tmp_dir)
         self.assert_(not rc)
 
+        new_path_perms = {}
+
         for currentdir, subdirs, files in os.walk(tmp_dir):
-            for file in files:
-                path = os.path.join(currentdir, file)
+            for xfile in files:
+                path = os.path.join(currentdir, xfile)
                 fstat = os.lstat(path)
                 mode = stat.S_IMODE(fstat.st_mode)
                 uid, gid = fstat.st_uid, fstat.st_gid
                 mystat = (mode, uid, gid,)
-                try:
-                    self.assertEqual(mystat, path_perms.get(path))
-                except AssertionError:
-                    print_generic("ouch", path, "my:", mystat)
-                    raise
+                new_path_perms[path] = (mode, uid, gid,)
 
-
+        self.assertEqual(path_perms, new_path_perms)
         shutil.rmtree(tmp_dir)
 
 

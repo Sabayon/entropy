@@ -130,6 +130,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         # we need to tweak the default unpack dir to make pkg install available
         # for uids != 0
         temp_unpack = tempfile.mkdtemp()
+        old_unpackdir = etpConst['entropyunpackdir']
         etpConst['entropyunpackdir'] = temp_unpack
 
         fake_root = tempfile.mkdtemp()
@@ -166,6 +167,9 @@ class EntropyRepositoryTest(unittest.TestCase):
         shutil.rmtree(pkg_dir, True)
         shutil.rmtree(temp_unpack, True)
         shutil.rmtree(fake_root, True)
+
+        # restore orig const value
+        etpConst['entropyunpackdir'] = old_unpackdir
 
 
 if __name__ == '__main__':

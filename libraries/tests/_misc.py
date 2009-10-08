@@ -5,9 +5,9 @@ from entropy.exceptions import FileNotFound
 def get_test_generic_package(test_pkg):
     path1 = os.path.join(os.getcwd(), "packages", test_pkg)
     path2 = os.path.join(os.getcwd(), "..", "packages", test_pkg)
-    if os.path.isfile(path1):
+    if os.path.lexists(path1):
         return path1
-    elif os.path.isfile(path2):
+    elif os.path.lexists(path2):
         return path2
     raise FileNotFound("cannot find test package %s" % (test_pkg,))
 
@@ -30,6 +30,10 @@ def get_test_package3():
 def get_entrofoo_test_package():
     test_pkg = "entrofoo-1.tbz2"
     return get_test_generic_package(test_pkg), "app-misc/entrofoo"
+
+def get_entrofoo_test_spm_portage_dir():
+    test_pkg = "portage/entrofoo-2"
+    return get_test_generic_package(test_pkg)
 
 def get_test_entropy_package():
     test_pkg = "sys-libs:zlib-1.2.3-r1~1.tbz2"
