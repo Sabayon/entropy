@@ -33,11 +33,19 @@ else:
 def addtolist(mylist, curdir):
     """(list, dir) --- Takes an array(list) and appends all files from dir down
     the directory tree. Returns nothing. list is modified."""
-    for x in os.listdir("."):
+    if sys.hexversion >= 0x3000000:
+        this_dir = b"."
+        slash_dir = b"/"
+        upper_dir = b".."
+    else:
+        this_dir = "."
+        slash_dir = "/"
+        upper_dir = ".."
+    for x in os.listdir(this_dir):
         if os.path.isdir(x):
             os.chdir(x)
-            addtolist(mylist, curdir+x+"/")
-            os.chdir("..")
+            addtolist(mylist, curdir + x + slash_dir)
+            os.chdir(upper_dir)
         else:
             if curdir+x not in mylist:
                 mylist.append(curdir+x)
@@ -49,7 +57,10 @@ def encodeint(myint):
     part2=chr((myint >> 16 ) & 0x000000ff)
     part3=chr((myint >> 8 ) & 0x000000ff)
     part4=chr(myint & 0x000000ff)
-    return part1+part2+part3+part4
+    if sys.hexversion >= 0x3000000:
+        return bytes(part1+part2+part3+part4, 'raw_unicode_escape')
+    else:
+        return part1+part2+part3+part4
 
 def decodeint(mystring):
     """Takes a 4 byte string and converts it into a 4 byte integer.
@@ -79,9 +90,15 @@ def xpak(rootdir,outfile=None):
         os.chdir("/")
         origdir="/"
     os.chdir(rootdir)
-    mylist=[]
+    mylist = []
 
-    addtolist(mylist, "")
+    if sys.hexversion >= 0x3000000:
+        edir = b""
+    else:
+        edir = ""
+
+    addtolist(mylist, edir)
+
     mylist.sort()
     mydata = {}
     for x in mylist:
@@ -101,19 +118,21 @@ def xpak(rootdir,outfile=None):
 def xpak_mem(mydata):
     """Create an xpack segement from a map object."""
     if sys.hexversion >= 0x3000000:
-        indexglob=b""
-        dataglob=b""
+        indexglob = b""
+        dataglob = b""
     else:
-        indexglob=""
-        dataglob=""
-    indexpos=0
-    datapos=0
-    for x, newglob in list(mydata.items()):
-        mydatasize=len(newglob)
-        indexglob=indexglob+encodeint(len(x))+x+encodeint(datapos)+encodeint(mydatasize)
-        indexpos=indexpos+4+len(x)+4+4
-        dataglob=dataglob+newglob
-        datapos=datapos+mydatasize
+        indexglob = ""
+        dataglob = ""
+    indexpos = 0
+    datapos = 0
+
+    for x, newglob in mydata.items():
+        mydatasize = len(newglob)
+        int_enc_dir = encodeint(len(x)) + x
+        indexglob += int_enc_dir + encodeint(datapos) + encodeint(mydatasize)
+        indexpos = indexpos + 4 + len(x) + 4 + 4
+        dataglob = dataglob + newglob
+        datapos += mydatasize
     return XPAKPACK \
     + encodeint(len(indexglob)) \
     + encodeint(len(dataglob)) \
@@ -270,10 +289,12 @@ class tbz2:
         if not os.path.exists(datadir):
             os.makedirs(datadir)
         return self.unpackinfo(datadir)
-    def compose(self,datadir,cleanup=0):
+
+    def compose(self, datadir, cleanup=0):
         """Alias for recompose()."""
         return self.recompose(datadir, cleanup)
-    def recompose(self,datadir,cleanup=0):
+
+    def recompose(self, datadir, cleanup=0):
         """Creates an xpak segment from the datadir provided, truncates the tbz2
         to the end of regular data if an xpak segment already exists, and adds
         the new segment to the file with terminating info."""
