@@ -138,6 +138,7 @@ class PortagePlugin(SpmPlugin):
         'portagetree': {},
     }
 
+    PLUGIN_NAME = 'portage'
     ENV_FILE_COMP = "environment.bz2"
     EBUILD_EXT = ".ebuild"
 
@@ -544,7 +545,8 @@ class PortagePlugin(SpmPlugin):
         vartree = trees["vartree"]
         dblnk = self.portage.dblink(pkgcat, pkgname, "/", vartree.settings,
             treetype="vartree", vartree=vartree)
-        dblnk.lockdb()
+        if etpConst['uid'] == 0:
+            dblnk.lockdb()
         tar = tarfile.open(file_save_path, "w:bz2")
 
         contents = dblnk.getcontents()

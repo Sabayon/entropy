@@ -28,6 +28,9 @@ class SpmPlugin(Singleton):
     # argument values
     SUPPORTED_MATCH_TYPES = []
 
+    # Name of your Spm Plugin
+    PLUGIN_NAME = None
+
     def init_singleton(self, output_interface):
         """
         Source Package Manager Plugin singleton method.
