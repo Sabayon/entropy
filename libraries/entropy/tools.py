@@ -371,11 +371,9 @@ def is_valid_ascii(string):
     @return: True if string contains pure ASCII
     @rtype: bool
     """
-    try:
-        mystring = str(string)
-        del mystring
-    except (UnicodeDecodeError, UnicodeEncodeError,):
-        return False
+    for elem in string:
+        if not ((ord(elem) > 0x20) and (ord(elem) <= 0x80)):
+            return False
     return True
 
 def is_valid_unicode(string):
@@ -835,30 +833,6 @@ def md5obj_directory(directory):
                 block = readfile.read(1024)
             readfile.close()
     return m
-
-# kindly stolen from Anaconda
-# Copyright 1999-2008 Red Hat, Inc. <iutil.py>
-def getfd(filespec, readOnly = 0):
-    """
-    docstring_title
-
-    @param filespec: 
-    @type filespec: 
-    @keyword readOnly: 
-    @type readOnly: 
-    @return: 
-    @rtype: 
-    """
-    import types
-    if isinstance(filespec, int):
-        return filespec
-    if filespec == None:
-        filespec = "/dev/null"
-
-    flags = os.O_RDWR | os.O_CREAT
-    if (readOnly):
-        flags = os.O_RDONLY
-    return os.open(filespec, flags)
 
 def uncompress_file(file_path, destination_path, opener):
     """
@@ -2949,7 +2923,8 @@ def hide_ftp_password(uri):
     @rtype: 
     """
     ftppassword = uri.split("@")[:-1]
-    if not ftppassword: return uri
+    if not ftppassword:
+        return uri
     ftppassword = '@'.join(ftppassword)
     ftppassword = ftppassword.split(":")[-1]
     if not ftppassword:
@@ -3130,7 +3105,7 @@ def convert_seconds_to_fancy_output(seconds):
     return ':'.join(output)
 
 # Temporary files cleaner
-def cleanup(toCleanDirs = []):
+def cleanup(toCleanDirs = None):
     """
     docstring_title
 
@@ -3139,13 +3114,13 @@ def cleanup(toCleanDirs = []):
     @return: 
     @rtype: 
     """
-
     if not toCleanDirs:
         toCleanDirs = [ etpConst['packagestmpdir'], etpConst['logdir'] ]
-    counter = 0
 
+    counter = 0
     for xdir in toCleanDirs:
-        print_info(red(" * ")+"Cleaning "+darkgreen(xdir)+" directory...", back = True)
+        print_info(red(" * ")+"Cleaning "+darkgreen(xdir)+" directory...",
+            back = True)
         if os.path.isdir(xdir):
             dircontent = os.listdir(xdir)
             if dircontent != []:
@@ -3206,7 +3181,8 @@ def write_ordered_repositories_entries(ordered_repository_list):
     """
     content = read_repositories_conf()
     content = [x.strip() for x in content]
-    repolines = [x for x in content if x.startswith("repository|") and (len(x.split("|")) == 5)]
+    repolines = [x for x in content if x.startswith("repository|") and \
+        (len(x.split("|")) == 5)]
     content = [x for x in content if x not in repolines]
     for repoid in ordered_repository_list:
         # get repoid from repolines
@@ -3216,7 +3192,8 @@ def write_ordered_repositories_entries(ordered_repository_list):
                 content.append(x)
     _save_repositories_content(content)
 
-def save_repository_settings(repodata, remove = False, disable = False, enable = False):
+def save_repository_settings(repodata, remove = False, disable = False,
+    enable = False):
     """
     docstring_title
 
@@ -3582,7 +3559,9 @@ def read_elf_dynamic_libraries(elf_file):
         if not os.access(etpConst['systemroot']+"/usr/bin/readelf", os.X_OK):
             FileNotFound('FileNotFound: no readelf')
         readelf_avail_check = True
-    return set([x.strip().split()[-1][1:-1] for x in getstatusoutput('/usr/bin/readelf -d %s' % (elf_file,))[1].split("\n") if (x.find("(NEEDED)") != -1)])
+    return set([x.strip().split()[-1][1:-1] for x in \
+        getstatusoutput('/usr/bin/readelf -d %s' % (elf_file,))[1].split("\n") \
+            if (x.find("(NEEDED)") != -1)])
 
 def read_elf_broken_symbols(elf_file):
     """
@@ -3598,7 +3577,9 @@ def read_elf_broken_symbols(elf_file):
         if not os.access(etpConst['systemroot']+"/usr/bin/ldd", os.X_OK):
             FileNotFound('FileNotFound: no ldd')
         ldd_avail_check = True
-    return set([x.strip().split("\t")[0].split()[-1] for x in getstatusoutput('/usr/bin/ldd -r %s' % (elf_file,))[1].split("\n") if (x.find("undefined symbol:") != -1)])
+    return set([x.strip().split("\t")[0].split()[-1] for x in \
+        getstatusoutput('/usr/bin/ldd -r %s' % (elf_file,))[1].split("\n") if \
+            (x.find("undefined symbol:") != -1)])
 
 def read_elf_linker_paths(elf_file):
     """
@@ -3614,7 +3595,9 @@ def read_elf_linker_paths(elf_file):
         if not os.access(etpConst['systemroot']+"/usr/bin/readelf", os.X_OK):
             FileNotFound('FileNotFound: no readelf')
         readelf_avail_check = True
-    data = [x.strip().split()[-1][1:-1].split(":") for x in getstatusoutput('readelf -d %s' % (elf_file,))[1].split("\n") if not ((x.find("(RPATH)") == -1) and (x.find("(RUNPATH)") == -1))]
+    data = [x.strip().split()[-1][1:-1].split(":") for x in \
+        getstatusoutput('readelf -d %s' % (elf_file,))[1].split("\n") if not \
+            ((x.find("(RPATH)") == -1) and (x.find("(RUNPATH)") == -1))]
     mypaths = []
     for mypath in data:
         for xpath in mypath:
@@ -3886,4 +3869,3 @@ def collect_paths():
         paths = set(paths.split(":"))
         path |= paths
     return path
-
