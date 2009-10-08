@@ -26,7 +26,7 @@ def smart(options):
     # check if I am root
     if (not Equo.entropyTools.is_root()):
         mytxt = _("You are not") # you are not root
-        print_error(red(mytxt)+bold("root")+red("."))
+        print_error(red(mytxt)+" "+bold("root")+red("."))
         return 1
 
     # Options available for all the packages submodules
