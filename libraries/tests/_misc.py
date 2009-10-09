@@ -55,6 +55,18 @@ def get_test_xpak_empty_package():
     test_pkg = "aspell-es-0.50.2.tbz2"
     return get_test_generic_package(test_pkg)
 
+def get_png():
+    test_pkg = "sabayon.png"
+    return get_test_generic_package(test_pkg)
+
+def get_dl_so_amd():
+    test_pkg = "libdl-2.10.1.so"
+    return get_test_generic_package(test_pkg)
+
+def get_dl_so_amd_2():
+    test_pkg = "libkdb5.so.4.0"
+    return get_test_generic_package(test_pkg)
+
 def get_test_package_name():
     return "zlib"
 
