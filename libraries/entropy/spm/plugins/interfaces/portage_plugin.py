@@ -2120,6 +2120,36 @@ class PortagePlugin(SpmPlugin):
 
         return 0
 
+    def _extract_elog(self, logfile):
+        """
+        Extract Portage package merge log file information.
+
+        @param logfile: path to log file
+        @type logfile: string
+        @return: content of the log file
+        @rtype: string
+        """
+
+        logline = False
+        logoutput = []
+        f = open(logfile, "r")
+        reallog = f.readlines()
+        f.close()
+
+        for line in reallog:
+            if line.startswith("INFO: postinst") or \
+                line.startswith("LOG: postinst"):
+                logline = True
+                continue
+                # disable all the others
+            elif line.startswith("LOG:"):
+                logline = False
+                continue
+            if (logline) and (line.strip()):
+                # trap !
+                logoutput.append(line.strip())
+        return logoutput
+
     def _get_portage_vartree(self, root = None):
 
         if root is None:
@@ -3093,7 +3123,7 @@ class PortagePlugin(SpmPlugin):
                 for item in foundfiles: mtimes.append((entropy.tools.get_file_unix_mtime(os.path.join(log_dir, item)), item))
                 mtimes = sorted(mtimes)
                 elogfile = mtimes[-1][1]
-            messages = entropy.tools.extract_elog(os.path.join(log_dir, elogfile))
+            messages = self._extract_elog(os.path.join(log_dir, elogfile))
             for message in messages:
                 message = message.replace("emerge", "install")
                 pkg_messages.append(const_convert_to_unicode(message))
