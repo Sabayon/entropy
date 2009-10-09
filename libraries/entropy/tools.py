@@ -29,7 +29,7 @@ from entropy.output import TextInterface, print_info, print_generic, red, \
     darkgreen, green
 from entropy.const import etpConst, const_kill_threads, const_islive, \
     const_isunicode, const_convert_to_unicode, const_convert_to_rawstring, \
-    const_cmp
+    const_cmp, const_israwstring
 from entropy.exceptions import FileNotFound, InvalidAtom, InvalidDataType, \
     DirectoryNotFound
 
@@ -159,7 +159,10 @@ def get_traceback():
     @rtype: string
     """
     import traceback
-    from io import StringIO
+    if sys.hexversion >= 0x3000000:
+        from io import StringIO
+    else:
+        from cStringIO import StringIO
     buf = StringIO()
     traceback.print_exc(file = buf)
     return buf.getvalue()
@@ -265,30 +268,30 @@ def get_remote_data(url, timeout = 5):
     return result
 
 def _is_png_file(path):
-    with open(path, "r") as f:
+    with open(path, "rb") as f:
         x = f.read(4)
-    if x == '\x89PNG':
+    if x == const_convert_to_rawstring('\x89PNG'):
         return True
     return False
 
 def _is_jpeg_file(path):
-    with open(path, "r") as f:
+    with open(path, "rb") as f:
         x = f.read(10)
-    if x == '\xff\xd8\xff\xe0\x00\x10JFIF':
+    if x == const_convert_to_rawstring('\xff\xd8\xff\xe0\x00\x10JFIF'):
         return True
     return False
 
 def _is_bmp_file(path):
-    with open(path, "r") as f:
+    with open(path, "rb") as f:
         x = f.read(2)
-    if x == 'BM':
+    if x == const_convert_to_rawstring('BM'):
         return True
     return False
 
 def _is_gif_file(path):
-    with open(path, "r") as f:
+    with open(path, "rb") as f:
         x = f.read(5)
-    if x == 'GIF89':
+    if x == const_convert_to_rawstring('GIF89'):
         return True
     return False
 
@@ -1357,7 +1360,7 @@ def remove_edb(tbz2file, savedir):
     old.seek(0)
     counter = 0
     max_read_len = 1024
-    db_tag = etpConst['databasestarttag']
+    db_tag = const_convert_to_rawstring(etpConst['databasestarttag'])
     db_tag_len = len(db_tag)
     start_position -= db_tag_len
 
@@ -1373,7 +1376,7 @@ def remove_edb(tbz2file, savedir):
     new.flush()
     new.close()
     old.close()
-    return savedir+"/"+os.path.basename(tbz2file)
+    return os.path.join(savedir, os.path.basename(tbz2file))
 
 # This function creates the .md5 file related to the given package file
 def create_md5_file(filepath):
@@ -1389,7 +1392,10 @@ def create_md5_file(filepath):
     hashfile = filepath+etpConst['packagesmd5fileext']
     f = open(hashfile, "w")
     name = os.path.basename(filepath)
-    f.write(md5hash+"  "+name+"\n")
+    if sys.hexversion >= 0x3000000:
+        f.write(md5hash+"  "+name+"\n")
+    else:
+        f.write(md5hash+"  "+name.encode('utf-8')+"\n")
     f.flush()
     f.close()
     return hashfile
@@ -1407,7 +1413,10 @@ def create_sha512_file(filepath):
     hashfile = filepath+etpConst['packagessha512fileext']
     f = open(hashfile, "w")
     tbz2name = os.path.basename(filepath)
-    f.write(sha512hash+"  "+tbz2name+"\n")
+    if sys.hexversion >= 0x3000000:
+        f.write(sha512hash+"  "+tbz2name+"\n")
+    else:
+        f.write(sha512hash+"  "+tbz2name.encode('utf-8')+"\n")
     f.flush()
     f.close()
     return hashfile
@@ -1425,7 +1434,10 @@ def create_sha256_file(filepath):
     hashfile = filepath+etpConst['packagessha256fileext']
     f = open(hashfile, "w")
     tbz2name = os.path.basename(filepath)
-    f.write(sha256hash+"  "+tbz2name+"\n")
+    if sys.hexversion >= 0x3000000:
+        f.write(sha256hash+"  "+tbz2name+"\n")
+    else:
+        f.write(sha256hash+"  "+tbz2name.encode('utf-8')+"\n")
     f.flush()
     f.close()
     return hashfile
@@ -1443,7 +1455,10 @@ def create_sha1_file(filepath):
     hashfile = filepath+etpConst['packagessha1fileext']
     f = open(hashfile, "w")
     tbz2name = os.path.basename(filepath)
-    f.write(sha1hash+"  "+tbz2name+"\n")
+    if sys.hexversion >= 0x3000000:
+        f.write(sha1hash+"  "+tbz2name+"\n")
+    else:
+        f.write(sha1hash+"  "+tbz2name.encode('utf-8')+"\n")
     f.flush()
     f.close()
     return hashfile
@@ -1529,6 +1544,8 @@ def md5string(string):
     @return: 
     @rtype: 
     """
+    if const_isunicode(string):
+        string = const_convert_to_rawstring(string)
     m = hashlib.md5()
     m.update(string)
     return m.hexdigest()
@@ -1584,13 +1601,12 @@ def generic_file_content_parser(filepath):
             data.append(line)
     return data
 
-# used by equo, this function retrieves the new safe Gentoo-aware file path
-def allocate_masked_file(file, fromfile):
+def allocate_masked_file(maskfile, fromfile):
     """
     docstring_title
 
-    @param file: 
-    @type file: 
+    @param maskfile: 
+    @type maskfile: 
     @param fromfile: 
     @type fromfile: 
     @return: 
@@ -1598,11 +1614,11 @@ def allocate_masked_file(file, fromfile):
     """
 
     # check if file and tofile are equal
-    if os.path.isfile(file) and os.path.isfile(fromfile):
+    if os.path.isfile(maskfile) and os.path.isfile(fromfile):
         old = md5sum(fromfile)
-        new = md5sum(file)
+        new = md5sum(maskfile)
         if old == new:
-            return file, False
+            return maskfile, False
 
     counter = -1
     newfile = ""
@@ -1618,15 +1634,19 @@ def allocate_masked_file(file, fromfile):
             txtcounter = "0"+txtcounter
             oldtxtcounter = "0"+oldtxtcounter
             cnt += 1
-        newfile = os.path.dirname(file)+"/"+"._cfg"+txtcounter+"_"+os.path.basename(file)
+        newfile = os.path.join(os.path.dirname(maskfile),
+            "._cfg" + txtcounter + "_" + os.path.basename(maskfile))
         if counter > 0:
-            previousfile = os.path.dirname(file)+"/"+"._cfg"+oldtxtcounter+"_"+os.path.basename(file)
+            previousfile = os.path.join(os.path.dirname(maskfile),
+                "._cfg" + oldtxtcounter + "_" + os.path.basename(maskfile))
         else:
-            previousfile = os.path.dirname(file)+"/"+"._cfg0000_"+os.path.basename(file)
+            previousfile = os.path.join(os.path.dirname(maskfile),
+                "._cfg0000_" + os.path.basename(maskfile))
         if not os.path.exists(newfile):
             break
     if not newfile:
-        newfile = os.path.dirname(file)+"/"+"._cfg0000_"+os.path.basename(file)
+        newfile = os.path.join(os.path.dirname(maskfile),
+            "._cfg0000_" + os.path.basename(maskfile))
     else:
 
         if os.path.exists(previousfile):
@@ -1637,52 +1657,22 @@ def allocate_masked_file(file, fromfile):
             if new == old:
                 return previousfile, False
 
-            # compare old and new, if they match, suggest previousfile directly
-            new = md5sum(file)
+            # compare old and new, if they match,
+            # suggest previousfile directly
+            new = md5sum(maskfile)
             old = md5sum(previousfile)
             if (new == old):
                 return previousfile, False
 
     return newfile, True
 
-def extract_elog(file):
-    """
-    docstring_title
-
-    @param file: 
-    @type file: 
-    @return: 
-    @rtype: 
-    """
-
-    logline = False
-    logoutput = []
-    f = open(file, "r")
-    reallog = f.readlines()
-    f.close()
-
-    for line in reallog:
-        if line.startswith("INFO: postinst") or line.startswith("LOG: postinst"):
-            logline = True
-            continue
-            # disable all the others
-        elif line.startswith("LOG:"):
-            logline = False
-            continue
-        if (logline) and (line.strip()):
-            # trap !
-            logoutput.append(line.strip())
-    return logoutput
-
 # Imported from Gentoo portage_dep.py
 # Copyright 2003-2004 Gentoo Foundation
 # done to avoid the import of portage_dep here
-
 ver_regexp = re.compile("^(cvs\\.)?(\\d+)((\\.\\d+)*)([a-z]?)((_(pre|p|beta|alpha|rc)\\d*)*)(-r(\\d+))?$")
 suffix_regexp = re.compile("^(alpha|beta|rc|pre|p)(\\d*)$")
 suffix_value = {"pre": -2, "p": 0, "alpha": -4, "beta": -3, "rc": -1}
 endversion_keys = ["pre", "p", "alpha", "beta", "rc"]
-
 
 def isjustpkgname(mypkg):
     """
@@ -2229,7 +2219,7 @@ def dep_get_entropy_revision(mydep):
 
 
 dep_revmatch = re.compile('^r[0-9]')
-def dep_get_portage_revision(mydep):
+def dep_get_spm_revision(mydep):
     """
     docstring_title
 
@@ -2265,7 +2255,7 @@ def dep_get_match_in_repos(mydep):
     else:
         return mydep, None
 
-def dep_gettag(dep):
+def dep_gettag(mydep):
 
     """
     Retrieve the slot on a depend.
@@ -2275,7 +2265,8 @@ def dep_gettag(dep):
         '2.6.23-sabayon-r1'
 
     """
-
+    dep = mydep[:]
+    dep = remove_entropy_revision(dep)
     colon = dep.rfind("#")
     if colon != -1:
         mydep = dep[colon+1:]
@@ -2292,15 +2283,7 @@ def remove_package_operators(atom):
     @return: 
     @rtype: 
     """
-    try:
-        while atom:
-            if atom[0] in ('>', '<', '=', '~',):
-                atom = atom[1:]
-                continue
-            break
-    except IndexError:
-        pass
-    return atom
+    return atom.lstrip("><=~")
 
 # Version compare function taken from portage_versions.py
 # portage_versions.py -- core Portage functionality
@@ -2340,7 +2323,8 @@ def compare_versions(ver1, ver2):
     elif not match2.groups():
         invalid_rc = 1
         invalid = True
-    if invalid: return invalid_rc
+    if invalid:
+        return invalid_rc
 
     # building lists of the version parts before the suffix
     # first part is simple
@@ -2955,7 +2939,7 @@ def extract_ftp_data(ftpuri):
         else:
             ftppassword = ftppassword[0]
             ftppassword = ftppassword.split(":")[-1]
-            if (not ftppassword):
+            if not ftppassword:
                 ftppassword = "anonymous"
 
     ftpport = ftpuri.split(":")[-1]
@@ -2966,12 +2950,14 @@ def extract_ftp_data(ftpuri):
 
     ftpdir = '/'
     if ftpuri.count("/") > 2:
-        ftpdir = ftpuri.split("ftp://")[-1]
-        ftpdir = ftpdir.split("/")[-1]
+        if ftpuri.startswith("ftp://"):
+            ftpdir = ftpuri[6:]
+        ftpdir = "/" + ftpdir.split("/", 1)[-1]
         ftpdir = ftpdir.split(":")[0]
-        if ftpdir.endswith("/"):
-            ftpdir = ftpdir[:len(ftpdir)-1]
-        if not ftpdir: ftpdir = "/"
+        if not ftpdir:
+            ftpdir = '/'
+        elif ftpdir.endswith("/") and (ftpdir != "/"):
+            ftpdir = ftpdir[:-1]
 
     return ftpuser, ftppassword, ftpport, ftpdir
 
@@ -3620,10 +3606,10 @@ def xml_from_dict_extended(dictionary):
     for key, value in list(dictionary.items()):
         item = doc.createElement('item')
         item.setAttribute('value', key)
-        if isinstance(value, str):
-            mytype = "str"
-        elif const_isunicode(value):
+        if const_isunicode(value):
             mytype = "unicode"
+        elif isinstance(value, str):
+            mytype = "str"
         elif isinstance(value, list):
             mytype = "list"
         elif isinstance(value, set):
@@ -3658,6 +3644,8 @@ def dict_from_xml_extended(xml_string):
     @return: 
     @rtype: 
     """
+    if const_isunicode(xml_string):
+        xml_string = const_convert_to_rawstring(xml_string, 'utf-8')
     from xml.dom import minidom
     doc = minidom.parseString(xml_string)
     entropies = doc.getElementsByTagName("entropy")
@@ -3671,8 +3659,13 @@ def dict_from_xml_extended(xml_string):
             return obj
         return const_convert_to_unicode(obj)
 
+    def convert_raw(obj):
+        if const_israwstring(obj):
+            return obj
+        return const_convert_to_rawstring(obj)
+
     my_map = {
-        "str": str,
+        "str": convert_raw,
         "unicode": convert_unicode,
         "list": list,
         "set": set,
@@ -3687,24 +3680,39 @@ def dict_from_xml_extended(xml_string):
     mydict = {}
     for item in items:
         key = item.getAttribute('value')
-        if not key: continue
+        if not key:
+            continue
+
         mytype = item.getAttribute('type')
-        mytype_m = my_map.get(mytype)
-        if mytype_m == None:
-            raise TypeError()
+        mytype_m = my_map.get(mytype, 0)
+        if mytype_m == 0:
+            raise TypeError("%s is unsupported" % (mytype,))
+
         try:
             data = item.firstChild.data
         except AttributeError:
             data = ''
+
         if mytype in ("list", "set", "frozenset", "dict", "tuple",):
-            if data:
-                if data[0] not in ("(", "[", "s", "{",):
-                    data = ''
-            mydict[key] = eval(data)
+
+            valid_strs = ("(", "[", "set(", "frozenset(", "{")
+            valid = False
+            for xts in valid_strs:
+                if data.startswith(xts):
+                    valid = True
+                    break
+            if not valid:
+                data = ''
+            if not data:
+                mydict[key] = None
+            else:
+                mydict[key] = eval(data)
+
         elif mytype == "None":
             mydict[key] = None
         else:
             mydict[key] = mytype_m(data)
+
     return mydict
 
 def xml_from_dict(dictionary):
@@ -3737,6 +3745,8 @@ def dict_from_xml(xml_string):
     @return: 
     @rtype: 
     """
+    if const_isunicode(xml_string):
+        xml_string = const_convert_to_rawstring(xml_string, 'utf-8')
     from xml.dom import minidom
     doc = minidom.parseString(xml_string)
     entropies = doc.getElementsByTagName("entropy")
