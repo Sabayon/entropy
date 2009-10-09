@@ -8687,7 +8687,7 @@ class EntropyRepository:
                             pkgversion)
 
                 if (direction == "~"):
-                    pkgrevision = self.entropyTools.dep_get_portage_revision(
+                    pkgrevision = self.entropyTools.dep_get_spm_revision(
                         pkgversion)
                     pkgversion = self.entropyTools.remove_revision(pkgversion)
 
@@ -8695,7 +8695,7 @@ class EntropyRepository:
 
                     dbver = self.retrieveVersion(idpackage)
                     if (direction == "~"):
-                        myrev = self.entropyTools.dep_get_portage_revision(
+                        myrev = self.entropyTools.dep_get_spm_revision(
                             dbver)
                         myver = self.entropyTools.remove_revision(dbver)
                         if myver == pkgversion and pkgrevision <= myrev:

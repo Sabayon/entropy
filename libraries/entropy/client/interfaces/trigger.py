@@ -242,7 +242,7 @@ class Trigger:
             if const_isunicode(pv):
                 pv = pv.encode('utf-8')
 
-            pr = self.entropyTools.dep_get_portage_revision(pv)
+            pr = self.entropyTools.dep_get_spm_revision(pv)
             pvr = pv
             if pr == "r0": pvr += "-%s" % (pr,)
 
