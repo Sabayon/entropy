@@ -4,6 +4,13 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
+    - Python3:
+        - when dealing with sockets, always pass raw string
+
+    - remove entropy spm (sort_update_files) from entropy.server
+    - bind repo cache validation to repo checksum
+    - move entropy.xpak to entropy.spm
+    - move all the portage related stuff in entropy.tools to entropy.spm
     - move sensible pkgs to alt dir
     - move etpConst['spm'] to entropy.spm
     - entropy.db hookable plugins support (atom/dep validation, db taint,
