@@ -517,6 +517,16 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
+    @staticmethod
+    def execute_qa_tests(package_path):
+        """
+        Execute Source Package Manager based QA tests on Entropy package
+        files. This method can be used to test Entropy produced packages
+        to make sure that they are fine on this side too. It is called
+        by Entropy QA module (entropy.qa).
+        """
+        raise NotImplementedError()
+
     def execute_package_phase(self, package_metadata, phase_name):
         """
         Execute Source Package Manager package phase (postinstall, preinstall,
