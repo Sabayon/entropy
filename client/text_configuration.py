@@ -58,11 +58,13 @@ def update(cmd = None):
     if cmd != None:
         docmd = True
     while True:
-        print_info(brown(" @@ ")+darkgreen("%s ..." % (_("Scanning filesystem"),)))
+        print_info(brown(" @@ ") + \
+            darkgreen("%s ..." % (_("Scanning filesystem"),)))
         scandata = Equo.FileUpdates.scanfs(dcache = cache_status)
         if cache_status:
             for x in scandata:
-                print_info("("+blue(str(x))+") "+red(" %s: " % (_("file"),) )+etpConst['systemroot']+scandata[x]['destination'])
+                print_info("("+blue(str(x))+") "+red(" %s: " % (_("file"),) ) + \
+                    etpConst['systemroot'] + scandata[x]['destination'])
         cache_status = True
 
         if (not scandata):
@@ -91,12 +93,18 @@ def update(cmd = None):
                     Equo.FileUpdates.remove_from_cache(key)
                     scandata = Equo.FileUpdates.scandata
                     continue
-                print_info(darkred("%s: " % (_("Configuration file"),) )+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
+                print_info(darkred("%s: " % (_("Configuration file"),) ) + \
+                    darkgreen(etpConst['systemroot']+scandata[key]['destination']))
                 if cmd == -3:
                     rc = Equo.askQuestion(">>   %s" % (_("Overwrite ?"),) )
                     if rc == _("No"):
                         continue
-                print_info(darkred("%s " % (_("Moving"),) )+darkgreen(etpConst['systemroot']+scandata[key]['source'])+darkred(" %s " % (_("to"),) )+brown(etpConst['systemroot']+scandata[key]['destination']))
+                print_info(darkred("%s " % (_("Moving"),) ) + \
+                    darkgreen(etpConst['systemroot'] + \
+                    scandata[key]['source']) + \
+                    darkred(" %s " % (_("to"),) ) + \
+                    brown(etpConst['systemroot'] + \
+                    scandata[key]['destination']))
 
                 Equo.FileUpdates.merge_file(key)
                 scandata = Equo.FileUpdates.scandata
@@ -112,12 +120,14 @@ def update(cmd = None):
                     scandata = Equo.FileUpdates.scandata
 
                     continue
-                print_info(darkred("%s: " % (_("Configuration file"),) )+darkgreen(etpConst['systemroot']+scandata[key]['destination']))
+                print_info(darkred("%s: " % (_("Configuration file"),) ) + \
+                    darkgreen(etpConst['systemroot']+scandata[key]['destination']))
                 if cmd == -7:
                     rc = Equo.askQuestion(">>   %s" % (_("Discard ?"),) )
                     if rc == _("No"):
                         continue
-                print_info(darkred("%s " % (_("Discarding"),) )+darkgreen(etpConst['systemroot']+scandata[key]['source']))
+                print_info(darkred("%s " % (_("Discarding"),) ) + \
+                    darkgreen(etpConst['systemroot']+scandata[key]['source']))
 
                 Equo.FileUpdates.remove_file(key)
                 scandata = Equo.FileUpdates.scandata
@@ -135,7 +145,8 @@ def update(cmd = None):
 
                     continue
                 if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['destination']):
-                    print_info(darkred("%s: " % (_("Automerging file"),) )+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+                    print_info(darkred("%s: " % (_("Automerging file"),) ) + \
+                        darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 
                     Equo.FileUpdates.merge_file(cmd)
                     scandata = Equo.FileUpdates.scandata
@@ -143,9 +154,11 @@ def update(cmd = None):
                     continue
                 # end check
 
-                diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'], etpConst['systemroot']+scandata[cmd]['source'])
+                diff = showdiff(etpConst['systemroot']+scandata[cmd]['destination'],
+                    etpConst['systemroot']+scandata[cmd]['source'])
                 if (not diff):
-                    print_info(darkred("%s " % (_("Automerging file"),) )+darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
+                    print_info(darkred("%s " % (_("Automerging file"),) ) + \
+                        darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 
                     Equo.FileUpdates.merge_file(cmd)
                     scandata = Equo.FileUpdates.scandata
@@ -183,7 +196,8 @@ def update(cmd = None):
                         break
 
                     elif action == 2:
-                        print_info(darkred("%s " % (_("Deleting file"),) ) + darkgreen(etpConst['systemroot'] + \
+                        print_info(darkred("%s " % (_("Deleting file"),) ) + \
+                            darkgreen(etpConst['systemroot'] + \
                             scandata[cmd]['source'])
                         )
 
@@ -212,7 +226,8 @@ def update(cmd = None):
                         diff = showdiff(etpConst['systemroot'] + scandata[cmd]['destination'], etpConst['systemroot'] + \
                             scandata[cmd]['source'])
                         if not diff:
-                            print_info(darkred("%s " % (_("Automerging file"),) ) + darkgreen(scandata[cmd]['source']))
+                            print_info(darkred("%s " % (_("Automerging file"),) ) + \
+                                darkgreen(scandata[cmd]['source']))
 
                             Equo.FileUpdates.merge_file(cmd)
                             scandata = Equo.FileUpdates.scandata
@@ -224,7 +239,8 @@ def update(cmd = None):
 
                     elif action == 4:
                         # show diffs again
-                        diff = showdiff(etpConst['systemroot'] + scandata[cmd]['destination'], etpConst['systemroot'] + scandata[cmd]['source'])
+                        diff = showdiff(etpConst['systemroot'] + scandata[cmd]['destination'],
+                            etpConst['systemroot'] + scandata[cmd]['source'])
                         continue
 
                 if (comeback):
@@ -269,17 +285,17 @@ def showdiff(fromfile, tofile):
     output = getoutput(diffcmd).split("\n")
     coloured = []
     for line in output:
-	if line.startswith("---"):
-	    line = darkred(line)
-	elif line.startswith("+++"):
-	    line = red(line)
-	elif line.startswith("@@"):
-	    line = brown(line)
-	elif line.startswith("-"):
-	    line = blue(line)
-	elif line.startswith("+"):
-	    line = darkgreen(line)
-	coloured.append(line+"\n")
+    if line.startswith("---"):
+        line = darkred(line)
+    elif line.startswith("+++"):
+        line = red(line)
+    elif line.startswith("@@"):
+        line = brown(line)
+    elif line.startswith("-"):
+        line = blue(line)
+    elif line.startswith("+"):
+        line = darkgreen(line)
+    coloured.append(line+"\n")
     f = open("/tmp/"+os.path.basename(fromfile), "w")
     f.writelines(coloured)
     f.flush()
@@ -287,10 +303,11 @@ def showdiff(fromfile, tofile):
     print()
     os.system("cat \"%s\" | less --no-init --QUIT-AT-EOF" % ("/tmp/"+os.path.basename(fromfile),))
     try:
-	os.remove("/tmp/"+os.path.basename(fromfile))
+        os.remove("/tmp/"+os.path.basename(fromfile))
     except OSError:
-	pass
-    if output == ['']: output = [] #FIXME beautify
+        pass
+    if output == ['']:
+        output = [] #FIXME beautify
     return output
 
 
@@ -302,12 +319,12 @@ def confinfo():
     data = Equo.FileUpdates.scanfs(dcache = False)
     counter = 0
     for item in data:
-	counter += 1
-	print_info(" ("+blue(str(counter))+") "+"[auto:"+str(data[item]['automerge'])+"]"+red(" %s: " % (_("file"),) )+str(item))
+        counter += 1
+        print_info(" ("+blue(str(counter))+") "+"[auto:"+str(data[item]['automerge'])+"]"+red(" %s: " % (_("file"),) )+str(item))
     print_info(red(" @@ ")+brown("%s:\t\t" % (_("Unique files that would be update"),) )+red(str(len(data))))
     automerge = 0
     for x in data:
-	if data[x]['automerge']:
-	    automerge += 1
+        if data[x]['automerge']:
+            automerge += 1
     print_info(red(" @@ ")+brown("%s:\t\t" % (_("Unique files that would be automerged"),) )+green(str(automerge)))
     return 0
