@@ -1262,7 +1262,10 @@ class PortagePlugin(SpmPlugin):
         for key in keys:
             mykeypath = os.path.join(myebuilddir, key)
             if os.path.isfile(mykeypath) and os.access(mykeypath, os.R_OK):
-                f = open(mykeypath, "rb")
+                if sys.hexversion >= 0x3000000:
+                    f = open(mykeypath, "r", encoding = "raw_unicode_escape")
+                else:
+                    f = open(mykeypath, "rb")
                 metadata[key] = f.readline().strip()
                 f.close()
 
@@ -1573,10 +1576,17 @@ class PortagePlugin(SpmPlugin):
                         phase, package, Exception, e,)
                 )
 
-                mytxt = "%s: %s %s. %s. %s: %s + %s [%s]" % (
+                mytxt = "%s: %s %s." % (
                     bold(_("QA")),
                     brown(_("Cannot run Source Package Manager trigger for")),
                     bold(str(package)),
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
+                mytxt = "%s. %s: %s + %s [%s]" % (
                     brown(_("Please report it")),
                     bold(_("Attach this")),
                     darkred(etpConst['spmlogfile']),
@@ -1678,10 +1688,17 @@ class PortagePlugin(SpmPlugin):
                     " Exception %s [%s]" % (phase, package, Exception, e,)
                 )
 
-                mytxt = "%s: %s %s. %s. %s: %s + %s [%s]" % (
+                mytxt = "%s: %s %s." % (
                     bold(_("QA")),
                     brown(_("Cannot run Source Package Manager trigger for")),
                     bold(str(package)),
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 0,
+                    header = red("   ## ")
+                )
+                mytxt = "%s. %s: %s + %s [%s]" % (
                     brown(_("Please report it")),
                     bold(_("Attach this")),
                     darkred(etpConst['spmlogfile']),
