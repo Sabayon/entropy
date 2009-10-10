@@ -225,17 +225,6 @@ class RepositoryMixin:
         if r != -1:
             self.SystemSettings['repositories']['available'][reponame]['dbrevision'] = str(r)
 
-    def get_repository_db_file_checksum(self, reponame):
-        fname = self.SystemSettings['repositories']['available'][reponame]['dbpath']+"/"+etpConst['etpdatabasehashfile']
-        mhash = "-1"
-        if os.path.isfile(fname) and os.access(fname, os.R_OK):
-            with open(fname, "r") as f:
-                try:
-                    mhash = f.readline().strip().split()[0]
-                except (OSError, IOError, IndexError,):
-                    pass
-        return mhash
-
     def add_repository(self, repodata):
         product = self.SystemSettings['repositories']['product']
         branch = self.SystemSettings['repositories']['branch']

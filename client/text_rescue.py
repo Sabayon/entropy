@@ -751,7 +751,6 @@ def getinfo(dict = False):
             info['Repository databases'][x]['Installation internal protected directory masks'] = dbconn.listConfigProtectEntries(mask = True)
             info['Repository databases'][x]['Total available packages'] = len(dbconn.listAllIdpackages())
             info['Repository databases'][x]['Database revision'] = Equo.get_repository_revision(x)
-            info['Repository databases'][x]['Database hash'] = Equo.get_repository_db_file_checksum(x)
 
     if (dict):
         return info

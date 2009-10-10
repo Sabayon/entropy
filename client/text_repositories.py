@@ -146,8 +146,6 @@ def showRepositoryInfo(reponame):
     print_info( red("\t%s: %s") % (_("Repository name"), bold(reponame),) )
     print_info( red("\t%s: %s") % (_("Repository database path"), blue(Equo.SystemSettings['repositories']['available'][reponame]['dbpath']),) )
     revision = Equo.get_repository_revision(reponame)
-    mhash = Equo.get_repository_db_file_checksum(reponame)
-    print_info( red("\t%s: %s") % (_("Repository database checksum"), mhash,) )
     print_info( red("\t%s: %s") % (_("Repository revision"), darkgreen(str(revision)),) )
 
     return 0
