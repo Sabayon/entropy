@@ -583,11 +583,13 @@ def _showPackageInfo(foundAtoms, deps):
         if (etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']):
             print_info(red(" @@ ")+blue("%s: " % (_("Packages involved"),) )+str(totalatoms))
 
-        if deps:
-            if (etpUi['ask']):
+        if etpUi['ask']:
+            if deps:
                 rc = Equo.askQuestion("     %s" % (_("Would you like to continue with dependencies calculation ?"),) )
-                if rc == _("No"):
-                    return True, (0, 0)
+            else:
+                rc = Equo.askQuestion("     %s" % (_("Would you like to continue with the installation ?"),) )
+            if rc == _("No"):
+                return True, (0, 0)
 
     return False, (0, 0)
 
