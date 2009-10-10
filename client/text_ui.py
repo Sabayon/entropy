@@ -83,7 +83,7 @@ def package(options):
             except ValueError:
                 continue
             if myn not in list(range(2, 11)):
-                continue
+                myn = 10
             equoRequestMultifetch = myn
         elif (opt == "--nochecksum"):
             equoRequestChecksum = False
