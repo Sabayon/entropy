@@ -2029,6 +2029,63 @@ class PortagePlugin(SpmPlugin):
         return 0
 
     @staticmethod
+    def execute_qa_tests(package_path):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        tests = [PortagePlugin._test_environment_bz2]
+        msg = None
+        exec_rc = 0
+        for test in tests:
+            exec_rc, msg = test(package_path)
+            if exec_rc != 0:
+                break
+        return exec_rc, msg
+
+    @staticmethod
+    def _test_environment_bz2(package_path):
+
+        tmp_path = tempfile.mkdtemp()
+        entropy.tools.extract_xpak(package_path, tmpdir = tmp_path)
+        if not os.listdir(tmp_path):
+            shutil.rmtree(tmp_path)
+            return 1, "unable to extract xpak metadata"
+
+        # make sure we have the environment.bz2 file to check
+        env_file = os.path.join(tmp_path, PortagePlugin.ENV_FILE_COMP)
+        if not (os.path.isfile(env_file) and os.access(env_file, os.R_OK)):
+            shutil.rmtree(tmp_path)
+            return 2, "unable to locate %s file" % (
+                PortagePlugin.ENV_FILE_COMP,)
+
+        # read env file
+        bz_f = bz2.BZ2File(env_file, "r")
+        valid_lc_all = True
+        msg = None
+        lc_all_str = const_convert_to_rawstring("LC_ALL")
+        lc_all_c = const_convert_to_rawstring("LC_ALL=C")
+        lc_all_enus = const_convert_to_rawstring("LC_ALL=en_US")
+        try:
+
+            for line in bz_f.readlines():
+                if line.startswith(lc_all_str):
+                    if line.startswith(lc_all_c) or \
+                        line.startswith(lc_all_enus):
+                        continue
+                    valid_lc_all = False
+                    msg = "LC_ALL set to => %s" % (line.strip(),)
+                    break
+
+        finally:
+            bz_f.close()
+
+        env_rc = 0
+        if not valid_lc_all:
+            env_rc = 1
+        shutil.rmtree(tmp_path)
+        return env_rc, msg
+
+    @staticmethod
     def entropy_install_setup_hook(entropy_client, package_metadata):
         """
         Reimplemented from SpmPlugin class.

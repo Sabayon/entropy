@@ -991,6 +991,18 @@ class QAInterface:
 
         return valid
 
+    def __check_package_using_spm(self, package_path):
+
+        from entropy.spm.plugins.factory import get_default_class
+        spm_class = get_default_class()
+        spm_rc, spm_msg = spm_class.execute_qa_tests(package_path)
+
+        if spm_rc == 0:
+            return True
+        sys.stderr.write("QA Error: " + spm_msg)
+        sys.stderr.flush()
+        return False
+
     def entropy_package_checks(self, package_path):
         """
         Main method for the execution of QA tests on physical Entropy
@@ -1001,7 +1013,8 @@ class QAInterface:
         @return: True, if all checks passed
         @rtype: bool
         """
-        qa_methods = [self.__analyze_package_edb]
+        qa_methods = [self.__analyze_package_edb,
+            self.__check_package_using_spm]
         for method in qa_methods:
             qa_rc = method(package_path)
             if not qa_rc:

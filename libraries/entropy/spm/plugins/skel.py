@@ -524,6 +524,12 @@ class SpmPlugin(Singleton):
         files. This method can be used to test Entropy produced packages
         to make sure that they are fine on this side too. It is called
         by Entropy QA module (entropy.qa).
+
+        @param package_path: path to Entropy package
+        @type package_path: string
+        @return: tuple composed by error status and error message (if any).
+            Error status is an int with != 0 values if error occured.
+        @rtype: tuple
         """
         raise NotImplementedError()
 
