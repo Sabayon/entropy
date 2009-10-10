@@ -74,7 +74,6 @@
 ../libraries/entropy/tools.py
 ../libraries/entropy/transceivers.py
 ../libraries/entropy/xpak.py
-../libraries/test.py
 ../client/equo.py
 ../client/text_cache.py
 ../client/text_configuration.py
