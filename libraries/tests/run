@@ -14,11 +14,11 @@ sys.path.insert(0,'../')
 # set unit testing mode
 from entropy.const import etpSys
 etpSys['unittest'] = True
-from tests import db, client, server, misc, transceivers, tools, i18n, spm
+from tests import db, client, server, misc, transceivers, tools, i18n, spm, qa
 rc = 0
 
 # Add to the list the module to test
-mods = [db, client, server, misc, transceivers, tools, i18n, spm]
+mods = [db, client, server, misc, transceivers, tools, i18n, spm, qa]
 
 tests = []
 for mod in mods:

@@ -10,7 +10,7 @@ import tests._misc as _misc
 import tempfile
 import shutil
 
-class ToolsTest(unittest.TestCase):
+class SpmTest(unittest.TestCase):
 
     def setUp(self):
         self.Client = Client(noclientdb = 2, indexing = False, xcache = False,
