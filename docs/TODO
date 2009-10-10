@@ -7,6 +7,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - Python3:
         - when dealing with sockets, always pass raw string
 
+    - stop using pickle in entropy.services + ugc
     - remove entropy spm (sort_update_files) from entropy.server
     - bind repo cache validation to repo checksum
     - move entropy.xpak to entropy.spm
