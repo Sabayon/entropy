@@ -999,7 +999,7 @@ class QAInterface:
 
         if spm_rc == 0:
             return True
-        sys.stderr.write("QA Error: " + spm_msg)
+        sys.stderr.write("QA Error: " + spm_msg + "\n")
         sys.stderr.flush()
         return False
 
