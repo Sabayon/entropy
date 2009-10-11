@@ -25,6 +25,8 @@ from entropy.core.settings.base import SystemSettings
 from entropy.misc import LogFile
 from entropy.spm.plugins.skel import SpmPlugin
 import entropy.tools
+from entropy.spm.plugins.interfaces.portage_plugin import xpak
+from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
 
 class PortagePackageGroups(dict):
     """
@@ -580,7 +582,6 @@ class PortagePlugin(SpmPlugin):
         tar.close()
 
         # appending xpak informations
-        import entropy.xpak as xpak
         tbz2 = xpak.tbz2(file_save_path)
         tbz2.recompose(dbdir)
 
@@ -621,7 +622,7 @@ class PortagePlugin(SpmPlugin):
         os.mkdir(pkg_dir)
 
         # extract stuff
-        entropy.tools.extract_xpak(package_file, meta_dir)
+        xpaktools.extract_xpak(package_file, meta_dir)
         entropy.tools.uncompress_tar_bz2(package_file,
             extractPath = pkg_dir, catchEmpty = True)
 
@@ -1162,6 +1163,7 @@ class PortagePlugin(SpmPlugin):
         Reimplemented from SpmPlugin class.
         """
         spm_name = entropy.tools.remove_tag(entropy_package_name)
+        spm_name = entropy.tools.remove_entropy_revision(spm_name)
         return spm_name
 
     def assign_uid_to_installed_package(self, package, root = None):
@@ -1782,6 +1784,20 @@ class PortagePlugin(SpmPlugin):
 
         return 0
 
+    def append_metadata_to_package(self, entropy_package_name, package_path):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        spm_name = self.convert_from_entropy_package_name(entropy_package_name)
+        dbbuild = self.get_installed_package_build_script_path(spm_name)
+        dbdir = os.path.dirname(dbbuild)
+
+        if os.path.isdir(dbdir):
+            tbz2 = xpak.tbz2(package_path)
+            tbz2.recompose(dbdir)
+            return True
+        return False
+
     def execute_package_phase(self, package_metadata, phase_name):
         """
         Reimplemented from SpmPlugin class.
@@ -2046,7 +2062,7 @@ class PortagePlugin(SpmPlugin):
     def _test_environment_bz2(package_path):
 
         tmp_path = tempfile.mkdtemp()
-        entropy.tools.extract_xpak(package_path, tmpdir = tmp_path)
+        xpaktools.extract_xpak(package_path, tmpdir = tmp_path)
         if not os.listdir(tmp_path):
             shutil.rmtree(tmp_path)
             return 1, "unable to extract xpak metadata"
@@ -2157,7 +2173,7 @@ class PortagePlugin(SpmPlugin):
                         xpak_f.write(xpakdata)
                         xpak_f.flush()
                     package_metadata['xpakstatus'] = \
-                        entropy.tools.unpack_xpak(
+                        xpaktools.unpack_xpak(
                             xpak_path,
                             xpak_dir
                         )
@@ -2166,7 +2182,7 @@ class PortagePlugin(SpmPlugin):
                 del xpakdata
 
             else:
-                package_metadata['xpakstatus'] = entropy.tools.extract_xpak(
+                package_metadata['xpakstatus'] = xpaktools.extract_xpak(
                     package_metadata['pkgpath'],
                     xpak_dir
                 )
@@ -2418,6 +2434,7 @@ class PortagePlugin(SpmPlugin):
                     new_line = myatom + " " + " ".join(new_flags)
                 new_content.append(new_line)
 
+        newline = const_convert_to_rawstring("\n")
         with open(use_file+".tmp", "wb") as f:
             for line in new_content:
                 f.write(line + newline)

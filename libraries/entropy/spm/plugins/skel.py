@@ -533,6 +533,20 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
+    def append_metadata_to_package(self, entropy_package_name, package_path):
+        """
+        Append Source Package Manager metadata bits to an Entropy package,
+        known its name and path.
+
+        @param entropy_package_name: Entropy package name
+        @type entropy_package_name: string
+        @param package_path: Entropy package path
+        @type package_path: string
+        @return: True, if metadata has been appended succesfully
+        @rtype: bool
+        """
+        raise NotImplementedError()
+
     def execute_package_phase(self, package_metadata, phase_name):
         """
         Execute Source Package Manager package phase (postinstall, preinstall,

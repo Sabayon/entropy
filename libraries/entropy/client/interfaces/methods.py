@@ -1510,7 +1510,7 @@ class MiscMixin:
             return 0, atom, resultfile
 
     def quickpkg_handler(self, pkgdata, dirpath, edb = True,
-           portdbPath = None, fake = False, compression = "bz2", shiftpath = ""):
+           fake = False, compression = "bz2", shiftpath = ""):
 
         import tarfile
 
@@ -1520,13 +1520,15 @@ class MiscMixin:
         # getting package info
         pkgtag = ''
         pkgrev = "~"+str(pkgdata['revision'])
-        if pkgdata['versiontag']: pkgtag = "#"+pkgdata['versiontag']
-        pkgname = pkgdata['name']+"-"+pkgdata['version']+pkgrev+pkgtag # + version + tag
+        if pkgdata['versiontag']:
+            pkgtag = "#"+pkgdata['versiontag']
+        # + version + tag
+        pkgname = pkgdata['name']+"-"+pkgdata['version']+pkgrev+pkgtag
         pkgcat = pkgdata['category']
-        dirpath += "/"+pkgname+etpConst['packagesext']
-        if os.path.isfile(dirpath):
-            os.remove(dirpath)
-        tar = tarfile.open(dirpath, "w:"+compression)
+        pkg_path = dirpath+os.path.sep+pkgname+etpConst['packagesext']
+        if os.path.isfile(pkg_path):
+            os.remove(pkg_path)
+        tar = tarfile.open(pkg_path, "w:"+compression)
 
         if not fake:
 
@@ -1567,28 +1569,14 @@ class MiscMixin:
 
         tar.close()
 
-        # appending xpak metadata
-        import entropy.xpak as xpak
+        # append SPM metadata
         Spm = self.Spm()
-
-        spm_name = self.entropyTools.remove_tag(pkgname)
-        spm_name = self.entropyTools.remove_entropy_revision(spm_name)
-        if portdbPath is None:
-            spm_pkg = os.path.join(pkgcat, spm_name)
-            dbbuild = Spm.get_installed_package_build_script_path(spm_pkg)
-            dbdir = os.path.dirname(dbbuild)
-        else:
-            dbdir = os.path.join(portdbPath, pkgcat, spm_name)
-
-        if os.path.isdir(dbdir):
-            tbz2 = xpak.tbz2(dirpath)
-            tbz2.recompose(dbdir)
-
+        Spm.append_metadata_to_package(pkgcat + "/" + pkgname, pkg_path)
         if edb:
-            self.inject_entropy_database_into_package(dirpath, pkgdata)
+            self.inject_entropy_database_into_package(pkg_path, pkgdata)
 
-        if os.path.isfile(dirpath):
-            return dirpath
+        if os.path.isfile(pkg_path):
+            return pkg_path
         return None
 
 

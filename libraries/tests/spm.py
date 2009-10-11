@@ -73,7 +73,8 @@ class SpmTest(unittest.TestCase):
         sums = {}
         paths = []
 
-        import entropy.xpak as xpak
+        from entropy.spm.plugins.interfaces.portage_plugin import xpak
+        from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
         temp_unpack = tempfile.mkdtemp()
         temp_unpack2 = tempfile.mkdtemp()
         test_pkg = os.path.join(temp_unpack2, "test.pkg")
@@ -93,7 +94,7 @@ class SpmTest(unittest.TestCase):
 
         # now extract xpak
         new_sums = {}
-        et.extract_xpak(test_pkg, tmpdir = temp_unpack)
+        xpaktools.extract_xpak(test_pkg, tmpdir = temp_unpack)
         for path in os.listdir(temp_unpack):
             xpath = os.path.join(temp_unpack, path)
             new_sums[path] = et.md5sum(xpath)
@@ -102,6 +103,39 @@ class SpmTest(unittest.TestCase):
 
         shutil.rmtree(temp_unpack)
         shutil.rmtree(temp_unpack2)
+
+    def test_extract_xpak(self):
+
+        spm_class = self.Client.Spm_class()
+        if spm_class.PLUGIN_NAME != "portage":
+            return
+
+        from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
+        tmp_path = tempfile.mkdtemp()
+
+        for test_pkg in self.test_pkgs:
+            out_path = xpaktools.extract_xpak(test_pkg, tmp_path)
+            self.assertNotEqual(out_path, None)
+            self.assert_(os.listdir(out_path))
+
+        shutil.rmtree(tmp_path, True)
+
+
+    def test_extract_xpak_only(self):
+
+        spm_class = self.Client.Spm_class()
+        if spm_class.PLUGIN_NAME != "portage":
+            return
+
+        from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
+        pkg_path = _misc.get_test_xpak_empty_package()
+        tmp_path = tempfile.mkdtemp()
+        out_path = xpaktools.extract_xpak(pkg_path, tmp_path)
+
+        self.assertNotEqual(out_path, None)
+        self.assert_(os.listdir(out_path))
+
+        shutil.rmtree(tmp_path, True)
 
 if __name__ == '__main__':
     unittest.main()
