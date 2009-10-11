@@ -7782,14 +7782,17 @@ class EntropyRepository:
 
     def __atomMatchFetchCache(self, *args):
         if self.xcache:
-            cached = self.dumpTools.loadobj("%s/%s/%s" % (
-                self.dbMatchCacheKey, self.dbname, hash(tuple(args)),))
-            if cached != None: return cached
+            ck_sum = hash(self.checksum())
+            cached = self.dumpTools.loadobj("%s/%s/%s_%s" % (
+                self.dbMatchCacheKey, self.dbname, ck_sum, hash(tuple(args)),))
+            if cached is not None:
+                return cached
 
     def __atomMatchStoreCache(self, *args, **kwargs):
         if self.xcache:
-            self.Cacher.push("%s/%s/%s" % (
-                self.dbMatchCacheKey, self.dbname, hash(tuple(args)),),
+            ck_sum = hash(self.checksum(strict = False))
+            self.Cacher.push("%s/%s/%s_%s" % (
+                self.dbMatchCacheKey, self.dbname, ck_sum, hash(tuple(args)),),
                 kwargs.get('result')
             )
 

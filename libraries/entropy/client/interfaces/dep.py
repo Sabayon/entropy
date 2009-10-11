@@ -153,20 +153,23 @@ class CalculatorsMixin:
             reponame = revisionInfo.get(newerRevision)
             return (results[reponame], reponame)
 
-        # final step, in this case we have >two packages with the same version, tag and revision
+        # final step, in this case we have >two packages with
+        # the same version, tag and revision
         # get the repository with the biggest priority
-
         for reponame in valid_repos:
             if reponame in conflictingRevisions:
                 return (results[reponame], reponame)
 
-    def __validate_atom_match_cache(self, cached_obj, multiMatch, extendedResults, multiRepo, server_inst):
+    def __validate_atom_match_cache(self, cached_obj, multiMatch,
+        extendedResults, multiRepo, server_inst):
 
         data, rc = cached_obj
-        if rc == 1: return cached_obj
+        if rc == 1:
+            return cached_obj
 
         if multiRepo or multiMatch:
-            matches = data # set([(14789, 'sabayonlinux.org'), (14479, 'sabayonlinux.org')])
+            # set([(14789, 'sabayonlinux.org'), (14479, 'sabayonlinux.org')])
+            matches = data
             if extendedResults:
                 # set([((14789, '3.3.8b', '', 0), 'sabayonlinux.org')])
                 matches = [(x[0][0], x[1],) for x in data]
@@ -175,7 +178,8 @@ class CalculatorsMixin:
                 if not m_db.isIdpackageAvailable(m_id):
                     return None
         else:
-            m_id, m_repo = cached_obj # (14479, 'sabayonlinux.org')
+            # (14479, 'sabayonlinux.org')
+            m_id, m_repo = cached_obj
             if extendedResults:
                 # ((14479, '4.4.2', '', 0), 'sabayonlinux.org')
                 m_id, m_repo = cached_obj[0][0], cached_obj[1]
@@ -217,8 +221,10 @@ class CalculatorsMixin:
             k_mt = matchTag
         if const_isstring(matchRevision):
             k_mr = matchRevision
+        repos_ck = self.all_repositories_checksum()
 
-        c_hash = "|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
+        c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
+            repos_ck,
             atom, k_ms, k_mt, hash(packagesFilter),
             hash(frozenset(self.validRepositories)),
             hash(frozenset(self.SystemSettings['repositories']['available'])),
@@ -230,9 +236,10 @@ class CalculatorsMixin:
 
         if self.xcache and useCache:
             cached = self.Cacher.pop(c_hash)
-            if cached != None:
+            if cached is not None:
                 try:
-                    cached = self.__validate_atom_match_cache(cached, multiMatch, extendedResults, multiRepo, serverInstance)
+                    cached = self.__validate_atom_match_cache(cached,
+                        multiMatch, extendedResults, multiRepo, serverInstance)
                 except (TypeError, ValueError, IndexError, KeyError,):
                     cached = None
             if cached != None:
@@ -269,7 +276,8 @@ class CalculatorsMixin:
                     if query_rc == 0:
                         # package found, add to our dictionary
                         if extendedResults:
-                            repoResults[repo] = (query_data[0], query_data[2], query_data[3], query_data[4])
+                            repoResults[repo] = (query_data[0], query_data[2],
+                                query_data[3], query_data[4])
                         else:
                             repoResults[repo] = query_data
                 except TypeError:
@@ -301,8 +309,10 @@ class CalculatorsMixin:
         elif len(repoResults) > 1:
 
             # we have to decide which version should be taken
-            mypkginfo = self.__handle_multi_repo_matches(repoResults, extendedResults, valid_repos, serverInstance)
-            if mypkginfo != None: dbpkginfo = mypkginfo
+            mypkginfo = self.__handle_multi_repo_matches(repoResults,
+                extendedResults, valid_repos, serverInstance)
+            if mypkginfo is not None:
+                dbpkginfo = mypkginfo
 
         # multimatch support
         if multiMatch:
@@ -341,7 +351,8 @@ class CalculatorsMixin:
                         extendedResults = extendedResults
                     )
                     if extendedResults:
-                        dbpkginfo = (set([((x[0], x[2], x[3], x[4]), dbpkginfo[1]) for x in query_data]), 0)
+                        dbpkginfo = (set([((x[0], x[2], x[3], x[4]), dbpkginfo[1]) \
+                            for x in query_data]), 0)
                     else:
                         dbpkginfo = (set([(x, dbpkginfo[1]) for x in query_data]), 0)
 
