@@ -8,13 +8,13 @@ msgstr ""
 "Project-Id-Version: ca\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-10-11 09:29+0200\n"
-"PO-Revision-Date: 2009-09-01 12:54+0100\n"
+"PO-Revision-Date: 2009-10-11 18:25+0200\n"
 "Last-Translator: Roger Calvó <rcalvoi@yahoo.com>\n"
-"Language-Team: Catalan <>\n"
+"Language-Team: Catalan <kde-i18n-ca@kde.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Lokalize 0.3\n"
+"X-Generator: Lokalize 1.0\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
 
 #: ../../libraries/entropy/services/system/executors.py:459
@@ -471,15 +471,13 @@ msgid "Every dependency is satisfied. It's all fine."
 msgstr "S'han satisfet totes les dependències. Tot és correcte."
 
 #: ../../libraries/entropy/server/interfaces/main.py:1295
-#, fuzzy
 msgid "Broken and matched packages list"
-msgstr "No hi ha paquets coincidents"
+msgstr "Llista de paquets trencats i coincidents"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1297
 #: ../../libraries/entropy/qa.py:383
-#, fuzzy
 msgid "Dumping results into these files"
-msgstr "S'estan abocant les revisions actuals al fitxer"
+msgstr "S'estan abocant els resultats en aquests fitxers"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1327
 #: ../../client/text_ui.py:1744
@@ -1616,9 +1614,8 @@ msgid "Access denied. Login failed"
 msgstr "S'ha denegat l'accés. L'entrada ha fallat"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:146
-#, fuzzy
 msgid "Ok"
-msgstr "D'acord?"
+msgstr "D'acord"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:154
 msgid "Login successful. Do you want to save these credentials ?"
@@ -2496,33 +2493,27 @@ msgstr "S'està comprovant la suma de verificació del paquet..."
 msgid "Package checksum matches"
 msgstr "La suma de verificació coincideix."
 
-#: ../../libraries/entropy/client/interfaces/package.py:175
-#, fuzzy, python-format
+#: ../../libraries/entropy/client/interfaces/package.py:175, python-format
 msgid "Checksum does not match. Download attempt #%s"
-msgstr ""
-"La suma de verificació del paquet no coincideix. S'està baixant de nou... "
-"intent #%s"
+msgstr "La suma de verificació del paquet no coincideix. Intent de baixada #%s"
 
 #: ../../libraries/entropy/client/interfaces/package.py:195
 msgid "Cannot properly fetch package! Quitting."
 msgstr "No es pot obtenir el paquet correctament! Sortint."
 
 #: ../../libraries/entropy/client/interfaces/package.py:207
-#, fuzzy
 msgid "Cannot fetch package or checksum does not match"
 msgstr ""
-"No es pot obtenir el paquet correctament o la suma de verificació no "
-"coincideix. Intenteu baixar els últims repositoris."
+"No es pot obtenir el paquet o la suma de verificació no "
+"coincideix."
 
 #: ../../libraries/entropy/client/interfaces/package.py:208
-#, fuzzy
 msgid "Try to download latest repositories"
-msgstr "no es pot baixar el fitxer de revisió del repositori "
+msgstr "Intenteu baixar els últims repositoris"
 
 #: ../../libraries/entropy/client/interfaces/package.py:352
-#, fuzzy
 msgid "configuration phase"
-msgstr "Fitxer de configuració"
+msgstr "fase de configuració"
 
 #: ../../libraries/entropy/client/interfaces/package.py:367
 msgid "Removing from Entropy"
@@ -2550,9 +2541,8 @@ msgid "Updating database"
 msgstr "S'està actualitzant la base de dades"
 
 #: ../../libraries/entropy/client/interfaces/package.py:735
-#, fuzzy
 msgid "Cleaning previously installed information..."
-msgstr "continua amb les operacions prèviament interrompudes"
+msgstr "S'està netejant la informació instal·lada anteriorment..."
 
 #: ../../libraries/entropy/client/interfaces/package.py:1051
 #, python-format
@@ -2562,13 +2552,12 @@ msgstr ""
 
 #: ../../libraries/entropy/client/interfaces/package.py:1077
 msgid "directory expected, symlink found"
-msgstr ""
+msgstr "s'esperava un directori i s'ha trobat un enllaç simbòlic"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1080
 #: ../../libraries/entropy/client/interfaces/package.py:1249
-#, fuzzy
 msgid "Removing in 20 seconds !!"
-msgstr "Es tornarà a intentar en 1 segon."
+msgstr "S'eliminarà en 20 segons !!"
 
 #. we can merge it, files, even if
 #. contains changes have not been modified
@@ -2580,9 +2569,8 @@ msgstr ""
 "mai"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1246
-#, fuzzy
 msgid "file expected, directory found"
-msgstr "S'han trobat diversos directoris de Python:"
+msgstr "s'esperava un fitxer i s'ha trobat un directori"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1301
 msgid "File move error"
@@ -2618,11 +2606,8 @@ msgid "Downloading archive"
 msgstr "S'està baixant el fitxer"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1661
-#, fuzzy
 msgid "Package cannot be fetched. Try to update repositories"
-msgstr ""
-"No s'ha pogut obtenir el paquet. Intenteu actualitzar els repositoris i "
-"torneu-ho a provar"
+msgstr "No es pot obtenir el paquet. Intenteu actualitzar els repositoris"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1662
 #: ../../libraries/entropy/client/interfaces/package.py:1701
@@ -2645,20 +2630,16 @@ msgid "archives"
 msgstr "fitxers"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1699
-#, fuzzy
 msgid "Some packages cannot be fetched"
-msgstr "Hi ha alguns paquets emmascarats"
+msgstr "Alguns paquets no es poden obtenir"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1700
-#, fuzzy
 msgid "Try to update your repositories and retry"
-msgstr ""
-"No s'ha pogut obtenir el paquet. Intenteu actualitzar els repositoris i "
-"torneu-ho a provar"
+msgstr "Intenteu actualitzar els repositoris i torneu-ho a intentar"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1729
 msgid "Package cannot be downloaded, unknown error."
-msgstr ""
+msgstr "El paquet no s'ha pogut baixar, error desconegut."
 
 #: ../../libraries/entropy/client/interfaces/package.py:1738
 msgid "Installed package in queue vanished, skipping."
@@ -2728,7 +2709,6 @@ msgid "Make sure that your system is healthy"
 msgstr "Comproveu si el vostre sistema està sa"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2022
-#, fuzzy
 msgid "It seems that Source Package Manager entry is missing"
 msgstr "Sembla que falta l'entrada del gestor de paquets font"
 
@@ -2807,7 +2787,7 @@ msgstr "S'està configurant"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2219
 msgid "Cannot acquire Entropy resources lock."
-msgstr ""
+msgstr "No es pot accedir al bloqueig de recursos d'Entropy."
 
 #: ../../libraries/entropy/client/interfaces/package.py:2232
 msgid "An error occured. Action aborted."
@@ -3407,14 +3387,12 @@ msgid "Moving old entry"
 msgstr "S'està movent una entrada antiga"
 
 #: ../../libraries/entropy/db.py:6462
-#, fuzzy
 msgid "baseinfo error. Either does not exist or corrupted."
-msgstr "no es troba la taula baseinfo. No existeix o està malmesa."
+msgstr "error de baseinfo. No existeix o està malmès."
 
 #: ../../libraries/entropy/db.py:6470
-#, fuzzy
 msgid "extrainfo error. Either does not exist or corrupted."
-msgstr "no es troba la taula extrainfo. No existeix o està malmesa."
+msgstr "error de extrainfo. No existeix o està malmès."
 
 #: ../../libraries/entropy/db.py:6538
 msgid "Syncing current database"
@@ -3445,9 +3423,8 @@ msgid "Database Export completed."
 msgstr "S'ha completat l'exportació de la base de dades"
 
 #: ../../libraries/entropy/db.py:7389
-#, fuzzy
 msgid "Spm counter path not found in"
-msgstr "no s'ha trobat l'usuari"
+msgstr "el camí al contador Spm no s'ha trobat a"
 
 #: ../../libraries/entropy/db.py:7407
 msgid "Spm id is not valid for"
@@ -3462,9 +3439,8 @@ msgid "id for atom is duplicated, ignoring"
 msgstr "la identitat de l'àtom està duplicada. S'ignora"
 
 #: ../../libraries/entropy/db.py:7525
-#, fuzzy
 msgid "generating provided_libs metadata, please wait!"
-msgstr "S'estan generant metadades, espereu si us plau."
+msgstr "s'estan generant les metadades de provided_libs, espereu si us plau."
 
 #: ../../libraries/entropy/output.py:648
 #: ../../sulfur/src/sulfur/entropyapi.py:363
@@ -3597,14 +3573,12 @@ msgid "Libraries test"
 msgstr "Verificació de les llibreries"
 
 #: ../../libraries/entropy/qa.py:380
-#, fuzzy
 msgid "Broken symbols packages list"
-msgstr "paquets trencats"
+msgstr "S'ha trencat la llista de paquets de símbols"
 
 #: ../../libraries/entropy/qa.py:381
-#, fuzzy
 msgid "Broken executables list"
-msgstr "S'estan recollint els executables trencats"
+msgstr "Llista d'executables trencats"
 
 #: ../../libraries/entropy/qa.py:410
 msgid "Cannot find "
@@ -4049,9 +4023,8 @@ msgid "download N packages in parallel (max 10)"
 msgstr "descarrega N paquets en paral·lel (màx. 10)"
 
 #: ../../client/equo.py:103
-#, fuzzy
 msgid "same as world"
-msgstr "el mateix que --replay"
+msgstr "el mateix que world"
 
 #: ../../client/equo.py:105
 msgid "security infrastructure functions"
@@ -4171,7 +4144,7 @@ msgstr "cerca llibreries perdudes"
 
 #: ../../client/equo.py:160 ../../server/reagent.py:103
 msgid "dump results to files"
-msgstr ""
+msgstr "aboca els resultats en fitxers"
 
 #: ../../client/equo.py:161
 msgid "print broken files to stdout"
@@ -4405,7 +4378,7 @@ msgstr "gestiona només els àtoms especificats"
 
 #: ../../client/equo.py:233 ../../server/reagent.py:44
 msgid "run in interactive mode (asking things one by one)"
-msgstr ""
+msgstr "executa en mode interactiu (preguntant coses d'una en una)"
 
 #: ../../client/equo.py:234 ../../server/reagent.py:46
 msgid "add binary packages to repository w/o affecting scopes (multipackages)"
@@ -4618,9 +4591,8 @@ msgid "just list packages"
 msgstr "només llista els paquets"
 
 #: ../../client/equo.py:308 ../../server/reagent.py:93
-#, fuzzy
 msgid "do not pull old package slots"
-msgstr "paquets baixats"
+msgstr "no afegeixis slots de paquets antics"
 
 #: ../../client/equo.py:309 ../../server/reagent.py:94
 msgid "compile packages in provided package set names"
@@ -5786,9 +5758,8 @@ msgid "Are you ready ?"
 msgstr "Esteu preparat?"
 
 #: ../../client/text_rescue.py:507
-#, fuzzy
 msgid "Entropy locked during lock acquire"
-msgstr "Entropy està bloquejat, sortint"
+msgstr "Entropy està bloquejat mentre l'adquireix el bloqueig"
 
 #: ../../client/text_rescue.py:512
 msgid "Someone removed these packages"
@@ -6419,9 +6390,8 @@ msgid "Would you like to continue with dependencies calculation ?"
 msgstr "Voleu continuar amb el càlcul de dependències?"
 
 #: ../../client/text_ui.py:590
-#, fuzzy
 msgid "Would you like to continue with the installation ?"
-msgstr "Voleu continuar amb el càlcul de dependències?"
+msgstr "Voleu continuar amb la instal·lació?"
 
 #: ../../client/text_ui.py:602
 msgid "Calculating dependencies"
@@ -6916,28 +6886,24 @@ msgid "expired"
 msgstr "vençut"
 
 #: ../../server/server_reagent.py:370
-#, fuzzy
 msgid "So sweetheart, what packages do you want to remove ?"
-msgstr "Escolliu quin conjunt de paquets voleu eliminar"
+msgstr "Quins paquets voleu eliminar?"
 
 #: ../../server/server_reagent.py:374
-#, fuzzy
 msgid "Remove this package?"
-msgstr "Elimina els paquets"
+msgstr "Elimina aquest paquet?"
 
 #: ../../server/server_reagent.py:381 ../../server/server_reagent.py:575
 msgid "These are the packages that would be removed from the database"
 msgstr "Aquests són els paquets que s'eliminaran de la base de dades"
 
 #: ../../server/server_reagent.py:399
-#, fuzzy
 msgid "So sweetheart, what packages do you want to add ?"
-msgstr "Escolliu quin conjunt de paquets voleu veure"
+msgstr "Quins paquets voleu afegir?"
 
 #: ../../server/server_reagent.py:403
-#, fuzzy
 msgid "Add this package?"
-msgstr "Emmascara el paquet"
+msgstr "Afegeix aquest paquet?"
 
 #: ../../server/server_reagent.py:410
 msgid "These are the packages that would be added/updated to the add list"
@@ -7576,14 +7542,12 @@ msgid "Author"
 msgstr "Autor"
 
 #: ../../sulfur/src/sulfur/dialogs.py:4133
-#, fuzzy
 msgid "Timeout Error"
-msgstr "error en temps d'espera"
+msgstr "Error en temps d'espera"
 
 #: ../../sulfur/src/sulfur/dialogs.py:4134
-#, fuzzy
 msgid "Connection timed out, sorry!"
-msgstr "s'ha excedit el temps de connexió en la recepció de dades"
+msgstr "S'ha excedit el temps de connexió!"
 
 #: ../../sulfur/src/sulfur/dialogs.py:4285
 msgid "Package ChangeLog"
@@ -8286,13 +8250,12 @@ msgstr ""
 "S'està executant una altra instància d'Entropy. No es pot processar la cua."
 
 #: ../../sulfur/src/sulfur/__init__.py:1526
-#, fuzzy
 msgid ""
 "Another Entropy instance is locking this task at the moment. Try in a few "
 "minutes."
 msgstr ""
-"S'està executant una altra instància d'Entropy. No es pot satisfer la vostra "
-"demanda."
+"Una altra instància d'Entropy està bloquejant aquesta tasca. Intenteu-ho en "
+"uns minuts."
 
 #: ../../sulfur/src/sulfur/__init__.py:1532
 msgid "Running tasks"
@@ -8827,9 +8790,8 @@ msgid "Cl_ean"
 msgstr "Net_eja"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:34
-#, fuzzy
 msgid "Close notice"
-msgstr "Escolliu el mode"
+msgstr "Tanca la notícia"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:35
 msgid "Collision protection"
@@ -9033,7 +8995,7 @@ msgstr "Proxy HTTP"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:91
 msgid "Hide this until something new happens"
-msgstr ""
+msgstr "Amaga-ho mentre no hi hagi res de nou"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:94
 msgid "If selected, packages will be downloaded only"
@@ -9117,7 +9079,7 @@ msgstr "C_ombina"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:120
 msgid "Mark as read"
-msgstr ""
+msgstr "Marca com a llegit"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:121
 msgid "Mask the selected packages"
@@ -9790,252 +9752,3 @@ msgstr "Notificador d'actualitzacions de l'aplicació Magneto"
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "Carrega e_l gestor de paquets"
-
-#~ msgid "Office"
-#~ msgstr "Oficina"
-
-#~ msgid "Applications used in office environments"
-#~ msgstr "Aplicacions usades en entorn d'oficina"
-
-#~ msgid "Development"
-#~ msgstr "Desenvolupament"
-
-#~ msgid "Applications or system libraries"
-#~ msgstr "Aplicacions o llibreries del sistema"
-
-#~ msgid "System applications or libraries"
-#~ msgstr "Aplicacions o llibreries del sistema"
-
-#~ msgid "Games"
-#~ msgstr "Jocs"
-
-#~ msgid "Games, enjoy your spare time"
-#~ msgstr "Jocs; Gaudiu del temps lliure"
-
-#~ msgid "GNOME Desktop"
-#~ msgstr "Escriptori GNOME"
-
-#~ msgid "Applications and libraries for the GNOME Desktop"
-#~ msgstr "Aplicacions i llibreries per l'escriptori GNOME"
-
-#~ msgid "KDE Desktop"
-#~ msgstr "Escriptori KDE"
-
-#~ msgid "Applications and libraries for the KDE Desktop"
-#~ msgstr "Aplicacions i llibreries per l'escriptori KDE"
-
-#~ msgid "XFCE Desktop"
-#~ msgstr "Escriptori XFCE"
-
-#~ msgid "Applications and libraries for the XFCE Desktop"
-#~ msgstr "Aplicacions i llibreries per l'escriptori XFCE"
-
-#~ msgid "LXDE Desktop"
-#~ msgstr "Escriptori LXDE"
-
-#~ msgid "Applications and libraries for the LXDE Desktop"
-#~ msgstr "Aplicacions i llibreries per l'escriptori LXDE"
-
-#~ msgid "Multimedia"
-#~ msgstr "Multimèdia"
-
-#~ msgid "Applications and libraries for Multimedia"
-#~ msgstr "Aplicacions i llibreries multimèdia"
-
-#~ msgid "Applications and libraries for Networking"
-#~ msgstr "Aplicacions i llibreries de treball en xarxa"
-
-#~ msgid "Science"
-#~ msgstr "Ciència"
-
-#~ msgid "Scientific applications and libraries"
-#~ msgstr "Aplicacions i llibreries científiques"
-
-#~ msgid "X11"
-#~ msgstr "X11"
-
-#~ msgid "Applications and libraries for X11"
-#~ msgstr "Aplicacions i llibreries de X11"
-
-#~ msgid "Cannot run Source Package Manager trigger for"
-#~ msgstr "No es pot executar l'activador del gestor de paquets font per"
-
-#~ msgid "Attach this"
-#~ msgstr "Adjunta aquest"
-
-#, fuzzy
-#~ msgid "Cannot run SPM configure phase for"
-#~ msgstr "No es pot executar pkg_config() per"
-
-#~ msgid "Cannot update Portage database to destination"
-#~ msgstr "No es pot actualitzar la base de dades de Portage a la destinació"
-
-#~ msgid "Error calculating dependencies"
-#~ msgstr "S'ha produït un error en calcular les dependències"
-
-#~ msgid "missing right parenthesis"
-#~ msgstr "falta el parèntesi dret"
-
-#~ msgid "missing atom list in"
-#~ msgstr "falta la llista d'àtoms a"
-
-#~ msgid "Conditional without target in"
-#~ msgstr "Condicional sense objectiu a"
-
-#~ msgid "Conditional with no target"
-#~ msgstr "Condicional sense objectiu"
-
-#~ msgid "Empty target in string"
-#~ msgstr "L'objectiu està buit en la cadena"
-
-#~ msgid "Deprecated"
-#~ msgstr "Depreciat"
-
-#~ msgid "Nested use flags without parenthesis"
-#~ msgstr "Marcadors use niats sense parèntesi"
-
-#~ msgid "Conditional without flag"
-#~ msgstr "Condicional sense marcador"
-
-#~ msgid "Conditional without parenthesis"
-#~ msgstr "Condicional sense parèntesi"
-
-#~ msgid "Probably Portage API has changed"
-#~ msgstr "Probablement la API de Portage ha canviat"
-
-#~ msgid "cannot update library data"
-#~ msgstr "no es poden actualitzar les dades de la llibreria"
-
-#~ msgid "A valid Entropy Instance is needed"
-#~ msgstr "Es necessita una interfície vàlida d'Entropy"
-
-#~ msgid "Valid phases"
-#~ msgstr "Fases vàlides"
-
-#~ msgid "Updating {conf.d,init.d} mtime"
-#~ msgstr "S'està actualitzant {conf.d,init.d} mtime"
-
-#~ msgid "Removing boot service"
-#~ msgstr "S'està eliminant el servei d'arrencada"
-
-#~ msgid "Regenerating"
-#~ msgstr "S'està regenerant"
-
-#~ msgid "Updating environment"
-#~ msgstr "S'està actualitzant l'entorn"
-
-#~ msgid "Resolving libraries, please wait"
-#~ msgstr "S'estan resolent les llibreries, espereu"
-
-#~ msgid "Libraries solved, all fine"
-#~ msgstr "S'han resolt les llibreries, tot és correcte"
-
-#~ msgid "handles packages helper applications"
-#~ msgstr "gestiona aplicacions d'ajuda"
-
-#~ msgid "migrate all Python modules to the latest installed version"
-#~ msgstr "migra tots els mòduls de Python a l'última versió instal·lada"
-
-#~ msgid "Repository database checksum"
-#~ msgstr "Suma de verificació de la base de dades del repositori"
-
-#~ msgid "Looking for old Python directories..."
-#~ msgstr "S'estan cercant directoris antics de Python..."
-
-#~ msgid "Your Python installation seems fine."
-#~ msgstr "La instal·lació de Python sembla correcta."
-
-#~ msgid "Multiple Python directories found:"
-#~ msgstr "S'han trobat diversos directoris de Python:"
-
-#~ msgid "There are no files belonging to your old Python installation in"
-#~ msgstr ""
-#~ "No hi ha fitxers que pertanyin a la vostra antiga instal·lació de Python a"
-
-#~ msgid "These are the installed packages with files in:"
-#~ msgstr "Aquests són els paquets instal·lats amb fitxers a:"
-
-#~ msgid "Searching inside available repositories"
-#~ msgstr "S'està cercant en els repositoris disponibles"
-
-#~ msgid ""
-#~ "There are no files belonging to your old Python installation stored in "
-#~ "the repositories for"
-#~ msgstr ""
-#~ "No hi ha fitxers que pertanyin a la vostra antiga instal·lació de Python "
-#~ "desada en els repositoris per"
-
-#~ msgid "selected SPM backend not available"
-#~ msgstr "el dorsal SPM seleccionat no està disponible"
-
-#~ msgid "not set"
-#~ msgstr "no s'ha establert"
-
-#~ msgid "have you configured make.conf properly?"
-#~ msgstr "heu configurat correctament el make.conf?"
-
-#~ msgid "changelog string conversion error"
-#~ msgstr "error en la cadena de conversió del registre de canvis"
-
-#~ msgid "Cleaning old package files..."
-#~ msgstr "S'estan suprimint fitxers de paquets antics..."
-
-#~ msgid "Cannot update Portage counter, destination %s does not exist."
-#~ msgstr ""
-#~ "No es pot actualitzar el comptador de Portage, la destinació %s no "
-#~ "existeix."
-
-#~ msgid "Cannot update Portage world file, destination %s does not exist."
-#~ msgstr ""
-#~ "No es pot actualitzar el fitxer world de Portage, la destinació %s no "
-#~ "existeix."
-
-#~ msgid "Cannot update Portage world file, destination %s is corrupted."
-#~ msgstr ""
-#~ "No es pot actualitzar el fitxer world de Portage, la destinació %s està "
-#~ "malmesa."
-
-#~ msgid ""
-#~ "%s is a directory when should be a symlink !! Removing in 20 seconds..."
-#~ msgstr ""
-#~ "%s és un directori i hauria de ser un enllaç simbòlic !! S'eliminarà en "
-#~ "20 segons..."
-
-#~ msgid ""
-#~ "%s is a directory when it should be a file !! Removing in 20 seconds..."
-#~ msgstr ""
-#~ "%s és un directori i hauria de ser un fitxer !! S'eliminarà en 20 "
-#~ "segons..."
-
-#~ msgid "Cannot check CONFIG PROTECTION. Error"
-#~ msgstr "No es pot comprovar CONFIG PROTECTION. Error"
-
-#~ msgid ""
-#~ "Some packages cannot be fetched. Try to update repositories and retry"
-#~ msgstr ""
-#~ "No s'han pogut obtenir alguns paquets. Intenteu actualitzar els "
-#~ "repositoris i torneu-ho a provar"
-
-#~ msgid "Fetch for the chosen package is not available, unknown error."
-#~ msgstr "Error desconegut: el paquet seleccionat no està disponible."
-
-#~ msgid "Show Package Updates"
-#~ msgstr "Mostra les actualitzacions de paquets"
-
-#~ msgid "Show available Packages"
-#~ msgstr "Mostra els paquets disponibles"
-
-#~ msgid "Show Installed Packages"
-#~ msgstr "Mostra els paquets instal·lats"
-
-#~ msgid "Show Masked Packages"
-#~ msgstr "Mostra els paquets emmascarats"
-
-#~ msgid "Show All Packages"
-#~ msgstr "Mostra tots els paquets"
-
-#~ msgid "Show Package Sets"
-#~ msgstr "Mostra els conjunts de paquets"
-
-#~ msgid "Show Queued Packages"
-#~ msgstr "Mostra els paquets de la cua"
