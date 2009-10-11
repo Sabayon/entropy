@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-10-10 23:32+0200\n"
+"POT-Creation-Date: 2009-10-11 09:29+0200\n"
 "PO-Revision-Date: 2009-07-17 22:38+0100\n"
 "Last-Translator: Andre Parhan <dyingmuppet@gmail.com>\n"
 "Language-Team: Dutch <nl@li.org>\n"
@@ -18,248 +18,6 @@ msgstr ""
 "X-Poedit-Country: NETHERLANDS\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: KBabel 1.11.4\n"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:38
-#, fuzzy
-msgid "Office"
-msgstr "bestand"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:39
-msgid "Applications used in office environments"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:45
-msgid "Development"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:46
-#, fuzzy
-msgid "Applications or system libraries"
-msgstr "zoek naar ontbrekende bibliotheken"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:50
-#: ../../sulfur/src/sulfur/sulfur.glade.h:232
-msgid "System"
-msgstr "Systeem"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:51
-#, fuzzy
-msgid "System applications or libraries"
-msgstr "Scannen van bibliotheken"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:55
-#, fuzzy
-msgid "Games"
-msgstr "Naam"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:56
-msgid "Games, enjoy your spare time"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:60
-msgid "GNOME Desktop"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:62
-msgid "Applications and libraries for the GNOME Desktop"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:66
-msgid "KDE Desktop"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:68
-msgid "Applications and libraries for the KDE Desktop"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:72
-msgid "XFCE Desktop"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:74
-msgid "Applications and libraries for the XFCE Desktop"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:78
-msgid "LXDE Desktop"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:80
-msgid "Applications and libraries for the LXDE Desktop"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:84
-msgid "Multimedia"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:86
-msgid "Applications and libraries for Multimedia"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:90
-#: ../../sulfur/src/sulfur/sulfur.glade.h:128
-msgid "Networking"
-msgstr "Netwerken"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:92
-msgid "Applications and libraries for Networking"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:96
-msgid "Science"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:98
-msgid "Scientific applications and libraries"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:102
-msgid "X11"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:104
-#, fuzzy
-msgid "Applications and libraries for X11"
-msgstr "Programma Opties"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:185
-#: ../../libraries/entropy/services/ugc/interfaces.py:1723
-#: ../../libraries/entropy/services/ugc/interfaces.py:1726
-#: ../../libraries/entropy/client/services/ugc/commands.py:25
-#: ../../libraries/entropy/client/services/ugc/commands.py:28
-#: ../../libraries/entropy/client/services/system/interfaces.py:27
-#: ../../libraries/entropy/client/services/system/interfaces.py:30
-#: ../../libraries/entropy/transceivers.py:642
-#: ../../libraries/entropy/transceivers.py:645
-msgid "OutputInterface does not have an updateProgress method"
-msgstr "OutputInterface heeft geen updateProgress methode"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:593
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1525
-#: ../../libraries/entropy/server/interfaces/mirrors.py:1645
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3065
-#: ../../libraries/entropy/server/interfaces/mirrors.py:3087
-#: ../../libraries/entropy/transceivers.py:1418
-msgid "error"
-msgstr "fout"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:595
-#: ../../libraries/entropy/client/interfaces/fetch.py:209
-#: ../../libraries/entropy/client/interfaces/fetch.py:458
-#: ../../server/server_reagent.py:94 ../../server/server_reagent.py:106
-msgid "not found"
-msgstr "niet gevonden"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1580
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1692
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1766
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1855
-#: ../../libraries/entropy/client/interfaces/trigger.py:211
-msgid "QA"
-msgstr "VA"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1581
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1693
-#, fuzzy
-msgid "Cannot run Source Package Manager trigger for"
-msgstr "Kan Portage functie niet starten voor"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1590
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1702
-#: ../../libraries/entropy/client/interfaces/trigger.py:214
-msgid "Please report it"
-msgstr "Rapporteer het alsjeblieft"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1591
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1703
-msgid "Attach this"
-msgstr "Koppel deze"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1767
-#, fuzzy
-msgid "Cannot run SPM configure phase for"
-msgstr "kan Spm pkg_config() niet starten voor"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1771
-#: ../../libraries/entropy/client/interfaces/package.py:1662
-#: ../../libraries/entropy/client/interfaces/package.py:1701
-#: ../../libraries/entropy/client/interfaces/package.py:1784
-#: ../../libraries/entropy/client/interfaces/package.py:1791
-#: ../../libraries/entropy/client/interfaces/package.py:1828
-#: ../../libraries/entropy/client/interfaces/package.py:1857
-#: ../../libraries/entropy/client/interfaces/package.py:2003
-#: ../../libraries/entropy/client/interfaces/package.py:2023
-#: ../../libraries/entropy/client/interfaces/trigger.py:55
-#: ../../libraries/entropy/db.py:61 ../../libraries/entropy/security.py:353
-#: ../../server/server_reagent.py:656 ../../sulfur/src/sulfur/events.py:891
-#: ../../sulfur/src/sulfur/events.py:897 ../../sulfur/src/sulfur/events.py:934
-#: ../../sulfur/src/sulfur/sulfur.glade.h:76
-msgid "Error"
-msgstr "Fout"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1856
-msgid "Cannot update Portage database to destination"
-msgstr "Kan niet naar de Portage database bestemming updaten"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1872
-#, fuzzy
-msgid "SPM uid update error"
-msgstr "Updates: fout"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:1926
-msgid "Cannot update SPM installed pkgs file"
-msgstr ""
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:2492
-msgid "Error calculating dependencies"
-msgstr "Fout tijdens het calculeren van afhankelijkheden"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:2621
-msgid "missing right parenthesis"
-msgstr "de juiste haakjes ontbreken"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:2691
-msgid "missing atom list in"
-msgstr "ontbrekende atoom lijst in"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:2694
-msgid "Conditional without target in"
-msgstr "Voorwaardelijke zonder doel in"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:2724
-msgid "Conditional with no target"
-msgstr "Voorwaardelijke zonder doel"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:2729
-msgid "Empty target in string"
-msgstr "Leeg doel in tekenreeks"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:2729
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:2738
-msgid "Deprecated"
-msgstr "Achterhaald"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:2738
-msgid "Nested use flags without parenthesis"
-msgstr "Ingebedde 'use' vlaggen zonder haakjes"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:2778
-msgid "Conditional without flag"
-msgstr "Voorwaardelijke zonder vlag"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:2794
-msgid "Conditional without parenthesis"
-msgstr "Voorwaardelijke zonder haakjes"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:3043
-#: ../../libraries/entropy/server/interfaces/main.py:3417
-#: ../../libraries/entropy/transceivers.py:1205
-msgid "not supported"
-msgstr "niet ondersteund"
-
-#: ../../libraries/entropy/spm/plugins/interfaces/portage_plugin.py:3044
-msgid "Probably Portage API has changed"
-msgstr "Waarschijnlijk is Portage API veranderd"
 
 #: ../../libraries/entropy/services/system/executors.py:459
 msgid "Calculating updates..."
@@ -323,6 +81,17 @@ msgstr "Lokale database revisie is op dit moment"
 #: ../../libraries/entropy/services/ugc/interfaces.py:266
 msgid "not a valid directory path"
 msgstr "geen geldig mappen pad"
+
+#: ../../libraries/entropy/services/ugc/interfaces.py:1723
+#: ../../libraries/entropy/services/ugc/interfaces.py:1726
+#: ../../libraries/entropy/client/services/ugc/commands.py:25
+#: ../../libraries/entropy/client/services/ugc/commands.py:28
+#: ../../libraries/entropy/client/services/system/interfaces.py:27
+#: ../../libraries/entropy/client/services/system/interfaces.py:30
+#: ../../libraries/entropy/transceivers.py:642
+#: ../../libraries/entropy/transceivers.py:645
+msgid "OutputInterface does not have an updateProgress method"
+msgstr "OutputInterface heeft geen updateProgress methode"
 
 #: ../../libraries/entropy/services/ugc/interfaces.py:1731
 msgid "A valid entropy.client.services.ugc.commands.Base interface is needed"
@@ -500,7 +269,7 @@ msgid "migrating database path from"
 msgstr "migreren van database pad vanaf"
 
 #: ../../libraries/entropy/server/interfaces/main.py:418
-#: ../../libraries/entropy/db.py:1210 ../../client/text_configuration.py:99
+#: ../../libraries/entropy/db.py:1210 ../../client/text_configuration.py:105
 msgid "to"
 msgstr "naar"
 
@@ -522,8 +291,8 @@ msgstr "Wilt u de standaard repositorie initialiseren ?"
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2992
 #: ../../libraries/entropy/server/interfaces/mirrors.py:3326
 #: ../../libraries/entropy/output.py:769 ../../libraries/entropy/qa.py:291
-#: ../../client/equo.py:846 ../../client/text_configuration.py:97
-#: ../../client/text_configuration.py:118 ../../client/text_rescue.py:68
+#: ../../client/equo.py:848 ../../client/text_configuration.py:100
+#: ../../client/text_configuration.py:127 ../../client/text_rescue.py:68
 #: ../../client/text_rescue.py:71 ../../client/text_rescue.py:74
 #: ../../client/text_rescue.py:236 ../../client/text_rescue.py:239
 #: ../../client/text_rescue.py:242 ../../client/text_rescue.py:502
@@ -1040,8 +809,8 @@ msgstr "Herziening"
 #: ../../libraries/entropy/qa.py:514 ../../client/text_rescue.py:285
 #: ../../client/text_rescue.py:298 ../../client/text_ui.py:999
 #: ../../client/text_ui.py:1000 ../../client/text_ui.py:1002
-#: ../../client/text_ui.py:1003 ../../sulfur/src/sulfur/__init__.py:978
-#: ../../sulfur/src/sulfur/dialogs.py:5968
+#: ../../client/text_ui.py:1003 ../../sulfur/src/sulfur/dialogs.py:5968
+#: ../../sulfur/src/sulfur/__init__.py:978
 #: ../../sulfur/src/sulfur/packages.py:97
 #: ../../sulfur/src/sulfur/packages.py:412
 msgid "Attention"
@@ -1077,6 +846,11 @@ msgstr "checken van hash"
 #: ../../libraries/entropy/server/interfaces/main.py:3432
 msgid "digest verification of"
 msgstr "'digest' controle voor"
+
+#: ../../libraries/entropy/server/interfaces/main.py:3417
+#: ../../libraries/entropy/transceivers.py:1205
+msgid "not supported"
+msgstr "niet ondersteund"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3434
 msgid "failed for unknown reasons"
@@ -1425,6 +1199,14 @@ msgstr "gecomprimeerde controlesom"
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1523
 msgid "cannot create mirror directory"
 msgstr "Kan geen mirror map aanmaken"
+
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1525
+#: ../../libraries/entropy/server/interfaces/mirrors.py:1645
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3065
+#: ../../libraries/entropy/server/interfaces/mirrors.py:3087
+#: ../../libraries/entropy/transceivers.py:1418
+msgid "error"
+msgstr "fout"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1560
 msgid "waiting up to 2 minutes before giving up"
@@ -2327,9 +2109,9 @@ msgid "A valid Client instance or subclass is needed"
 msgstr "Een geldige Cliënt instantie of subklasse is nodig"
 
 #: ../../libraries/entropy/client/misc.py:139
-#: ../../client/text_configuration.py:138
 #: ../../client/text_configuration.py:148
-#: ../../client/text_configuration.py:215
+#: ../../client/text_configuration.py:160
+#: ../../client/text_configuration.py:229
 msgid "Automerging file"
 msgstr "Auto-samenvoegen van bestand"
 
@@ -2387,24 +2169,24 @@ msgstr "Updaten van systeem database middels repositorie"
 msgid "Checking %s"
 msgstr "Checken %s"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:243
-#: ../../libraries/entropy/client/interfaces/dep.py:431
+#: ../../libraries/entropy/client/interfaces/dep.py:250
+#: ../../libraries/entropy/client/interfaces/dep.py:442
 msgid "server_repos needs serverInstance"
 msgstr "server_repos heeft serverInstance nodig"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1397
+#: ../../libraries/entropy/client/interfaces/dep.py:1408
 msgid "Sorting dependencies"
 msgstr "Sorteren van afhankelijkheden"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1496
+#: ../../libraries/entropy/client/interfaces/dep.py:1507
 msgid "Calculating inverse dependencies for"
 msgstr "Berekenen tegengestelde afhankelijkheden voor"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1586
+#: ../../libraries/entropy/client/interfaces/dep.py:1597
 msgid "Calculating available packages for"
 msgstr "Berekenen beschikbare pakketten voor"
 
-#: ../../libraries/entropy/client/interfaces/dep.py:1714
+#: ../../libraries/entropy/client/interfaces/dep.py:1725
 msgid "Calculating world packages"
 msgstr "Berekenen wereld pakketten"
 
@@ -2442,6 +2224,12 @@ msgstr "bestand niet beschikbaar op deze mirror"
 #: ../../libraries/entropy/client/interfaces/fetch.py:456
 msgid "wrong checksum"
 msgstr "verkeerde controlesom"
+
+#: ../../libraries/entropy/client/interfaces/fetch.py:209
+#: ../../libraries/entropy/client/interfaces/fetch.py:458
+#: ../../server/server_reagent.py:94 ../../server/server_reagent.py:106
+msgid "not found"
+msgstr "niet gevonden"
 
 #. timeout!
 #: ../../libraries/entropy/client/interfaces/fetch.py:211
@@ -2492,7 +2280,6 @@ msgstr "tijd verstreken, ik geef opâ€â€Ž"
 #: ../../libraries/entropy/client/interfaces/methods.py:60
 #: ../../libraries/entropy/client/interfaces/methods.py:81
 #: ../../server/server_reagent.py:91 ../../server/server_reagent.py:103
-#: ../../sulfur/src/sulfur/__init__.py:763
 #: ../../sulfur/src/sulfur/dialogs.py:2316
 #: ../../sulfur/src/sulfur/dialogs.py:2479
 #: ../../sulfur/src/sulfur/dialogs.py:2556
@@ -2503,6 +2290,7 @@ msgstr "tijd verstreken, ik geef opâ€â€Ž"
 #: ../../sulfur/src/sulfur/dialogs.py:3641
 #: ../../sulfur/src/sulfur/dialogs.py:3667
 #: ../../sulfur/src/sulfur/dialogs.py:3707
+#: ../../sulfur/src/sulfur/__init__.py:763
 #: ../../sulfur/src/sulfur/views.py:1567 ../../sulfur/src/sulfur/views.py:2256
 msgid "Repository"
 msgstr "Repositorie"
@@ -2842,6 +2630,22 @@ msgstr ""
 "Pakket kan niet worden binnengehaald. Probeer de repositories up-te-daten en "
 "probeer dan opnieuw"
 
+#: ../../libraries/entropy/client/interfaces/package.py:1662
+#: ../../libraries/entropy/client/interfaces/package.py:1701
+#: ../../libraries/entropy/client/interfaces/package.py:1784
+#: ../../libraries/entropy/client/interfaces/package.py:1791
+#: ../../libraries/entropy/client/interfaces/package.py:1828
+#: ../../libraries/entropy/client/interfaces/package.py:1857
+#: ../../libraries/entropy/client/interfaces/package.py:2003
+#: ../../libraries/entropy/client/interfaces/package.py:2023
+#: ../../libraries/entropy/client/interfaces/trigger.py:55
+#: ../../libraries/entropy/db.py:61 ../../libraries/entropy/security.py:353
+#: ../../server/server_reagent.py:656 ../../sulfur/src/sulfur/events.py:891
+#: ../../sulfur/src/sulfur/events.py:897 ../../sulfur/src/sulfur/events.py:934
+#: ../../sulfur/src/sulfur/sulfur.glade.h:76
+msgid "Error"
+msgstr "Fout"
+
 #: ../../libraries/entropy/client/interfaces/package.py:1681
 msgid "archives"
 msgstr "archieven"
@@ -3018,7 +2822,7 @@ msgid "An error occured. Action aborted."
 msgstr "Een fout deed zich voor. Actie afgebroken."
 
 #: ../../libraries/entropy/client/interfaces/qa.py:82
-#: ../../libraries/entropy/qa.py:1129
+#: ../../libraries/entropy/qa.py:1142
 msgid "Not prepared yet"
 msgstr "Nog niet voorbereid"
 
@@ -3415,9 +3219,17 @@ msgstr "Portage omgeving kan niet worden geladen"
 msgid "please fix"
 msgstr "repareer aub"
 
+#: ../../libraries/entropy/client/interfaces/trigger.py:211
+msgid "QA"
+msgstr "VA"
+
 #: ../../libraries/entropy/client/interfaces/trigger.py:212
 msgid "Cannot run External trigger for"
 msgstr "Kan Externe trekker niet starten voor"
+
+#: ../../libraries/entropy/client/interfaces/trigger.py:214
+msgid "Please report it"
+msgstr "Rapporteer het alsjeblieft"
 
 #: ../../libraries/entropy/client/interfaces/trigger.py:436
 #, fuzzy
@@ -3711,13 +3523,13 @@ msgstr "geef huidige lijst weer"
 
 #. wait user interaction
 #: ../../libraries/entropy/output.py:879
-#: ../../client/text_configuration.py:248
-#: ../../client/text_configuration.py:263
+#: ../../client/text_configuration.py:264
+#: ../../client/text_configuration.py:279
 msgid "Your choice (type a number and press enter):"
 msgstr "Jouw keuze (typ een nummer en druk op enter):"
 
 #: ../../libraries/entropy/output.py:905
-#: ../../client/text_configuration.py:167
+#: ../../client/text_configuration.py:180
 msgid "You don't have typed a number."
 msgstr "Je hebt geen nummer gegeven."
 
@@ -4201,23 +4013,23 @@ msgstr "upgrade je distributie naar een nieuwe uitgave (branche)"
 msgid "update system with the latest available packages"
 msgstr "update systeem met de laatst beschikbare pakketten"
 
-#: ../../client/equo.py:91 ../../client/equo.py:110 ../../client/equo.py:116
-#: ../../client/equo.py:132 ../../client/equo.py:137 ../../client/equo.py:145
-#: ../../client/equo.py:150 ../../client/equo.py:161 ../../client/equo.py:238
+#: ../../client/equo.py:91 ../../client/equo.py:112 ../../client/equo.py:118
+#: ../../client/equo.py:134 ../../client/equo.py:139 ../../client/equo.py:147
+#: ../../client/equo.py:152 ../../client/equo.py:163 ../../client/equo.py:240
 #: ../../server/activator.py:48
 msgid "ask before making any changes"
 msgstr "vragen voor maken van veranderingen"
 
-#: ../../client/equo.py:92 ../../client/equo.py:111
+#: ../../client/equo.py:92 ../../client/equo.py:113
 msgid "just download packages"
 msgstr "pakketten alleen downloaden"
 
-#: ../../client/equo.py:93 ../../client/equo.py:239
+#: ../../client/equo.py:93 ../../client/equo.py:241
 #: ../../server/activator.py:49
 msgid "only show what would be done"
 msgstr "alleen laten zien wat er zou gebeuren"
 
-#: ../../client/equo.py:94 ../../client/equo.py:125
+#: ../../client/equo.py:94 ../../client/equo.py:127
 msgid "show more details about what is going on"
 msgstr "laat meer details zien over wat er gaande is"
 
@@ -4229,7 +4041,7 @@ msgstr "Her installeer alle pakketten en hun afhankelijkheden"
 msgid "same as --replay"
 msgstr "zelfde als --replay"
 
-#: ../../client/equo.py:97 ../../client/equo.py:120 ../../client/equo.py:142
+#: ../../client/equo.py:97 ../../client/equo.py:122 ../../client/equo.py:144
 msgid "resume previously interrupted operations"
 msgstr "vervolg vorige onderbroken actie"
 
@@ -4237,640 +4049,645 @@ msgstr "vervolg vorige onderbroken actie"
 msgid "used with --resume, makes the first package to be skipped"
 msgstr "in combinatie met --resume, wordt het eerste pakket overgeslagen"
 
-#: ../../client/equo.py:99 ../../client/equo.py:127
+#: ../../client/equo.py:99 ../../client/equo.py:129
 msgid "disable package integrity check"
 msgstr "schakel pakket integriteit check uit"
 
-#: ../../client/equo.py:100 ../../client/equo.py:128
+#: ../../client/equo.py:100 ../../client/equo.py:130
 msgid "download multiple packages in parallel (default 3)"
 msgstr "download meerdere pakketten parallel (standaard 3)"
 
-#: ../../client/equo.py:101 ../../client/equo.py:129
+#: ../../client/equo.py:101 ../../client/equo.py:131
 msgid "download N packages in parallel (max 10)"
 msgstr "download N pakketten parallel (max. 10)"
 
 #: ../../client/equo.py:103
+#, fuzzy
+msgid "same as world"
+msgstr "zelfde als --replay"
+
+#: ../../client/equo.py:105
 msgid "security infrastructure functions"
 msgstr "beveiliging infrastructuur functies"
 
-#: ../../client/equo.py:104
+#: ../../client/equo.py:106
 msgid "download the latest Security Advisories"
 msgstr "download de laatste Beveiligings Adviezen"
 
-#: ../../client/equo.py:105
+#: ../../client/equo.py:107
 msgid "list all the available Security Advisories"
 msgstr "laat alle mogelijke Beveiliging Adviezen zien"
 
-#: ../../client/equo.py:106
+#: ../../client/equo.py:108
 msgid "list only affected"
 msgstr "laat alleen aangetasten zien"
 
-#: ../../client/equo.py:107
+#: ../../client/equo.py:109
 msgid "list only unaffected"
 msgstr "laat alleen desinfecteerde zien"
 
-#: ../../client/equo.py:108
+#: ../../client/equo.py:110
 msgid "show information about provided advisories identifiers"
 msgstr "geef informatie over gegeven adviezen herkenningen"
 
-#: ../../client/equo.py:109
+#: ../../client/equo.py:111
 msgid "automatically install all the available security updates"
 msgstr "installeer alle beschikbare beveiliging updates automatisch"
 
-#: ../../client/equo.py:112 ../../client/equo.py:117 ../../client/equo.py:133
-#: ../../client/equo.py:138 ../../client/equo.py:146 ../../client/equo.py:151
-#: ../../client/equo.py:162
+#: ../../client/equo.py:114 ../../client/equo.py:119 ../../client/equo.py:135
+#: ../../client/equo.py:140 ../../client/equo.py:148 ../../client/equo.py:153
+#: ../../client/equo.py:164
 msgid "just show what would be done"
 msgstr "laat alleen zien wat er gedaan zou worden"
 
-#: ../../client/equo.py:113 ../../client/equo.py:149 ../../client/equo.py:154
-#: ../../client/equo.py:160
+#: ../../client/equo.py:115 ../../client/equo.py:151 ../../client/equo.py:156
+#: ../../client/equo.py:162
 msgid "show less details (useful for scripting)"
 msgstr "laat minder details zien (handig voor scripts)"
 
-#: ../../client/equo.py:115
+#: ../../client/equo.py:117
 msgid "install atoms or .tbz2 packages"
 msgstr "installeer atomen of .tbz2 pakketten"
 
-#: ../../client/equo.py:118
+#: ../../client/equo.py:120
 msgid "just download packages without doing the install"
 msgstr "download de pakketten zonder ze te installeren"
 
-#: ../../client/equo.py:119 ../../client/equo.py:139
+#: ../../client/equo.py:121 ../../client/equo.py:141
 msgid "do not pull in any dependency"
 msgstr "voeg geen afhankelijkheden toe"
 
-#: ../../client/equo.py:121
+#: ../../client/equo.py:123
 msgid "used with --resume, makes the first package in queue to be skipped"
 msgstr ""
 "in combinatie met --resume, wordt het eerste pakket in rij overgeslagen"
 
-#: ../../client/equo.py:122
+#: ../../client/equo.py:124
 msgid "remove downloaded packages after being used"
 msgstr "verwijder gedownload pakket nadat deze is gebruikt"
 
-#: ../../client/equo.py:123
+#: ../../client/equo.py:125
 msgid "pull all the dependencies in, regardless their state"
 msgstr "voeg alle afhankelijkheden toe, ongeacht hun status"
 
-#: ../../client/equo.py:124
+#: ../../client/equo.py:126
 msgid "makes dependency rules stricter"
 msgstr "maakt afhankelijkheid regels strikter"
 
-#: ../../client/equo.py:126
+#: ../../client/equo.py:128
 msgid "makes old configuration files to be removed"
 msgstr "zorgt ervoor dat oude configuratie bestanden worden verwijderd"
 
-#: ../../client/equo.py:131
+#: ../../client/equo.py:133
 msgid "download atoms source code"
 msgstr "download atomen bron code"
 
-#: ../../client/equo.py:134
+#: ../../client/equo.py:136
 msgid "save sources in current working directory"
 msgstr "sla bronnen op in de huidige map"
 
-#: ../../client/equo.py:136
+#: ../../client/equo.py:138
 msgid "remove one or more packages"
 msgstr "verwijder Ã©Ã©n of meerdere pakketten"
 
-#: ../../client/equo.py:140
+#: ../../client/equo.py:142
 msgid "also pull unused dependencies where depends list is empty"
 msgstr ""
 "neem ook ongebruikte afhankelijkheden mee waar afhankelijken lijst leeg is"
 
-#: ../../client/equo.py:141
+#: ../../client/equo.py:143
 msgid "makes configuration files to be removed"
 msgstr "zorgt voor verwijdering van configuratie bestanden"
 
-#: ../../client/equo.py:144
+#: ../../client/equo.py:146
 msgid "configure one or more installed packages"
 msgstr "configureer een of meer geÃ¯nstalleerde pakketten"
 
-#: ../../client/equo.py:148 ../../server/reagent.py:101
+#: ../../client/equo.py:150 ../../server/reagent.py:101
 msgid "look for unsatisfied dependencies"
 msgstr "zoek naar onbevredigde afhankelijkheden"
 
-#: ../../client/equo.py:153
+#: ../../client/equo.py:155
 msgid "look for unused packages (pay attention)"
 msgstr "zoek naar ongebruikte pakketten (houd je aandacht erbij)"
 
-#: ../../client/equo.py:155
+#: ../../client/equo.py:157
 msgid "sort packages by disk size"
 msgstr "sorteer pakketten op schijf grootte"
 
-#: ../../client/equo.py:157 ../../server/reagent.py:102
+#: ../../client/equo.py:159 ../../server/reagent.py:102
 msgid "look for missing libraries"
 msgstr "zoek naar ontbrekende bibliotheken"
 
-#: ../../client/equo.py:158 ../../server/reagent.py:103
+#: ../../client/equo.py:160 ../../server/reagent.py:103
 msgid "dump results to files"
 msgstr ""
 
-#: ../../client/equo.py:159
+#: ../../client/equo.py:161
 msgid "print broken files to stdout"
 msgstr "print gebroken bestand naar stdout"
 
-#: ../../client/equo.py:164
+#: ../../client/equo.py:166
 msgid "configuration files update tool"
 msgstr "configuratie bestanden update gereedschap"
 
-#: ../../client/equo.py:165
+#: ../../client/equo.py:167
 msgid "show configuration files to be updated"
 msgstr "geef configuratie bestanden voor update weer"
 
-#: ../../client/equo.py:166
+#: ../../client/equo.py:168
 msgid "run the configuration files update function"
 msgstr "voer de configuratie bestanden update functie uit"
 
-#: ../../client/equo.py:168
+#: ../../client/equo.py:170
 msgid "do misc queries on repository and local databases"
 msgstr "doe diverse queries op repositorie en lokale databases"
 
-#: ../../client/equo.py:169
+#: ../../client/equo.py:171
 msgid "search from what package a file belongs"
 msgstr "zoek naar welk pakket een bestand behoort"
 
-#: ../../client/equo.py:170 ../../client/equo.py:287
+#: ../../client/equo.py:172 ../../client/equo.py:289
 msgid "show packages changelog"
 msgstr "bekijk pakketten veranderingen-log"
 
-#: ../../client/equo.py:171
+#: ../../client/equo.py:173
 msgid "search what packages depend on the provided atoms"
 msgstr "zoek naar welke pakketten afhangen van de gegeven atomen"
 
-#: ../../client/equo.py:172 ../../client/equo.py:289
+#: ../../client/equo.py:174 ../../client/equo.py:291
 #: ../../server/reagent.py:56
 msgid "search packages by description"
 msgstr "zoek pakketten op beschrijving"
 
-#: ../../client/equo.py:173 ../../client/equo.py:291
+#: ../../client/equo.py:175 ../../client/equo.py:293
 #: ../../server/reagent.py:54
 msgid "show files owned by the provided atoms"
 msgstr "geef bestanden weer behorend aan de gegeven atomen"
 
-#: ../../client/equo.py:174
+#: ../../client/equo.py:176
 msgid "search a package into the local database"
 msgstr "zoek naar een pakket in de lokale database"
 
-#: ../../client/equo.py:175
+#: ../../client/equo.py:177
 msgid "show packages owning the provided licenses"
 msgstr "geef pakketten weer behorende bij de gegeven licenties"
 
-#: ../../client/equo.py:176
+#: ../../client/equo.py:178
 msgid "list packages based on the chosen parameter below"
 msgstr "som pakketten gebaseerd op de gekozen parameter hieronder op"
 
-#: ../../client/equo.py:177
+#: ../../client/equo.py:179
 msgid "list installed packages"
 msgstr "Toon geÃ¯nstalleerde pakketten"
 
-#: ../../client/equo.py:178
+#: ../../client/equo.py:180
 #, fuzzy
 msgid "list available packages"
 msgstr "Toon geÃ¯nstalleerde pakketten"
 
-#: ../../client/equo.py:179 ../../client/equo.py:293
+#: ../../client/equo.py:181 ../../client/equo.py:295
 #: ../../server/reagent.py:50
 msgid "show runtime libraries needed by the provided atoms"
 msgstr "geef runtime bibliotheken weer die nodig zijn voor de gegeven atomen"
 
-#: ../../client/equo.py:180
+#: ../../client/equo.py:182
 msgid "search files that do not belong to any package"
 msgstr "zoek naar bestanden die niet behoren tot een enkel pakket"
 
-#: ../../client/equo.py:181
+#: ../../client/equo.py:183
 msgid "show the removal tree for the specified atoms"
 msgstr "Geef de verwijder lijst voor de gespecificeerde atomen weer"
 
-#: ../../client/equo.py:182
+#: ../../client/equo.py:184
 msgid "show atoms needing the provided libraries"
 msgstr "geef atomen weer die nodig zijn voor de gegeven bibliotheken"
 
-#: ../../client/equo.py:183 ../../client/equo.py:295
+#: ../../client/equo.py:185 ../../client/equo.py:297
 #: ../../server/reagent.py:53
 msgid "search available package sets"
 msgstr "zoek beschikbare pakket sets"
 
-#: ../../client/equo.py:184
+#: ../../client/equo.py:186
 msgid "show packages owning the provided slot"
 msgstr "geef pakketten weer behorend aan het gegeven slot"
 
-#: ../../client/equo.py:185
+#: ../../client/equo.py:187
 msgid "show packages owning the provided tags"
 msgstr "geef pakketten weer behorend aan de gegeven tags"
 
-#: ../../client/equo.py:186 ../../client/equo.py:297 ../../client/equo.py:344
+#: ../../client/equo.py:188 ../../client/equo.py:299 ../../client/equo.py:346
 #: ../../server/reagent.py:59
 msgid "show more details"
 msgstr "meer details tonen"
 
-#: ../../client/equo.py:187 ../../client/equo.py:298 ../../client/equo.py:345
+#: ../../client/equo.py:189 ../../client/equo.py:300 ../../client/equo.py:347
 #: ../../server/reagent.py:60
 msgid "print results in a scriptable way"
 msgstr "print resultaten in een scriptbare manier"
 
-#: ../../client/equo.py:193
+#: ../../client/equo.py:195
 msgid "!!! Use --verbose to get full help output"
 msgstr "!!! Gebruik --verbose voor volledige hulp uitvoer"
 
-#: ../../client/equo.py:198
+#: ../../client/equo.py:200
 msgid "Extended Options"
 msgstr "Uitgebreide Opties"
 
-#: ../../client/equo.py:200
+#: ../../client/equo.py:202
 msgid "handles extended functionalities"
 msgstr "behandelt uitgebreide functionaliteiten"
 
-#: ../../client/equo.py:201
+#: ../../client/equo.py:203
 msgid "make a smart application for the provided atoms (experimental)"
 msgstr "maak een 'smart' applicatie voor de gegeven atomen (experimenteel)"
 
-#: ../../client/equo.py:202
+#: ../../client/equo.py:204
 msgid ""
 "make a smart package for the provided atoms (multiple packages into one file)"
 msgstr ""
 "maak een 'smart' pakket voor de gegeven atomen (meerdere pakketten in een "
 "bestand)"
 
-#: ../../client/equo.py:203
+#: ../../client/equo.py:205
 msgid "recreate an Entropy package from your System"
 msgstr "her-creÃ«er een Entropy pakket vanaf jouw Systeem"
 
-#: ../../client/equo.py:204 ../../client/equo.py:206 ../../client/equo.py:208
+#: ../../client/equo.py:206 ../../client/equo.py:208 ../../client/equo.py:210
 msgid "save new packages into the specified directory"
 msgstr "sla nieuwe pakketten op in de gespecificeerde map"
 
-#: ../../client/equo.py:205
+#: ../../client/equo.py:207
 msgid "convert provided Gentoo .tbz2s into Entropy packages (Portage needed)"
 msgstr ""
 "converteer gegeven Gentoo .tbz2's naar Entropy pakketten (Portage nodig)"
 
-#: ../../client/equo.py:207
+#: ../../client/equo.py:209
 msgid "convert provided Entropy packages into Gentoo ones (Portage needed)"
 msgstr ""
 "converteer gegeven Entropy pakketten naar die van Gentoo (Portage nodig)"
 
-#: ../../client/equo.py:209
+#: ../../client/equo.py:211
 msgid "extract Entropy metadata from provided .tbz2 packages"
 msgstr "pak Entropy metadata uit van gegeven .tbz2 pakketten"
 
-#: ../../client/equo.py:210
+#: ../../client/equo.py:212
 msgid "save new metadata into the specified directory"
 msgstr "sla nieuwe metadata op naar de gespecificeerde map"
 
-#: ../../client/equo.py:212
+#: ../../client/equo.py:214
 msgid "handles installed packages database"
 msgstr "behandelt geÃ¯nstalleerde pakketten database"
 
-#: ../../client/equo.py:213
+#: ../../client/equo.py:215
 msgid "check System Database for errors"
 msgstr "check Systeem Database voor fouten"
 
-#: ../../client/equo.py:214
+#: ../../client/equo.py:216
 msgid "remove System Database internal indexes to save space"
 msgstr "verwijder Systeem Database interne indexen om ruimte te sparen"
 
-#: ../../client/equo.py:216
+#: ../../client/equo.py:218
 msgid ""
 "generate installed packages database using files on the system [last hope]"
 msgstr ""
 "genereer geÃ¯nstalleerde pakketten database door middel van bestanden op het "
 "systeem [laatste hoop]"
 
-#: ../../client/equo.py:217
+#: ../../client/equo.py:219
 msgid "regenerate depends caching table"
 msgstr "hergenereer afhankelijken caching tabel"
 
-#: ../../client/equo.py:218
+#: ../../client/equo.py:220
 msgid "update/generate counters table (Portage <-> Entropy packages table)"
 msgstr ""
 "update/genereer verschillen tabel (Portage <-> Entropy pakketten tabel)"
 
-#: ../../client/equo.py:219
+#: ../../client/equo.py:221
 msgid "makes Entropy aware of your Portage-updated packages"
 msgstr "maakt Entropy bewust van jouw Portage-bijgewerkte pakketten"
 
-#: ../../client/equo.py:220
+#: ../../client/equo.py:222
 msgid "backup the current Entropy installed packages database"
 msgstr "back up de huidige Entropy geÃ¯nstalleerde pakketten database"
 
-#: ../../client/equo.py:221
+#: ../../client/equo.py:223
 msgid "restore a previously backed up Entropy installed packages database"
 msgstr ""
 "herstel een eerdere back up van de Entropy geÃ¯nstalleerde pakketten database"
 
-#: ../../client/equo.py:223
+#: ../../client/equo.py:225
 msgid "handles community-side features"
 msgstr "handelt communitie-zijde middelen"
 
-#: ../../client/equo.py:225
+#: ../../client/equo.py:227
 msgid "community repositories management functions"
 msgstr "communitie repositories beheer functies"
 
-#: ../../client/equo.py:226 ../../server/reagent.py:39
+#: ../../client/equo.py:228 ../../server/reagent.py:39
 msgid "scan the System looking for newly compiled packages"
 msgstr "scan het Systeem op nieuw gecompileerde pakketten"
 
-#: ../../client/equo.py:227 ../../server/reagent.py:40
+#: ../../client/equo.py:229 ../../server/reagent.py:40
 msgid "analyze the Entropy Store directory directly"
 msgstr "analizeer de Entropy Winkel map meteen"
 
-#: ../../client/equo.py:228 ../../server/reagent.py:41
+#: ../../client/equo.py:230 ../../server/reagent.py:41
 msgid "repackage the specified atoms"
 msgstr "Her-verpak de gespecificeerde atomen"
 
-#: ../../client/equo.py:229 ../../client/equo.py:235
+#: ../../client/equo.py:231 ../../client/equo.py:237
 #: ../../server/activator.py:41 ../../server/reagent.py:42
 msgid "do not ask anything except critical things"
 msgstr "vraag nergens om behalve voor kritische dingen"
 
-#: ../../client/equo.py:230 ../../server/reagent.py:43
+#: ../../client/equo.py:232 ../../server/reagent.py:43
 msgid "manage only the specified atoms"
 msgstr "beheer alleen de gespecificeerde atomen"
 
-#: ../../client/equo.py:231 ../../server/reagent.py:44
+#: ../../client/equo.py:233 ../../server/reagent.py:44
 msgid "run in interactive mode (asking things one by one)"
 msgstr ""
 
-#: ../../client/equo.py:232 ../../server/reagent.py:46
+#: ../../client/equo.py:234 ../../server/reagent.py:46
 msgid "add binary packages to repository w/o affecting scopes (multipackages)"
 msgstr ""
 "voeg binaire pakketten toe aan repositorie zonder 'scopes' te beinvloeden "
 "(multi-pakketten)"
 
-#: ../../client/equo.py:233
+#: ../../client/equo.py:235
 msgid "community repositories mirrors management functions"
 msgstr "community repositories mirrors management functies"
 
-#: ../../client/equo.py:234 ../../server/activator.py:39
+#: ../../client/equo.py:236 ../../server/activator.py:39
 msgid "sync packages, database and also do some tidy"
 msgstr "sync pakketten, database en doe wat ordening"
 
-#: ../../client/equo.py:236 ../../client/equo.py:240 ../../client/equo.py:243
+#: ../../client/equo.py:238 ../../client/equo.py:242 ../../client/equo.py:245
 #: ../../server/activator.py:42 ../../server/activator.py:50
 #: ../../server/activator.py:60
 msgid "sync all the configured repositories"
 msgstr "sync alle geconfigureerde repositories"
 
-#: ../../client/equo.py:237
+#: ../../client/equo.py:239
 msgid "sync packages across primary mirrors"
 msgstr "sync pakketten over de primaire mirrors"
 
-#: ../../client/equo.py:241 ../../server/activator.py:51
+#: ../../client/equo.py:243 ../../server/activator.py:51
 msgid "also verify packages integrity"
 msgstr "verifieer ook de pakketten integriteit"
 
-#: ../../client/equo.py:242 ../../server/activator.py:54
+#: ../../client/equo.py:244 ../../server/activator.py:54
 msgid "sync the current repository database across primary mirrors"
 msgstr "synchroniseer de huidige repositorie database over de primaire mirrors"
 
-#: ../../client/equo.py:244 ../../server/activator.py:55
+#: ../../client/equo.py:246 ../../server/activator.py:55
 msgid "lock the current repository database (server-side)"
 msgstr "blokkeer de huidige repositorie database (server-zijde)"
 
-#: ../../client/equo.py:245 ../../server/activator.py:56
+#: ../../client/equo.py:247 ../../server/activator.py:56
 msgid "unlock the current repository database (server-side)"
 msgstr "deblokkeer de huidige repositorie database (server-zijde)"
 
-#: ../../client/equo.py:246 ../../server/activator.py:57
+#: ../../client/equo.py:248 ../../server/activator.py:57
 msgid "lock the current repository database (client-side)"
 msgstr "blokkeer de huidige repositorie database (cliënt-zijde)"
 
-#: ../../client/equo.py:247 ../../server/activator.py:58
+#: ../../client/equo.py:249 ../../server/activator.py:58
 msgid "unlock the current repository database (client-side)"
 msgstr "deblokkeer de huidige repositorie database (cliënt-zijde)"
 
-#: ../../client/equo.py:248 ../../server/activator.py:59
+#: ../../client/equo.py:250 ../../server/activator.py:59
 msgid "show current lock status"
 msgstr "geef huidige vergrendel status"
 
-#: ../../client/equo.py:249 ../../server/activator.py:44
+#: ../../client/equo.py:251 ../../server/activator.py:44
 msgid "remove binary packages not in repositories and expired"
 msgstr "verwijder binaire pakketten niet in de repositories en verlopen"
 
-#: ../../client/equo.py:253
+#: ../../client/equo.py:255
 msgid "community repositories database functions"
 msgstr "communitie repositories database functies"
 
-#: ../../client/equo.py:254 ../../server/reagent.py:63
+#: ../../client/equo.py:256 ../../server/reagent.py:63
 msgid "(re)initialize the current repository database"
 msgstr "(her)initialiseren van de huidige repositorie database"
 
-#: ../../client/equo.py:255 ../../server/reagent.py:64
+#: ../../client/equo.py:257 ../../server/reagent.py:64
 msgid "do not refill database using packages on mirrors"
 msgstr "her vul de database niet met pakketten op de mirrors"
 
-#: ../../client/equo.py:256 ../../server/reagent.py:65
+#: ../../client/equo.py:258 ../../server/reagent.py:65
 msgid "(re)create the database for the specified repository"
 msgstr "(her)creëer de database voor de gespecificeerde repositorie"
 
-#: ../../client/equo.py:257 ../../server/reagent.py:66
+#: ../../client/equo.py:259 ../../server/reagent.py:66
 msgid "manually force a revision bump for the current repository database"
 msgstr ""
 "forceer een revisie update handmatig voor de huidige repositorie database"
 
-#: ../../client/equo.py:258 ../../server/reagent.py:67
+#: ../../client/equo.py:260 ../../server/reagent.py:67
 msgid "synchronize the database"
 msgstr "synchroniseer de database"
 
-#: ../../client/equo.py:259 ../../server/reagent.py:68
+#: ../../client/equo.py:261 ../../server/reagent.py:68
 msgid "flush back old branches packages to current branch"
 msgstr "terug spoelen van de oude branches pakketten naar huidige branche"
 
-#: ../../client/equo.py:260 ../../server/reagent.py:69
+#: ../../client/equo.py:262 ../../server/reagent.py:69
 msgid "remove the provided atoms from the current repository database"
 msgstr "verwijder de gegeven atomen van de huidige repositorie database"
 
-#: ../../client/equo.py:261 ../../server/reagent.py:70
+#: ../../client/equo.py:263 ../../server/reagent.py:70
 msgid "remove the provided injected atoms (all if no atom specified)"
 msgstr ""
 "verwijder de gegeven geinjecteerde atomen (alles als geen atoom is "
 "gespecificeerd)"
 
-#: ../../client/equo.py:262 ../../server/reagent.py:71
+#: ../../client/equo.py:264 ../../server/reagent.py:71
 msgid "create an empty repository database in the provided path"
 msgstr "creëer een lege repositorie database in het gegeven pad"
 
-#: ../../client/equo.py:263
+#: ../../client/equo.py:265
 msgid "switch to the specified branch the provided atoms (or world)"
 msgstr "wissel de gegeven atomen (of wereld) naar de gespecificeerde branche"
 
-#: ../../client/equo.py:264 ../../server/reagent.py:73
+#: ../../client/equo.py:266 ../../server/reagent.py:73
 msgid "verify remote integrity of the provided atoms (or world)"
 msgstr "verifieer externe integriteit van de gegeven atomen (of wereld)"
 
-#: ../../client/equo.py:265 ../../server/reagent.py:74
+#: ../../client/equo.py:267 ../../server/reagent.py:74
 msgid "backup current repository database"
 msgstr "back-up huidige repositorie database"
 
-#: ../../client/equo.py:266 ../../server/reagent.py:75
+#: ../../client/equo.py:268 ../../server/reagent.py:75
 msgid "restore a previously backed-up repository database"
 msgstr "herstel een eerdere back up van de repositorie database"
 
-#: ../../client/equo.py:267
+#: ../../client/equo.py:269
 msgid "resync counters table (Portage <-> Entropy matching scheme)"
 msgstr ""
 "hersynchroniseer tegengestelden tabel (Portage <-> Entropy overeenkomende "
 "schema's)"
 
-#: ../../client/equo.py:271 ../../server/reagent.py:77
+#: ../../client/equo.py:273 ../../server/reagent.py:77
 msgid "manage a repository"
 msgstr "onderhoud een repositorie"
 
-#: ../../client/equo.py:272 ../../server/reagent.py:78
+#: ../../client/equo.py:274 ../../server/reagent.py:78
 msgid "enable the specified repository"
 msgstr "gespecificeerde repositorie aanzetten"
 
-#: ../../client/equo.py:273 ../../server/reagent.py:79
+#: ../../client/equo.py:275 ../../server/reagent.py:79
 msgid "disable the specified repository"
 msgstr "gespecificeerde repositorie uitzetten"
 
-#: ../../client/equo.py:274 ../../server/reagent.py:80
+#: ../../client/equo.py:276 ../../server/reagent.py:80
 msgid "show the current Server Interface status"
 msgstr "geef de huidige Server Omgeving status weer"
 
-#: ../../client/equo.py:275 ../../server/reagent.py:81
+#: ../../client/equo.py:277 ../../server/reagent.py:81
 msgid "handle packages manual dependencies"
 msgstr "behandel handmatige pakketten afhankelijkheden"
 
-#: ../../client/equo.py:276
+#: ../../client/equo.py:278
 msgid "clone a package inside a repository assigning it an arbitrary tag"
 msgstr ""
 "kloon een pakket binnen een repositorie en wijs deze toe aan een "
 "willekeurige tag"
 
-#: ../../client/equo.py:277 ../../server/reagent.py:83
+#: ../../client/equo.py:279 ../../server/reagent.py:83
 msgid "move packages from a repository to another"
 msgstr "verplaats pakketten van de ene repositorie naar een ander"
 
-#: ../../client/equo.py:278 ../../client/equo.py:280
+#: ../../client/equo.py:280 ../../client/equo.py:282
 #: ../../server/reagent.py:84 ../../server/reagent.py:86
 msgid "pulls dependencies in"
 msgstr "haalt afhankelijkheden binnen"
 
-#: ../../client/equo.py:279 ../../server/reagent.py:85
+#: ../../client/equo.py:281 ../../server/reagent.py:85
 msgid "copy packages from a repository to another"
 msgstr "kopieer pakketten van de ene repositorie naar de andere"
 
-#: ../../client/equo.py:281 ../../server/reagent.py:87
+#: ../../client/equo.py:283 ../../server/reagent.py:87
 msgid "set the default repository"
 msgstr "standaard repositorie instellen"
 
-#: ../../client/equo.py:285
+#: ../../client/equo.py:287
 msgid "do some searches into community repository databases"
 msgstr "doe een zoek actie in de communitie repositorie databases"
 
-#: ../../client/equo.py:286 ../../server/reagent.py:55
+#: ../../client/equo.py:288 ../../server/reagent.py:55
 msgid "show from what package the provided files belong"
 msgstr "geef weer bij welk pakket de gegeven bestanden horen"
 
-#: ../../client/equo.py:288 ../../server/reagent.py:51
+#: ../../client/equo.py:290 ../../server/reagent.py:51
 msgid "show what packages depend on the provided atoms"
 msgstr "geef weer welke pakketten afhangen van de gegeven atomen"
 
-#: ../../client/equo.py:290 ../../server/reagent.py:57
+#: ../../client/equo.py:292 ../../server/reagent.py:57
 msgid "search packages using the provided eclasses"
 msgstr "zoek pakketten gebruik makend van gegeven eclassen"
 
-#: ../../client/equo.py:292 ../../server/reagent.py:58
+#: ../../client/equo.py:294 ../../server/reagent.py:58
 msgid "list all the packages in the default repository"
 msgstr "som alle pakketten in de standaard repositorie op"
 
-#: ../../client/equo.py:294 ../../server/reagent.py:49
+#: ../../client/equo.py:296 ../../server/reagent.py:49
 msgid "search packages inside the default repository database"
 msgstr "zoek pakketten binnen de standaard repositorie database"
 
-#: ../../client/equo.py:296 ../../server/reagent.py:52
+#: ../../client/equo.py:298 ../../server/reagent.py:52
 msgid "show packages owning the specified tags"
 msgstr "Geef pakketten weer die de gespecificeerde tags bezitten"
 
-#: ../../client/equo.py:302 ../../server/reagent.py:89
+#: ../../client/equo.py:304 ../../server/reagent.py:89
 msgid "source package manager functions"
 msgstr "Bron pakket manager functies "
 
-#: ../../client/equo.py:303 ../../server/reagent.py:90
+#: ../../client/equo.py:305 ../../server/reagent.py:90
 msgid "compilation function"
 msgstr "compilatie functie"
 
-#: ../../client/equo.py:304 ../../server/reagent.py:91
+#: ../../client/equo.py:306 ../../server/reagent.py:91
 msgid "compile packages belonging to the provided categories"
 msgstr "compileer pakketten behorende tot de gegeven categorieÃ«n"
 
-#: ../../client/equo.py:305 ../../client/equo.py:308
+#: ../../client/equo.py:307 ../../client/equo.py:310
 #: ../../server/reagent.py:92 ../../server/reagent.py:95
 msgid "just list packages"
 msgstr "som lijst op met pakketten"
 
-#: ../../client/equo.py:306 ../../server/reagent.py:93
+#: ../../client/equo.py:308 ../../server/reagent.py:93
 #, fuzzy
 msgid "do not pull old package slots"
 msgstr "gedownloade pakketten"
 
-#: ../../client/equo.py:307 ../../server/reagent.py:94
+#: ../../client/equo.py:309 ../../server/reagent.py:94
 msgid "compile packages in provided package set names"
 msgstr "compileer pakketten in gegeven pakket set namen"
 
-#: ../../client/equo.py:309 ../../server/reagent.py:96
+#: ../../client/equo.py:311 ../../server/reagent.py:96
 msgid "rebuild everything"
 msgstr "herbouw alles"
 
-#: ../../client/equo.py:310 ../../server/reagent.py:97
+#: ../../client/equo.py:312 ../../server/reagent.py:97
 msgid "run database update if all went fine"
 msgstr "start database update als alles is goed gegaan"
 
-#: ../../client/equo.py:311 ../../server/reagent.py:98
+#: ../../client/equo.py:313 ../../server/reagent.py:98
 msgid "run mirror sync if all went fine"
 msgstr "start mirror sync als alles is goed gegaan"
 
-#: ../../client/equo.py:312 ../../server/reagent.py:99
+#: ../../client/equo.py:314 ../../server/reagent.py:99
 msgid "scan orphaned packages on SPM"
 msgstr "scan wees pakketten in SPM"
 
-#: ../../client/equo.py:316 ../../server/activator.py:62
+#: ../../client/equo.py:318 ../../server/activator.py:62
 msgid "notice board handling functions"
 msgstr "notitie bord handeling functies"
 
-#: ../../client/equo.py:317 ../../server/activator.py:63
+#: ../../client/equo.py:319 ../../server/activator.py:63
 msgid "add a news item to the notice board"
 msgstr "voeg een nieuws item to aan het notitie bord"
 
-#: ../../client/equo.py:318 ../../server/activator.py:64
+#: ../../client/equo.py:320 ../../server/activator.py:64
 msgid "remove a news item from the notice board"
 msgstr "Verwijder een nieuws item van het notitie bord"
 
-#: ../../client/equo.py:319 ../../server/activator.py:65
+#: ../../client/equo.py:321 ../../server/activator.py:65
 msgid "read the current notice board"
 msgstr "lees het huidige notitie bord"
 
-#: ../../client/equo.py:323
+#: ../../client/equo.py:325
 msgid "look for unsatisfied dependencies across community repositories"
 msgstr "zoek naar onbevredigde afhankelijkheden op communitie repositories"
 
-#: ../../client/equo.py:324 ../../server/reagent.py:104
+#: ../../client/equo.py:326 ../../server/reagent.py:104
 msgid "verify the integrity of local package files"
 msgstr ""
 
-#: ../../client/equo.py:325 ../../server/reagent.py:105
+#: ../../client/equo.py:327 ../../server/reagent.py:105
 msgid "regenerate the depends table"
 msgstr "hergenereer de afhankelijkheids tabel"
 
-#: ../../client/equo.py:328
+#: ../../client/equo.py:330
 msgid "handles User Generated Content features"
 msgstr "handelt Gebruiker Gedefinieerde Inhoud mogelijkheden"
 
-#: ../../client/equo.py:329
+#: ../../client/equo.py:331
 msgid "login against a specified repository"
 msgstr "Log in op een gespecificeerde repositorie"
 
-#: ../../client/equo.py:330
+#: ../../client/equo.py:332
 msgid "logout from a specified repository"
 msgstr "uitloggen van een gespecificeerde repositorie"
 
-#: ../../client/equo.py:331
+#: ../../client/equo.py:333
 msgid "force action"
 msgstr "forceer actie"
 
-#: ../../client/equo.py:332
+#: ../../client/equo.py:334
 msgid ""
 "manage package documents for the selected repository (comments, files, "
 "videos)"
@@ -4878,101 +4695,101 @@ msgstr ""
 "beheer pakket documenten voor de geselecteerde repositorie (commentaar, "
 "bestanden, video's)"
 
-#: ../../client/equo.py:333
+#: ../../client/equo.py:335
 msgid ""
 "get available documents for the specified package key (example: x11-libs/qt)"
 msgstr ""
 "haal beschikbare documenten op voor de gespecificeerde pakket sleutel "
 "(example: x11-libs/qt)"
 
-#: ../../client/equo.py:334
+#: ../../client/equo.py:336
 msgid "add a new document to the specified package key (example: x11-libs/qt)"
 msgstr ""
 "voeg een nieuw document to aan de gespecificeerde pakket sleutel (voorbeeld: "
 "x11-libs/qt)"
 
-#: ../../client/equo.py:335
+#: ../../client/equo.py:337
 msgid "remove documents from database using their identifiers"
 msgstr ""
 "verwijder documenten van de database door middel van hun "
 "identificatiemiddelen"
 
-#: ../../client/equo.py:336
+#: ../../client/equo.py:338
 msgid "manage package votes for the selected repository"
 msgstr "beheer pakket stemmen voor de geselecteerde repositorie"
 
-#: ../../client/equo.py:337
+#: ../../client/equo.py:339
 msgid "get vote for the specified package key (example: x11-libs/qt)"
 msgstr ""
 "haal stemmen voor de geselecteerde pakket sleutel op (voorbeeld: x11-libs/qt)"
 
-#: ../../client/equo.py:338
+#: ../../client/equo.py:340
 msgid "add vote for the specified package key (example: x11-libs/qt)"
 msgstr ""
 "voeg een stem toe voor de gespecificeerde pakket sleutel (voorbeeld: x11-"
 "libs/qt)"
 
-#: ../../client/equo.py:341
+#: ../../client/equo.py:343
 msgid "handles Entropy cache"
 msgstr "behandeld Entropy cache"
 
-#: ../../client/equo.py:342
+#: ../../client/equo.py:344
 msgid "clean Entropy cache"
 msgstr "gooi Entropy cache leeg"
 
-#: ../../client/equo.py:343
+#: ../../client/equo.py:345
 msgid "regenerate Entropy cache"
 msgstr "hergenereer Entropy cache"
 
-#: ../../client/equo.py:347
+#: ../../client/equo.py:349
 msgid "remove downloaded packages and clean temp. directories"
 msgstr "verwijder gedownloade pakketten en gooi temp. mappen leeg"
 
-#: ../../client/equo.py:349
+#: ../../client/equo.py:351
 msgid "show system information"
 msgstr "systeem informatie weergeven"
 
-#: ../../client/equo.py:399
+#: ../../client/equo.py:401
 #, fuzzy
 msgid "not enough parameters"
 msgstr "Onvoldoende parameters"
 
-#: ../../client/equo.py:458
+#: ../../client/equo.py:460
 msgid "Caching equo conf"
 msgstr "Caching equo conf"
 
-#: ../../client/equo.py:469
+#: ../../client/equo.py:471
 msgid "Caching not run."
 msgstr "Caching niet gestart"
 
-#: ../../client/equo.py:474
+#: ../../client/equo.py:476
 msgid "Caching complete."
 msgstr "Cachen compleet."
 
-#: ../../client/equo.py:480 ../../magneto/src/magneto/core/interfaces.py:217
+#: ../../client/equo.py:482 ../../magneto/src/magneto/core/interfaces.py:217
 #: ../../magneto/src/magneto/core/interfaces.py:225
 msgid "There are"
 msgstr "Er is/zijn"
 
-#: ../../client/equo.py:482
+#: ../../client/equo.py:484
 msgid "configuration file(s) needing update"
 msgstr "configuratie bestand(en) toe aan een update"
 
-#: ../../client/equo.py:485
+#: ../../client/equo.py:487
 msgid "Please run"
 msgstr "Voer eerst uit"
 
-#: ../../client/equo.py:592 ../../client/equo.py:607 ../../client/equo.py:639
-#: ../../client/equo.py:649 ../../client/equo.py:669 ../../client/equo.py:678
-#: ../../client/equo.py:688 ../../client/equo.py:698 ../../client/equo.py:708
+#: ../../client/equo.py:594 ../../client/equo.py:609 ../../client/equo.py:641
+#: ../../client/equo.py:651 ../../client/equo.py:671 ../../client/equo.py:680
+#: ../../client/equo.py:690 ../../client/equo.py:700 ../../client/equo.py:710
 msgid "You need to install sys-apps/entropy-server. :-) Do it !"
 msgstr "Je moet sys-apps/entropy-server installeren. :-) Doe het !"
 
-#: ../../client/equo.py:660
+#: ../../client/equo.py:662
 msgid "You need to install/update sys-apps/entropy-server. :-) Do it !"
 msgstr "Je moet sys-apps/entropy-server installeren/updaten. :-) Doe het !"
 
-#: ../../client/equo.py:736
+#: ../../client/equo.py:738
 msgid ""
 "Installed Packages Database not found or corrupted. Please generate it using "
 "'equo database' tools"
@@ -4981,18 +4798,18 @@ msgstr ""
 "nieuwe database met 'equo database' gereedschap"
 
 #. becoming from entropy.db
-#: ../../client/equo.py:741 ../../client/equo.py:747 ../../client/equo.py:752
-#: ../../client/equo.py:757 ../../client/equo.py:762 ../../client/equo.py:767
-#: ../../client/equo.py:780 ../../client/text_smart.py:119
+#: ../../client/equo.py:743 ../../client/equo.py:749 ../../client/equo.py:754
+#: ../../client/equo.py:759 ../../client/equo.py:764 ../../client/equo.py:769
+#: ../../client/equo.py:782 ../../client/text_smart.py:119
 #: ../../client/text_smart.py:284 ../../client/text_smart.py:425
 msgid "Cannot continue"
 msgstr "Kan niet verder"
 
-#: ../../client/equo.py:775
+#: ../../client/equo.py:777
 msgid "Cannot continue. Your hard disk is probably faulty."
 msgstr "Kan niet doorgaan. Uw harde schijf is waarschijnlijk beschadigd."
 
-#: ../../client/equo.py:797
+#: ../../client/equo.py:799
 msgid ""
 "Your hard drive is full! Next time remember to have a look at it before "
 "starting. I'm sorry, there's nothing I can do for you. It's your fault :-("
@@ -5000,7 +4817,7 @@ msgstr ""
 "Je harddisk is vol! Volgende keer moet je niet vergeten even te kijken voor "
 "je start. Sorry, er is niets dat ik kan doen.'T is jouw fout :-("
 
-#: ../../client/equo.py:811
+#: ../../client/equo.py:813
 msgid ""
 "Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. "
 "Well, you know, shit happens."
@@ -5008,23 +4825,23 @@ msgstr ""
 "He. Mijn naam is Bug Reporter. Het spijt me dat ik je moet informeren dat "
 "Equo is gecrashed. Nou ja, weet je, shit happens."
 
-#: ../../client/equo.py:812
+#: ../../client/equo.py:814
 msgid ""
 "But there's something you could do to help Equo to be a better application."
 msgstr "Maar er is iets dat je kan doen om Equo een beter programma te maken."
 
-#: ../../client/equo.py:813
+#: ../../client/equo.py:815
 msgid "-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --"
 msgstr ""
 "-- OOK AL WIL IK NIET DAT JE MEERDERE KEREN HETZELFDE RAPPORT STUURT --"
 
-#: ../../client/equo.py:814
+#: ../../client/equo.py:816
 msgid "Now I am showing you what happened. Don't panic, I'm here to help you."
 msgstr ""
 "Nu zal ik je laten zien wat er is gebeurt. Vrees niet, Ik ben hier om je te "
 "helpen."
 
-#: ../../client/equo.py:839
+#: ../../client/equo.py:841
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
 "lxnay@sabayonlinux.org."
@@ -5032,11 +4849,11 @@ msgstr ""
 "Ach ja, Ik kan niet eens schrijven naar /tmp. Dus, kopieer de fout en mail "
 "hem naar lxnay@sabayonlinux.org."
 
-#: ../../client/equo.py:844
+#: ../../client/equo.py:846
 msgid "Of course you are on the Internet..."
 msgstr "Natuurlijk zijn we verbonden met Internet..."
 
-#: ../../client/equo.py:845
+#: ../../client/equo.py:847
 msgid ""
 "Erm... Can I send the error, along with some information\n"
 "   about your hardware to my creators so they can fix me? (Your IP will be "
@@ -5046,11 +4863,11 @@ msgstr ""
 "   over je hardware naar mijn makers zodat zij me kunnen repareren? (Je IP "
 "wordt gelogged)"
 
-#: ../../client/equo.py:847
+#: ../../client/equo.py:849
 msgid "Ok, ok ok ok... Sorry!"
 msgstr "OkÃ©, okÃ© okÃ© okÃ©... Sorry!"
 
-#: ../../client/equo.py:850
+#: ../../client/equo.py:852
 msgid ""
 "If you want to be contacted back (and actively supported), also answer the "
 "questions below:"
@@ -5058,19 +4875,19 @@ msgstr ""
 "Als je bericht terug wilt ontvangen (en actief mee helpt), beantwoord dan "
 "ook deze vragen:"
 
-#: ../../client/equo.py:851
+#: ../../client/equo.py:853
 msgid "Your Full name:"
 msgstr "Je volledige naam:"
 
-#: ../../client/equo.py:852
+#: ../../client/equo.py:854
 msgid "Your E-Mail address:"
 msgstr "Je e-mail adres:"
 
-#: ../../client/equo.py:853
+#: ../../client/equo.py:855
 msgid "What you were doing:"
 msgstr "Waar was je mee bezig:"
 
-#: ../../client/equo.py:868
+#: ../../client/equo.py:870
 msgid ""
 "Thank you very much. The error has been reported and hopefully, the problem "
 "will be solved as soon as possible."
@@ -5078,7 +4895,7 @@ msgstr ""
 "Dank je hartelijk. De fout is doorgestuurd en hopelijk wordt het probleem zo "
 "snel mogelijk verholpen."
 
-#: ../../client/equo.py:870
+#: ../../client/equo.py:872
 msgid ""
 "Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When "
 "you want, mail the file to lxnay@sabayonlinux.org."
@@ -5090,142 +4907,142 @@ msgstr ""
 msgid "You are not root"
 msgstr "Je bent geen root"
 
-#: ../../client/text_configuration.py:61
+#: ../../client/text_configuration.py:62
 msgid "Scanning filesystem"
 msgstr "Scannen van bestandssysteem"
 
-#: ../../client/text_configuration.py:65
-#: ../../client/text_configuration.py:306
+#: ../../client/text_configuration.py:66
+#: ../../client/text_configuration.py:323
 msgid "file"
 msgstr "bestand"
 
-#: ../../client/text_configuration.py:69
+#: ../../client/text_configuration.py:71
 msgid "All fine baby. Nothing to do!"
 msgstr "'t Zit goed schat. Niets te doen!"
 
-#: ../../client/text_configuration.py:80
+#: ../../client/text_configuration.py:82
 msgid "Type a number."
 msgstr "Geef een nummer."
 
-#: ../../client/text_configuration.py:94
-#: ../../client/text_configuration.py:115 ../../server/server_reagent.py:94
+#: ../../client/text_configuration.py:96
+#: ../../client/text_configuration.py:123 ../../server/server_reagent.py:94
 #: ../../server/server_reagent.py:106
 msgid "Configuration file"
 msgstr "Configuratiebestand"
 
-#: ../../client/text_configuration.py:96
+#: ../../client/text_configuration.py:99
 msgid "Overwrite ?"
 msgstr "Overschrijven ?"
 
-#: ../../client/text_configuration.py:99
+#: ../../client/text_configuration.py:102
 msgid "Moving"
 msgstr "Verplaatsen"
 
-#: ../../client/text_configuration.py:117
+#: ../../client/text_configuration.py:126
 msgid "Discard ?"
 msgstr "Afwijzen ?"
 
-#: ../../client/text_configuration.py:120
+#: ../../client/text_configuration.py:129
 msgid "Discarding"
 msgstr "Wordt afgewezen"
 
-#: ../../client/text_configuration.py:156
+#: ../../client/text_configuration.py:169
 msgid "Selected file"
 msgstr "Geselecteerd bestand"
 
-#: ../../client/text_configuration.py:175
+#: ../../client/text_configuration.py:188
 msgid "Replacing"
 msgstr "Vervangen"
 
-#: ../../client/text_configuration.py:176
+#: ../../client/text_configuration.py:189
 msgid "with"
 msgstr "met"
 
-#: ../../client/text_configuration.py:186
+#: ../../client/text_configuration.py:199
 msgid "Deleting file"
 msgstr "Verwijderen van bestand"
 
-#: ../../client/text_configuration.py:197
+#: ../../client/text_configuration.py:211
 msgid "Editing file"
 msgstr "Veranderen van bestand"
 
-#: ../../client/text_configuration.py:203
+#: ../../client/text_configuration.py:217
 msgid "Cannot find a suitable editor. Can't edit file directly."
 msgstr ""
 "Kan geen passende text-verwerker vinden. Kan bestand niet gelijk aanpassen."
 
-#: ../../client/text_configuration.py:209
+#: ../../client/text_configuration.py:223
 msgid "Edited file"
 msgstr "Aangepast bestand"
 
-#: ../../client/text_configuration.py:210
+#: ../../client/text_configuration.py:224
 msgid "showing differencies"
 msgstr "verschillen worden weergegeven"
 
-#: ../../client/text_configuration.py:240
+#: ../../client/text_configuration.py:256
 msgid "Please choose a file to update by typing its identification number."
 msgstr ""
 "Kies a.u.b. een bestand voor update door zijn identificatie nummer te typen."
 
-#: ../../client/text_configuration.py:241
+#: ../../client/text_configuration.py:257
 msgid "Other options are:"
 msgstr "Andere opties zijn:"
 
-#: ../../client/text_configuration.py:242
+#: ../../client/text_configuration.py:258
 #: ../../client/text_repositories.py:230
 #: ../../magneto/src/magneto/core/interfaces.py:148
 msgid "Exit"
 msgstr "Afsluiten"
 
-#: ../../client/text_configuration.py:243
+#: ../../client/text_configuration.py:259
 msgid "Automerge all the files asking you one by one"
 msgstr "Automatisch samenvoegen van alle bestanden na een voor een te vragen"
 
-#: ../../client/text_configuration.py:244
+#: ../../client/text_configuration.py:260
 msgid "Automerge all the files without questioning"
 msgstr "Automatisch samenvoegen van alle bestanden zonder te vragen"
 
-#: ../../client/text_configuration.py:245
+#: ../../client/text_configuration.py:261
 msgid "Discard all the files asking you one by one"
 msgstr "Wijs alle bestanden af na een voor een te vragen"
 
-#: ../../client/text_configuration.py:246
+#: ../../client/text_configuration.py:262
 msgid "Discard all the files without questioning"
 msgstr "Wijs alle bestanden af zonder te vragen"
 
-#: ../../client/text_configuration.py:256
+#: ../../client/text_configuration.py:272
 msgid "Please choose an action to take for the selected file."
 msgstr "Kies een actie voor het geselecteerde bestand."
 
-#: ../../client/text_configuration.py:257
+#: ../../client/text_configuration.py:273
 msgid "Come back to the files list"
 msgstr "kom terug bij de lijst met bestanden"
 
-#: ../../client/text_configuration.py:258
+#: ../../client/text_configuration.py:274
 msgid "Replace original with update"
 msgstr "Verwissel origineel met update"
 
-#: ../../client/text_configuration.py:259
+#: ../../client/text_configuration.py:275
 msgid "Delete update, keeping original as is"
 msgstr "Verwijder update, houd origineel zoals hij is"
 
-#: ../../client/text_configuration.py:260
+#: ../../client/text_configuration.py:276
 msgid "Edit proposed file and show diffs again"
 msgstr "Verander aangegeven bestand en bekijk de verschillen opnieuw"
 
-#: ../../client/text_configuration.py:261
+#: ../../client/text_configuration.py:277
 msgid "Show differences again"
 msgstr "bekijk verschillen opnieuw"
 
-#: ../../client/text_configuration.py:301
+#: ../../client/text_configuration.py:318
 msgid "These are the files that would be updated:"
 msgstr "De volgende bestanden zullen worden geÃ¼pdate:"
 
-#: ../../client/text_configuration.py:307
+#: ../../client/text_configuration.py:324
 msgid "Unique files that would be update"
 msgstr "Unieke bestanden die geÃ¼pdate kunnen worden"
 
-#: ../../client/text_configuration.py:312
+#: ../../client/text_configuration.py:329
 msgid "Unique files that would be automerged"
 msgstr "Unieke bestanden die automatisch geÃ¼pdate worden"
 
@@ -7215,330 +7032,6 @@ msgstr "Geen pakket set gevonden"
 msgid "package set not found"
 msgstr "pakket set niet gevonden"
 
-#: ../../sulfur/src/sulfur/__init__.py:72
-msgid ""
-"Entropy resources are locked and not accessible. Another Entropy application "
-"is running. Sorry, can't load Sulfur."
-msgstr ""
-"Entropy handelingen zijn geblokkeerd en niet beschikbaar. Een ander Entropy "
-"programma is bezig. Sorry, kan Sulfur niet laden."
-
-#: ../../sulfur/src/sulfur/__init__.py:79
-msgid "Entropy is running in safe mode"
-msgstr "Entropy draait in veilige modus"
-
-#: ../../sulfur/src/sulfur/__init__.py:80
-msgid "Please fix as soon as possible"
-msgstr "Repareer zo snel mogelijk"
-
-#: ../../sulfur/src/sulfur/__init__.py:82
-msgid "Safe Mode"
-msgstr "Velige modus"
-
-#: ../../sulfur/src/sulfur/__init__.py:107
-msgid "April 1st, w0000h0000! Gonna erase your hard disk!"
-msgstr ""
-
-#: ../../sulfur/src/sulfur/__init__.py:372
-msgid "Default packages sorting"
-msgstr "Standaard pakketten sortering"
-
-#: ../../sulfur/src/sulfur/__init__.py:373
-msgid "Sort by name [A-Z]"
-msgstr "Sorteren op naam [A-Z]"
-
-#: ../../sulfur/src/sulfur/__init__.py:374
-msgid "Sort by name [Z-A]"
-msgstr "Sorteren op naam [Z-A]"
-
-#: ../../sulfur/src/sulfur/__init__.py:375
-msgid "Sort by downloads"
-msgstr "Sorteren op downloads"
-
-#: ../../sulfur/src/sulfur/__init__.py:376
-msgid "Sort by votes"
-msgstr "Sorteren op stemmen"
-
-#: ../../sulfur/src/sulfur/__init__.py:377
-msgid "Sort by repository"
-msgstr "Sorteren op repositorie"
-
-#: ../../sulfur/src/sulfur/__init__.py:378
-msgid "Sort by date (simple)"
-msgstr "Sorteren op datum (simpel)"
-
-#: ../../sulfur/src/sulfur/__init__.py:379
-msgid "Sort by date (grouped)"
-msgstr "Sorteren op datum (groepen)"
-
-#: ../../sulfur/src/sulfur/__init__.py:380
-#, fuzzy
-msgid "Sort by license (grouped)"
-msgstr "Sorteren op datum (groepen)"
-
-#: ../../sulfur/src/sulfur/__init__.py:381
-#, fuzzy
-msgid "Sort by Groups"
-msgstr "Sorteren op stemmen"
-
-#: ../../sulfur/src/sulfur/__init__.py:442
-msgid ""
-"The repositories listed below are configured but not available. They should "
-"be downloaded."
-msgstr ""
-"De repositories hier onder zijn geconfigureerd maar niet beschikbaar. Ze "
-"moeten worden gedownload."
-
-#: ../../sulfur/src/sulfur/__init__.py:443
-msgid "If you don't do this now, you won't be able to use them."
-msgstr "Als je dit nu niet doet, kan je ze niet gebruiken."
-
-#: ../../sulfur/src/sulfur/__init__.py:445
-msgid "Download now"
-msgstr "Download nu"
-
-#: ../../sulfur/src/sulfur/__init__.py:446
-msgid "Skip"
-msgstr "Overslaan"
-
-#: ../../sulfur/src/sulfur/__init__.py:612
-#: ../../sulfur/src/sulfur/sulfur.glade.h:159
-msgid "Preferences"
-msgstr "Voorkeuren"
-
-#: ../../sulfur/src/sulfur/__init__.py:615
-msgid ""
-"Some configuration options are critical for the health of your System. Be "
-"careful."
-msgstr ""
-"Sommige configuratie opties zijn kritisch voor de gezondheid van jouw "
-"systeem. Wees voorzichtig."
-
-#: ../../sulfur/src/sulfur/__init__.py:691
-#: ../../sulfur/src/sulfur/__init__.py:701
-#: ../../sulfur/src/sulfur/__init__.py:711
-#: ../../sulfur/src/sulfur/dialogs.py:5576
-msgid "Item"
-msgstr "Item"
-
-#: ../../sulfur/src/sulfur/__init__.py:720
-#: ../../sulfur/src/sulfur/dialogs.py:2329
-msgid "Database"
-msgstr "Database"
-
-#. date col
-#. date
-#: ../../sulfur/src/sulfur/__init__.py:723
-#: ../../sulfur/src/sulfur/dialogs.py:998
-#: ../../sulfur/src/sulfur/dialogs.py:1038
-#: ../../sulfur/src/sulfur/sulfur.glade.h:52
-msgid "Date"
-msgstr "Datum"
-
-#: ../../sulfur/src/sulfur/__init__.py:771
-msgid "Logged in as"
-msgstr "Ingelogd als"
-
-#: ../../sulfur/src/sulfur/__init__.py:778
-msgid "UGC Status"
-msgstr "GGI Status"
-
-#: ../../sulfur/src/sulfur/__init__.py:801
-#: ../../sulfur/src/sulfur/__init__.py:829
-msgid "Error setting parameter"
-msgstr "Fout bij instellen waarde"
-
-#: ../../sulfur/src/sulfur/__init__.py:803
-msgid "An issue occured while loading a preference"
-msgstr "Er deed zich een fout voor bij het laden van de voorkeuren"
-
-#: ../../sulfur/src/sulfur/__init__.py:804
-#: ../../sulfur/src/sulfur/__init__.py:832
-#: ../../sulfur/src/sulfur/events.py:298
-msgid "Parameter"
-msgstr "Parameter"
-
-#: ../../sulfur/src/sulfur/__init__.py:805
-#: ../../sulfur/src/sulfur/__init__.py:833
-msgid "must be of type"
-msgstr "moet een reeks zijn van"
-
-#: ../../sulfur/src/sulfur/__init__.py:805
-#: ../../sulfur/src/sulfur/__init__.py:833
-msgid "got"
-msgstr "heeft"
-
-#: ../../sulfur/src/sulfur/__init__.py:831
-#: ../../sulfur/src/sulfur/events.py:297
-msgid "An issue occured while saving a preference"
-msgstr "Er deed zich een fout voor bij het opslaan van de voorkeuren"
-
-#: ../../sulfur/src/sulfur/__init__.py:973
-msgid "Error saving preferences"
-msgstr "Fout bij opslaan eigenschappen"
-
-#: ../../sulfur/src/sulfur/__init__.py:979
-msgid ""
-"These packages are masked either by default or due to your choice. Please be "
-"careful, at least."
-msgstr ""
-"Deze pakketten zijn standaard afgeschermd of wegens jouw keuze. Wees "
-"voorzichtig."
-
-#: ../../sulfur/src/sulfur/__init__.py:1038
-msgid "Generating metadata. Please wait."
-msgstr "Genereren van Metadata. Even geduld."
-
-#: ../../sulfur/src/sulfur/__init__.py:1046
-msgid "Error during list population"
-msgstr "Fout tijdens de lijst populatie"
-
-#: ../../sulfur/src/sulfur/__init__.py:1048
-msgid "Retrying in 1 second."
-msgstr "Opnieuw proberen in 1 seconde."
-
-#: ../../sulfur/src/sulfur/__init__.py:1083
-msgid "Error loading advisories"
-msgstr "Fout bij laden van Advisories"
-
-#: ../../sulfur/src/sulfur/__init__.py:1141
-msgid "Initializing Repository module..."
-msgstr "Initialiseren van Repositorie module..."
-
-#: ../../sulfur/src/sulfur/__init__.py:1147
-msgid "You must run this application as root"
-msgstr "Je moet deze applicatie als root uitvoeren"
-
-#: ../../sulfur/src/sulfur/__init__.py:1161
-msgid "You are not connected to the Internet. You should."
-msgstr "Je bent niet verbonden met het internet. Dat is een vereiste."
-
-#: ../../sulfur/src/sulfur/__init__.py:1187
-msgid "Errors updating repositories."
-msgstr "Fouten tijdens het updaten van de repositories"
-
-#: ../../sulfur/src/sulfur/__init__.py:1189
-msgid "Please check logs below for more info"
-msgstr "Controleer onderstaande log voor uitgebreide informatie."
-
-#: ../../sulfur/src/sulfur/__init__.py:1193
-msgid "Repositories updated successfully"
-msgstr "Repositories succesvol geupdate"
-
-#: ../../sulfur/src/sulfur/__init__.py:1197
-msgid "All the repositories were already up to date."
-msgstr "Alle repositories waren reeds up to date"
-
-#: ../../sulfur/src/sulfur/__init__.py:1200
-msgid "repositories were already up to date. Others have been updated."
-msgstr "repositories waren reeds up-to-date, de overige zijn geÃ¼pdate."
-
-#: ../../sulfur/src/sulfur/__init__.py:1204
-msgid "sys-apps/entropy needs to be updated as soon as possible."
-msgstr "sys-apps/entropy dient zo spoedig mogelijk geÃ¼pdate te worden!"
-
-#: ../../sulfur/src/sulfur/__init__.py:1214
-msgid "Nothing to do. I am idle."
-msgstr "Niets te doen. Ik wacht."
-
-#: ../../sulfur/src/sulfur/__init__.py:1216
-msgid "Really, don't waste your time here. This is just a placeholder"
-msgstr "Niets te zien hier mensen, doorlopen!"
-
-#: ../../sulfur/src/sulfur/__init__.py:1217
-msgid "I am still alive and kickin'"
-msgstr "Joehoe! Ik leef nog hoor!"
-
-#. -> Get lists
-#: ../../sulfur/src/sulfur/__init__.py:1320
-msgid "Generating Metadata, please wait."
-msgstr "Genereren van Metadata, even geduld."
-
-#: ../../sulfur/src/sulfur/__init__.py:1322
-msgid "Entropy is indexing the repositories. It will take a few seconds"
-msgstr "Entropy indexeert de repositories, even geduld"
-
-#: ../../sulfur/src/sulfur/__init__.py:1324
-msgid "While you are waiting, take a break and look outside. Is it rainy?"
-msgstr "Terwijl je wacht kijk eens naar buiten. Regent het?"
-
-#: ../../sulfur/src/sulfur/__init__.py:1326
-#: ../../sulfur/src/sulfur/__init__.py:1332
-msgid "Calculating"
-msgstr "Berekenen"
-
-#. if bootstrap: time.sleep(1)
-#: ../../sulfur/src/sulfur/__init__.py:1345
-msgid "Showing"
-msgstr "Weergeven"
-
-#: ../../sulfur/src/sulfur/__init__.py:1380
-msgid "No packages need or can be queued at the moment."
-msgstr ""
-
-#: ../../sulfur/src/sulfur/__init__.py:1497
-#, fuzzy
-msgid "Abort action"
-msgstr "forceer actie"
-
-#: ../../sulfur/src/sulfur/__init__.py:1498
-#, fuzzy
-msgid "Ignore"
-msgstr "negeren"
-
-#: ../../sulfur/src/sulfur/__init__.py:1517
-msgid "Another Entropy instance is running. Cannot process queue."
-msgstr "Een ander Entropy proces draait nog. Kan verzoek niet uitvoeren."
-
-#: ../../sulfur/src/sulfur/__init__.py:1526
-#, fuzzy
-msgid ""
-"Another Entropy instance is locking this task at the moment. Try in a few "
-"minutes."
-msgstr ""
-"Een andere instantie van Entropy is actief, ik kan je verzoek niet "
-"behandelen."
-
-#: ../../sulfur/src/sulfur/__init__.py:1532
-msgid "Running tasks"
-msgstr "Bezig met uitvoeren van taken"
-
-#: ../../sulfur/src/sulfur/__init__.py:1542
-msgid "Processing Packages in queue"
-msgstr "Verwerken van pakket wachtlijst"
-
-#: ../../sulfur/src/sulfur/__init__.py:1624
-msgid "Attention. You chose to abort the processing."
-msgstr "Attentie. Je hebt gekozen de behandeling te stoppen."
-
-#: ../../sulfur/src/sulfur/__init__.py:1627
-msgid ""
-"Attention. An error occured when processing the queue.\n"
-"Please have a look in the processing terminal."
-msgstr ""
-"Attentie! Er is een fout opgetreden tijdens het verwerken van de "
-"wachtlijst.\n"
-" Kijk in het terminal venster voor meer informatie"
-
-#: ../../sulfur/src/sulfur/__init__.py:1639
-msgid ""
-"Attention. You have updated Entropy.\n"
-"Sulfur will be reloaded."
-msgstr ""
-
-#: ../../sulfur/src/sulfur/__init__.py:1682
-msgid "No packages selected"
-msgstr "Geen pakketten geselecteerd"
-
-#: ../../sulfur/src/sulfur/__init__.py:1762
-#: ../../sulfur/src/sulfur/events.py:1020
-msgid "Aborting queue tasks."
-msgstr "BeÃ«indigen gegeven taken."
-
-#: ../../sulfur/src/sulfur/__init__.py:1769
-msgid "Skipping current mirror."
-msgstr "mirror wordt overgeslagen."
-
 #: ../../sulfur/src/sulfur/dialogs.py:120
 msgid "No Repository Identifier"
 msgstr "Geen Repositorie Identifier"
@@ -7747,6 +7240,15 @@ msgstr "Geen"
 msgid "Parameters"
 msgstr "Parameters"
 
+#. date col
+#. date
+#: ../../sulfur/src/sulfur/dialogs.py:998
+#: ../../sulfur/src/sulfur/dialogs.py:1038
+#: ../../sulfur/src/sulfur/__init__.py:723
+#: ../../sulfur/src/sulfur/sulfur.glade.h:52
+msgid "Date"
+msgstr "Datum"
+
 #: ../../sulfur/src/sulfur/dialogs.py:1099
 msgid "Key"
 msgstr "Sleutel"
@@ -7862,6 +7364,11 @@ msgstr "Voer jouw nieuwe notitie bord invoer in"
 #: ../../sulfur/src/sulfur/dialogs.py:2320
 msgid "Server"
 msgstr "Server"
+
+#: ../../sulfur/src/sulfur/dialogs.py:2329
+#: ../../sulfur/src/sulfur/__init__.py:720
+msgid "Database"
+msgstr "Database"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2330
 msgid "current revision"
@@ -8244,6 +7751,13 @@ msgstr "Geen omschrijving"
 msgid "Please confirm the actions above"
 msgstr "Bevestig bovenstaande actie"
 
+#: ../../sulfur/src/sulfur/dialogs.py:5576
+#: ../../sulfur/src/sulfur/__init__.py:691
+#: ../../sulfur/src/sulfur/__init__.py:701
+#: ../../sulfur/src/sulfur/__init__.py:711
+msgid "Item"
+msgstr "Item"
+
 #: ../../sulfur/src/sulfur/dialogs.py:5593
 #: ../../sulfur/src/sulfur/dialogs.py:5647
 msgid "To be downgraded"
@@ -8384,6 +7898,17 @@ msgstr "Weet u het zeker?"
 msgid "Error saving parameter"
 msgstr "Fout bij opslaan parameter"
 
+#: ../../sulfur/src/sulfur/events.py:297
+#: ../../sulfur/src/sulfur/__init__.py:831
+msgid "An issue occured while saving a preference"
+msgstr "Er deed zich een fout voor bij het opslaan van de voorkeuren"
+
+#: ../../sulfur/src/sulfur/events.py:298
+#: ../../sulfur/src/sulfur/__init__.py:804
+#: ../../sulfur/src/sulfur/__init__.py:832
+msgid "Parameter"
+msgstr "Parameter"
+
 #: ../../sulfur/src/sulfur/events.py:298
 msgid "not saved"
 msgstr "niet opgeslagen"
@@ -8501,6 +8026,11 @@ msgid "All the missing dependencies are going to be added to the queue"
 msgstr ""
 "Alle missende afhankelijkheden zullen worden toegevoegd aan de wachtrij"
 
+#: ../../sulfur/src/sulfur/events.py:1020
+#: ../../sulfur/src/sulfur/__init__.py:1762
+msgid "Aborting queue tasks."
+msgstr "BeÃ«indigen gegeven taken."
+
 #: ../../sulfur/src/sulfur/events.py:1052
 msgid "Libraries test aborted"
 msgstr "Bibliotheken test geannuleerd"
@@ -8516,6 +8046,293 @@ msgstr ""
 #: ../../sulfur/src/sulfur/events.py:1064
 msgid "All the broken packages are going to be added to the queue"
 msgstr "Alle gebroken pakketten zullen worden toegevoegd aan de wachtrij"
+
+#: ../../sulfur/src/sulfur/__init__.py:72
+msgid ""
+"Entropy resources are locked and not accessible. Another Entropy application "
+"is running. Sorry, can't load Sulfur."
+msgstr ""
+"Entropy handelingen zijn geblokkeerd en niet beschikbaar. Een ander Entropy "
+"programma is bezig. Sorry, kan Sulfur niet laden."
+
+#: ../../sulfur/src/sulfur/__init__.py:79
+msgid "Entropy is running in safe mode"
+msgstr "Entropy draait in veilige modus"
+
+#: ../../sulfur/src/sulfur/__init__.py:80
+msgid "Please fix as soon as possible"
+msgstr "Repareer zo snel mogelijk"
+
+#: ../../sulfur/src/sulfur/__init__.py:82
+msgid "Safe Mode"
+msgstr "Velige modus"
+
+#: ../../sulfur/src/sulfur/__init__.py:107
+msgid "April 1st, w0000h0000! Gonna erase your hard disk!"
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:372
+msgid "Default packages sorting"
+msgstr "Standaard pakketten sortering"
+
+#: ../../sulfur/src/sulfur/__init__.py:373
+msgid "Sort by name [A-Z]"
+msgstr "Sorteren op naam [A-Z]"
+
+#: ../../sulfur/src/sulfur/__init__.py:374
+msgid "Sort by name [Z-A]"
+msgstr "Sorteren op naam [Z-A]"
+
+#: ../../sulfur/src/sulfur/__init__.py:375
+msgid "Sort by downloads"
+msgstr "Sorteren op downloads"
+
+#: ../../sulfur/src/sulfur/__init__.py:376
+msgid "Sort by votes"
+msgstr "Sorteren op stemmen"
+
+#: ../../sulfur/src/sulfur/__init__.py:377
+msgid "Sort by repository"
+msgstr "Sorteren op repositorie"
+
+#: ../../sulfur/src/sulfur/__init__.py:378
+msgid "Sort by date (simple)"
+msgstr "Sorteren op datum (simpel)"
+
+#: ../../sulfur/src/sulfur/__init__.py:379
+msgid "Sort by date (grouped)"
+msgstr "Sorteren op datum (groepen)"
+
+#: ../../sulfur/src/sulfur/__init__.py:380
+#, fuzzy
+msgid "Sort by license (grouped)"
+msgstr "Sorteren op datum (groepen)"
+
+#: ../../sulfur/src/sulfur/__init__.py:381
+#, fuzzy
+msgid "Sort by Groups"
+msgstr "Sorteren op stemmen"
+
+#: ../../sulfur/src/sulfur/__init__.py:442
+msgid ""
+"The repositories listed below are configured but not available. They should "
+"be downloaded."
+msgstr ""
+"De repositories hier onder zijn geconfigureerd maar niet beschikbaar. Ze "
+"moeten worden gedownload."
+
+#: ../../sulfur/src/sulfur/__init__.py:443
+msgid "If you don't do this now, you won't be able to use them."
+msgstr "Als je dit nu niet doet, kan je ze niet gebruiken."
+
+#: ../../sulfur/src/sulfur/__init__.py:445
+msgid "Download now"
+msgstr "Download nu"
+
+#: ../../sulfur/src/sulfur/__init__.py:446
+msgid "Skip"
+msgstr "Overslaan"
+
+#: ../../sulfur/src/sulfur/__init__.py:612
+#: ../../sulfur/src/sulfur/sulfur.glade.h:159
+msgid "Preferences"
+msgstr "Voorkeuren"
+
+#: ../../sulfur/src/sulfur/__init__.py:615
+msgid ""
+"Some configuration options are critical for the health of your System. Be "
+"careful."
+msgstr ""
+"Sommige configuratie opties zijn kritisch voor de gezondheid van jouw "
+"systeem. Wees voorzichtig."
+
+#: ../../sulfur/src/sulfur/__init__.py:771
+msgid "Logged in as"
+msgstr "Ingelogd als"
+
+#: ../../sulfur/src/sulfur/__init__.py:778
+msgid "UGC Status"
+msgstr "GGI Status"
+
+#: ../../sulfur/src/sulfur/__init__.py:801
+#: ../../sulfur/src/sulfur/__init__.py:829
+msgid "Error setting parameter"
+msgstr "Fout bij instellen waarde"
+
+#: ../../sulfur/src/sulfur/__init__.py:803
+msgid "An issue occured while loading a preference"
+msgstr "Er deed zich een fout voor bij het laden van de voorkeuren"
+
+#: ../../sulfur/src/sulfur/__init__.py:805
+#: ../../sulfur/src/sulfur/__init__.py:833
+msgid "must be of type"
+msgstr "moet een reeks zijn van"
+
+#: ../../sulfur/src/sulfur/__init__.py:805
+#: ../../sulfur/src/sulfur/__init__.py:833
+msgid "got"
+msgstr "heeft"
+
+#: ../../sulfur/src/sulfur/__init__.py:973
+msgid "Error saving preferences"
+msgstr "Fout bij opslaan eigenschappen"
+
+#: ../../sulfur/src/sulfur/__init__.py:979
+msgid ""
+"These packages are masked either by default or due to your choice. Please be "
+"careful, at least."
+msgstr ""
+"Deze pakketten zijn standaard afgeschermd of wegens jouw keuze. Wees "
+"voorzichtig."
+
+#: ../../sulfur/src/sulfur/__init__.py:1038
+msgid "Generating metadata. Please wait."
+msgstr "Genereren van Metadata. Even geduld."
+
+#: ../../sulfur/src/sulfur/__init__.py:1046
+msgid "Error during list population"
+msgstr "Fout tijdens de lijst populatie"
+
+#: ../../sulfur/src/sulfur/__init__.py:1048
+msgid "Retrying in 1 second."
+msgstr "Opnieuw proberen in 1 seconde."
+
+#: ../../sulfur/src/sulfur/__init__.py:1083
+msgid "Error loading advisories"
+msgstr "Fout bij laden van Advisories"
+
+#: ../../sulfur/src/sulfur/__init__.py:1141
+msgid "Initializing Repository module..."
+msgstr "Initialiseren van Repositorie module..."
+
+#: ../../sulfur/src/sulfur/__init__.py:1147
+msgid "You must run this application as root"
+msgstr "Je moet deze applicatie als root uitvoeren"
+
+#: ../../sulfur/src/sulfur/__init__.py:1161
+msgid "You are not connected to the Internet. You should."
+msgstr "Je bent niet verbonden met het internet. Dat is een vereiste."
+
+#: ../../sulfur/src/sulfur/__init__.py:1187
+msgid "Errors updating repositories."
+msgstr "Fouten tijdens het updaten van de repositories"
+
+#: ../../sulfur/src/sulfur/__init__.py:1189
+msgid "Please check logs below for more info"
+msgstr "Controleer onderstaande log voor uitgebreide informatie."
+
+#: ../../sulfur/src/sulfur/__init__.py:1193
+msgid "Repositories updated successfully"
+msgstr "Repositories succesvol geupdate"
+
+#: ../../sulfur/src/sulfur/__init__.py:1197
+msgid "All the repositories were already up to date."
+msgstr "Alle repositories waren reeds up to date"
+
+#: ../../sulfur/src/sulfur/__init__.py:1200
+msgid "repositories were already up to date. Others have been updated."
+msgstr "repositories waren reeds up-to-date, de overige zijn geÃ¼pdate."
+
+#: ../../sulfur/src/sulfur/__init__.py:1204
+msgid "sys-apps/entropy needs to be updated as soon as possible."
+msgstr "sys-apps/entropy dient zo spoedig mogelijk geÃ¼pdate te worden!"
+
+#: ../../sulfur/src/sulfur/__init__.py:1214
+msgid "Nothing to do. I am idle."
+msgstr "Niets te doen. Ik wacht."
+
+#: ../../sulfur/src/sulfur/__init__.py:1216
+msgid "Really, don't waste your time here. This is just a placeholder"
+msgstr "Niets te zien hier mensen, doorlopen!"
+
+#: ../../sulfur/src/sulfur/__init__.py:1217
+msgid "I am still alive and kickin'"
+msgstr "Joehoe! Ik leef nog hoor!"
+
+#. -> Get lists
+#: ../../sulfur/src/sulfur/__init__.py:1320
+msgid "Generating Metadata, please wait."
+msgstr "Genereren van Metadata, even geduld."
+
+#: ../../sulfur/src/sulfur/__init__.py:1322
+msgid "Entropy is indexing the repositories. It will take a few seconds"
+msgstr "Entropy indexeert de repositories, even geduld"
+
+#: ../../sulfur/src/sulfur/__init__.py:1324
+msgid "While you are waiting, take a break and look outside. Is it rainy?"
+msgstr "Terwijl je wacht kijk eens naar buiten. Regent het?"
+
+#: ../../sulfur/src/sulfur/__init__.py:1326
+#: ../../sulfur/src/sulfur/__init__.py:1332
+msgid "Calculating"
+msgstr "Berekenen"
+
+#. if bootstrap: time.sleep(1)
+#: ../../sulfur/src/sulfur/__init__.py:1345
+msgid "Showing"
+msgstr "Weergeven"
+
+#: ../../sulfur/src/sulfur/__init__.py:1380
+msgid "No packages need or can be queued at the moment."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1497
+#, fuzzy
+msgid "Abort action"
+msgstr "forceer actie"
+
+#: ../../sulfur/src/sulfur/__init__.py:1498
+#, fuzzy
+msgid "Ignore"
+msgstr "negeren"
+
+#: ../../sulfur/src/sulfur/__init__.py:1517
+msgid "Another Entropy instance is running. Cannot process queue."
+msgstr "Een ander Entropy proces draait nog. Kan verzoek niet uitvoeren."
+
+#: ../../sulfur/src/sulfur/__init__.py:1526
+#, fuzzy
+msgid ""
+"Another Entropy instance is locking this task at the moment. Try in a few "
+"minutes."
+msgstr ""
+"Een andere instantie van Entropy is actief, ik kan je verzoek niet "
+"behandelen."
+
+#: ../../sulfur/src/sulfur/__init__.py:1532
+msgid "Running tasks"
+msgstr "Bezig met uitvoeren van taken"
+
+#: ../../sulfur/src/sulfur/__init__.py:1542
+msgid "Processing Packages in queue"
+msgstr "Verwerken van pakket wachtlijst"
+
+#: ../../sulfur/src/sulfur/__init__.py:1624
+msgid "Attention. You chose to abort the processing."
+msgstr "Attentie. Je hebt gekozen de behandeling te stoppen."
+
+#: ../../sulfur/src/sulfur/__init__.py:1627
+msgid ""
+"Attention. An error occured when processing the queue.\n"
+"Please have a look in the processing terminal."
+msgstr ""
+"Attentie! Er is een fout opgetreden tijdens het verwerken van de "
+"wachtlijst.\n"
+" Kijk in het terminal venster voor meer informatie"
+
+#: ../../sulfur/src/sulfur/__init__.py:1639
+msgid ""
+"Attention. You have updated Entropy.\n"
+"Sulfur will be reloaded."
+msgstr ""
+
+#: ../../sulfur/src/sulfur/__init__.py:1682
+msgid "No packages selected"
+msgstr "Geen pakketten geselecteerd"
+
+#: ../../sulfur/src/sulfur/__init__.py:1769
+msgid "Skipping current mirror."
+msgstr "mirror wordt overgeslagen."
 
 #: ../../sulfur/src/sulfur/package.py:207
 msgid "Recursive Package Set"
@@ -9333,6 +9150,10 @@ msgstr "Meldingen"
 msgid "Mirror updates"
 msgstr "Mirror updates"
 
+#: ../../sulfur/src/sulfur/sulfur.glade.h:128
+msgid "Networking"
+msgstr "Netwerken"
+
 #: ../../sulfur/src/sulfur/sulfur.glade.h:129
 msgid "New backup"
 msgstr "Nieuwe back up"
@@ -9677,6 +9498,10 @@ msgstr "Wissel naar"
 msgid "Sync repositories to fetch latest updates"
 msgstr "Synchroniseer repositories voor de laatste updates"
 
+#: ../../sulfur/src/sulfur/sulfur.glade.h:232
+msgid "System"
+msgstr "Systeem"
+
 #: ../../sulfur/src/sulfur/sulfur.glade.h:233
 msgid "System Database"
 msgstr "Systeem Database"
@@ -9977,6 +9802,77 @@ msgstr ""
 #: ../../magneto/src/magneto/gtk/magneto.glade.h:3
 msgid "_Load Package Manager"
 msgstr "_Start Pakketten Beheerder"
+
+#, fuzzy
+#~ msgid "Office"
+#~ msgstr "bestand"
+
+#, fuzzy
+#~ msgid "Applications or system libraries"
+#~ msgstr "zoek naar ontbrekende bibliotheken"
+
+#, fuzzy
+#~ msgid "System applications or libraries"
+#~ msgstr "Scannen van bibliotheken"
+
+#, fuzzy
+#~ msgid "Games"
+#~ msgstr "Naam"
+
+#, fuzzy
+#~ msgid "Applications and libraries for X11"
+#~ msgstr "Programma Opties"
+
+#, fuzzy
+#~ msgid "Cannot run Source Package Manager trigger for"
+#~ msgstr "Kan Portage functie niet starten voor"
+
+#~ msgid "Attach this"
+#~ msgstr "Koppel deze"
+
+#, fuzzy
+#~ msgid "Cannot run SPM configure phase for"
+#~ msgstr "kan Spm pkg_config() niet starten voor"
+
+#~ msgid "Cannot update Portage database to destination"
+#~ msgstr "Kan niet naar de Portage database bestemming updaten"
+
+#, fuzzy
+#~ msgid "SPM uid update error"
+#~ msgstr "Updates: fout"
+
+#~ msgid "Error calculating dependencies"
+#~ msgstr "Fout tijdens het calculeren van afhankelijkheden"
+
+#~ msgid "missing right parenthesis"
+#~ msgstr "de juiste haakjes ontbreken"
+
+#~ msgid "missing atom list in"
+#~ msgstr "ontbrekende atoom lijst in"
+
+#~ msgid "Conditional without target in"
+#~ msgstr "Voorwaardelijke zonder doel in"
+
+#~ msgid "Conditional with no target"
+#~ msgstr "Voorwaardelijke zonder doel"
+
+#~ msgid "Empty target in string"
+#~ msgstr "Leeg doel in tekenreeks"
+
+#~ msgid "Deprecated"
+#~ msgstr "Achterhaald"
+
+#~ msgid "Nested use flags without parenthesis"
+#~ msgstr "Ingebedde 'use' vlaggen zonder haakjes"
+
+#~ msgid "Conditional without flag"
+#~ msgstr "Voorwaardelijke zonder vlag"
+
+#~ msgid "Conditional without parenthesis"
+#~ msgstr "Voorwaardelijke zonder haakjes"
+
+#~ msgid "Probably Portage API has changed"
+#~ msgstr "Waarschijnlijk is Portage API veranderd"
 
 #~ msgid "cannot update library data"
 #~ msgstr "Kan bibliotheek data niet updaten"
