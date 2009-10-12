@@ -7,8 +7,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - Python3:
         - when dealing with sockets, always pass raw string
 
-    - PRESERVE mtime of unpacked/installed files (this will be a requirement
-        in the future) => push the fix to both branches
     - export LC_ALL value check to config file (entropy.qa, entropy.spm)
     - stop using pickle in entropy.services + ugc
     - remove entropy spm (sort_update_files) from entropy.server
