@@ -30,6 +30,33 @@ from entropy.exceptions import IncorrectParameter, PermissionDenied, \
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 
+class QAInterfacePlugin:
+    """
+    Inherit this class to create a QAInterface tests Plugin.
+    You need to implement
+
+    """
+    def get_tests(self):
+        """
+        Return a list of callable functions that will be used by QAInterface,
+        for tests execution.
+        Note: the callable functions signature must be:
+            bool function(package_path)
+
+        @return: list of callable objects
+        @rtype: list
+        """
+        raise NotImplementedError()
+
+    def get_id(self):
+        """
+        Return an identifier string for this Plugin.
+
+        @return: identifier string
+        @rtype: string
+        """
+        raise NotImplementedError()
+
 class QAInterface:
 
     """
@@ -57,6 +84,7 @@ class QAInterface:
         with proper signature.
         @type OutputInterface: TextInterface class or subclass instance
         """
+        self.__plugins = {}
         self.Output = OutputInterface
         self.SystemSettings = SystemSettings()
 
@@ -66,6 +94,28 @@ class QAInterface:
         elif not hasattr(self.Output.updateProgress, '__call__'):
             mytxt = _("Output interface has no updateProgress method")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+
+    def add_plugin(self, plugin):
+        """
+        Add a QAInterface plugin to the testing list.
+
+        @param plugin: QAInterfacePlugin based instance
+        @type plugin: QAInterface based instance
+        @raise AttributeError: if plugin is not a QAInterfacePlugin instance
+        """
+        if not isinstance(plugin, QAInterfacePlugin):
+            raise AttributeError("Specify a QAInterfacePlugin based class")
+        self.__plugins[plugin.get_id()] = plugin
+
+    def remove_plugin(self, plugin_id):
+        """
+        Remove a QAInterface plugin from the testing list.
+
+        @param plugin_id: identifier of the QAInterfacePlugin already added
+        @type plugin_id: hashable object
+        @raise KeyError: if plugin_id is not found in QAInterface
+        """
+        del self.__plugins[plugin_id]
 
     def test_depends_linking(self, idpackages, dbconn, repo = None):
         """
@@ -991,18 +1041,6 @@ class QAInterface:
 
         return valid
 
-    def __check_package_using_spm(self, package_path):
-
-        from entropy.spm.plugins.factory import get_default_class
-        spm_class = get_default_class()
-        spm_rc, spm_msg = spm_class.execute_qa_tests(package_path)
-
-        if spm_rc == 0:
-            return True
-        sys.stderr.write("QA Error: " + spm_msg + "\n")
-        sys.stderr.flush()
-        return False
-
     def entropy_package_checks(self, package_path):
         """
         Main method for the execution of QA tests on physical Entropy
@@ -1013,8 +1051,14 @@ class QAInterface:
         @return: True, if all checks passed
         @rtype: bool
         """
-        qa_methods = [self.__analyze_package_edb,
-            self.__check_package_using_spm]
+        # built-in ones
+        qa_methods = [self.__analyze_package_edb]
+
+        # plugged ones
+        for plug_id, plug_inst in self.__plugins.items():
+            qa_methods += plug_inst.get_tests()
+
+        # let's play!
         for method in qa_methods:
             qa_rc = method(package_path)
             if not qa_rc:
