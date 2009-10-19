@@ -23,9 +23,21 @@
 
 """
 
+import sys
 import os
 from entropy.const import etpConst, const_setup_perms, const_setup_file
-import pickle
+# Always use MAX pickle protocol to <=2, to allow Python 2 and 3 support
+COMPAT_PICKLE_PROTOCOL = 2
+
+if sys.hexversion >= 0x3000000:
+    import pickle
+else:
+    try:
+        import cPickle as pickle
+    except ImportError:
+        import pickle
+
+pickle.HIGHEST_PROTOCOL = COMPAT_PICKLE_PROTOCOL
 
 D_EXT = etpConst['cachedumpext']
 D_DIR = etpConst['dumpstoragedir']
@@ -79,7 +91,11 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True):
 
                 dmpfile = dump_path+D_EXT
             with open(dmpfile, "wb") as dmp_f:
-                pickle.dump(my_object, dmp_f)
+                if sys.hexversion >= 0x3000000:
+                    pickle.dump(my_object, dmp_f,
+                        protocol = COMPAT_PICKLE_PROTOCOL, fix_imports = True)
+                else:
+                    pickle.dump(my_object, dmp_f)
                 dmp_f.flush()
             const_setup_file(dmpfile, E_GID, 0o664)
         except RuntimeError:
@@ -113,7 +129,11 @@ def serialize(myobj, ser_f, do_seek = True):
         race conditions on multi-processing or multi-threading
     @raise pickle.PicklingError: when object cannot be recreated
     """
-    pickle.dump(myobj, ser_f)
+    if sys.hexversion >= 0x3000000:
+        pickle.dump(myobj, ser_f, protocol = COMPAT_PICKLE_PROTOCOL,
+            fix_imports = True)
+    else:
+        pickle.dump(myobj, ser_f)
     ser_f.flush()
     if do_seek:
         ser_f.seek(0)
@@ -129,7 +149,10 @@ def unserialize(serial_f):
     @rtype: any Python pickable object
     @raise pickle.UnpicklingError: when object cannot be recreated
     """
-    return pickle.load(serial_f)
+    if sys.hexversion >= 0x3000000:
+        return pickle.load(serial_f, fix_imports = True)
+    else:
+        return pickle.load(serial_f)
 
 def unserialize_string(mystring):
     """
@@ -141,7 +164,10 @@ def unserialize_string(mystring):
     @rtype: any Python pickable object
     @raise pickle.UnpicklingError: when object cannot be recreated
     """
-    return pickle.loads(mystring)
+    if sys.hexversion >= 0x3000000:
+        return pickle.loads(mystring, fix_imports = True)
+    else:
+        return pickle.loads(mystring)
 
 def serialize_string(myobj):
     """
@@ -153,7 +179,11 @@ def serialize_string(myobj):
     @rtype: string
     @raise pickle.PicklingError: when object cannot be recreated
     """
-    return pickle.dumps(myobj)
+    if sys.hexversion >= 0x3000000:
+        return pickle.dumps(myobj, protocol = COMPAT_PICKLE_PROTOCOL,
+            fix_imports = True)
+    else:
+        return pickle.dumps(myobj)
 
 def loadobj(name, complete_path = False):
     """
@@ -179,7 +209,10 @@ def loadobj(name, complete_path = False):
                 with open(dmpfile, "rb") as dmp_f:
                     obj = None
                     try:
-                        obj = pickle.load(dmp_f)
+                        if sys.hexversion >= 0x3000000:
+                            obj = pickle.load(dmp_f, fix_imports = True)
+                        else:
+                            obj = pickle.load(dmp_f)
                     except (ValueError, EOFError, IOError,
                         OSError, pickle.UnpicklingError, TypeError,
                         AttributeError,):

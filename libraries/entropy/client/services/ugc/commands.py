@@ -12,7 +12,7 @@
 
 import os
 from entropy.exceptions import *
-from entropy.const import etpConst, const_get_stringtype
+from entropy.const import etpConst, const_get_stringtype, const_debug_write
 from entropy.output import darkblue, bold, blue, darkgreen, darkred, brown
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
@@ -96,6 +96,7 @@ class Base:
                 type = "error",
                 header = self.output_header
             )
+            do_skip = True
         elif data != self.Service.answers['ok']:
             mytxt = _("received wrong answer")
 
@@ -140,6 +141,7 @@ class Base:
         try:
             data = self.Service.stream_to_object(data, gzipped)
         except (EOFError, IOError, self.zlib.error, self.dumpTools.pickle.UnpicklingError,):
+            const_debug_write(__name__, self.entropyTools.get_traceback())
             mytxt = _("cannot convert stream into object")
             self.Output.updateProgress(
                 "[%s:%s|%s:%s|%s:%s] %s" % (
