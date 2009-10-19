@@ -26,7 +26,11 @@ from entropy.core.settings.base import SystemSettings
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 from entropy.transceivers import FtpInterface
 from entropy.db import EntropyRepository
-from entropy.spm.plugins.factory import get_default_instance as get_spm
+from entropy.spm.plugins.factory import get_default_instance as get_spm, \
+    get_default_class as get_spm_class
+from entropy.qa import QAInterfacePlugin
+
+SERVER_QA_PLUGIN = "ServerQAInterfacePlugin"
 
 class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
@@ -40,6 +44,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         data = {
             'repositories': etpConst['server_repositories'].copy(),
+            'qa_langs': ["en_US", "C"],
             'default_repository_id': etpConst['officialserverrepositoryid'],
             'packages_expiration_days': etpConst['packagesexpirationdays'],
             'database_file_format': etpConst['etpdatabasefileformat'],
@@ -104,8 +109,11 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 if (len(mydis) < 3) and mydis:
                     data['disabled_eapis'] = mydis
 
+            elif line.startswith("server-basic-languages|") and \
+                (split_line_len == 2):
+                data['qa_langs'] = split_line[1].strip().split()
 
-            elif line.startswith("repository|") and (split_line_len in [5, 6]) \
+            elif line.startswith("repository|") and (split_line_len in (5, 6)) \
                 and (not fake_instance):
 
                 repoid, repodata = const_extract_srv_repo_params(line,
@@ -276,6 +284,25 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
 
         return data
 
+class ServerQAInterfacePlugin(QAInterfacePlugin):
+
+    def __check_package_using_spm(self, package_path):
+
+        spm_class = get_spm_class()
+        spm_rc, spm_msg = spm_class.execute_qa_tests(package_path)
+
+        if spm_rc == 0:
+            return True
+        sys.stderr.write("QA Error: " + spm_msg + "\n")
+        sys.stderr.flush()
+        return False
+
+    def get_tests(self):
+        return [self.__check_package_using_spm]
+
+    def get_id(self):
+        return SERVER_QA_PLUGIN
+
 
 class Server(Singleton, TextInterface):
 
@@ -445,6 +472,10 @@ class Server(Singleton, TextInterface):
         cs_name = 'ClientService'
         if hasattr(self, cs_name):
             obj = getattr(self, cs_name)
+            try:
+                obj.QA.remove_plugin(SERVER_QA_PLUGIN)
+            except (KeyError,):
+                pass
             obj.destroy()
         from entropy.client.interfaces import Client
         self.ClientService = Client(
@@ -459,10 +490,21 @@ class Server(Singleton, TextInterface):
         self.validRepositories = self.ClientService.validRepositories
         self.entropyTools = self.ClientService.entropyTools
         self.dumpTools = self.ClientService.dumpTools
-        self.QA = self.ClientService.QA
         self.backup_entropy_settings()
 
         self.MirrorsService = MirrorsServer(self)
+
+    def QA(self):
+        """
+        Get Entropy QA Interface instance.
+
+        @return: Entropy QA Interface instance
+        @rtype: entropy.qa.QAInterface instance
+        """
+        qa_plugin = ServerQAInterfacePlugin()
+        qa = self.ClientService.QA()
+        qa.add_plugin(qa_plugin)
+        return qa
 
     def Spm(self):
         """
