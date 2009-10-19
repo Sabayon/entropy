@@ -2074,31 +2074,40 @@ class PortagePlugin(SpmPlugin):
             return 2, "unable to locate %s file" % (
                 PortagePlugin.ENV_FILE_COMP,)
 
+        # check if we have an alternate setting for LC*
+        sys_settings = SystemSettings()
+        srv_plug_id = etpConst['system_settings_plugins_ids']['server_plugin']
+        try:
+            qa_langs = sys_settings[srv_plug_id]['server']['qa_langs']
+        except KeyError:
+            qa_langs = ["en_US", "C"]
+
+        qa_rlangs = [const_convert_to_rawstring("LC_ALL="+x) for x in qa_langs]
+
         # read env file
         bz_f = bz2.BZ2File(env_file, "r")
-        valid_lc_all = True
+        valid_lc_all = False
+        lc_found = False
         msg = None
         lc_all_str = const_convert_to_rawstring("LC_ALL")
-        lc_all_c = const_convert_to_rawstring("LC_ALL=C")
-        lc_all_enus = const_convert_to_rawstring("LC_ALL=en_US")
         try:
-
             for line in bz_f.readlines():
-                if line.startswith(lc_all_str):
-                    if line.startswith(lc_all_c) or \
-                        line.startswith(lc_all_enus):
-                        continue
-                    valid_lc_all = False
-                    msg = "LC_ALL set to => %s" % (line.strip(),)
-                    break
-
+                if not line.startswith(lc_all_str):
+                    continue
+                lc_found = True
+                for lang in qa_rlangs:
+                    if line.startswith(lang):
+                        valid_lc_all = True
+                        break
         finally:
             bz_f.close()
 
         env_rc = 0
-        if not valid_lc_all:
+        if lc_found and (not valid_lc_all):
+            msg = "LC_ALL not set to => %s" % (qa_langs,)
             env_rc = 1
         shutil.rmtree(tmp_path)
+
         return env_rc, msg
 
     @staticmethod
