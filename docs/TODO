@@ -7,9 +7,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - Python3:
         - when dealing with sockets, always pass raw string
 
-    - in repo string, split EAPI3 URL from HTTP url using ","
     - entropy.tools + entropy.transceivers API docs merge
-    - export LC_ALL value check to config file (entropy.qa, entropy.spm)
     - stop using pickle in entropy.services + ugc
     - remove entropy spm (sort_update_files) from entropy.server
     - move all the portage related stuff in entropy.tools to entropy.spm
