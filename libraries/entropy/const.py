@@ -169,7 +169,7 @@ def const_default_settings(rootdir):
     @return: None
     """
 
-    default_etp_dir = rootdir+"/var/lib/entropy"
+    default_etp_dir = os.getenv('DEV_ETP_VAR_DIR', rootdir+"/var/lib/entropy")
     default_etp_tmpdir = "/tmp"
     default_etp_repodir = "/packages/"+ETP_ARCH_CONST
     default_etp_portdir = rootdir+"/usr/portage"
@@ -186,11 +186,13 @@ def const_default_settings(rootdir):
     default_etp_setsdirname = "sets"
     default_etp_setsdir = "/%s/" % (default_etp_setsdirname,)
     default_etp_logdir = default_etp_dir+"/"+"logs"
-    default_etp_confdir = rootdir+"/etc/entropy"
+    default_etp_confdir = os.getenv('DEV_ETP_ETC_DIR', rootdir+"/etc/entropy")
     default_etp_packagesdir = default_etp_confdir+"/packages"
     default_etp_ugc_confdir = default_etp_confdir+"/ugc"
-    default_etp_syslogdir = rootdir+"/var/log/entropy/"
-    default_etp_vardir = rootdir+"/var/tmp/entropy"
+    default_etp_syslogdir = os.getenv('DEV_ETP_LOG_DIR',
+        rootdir+"/var/log/entropy/")
+    default_etp_vardir = os.getenv('DEV_ETP_TMP_DIR',
+        rootdir+"/var/tmp/entropy")
 
     cmdline = []
     cmdline_file = "/proc/cmdline"
