@@ -1,16 +1,16 @@
 # Project Entropy 1.0 repositories configuration file
 
 #
-#  syntax for repositories:
+#  syntax for repositories (content in square brackets not mandatory):
 #
 #    repository: where the available packages and its database are stored 
-#|   repository|repository_id|repository description|<packages mirror 1> <packages mirror 2> <...>|<database uri>#compression_method#<service port,ssl service port>
+#|   repository|repository_id|repository description|<packages mirror 1> <packages mirror 2> <...>|<database uri>[,<UGC service URI>][#compression_method][#<service port,ssl service port>]
 #
-#    example:
-#|       repository|sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org/packages|http://pkg.sabayon.org/db#bz2#1026,1027
+#    example (content in square brackets not mandatory):
+#|       repository|sabayonlinux.org|Sabayon Linux Official Repository|http://pkg.sabayon.org/packages|http://pkg.sabayon.org/db[,sabayon.org][#bz2][#1026,1027]
 #
 # Sabayon Linux Official Repository
-repository|sabayonlinux.org|Sabayon Linux Official Repository||http://pkg.sabayon.org#bz2
+repository|sabayonlinux.org|Sabayon Linux Official Repository||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy,sabayon.org
 repository|sabayonlinux.org||http://mirrors.cs.wmich.edu/sabayon/entropy|
 repository|sabayonlinux.org||http://ftp.cc.uoc.gr/mirrors/linux/SabayonLinux/entropy|
 repository|sabayonlinux.org||http://mirror.dun.nu/sabayonlinux/entropy|
@@ -45,7 +45,7 @@ product|standard
 #    branch|5
 #
 # Branch default setting
-branch|4
+branch|5
 
 #
 #  syntax for officialrepositoryid:
