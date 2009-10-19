@@ -761,20 +761,25 @@ def const_extract_cli_repo_params(repostring, branch = None, product = None):
     repopackages = repostring.split("|")[3].strip()
     repodatabase = repostring.split("|")[4].strip()
 
+    eapi3_uri = None
     eapi3_port = int(etpConst['socket_service']['port'])
     eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
     eapi3_formatcolon = repodatabase.rfind("#")
+
+    # Support for custom EAPI3 ports
     if eapi3_formatcolon != -1:
         try:
             ports = repodatabase[eapi3_formatcolon+1:].split(",")
-            eapi3_port = int(ports[0])
+            if ports:
+                eapi3_port = int(ports[0])
             if len(ports) > 1:
                 eapi3_ssl_port = int(ports[1])
-            repodatabase = repodatabase[:eapi3_formatcolon]
         except (ValueError, IndexError,):
             eapi3_port = int(etpConst['socket_service']['port'])
             eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
+        repodatabase = repodatabase[:eapi3_formatcolon]
 
+    # Support for custom database file compression
     dbformat = etpConst['etpdatabasefileformat']
     dbformatcolon = repodatabase.rfind("#")
     if dbformatcolon != -1:
@@ -785,10 +790,28 @@ def const_extract_cli_repo_params(repostring, branch = None, product = None):
                 pass
         repodatabase = repodatabase[:dbformatcolon]
 
+    # Support for custom EAPI3 service URI
+    eapi3_uricolon = repodatabase.rfind(",")
+    if eapi3_uricolon != -1:
+
+        found_eapi3_uri = repodatabase[eapi3_uricolon+1:]
+        if found_eapi3_uri:
+            eapi3_uri = found_eapi3_uri
+        repodatabase = repodatabase[:eapi3_uricolon]
+
     mydata = {}
     mydata['repoid'] = reponame
     mydata['service_port'] = eapi3_port
     mydata['ssl_service_port'] = eapi3_ssl_port
+
+    if not repodatabase.endswith("file://") and (eapi3_uri is None):
+        try:
+            # try to cope with the fact that no specific EAPI3 URI has been
+            # provided
+            eapi3_uri = repodatabase.split("/")[2]
+        except IndexError:
+            eapi3_uri = None
+    mydata['service_uri'] = eapi3_uri
     mydata['description'] = repodesc
     mydata['packages'] = []
     mydata['plain_packages'] = []
