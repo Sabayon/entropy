@@ -38,6 +38,15 @@ officialserverrepositoryid|sabayonlinux.org
 # bz2 or gz
 database-format|bz2
 
+# Server side LC_*, LANG, LANGUAGE default settings.
+# This setting is used by entropy.qa to validate packages and avoid weird
+# things happening. Please specify here a LC_*, LANG, LANGUAGE value that
+# all your produced distributions support (advice: en_US). There is no need
+# for extra stuff like @UTF-8. If you fail to do so and your L* value differs
+# from the one here, Entropy will bitch you at QA checks and uploading packages
+# will be impossible. You can concatenate (space separated) more than one value.
+# server-basic-languages|en_US C
+
 # Disabled EAPIs (comma separated).
 # By default, all current EAPI implementations are supported (1, 2, 3).
 # This means that when uploading/downloading database files, a lot of
