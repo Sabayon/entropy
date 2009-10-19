@@ -77,17 +77,16 @@ class Repository:
 
     def get_eapi3_connection(self, repository):
         # get database url
-        dburl = self.Entropy.SystemSettings['repositories']['available'][repository]['plain_database']
-        if dburl.startswith("file://"):
+        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        dburl = avail_data[repository].get('service_uri')
+        if dburl is None:
             return None
-        try:
-            dburl = dburl.split("/")[2]
-        except IndexError:
-            return None
-        port = self.Entropy.SystemSettings['repositories']['available'][repository]['service_port']
+
+        port = avail_data[repository]['service_port']
         try:
             from entropy.services.ugc.interfaces import Client
-            from entropy.client.services.ugc.commands import Client as CommandsClient
+            from entropy.client.services.ugc.commands import Client as \
+                CommandsClient
             eapi3_socket = Client(self.Entropy, CommandsClient,
                 output_header = "\t", socket_timeout = self.big_socket_timeout)
             eapi3_socket.connect(dburl, port)
