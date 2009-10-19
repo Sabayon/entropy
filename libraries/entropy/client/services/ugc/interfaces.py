@@ -38,15 +38,16 @@ class Client:
         self.TxLocks = {}
 
     def connect_to_service(self, repository, timeout = None):
-        if repository not in self.Entropy.SystemSettings['repositories']['available']:
-            raise RepositoryError("RepositoryError: %s" % (_('repository is not available'),))
 
-        try:
-            url = self.Entropy.SystemSettings['repositories']['available'][repository]['plain_database'].split("/")[2]
-            port = self.Entropy.SystemSettings['repositories']['available'][repository]['service_port']
-            if self.ssl_connection: port = self.Entropy.SystemSettings['repositories']['available'][repository]['ssl_service_port']
-        except (IndexError, KeyError,):
-            raise RepositoryError("RepositoryError: %s" % (_('repository metadata is malformed'),))
+        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        if repository not in avail_data:
+            raise RepositoryError("RepositoryError: %s" % (
+                _('repository is not available'),))
+
+        url = avail_data[repository]['service_uri']
+        port = avail_data[repository]['service_port']
+        if self.ssl_connection:
+            port = avail_data[repository]['ssl_service_port']
 
         from entropy.services.ugc.interfaces import Client
         from entropy.client.services.ugc.commands import Client as CommandsClient
