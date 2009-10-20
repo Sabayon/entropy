@@ -196,7 +196,7 @@ def print_exception(returndata = False):
                                              frame.f_code.co_filename,
                                              frame.f_lineno))
         else:
-            data.append("Frame %s in %s at line %s" % (frame.f_code.co_name,
+            data.append("Frame %s in %s at line %s\n" % (frame.f_code.co_name,
                                              frame.f_code.co_filename,
                                              frame.f_lineno))
         for key, value in list(frame.f_locals.items()):
@@ -208,7 +208,7 @@ def print_exception(returndata = False):
                 if not returndata:
                     sys.stdout.write(repr(value) + "\n")
                 else:
-                    data.append(repr(value))
+                    data.append(repr(value) + "\n")
             except:
                 if not returndata:
                     sys.stdout.write("<ERROR WHILE PRINTING VALUE>\n")
