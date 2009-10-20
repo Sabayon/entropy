@@ -334,7 +334,7 @@ class FetchersMixin:
                     header = red("   ## ")
                 )
                 self.entropyTools.print_traceback()
-            if not existed_before:
+            if (not existed_before) or (not resume):
                 do_stfu_rm(filepath)
             return -1, data_transfer, resumed
         if fetchChecksum == "-3":
@@ -348,7 +348,7 @@ class FetchersMixin:
 
         if digest and (fetchChecksum != digest):
             # not properly downloaded
-            if not existed_before:
+            if (not existed_before) or (not resume):
                 do_stfu_rm(filepath)
             return -2, data_transfer, resumed
 
@@ -455,6 +455,12 @@ class FetchersMixin:
                         elif rc == -2:
                             self.MirrorStatus.add_failing_mirror(uri,1)
                             error_message += " - %s." % (_("wrong checksum"),)
+                            # If file is fetched and its complete
+                            # better to enforce resume to False.
+                            if (data_transfer < 1) and do_resume:
+                                error_message += " %s." % (_("Disabling resume"),)
+                                do_resume = False
+                                continue
                         elif rc == -3:
                             error_message += " - %s." % (_("not found"),)
                         elif rc == -4: # timeout!
