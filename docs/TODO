@@ -4,9 +4,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
-    - Python3:
-        - when dealing with sockets, always pass raw string
-
     - entropy.tools + entropy.transceivers API docs merge
     - Entropy UGC broken with Python 3.x (due to pickle)
     - remove entropy spm (sort_update_files) from entropy.server
