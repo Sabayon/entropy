@@ -124,14 +124,9 @@ class UrlFetcher:
             self.localfile.seek(0, os.SEEK_END)
             self.__startingposition = int(self.localfile.tell())
             self.__resumed = True
+            return
 
-        elif os.path.lexists(self.__path_to_save) and not \
-            self.entropyTools.is_valid_path(self.__path_to_save):
-            try:
-                os.remove(self.__path_to_save)
-            except OSError: # I won't stop you here
-                pass
-            self.localfile = open(self.__path_to_save, "wb")
+        self.localfile = open(self.__path_to_save, "wb")
 
     def _setup_proxy(self):
         # setup proxy, doing here because config is dynamic
@@ -234,8 +229,7 @@ class UrlFetcher:
                 # all fine then!
                 self.__close(False)
                 return self.__prepare_return()
-            else:
-                self.localfile = open(self.__path_to_save, "wb")
+
             self.__remotefile = urlmod.urlopen(request)
         except KeyboardInterrupt:
             self.__close(False)
