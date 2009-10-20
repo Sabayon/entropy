@@ -289,7 +289,8 @@ class FetchersMixin:
         return 0, []
 
 
-    def fetch_file(self, url, branch, digest = None, resume = True, fetch_file_abort_function = None, filepath = None):
+    def fetch_file(self, url, branch, digest = None, resume = True,
+        fetch_file_abort_function = None, filepath = None):
 
         def do_stfu_rm(xpath):
             try:
@@ -333,7 +334,7 @@ class FetchersMixin:
                     header = red("   ## ")
                 )
                 self.entropyTools.print_traceback()
-            if not existed_before:
+            if (not existed_before) or (not resume):
                 do_stfu_rm(filepath)
             return -1, data_transfer, resumed
         if fetchChecksum == "-3":
@@ -347,7 +348,7 @@ class FetchersMixin:
 
         if digest and (fetchChecksum != digest):
             # not properly downloaded
-            if not existed_before:
+            if (not existed_before) or (not resume):
                 do_stfu_rm(filepath)
             return -2, data_transfer, resumed
 
@@ -371,7 +372,7 @@ class FetchersMixin:
             self.MirrorStatus.set_working_mirror(uri)
             mirrorcount += 1
             mirrorCountText = "( mirror #%s ) " % (mirrorcount,)
-            url = uri+"/"+filename
+            url = uri + "/" + filename
 
             # check if uri is sane
             if self.MirrorStatus.get_failing_mirror_status(uri) >= 30:
@@ -429,7 +430,8 @@ class FetchersMixin:
                         mytxt = mirrorCountText
                         mytxt += blue("%s: ") % (_("Successfully downloaded from"),)
                         mytxt += red(self.entropyTools.spliturl(uri)[1])
-                        mytxt += " %s %s/%s" % (_("at"), self.entropyTools.bytes_into_human(data_transfer), _("second"),)
+                        human_bytes = self.entropyTools.bytes_into_human(data_transfer)
+                        mytxt += " %s %s/%s" % (_("at"), human_bytes, _("second"),)
                         self.updateProgress(
                             mytxt,
                             importance = 1,
@@ -454,6 +456,12 @@ class FetchersMixin:
                         elif rc == -2:
                             self.MirrorStatus.add_failing_mirror(uri, 1)
                             error_message += " - %s." % (_("wrong checksum"),)
+                            # If file is fetched (with no resume) and its complete
+                            # better to enforce resume to False.
+                            if (data_transfer < 1) and do_resume:
+                                error_message += " %s." % (_("Disabling resume"),)
+                                do_resume = False
+                                continue
                         elif rc == -3:
                             error_message += " - %s." % (_("not found"),)
                         elif rc == -4: # timeout!
