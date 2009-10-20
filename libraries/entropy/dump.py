@@ -38,6 +38,7 @@ else:
         import pickle
 
 pickle.HIGHEST_PROTOCOL = COMPAT_PICKLE_PROTOCOL
+pickle.DEFAULT_PROTOCOL = COMPAT_PICKLE_PROTOCOL
 
 D_EXT = etpConst['cachedumpext']
 D_DIR = etpConst['dumpstoragedir']
@@ -150,7 +151,8 @@ def unserialize(serial_f):
     @raise pickle.UnpicklingError: when object cannot be recreated
     """
     if sys.hexversion >= 0x3000000:
-        return pickle.load(serial_f, fix_imports = True)
+        return pickle.load(serial_f, fix_imports = True,
+            encoding = 'raw_unicode_escape')
     else:
         return pickle.load(serial_f)
 
@@ -165,7 +167,8 @@ def unserialize_string(mystring):
     @raise pickle.UnpicklingError: when object cannot be recreated
     """
     if sys.hexversion >= 0x3000000:
-        return pickle.loads(mystring, fix_imports = True)
+        return pickle.loads(mystring, fix_imports = True,
+            encoding = 'raw_unicode_escape')
     else:
         return pickle.loads(mystring)
 
@@ -181,7 +184,7 @@ def serialize_string(myobj):
     """
     if sys.hexversion >= 0x3000000:
         return pickle.dumps(myobj, protocol = COMPAT_PICKLE_PROTOCOL,
-            fix_imports = True)
+            fix_imports = True, encoding = 'raw_unicode_escape')
     else:
         return pickle.dumps(myobj)
 
@@ -210,7 +213,8 @@ def loadobj(name, complete_path = False):
                     obj = None
                     try:
                         if sys.hexversion >= 0x3000000:
-                            obj = pickle.load(dmp_f, fix_imports = True)
+                            obj = pickle.load(dmp_f, fix_imports = True,
+                                encoding = 'raw_unicode_escape')
                         else:
                             obj = pickle.load(dmp_f)
                     except (ValueError, EOFError, IOError,
