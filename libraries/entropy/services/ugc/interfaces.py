@@ -1966,14 +1966,14 @@ class Client:
         self.socket.setdefaulttimeout(self.socket_timeout)
         self.transmit('begin')
         data = self.receive()
-        return data
+        return const_convert_to_unicode(data)
 
     def is_session_alive(self, session):
         self.check_socket_connection()
         self.socket.setdefaulttimeout(self.socket_timeout)
         self.transmit('alive %s' % (session,))
         data = self.receive()
-        if data == const_convert_to_unicode(self.answers['ok']):
+        if data == self.answers['ok']:
             return True
         return False
 
