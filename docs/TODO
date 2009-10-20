@@ -8,7 +8,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
         - when dealing with sockets, always pass raw string
 
     - entropy.tools + entropy.transceivers API docs merge
-    - stop using pickle in entropy.services + ugc
+    - Entropy UGC broken with Python 3.x (due to pickle)
     - remove entropy spm (sort_update_files) from entropy.server
     - move all the portage related stuff in entropy.tools to entropy.spm
     - move sensible pkgs to alt dir
