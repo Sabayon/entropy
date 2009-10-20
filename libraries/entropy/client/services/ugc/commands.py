@@ -97,6 +97,7 @@ class Base:
                 type = "error",
                 header = self.output_header
             )
+            do_skip = True
         elif data != self.Service.answers['ok']:
             mytxt = _("received wrong answer")
 
