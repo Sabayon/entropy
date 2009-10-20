@@ -820,26 +820,21 @@ def main():
         import traceback
         exception_data = ""
         try:
-            ferror = open("/tmp/equoerror.txt", "w")
-            traceback.print_exc(file = ferror)
-            ferror.write("\nRevision: "+etpConst['entropyversion']+"\n\n")
-            exception_data = entropyTools.print_exception(True)
-            ferror.write("\n")
-            ferror.flush()
-            ferror.close()
-            f = open("/tmp/equoerror.txt", "r")
-            errorText = f.readlines()
-            f.close()
-            ferror = open("/tmp/equoerror.txt", "a")
-            ferror.write("\n\n")
-            for x in exception_data:
-                ferror.write("%s\n" % (e,))
-            ferror.flush()
-            ferror.close()
-        except Exception as e:
-            print()
+            ferror = open("/tmp/equoerror.txt", "wb")
+        except (OSError, IOError,):
             print_error(darkred(_("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org.")))
             raise SystemExit(1)
+
+        exception_stack = entropyTools.get_traceback()
+        exception_data = entropyTools.print_exception(True)
+        ferror.write(const_convert_to_rawstring("\nRevision: " + \
+            etpConst['entropyversion'] + "\n\n"))
+        ferror.write(const_convert_to_rawstring(exception_stack))
+        ferror.write(const_convert_to_rawstring("\n\n"))
+        ferror.write(const_convert_to_rawstring(''.join(exception_data)))
+        ferror.write(const_convert_to_rawstring("\n"))
+        ferror.flush()
+        ferror.close()
 
         print_generic("")
 
