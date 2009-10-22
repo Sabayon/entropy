@@ -2211,7 +2211,7 @@ class Client:
                         header = self.output_header
                     )
         except self.socket.error as e:
-            if e[0] == 111:
+            if e.errno == 111:
                 mytxt = "%s: %s, %s: %s" % (_("Cannot connect to"), host, _("on port"), port,)
                 raise ConnectionError("ConnectionError: %s" % (mytxt,))
             else:
