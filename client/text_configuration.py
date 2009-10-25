@@ -285,16 +285,16 @@ def showdiff(fromfile, tofile):
     output = getoutput(diffcmd).split("\n")
     coloured = []
     for line in output:
-    if line.startswith("---"):
-        line = darkred(line)
-    elif line.startswith("+++"):
-        line = red(line)
-    elif line.startswith("@@"):
-        line = brown(line)
-    elif line.startswith("-"):
-        line = blue(line)
-    elif line.startswith("+"):
-        line = darkgreen(line)
+        if line.startswith("---"):
+            line = darkred(line)
+        elif line.startswith("+++"):
+            line = red(line)
+        elif line.startswith("@@"):
+            line = brown(line)
+        elif line.startswith("-"):
+            line = blue(line)
+        elif line.startswith("+"):
+            line = darkgreen(line)
     coloured.append(line+"\n")
     f = open("/tmp/"+os.path.basename(fromfile), "w")
     f.writelines(coloured)
