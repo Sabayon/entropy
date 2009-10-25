@@ -1310,16 +1310,16 @@ class FtpServerHandler:
             maxcount = len(self.myfiles)
             counter = 0
 
-            def ensure_ftp():
+            def ensure_ftp(ftp):
                 try:
                     ftp.set_basedir()
                     ftp.set_cwd(self.ftp_basedir, dodir = True)
                 except ftp.ftplib.error_temp:
-                    ftp = self.FtpInterface(uri, self.Entropy)
+                    ftp.reconnect_host()
 
             for mypath in self.myfiles:
 
-                ensure_ftp()
+                ensure_ftp(ftp)
 
                 mycwd = None
                 if isinstance(mypath, tuple):
