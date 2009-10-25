@@ -1288,9 +1288,12 @@ class FtpServerHandler:
                 ftp = self.FtpInterface(uri, self.Entropy)
             except ConnectionError:
                 self.entropyTools.print_traceback()
-                return True,fine_uris,broken_uris # issues
+                return True, fine_uris, broken_uris # issues
+
             branch = self.Entropy.SystemSettings['repositories']['branch']
-            my_path = os.path.join(self.Entropy.get_remote_database_relative_path(self.repo), branch)
+            my_path = os.path.join(
+                self.Entropy.get_remote_database_relative_path(self.repo),
+                    branch)
             self.Entropy.updateProgress(
                 "[%s|%s] %s %s..." % (
                     blue(crippled_uri),
@@ -1307,14 +1310,21 @@ class FtpServerHandler:
             maxcount = len(self.myfiles)
             counter = 0
 
+            def ensure_ftp():
+                try:
+                    ftp.set_basedir()
+                    ftp.set_cwd(self.ftp_basedir, dodir = True)
+                except ftp.ftplib.error_temp:
+                    ftp = self.FtpInterface(uri, self.Entropy)
+
             for mypath in self.myfiles:
 
-                ftp.set_basedir()
-                ftp.set_cwd(self.ftp_basedir, dodir = True)
+                ensure_ftp()
 
                 mycwd = None
-                if isinstance(mypath,tuple):
-                    if len(mypath) < 2: continue
+                if isinstance(mypath, tuple):
+                    if len(mypath) < 2:
+                        continue
                     mycwd = mypath[0]
                     mypath = mypath[1]
                     ftp.set_cwd(mycwd, dodir = True)
