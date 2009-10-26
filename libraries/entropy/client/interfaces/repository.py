@@ -1407,7 +1407,7 @@ class Repository:
         # kill previous
         self.current_repository_got_locked = False
         self.kill_previous_repository_lock_scanner()
-        self.LockScanner = TimeScheduled(5, self.repository_lock_scanner, repo)
+        self.LockScanner = TimeScheduled(30, self.repository_lock_scanner, repo)
         self.LockScanner.start()
 
     def kill_previous_repository_lock_scanner(self):
