@@ -9,16 +9,20 @@
     B{Entropy Package Manager Client}.
 
 """
+import os
 import sys
 import shutil
+import tempfile
+import subprocess
 if sys.hexversion >= 0x3000000:
     from subprocess import getoutput
 else:
     from commands import getoutput
+
 from entropy.const import *
 from entropy.output import *
 from entropy.client.interfaces import Client
-Equo = Client() # client db must be available, it is for a reason!
+Equo = Client()
 from entropy.i18n import _
 
 ########################################################
@@ -280,9 +284,10 @@ def selaction():
     return action
 
 def showdiff(fromfile, tofile):
-    # run diff
-    diffcmd = "diff -Nu "+fromfile+" "+tofile #+" | less --no-init --QUIT-AT-EOF"
-    output = getoutput(diffcmd).split("\n")
+
+    args = ["diff", "-Nu", "'"+fromfile+"'", "'"+tofile+"'"]
+    output = getoutput(' '.join(args)).split("\n")
+
     coloured = []
     for line in output:
         if line.startswith("---"):
@@ -295,19 +300,22 @@ def showdiff(fromfile, tofile):
             line = blue(line)
         elif line.startswith("+"):
             line = darkgreen(line)
-    coloured.append(line+"\n")
-    f = open("/tmp/"+os.path.basename(fromfile), "w")
+    coloured.append(line + "\n")
+
+    fd, tmp_path = tempfile.mkstemp()
+    f = open(tmp_path, "w")
     f.writelines(coloured)
     f.flush()
     f.close()
+    os.close(fd)
+
     print()
-    os.system("cat \"%s\" | less --no-init --QUIT-AT-EOF" % ("/tmp/"+os.path.basename(fromfile),))
-    try:
-        os.remove("/tmp/"+os.path.basename(fromfile))
-    except OSError:
-        pass
+    args = ["less", "--no-init", "--QUIT-AT-EOF", tmp_path]
+    subprocess.call(args)
+    os.remove(tmp_path)
+
     if output == ['']:
-        output = [] #FIXME beautify
+        return []
     return output
 
 
