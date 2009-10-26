@@ -1282,6 +1282,13 @@ class FtpServerHandler:
         elif self.remove:
             action = 'remove'
 
+        def ensure_ftp(ftp):
+            try:
+                ftp.set_basedir()
+                ftp.set_cwd(self.ftp_basedir, dodir = True)
+            except ftp.ftplib.error_temp:
+                ftp.reconnect_host()
+
         for uri in self.uris:
 
             crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
@@ -1320,8 +1327,7 @@ class FtpServerHandler:
 
             for mypath in self.myfiles:
 
-                ftp.set_basedir()
-                ftp.set_cwd(self.ftp_basedir, dodir = True)
+                ensure_ftp(ftp)
 
                 mycwd = None
                 if isinstance(mypath, tuple):
