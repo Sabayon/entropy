@@ -302,7 +302,12 @@ class FetchersMixin:
         if not filepath:
             filepath = os.path.join(etpConst['packagesbindir'], branch, filename)
         filepath_dir = os.path.dirname(filepath)
-        if not os.path.isdir(filepath_dir):
+        # symlink support
+        if not os.path.isdir(os.path.realpath(filepath_dir)):
+            try:
+                os.remove(filepath_dir)
+            except OSError:
+                pass
             os.makedirs(filepath_dir, 0o755)
 
         existed_before = False
