@@ -15,8 +15,8 @@
     entropy.client.interfaces.cache mixin methods)
 
 """
-
 from __future__ import with_statement
+import sys
 from entropy.core import Singleton
 from entropy.misc import TimeScheduled, Lifo
 import time
@@ -220,7 +220,15 @@ class EntropyCacher(Singleton):
             return
         if async:
             with self.__cache_lock:
-                self.__cache_buffer.push((key, self.__copy_obj(data),))
+                try:
+                    self.__cache_buffer.push((key, self.__copy_obj(data),))
+                except TypeError:
+                    # sometimes, very rarely, copy.deepcopy() is unable
+                    # to properly copy an object (blame Python bug)
+                    sys.stdout.write("!!! cannot cache object with key %s\n" % (
+                        key,))
+                    sys.stdout.flush()
+
         else:
             self.dumpTools.dumpobj(key, data)
 
