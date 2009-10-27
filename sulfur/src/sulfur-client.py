@@ -1,5 +1,5 @@
 #!/usr/bin/python2 -O
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 """
 
     @author: Fabio Erculiani <lxnay@sabayonlinux.org>
@@ -56,6 +56,12 @@ except KeyboardInterrupt:
     except NameError:
         pass
 except: # catch other exception and write it to the logger.
+
+    if "--debug" in sys.argv:
+        entropy.tools.print_exception()
+        import pdb
+        pdb.set_trace()
+
     my = ExceptionDialog()
     my.show()
     entropy.tools.kill_threads()
