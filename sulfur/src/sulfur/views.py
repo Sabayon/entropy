@@ -28,7 +28,7 @@ from entropy.misc import ParallelTask
 from entropy.i18n import _, _LOCALE
 from entropy.db import dbapi2
 from entropy.tools import convert_unix_time_to_datetime
-from entropy.output import const_get_stringtype
+from entropy.const import const_get_stringtype
 
 from sulfur.setup import const, cleanMarkupString, SulfurConf
 from sulfur.core import UI

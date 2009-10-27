@@ -319,7 +319,10 @@ def cleanMarkupString(msg):
     msg = gobject.markup_escape_text(msg)
     return msg
 
-from html.entities import codepoint2name
+try:
+    from html.entities import codepoint2name
+except ImportError:
+    from htmlentitydefs import codepoint2name
 def unicode2htmlentities(u):
    htmlentities = list()
    for c in u:
