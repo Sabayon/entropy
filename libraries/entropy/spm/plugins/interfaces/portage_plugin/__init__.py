@@ -1838,7 +1838,10 @@ class PortagePlugin(SpmPlugin):
         myslot = package_metadata['slot']
         for xatom in atomsfound:
 
-            if self.get_installed_package_metadata(xatom, "SLOT") != myslot:
+            try:
+                if self.get_installed_package_metadata(xatom, "SLOT") != myslot:
+                    continue
+            except KeyError: # package not found??
                 continue
 
             mybuild = self.get_installed_package_build_script_path(xatom)
