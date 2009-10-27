@@ -25,7 +25,8 @@ from sulfur.dialogs import LicenseDialog, okDialog, choiceDialog, inputDialog
 import gobject
 
 # Entropy Imports
-from entropy.const import etpConst, print_generic
+from entropy.const import etpConst
+from entropy.output import print_generic
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.transceivers import UrlFetcher
 from entropy.i18n import _

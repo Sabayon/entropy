@@ -395,6 +395,8 @@ class SulfurApplicationEventsMixin:
         if not rc:
             return
 
+        # clear all caches
+        self.reset_cache_status()
         self.pkgView.store.clear()
 
         newrepo = os.path.basename(fn)

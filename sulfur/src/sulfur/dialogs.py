@@ -17,7 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
-import time, gtk, gobject, pango, _thread, pty, sys
+import time, gtk, gobject, pango, pty, sys
 from entropy.i18n import _, _LOCALE
 from entropy.exceptions import *
 from entropy.const import *
