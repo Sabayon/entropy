@@ -2134,10 +2134,10 @@ class PortagePlugin(SpmPlugin):
 
             try:
                 try:
-                    import portage.const as portage_const
+                    import portage.const as pc
                 except ImportError:
-                    import portage_const
-                portdbdir = portage_const.VDB_PATH
+                    import portage_const as pc
+                portdbdir = pc.VDB_PATH
             except ImportError:
                 portdbdir = 'var/db/pkg'
 
