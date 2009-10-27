@@ -411,7 +411,8 @@ class RepositoryMixin:
         mydbconn = self.open_generic_database(dbfile)
         # read all idpackages
         try:
-            myidpackages = mydbconn.listAllIdpackages() # all branches admitted from external files
+            # all branches admitted from external files
+            myidpackages = mydbconn.listAllIdpackages()
         except (AttributeError, self.dbapi2.DatabaseError, \
             self.dbapi2.IntegrityError, self.dbapi2.OperationalError,):
                 return -2, atoms_contained
