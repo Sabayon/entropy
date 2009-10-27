@@ -338,7 +338,7 @@ class Equo(EquoInterface):
 
     def cycleDone(self):
         def update_gui():
-            next(self.progress.total)
+            self.progress.total.next() 
             return False
         gobject.timeout_add(0, update_gui)
 

@@ -1519,16 +1519,17 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.switch_notebook_page('packages')
             return False
 
+        self.disable_ugc = True
         # acquire Entropy resources here to avoid surpises afterwards
         acquired = self.Equo.resources_create_lock()
         if not acquired:
             okDialog(self.ui.main,
                 _("Another Entropy instance is locking this task at the moment. Try in a few minutes."))
+            self.disable_ugc = False
             return False
 
         switch_back_page = None
         self.hide_notebook_tabs_for_install()
-        self.disable_ugc = True
         self.set_status_ticker(_("Running tasks"))
         total = 0
         for key in pkgs:

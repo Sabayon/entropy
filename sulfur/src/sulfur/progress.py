@@ -48,7 +48,7 @@ class _Total:
     def show(self):
         self.progress.show()
 
-    def __next__(self):
+    def next(self):
         now = 0.0
         if self.currentStep < self.numSteps:
             self.currentStep += 1
