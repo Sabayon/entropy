@@ -27,7 +27,8 @@ from entropy.const import etpConst, etpSys, initconfig_entropy_constants
 from entropy.misc import ParallelTask
 from entropy.i18n import _, _LOCALE
 from entropy.db import dbapi2
-from entropy.tools import convert_unix_time_to_datetime
+from entropy.tools import convert_unix_time_to_datetime, dep_getkey, \
+    print_traceback
 from entropy.const import const_get_stringtype
 
 from sulfur.setup import const, cleanMarkupString, SulfurConf
@@ -1598,7 +1599,7 @@ class EntropyPackageView:
             obj.voted = 0.0
             return
         atom = obj.name
-        key = self.Equo.entropyTools.dep_getkey(atom)
+        key = dep_getkey(atom)
 
         self.queueView.refresh()
         self.view.queue_draw()
@@ -2090,6 +2091,7 @@ class EntropyAdvisoriesView:
         self.model = self.setup_view()
         self.etpbase = etpbase
         self.ui = ui
+        self._xcache = {}
 
     def setup_view( self ):
         model = gtk.ListStore(
@@ -2160,8 +2162,8 @@ class EntropyAdvisoriesView:
     def set_icon_to_cell(self, cell, icon):
         cell.set_property( 'icon-name', icon )
 
-    def new_icon( self, column, cell, model, iter ):
-        key, affected, data = model.get_value( iter, 0 )
+    def new_icon( self, column, cell, model, myiter ):
+        key, affected, data = model.get_value( myiter, 0 )
         if key == None:
             affected = False
         if affected:
@@ -2169,8 +2171,8 @@ class EntropyAdvisoriesView:
         else:
             self.set_icon_to_cell(cell, 'gtk-apply')
 
-    def get_data_text( self, column, cell, model, iter ):
-        key, affected, data = model.get_value( iter, 0 )
+    def get_data_text( self, column, cell, model, myiter ):
+        key, affected, data = model.get_value( myiter, 0 )
         if key == None:
             affected = False
         if affected:
@@ -2189,7 +2191,8 @@ class EntropyAdvisoriesView:
                 return False
         return True
 
-    def populate( self, securityConn, adv_metadata, show ):
+    def populate(self, security_interface, adv_metadata, show,
+        use_cache = False):
 
         self.model.clear()
         self.enable_properties_menu(None)
@@ -2204,18 +2207,38 @@ class EntropyAdvisoriesView:
         else:
             do_all = True
 
-        identifiers = {}
-        for key in adv_metadata:
-            affected = securityConn.is_affected(key)
-            if do_all:
-                identifiers[key] = affected
-            elif only_affected and not affected:
-                continue
-            elif only_unaffected and affected:
-                continue
-            identifiers[key] = affected
+        model_data = None
+        if use_cache and (show in self._xcache):
+            model_data = self._xcache[show]
 
-        if not identifiers:
+        if model_data is None:
+            identifiers = {}
+            model_data = []
+
+            for key in adv_metadata:
+                affected = security_interface.is_affected(key)
+                if do_all:
+                    identifiers[key] = affected
+                elif only_affected and not affected:
+                    continue
+                elif only_unaffected and affected:
+                    continue
+                identifiers[key] = affected
+
+            for key in identifiers:
+                if not adv_metadata[key]['affected']:
+                    continue
+                affected_data = adv_metadata[key]['affected']
+                if not affected_data:
+                    continue
+                for a_key in affected_data:
+                    model_data.append(
+                        (key, identifiers[key], adv_metadata[key], a_key))
+
+        # cache item
+        self._xcache[show] = model_data[:]
+
+        if not model_data:
             self.model.append(
                 [
                     (None, None, None),
@@ -2225,25 +2248,19 @@ class EntropyAdvisoriesView:
                 ]
             )
 
-        for key in identifiers:
-            if not adv_metadata[key]['affected']:
-                continue
-            affected_data = list(adv_metadata[key]['affected'].keys())
-            if not affected_data:
-                continue
-            for a_key in affected_data:
-                mydata = adv_metadata[key]
+        else:
+            for key, adv_affected, adv_meta, a_key in model_data:
                 self.model.append(
                     [
-                        (key, identifiers[key], adv_metadata[key].copy(),),
-                        key,
-                        "<b>%s</b>" % (a_key,),
+                        (key, adv_affected, adv_meta,),
+                        key, "<b>%s</b>" % (a_key,),
                         "<small>%s</small>" % (
-                            cleanMarkupString(mydata['title']),)
+                            cleanMarkupString(adv_meta['title']),
+                        )
                     ]
                 )
 
-        self.view.set_search_column( 2 )
+        self.view.set_search_column(2)
         self.view.set_search_equal_func(self.atom_search)
         self.view.set_property('headers-visible', True)
         self.view.set_property('enable-search', True)

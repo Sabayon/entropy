@@ -268,11 +268,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.switch_notebook_page("packages")
 
-        self.setup_advisories()
         # setup Repositories
         self.setup_repoView()
         self.firstTime = True
-        # calculate updates
+        # setup app
         self.setup_application()
 
         self.console.set_pty(self.pty[0])
@@ -505,7 +504,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 self.show_notice_board(force = False)
 
     def setup_advisories_filter(self):
-        self.advisoryRB = {}
         widgets = [
                     (self.ui.rbAdvisories, 'affected'),
                     (self.ui.rbAdvisoriesApplied, 'applied'),
@@ -514,7 +512,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         for w, tag in widgets:
             w.connect('toggled', self.populate_advisories, tag)
             w.set_mode(False)
-            self.advisoryRB[tag] = w
 
     def setup_packages_filter(self):
 
@@ -980,9 +977,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         )
         self.ui.maskedWarningLabel.set_markup(mytxt)
 
-    def setup_advisories(self):
-        self.Advisories = self.Equo.Security()
-
     def setup_editor(self):
 
         pathenv = os.getenv("PATH")
@@ -1065,27 +1059,36 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.progress.total.show()
 
     def populate_advisories(self, widget, show):
-        self.set_busy()
-        self.wait_window.show()
-        cached = None
+
+        if widget is not None:
+            if not widget.get_active():
+                return
+            widget.grab_add()
+
+        meta_id = "glsa_metadata"
+        meta_cached = self.etpbase.is_cached(meta_id)
+
+        if not meta_cached:
+            self.set_busy()
+            self.wait_window.show()
+
         try:
-            cached = self.Advisories.get_advisories_cache()
-        except (IOError, EOFError):
-            pass
-        except AttributeError:
-            time.sleep(5)
-            cached = self.Advisories.get_advisories_cache()
-        if cached == None:
-            try:
-                cached = self.Advisories.get_advisories_metadata()
-            except Exception as e:
-                okDialog( self.ui.main, "%s: %s" % (
-                    _("Error loading advisories"), e) )
-                cached = {}
+            cached = self.etpbase.get_groups(meta_id)
+        except Exception as e:
+            okDialog( self.ui.main, "%s: %s" % (
+                _("Error loading advisories"), e) )
+            cached = {}
+
         if cached:
-            self.advisoriesView.populate(self.Advisories, cached, show)
-        self.unset_busy()
-        self.wait_window.hide()
+            self.advisoriesView.populate(self.Equo.Security(), cached, show,
+                use_cache = meta_cached)
+
+        if not meta_cached:
+            self.unset_busy()
+            self.wait_window.hide()
+
+        if widget is not None:
+            widget.grab_remove()
 
     def populate_files_update(self):
         # load filesUpdate interface and fill self.filesView

@@ -115,10 +115,11 @@ class SulfurApplicationEventsMixin:
 
     def on_updateAdvAll_clicked( self, widget ):
 
-        adv_data = self.Advisories.get_advisories_metadata()
+        security = self.Equo.Security()
+        adv_data = security.get_advisories_metadata()
         atoms = set()
         for key in adv_data:
-            affected = self.Advisories.is_affected(key)
+            affected = security.is_affected(key)
             if not affected:
                 continue
             for mykey in adv_data[key]['affected']:

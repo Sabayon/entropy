@@ -614,6 +614,9 @@ class EntropyPackages:
         self.selected_treeview_item = None
         self.selected_advisory_item = None
 
+    def is_cached(self, group):
+        return group in self._packages
+
     def populate_single_group(self, mask, force = False):
         if mask in self._packages and not force and mask not in \
             self._non_cached_groups:
@@ -628,7 +631,7 @@ class EntropyPackages:
     def get_groups(self, flt):
         if flt == 'all':
             return self.get_all_groups()
-        elif flt == 'queued':
+        elif flt in ['queued', 'glsa_metadata']:
             return self.get_raw_groups(flt)
         else:
             return self.do_filtering(self.get_raw_groups(flt))
@@ -986,6 +989,21 @@ class EntropyPackages:
             dummy_type = SulfurConf.dummy_empty)
         return myobj
 
+    def _pkg_get_glsa_metadata(self):
+        security = self.Entropy.Security()
+
+        try:
+            metadata = security.get_advisories_cache()
+        except (IOError, EOFError):
+            metadata = None
+        except AttributeError:
+            metadata = security.get_advisories_cache()
+
+        if metadata is None:
+            metadata = security.get_advisories_metadata()
+
+        return metadata
+
     def _get_groups(self, mask):
 
         calls_dict = {
@@ -1001,6 +1019,7 @@ class EntropyPackages:
             "pkgsets": self._pkg_get_pkgsets,
             "fake_updates": self._pkg_get_fake_updates,
             "downgrade": self._pkg_get_downgrade,
+            "glsa_metadata": self._pkg_get_glsa_metadata,
         }
         return calls_dict.get(mask)()
 
