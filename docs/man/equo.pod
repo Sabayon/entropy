@@ -334,6 +334,10 @@ ask before making any changes
 
 just show what would be done
 
+=item B<--nodeps>
+
+do not pull in any dependency
+
 =item B<--multifetch>
 
 download multiple packages in parallel (default 3)
