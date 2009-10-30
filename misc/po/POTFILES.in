@@ -27,6 +27,7 @@
 ../libraries/entropy/services/interfaces.py
 ../libraries/entropy/services/skel.py
 ../libraries/entropy/server/__init__.py
+../libraries/entropy/server/transceivers.py
 ../libraries/entropy/server/interfaces/__init__.py
 ../libraries/entropy/server/interfaces/main.py
 ../libraries/entropy/server/interfaces/mirrors.py
