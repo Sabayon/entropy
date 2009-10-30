@@ -4,15 +4,9 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
-    # test (after Py3x code mess):
-        - sulfur
-        - magneto
-        - services
-        - ugc
-
+    - UGC UT
     - move FtpServerHandler to entropy.server
     - entropy.tools + entropy.transceivers API docs merge
-    - Entropy UGC broken with Python 3.x (due to pickle)
     - remove entropy spm (sort_update_files) from entropy.server
     - move all the portage related stuff in entropy.tools to entropy.spm
     - move sensible pkgs to alt dir
