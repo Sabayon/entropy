@@ -36,7 +36,7 @@ class Server:
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         self.Entropy = ServerInstance
-        from entropy.transceivers import FtpServerHandler
+        from entropy.server.transceivers import FtpServerHandler
         self.FtpServerHandler = FtpServerHandler
         from entropy.cache import EntropyCacher
         self.Cacher = EntropyCacher()
