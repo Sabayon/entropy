@@ -2,6 +2,10 @@ PKGNAME = entropy
 PYTHON = python2
 SUBDIRS = client conf docs handlers libraries misc/po misc server sulfur
 SERVER_INSPKGS = reagent.py activator.py server_reagent.py server_activator.py repository-admin-daemon repository-services-daemon.example server_query.py
+PREFIX = /usr/local
+BINDIR = $(PREFIX)/bin
+LIBDIR = $(PREFIX)/lib
+DESTDIR = 
 
 all:
 	for d in $(SUBDIRS); do make -C $$d; done
@@ -98,23 +102,23 @@ updates-daemon-install:
 
 magneto-core-install:
 
-	make DESTDIR="$(DESTDIR)" -C magneto magneto-core-install
+	make DESTDIR="$(DESTDIR)" LIBDIR="$(LIBDIR)" -C magneto magneto-core-install
 
 magneto-loader-install:
 
-	make DESTDIR="$(DESTDIR)" -C magneto magneto-loader-install
+	make DESTDIR="$(DESTDIR)" LIBDIR="$(LIBDIR)" -C magneto magneto-loader-install
 
 magneto-gtk-install:
 
-	make DESTDIR="$(DESTDIR)" -C magneto magneto-gtk-install
+	make DESTDIR="$(DESTDIR)" LIBDIR="$(LIBDIR)" -C magneto magneto-gtk-install
 
 magneto-kde-install:
 
-	make DESTDIR="$(DESTDIR)" -C magneto magneto-kde-install
+	make DESTDIR="$(DESTDIR)" LIBDIR="$(LIBDIR)" -C magneto magneto-kde-install
 
 sulfur-install:
 
-	make DESTDIR="$(DESTDIR)" -C sulfur install
+	make DESTDIR="$(DESTDIR)" LIBDIR="$(LIBDIR)" -C sulfur install
 
 pycompile-all:
 
