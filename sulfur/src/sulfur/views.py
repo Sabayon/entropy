@@ -1,5 +1,5 @@
 #!/usr/bin/python2 -O
-# -*- coding: iso-8859-1 -*-
+# -*- coding: utf-8 -*-
 #    Sulfur (Entropy Interface)
 #    Copyright: (C) 2007-2009 Fabio Erculiani < lxnay<AT>sabayonlinux<DOT>org >
 #
@@ -2096,6 +2096,7 @@ class EntropyAdvisoriesView:
         self.model = self.setup_view()
         self.etpbase = etpbase
         self.ui = ui
+        self._xcache = {}
 
     def setup_view( self ):
         model = gtk.ListStore(
@@ -2195,7 +2196,8 @@ class EntropyAdvisoriesView:
                 return False
         return True
 
-    def populate( self, securityConn, adv_metadata, show ):
+    def populate(self, security_interface, adv_metadata, show,
+        use_cache = False):
 
         self.model.clear()
         self.enable_properties_menu(None)
@@ -2210,49 +2212,63 @@ class EntropyAdvisoriesView:
         else:
             do_all = True
 
-        identifiers = {}
-        for key in adv_metadata:
-            affected = securityConn.is_affected(key)
-            if do_all:
-                identifiers[key] = affected
-            elif only_affected and not affected:
-                continue
-            elif only_unaffected and affected:
-                continue
-            identifiers[key] = affected
+        model_data = None
+        if use_cache and (show in self._xcache):
+            model_data = self._xcache[show]
 
-        if not identifiers:
+        if model_data is None:
+            identifiers = {}
+            model_data = []
+
+            for key in adv_metadata:
+                affected = security_interface.is_affected(key)
+                if do_all:
+                    identifiers[key] = affected
+                elif only_affected and not affected:
+                    continue
+                elif only_unaffected and affected:
+                    continue
+                identifiers[key] = affected
+
+            for key in identifiers:
+                if not adv_metadata[key]['affected']:
+                    continue
+                affected_data = adv_metadata[key]['affected']
+                if not affected_data:
+                    continue
+                for a_key in affected_data:
+                    model_data.append(
+                        (key, identifiers[key], adv_metadata[key], a_key))
+
+        # cache item
+        self._xcache[show] = model_data[:]
+
+        if not model_data:
             self.model.append(
                 [
-                    (None,None,None),
+                    (None, None, None),
                     "---------",
                     "<b>%s</b>" % (_("No advisories"),),
                     "<small>%s</small>" % (_("There are no items to show"),)
                 ]
             )
 
-        for key in identifiers:
-            if not adv_metadata[key]['affected']:
-                continue
-            affected_data = adv_metadata[key]['affected'].keys()
-            if not affected_data:
-                continue
-            for a_key in affected_data:
-                mydata = adv_metadata[key]
+        else:
+            for key, adv_affected, adv_meta, a_key in model_data:
                 self.model.append(
                     [
-                        (key,identifiers[key],adv_metadata[key].copy(),),
-                        key,
-                        "<b>%s</b>" % (a_key,),
+                        (key, adv_affected, adv_meta,),
+                        key, "<b>%s</b>" % (a_key,),
                         "<small>%s</small>" % (
-                            cleanMarkupString(mydata['title']),)
+                            cleanMarkupString(adv_meta['title']),
+                        )
                     ]
                 )
 
-        self.view.set_search_column( 2 )
+        self.view.set_search_column(2)
         self.view.set_search_equal_func(self.atom_search)
-        self.view.set_property('headers-visible',True)
-        self.view.set_property('enable-search',True)
+        self.view.set_property('headers-visible', True)
+        self.view.set_property('enable-search', True)
 
 
 class EntropyRepoView:
