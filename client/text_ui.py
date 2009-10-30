@@ -23,7 +23,6 @@ from entropy.client.interfaces import Client
 from entropy.misc import ParallelTask
 from entropy.i18n import _
 Equo = Client()
-DIRS_TO_CLEAN = set()
 
 def package(options):
 
@@ -127,7 +126,7 @@ def package(options):
 
         if myopts or mytbz2paths:
             status, rc = downloadPackages(myopts, deps = equoRequestDeps,
-                deepdeps = equoRequestDeep, tbz2 = mytbz2paths,
+                deepdeps = equoRequestDeep,
                 multifetch = equoRequestMultifetch,
                 dochecksum = equoRequestChecksum)
         else:
@@ -507,7 +506,7 @@ def _scanPackages(packages, tbz2):
 
     return foundAtoms
 
-def _showPackageInfo(foundAtoms, deps):
+def _showPackageInfo(foundAtoms, deps, action_name = None):
 
     if (etpUi['ask'] or etpUi['pretend'] or etpUi['verbose']):
         # now print the selected packages
@@ -576,6 +575,7 @@ def _showPackageInfo(foundAtoms, deps):
                 installedVer = "0"
             if installedRev == "NoRev":
                 installedRev = 0
+
             pkgcmp = Equo.get_package_action((idpackage, reponame))
             if (pkgcmp == 0) and is_installed:
                 if installedRepo != reponame:
@@ -589,6 +589,11 @@ def _showPackageInfo(foundAtoms, deps):
                 action = blue(_("Upgrade"))
             else:
                 action = red(_("Downgrade"))
+
+            # support for caller provided action name
+            if action_name is not None:
+                action = action_name
+
             print_info("\t"+red("%s:\t\t" % (_("Action"),) )+" "+action)
 
         if (etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']):
@@ -598,7 +603,7 @@ def _showPackageInfo(foundAtoms, deps):
             if deps:
                 rc = Equo.askQuestion("     %s" % (_("Would you like to continue with dependencies calculation ?"),) )
             else:
-                rc = Equo.askQuestion("     %s" % (_("Would you like to continue with the installation ?"),) )
+                rc = Equo.askQuestion("     %s" % (_("Would you like to continue ?"),) )
             if rc == _("No"):
                 return True, (0, 0)
 
@@ -681,12 +686,15 @@ def downloadSources(packages = None, deps = True, deepdeps = False, tbz2 = None,
         print_error( red("%s." % (_("No packages found"),) ))
         return 127, -1
 
-    abort, myrc = _showPackageInfo(foundAtoms, deps)
-    if abort: return myrc
+    action = darkgreen(_("Source code download"))
+    abort, myrc = _showPackageInfo(foundAtoms, deps, action_name = action)
+    if abort:
+        return myrc
 
     abort, runQueue, removalQueue = _generateRunQueue(foundAtoms, deps,
         False, deepdeps)
-    if abort: return runQueue
+    if abort:
+        return runQueue
 
     if etpUi['pretend']:
         return 0, 0
@@ -753,46 +761,45 @@ def _fetchPackages(runQueue, multifetch = 1, dochecksum = True):
 
             rc = Package.run(xterm_header = xterm_header)
             if rc != 0:
-                #dirscleanup()
                 return -1, rc
             Package.kill()
-
             del metaopts
             del Package
-    else:
-        for match in runQueue:
-            fetchqueue += 1
 
-            metaopts = {}
-            metaopts['dochecksum'] = dochecksum
-            Package = Equo.Package()
-            Package.prepare(match, "fetch", metaopts)
-            myrepo = Package.pkgmeta['repository']
-            if myrepo not in mykeys:
-                mykeys[myrepo] = set()
-            mykeys[myrepo].add(Equo.entropyTools.dep_getkey(Package.pkgmeta['atom']))
+        return 0, 0
 
-            xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
-            print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
-                           red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.pkgmeta['atom']))
+    # normal fetch
+    for match in runQueue:
+        fetchqueue += 1
 
-            rc = Package.run(xterm_header = xterm_header)
-            if rc != 0:
-                #dirscleanup()
-                return -1, rc
-            Package.kill()
+        metaopts = {}
+        metaopts['dochecksum'] = dochecksum
+        Package = Equo.Package()
+        Package.prepare(match, "fetch", metaopts)
+        myrepo = Package.pkgmeta['repository']
+        if myrepo not in mykeys:
+            mykeys[myrepo] = set()
+        mykeys[myrepo].add(Equo.entropyTools.dep_getkey(Package.pkgmeta['atom']))
 
-            del metaopts
-            del Package
-    return 0,0
-            
-def downloadPackages(packages = None, deps = True, deepdeps = False, tbz2 = None,
+        xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
+        print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
+                        red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.pkgmeta['atom']))
+
+        rc = Package.run(xterm_header = xterm_header)
+        if rc != 0:
+            return -1, rc
+        Package.kill()
+        del metaopts
+        del Package
+
+    return 0, 0
+
+
+def downloadPackages(packages = None, deps = True, deepdeps = False,
     multifetch = 1, dochecksum = True):
 
     if packages is None:
         packages = []
-    if tbz2 is None:
-        tbz2 = []
 
     # check if I am root
     if (not Equo.entropyTools.is_root()):
@@ -800,32 +807,28 @@ def downloadPackages(packages = None, deps = True, deepdeps = False, tbz2 = None
         print_warning(mytxt)
         etpUi['pretend'] = True
 
-        
-    foundAtoms = _scanPackages(packages, tbz2)
-    
+
+    foundAtoms = _scanPackages(packages, None)
+
     # are there packages in foundAtoms?
     if not foundAtoms:
         print_error( red("%s." % (_("No packages found"),) ))
         return 127, -1
 
-    abort, myrc = _showPackageInfo(foundAtoms, deps)
-    if abort: return myrc
+    action = brown(_("Download"))
+    abort, myrc = _showPackageInfo(foundAtoms, deps, action_name = action)
+    if abort:
+        return myrc
 
     abort, runQueue, removalQueue = _generateRunQueue(foundAtoms, deps,
         False, deepdeps)
-    if abort: return runQueue
+    if abort:
+        return runQueue
 
     if etpUi['pretend']:
         return 0, 0
 
-    if (etpUi['ask']):
-        rc = Equo.askQuestion("     %s" % (_("Would you like to execute the queue ?"),) )
-    if rc == _("No"):
-        #dirscleanup()
-        return 0, 0
-
     return _fetchPackages(runQueue, multifetch, dochecksum)
-    
 
 def installPackages(packages = None, atomsdata = None, deps = True,
     emptydeps = False, onlyfetch = False, deepdeps = False,
@@ -844,16 +847,6 @@ def installPackages(packages = None, atomsdata = None, deps = True,
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
-
-    DIRS_TO_CLEAN.clear()
-    def dirscleanup():
-        for xdir in DIRS_TO_CLEAN:
-            try:
-                if os.path.isdir(xdir):
-                    shutil.rmtree(xdir, True)
-            except shutil.Error:
-                continue
-        DIRS_TO_CLEAN.clear()
 
     explicit_user_packages = set()
 
@@ -889,24 +882,20 @@ def installPackages(packages = None, atomsdata = None, deps = True,
         # are there packages in foundAtoms?
         if (not foundAtoms):
             print_error( red("%s." % (_("No packages found"),) ))
-            dirscleanup()
             return 127, -1
 
         abort, myrc = _showPackageInfo(foundAtoms, deps)
         if abort:
-            dirscleanup()
             return myrc
 
         abort, runQueue, removalQueue = _generateRunQueue(foundAtoms, deps,
             emptydeps, deepdeps)
         if abort:
-            dirscleanup()
             return runQueue
 
 
         if ((not runQueue) and (not removalQueue)):
             print_error(red("%s." % (_("Nothing to do"),) ))
-            dirscleanup()
             return 126, -1
 
         downloadSize = 0
@@ -1124,13 +1113,12 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 print_info(darkred(" !!! ")+bold(_("Attention")))
                 print_info(darkred(" !!! ")+bold(_("Attention")))
 
-        if (etpUi['ask']):
+        if etpUi['ask']:
             rc = Equo.askQuestion("     %s" % (_("Would you like to execute the queue ?"),) )
             if rc == _("No"):
-                dirscleanup()
                 return 0, 0
-        if (etpUi['pretend']):
-            dirscleanup()
+
+        if etpUi['pretend']:
             return 0, 0
 
         try:
@@ -1225,7 +1213,6 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 if choice not in (0, 1, 2, 3):
                     continue
                 if choice == 0:
-                    dirscleanup()
                     return 0, 0
                 elif choice == 1: # read
                     filename = Equo.get_text_license(key, match[1])
@@ -1243,9 +1230,9 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                     break
 
     if not etpUi['clean'] or onlyfetch:
-        ### Before starting the real install, fetch packages and verify checksum.
+        # Before starting the real install, fetch packages and verify checksum.
         _fetchPackages(runQueue, multifetch, dochecksum)
-        
+
         def spawn_ugc():
             try:
                 if Equo.UGC != None:
@@ -1279,7 +1266,6 @@ def installPackages(packages = None, atomsdata = None, deps = True,
 
         rc = Package.run(xterm_header = xterm_header)
         if rc != 0:
-            dirscleanup()
             return -1, rc
 
         # there's a buffer inside, better remove otherwise cPickle will complain
@@ -1309,7 +1295,6 @@ def installPackages(packages = None, atomsdata = None, deps = True,
         Equo.dumpTools.dumpobj(etpCache['install'], {})
     except (IOError, OSError):
         pass
-    dirscleanup()
     return 0, 0
 
 def configurePackages(packages = None):
