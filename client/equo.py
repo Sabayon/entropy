@@ -138,6 +138,7 @@ myopts = [
     (1, 'fetch', 2, _('just download packages without doing the install')),
     (2, '--ask', 2, _('ask before making any changes')),
     (2, '--pretend', 1, _('just show what would be done')),
+    (2, '--nodeps', 1, _('do not pull in any dependency')),
     (2, '--multifetch', 1, _('download multiple packages in parallel (default 3)')),
     (2, '--multifetch=N', 1, _('download N packages in parallel (max 10)')),
     None,
