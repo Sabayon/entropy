@@ -320,6 +320,30 @@ save sources in current working directory
 
 =back
 
+=item B<fetch>
+
+just download packages without doing the install
+
+=over
+
+=item B<--ask (-a)>
+
+ask before making any changes
+
+=item B<--pretend (-p)>
+
+just show what would be done
+
+=item B<--multifetch>
+
+download multiple packages in parallel (default 3)
+
+=item B<--multifetch=N>
+
+download N packages in parallel (max 10)
+
+=back
+
 =item B<remove>
 
 remove one or more packages
