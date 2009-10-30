@@ -135,6 +135,12 @@ myopts = [
     (2, '--pretend', 1, _('just show what would be done')),
     (2, '--savehere', 1, _('save sources in current working directory')),
     None,
+    (1, 'fetch', 2, _('just download packages without doing the install')),
+    (2, '--ask', 2, _('ask before making any changes')),
+    (2, '--pretend', 1, _('just show what would be done')),
+    (2, '--multifetch', 1, _('download multiple packages in parallel (default 3)')),
+    (2, '--multifetch=N', 1, _('download N packages in parallel (max 10)')),
+    None,
     (1, 'remove', 2, _('remove one or more packages')),
     (2, '--ask', 2, _('ask before making any changes')),
     (2, '--pretend', 1, _('just show what would be done')),
@@ -501,7 +507,7 @@ def main():
             do_moo()
 
         elif options[0] in ("install", "remove", "config", "world", "upgrade",
-            "deptest", "unusedpackages", "libtest", "source", "hop"):
+            "deptest", "unusedpackages", "libtest", "source", "fetch", "hop"):
 
             import text_ui
             rc = text_ui.package(options)

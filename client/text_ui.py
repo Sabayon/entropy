@@ -123,6 +123,17 @@ def package(options):
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
 
+    elif (options[0] == "fetch"):
+
+        if myopts or mytbz2paths:
+            status, rc = downloadPackages(myopts, deps = equoRequestDeps,
+                deepdeps = equoRequestDeep, tbz2 = mytbz2paths,
+                multifetch = equoRequestMultifetch,
+                dochecksum = equoRequestChecksum)
+        else:
+            print_error(red(" %s." % (_("Nothing to do"),) ))
+            rc = 127
+
     elif (options[0] == "install"):
         if (myopts) or (mytbz2paths) or (equoRequestResume):
             status, rc = installPackages(myopts, deps = equoRequestDeps,
@@ -702,6 +713,103 @@ def downloadSources(packages = None, deps = True, deepdeps = False, tbz2 = None,
         Package.kill()
 
         del Package
+
+    return 0, 0
+
+def downloadPackages(packages = None, deps = True, deepdeps = False, tbz2 = None,
+    multifetch = 1, dochecksum = True):
+
+    if packages is None:
+        packages = []
+    if tbz2 is None:
+        tbz2 = []
+
+    # check if I am root
+    if (not Equo.entropyTools.is_root()):
+        mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
+        print_warning(mytxt)
+        etpUi['pretend'] = True
+
+        
+    foundAtoms = _scanPackages(packages, tbz2)
+    
+    # are there packages in foundAtoms?
+    if not foundAtoms:
+        print_error( red("%s." % (_("No packages found"),) ))
+        return 127, -1
+
+    abort, myrc = _showPackageInfo(foundAtoms, deps)
+    if abort: return myrc
+
+    abort, runQueue, removalQueue = _generateRunQueue(foundAtoms, deps,
+        False, deepdeps)
+    if abort: return runQueue
+
+    if etpUi['pretend']:
+        return 0, 0
+
+    totalqueue = str(len(runQueue))
+    fetchqueue = 0
+    metaopts = {}
+
+    mykeys = {}
+    mymultifetch = multifetch
+
+    if multifetch > 1:
+        myqueue = []
+        mystart = 0
+        while True:
+            mylist = runQueue[mystart:mymultifetch]
+            if not mylist: break
+            myqueue.append(mylist)
+            mystart += multifetch
+            mymultifetch += multifetch
+        mytotalqueue = str(len(myqueue))
+
+        for matches in myqueue:
+            fetchqueue += 1
+
+            metaopts = {}
+            metaopts['dochecksum'] = dochecksum
+            Package = Equo.Package()
+            Package.prepare(matches, "multi_fetch", metaopts)
+            myrepo_data = Package.pkgmeta['repository_atoms']
+            for myrepo in myrepo_data:
+                if myrepo not in mykeys:
+                    mykeys[myrepo] = set()
+                for myatom in myrepo_data[myrepo]:
+                    mykeys[myrepo].add(Equo.entropyTools.dep_getkey(myatom))
+
+            xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+mytotalqueue+" ::"
+            print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
+                           red(mytotalqueue)+bold(") ")+">>> "+darkgreen(str(len(matches)))+" "+_("packages"))
+
+            rc = Package.run(xterm_header = xterm_header)
+            if rc != 0:
+                #dirscleanup() #FIXME is this needed?
+                return -1, rc
+            Package.kill()
+
+            del metaopts
+            del Package
+    else:
+
+        for match in runQueue:
+            fetchqueue += 1
+            
+            Package = Equo.Package()
+            
+            Package.prepare(match, "fetch", metaopts)
+            
+            xterm_header = "Equo ("+_("sources fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
+            print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.pkgmeta['atom']))
+            
+            rc = Package.run(xterm_header = xterm_header)
+            if rc != 0:
+                return -1, rc
+            Package.kill()
+
+            del Package
 
     return 0, 0
 
