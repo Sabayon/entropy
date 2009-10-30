@@ -716,6 +716,76 @@ def downloadSources(packages = None, deps = True, deepdeps = False, tbz2 = None,
 
     return 0, 0
 
+def _fetchPackages(runQueue, multifetch = 1, dochecksum = True):
+    totalqueue = str(len(runQueue))
+
+    fetchqueue = 0
+    mykeys = {}
+    mymultifetch = multifetch
+    if multifetch > 1:
+        myqueue = []
+        mystart = 0
+        while True:
+            mylist = runQueue[mystart:mymultifetch]
+            if not mylist: break
+            myqueue.append(mylist)
+            mystart += multifetch
+            mymultifetch += multifetch
+        mytotalqueue = str(len(myqueue))
+
+        for matches in myqueue:
+            fetchqueue += 1
+
+            metaopts = {}
+            metaopts['dochecksum'] = dochecksum
+            Package = Equo.Package()
+            Package.prepare(matches, "multi_fetch", metaopts)
+            myrepo_data = Package.pkgmeta['repository_atoms']
+            for myrepo in myrepo_data:
+                if myrepo not in mykeys:
+                    mykeys[myrepo] = set()
+                for myatom in myrepo_data[myrepo]:
+                    mykeys[myrepo].add(Equo.entropyTools.dep_getkey(myatom))
+
+            xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+mytotalqueue+" ::"
+            print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
+                           red(mytotalqueue)+bold(") ")+">>> "+darkgreen(str(len(matches)))+" "+_("packages"))
+
+            rc = Package.run(xterm_header = xterm_header)
+            if rc != 0:
+                #dirscleanup()
+                return -1, rc
+            Package.kill()
+
+            del metaopts
+            del Package
+    else:
+        for match in runQueue:
+            fetchqueue += 1
+
+            metaopts = {}
+            metaopts['dochecksum'] = dochecksum
+            Package = Equo.Package()
+            Package.prepare(match, "fetch", metaopts)
+            myrepo = Package.pkgmeta['repository']
+            if myrepo not in mykeys:
+                mykeys[myrepo] = set()
+            mykeys[myrepo].add(Equo.entropyTools.dep_getkey(Package.pkgmeta['atom']))
+
+            xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
+            print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
+                           red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.pkgmeta['atom']))
+
+            rc = Package.run(xterm_header = xterm_header)
+            if rc != 0:
+                #dirscleanup()
+                return -1, rc
+            Package.kill()
+
+            del metaopts
+            del Package
+    return 0,0
+            
 def downloadPackages(packages = None, deps = True, deepdeps = False, tbz2 = None,
     multifetch = 1, dochecksum = True):
 
@@ -748,70 +818,14 @@ def downloadPackages(packages = None, deps = True, deepdeps = False, tbz2 = None
     if etpUi['pretend']:
         return 0, 0
 
-    totalqueue = str(len(runQueue))
-    fetchqueue = 0
-    metaopts = {}
+    if (etpUi['ask']):
+        rc = Equo.askQuestion("     %s" % (_("Would you like to execute the queue ?"),) )
+    if rc == _("No"):
+        #dirscleanup()
+        return 0, 0
 
-    mykeys = {}
-    mymultifetch = multifetch
-
-    if multifetch > 1:
-        myqueue = []
-        mystart = 0
-        while True:
-            mylist = runQueue[mystart:mymultifetch]
-            if not mylist: break
-            myqueue.append(mylist)
-            mystart += multifetch
-            mymultifetch += multifetch
-        mytotalqueue = str(len(myqueue))
-
-        for matches in myqueue:
-            fetchqueue += 1
-
-            metaopts = {}
-            metaopts['dochecksum'] = dochecksum
-            Package = Equo.Package()
-            Package.prepare(matches, "multi_fetch", metaopts)
-            myrepo_data = Package.pkgmeta['repository_atoms']
-            for myrepo in myrepo_data:
-                if myrepo not in mykeys:
-                    mykeys[myrepo] = set()
-                for myatom in myrepo_data[myrepo]:
-                    mykeys[myrepo].add(Equo.entropyTools.dep_getkey(myatom))
-
-            xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+mytotalqueue+" ::"
-            print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
-                           red(mytotalqueue)+bold(") ")+">>> "+darkgreen(str(len(matches)))+" "+_("packages"))
-
-            rc = Package.run(xterm_header = xterm_header)
-            if rc != 0:
-                #dirscleanup() #FIXME is this needed?
-                return -1, rc
-            Package.kill()
-
-            del metaopts
-            del Package
-    else:
-
-        for match in runQueue:
-            fetchqueue += 1
-            
-            Package = Equo.Package()
-            
-            Package.prepare(match, "fetch", metaopts)
-            
-            xterm_header = "Equo ("+_("sources fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
-            print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.pkgmeta['atom']))
-            
-            rc = Package.run(xterm_header = xterm_header)
-            if rc != 0:
-                return -1, rc
-            Package.kill()
-
-            del Package
-
-    return 0, 0
+    return _fetchPackages(runQueue, multifetch, dochecksum)
+    
 
 def installPackages(packages = None, atomsdata = None, deps = True,
     emptydeps = False, onlyfetch = False, deepdeps = False,
@@ -1230,72 +1244,8 @@ def installPackages(packages = None, atomsdata = None, deps = True,
 
     if not etpUi['clean'] or onlyfetch:
         ### Before starting the real install, fetch packages and verify checksum.
-        fetchqueue = 0
-        mykeys = {}
-        mymultifetch = multifetch
-        if multifetch > 1:
-            myqueue = []
-            mystart = 0
-            while True:
-                mylist = runQueue[mystart:mymultifetch]
-                if not mylist: break
-                myqueue.append(mylist)
-                mystart += multifetch
-                mymultifetch += multifetch
-            mytotalqueue = str(len(myqueue))
-
-            for matches in myqueue:
-                fetchqueue += 1
-
-                metaopts = {}
-                metaopts['dochecksum'] = dochecksum
-                Package = Equo.Package()
-                Package.prepare(matches, "multi_fetch", metaopts)
-                myrepo_data = Package.pkgmeta['repository_atoms']
-                for myrepo in myrepo_data:
-                    if myrepo not in mykeys:
-                        mykeys[myrepo] = set()
-                    for myatom in myrepo_data[myrepo]:
-                        mykeys[myrepo].add(Equo.entropyTools.dep_getkey(myatom))
-
-                xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+mytotalqueue+" ::"
-                print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
-                    red(mytotalqueue)+bold(") ")+">>> "+darkgreen(str(len(matches)))+" "+_("packages"))
-
-                rc = Package.run(xterm_header = xterm_header)
-                if rc != 0:
-                    dirscleanup()
-                    return -1, rc
-                Package.kill()
-
-                del metaopts
-                del Package
-        else:
-            for match in runQueue:
-                fetchqueue += 1
-
-                metaopts = {}
-                metaopts['dochecksum'] = dochecksum
-                Package = Equo.Package()
-                Package.prepare(match, "fetch", metaopts)
-                myrepo = Package.pkgmeta['repository']
-                if myrepo not in mykeys:
-                    mykeys[myrepo] = set()
-                mykeys[myrepo].add(Equo.entropyTools.dep_getkey(Package.pkgmeta['atom']))
-
-                xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
-                print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
-                    red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.pkgmeta['atom']))
-
-                rc = Package.run(xterm_header = xterm_header)
-                if rc != 0:
-                    dirscleanup()
-                    return -1, rc
-                Package.kill()
-
-                del metaopts
-                del Package
-
+        _fetchPackages(runQueue, multifetch, dochecksum)
+        
         def spawn_ugc():
             try:
                 if Equo.UGC != None:
