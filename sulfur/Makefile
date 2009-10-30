@@ -5,6 +5,10 @@ PYTHON = python2
 SRCDIR = src
 MISCDIR = misc
 PIXDIR = gfx
+PREFIX = /usr
+LIBDIR = $(PREFIX)/lib
+BINDIR = $(PREFIX)/bin
+DESTDIR = 
 
 all: subdirs
 	
@@ -26,13 +30,13 @@ install:
 	mkdir -p $(DESTDIR)/usr/share/autostart
 	mkdir -p $(DESTDIR)/etc/xdg/autostart
 	mkdir -p $(DESTDIR)/etc/gconf/schemas	
-	mkdir -p $(DESTDIR)/usr/bin
+	mkdir -p $(DESTDIR)$(BINDIR)
 	mkdir -p $(DESTDIR)/etc
 	mkdir -p $(DESTDIR)/etc/pam.d
 
-	install -m755 $(MISCDIR)/entropy-repo-manager $(DESTDIR)/usr/bin/.
-	install -m755 $(MISCDIR)/sulfur $(DESTDIR)/usr/bin/.
-	install -m755 $(MISCDIR)/sulfur-uri-handler $(DESTDIR)/usr/bin/.
+	install -m755 $(MISCDIR)/entropy-repo-manager $(DESTDIR)$(BINDIR)/.
+	install -m755 $(MISCDIR)/sulfur $(DESTDIR)$(BINDIR)/.
+	install -m755 $(MISCDIR)/sulfur-uri-handler $(DESTDIR)$(BINDIR)/.
 	install -m644 $(MISCDIR)/entropy-handler.schemas $(DESTDIR)/etc/gconf/schemas/.
 	install -m644 $(PIXDIR)/*.png $(DESTDIR)/usr/share/pixmaps/sulfur/.
 	install -m644 $(PIXDIR)/packages/*.png $(DESTDIR)/usr/share/pixmaps/sulfur/packages/.
