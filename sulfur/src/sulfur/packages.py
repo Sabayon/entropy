@@ -50,7 +50,7 @@ class Queue:
         self.pkgView = pkgView
         self.ui = ui
 
-    def clear( self ):
+    def clear(self):
         self.Sulfur.ui.rbPkgQueued.hide()
         self.packages.clear()
         self.packages['i'] = []
@@ -61,11 +61,10 @@ class Queue:
         del self.before[:]
         self.keyslotFilter.clear()
 
-    def get( self, action = None ):
-        if action == None:
+    def get(self, action = None):
+        if action is None:
             return self.packages
-        else:
-            return self.packages[action]
+        return self.packages[action]
 
     def total(self):
         size = 0
@@ -844,7 +843,8 @@ class EntropyPackages:
             yp.masked = idreason
             yp.color = SulfurConf.color_install
             return yp
-        return [x for x in map(fm, self.get_masked_packages()) if not isinstance(x, int)]
+        return [x for x in map(fm, self.get_masked_packages()) \
+            if not isinstance(x, int)]
 
     def _pkg_get_user_masked(self):
         masked_objs = self.get_raw_groups("masked")
