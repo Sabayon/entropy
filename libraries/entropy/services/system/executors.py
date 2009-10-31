@@ -970,7 +970,8 @@ class Base:
         spm = self.SystemManagerExecutor.SystemInterface.Entropy.Spm()
         glsa_ids = spm.get_security_packages(list_type)
         if not glsa_ids:
-            return False, data
+            return True, [] # return empty list then
+
         for myid in glsa_ids:
             data[myid] = spm.get_security_advisory_metadata(myid)
         return True, data
