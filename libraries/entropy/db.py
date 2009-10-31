@@ -574,7 +574,6 @@ class EntropyRepository:
 
         if not self.clientDatabase:
             self.server_repo = self.dbname[len(etpConst['serverdbid']):]
-            self._create_dbstatus_data()
 
         if not self.skipChecks:
             # no caching for non root and server connections
@@ -630,18 +629,6 @@ class EntropyRepository:
     def __del__(self):
         if not self.dbclosed:
             self.closeDB()
-
-    def _create_dbstatus_data(self):
-        """
-        Server-side function that setups server status information
-        """
-        from entropy.server.interfaces import Server
-        srv = Server()
-        taint_file = srv.get_local_database_taint_file(self.server_repo)
-        if os.path.isfile(taint_file):
-            dbs = ServerRepositoryStatus()
-            dbs.set_tainted(self.dbFile)
-            dbs.set_bumped(self.dbFile)
 
     def closeDB(self):
         """

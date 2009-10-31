@@ -25,7 +25,7 @@ from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 from entropy.transceivers import FtpInterface
-from entropy.db import EntropyRepository
+from entropy.db import EntropyRepository, ServerRepositoryStatus
 from entropy.spm.plugins.factory import get_default_instance as get_spm, \
     get_default_class as get_spm_class
 from entropy.qa import QAInterfacePlugin
@@ -880,6 +880,18 @@ class Server(Singleton, TextInterface):
         dbc.initializeDatabase()
         return dbc
 
+    def __setup_server_repository_status(self, repo, local_dbfile):
+        """
+        Setup server repository status information for newly created repos.
+        NOTE: This is a temp. workaround waiting for real pluggable
+        EntropyRepository interface calls.
+        """
+        taint_file = self.get_local_database_taint_file(repo)
+        if os.path.isfile(taint_file):
+            dbs = ServerRepositoryStatus()
+            dbs.set_tainted(local_dbfile)
+            dbs.set_bumped(local_dbfile)
+
     def open_server_repository(
             self,
             read_only = True,
@@ -937,6 +949,8 @@ class Server(Singleton, TextInterface):
             useBranch = use_branch,
             lockRemote = lock_remote
         )
+        # FIXME: remove this once we have a pluggable EntropyRepository class
+        self.__setup_server_repository_status(repo, local_dbfile)
         if not local_dbfile_exists:
             # better than having a completely broken db
             conn.readOnly = False
