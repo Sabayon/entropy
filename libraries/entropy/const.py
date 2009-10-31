@@ -1427,7 +1427,7 @@ def const_convert_to_unicode(obj, enctype = 'raw_unicode_escape'):
 
     # None support
     if obj is None:
-        return "None"
+        return const_convert_to_unicode("None")
 
     # int support
     if isinstance(obj, int):
