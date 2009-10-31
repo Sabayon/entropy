@@ -544,7 +544,6 @@ class SulfurApplicationEventsMixin:
             self.reset_cache_status()
             self.setup_repoView()
             self.setup_application()
-            self.setup_advisories()
             self.switch_notebook_page('repos')
             if status:
                 self.show_notice_board()
