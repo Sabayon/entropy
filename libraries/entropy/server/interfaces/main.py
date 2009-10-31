@@ -472,10 +472,8 @@ class Server(Singleton, TextInterface):
         cs_name = 'ClientService'
         if hasattr(self, cs_name):
             obj = getattr(self, cs_name)
-            try:
-                obj.QA.remove_plugin(SERVER_QA_PLUGIN)
-            except (KeyError,):
-                pass
+            # no need to close, remove, whatever QA plugins, it's automagically
+            # arranged
             obj.destroy()
         from entropy.client.interfaces import Client
         self.ClientService = Client(
