@@ -1424,16 +1424,26 @@ def const_convert_to_unicode(obj, enctype = 'raw_unicode_escape'):
     @return: unicode string object
     @rtype: unicode object
     """
+
+    # None support
+    if obj is None:
+        return "None"
+
+    # int support
     if isinstance(obj, int):
         if sys.hexversion >= 0x3000000:
             return str(obj)
         else:
             return unicode(obj)
+
+    # buffer support
     if isinstance(obj, const_get_buffer()):
         if sys.hexversion >= 0x3000000:
             return str(obj.tobytes(), enctype)
         else:
             return unicode(obj, enctype)
+
+    # string/unicode support
     if const_isunicode(obj):
         return obj
     if hasattr(obj, 'decode'):
