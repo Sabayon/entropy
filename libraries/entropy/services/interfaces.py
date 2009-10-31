@@ -21,11 +21,15 @@ from entropy.exceptions import *
 from entropy.services.skel import SocketAuthenticator, SocketCommands
 from entropy.i18n import _
 from entropy.output import blue, red, darkgreen
+try:
+    import SocketServer as socketserver
+except ImportError: # Python 3.x
+    import socketserver
+
 
 class SocketHost:
 
     import socket
-    import socketserver
     from threading import Thread
 
     class BasicPamAuthenticator(SocketAuthenticator):
@@ -182,7 +186,6 @@ class SocketHost:
 
         import entropy.tools as entropyTools
         import socket as socket_mod
-        import socketserver
         # This means the main server will not do the equivalent of a
         # pthread_join() on the new threads.  With this set, Ctrl-C will
         # kill the server reliably.
@@ -206,12 +209,12 @@ class SocketHost:
             self.ssl_authorized_clients_only = authorized_clients_only
 
             if self.SSL:
-                self.SocketServer.BaseServer.__init__(self, server_address, RequestHandlerClass)
+                socketserver.BaseServer.__init__(self, server_address, RequestHandlerClass)
                 self.load_ssl_context()
                 self.make_ssl_connection_alive()
             else:
                 try:
-                    self.SocketServer.TCPServer.__init__(self, server_address, RequestHandlerClass)
+                    socketserver.TCPServer.__init__(self, server_address, RequestHandlerClass)
                 except self.socket_mod.error as e:
                     if e[0] == 13:
                         raise ConnectionError('ConnectionError: %s' % (_("Cannot bind the service"),))
@@ -371,7 +374,6 @@ class SocketHost:
 
     class RequestHandler(socketserver.BaseRequestHandler):
 
-        import socketserver
         import select
         import socket
         import entropy.tools as entropyTools
@@ -387,7 +389,7 @@ class SocketHost:
             self.server = None
             self.request = None
             self.client_address = None
-            self.SocketServer.BaseRequestHandler.__init__(self, request,
+            socketserver.BaseRequestHandler.__init__(self, request,
                 client_address, server)
             self.__data_counter = None
 
