@@ -4,25 +4,24 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
-    - UGC UT
-    - entropy.tools + entropy.transceivers API docs merge
-    - remove entropy spm (sort_update_files) from entropy.server
-    - move all the portage related stuff in entropy.tools to entropy.spm
-    - move sensible pkgs to alt dir
-    - move etpConst['spm'] to entropy.spm
-    - reagent option: --norevbump
-    - entropy.server ts completion
-    - entropy.db ts completion
-    - entropy.client ts completion
-    - portage storing LC_* in environment?
     - entropy.db hookable plugins support (atom/dep validation, db taint,
         pkg add, pkg rm)
+    - entropy.db ts completion
+    - entropy.services ts completion
+    - entropy.client ts completion
+    - entropy.server ts completion
+    - move etpConst['spm'] to entropy.spm
+    - entropy.tools + entropy.transceivers API docs merge
+    - remove entropy spm (sort_update_files) from entropy.server
+    - move sensible pkgs to alt dir
+    - entropy.server API docs merge
+    - portage storing LC_* in environment?
+    - move all the portage related stuff in entropy.tools to entropy.spm
+        => prototype class defining transformations (collect them from tools)
     - Transform Sulfur into Entropy Store:
         - UGC for more coolness
         - title change
         - more sexy UI
-    - Sulfur: when window is maximized, pkgs description must be longer
-    - entropy.server API docs merge
 
   1.0_beta2:
 
