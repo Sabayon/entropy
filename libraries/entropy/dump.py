@@ -27,7 +27,7 @@ import sys
 import os
 from entropy.const import etpConst, const_setup_perms, const_setup_file
 # Always use MAX pickle protocol to <=2, to allow Python 2 and 3 support
-COMPAT_PICKLE_PROTOCOL = 2
+COMPAT_PICKLE_PROTOCOL = 0
 
 if sys.hexversion >= 0x3000000:
     import pickle
