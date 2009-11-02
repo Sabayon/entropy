@@ -16,11 +16,12 @@ import shutil
 import time
 from entropy.const import etpConst, ETP_LOGLEVEL_NORMAL, ETP_LOGPRI_INFO, \
     const_setup_perms, const_isstring, const_get_stringtype, \
-    const_convert_to_rawstring
+    const_convert_to_rawstring, etpUi, const_debug_write
 from entropy.exceptions import *
 from entropy.services.skel import SocketAuthenticator, SocketCommands
 from entropy.i18n import _
-from entropy.output import blue, red, darkgreen
+from entropy.output import blue, red, darkgreen, darkred, darkblue, brown, \
+    purple
 try:
     import SocketServer as socketserver
 except ImportError: # Python 3.x
@@ -552,6 +553,11 @@ class SocketHost:
                 if not self.__buffered_data:
                     return True
 
+                if etpUi['debug']:
+                    const_debug_write(__name__, darkred("=== RECV ======== \\"))
+                    const_debug_write(__name__, darkred(repr(self.__buffered_data)))
+                    const_debug_write(__name__, darkred("=== RECV ======== /"))
+
                 cmd = self.server.processor.process(self.__buffered_data, self.request, self.client_address)
                 if cmd == 'close':
                     # send KAPUTT signal JA!
@@ -822,15 +828,33 @@ class SocketHost:
                 p_args = authenticator.hide_login_data(p_args)
             elif cmd in self.HostInterface.raw_commands:
                 p_args = ['raw data']
+            data_len = len(data)
+
+            # beautify interface if debug mode is on
+            out_cmd = cmd
+            out_data_len = data_len
+            out_session = session
+            out_valid_cmd = valid_cmd
+            out_reason = reason
+            out_args = p_args
+            if etpUi['debug']:
+                out_cmd = purple(out_cmd)
+                out_data_len = brown(str(out_data_len))
+                out_session = darkgreen(str(out_session))
+                out_valid_cmd = darkgreen(str(out_valid_cmd))
+                out_reason = darkblue(str(out_reason))
+                out_args = brown(str(out_args))
+
             self.HostInterface.updateProgress(
-                '[from: %s] command validation :: called %s: length: %s, args: %s, session: %s, valid: %s, reason: %s' % (
+                '[from: %s] command validation :: called %s: length: %s, args: '
+                '%s, session: %s, valid: %s, reason: %s' % (
                     self.client_address,
-                    cmd,
-                    len(data),
-                    p_args,
-                    session,
-                    valid_cmd,
-                    reason,
+                    out_cmd,
+                    out_data_len,
+                    out_args,
+                    out_session,
+                    out_valid_cmd,
+                    out_reason,
                 )
             )
 
@@ -845,7 +869,14 @@ class SocketHost:
                 if "Entropy" in cmd_data['args']:
                     Entropy = self.load_service_interface(session)
                 try:
-                    self.run_task(cmd, args, session, Entropy, authenticator)
+                    run_task_out = self.run_task(cmd, args, session, Entropy, authenticator)
+                    if etpUi['debug']:
+                        self.HostInterface.updateProgress(
+                            '[from: %s] command executed: result %s' % (
+                                self.client_address,
+                                run_task_out,
+                            )
+                        )
                 except self.socket.timeout:
                     self.HostInterface.updateProgress(
                         '[from: %s] command error: timeout, closing connection' % (
@@ -914,6 +945,12 @@ class SocketHost:
             return rcmd
 
         def transmit(self, data):
+
+            if etpUi['debug']:
+                const_debug_write(__name__, darkblue("=== SEND ======== \\"))
+                const_debug_write(__name__, darkblue(repr(data)))
+                const_debug_write(__name__, darkblue("=== SEND ======== /"))
+
             self.HostInterface.transmit(self.channel, data)
 
         def run_task(self, cmd, args, session, Entropy, authenticator):
@@ -1877,15 +1914,17 @@ class SocketHost:
 
     def destroy_session(self, session):
         with self.SessionsLock:
-            self._destroy_session(session)
+            return self._destroy_session(session)
 
     def _destroy_session(self, session):
         if session in self.sessions:
             stream_path = self.sessions[session]['stream_path']
             del self.sessions[session]
             if os.path.isfile(stream_path) and os.access(stream_path, os.W_OK) and not os.path.islink(stream_path):
-                try: os.remove(stream_path)
-                except OSError: pass
+                try:
+                    os.remove(stream_path)
+                except OSError:
+                    pass
             return True
         return False
 
