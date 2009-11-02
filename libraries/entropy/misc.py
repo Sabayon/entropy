@@ -192,6 +192,17 @@ class TimeScheduled(threading.Thread):
         self.__accurate = False
         self.__delay_before = False
         self.__alive = 0
+        self.__paused = False
+        self.__paused_delay = 2
+
+    def pause(self, pause):
+        """
+        Pause current internal timer countdown.
+
+        @param pause: True to pause timer
+        @type pause: bool
+        """
+        self.__paused = pause
 
     def set_delay(self, delay):
         """
@@ -252,6 +263,10 @@ class TimeScheduled(threading.Thread):
     def __do_delay(self):
 
         """ Executes the delay """
+        while self.__paused:
+            if time == None:
+                return True
+            time.sleep(self.__paused_delay)
 
         if not self.__accurate:
 
