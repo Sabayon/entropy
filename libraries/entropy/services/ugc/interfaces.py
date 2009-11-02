@@ -20,8 +20,8 @@ from entropy.services.skel import RemoteDatabase
 from entropy.exceptions import *
 from entropy.const import etpConst, etpUi, etpCache, const_setup_perms, \
     const_set_chmod, const_setup_file, const_get_stringtype, \
-    const_convert_to_rawstring, const_convert_to_unicode
-from entropy.output import brown, bold, blue
+    const_convert_to_rawstring, const_convert_to_unicode, const_debug_write
+from entropy.output import brown, bold, blue, darkred, darkblue
 from entropy.i18n import _
 
 class Server(RemoteDatabase):
@@ -1716,7 +1716,7 @@ class Client:
     import entropy.dump as dumpTools
     import entropy.tools as entropyTools
     import zlib
-    def __init__(self, OutputInterface, ClientCommandsClass, quiet = False, show_progress = True, output_header = '', ssl = False, socket_timeout = 25):
+    def __init__(self, OutputInterface, ClientCommandsClass, quiet = False, show_progress = True, output_header = '', ssl = False, socket_timeout = 25.0):
         #, server_ca_cert = None, server_cert = None):
 
         if not hasattr(OutputInterface, 'updateProgress'):
@@ -1743,11 +1743,15 @@ class Client:
         self.buffered_data = const_convert_to_rawstring('')
         self.buffer_length = None
         self.quiet = quiet
+        if self.quiet and etpUi['debug']:
+            self.quiet = False
         self.show_progress = show_progress
         self.output_header = output_header
         self.CmdInterface = ClientCommandsClass(self.Output, self)
         self.CmdInterface.output_header = self.output_header
-        self.socket_timeout = socket_timeout
+        const_debug_write(__name__, "%s loaded with timeout %s" % (
+            self, float(socket_timeout),)) 
+        self.socket_timeout = float(socket_timeout)
         self.socket.setdefaulttimeout(self.socket_timeout)
 
 
@@ -1908,6 +1912,11 @@ class Client:
             self.sock_conn.settimeout(self.socket_timeout)
         data = self.append_eos(data)
 
+        if etpUi['debug']:
+            const_debug_write(__name__, darkblue("=== SEND ======== \\"))
+            const_debug_write(__name__, darkblue(repr(data)))
+            const_debug_write(__name__, darkblue("=== SEND ======== /"))
+
         try:
 
             encode_done = False
@@ -1990,6 +1999,22 @@ class Client:
         if hasattr(self.sock_conn, 'settimeout'):
             self.sock_conn.settimeout(self.socket_timeout)
         self.ssl_prepending = True
+
+        def print_timeout_err():
+            if not self.quiet:
+                mytxt = _("connection error while receiving data")
+                self.Output.updateProgress(
+                    "[%s:%s|timeout:%s] %s: %s" % (
+                            brown(self.hostname),
+                            bold(str(self.hostport)),
+                            blue(str(self.socket_timeout)),
+                            blue(mytxt),
+                            e,
+                    ),
+                    importance = 1,
+                    type = "warning",
+                    header = self.output_header
+                )
 
         def do_receive():
             data = const_convert_to_rawstring('')
@@ -2100,28 +2125,33 @@ class Client:
                     )
                 return None
             except self.socket.error as e:
-                if not self.quiet:
-                    mytxt = _("connection error while receiving data")
-                    self.Output.updateProgress(
-                        "[%s:%s] %s: %s" % (
-                                brown(self.hostname),
-                                bold(str(self.hostport)),
-                                blue(mytxt),
-                                e,
-                        ),
-                        importance = 1,
-                        type = "warning",
-                        header = self.output_header
-                    )
+                print_timeout_err()
                 return None
+
             except self.SSL_exceptions['WantX509LookupError']:
+                const_debug_write(__name__, "WantX509LookupError on receive()")
                 continue
+
             except self.SSL_exceptions['WantReadError']:
-                self._ssl_poll(select.POLLIN, 'read')
+                const_debug_write(__name__, "WantReadError on receive()")
+                try:
+                    self._ssl_poll(select.POLLIN, 'read')
+                except TimeoutError as e:
+                    print_timeout_err()
+                    return None
+
             except self.SSL_exceptions['WantWriteError']:
-                self._ssl_poll(select.POLLOUT, 'read')
+                const_debug_write(__name__, "WantWriteError on receive()")
+                try:
+                    self._ssl_poll(select.POLLOUT, 'read')
+                except TimeoutError as e:
+                    print_timeout_err()
+                    return None
+
             except self.SSL_exceptions['ZeroReturnError']:
+                const_debug_write(__name__, "ZeroReturnError on receive(), breaking")
                 break
+
             except self.SSL_exceptions['SysCallError'] as e:
                 if not self.quiet:
                     mytxt = _("syscall error while receiving data")
@@ -2137,6 +2167,11 @@ class Client:
                         header = self.output_header
                     )
                 return None
+
+        if etpUi['debug']:
+            const_debug_write(__name__, darkred("=== RECV ======== \\"))
+            const_debug_write(__name__, darkred(repr(data)))
+            const_debug_write(__name__, darkred("=== RECV ======== /"))
 
         return const_convert_to_rawstring(self.buffered_data)
 
