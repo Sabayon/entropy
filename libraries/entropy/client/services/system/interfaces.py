@@ -10,7 +10,7 @@
 
 """
 import time
-from entropy.const import const_isstring
+from entropy.const import const_isstring, etpUi
 from entropy.exceptions import *
 from entropy.i18n import _
 from entropy.misc import TimeScheduled
@@ -21,14 +21,17 @@ class Client:
     ssl_connection = True
     def __init__(self, OutputInterface, MethodsInterface = None,
         ClientCommandsInterface = None, quiet = True, show_progress = False,
-        do_cache_connection = False, do_cache_session = False):
+        do_cache_connection = False, do_cache_session = False,
+        socket_timeout = 120.0):
 
         if not hasattr(OutputInterface, 'updateProgress'):
             mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
+            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (
+                OutputInterface, mytxt,))
         elif not hasattr(OutputInterface.updateProgress, '__call__'):
             mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
+            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (
+                OutputInterface, mytxt,))
 
         from entropy.client.services.system.commands import Client as ClientCommands
         if not issubclass(ClientCommandsInterface, ClientCommands):
@@ -53,7 +56,10 @@ class Client:
         self.hostport = None
         self.username = None
         self.password = None
+        if quiet and etpUi['debug']: # enforce quiet value if debug is enabled
+            quiet = False
         self.quiet = quiet
+        self.socket_timeout = socket_timeout
         self.do_cache_connection = do_cache_connection
         self.show_progress = show_progress
         self.ClientCommandsInterface = ClientCommandsInterface
@@ -72,7 +78,8 @@ class Client:
         # expires
         self.do_cache_session = do_cache_session
         if self.do_cache_connection:
-            self.connection_killer = TimeScheduled(2, self.connection_killer_handler)
+            self.connection_killer = TimeScheduled(2,
+                self.connection_killer_handler)
             self.connection_killer.start()
 
     def __del__(self):
@@ -121,7 +128,8 @@ class Client:
         if self.do_cache_connection:
             key = self.get_connection_cache_key()
             srv = self.connection_cache.get(key)
-            # FIXME: if you enable cache connection, you should also consider to clear the socket buffer
+            # FIXME: if you enable cache connection, you should also
+            #        consider to clear the socket buffer
             #  srv.sock_conn
             #  srv.real_sock_conn
             return srv
@@ -154,9 +162,12 @@ class Client:
 
     def connection_killer_handler(self):
 
-        if not self.do_cache_connection: return
-        if self.shutdown: return
-        if not self.connection_cache: return
+        if not self.do_cache_connection:
+            return
+        if self.shutdown:
+            return
+        if not self.connection_cache:
+            return
 
         keys = list(self.connection_cache.keys())
         for key in keys:
@@ -192,7 +203,10 @@ class Client:
             'quiet': self.quiet,
             'show_progress': self.show_progress
         }
-        if timeout != None: kwargs['socket_timeout'] = timeout
+        if timeout is None:
+            kwargs['socket_timeout'] = self.socket_timeout
+        else:
+            kwargs['socket_timeout'] = timeout
         from entropy.services.ugc.interfaces import Client
         srv = Client(*args,**kwargs)
         srv.connect(self.hostname, self.hostport)
@@ -220,7 +234,7 @@ class Client:
 
             srv = self.get_connection_cache()
             if srv == None:
-                srv = self.get_service_connection(timeout = 10)
+                srv = self.get_service_connection(timeout = self.socket_timeout)
                 if srv != None: self.cache_connection(srv)
             else:
                 srv = srv['conn']
