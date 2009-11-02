@@ -1588,7 +1588,12 @@ def const_debug_write(identifier, msg):
     @return: None
     """
     if etpUi['debug']:
-        sys.stdout.write("%s: %s" % (identifier, msg + "\n"))
+        if sys.hexversion >= 0x3000000:
+            sys.stdout.buffer.write(const_convert_to_rawstring(identifier) + \
+                b" " + const_convert_to_rawstring(msg) + b"\n")
+        else:
+            sys.stdout.write("%s: %s" % (identifier, msg + "\n"))
+        sys.stdout.flush()
 
 # load config
 initconfig_entropy_constants(etpSys['rootdir'])
