@@ -1869,7 +1869,7 @@ class SocketHost:
 
     def destroy_session(self, session):
         with self.SessionsLock:
-            self._destroy_session(session)
+            return self._destroy_session(session)
 
     def _destroy_session(self, session):
         if self.sessions.has_key(session):
