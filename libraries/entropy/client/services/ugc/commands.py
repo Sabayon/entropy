@@ -36,14 +36,27 @@ class Base:
         import socket, zlib, struct
         import entropy.tools as entropyTools
         import entropy.dump as dumpTools
-        self.entropyTools, self.socket, self.zlib, self.struct, self.dumpTools = entropyTools, socket, zlib, struct, dumpTools
+        self.entropyTools, self.socket, self.zlib, self.struct, \
+            self.dumpTools = entropyTools, socket, zlib, struct, dumpTools
         self.Output = OutputInterface
         self.Service = Service
         self.output_header = ''
         self.SystemSettings = SystemSettings()
+        self.standard_answers_map = {
+            'all_fine': 0,
+            'not_supported_remotely': 1,
+            'service_temp_not_avail': 2,
+            'command_failed': 3,
+            'wrong_answer': 4,
+        }
 
-    def handle_standard_answer(self, data, repository = None, arch = None, product = None):
+
+    def handle_standard_answer(self, data, repository = None, arch = None,
+        product = None):
+
         do_skip = False
+        answer_id = self.standard_answers_map['all_fine']
+
         # elaborate answer
         if data == None:
             mytxt = _("feature not supported remotely")
@@ -62,6 +75,7 @@ class Base:
                 header = self.output_header
             )
             do_skip = True
+            answer_id = self.standard_answers_map['not_supported_remotely']
         elif not data:
             mytxt = _("service temporarily not available")
             self.Output.updateProgress(
@@ -79,6 +93,7 @@ class Base:
                 header = self.output_header
             )
             do_skip = True
+            answer_id = self.standard_answers_map['service_temp_not_avail']
         elif data == self.Service.answers['no']:
             # command failed
             mytxt = _("command failed")
@@ -97,6 +112,7 @@ class Base:
                 header = self.output_header
             )
             do_skip = True
+            answer_id = self.standard_answers_map['command_failed']
         elif data != self.Service.answers['ok']:
             mytxt = _("received wrong answer")
 
@@ -121,7 +137,9 @@ class Base:
                 header = self.output_header
             )
             do_skip = True
-        return do_skip
+            answer_id = self.standard_answers_map['wrong_answer']
+
+        return do_skip, answer_id
 
     def get_result(self, session):
         # get the information
@@ -179,8 +197,18 @@ class Base:
             # receive answer
             data = self.Service.receive()
 
-            skip = self.handle_standard_answer(data, repository, arch, product)
+            skip, answer_id = self.handle_standard_answer(data, repository,
+                arch, product)
             if skip:
+                if tries <= 0:
+                    const_debug_write(__name__,
+                        darkred("skipping command, NOT reconnecting"))
+                else:
+                    const_debug_write(__name__,
+                        darkred("skipping command, reconnect+retry!"))
+                const_debug_write(__name__, str(answer_id))
+                # reconnect host and retry
+                self.Service.reconnect_socket()
                 continue
 
             data = self.get_result(session_id)
