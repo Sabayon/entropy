@@ -554,9 +554,9 @@ class SocketHost:
                     return True
 
                 if etpUi['debug']:
-                    const_debug_write(__name__, darkred("=== RECV ======== \\"))
+                    const_debug_write(__name__, darkred("=== recv ======== \\"))
                     const_debug_write(__name__, darkred(repr(self.__buffered_data)))
-                    const_debug_write(__name__, darkred("=== RECV ======== /"))
+                    const_debug_write(__name__, darkred("=== recv ======== /"))
 
                 cmd = self.server.processor.process(self.__buffered_data, self.request, self.client_address)
                 if cmd == 'close':
@@ -947,9 +947,9 @@ class SocketHost:
         def transmit(self, data):
 
             if etpUi['debug']:
-                const_debug_write(__name__, darkblue("=== SEND ======== \\"))
+                const_debug_write(__name__, darkblue("=== send ======== \\"))
                 const_debug_write(__name__, darkblue(repr(data)))
-                const_debug_write(__name__, darkblue("=== SEND ======== /"))
+                const_debug_write(__name__, darkblue("=== send ======== /"))
 
             self.HostInterface.transmit(self.channel, data)
 
