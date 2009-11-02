@@ -17,6 +17,7 @@
 #    along with this program; if not, write to the Free Software
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
+import threading
 import time, gtk, gobject, pango, pty, sys
 from entropy.i18n import _, _LOCALE
 from entropy.exceptions import *
@@ -621,11 +622,26 @@ class RemoteConnectionMenu(MenuSkel):
 
 class RepositoryManagerMenu(MenuSkel):
 
-    import threading
+    class SocketLock:
+        """ Socket lock, this is used for stopping updaters too """
+
+        def __init__(self, repoman_intf):
+            self.__intf = repoman_intf
+            self.__lock = threading.Lock()
+
+        def __enter__(self):
+            self.__intf.pause_updaters(True)
+            return self.__lock.acquire()
+
+        def __exit__(self, exc_type, exc_value, traceback):
+            self.__intf.pause_updaters(False)
+            self.__lock.release()
+
+
     def __init__(self, Entropy, window):
         self.do_debug = False
         if etpUi['debug']: self.do_debug = True
-        self.BufferLock = self.threading.Lock()
+        self.BufferLock = RepositoryManagerMenu.SocketLock(self)
         self.Entropy = Entropy
         self.window = window
         self.sm_ui = UI( const.GLADE_FILE, 'repositoryManager', 'entropy' )
@@ -634,8 +650,8 @@ class RepositoryManagerMenu(MenuSkel):
 
         self.DataStore = None
         self.DataView = None
-        self.QueueLock = self.threading.Lock()
-        self.OutputLock = self.threading.Lock()
+        self.QueueLock = threading.Lock()
+        self.OutputLock = threading.Lock()
         self.paused_queue_id = None
         self.is_processing = None
         self.is_writing_output = False
@@ -651,9 +667,15 @@ class RepositoryManagerMenu(MenuSkel):
         self.setup_pinboard_view()
         self.setup_console()
 
-        self.QueueUpdater = TimeScheduled(5, self.update_queue_view)
-        self.OutputUpdater = TimeScheduled(3, self.update_output_view)
-        self.PinboardUpdater = TimeScheduled(60, self.update_pinboard_view)
+        self.queue_timer = 5
+        self.output_timer = 3
+        self.pinboard_timer = 60
+        self.QueueUpdater = TimeScheduled(self.queue_timer,
+            self.update_queue_view)
+        self.OutputUpdater = TimeScheduled(self.output_timer,
+            self.update_output_view)
+        self.PinboardUpdater = TimeScheduled(self.pinboard_timer,
+            self.update_pinboard_view)
         self.notebook_pages = {
             'queue': 0,
             'commands': 1,
@@ -668,9 +690,12 @@ class RepositoryManagerMenu(MenuSkel):
         self.data_tree_selection_mode = None
         self.DataViewVbox = self.sm_ui.dataViewVbox
 
-        from entropy.client.services.system.interfaces import Client as SystemManagerClientInterface
-        from entropy.client.services.system.commands import Repository as SystemManagerRepositoryClientCommands
-        from entropy.client.services.system.methods import Repository as SystemManagerRepositoryMethodsInterface
+        from entropy.client.services.system.interfaces import Client as \
+            SystemManagerClientInterface
+        from entropy.client.services.system.commands import Repository as \
+            SystemManagerRepositoryClientCommands
+        from entropy.client.services.system.methods import Repository as \
+            SystemManagerRepositoryMethodsInterface
         self.Service = SystemManagerClientInterface(
             self.Entropy,
             MethodsInterface = SystemManagerRepositoryMethodsInterface,
@@ -687,6 +712,12 @@ class RepositoryManagerMenu(MenuSkel):
         if hasattr(self, 'connection_done'):
             if self.connection_done:
                 self.Service.kill_all_connections()
+
+    def pause_updaters(self, pause):
+        self.debug_print("pause_updaters", str(pause))
+        self.QueueUpdater.pause(pause)
+        self.OutputUpdater.pause(pause)
+        self.PinboardUpdater.pause(pause)
 
     def ui_lock(self, action):
         self.sm_ui.repositoryManager.set_sensitive(not action)
@@ -726,7 +757,8 @@ class RepositoryManagerMenu(MenuSkel):
         self.sm_ui.repoManagerTermHBox.show_all()
 
     def debug_print(self, f, msg):
-        if self.do_debug: print_generic("repoman debug:", f, msg)
+        if self.do_debug:
+            print_generic("repoman debug:", repr(self), f, msg)
 
     def clear_console(self):
         self.std_input.text_read = ''
@@ -1245,7 +1277,8 @@ class RepositoryManagerMenu(MenuSkel):
         with self.BufferLock:
             try:
                 status, repo_info = self.Service.Methods.get_available_repositories()
-                if not status: return None
+                if not status:
+                    return None
             except Exception as e:
                 self.service_status_message(e)
                 return
@@ -1255,7 +1288,8 @@ class RepositoryManagerMenu(MenuSkel):
 
         if repo_info == None:
             repo_info = self.get_available_repositories()
-            if not repo_info: return
+            if not repo_info:
+                return
 
         if isinstance(repo_info, dict):
 
@@ -1468,7 +1502,10 @@ class RepositoryManagerMenu(MenuSkel):
 
         with self.BufferLock:
             try:
-                status, (result, extended_result,) = self.Service.Methods.get_queue_id_result(queue_id)
+                rcvd_data = self.Service.Methods.get_queue_id_result(queue_id)
+                if rcvd_data is None:
+                    raise SystemError("received malformed data")
+                status, (result, extended_result,) = rcvd_data
                 if not status:
                     return
             except Exception as e:
@@ -1598,15 +1635,19 @@ class RepositoryManagerMenu(MenuSkel):
 
         with self.BufferLock:
             try:
-                self.debug_print("retrieve_entropy_idpackage_data_and_show", "called for: %s, %s" % (idpackage, repoid,))
+                self.debug_print("retrieve_entropy_idpackage_data_and_show",
+                    "called for: %s, %s" % (idpackage, repoid,))
                 status, package_data = self.Service.Methods.get_entropy_idpackage_information(idpackage, repoid)
-                self.debug_print("retrieve_entropy_idpackage_data_and_show", "done for: %s, %s" % (idpackage, repoid,))
-                if not status: return
+                self.debug_print("retrieve_entropy_idpackage_data_and_show",
+                    "done for: %s, %s" % (idpackage, repoid,))
+                if not status:
+                    return
             except Exception as e:
                 self.service_status_message(e)
                 return
 
-        if not package_data: return
+        if not package_data:
+            return
         from sulfur.packages import EntropyPackage
         pkg = EntropyPackage((idpackage, repoid,), remote = package_data)
         mymenu = PkgInfoMenu(self.Entropy, pkg, self.window)
@@ -1655,7 +1696,8 @@ class RepositoryManagerMenu(MenuSkel):
                 input_params,
                 cancel_button = True
             )
-            if mydata == None: return
+            if mydata == None:
+                return
             data.update(mydata)
             if not atoms:
                 data['atoms'] = data['atoms'].split()
@@ -1674,9 +1716,11 @@ class RepositoryManagerMenu(MenuSkel):
 
         def task(queue_id, repoid):
             item = self.wait_queue_id_to_complete(queue_id)
-            if item == None: return
+            if item == None:
+                return
             status, repo_data = item['result']
-            if not status: return
+            if not status:
+                return
             self.update_notice_board_data_view(repo_data, repoid)
 
         if status:
@@ -1743,9 +1787,11 @@ class RepositoryManagerMenu(MenuSkel):
 
         def task(queue_id, categories, world):
             item = self.wait_queue_id_to_complete(queue_id)
-            if item == None: return
+            if item == None:
+                return
             status, data = item['result']
-            if not status: return
+            if not status:
+                return
             def reload_function():
                 self.on_repoManagerInstalledPackages_clicked(None,
                     categories = categories, world = world)
@@ -3462,7 +3508,8 @@ class RepositoryManagerMenu(MenuSkel):
             input_params,
             cancel_button = True
         )
-        if data == None: return
+        if data == None:
+            return
         self.clear_data_store_and_view()
 
         with self.BufferLock:
@@ -3474,12 +3521,15 @@ class RepositoryManagerMenu(MenuSkel):
 
         def task(queue_id, data):
             item = self.wait_queue_id_to_complete(queue_id)
-            if item == None: return
+            if item == None:
+                return
+            data = None
             try:
                 status, data = item['result']
             except TypeError:
                 status = False
-            if not status: return
+            if not status:
+                return
             gobject.idle_add(self.glsa_data_view, data)
 
         if status:
@@ -3494,7 +3544,8 @@ class RepositoryManagerMenu(MenuSkel):
         model = self.EntropyRepositoryStore
         myiter = self.EntropyRepositoryCombo.get_active_iter()
         repoid = model.get_value(myiter, 0)
-        if not repoid: return
+        if not repoid:
+            return
 
         with self.BufferLock:
             try:
