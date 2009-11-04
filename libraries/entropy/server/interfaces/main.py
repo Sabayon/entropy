@@ -314,7 +314,8 @@ class Server(Singleton, TextInterface):
         self.__instance_destroyed = False
         if etpConst['uid'] != 0:
             mytxt = _("Entropy Server interface must be run as root")
-            raise PermissionDenied("PermissionDenied: %s" % (mytxt,))
+            import warnings
+            warnings.warn(mytxt)
 
         # settings
         self.SystemSettings = SystemSettings()
