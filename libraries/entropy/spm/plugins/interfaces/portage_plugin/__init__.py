@@ -17,7 +17,7 @@ import tempfile
 from entropy.const import etpConst, etpUi, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
-    InvalidData
+    InvalidData, InvalidAtom
 from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, \
     bold
 from entropy.i18n import _
@@ -512,8 +512,10 @@ class PortagePlugin(SpmPlugin):
             match_type = "bestmatch-visible"
         elif match_type not in PortagePlugin.SUPPORTED_MATCH_TYPES:
             raise KeyError
-
-        return self.portage.portdb.xmatch(match_type, package)
+        try:
+            return self.portage.portdb.xmatch(match_type, package)
+        except self.portage_exception:
+            raise InvalidAtom(package)
 
     def match_installed_package(self, package, match_all = False, root = None):
         """
