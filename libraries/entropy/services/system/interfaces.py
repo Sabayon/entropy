@@ -89,6 +89,7 @@ class Server(SocketHost):
     STDOUT_STORAGE_DIR = os.path.join(etpConst['dumpstoragedir'], 'system_manager_stdout')
     def __init__(self, EntropyInterface, do_ssl = False, stdout_logging = True, entropy_interface_kwargs = {}, **kwargs):
 
+        self.started = False
         self.queue_loaded = False
         from entropy.misc import TimeScheduled
         self.TimeScheduled = TimeScheduled
@@ -164,6 +165,7 @@ class Server(SocketHost):
         self.load_queue_processor()
         # here we can put anything that must be loaded before the queue processor execution
         self.play_queue()
+        self.started = True
 
     def __del__(self):
         if hasattr(self, 'queue_loaded'):
