@@ -14,6 +14,7 @@ import sys
 import subprocess
 from entropy.const import etpConst
 from entropy.output import blue, red
+from entropy.exceptions import InvalidAtom
 from entropy.i18n import _
 
 class Base:
@@ -290,7 +291,10 @@ class Base:
                 category = key.split("/")[0]
             except:
                 continue
-            matched_atom = spm.match_package(atom)
+            try:
+                matched_atom = spm.match_package(atom)
+            except InvalidAtom:
+                continue
             if not matched_atom:
                 continue
 
