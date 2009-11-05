@@ -74,7 +74,15 @@ class Client(Base):
             'systemsrv:get_queue_id_result',
             queue_id,
         )
-        return self.do_generic_handler(cmd, session_id)
+        # enable zlib compression
+        compression = self.set_gzip_compression(session_id, True)
+
+        rc = self.do_generic_handler(cmd, session_id, compression = compression)
+
+        # disable compression
+        self.set_gzip_compression(session_id, False)
+
+        return rc
 
     def remove_queue_ids(self, session_id, queue_ids):
 
