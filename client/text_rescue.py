@@ -21,6 +21,8 @@ from entropy.client.interfaces import Client
 from entropy.exceptions import *
 Equo = Client(noclientdb = True)
 from entropy.i18n import _
+# strictly depending on Portage atm
+from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
 
 def test_spm():
     # test if portage is available
@@ -130,7 +132,7 @@ def database(options):
             f = open(temptbz2, "wb")
             f.flush()
             f.close()
-            Equo.entropyTools.append_xpak(temptbz2, portagePackage)
+            xpaktools.append_xpak(temptbz2, portagePackage)
             # now extract info
             try:
                 mydata = Spm.extract_package_metadata(temptbz2)
@@ -585,7 +587,7 @@ def database(options):
                 f = open(temptbz2, "wb")
                 f.flush()
                 f.close()
-                Equo.entropyTools.append_xpak(temptbz2, atom)
+                xpaktools.append_xpak(temptbz2, atom)
                 # now extract info
                 try:
                     mydata = Spm.extract_package_metadata(temptbz2)
