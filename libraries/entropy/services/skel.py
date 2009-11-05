@@ -54,12 +54,59 @@ class SocketCommands:
 
 class SocketAuthenticator:
 
+    """
+    Base class for Entropy SocketHost RPC authentication.
+    """
+
     def __init__(self, HostInterface):
         self.HostInterface = HostInterface
         self.session = None
 
     def set_session(self, session):
+        """
+        Set Entropy SocketHost connection session id.
+
+        @param session: connection session
+        @type session: int
+        """
         self.session = session
+
+    def hide_login_data(self, args):
+        """
+        Given Entropy SocketHost RPC login command in list form, hide password
+        data (which is going to be stored in log file).
+        NOTE: this method MUST be reimplemented
+
+        @param args: arguments of RPC login command
+        @type args: list
+        @return: filtered list
+        @rtype: list
+        """
+        raise NotImplementedError()
+
+    def set_exc_permissions(self, uid, gid):
+        """
+        Set execution permissions (setuid, setgid) for the running process.
+
+        @param uid: user id
+        @type: int
+        @param gid: group id
+        @type: int
+        """
+        if gid != None:
+            os.setgid(gid)
+        if uid != None:
+            os.setuid(uid)
+
+    def terminate_instance(self):
+        """
+        This function is called when the Authenticator is going to be destroyed.
+        You can reimplement this to execute arbitrary code (for eg. terminate
+        a database connection).
+        NOTE: there is no need to reimplement this if you are not using any
+        fancy stuff.
+        """
+        pass
 
 class RemoteDatabase:
 
