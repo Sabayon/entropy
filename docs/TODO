@@ -10,6 +10,9 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
     - entropy.services ts completion
     - entropy.client ts completion
     - entropy.server ts completion
+    - --nodeep on dep calculation?
+    - provide repository digital key, fetch it when syncing repos and check if
+      it matches and all file match
     - move etpConst['spm'] to entropy.spm
     - entropy.tools + entropy.transceivers API docs merge
     - remove entropy spm (sort_update_files) from entropy.server
