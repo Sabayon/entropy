@@ -406,6 +406,7 @@ class SocketHost:
                 self.timed_out = True
                 return True
 
+            buf_len = 16384
             if len(ready_to_read) == 1 and ready_to_read[0] == self.request:
 
                 self.timed_out = False
@@ -431,10 +432,10 @@ class SocketHost:
                         # automatically
                         self.request.setblocking(True)
 
-                    data = self.request.recv(1024)
+                    data = self.request.recv(buf_len)
                     if self.ssl:
                         while self.request.pending():
-                            data += self.request.recv(1024)
+                            data += self.request.recv(buf_len)
 
                     if self.__data_counter is None:
                         if not data: # client wants to close
@@ -466,7 +467,6 @@ class SocketHost:
                                 self.__data_counter, self.max_command_length,))
 
                     buf_empty_watchdog_count = 50 # * 0.05 = 2,5 seconds
-                    buf_len = 1024
                     while self.__data_counter > 0:
                         data_buf = buf_len
                         if self.__data_counter < buf_len:
@@ -556,7 +556,8 @@ class SocketHost:
                 if etpUi['debug']:
                     const_debug_write(__name__, darkred("=== recv ======== \\"))
                     const_debug_write(__name__, darkred(repr(self.__buffered_data)))
-                    const_debug_write(__name__, darkred("=== recv ======== /"))
+                    const_debug_write(__name__,
+                        darkred("=== recv[%s] ======== /" % (len(self.__buffered_data),)))
 
                 cmd = self.server.processor.process(self.__buffered_data, self.request, self.client_address)
                 if cmd == 'close':
@@ -949,7 +950,8 @@ class SocketHost:
             if etpUi['debug']:
                 const_debug_write(__name__, darkblue("=== send ======== \\"))
                 const_debug_write(__name__, darkblue(repr(data)))
-                const_debug_write(__name__, darkblue("=== send ======== /"))
+                const_debug_write(__name__,
+                    darkblue("=== send[%s] ======== /" % (len(data),)))
 
             self.HostInterface.transmit(self.channel, data)
 
