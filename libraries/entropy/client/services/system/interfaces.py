@@ -235,7 +235,8 @@ class Client:
             srv = self.get_connection_cache()
             if srv == None:
                 srv = self.get_service_connection(timeout = self.socket_timeout)
-                if srv != None: self.cache_connection(srv)
+                if srv != None:
+                    self.cache_connection(srv)
             else:
                 srv = srv['conn']
 
