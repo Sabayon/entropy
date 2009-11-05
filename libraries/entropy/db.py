@@ -22,14 +22,6 @@
     I{EntropyRepository} is the sqlite3 implementation of the repository
     interface, as written above.
 
-    I{ServerRepositoryStatus} is a singleton containing the status of
-    server-side repositories. It is used to determine if repository has
-    been modified (tainted) or has been revision bumped already.
-    Revision bumps are automatic and happen on the very first data "commit".
-    Every repository features a revision number which is stored into the
-    "packages.db.revision" file. Only server-side (or community) repositories
-    are subject to this automation (revision file update on commit).
-
     @todo: migrate to "_" (underscore) convention
 
 """
@@ -45,7 +37,6 @@ from entropy.i18n import _
 from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen, \
     TextInterface
 from entropy.cache import EntropyCacher
-from entropy.core import Singleton
 from entropy.core.settings.base import SystemSettings
 from entropy.spm.plugins.factory import get_default_instance as get_spm
 
@@ -63,129 +54,6 @@ except ImportError: # fallback to pysqlite
             )
         )
 
-class ServerRepositoryStatus(Singleton):
-
-    """
-    Server-side Repositories status information container.
-    """
-
-    def init_singleton(self):
-        """ Singleton "constructor" """
-        self.__data = {}
-        self.__updates_log = {}
-
-    def __create_if_necessary(self, db):
-        if db not in self.__data:
-            self.__data[db] = {}
-            self.__data[db]['tainted'] = False
-            self.__data[db]['bumped'] = False
-            self.__data[db]['unlock_msg'] = False
-
-    def set_unlock_msg(self, db):
-        """
-        Set bit which determines if the unlock warning has been already
-        printed to user.
-
-        @param db: database identifier
-        @type db: string
-        """
-        self.__create_if_necessary(db)
-        self.__data[db]['unlock_msg'] = True
-
-    def unset_unlock_msg(self, db):
-        """
-        Unset bit which determines if the unlock warning has been already
-        printed to user.
-
-        @param db: database identifier
-        @type db: string
-        """
-        self.__create_if_necessary(db)
-        self.__data[db]['unlock_msg'] = False
-
-    def set_tainted(self, db):
-        """
-        Set bit which determines if the repository which db points to has been
-        modified.
-
-        @param db: database identifier
-        @type db: string
-        """
-        self.__create_if_necessary(db)
-        self.__data[db]['tainted'] = True
-
-    def unset_tainted(self, db):
-        """
-        Unset bit which determines if the repository which db points to has been
-        modified.
-
-        @param db: database identifier
-        @type db: string
-        """
-        self.__create_if_necessary(db)
-        self.__data[db]['tainted'] = False
-
-    def set_bumped(self, db):
-        """
-        Set bit which determines if the repository which db points to has been
-        revision bumped.
-
-        @param db: database identifier
-        @type db: string
-        """
-        self.__create_if_necessary(db)
-        self.__data[db]['bumped'] = True
-
-    def unset_bumped(self, db):
-        """
-        Unset bit which determines if the repository which db points to has been
-        revision bumped.
-
-        @param db: database identifier
-        @type db: string
-        """
-        self.__create_if_necessary(db)
-        self.__data[db]['bumped'] = False
-
-    def is_tainted(self, db):
-        """
-        Return whether repository which db points to has been modified.
-
-        @param db: database identifier
-        @type db: string
-        """
-        self.__create_if_necessary(db)
-        return self.__data[db]['tainted']
-
-    def is_bumped(self, db):
-        """
-        Return whether repository which db points to has been revision bumped.
-
-        @param db: database identifier
-        @type db: string
-        """
-        self.__create_if_necessary(db)
-        return self.__data[db]['bumped']
-
-    def is_unlock_msg(self, db):
-        """
-        Return whether repository which db points to has outputed the unlock
-        warning message.
-
-        @param db: database identifier
-        @type db: string
-        """
-        self.__create_if_necessary(db)
-        return self.__data[db]['unlock_msg']
-
-    def get_updates_log(self, db):
-        """
-        Return dict() object containing metadata related to package
-        updates occured in a server-side repository.
-        """
-        if db not in self.__updates_log:
-            self.__updates_log[db] = {}
-        return self.__updates_log[db]
 
 class EntropyRepository:
 
@@ -650,6 +518,7 @@ class EntropyRepository:
             self.connection.close()
             return
 
+        from entropy.server.interfaces.db import ServerRepositoryStatus
         sts = ServerRepositoryStatus()
         if not sts.is_tainted(self.dbFile):
             # we can unlock it, no changes were made
@@ -693,6 +562,7 @@ class EntropyRepository:
 
         if not self.clientDatabase:
             self.taintDatabase()
+            from entropy.server.interfaces.db import ServerRepositoryStatus
             dbs = ServerRepositoryStatus()
             if (dbs.is_tainted(self.dbFile)) and \
                 (not dbs.is_bumped(self.dbFile)):
@@ -706,7 +576,7 @@ class EntropyRepository:
         Server-side method that render your repository storage tainted,
         modified.
         """
-        # if it's equo to open it, this should be avoided
+        from entropy.server.interfaces.db import ServerRepositoryStatus
         from entropy.server.interfaces import Server
         srv = Server()
         # taint the database status
@@ -723,7 +593,7 @@ class EntropyRepository:
         Server-side method that render your repository storage NOT tainted,
         modified.
         """
-        # if it's equo to open it, this should be avoided
+        from entropy.server.interfaces.db import ServerRepositoryStatus
         from entropy.server.interfaces import Server
         srv = Server()
         ServerRepositoryStatus().unset_tainted(self.dbFile)
@@ -1619,6 +1489,7 @@ class EntropyRepository:
         # setup variables we're going to use
         srv_repo = self.server_repo
         rss_atom = "%s~%s" % (pkgatom, revision,)
+        from entropy.server.interfaces.db import ServerRepositoryStatus
         status = ServerRepositoryStatus()
         srv_updates = status.get_updates_log(srv_repo)
         rss_name = srv_repo + etpConst['rss-dump-name']
@@ -1665,6 +1536,7 @@ class EntropyRepository:
         srv_repo = self.server_repo
         rss_revision = self.retrieveRevision(idpackage)
         rss_atom = "%s~%s" % (self.retrieveAtom(idpackage), rss_revision,)
+        from entropy.server.interfaces.db import ServerRepositoryStatus
         status = ServerRepositoryStatus()
         srv_updates = status.get_updates_log(srv_repo)
         rss_name = srv_repo + etpConst['rss-dump-name']
