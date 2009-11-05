@@ -6,7 +6,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
     - entropy.db hookable plugins support (atom/dep validation, db taint,
         pkg add, pkg rm)
-    - entropy.db ts completion
     - entropy.services ts completion
     - entropy.client ts completion
     - entropy.server ts completion
