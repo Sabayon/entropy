@@ -306,6 +306,8 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
 
 class Server(Singleton, TextInterface):
 
+    _memory_db_instances = {}
+
     def init_singleton(self, default_repository = None, save_repository = False,
             community_repo = False, fake_default_repo = False,
             fake_default_repo_id = '::fake::',
@@ -323,7 +325,6 @@ class Server(Singleton, TextInterface):
         from entropy.db import dbapi2
         self.dbapi2 = dbapi2 # export for third parties
         etpSys['serverside'] = True
-        self._memory_db_instances = {}
         self.fake_default_repo = fake_default_repo
         self.indexing = False
         self.xcache = False
@@ -342,9 +343,8 @@ class Server(Singleton, TextInterface):
 
         if fake_default_repo:
             default_repository = fake_default_repo_id
-            etpConst['officialserverrepositoryid'] = fake_default_repo_id
-            self.init_generic_memory_server_repository(fake_default_repo_id,
-                fake_default_repo_desc)
+            Server.init_generic_memory_server_repository(fake_default_repo_id,
+                fake_default_repo_desc, set_as_default = True)
 
         # create our SystemSettings plugin
         self.sys_settings_plugin_id = \
@@ -835,13 +835,16 @@ class Server(Singleton, TextInterface):
             self.MirrorsService.sync_databases(no_upload, repo = repo)
 
 
-    def init_generic_memory_server_repository(self, repoid, description,
-        mirrors = None, community_repo = False, service_url = None):
+    @staticmethod
+    def init_generic_memory_server_repository(repoid, description,
+        mirrors = None, community_repo = False, service_url = None,
+        set_as_default = False):
 
         if mirrors is None:
             mirrors = []
-        dbc = self.open_memory_database(dbname = etpConst['serverdbid']+repoid)
-        self._memory_db_instances[repoid] = dbc
+        dbc = Server.open_memory_database(dbname = etpConst['serverdbid'] + \
+            repoid)
+        Server._memory_db_instances[repoid] = dbc
 
         eapi3_port = int(etpConst['socket_service']['port'])
         eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
@@ -859,11 +862,23 @@ class Server(Singleton, TextInterface):
         }
 
         etpConst['server_repositories'][repoid] = repodata
-        self.SystemSettings.clear()
+        if set_as_default:
+            etpConst['officialserverrepositoryid'] = repoid
+        sys_set = SystemSettings()
+        sys_set.clear()
 
         return dbc
 
-    def open_memory_database(self, dbname = None):
+    @staticmethod
+    def open_memory_database(dbname = None, output_interface = None):
+        """
+        Open in-memory EntropyRepository interface.
+
+        @keyword dbname: database name
+        @type dbname: string
+        @keyword output_interface: entropy.output.TextInterface based instance
+        @type output_interface: entropy.output.TextInterface based instance
+        """
         if dbname == None:
             dbname = etpConst['genericdbid']
         dbc = EntropyRepository(
@@ -873,7 +888,7 @@ class Server(Singleton, TextInterface):
             dbname = dbname,
             xcache = False,
             indexing = False,
-            OutputInterface = self,
+            OutputInterface = output_interface,
             skipChecks = True
         )
         dbc.initializeDatabase()
@@ -913,8 +928,8 @@ class Server(Singleton, TextInterface):
             return self.ClientService.clientDbconn
 
         # in-memory server repos
-        if repo in self._memory_db_instances:
-            return self._memory_db_instances.get(repo)
+        if repo in Server._memory_db_instances:
+            return Server._memory_db_instances.get(repo)
 
         if just_reading:
             read_only = True
