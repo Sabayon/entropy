@@ -826,8 +826,9 @@ def main():
 
         import traceback
         exception_data = ""
+        error_file = "/tmp/equoerror.txt"
         try:
-            ferror = open("/tmp/equoerror.txt", "wb")
+            ferror = open(error_file, "wb")
         except (OSError, IOError,):
             print_error(darkred(_("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org.")))
             raise SystemExit(1)
@@ -855,7 +856,10 @@ def main():
         name = readtext(_("Your Full name:"))
         email = readtext(_("Your E-Mail address:"))
         description = readtext(_("What you were doing:"))
-        errorText = ''.join(errorText)
+
+        ferror = open(error_file, "r")
+        error_text = ''.join(ferror.readlines())
+        ferror.close()
 
         from entropy.client.interfaces.qa import UGCErrorReportInterface
         try:
@@ -866,7 +870,7 @@ def main():
                 "/sabayonlinux.org/handlers/http_error_report.php"
             error = ErrorReportInterface(post_url)
 
-        error.prepare(errorText, name, email, '\n'.join([x for x in exception_data]), description)
+        error.prepare(error_text, name, email, '\n'.join([x for x in exception_data]), description)
         result = error.submit()
         if result:
             print_error(darkgreen(_("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible.")))
