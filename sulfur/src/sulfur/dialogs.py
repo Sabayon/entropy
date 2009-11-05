@@ -639,8 +639,10 @@ class RepositoryManagerMenu(MenuSkel):
 
 
     def __init__(self, Entropy, window):
+        self.ui_locked = True
         self.do_debug = False
-        if etpUi['debug']: self.do_debug = True
+        if etpUi['debug']:
+            self.do_debug = True
         self.BufferLock = RepositoryManagerMenu.SocketLock(self)
         self.Entropy = Entropy
         self.window = window
@@ -720,6 +722,7 @@ class RepositoryManagerMenu(MenuSkel):
         self.PinboardUpdater.pause(pause)
 
     def ui_lock(self, action):
+        self.ui_locked = action
         self.sm_ui.repositoryManager.set_sensitive(not action)
 
     def set_notebook_page(self, page):
@@ -1336,12 +1339,16 @@ class RepositoryManagerMenu(MenuSkel):
                 status, queue = self.Service.Methods.get_queue()
                 if not status:
                     return
+            except ConnectionError as err:
+                self.debug_print("do_update_queue_view", str(err))
+                return
             except Exception as e:
                 self.service_status_message(e)
                 return
 
         with self.QueueLock:
-            if queue == self.Queue: return
+            if queue == self.Queue:
+                return
             self.Queue = queue.copy()
             gobject.idle_add(self.fill_queue_view, queue)
 
@@ -2173,9 +2180,11 @@ class RepositoryManagerMenu(MenuSkel):
 
         def task(queue_id):
             item = self.wait_queue_id_to_complete(queue_id)
-            if item == None: return
+            if item == None:
+                return
             status, data = item['result']
-            if not status: return
+            if not status:
+                return
             gobject.idle_add(self.entropy_database_updates_data_view,
                 data)
 
