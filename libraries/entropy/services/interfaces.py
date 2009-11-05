@@ -157,19 +157,10 @@ class SocketHost:
 
             return True, user, "ok"
 
-        def set_exc_permissions(self, uid, gid):
-            if gid != None:
-                os.setgid(gid)
-            if uid != None:
-                os.setuid(uid)
-
         def hide_login_data(self, args):
             myargs = args[:]
             myargs[-1] = 'hidden'
             return myargs
-
-        def terminate_instance(self):
-            pass
 
     class HostServerMixin(socketserver.ThreadingMixIn, socketserver.TCPServer):
 
