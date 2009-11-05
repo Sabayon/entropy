@@ -37,13 +37,36 @@ class EntropyRepositoryTest(unittest.TestCase):
     def __open_test_db(self):
         return self.Client.open_memory_database(dbname = self.test_db_name)
 
+    def test_db_clearcache(self):
+        self.test_db.clearCache()
+
+    def test_treeupdates_actions(self):
+        self.assertEqual(self.test_db.listAllTreeUpdatesActions(), [])
+
+        updates = [
+            ('move media-libs/x264-svn media-libs/x264', '2020', '1210199116.46'),
+            ('slotmove x11-libs/lesstif 2.1 0', '2020', '1210753863.16')
+        ]
+        actions = sorted(['move media-libs/x264-svn media-libs/x264',
+            'slotmove x11-libs/lesstif 2.1 0'])
+
+        self.test_db.insertTreeUpdatesActions(updates, self.test_db_name)
+        db_actions = self.test_db.retrieveTreeUpdatesActions(self.test_db_name,
+            forbranch = '2020')
+        self.assertEqual(actions, db_actions)
+
+        self.test_db.removeTreeUpdatesActions(self.test_db_name)
+        db_actions = self.test_db.retrieveTreeUpdatesActions(self.test_db_name,
+            forbranch = '2020')
+        self.assertEqual([], db_actions)
+
     def test_db_creation(self):
         self.assert_(isinstance(self.test_db, EntropyRepository))
         self.assertEqual(self.test_db_name, self.test_db.dbname)
         self.assert_(self.test_db._doesTableExist('baseinfo'))
         self.assert_(self.test_db._doesTableExist('extrainfo'))
 
-    def test_db_contentdiff(self):
+    def test_db_metadata_handling(self):
 
         test_entry = {
             const_convert_to_unicode("/path/to/foo", "utf-8"): \
@@ -93,6 +116,48 @@ class EntropyRepositoryTest(unittest.TestCase):
         orig_diff = [const_convert_to_unicode(x, 'utf-8') for x in orig_diff]
         self.assertEqual(orig_diff, py_diff)
 
+        # test package content match
+        self.assertEqual(self.test_db.getIDPackagesFromFile(orig_diff[3]),
+            [1])
+        category = self.test_db.retrieveCategory(idpackage)
+        idcategory = self.test_db.getIDCategory(category)
+        self.assertEqual(self.test_db.getCategory(idcategory),
+            new_data['category'])
+
+        versioning_data = self.test_db.getVersioningData(idpackage)
+        dbverdata = (self.test_db.retrieveVersion(idpackage),
+            self.test_db.retrieveVersionTag(idpackage),
+            self.test_db.retrieveRevision(idpackage),)
+        self.assertEqual(versioning_data, dbverdata)
+
+        strict_scope = self.test_db.getStrictScopeData(idpackage)
+        dbverdata = (self.test_db.retrieveAtom(idpackage),
+            self.test_db.retrieveSlot(idpackage),
+            self.test_db.retrieveRevision(idpackage),)
+        self.assertEqual(strict_scope, dbverdata)
+
+        scope_data = self.test_db.getScopeData(idpackage)
+        dbverdata = (
+            self.test_db.retrieveAtom(idpackage),
+            self.test_db.retrieveCategory(idpackage),
+            self.test_db.retrieveName(idpackage),
+            self.test_db.retrieveVersion(idpackage),
+            self.test_db.retrieveSlot(idpackage),
+            self.test_db.retrieveVersionTag(idpackage),
+            self.test_db.retrieveRevision(idpackage),
+            self.test_db.retrieveBranch(idpackage),
+            self.test_db.retrieveApi(idpackage),
+        )
+        self.assertEqual(scope_data, dbverdata)
+
+        trigger_info = self.test_db.getTriggerInfo(idpackage)
+        trigger_keys = ['version', 'eclasses', 'etpapi', 'cxxflags', 'cflags',
+            'chost', 'atom', 'category', 'name', 'versiontag', 'content',
+            'trigger', 'branch', 'spm_phases', 'revision']
+        self.assertEqual(sorted(trigger_keys), sorted(trigger_info.keys()))
+
+        system_pkgs = self.test_db.retrieveSystemPackages()
+        self.assertEqual(system_pkgs, set([idpackage]))
 
     def test_db_insert_compare_match(self):
 
@@ -149,11 +214,13 @@ class EntropyRepositoryTest(unittest.TestCase):
         test_pkg = _misc.get_test_package2()
         data = self.Spm.extract_package_metadata(test_pkg)
         # Portage stores them this way
-        data['changelog'] = const_convert_to_unicode("#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel")
+        data['changelog'] = const_convert_to_unicode(
+            "#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel")
         data['license'] = const_convert_to_unicode('GPL-2')
         data['licensedata'] = {
             const_convert_to_unicode('GPL-2'): \
-                const_convert_to_unicode("#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"),
+                const_convert_to_unicode(
+                    "#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"),
         }
         idpackage, rev, new_data = self.test_db.handlePackage(data)
         db_data = self.test_db.getPackageData(idpackage)
@@ -229,11 +296,13 @@ class EntropyRepositoryTest(unittest.TestCase):
         test_pkg = _misc.get_test_package2()
         data = self.Spm.extract_package_metadata(test_pkg)
         # Portage stores them this way
-        data['changelog'] = const_convert_to_unicode("#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel")
+        data['changelog'] = const_convert_to_unicode(
+            "#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel")
         data['license'] = const_convert_to_unicode('GPL-2')
         data['licensedata'] = {
             const_convert_to_unicode('GPL-2'): \
-                const_convert_to_unicode("#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"),
+                const_convert_to_unicode(
+                    "#248083).\n\n  06 Feb 2009; Ra\xc3\xbal Porcel"),
         }
         idpackage, rev, new_data = self.test_db.handlePackage(data)
         db_data = self.test_db.getPackageData(idpackage)
@@ -281,8 +350,6 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.test_db.insertLicenses(lic_data)
         db_lic_txt = self.test_db.retrieveLicenseText(lic_name)
         self.assertEqual(db_lic_txt, lic_txt)
-
-    # XXX complete
 
 if __name__ == '__main__':
     unittest.main()
