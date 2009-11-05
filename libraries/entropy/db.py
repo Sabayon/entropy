@@ -55,7 +55,25 @@ except ImportError: # fallback to pysqlite
         )
 
 
-class EntropyRepository:
+class EntropyRepositoryPlugin:
+    """
+    This is the base class for implementing EntropyRepository plugin hooks.
+    You have to subclass this, implement not implemented methods and provide
+    it to EntropyRepository class as described below.
+    """
+
+class EntropyRepositoryPluginInterface:
+
+    """
+    EntropyRepository plugin interface. This is the EntropyRepository part
+    aimed to handle connected plugins
+    """
+
+    def __init__(self):
+        self.__plugin_classes = {}
+
+
+class EntropyRepository(EntropyRepositoryPluginInterface):
 
     """
     EntropyRepository implements SQLite3 based storage. In a Model-View based
@@ -393,6 +411,7 @@ class EntropyRepository:
             should be locked when updating the local version
         @type lockRemote: bool
         """
+        EntropyRepositoryPluginInterface.__init__(self)
 
         self.SystemSettings = SystemSettings()
         self.srv_sys_settings_plugin = \
