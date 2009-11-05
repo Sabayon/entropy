@@ -1913,9 +1913,9 @@ class Client:
         data = self.append_eos(data)
 
         if etpUi['debug']:
-            const_debug_write(__name__, darkblue("=== SEND ======== \\"))
+            const_debug_write(__name__, darkblue("=== send ======== \\"))
             const_debug_write(__name__, darkblue(repr(data)))
-            const_debug_write(__name__, darkblue("=== SEND ======== /"))
+            const_debug_write(__name__, darkblue("=== send ======== /"))
 
         try:
 
@@ -2086,7 +2086,9 @@ class Client:
                     self.buffered_data += data
 
                 while self.buffer_length > 0:
+                    # print "buf length", self.buffer_length
                     x = do_receive()
+                    # print "receive2", len(x) 
                     if self.ssl and self.pyopenssl and not x:
                         self.ssl_prepending = True
                     self.buffer_length -= len(x)
@@ -2169,9 +2171,9 @@ class Client:
                 return None
 
         if etpUi['debug']:
-            const_debug_write(__name__, darkred("=== RECV ======== \\"))
+            const_debug_write(__name__, darkred("=== recv ======== \\"))
             const_debug_write(__name__, darkred(repr(data)))
-            const_debug_write(__name__, darkred("=== RECV ======== /"))
+            const_debug_write(__name__, darkred("=== recv ======== /"))
 
         return const_convert_to_rawstring(self.buffered_data)
 
