@@ -2282,8 +2282,10 @@ class Client:
             )
 
     def disconnect(self):
+
         if not self.real_sock_conn:
             return True
+
         if self.ssl and self.pyopenssl:
             self.sock_conn.shutdown()
             self.sock_conn.close()
@@ -2292,10 +2294,18 @@ class Client:
                 self.real_sock_conn.shutdown(self.socket.SHUT_RDWR)
             except self.socket.error:
                 pass
-        del self.sock_conn
+
+        sock_conn = self.sock_conn
         self.sock_conn = None
+        real_sock_conn = self.real_sock_conn
+        self.real_sock_conn = None
         try:
-            self.real_sock_conn.close()
+            real_sock_conn.close()
+        except self.socket.error:
+            pass
+        try:
+            if sock_conn is not real_sock_conn:
+                sock_conn.close()
         except self.socket.error:
             pass
         if not self.quiet:
@@ -2310,7 +2320,7 @@ class Client:
                 type = "info",
                 header = self.output_header
             )
-        self.real_sock_conn = None
+
         # otherwise reconnect_socket won't work
         #self.hostname = None
         #self.hostport = None
