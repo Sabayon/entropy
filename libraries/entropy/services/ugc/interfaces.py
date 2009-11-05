@@ -2019,15 +2019,15 @@ class Client:
         def do_receive():
             data = const_convert_to_rawstring('')
             if self.ssl and not self.pyopenssl:
-                data = self.sock_conn.read(1024)
+                data = self.sock_conn.read(16384)
             elif self.ssl:
                 if self.ssl_prepending:
-                    data = self.sock_conn.recv(1024)
+                    data = self.sock_conn.recv(16384)
                     self.ssl_prepending = False
                 while self.sock_conn.pending():
-                    data += self.sock_conn.recv(1024)
+                    data += self.sock_conn.recv(16384)
             else:
-                data = self.sock_conn.recv(1024)
+                data = self.sock_conn.recv(16384)
             return data
 
         myeos = self.answers['eos']
