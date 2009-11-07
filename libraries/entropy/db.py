@@ -32,7 +32,7 @@ from entropy.const import etpConst, etpCache, const_setup_file, \
     const_isunicode, const_convert_to_unicode, const_get_buffer, \
     const_convert_to_rawstring, const_cmp
 from entropy.exceptions import IncorrectParameter, InvalidAtom, \
-    SystemDatabaseError, OperationNotPermitted
+    SystemDatabaseError, OperationNotPermitted, RepositoryPluginError
 from entropy.i18n import _
 from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen, \
     TextInterface
@@ -55,25 +55,136 @@ except ImportError: # fallback to pysqlite
         )
 
 
+from entropy.core import EntropyPluginStore
+
 class EntropyRepositoryPlugin:
     """
     This is the base class for implementing EntropyRepository plugin hooks.
     You have to subclass this, implement not implemented methods and provide
     it to EntropyRepository class as described below.
+
+    Every plugin hook function features this signature:
+        int something_hook(entropy_repository_instance)
+    Where entropy_repository_instance is the calling EntropyRepository instance.
+    Every method should return a return status code which, when nonzero causes
+    a RepositoryPluginError exception to be thrown.
+    Every method returns 0 in the base class implementation.
     """
 
-class EntropyRepositoryPluginInterface:
+    def get_id(self):
+        """
+        Return string identifier of myself.
+
+        @return: EntropyRepositoryPlugin identifier.
+        @rtype: string
+        """
+        return str(self)
+
+    def commit_hook(self, entropy_repository_instance):
+        """
+        Called during EntropyRepository data commit.
+
+        @param entropy_repository_instance: EntropyRepository instance
+        @type entropy_repository_instance: EntropyRepository
+        @return: execution status code, return nonzero for errors, this will
+            raise a RepositoryPluginError exception.
+        @rtype: int
+        """
+        return 0
+
+    def close_repo_hook(self, entropy_repository_instance):
+        """
+        Called during EntropyRepository instance shutdown (closeDB).
+
+        @param entropy_repository_instance: EntropyRepository instance
+        @type entropy_repository_instance: EntropyRepository
+        @return: execution status code, return nonzero for errors, this will
+            raise a RepositoryPluginError exception.
+        @rtype: int
+        """
+        return 0
+
+    def add_package_hook(self, entropy_repository_instance):
+        """
+        Called after the addition of a package from EntropyRepository.
+
+        @param entropy_repository_instance: EntropyRepository instance
+        @type entropy_repository_instance: EntropyRepository
+        @return: execution status code, return nonzero for errors, this will
+            raise a RepositoryPluginError exception.
+        @rtype: int
+        """
+        return 0
+
+    def remove_package_hook(self, entropy_repository_instance):
+        """
+        Called after the removal of a package from EntropyRepository.
+
+        @param entropy_repository_instance: EntropyRepository instance
+        @type entropy_repository_instance: EntropyRepository
+        @return: execution status code, return nonzero for errors, this will
+            raise a RepositoryPluginError exception.
+        @rtype: int
+        """
+        return 0
+
+    def clear_cache_hook(self, entropy_repository_instance):
+        """
+        Called during EntropyRepository cache cleanup (clearCache).
+
+        @param entropy_repository_instance: EntropyRepository instance
+        @type entropy_repository_instance: EntropyRepository
+        @return: execution status code, return nonzero for errors, this will
+            raise a RepositoryPluginError exception.
+        @rtype: int
+        """
+        return 0
+
+    def initialize_repo_hook(self, entropy_repository_instance):
+        """
+        Called during EntropyRepository data initialization (not instance init).
+
+        @param entropy_repository_instance: EntropyRepository instance
+        @type entropy_repository_instance: EntropyRepository
+        @return: execution status code, return nonzero for errors, this will
+            raise a RepositoryPluginError exception.
+        @rtype: int
+        """
+        return 0
+
+    def accept_license_hook(self, entropy_repository_instance):
+        """
+        Called during EntropyRepository acceptLicense call.
+
+        @param entropy_repository_instance: EntropyRepository instance
+        @type entropy_repository_instance: EntropyRepository
+        @return: execution status code, return nonzero for errors, this will
+            raise a RepositoryPluginError exception.
+        @rtype: int
+        """
+        return 0
+
+
+class EntropyRepositoryPluginStore(EntropyPluginStore):
 
     """
     EntropyRepository plugin interface. This is the EntropyRepository part
-    aimed to handle connected plugins
+    aimed to handle connected plugins.
     """
 
     def __init__(self):
-        self.__plugin_classes = {}
+        EntropyPluginStore.__init__(self)
+
+    def add_plugin(self, entropy_repository_plugin):
+        inst = entropy_repository_plugin
+        if not isinstance(inst, EntropyRepositoryPlugin):
+            raise AttributeError("EntropyRepositoryPluginStore: " + \
+                    "expected valid EntropyRepositoryPlugin instance")
+        EntropyPluginStore.add_plugin(self, inst.get_id(), inst)
 
 
-class EntropyRepository(EntropyRepositoryPluginInterface):
+
+class EntropyRepository(EntropyRepositoryPluginStore):
 
     """
     EntropyRepository implements SQLite3 based storage. In a Model-View based
@@ -411,7 +522,7 @@ class EntropyRepository(EntropyRepositoryPluginInterface):
             should be locked when updating the local version
         @type lockRemote: bool
         """
-        EntropyRepositoryPluginInterface.__init__(self)
+        EntropyRepositoryPluginStore.__init__(self)
 
         self.SystemSettings = SystemSettings()
         self.srv_sys_settings_plugin = \
@@ -525,18 +636,29 @@ class EntropyRepository(EntropyRepositoryPluginInterface):
         """
         self.dbclosed = True
 
-        # if the class is opened readOnly, close and forget
-        if self.readOnly:
+        try:
+
+            if not self.readOnly:
+                self.commitChanges()
+
+            plugins = self.get_plugins()
+            for plugin_id in sorted(plugins):
+                plug_inst = plugins[plugin_id]
+                exec_rc = plug_inst.close_repo_hook(self)
+                if exec_rc:
+                    raise RepositoryPluginError(
+                        "[close_repo_hook] %s: status: %s" % (
+                            plug_inst.get_id(), exec_rc,))
+
+        finally:
             self.cursor.close()
             self.connection.close()
-            return
 
+        # XXX: remove
         if self.clientDatabase:
-            self.commitChanges()
-            self.cursor.close()
-            self.connection.close()
             return
 
+        # XXX move from here
         from entropy.server.interfaces.db import ServerRepositoryStatus
         sts = ServerRepositoryStatus()
         if not sts.is_tainted(self.dbFile):
@@ -554,10 +676,6 @@ class EntropyRepository(EntropyRepositoryPluginInterface):
             )
             sts.set_unlock_msg(self.dbFile) # avoid spamming
 
-        self.commitChanges()
-        self.cursor.close()
-        self.connection.close()
-
     def vacuum(self):
         """
         Repository storage cleanup and optimization function.
@@ -571,96 +689,66 @@ class EntropyRepository(EntropyRepositoryPluginInterface):
         @keyword force: force commit, despite read-only bit being set
         @type force: bool
         """
-        if self.readOnly and not force:
-            return
 
-        try:
-            self.connection.commit()
-        except self.dbapi2.Error:
-            pass
+        if force or (not self.readOnly):
+            try:
+                self.connection.commit()
+            except self.dbapi2.Error:
+                pass
 
+        plugins = self.get_plugins()
+        for plugin_id in sorted(plugins):
+            plug_inst = plugins[plugin_id]
+            exec_rc = plug_inst.commit_hook(self)
+            if exec_rc:
+                raise RepositoryPluginError("[commit_hook] %s: status: %s" % (
+                    plug_inst.get_id(), exec_rc,))
+
+        # XXX: remove (move from here)
         if not self.clientDatabase:
-            self.taintDatabase()
+
             from entropy.server.interfaces.db import ServerRepositoryStatus
+            from entropy.server.interfaces import Server
+            srv = Server()
             dbs = ServerRepositoryStatus()
+
+            # taint the database status
+            taint_file = srv.get_local_database_taint_file(repo =
+                self.server_repo)
+            f = open(taint_file, "w")
+            f.write(etpConst['currentarch']+" database tainted\n")
+            f.flush()
+            f.close()
+            const_setup_file(taint_file, etpConst['entropygid'], 0o664)
+            dbs.set_tainted(self.dbFile)
+
             if (dbs.is_tainted(self.dbFile)) and \
                 (not dbs.is_bumped(self.dbFile)):
                 # bump revision, setting DatabaseBump causes
                 # the session to just bump once
                 dbs.set_bumped(self.dbFile)
-                self._revisionBump()
-
-    def taintDatabase(self):
-        """
-        Server-side method that render your repository storage tainted,
-        modified.
-        """
-        from entropy.server.interfaces.db import ServerRepositoryStatus
-        from entropy.server.interfaces import Server
-        srv = Server()
-        # taint the database status
-        taint_file = srv.get_local_database_taint_file(repo = self.server_repo)
-        f = open(taint_file, "w")
-        f.write(etpConst['currentarch']+" database tainted\n")
-        f.flush()
-        f.close()
-        const_setup_file(taint_file, etpConst['entropygid'], 0o664)
-        ServerRepositoryStatus().set_tainted(self.dbFile)
-
-    def untaintDatabase(self):
-        """
-        Server-side method that render your repository storage NOT tainted,
-        modified.
-        """
-        from entropy.server.interfaces.db import ServerRepositoryStatus
-        from entropy.server.interfaces import Server
-        srv = Server()
-        ServerRepositoryStatus().unset_tainted(self.dbFile)
-        # untaint the database status
-        taint_file = srv.get_local_database_taint_file(repo = self.server_repo)
-        if os.path.isfile(taint_file):
-            os.remove(taint_file)
-
-    def _revisionBump(self):
-        """
-        Entropy repository revision bumping function. Every time it's called,
-        revision is incremented by 1.
-        """
-        from entropy.server.interfaces import Server
-        srv = Server()
-        revision_file = srv.get_local_database_revision_file(
-            repo = self.server_repo)
-        if not os.path.isfile(revision_file):
-            revision = 1
-        else:
-            f = open(revision_file, "r")
-            revision = int(f.readline().strip())
-            revision += 1
-            f.close()
-        f = open(revision_file, "w")
-        f.write(str(revision)+"\n")
-        f.flush()
-        f.close()
-
-    def isDatabaseTainted(self):
-        """
-        Server-side function used to determine whether repository database
-        has been modified.
-
-        @return: taint status
-        @rtype: bool
-        """
-        from entropy.server.interfaces import Server
-        srv = Server()
-        taint_file = srv.get_local_database_taint_file(repo = self.server_repo)
-        if os.path.isfile(taint_file):
-            return True
-        return False
+                """
+                Entropy repository revision bumping function. Every time it's called,
+                revision is incremented by 1.
+                """
+                revision_file = srv.get_local_database_revision_file(
+                    repo = self.server_repo)
+                if not os.path.isfile(revision_file):
+                    revision = 1
+                else:
+                    f = open(revision_file, "r")
+                    revision = int(f.readline().strip())
+                    revision += 1
+                    f.close()
+                f = open(revision_file, "w")
+                f.write(str(revision)+"\n")
+                f.flush()
+                f.close()
 
     def initializeDatabase(self):
         """
         WARNING: it will erase your database.
-        This method (re)initialize the repository, dropping all its content.
+        This method (re)initializes the repository, dropping all its content.
         """
         my = self.Schema()
         for table in self.listAllTables():
@@ -675,6 +763,16 @@ class EntropyRepository(EntropyRepositoryPluginInterface):
         self.setCacheSize(8192)
         self.setDefaultCacheSize(8192)
         self._setupInitialSettings()
+
+        plugins = self.get_plugins()
+        for plugin_id in sorted(plugins):
+            plug_inst = plugins[plugin_id]
+            exec_rc = plug_inst.initialize_repo_hook(self)
+            if exec_rc:
+                raise RepositoryPluginError(
+                    "[initialize_repo_hook] %s: status: %s" % (
+                        plug_inst.get_id(), exec_rc,))
+
         self.commitChanges()
 
     def filterTreeUpdatesActions(self, actions):
@@ -1480,6 +1578,16 @@ class EntropyRepository(EntropyRepositoryPluginInterface):
             if do_commit:
                 self.commitChanges()
 
+        plugins = self.get_plugins()
+        for plugin_id in sorted(plugins):
+            plug_inst = plugins[plugin_id]
+            exec_rc = plug_inst.add_package_hook(self)
+            if exec_rc:
+                raise RepositoryPluginError(
+                    "[add_package_hook] %s: status: %s" % (
+                        plug_inst.get_id(), exec_rc,))
+
+        # XXX: move away
         ### RSS Atom support
         ### dictionary will be elaborated by activator
         if self.srv_sys_settings_plugin in self.SystemSettings:
@@ -1617,6 +1725,16 @@ class EntropyRepository(EntropyRepositoryPluginInterface):
         # clear caches
         self.clearCache()
 
+        plugins = self.get_plugins()
+        for plugin_id in sorted(plugins):
+            plug_inst = plugins[plugin_id]
+            exec_rc = plug_inst.remove_package_hook(self)
+            if exec_rc:
+                raise RepositoryPluginError(
+                    "[remove_package_hook] %s: status: %s" % (
+                        plug_inst.get_id(), exec_rc,))
+
+        # XXX: move away
         ### RSS Atom support
         ### dictionary will be elaborated by activator
         if self.srv_sys_settings_plugin in self.SystemSettings:
@@ -3517,6 +3635,15 @@ class EntropyRepository(EntropyRepositoryPluginInterface):
         @type depends: bool
         """
 
+        plugins = self.get_plugins()
+        for plugin_id in sorted(plugins):
+            plug_inst = plugins[plugin_id]
+            exec_rc = plug_inst.clear_cache_hook(self)
+            if exec_rc:
+                raise RepositoryPluginError(
+                    "[clear_cache_hook] %s: status: %s" % (
+                        plug_inst.get_id(), exec_rc,))
+
         self.live_cache.clear()
         def do_clear(name):
             """
@@ -5367,6 +5494,15 @@ class EntropyRepository(EntropyRepositoryPluginInterface):
         if not self.entropyTools.is_user_in_entropy_group():
             return
 
+        plugins = self.get_plugins()
+        for plugin_id in sorted(plugins):
+            plug_inst = plugins[plugin_id]
+            exec_rc = plug_inst.accept_license_hook(self)
+            if exec_rc:
+                raise RepositoryPluginError(
+                    "[accept_license_hook] %s: status: %s" % (
+                        plug_inst.get_id(), exec_rc,))
+
         with self.__write_mutex:
             self.cursor.execute("""
             INSERT OR IGNORE INTO licenses_accepted VALUES (?)
@@ -6727,11 +6863,6 @@ class EntropyRepository(EntropyRepositoryPluginInterface):
         self.live_cache[c_tup] = result[:]
         return result
 
-
-########################################################
-####
-##   Client Database API / but also used by server part
-#
 
     def storeInstalledPackage(self, idpackage, repoid, source = 0):
         """
