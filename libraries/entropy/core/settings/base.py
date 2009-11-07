@@ -25,10 +25,10 @@ from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, \
     const_extract_cli_repo_params, etpCache, const_isunicode, \
     const_convert_to_unicode, const_convert_to_rawstring
-from entropy.core import Singleton
+from entropy.core import Singleton, EntropyPluginStore
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 
-class SystemSettings(Singleton):
+class SystemSettings(Singleton, EntropyPluginStore):
 
     """
     This is the place where all the Entropy settings are stored if
@@ -55,6 +55,7 @@ class SystemSettings(Singleton):
         see Singleton API reference for more information.
 
         """
+        EntropyPluginStore.__init__(self)
 
         from entropy.core.settings.plugins.factory import get_available_plugins
         self.__get_external_plugins = get_available_plugins
@@ -65,7 +66,6 @@ class SystemSettings(Singleton):
         self.__is_destroyed = False
         self.__mutex = RLock() # reentrant lock on purpose
 
-        self.__plugins = {}
         self.__external_plugins = {}
         self.__setting_files_order = []
         self.__setting_files_pre_run = []
@@ -105,8 +105,6 @@ class SystemSettings(Singleton):
         Every add_plugin or remove_plugin method will also issue clear()
         for you. This could be bad and it might be removed in future.
 
-        @param plugin_id: plugin identifier
-        @type plugin_id: string
         @param system_settings_plugin_instance: valid SystemSettingsPlugin
             instance
         @type system_settings_plugin_instance: SystemSettingsPlugin instance
@@ -118,7 +116,7 @@ class SystemSettings(Singleton):
             raise AttributeError("SystemSettings: expected valid " + \
                     "SystemSettingsPlugin instance")
         with self.__mutex:
-            self.__plugins[inst.get_id()] = inst
+            EntropyPluginStore.add_plugin(self, inst.get_id(), inst)
             self.clear()
 
     def remove_plugin(self, plugin_id):
@@ -135,7 +133,7 @@ class SystemSettings(Singleton):
         @rtype: None
         """
         with self.__mutex:
-            del self.__plugins[plugin_id]
+            EntropyPluginStore.remove_plugin(self, plugin_id)
             self.clear()
 
     def __setup_const(self):
@@ -213,8 +211,9 @@ class SystemSettings(Singleton):
         enforce_persistent()
 
         # plugins support
-        for plugin_id in sorted(self.__plugins):
-            self.__plugins[plugin_id].parse(self)
+        local_plugins = self.get_plugins()
+        for plugin_id in sorted(local_plugins):
+            local_plugins[plugin_id].parse(self)
 
         # external plugins support
         external_plugins = self.__get_external_plugins()
@@ -226,8 +225,8 @@ class SystemSettings(Singleton):
         enforce_persistent()
 
         # run post-SystemSettings setup, plugins hook
-        for plugin_id in sorted(self.__plugins):
-            self.__plugins[plugin_id].post_setup(self)
+        for plugin_id in sorted(local_plugins):
+            local_plugins[plugin_id].post_setup(self)
 
         # run post-SystemSettings setup for external plugins too
         for external_plugin_id in sorted(self.__external_plugins):

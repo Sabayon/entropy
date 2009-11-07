@@ -51,6 +51,54 @@ class Singleton(object):
         """
         pass
 
+class EntropyPluginStore:
+
+    """
+    This is a base class for handling a map of plugin objects by providing
+    generic add/remove functions.
+    """
+
+    def __init__(self):
+        self.__plugins = {}
+
+    def get_plugins(self):
+        """
+        Return a copy of the internal dictionary that contains the currently
+        stored plugins map.
+
+        @return: stored plugins map
+        @rtype: dict
+        """
+        return self.__plugins.copy()
+
+    def drop_plugins(self):
+        """
+        Drop all the currently stored plugins from storage.
+        """
+        self.__plugins.clear()
+
+    def add_plugin(self, plugin_id, plugin_object):
+        """
+        This method lets you add a plugin to the store.
+
+        @param plugin_id: plugin identifier
+        @type plugin_id: string
+        @param plugin_object: valid SystemSettingsPlugin instance
+        @type plugin_object: any Python object
+        """
+        self.__plugins[plugin_id] = plugin_object
+
+    def remove_plugin(self, plugin_id):
+        """
+        This method lets you remove previously added plugin objects via
+        identifiers.
+
+        @param plugin_id: plugin identifier
+        @type plugin_id: basestring
+        """
+        del self.__plugins[plugin_id]
+
+
 class EntropyPluginFactory:
 
     """
