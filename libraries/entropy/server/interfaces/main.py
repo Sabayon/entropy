@@ -895,17 +895,6 @@ class Server(Singleton, TextInterface):
         dbc.initializeDatabase()
         return dbc
 
-    def __setup_server_repository_status(self, repo, local_dbfile):
-        """
-        Setup server repository status information for newly created repos.
-        NOTE: This is a temp. workaround waiting for real pluggable
-        EntropyRepository interface calls.
-        """
-        taint_file = self.get_local_database_taint_file(repo)
-        if os.path.isfile(taint_file):
-            dbs = ServerRepositoryStatus()
-            dbs.set_tainted(local_dbfile)
-            dbs.set_bumped(local_dbfile)
 
     def open_server_repository(
             self,
@@ -964,8 +953,18 @@ class Server(Singleton, TextInterface):
             useBranch = use_branch,
             lockRemote = lock_remote
         )
-        # FIXME: remove this once we have a pluggable EntropyRepository class
-        self.__setup_server_repository_status(repo, local_dbfile)
+        """
+        FIXME: remove this once we have a pluggable EntropyRepository class
+        Setup server repository status information for newly created repos.
+        NOTE: This is a temp. workaround waiting for real pluggable
+        EntropyRepository interface calls.
+        """
+        taint_file = self.get_local_database_taint_file(repo)
+        if os.path.isfile(taint_file):
+            dbs = ServerRepositoryStatus()
+            dbs.set_tainted(local_dbfile)
+            dbs.set_bumped(local_dbfile)
+
         if not local_dbfile_exists:
             # better than having a completely broken db
             conn.readOnly = False
@@ -1530,7 +1529,7 @@ class Server(Singleton, TextInterface):
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
         dbconn.regenerateReverseDependenciesMetadata()
-        dbconn.taintDatabase()
+        self.taint_database(repo = repo)
         dbconn.commitChanges()
 
     def create_empty_database(self, dbpath = None, repo = None):
@@ -2573,11 +2572,24 @@ class Server(Singleton, TextInterface):
             header = brown(" @@ ")
         )
 
+    def taint_database(self, repo = None):
+        if repo == None:
+            repo = self.default_repository
+
+        # taint the database status
+        db_file = self.get_local_database_file(repo = repo)
+        taint_file = self.get_local_database_taint_file(repo = repo)
+        f = open(taint_file, "w")
+        f.write("database tainted\n")
+        f.flush()
+        f.close()
+        const_setup_file(taint_file, etpConst['entropygid'], 0o664)
+        ServerRepositoryStatus().set_tainted(db_file)
 
     def bump_database(self, repo = None):
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
-        dbconn.taintDatabase()
+        self.taint_database(repo = repo)
         self.close_server_database(dbconn)
 
     def get_remote_mirrors(self, repo = None):
