@@ -60,6 +60,9 @@ class InvalidDataType(EntropyException):
 class RepositoryError(EntropyException):
     """Cannot open repository database"""
 
+class RepositoryPluginError(EntropyException):
+    """Error during EntropyRepositoryPlugin hook execution"""
+
 class ConnectionError(EntropyException):
     """Cannot connect to service"""
 
