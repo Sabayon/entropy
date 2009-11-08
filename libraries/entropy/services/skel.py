@@ -9,6 +9,7 @@
     B{Entropy Services Stub Interfaces}.
 
 """
+import os
 from entropy.const import const_convert_to_unicode
 from entropy.tools import escape
 from entropy.exceptions import *
