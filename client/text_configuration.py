@@ -300,7 +300,7 @@ def showdiff(fromfile, tofile):
             line = blue(line)
         elif line.startswith("+"):
             line = darkgreen(line)
-    coloured.append(line + "\n")
+        coloured.append(line + "\n")
 
     fd, tmp_path = tempfile.mkstemp()
     f = open(tmp_path, "w")
@@ -309,7 +309,7 @@ def showdiff(fromfile, tofile):
     f.close()
     os.close(fd)
 
-    print()
+    print("")
     args = ["less", "--no-init", "--QUIT-AT-EOF", tmp_path]
     subprocess.call(args)
     os.remove(tmp_path)
