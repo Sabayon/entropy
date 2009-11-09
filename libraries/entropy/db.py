@@ -37,6 +37,7 @@ from entropy.i18n import _
 from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen, \
     TextInterface
 from entropy.cache import EntropyCacher
+from entropy.core import EntropyPluginStore
 from entropy.core.settings.base import SystemSettings
 from entropy.spm.plugins.factory import get_default_instance as get_spm
 
@@ -54,8 +55,6 @@ except ImportError: # fallback to pysqlite
             )
         )
 
-
-from entropy.core import EntropyPluginStore
 
 class EntropyRepositoryPlugin:
     """
@@ -79,6 +78,30 @@ class EntropyRepositoryPlugin:
         @rtype: string
         """
         return str(self)
+
+    def add_plugin_hook(self, entropy_repository_instance):
+        """
+        Called during EntropyRepository plugin addition.
+
+        @param entropy_repository_instance: EntropyRepository instance
+        @type entropy_repository_instance: EntropyRepository
+        @return: execution status code, return nonzero for errors, this will
+            raise a RepositoryPluginError exception.
+        @rtype: int
+        """
+        return 0
+
+    def remove_plugin_hook(self, entropy_repository_instance):
+        """
+        Called during EntropyRepository plugin removal.
+
+        @param entropy_repository_instance: EntropyRepository instance
+        @type entropy_repository_instance: EntropyRepository
+        @return: execution status code, return nonzero for errors, this will
+            raise a RepositoryPluginError exception.
+        @rtype: int
+        """
+        return 0
 
     def commit_hook(self, entropy_repository_instance):
         """
@@ -104,24 +127,32 @@ class EntropyRepositoryPlugin:
         """
         return 0
 
-    def add_package_hook(self, entropy_repository_instance):
+    def add_package_hook(self, entropy_repository_instance, package_data):
         """
         Called after the addition of a package from EntropyRepository.
 
         @param entropy_repository_instance: EntropyRepository instance
         @type entropy_repository_instance: EntropyRepository
+        @param package_data: package metadata used for insertion
+            (see addPackage)
+        @type package_data: dict
         @return: execution status code, return nonzero for errors, this will
             raise a RepositoryPluginError exception.
         @rtype: int
         """
         return 0
 
-    def remove_package_hook(self, entropy_repository_instance):
+    def remove_package_hook(self, entropy_repository_instance, idpackage,
+        from_add_package):
         """
         Called after the removal of a package from EntropyRepository.
 
         @param entropy_repository_instance: EntropyRepository instance
         @type entropy_repository_instance: EntropyRepository
+        @param idpackage: Entropy repository package identifier
+        @type idpackage: int
+        @param from_add_package: inform whether removePackage() is called inside
+            addPackage()
         @return: execution status code, return nonzero for errors, this will
             raise a RepositoryPluginError exception.
         @rtype: int
@@ -181,7 +212,14 @@ class EntropyRepositoryPluginStore(EntropyPluginStore):
             raise AttributeError("EntropyRepositoryPluginStore: " + \
                     "expected valid EntropyRepositoryPlugin instance")
         EntropyPluginStore.add_plugin(self, inst.get_id(), inst)
+        inst.add_plugin_hook(self)
 
+    def remove_plugin(self, plugin_id):
+        plugins = self.get_plugins()
+        plug_inst = plugins.get(plugin_id)
+        if plug_inst is not None:
+            plug_inst.remove_plugin_hook(self)
+        return EntropyPluginStore.remove_plugin(self, plugin_id)
 
 
 class EntropyRepository(EntropyRepositoryPluginStore):
@@ -489,7 +527,7 @@ class EntropyRepository(EntropyRepositoryPluginStore):
     def __init__(self, readOnly = False, noUpload = False, dbFile = None,
         clientDatabase = False, xcache = False, dbname = etpConst['serverdbid'],
         indexing = True, OutputInterface = None, skipChecks = False,
-        useBranch = None, lockRemote = True):
+        useBranch = None):
 
         """
         EntropyRepository constructor.
@@ -518,22 +556,18 @@ class EntropyRepository(EntropyRepositoryPluginStore):
         @keyword useBranch: if True, it won't use SystemSettings' branch
             setting but rather the one provided
         @type useBranch: string
-        @keyword lockRemote: determine whether remote server-side database
-            should be locked when updating the local version
-        @type lockRemote: bool
         """
         EntropyRepositoryPluginStore.__init__(self)
 
         self.SystemSettings = SystemSettings()
-        self.srv_sys_settings_plugin = \
-            etpConst['system_settings_plugins_ids']['server_plugin']
         self.dbMatchCacheKey = etpCache['dbMatch']
         self.client_settings_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
         self.db_branch = self.SystemSettings['repositories']['branch']
         self.Cacher = EntropyCacher()
 
+        # default to None, used by entropy server
+        self.server_repo = None
         self.dbname = dbname
-        self.lockRemote = lockRemote
         if self.dbname == etpConst['clientdbid']:
             self.db_branch = None
         if useBranch != None:
@@ -568,10 +602,6 @@ class EntropyRepository(EntropyRepositoryPluginStore):
                 self.indexing = False
         self.dbFile = dbFile
         self.dbclosed = True
-        self.server_repo = None
-
-        if not self.clientDatabase:
-            self.server_repo = self.dbname[len(etpConst['serverdbid']):]
 
         if not self.skipChecks:
             # no caching for non root and server connections
@@ -654,28 +684,6 @@ class EntropyRepository(EntropyRepositoryPluginStore):
             self.cursor.close()
             self.connection.close()
 
-        # XXX: remove
-        if self.clientDatabase:
-            return
-
-        # XXX move from here
-        from entropy.server.interfaces.db import ServerRepositoryStatus
-        sts = ServerRepositoryStatus()
-        if not sts.is_tainted(self.dbFile):
-            # we can unlock it, no changes were made
-            from entropy.server.interfaces import Server
-            srv = Server()
-            srv.MirrorsService.lock_mirrors(False, repo = self.server_repo)
-        elif not sts.is_unlock_msg(self.dbFile):
-            u_msg = _("Mirrors have not been unlocked. Remember to sync them.")
-            self.updateProgress(
-                darkgreen(u_msg),
-                importance = 1,
-                type = "info",
-                header = brown(" * ")
-            )
-            sts.set_unlock_msg(self.dbFile) # avoid spamming
-
     def vacuum(self):
         """
         Repository storage cleanup and optimization function.
@@ -703,47 +711,6 @@ class EntropyRepository(EntropyRepositoryPluginStore):
             if exec_rc:
                 raise RepositoryPluginError("[commit_hook] %s: status: %s" % (
                     plug_inst.get_id(), exec_rc,))
-
-        # XXX: remove (move from here)
-        if not self.clientDatabase:
-
-            from entropy.server.interfaces.db import ServerRepositoryStatus
-            from entropy.server.interfaces import Server
-            srv = Server()
-            dbs = ServerRepositoryStatus()
-
-            # taint the database status
-            taint_file = srv.get_local_database_taint_file(repo =
-                self.server_repo)
-            f = open(taint_file, "w")
-            f.write(etpConst['currentarch']+" database tainted\n")
-            f.flush()
-            f.close()
-            const_setup_file(taint_file, etpConst['entropygid'], 0o664)
-            dbs.set_tainted(self.dbFile)
-
-            if (dbs.is_tainted(self.dbFile)) and \
-                (not dbs.is_bumped(self.dbFile)):
-                # bump revision, setting DatabaseBump causes
-                # the session to just bump once
-                dbs.set_bumped(self.dbFile)
-                """
-                Entropy repository revision bumping function. Every time it's called,
-                revision is incremented by 1.
-                """
-                revision_file = srv.get_local_database_revision_file(
-                    repo = self.server_repo)
-                if not os.path.isfile(revision_file):
-                    revision = 1
-                else:
-                    f = open(revision_file, "r")
-                    revision = int(f.readline().strip())
-                    revision += 1
-                    f.close()
-                f = open(revision_file, "w")
-                f.write(str(revision)+"\n")
-                f.flush()
-                f.close()
 
     def initializeDatabase(self):
         """
@@ -1387,7 +1354,8 @@ class EntropyRepository(EntropyRepositoryPluginStore):
             myslot = self.retrieveSlot(idpackage)
             # we merely ignore packages with
             # negative counters, since they're the injected ones
-            if self.isInjected(idpackage): continue
+            if self.isInjected(idpackage):
+                continue
             if slot == myslot:
                 # remove!
                 removelist.add(idpackage)
@@ -1482,7 +1450,7 @@ class EntropyRepository(EntropyRepositoryPluginStore):
 
             # does it exist?
             self.removePackage(idpackage, do_cleanup = False,
-                do_commit = False, do_rss = False)
+                do_commit = False, from_add_package = True)
             myidpackage_string = '?'
             mybaseinfo_data = (idpackage,)+mybaseinfo_data
 
@@ -1581,130 +1549,16 @@ class EntropyRepository(EntropyRepositoryPluginStore):
         plugins = self.get_plugins()
         for plugin_id in sorted(plugins):
             plug_inst = plugins[plugin_id]
-            exec_rc = plug_inst.add_package_hook(self)
+            exec_rc = plug_inst.add_package_hook(self, pkg_data)
             if exec_rc:
                 raise RepositoryPluginError(
                     "[add_package_hook] %s: status: %s" % (
                         plug_inst.get_id(), exec_rc,))
 
-        # XXX: move away
-        ### RSS Atom support
-        ### dictionary will be elaborated by activator
-        if self.srv_sys_settings_plugin in self.SystemSettings:
-            srv_data = self.SystemSettings[self.srv_sys_settings_plugin]
-            if srv_data['server']['rss']['enabled'] and not self.clientDatabase:
-
-                self._write_rss_for_added_package(pkgatom, revision,
-                    pkg_data['description'], pkg_data['homepage'])
-
-        # Update category description
-        if not self.clientDatabase:
-            mycategory = pkg_data['category']
-            descdata = {}
-            try:
-                descdata = self._get_category_description_from_disk(mycategory)
-            except (IOError, OSError, EOFError,):
-                pass
-            if descdata:
-                self.setCategoryDescription(mycategory, descdata)
-
         return idpackage, revision, pkg_data
 
-    def _write_rss_for_added_package(self, pkgatom, revision, description,
-        homepage):
-
-        # setup variables we're going to use
-        srv_repo = self.server_repo
-        rss_atom = "%s~%s" % (pkgatom, revision,)
-        from entropy.server.interfaces.db import ServerRepositoryStatus
-        status = ServerRepositoryStatus()
-        srv_updates = status.get_updates_log(srv_repo)
-        rss_name = srv_repo + etpConst['rss-dump-name']
-
-        # load metadata from on disk cache, if available
-        rss_obj = self.dumpTools.loadobj(rss_name)
-        if rss_obj:
-            srv_updates.update(rss_obj)
-
-        # setup metadata keys, if not available
-        if 'added' not in srv_updates:
-            srv_updates['added'] = {}
-        if 'removed' not in srv_updates:
-            srv_updates['removed'] = {}
-        if 'light' not in srv_updates:
-            srv_updates['light'] = {}
-
-        # if pkgatom (rss_atom) is in the "removed" metadata, drop it
-        if rss_atom in srv_updates['removed']:
-            del srv_updates['removed'][rss_atom]
-
-        # add metadata
-        srv_updates['added'][rss_atom] = {}
-        srv_updates['added'][rss_atom]['description'] = description
-        srv_updates['added'][rss_atom]['homepage'] = homepage
-        srv_updates['light'][rss_atom] = {}
-        srv_updates['light'][rss_atom]['description'] = description
-
-        # save to disk
-        self.dumpTools.dumpobj(rss_name, srv_updates)
-
-    def _write_rss_for_removed_package(self, idpackage):
-        """
-        docstring_title
-
-        @param idpackage: package indentifier
-        @type idpackage: int
-        @return:
-        @rtype:
-
-        """
-
-        # setup variables we're going to use
-        srv_repo = self.server_repo
-        rss_revision = self.retrieveRevision(idpackage)
-        rss_atom = "%s~%s" % (self.retrieveAtom(idpackage), rss_revision,)
-        from entropy.server.interfaces.db import ServerRepositoryStatus
-        status = ServerRepositoryStatus()
-        srv_updates = status.get_updates_log(srv_repo)
-        rss_name = srv_repo + etpConst['rss-dump-name']
-
-        # load metadata from on disk cache, if available
-        rss_obj = self.dumpTools.loadobj(rss_name)
-        if rss_obj:
-            srv_updates.update(rss_obj)
-
-        # setup metadata keys, if not available
-        if 'added' not in srv_updates:
-            srv_updates['added'] = {}
-        if 'removed' not in srv_updates:
-            srv_updates['removed'] = {}
-        if 'light' not in srv_updates:
-            srv_updates['light'] = {}
-
-        # if pkgatom (rss_atom) is in the "added" metadata, drop it
-        if rss_atom in srv_updates['added']:
-            del srv_updates['added'][rss_atom]
-        # same thing for light key
-        if rss_atom in srv_updates['light']:
-            del srv_updates['light'][rss_atom]
-
-        # add metadata
-        mydict = {}
-        try:
-            mydict['description'] = self.retrieveDescription(idpackage)
-        except TypeError:
-            mydict['description'] = "N/A"
-        try:
-            mydict['homepage'] = self.retrieveHomepage(idpackage)
-        except TypeError:
-            mydict['homepage'] = ""
-        srv_updates['removed'][rss_atom] = mydict
-
-        # save to disk
-        self.dumpTools.dumpobj(rss_name, srv_updates)
-
     def removePackage(self, idpackage, do_cleanup = True, do_commit = True,
-        do_rss = True):
+        from_add_package = False):
         """
         Remove package from this Entropy repository using it's identifier
         (idpackage).
@@ -1717,10 +1571,9 @@ class EntropyRepository(EntropyRepositoryPluginStore):
         @keyword do_commit: if True, commits the transaction (could cause
             slowness)
         @type do_commit: bool
-        @keyword do_rss: triggered only for server-side repositories, if True,
-            generates information about the removal in RSS form, dumping data
-            to cache (used internally to handle RSS support for repositories).
-        @type do_rss: bool
+        @keyword from_add_package: inform function that it's being called from
+            inside addPackage().
+        @type from_add_package: bool
         """
         # clear caches
         self.clearCache()
@@ -1728,21 +1581,12 @@ class EntropyRepository(EntropyRepositoryPluginStore):
         plugins = self.get_plugins()
         for plugin_id in sorted(plugins):
             plug_inst = plugins[plugin_id]
-            exec_rc = plug_inst.remove_package_hook(self)
+            exec_rc = plug_inst.remove_package_hook(self, idpackage,
+                from_add_package)
             if exec_rc:
                 raise RepositoryPluginError(
                     "[remove_package_hook] %s: status: %s" % (
                         plug_inst.get_id(), exec_rc,))
-
-        # XXX: move away
-        ### RSS Atom support
-        ### dictionary will be elaborated by activator
-        if self.srv_sys_settings_plugin in self.SystemSettings:
-            if self.SystemSettings[self.srv_sys_settings_plugin]['server']['rss']['enabled'] and \
-                (not self.clientDatabase) and do_rss:
-
-                # store addPackage action
-                self._write_rss_for_removed_package(idpackage)
 
         with self.__write_mutex:
 
@@ -3154,17 +2998,6 @@ class EntropyRepository(EntropyRepositoryPluginStore):
         if cat:
             return cat[0]
         return cat
-
-    def _get_category_description_from_disk(self, category):
-        """
-        Get category name description from Source Package Manager.
-
-        @param category: category name
-        @type category: string
-        @return: category description
-        @rtype: string
-        """
-        return get_spm(self).get_package_category_description_metadata(category)
 
     def getSystemPackages(self):
         """
