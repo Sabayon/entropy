@@ -13,6 +13,8 @@ import shutil
 class SpmTest(unittest.TestCase):
 
     def setUp(self):
+        sys.stdout.write("%s called\n" % (self,))
+        sys.stdout.flush()
         self.Client = Client(noclientdb = 2, indexing = False, xcache = False,
             repo_validation = False)
         self.test_pkg = _misc.get_test_entropy_package()

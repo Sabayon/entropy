@@ -14,6 +14,8 @@ import tests._misc as _misc
 class EntropyRepositoryTest(unittest.TestCase):
 
     def setUp(self):
+        sys.stdout.write("%s called\n" % (self,))
+        sys.stdout.flush()
         self.Client = Client(noclientdb = 2, indexing = False, xcache = False,
             repo_validation = False)
         self.Spm = self.Client.Spm()

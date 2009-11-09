@@ -17,6 +17,8 @@ import stat
 class ToolsTest(unittest.TestCase):
 
     def setUp(self):
+        sys.stdout.write("%s called\n" % (self,))
+        sys.stdout.flush()
         self.test_pkg = _misc.get_test_entropy_package()
         self.test_pkg2 = _misc.get_test_entropy_package2()
         self.test_pkg3 = _misc.get_test_entropy_package3()

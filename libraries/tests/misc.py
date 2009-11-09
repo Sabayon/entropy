@@ -9,6 +9,8 @@ from entropy.misc import Lifo, TimeScheduled, ParallelTask, EmailSender
 class MiscTest(unittest.TestCase):
 
     def setUp(self):
+        sys.stdout.write("%s called\n" % (self,))
+        sys.stdout.flush()
         self.__lifo = Lifo()
         self._lifo_item1 = set([1, 2, 3, 4])
         self._lifo_item2 = set([1, 2, 3, 4])

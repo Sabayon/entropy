@@ -11,6 +11,8 @@ from entropy.const import etpUi
 class TransceiversTest(unittest.TestCase):
 
     def setUp(self):
+        sys.stdout.write("%s called\n" % (self,))
+        sys.stdout.flush()
         self._random_file = _misc.get_random_file()
         self._random_file_md5 = _misc.get_random_file_md5()
 

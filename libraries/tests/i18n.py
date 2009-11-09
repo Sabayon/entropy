@@ -14,6 +14,8 @@ from entropy.const import const_convert_to_unicode
 class MiscTest(unittest.TestCase):
 
     def setUp(self):
+        sys.stdout.write("%s called\n" % (self,))
+        sys.stdout.flush()
         self._backup_language = os.environ.get("LANGUAGE", '')
         self._words_to_test = [
             "Yes", "No", "database already exists",

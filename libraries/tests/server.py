@@ -15,6 +15,8 @@ import tests._misc as _misc
 class EntropyRepositoryTest(unittest.TestCase):
 
     def setUp(self):
+        sys.stdout.write("%s called\n" % (self,))
+        sys.stdout.flush()
         self.default_repo = "foo"
         etpConst['officialserverrepositoryid'] = self.default_repo
         etpConst['uid'] = 0

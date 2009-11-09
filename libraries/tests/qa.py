@@ -11,6 +11,8 @@ import tempfile
 class QATest(unittest.TestCase):
 
     def setUp(self):
+        sys.stdout.write("%s called\n" % (self,))
+        sys.stdout.flush()
         text = TextInterface()
         self.QA = entropy.qa.QAInterface(text)
 
