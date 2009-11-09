@@ -48,6 +48,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         @param metadata: any dict form metadata map (key => value)
         @type metadata: dict
         """
+        EntropyRepositoryPlugin.__init__(self)
         self.SystemSettings = SystemSettings()
         self.srv_sys_settings_plugin = \
             etpConst['system_settings_plugins_ids']['server_plugin']
@@ -62,11 +63,23 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             "ServerEntropyRepositoryPlugin: calling add_plugin_hook => %s" % (
                 self,)
             )
+
         # setup some settings expected to be there by Entropy Server
         entropy_repository_instance.lockRemote = \
             self._metadata.get('lock_remote', False)
-        entropy_repository_instance.server_repo = \
-            self._metadata.get('server_repo')
+
+        entropy_repository_instance.noUpload = \
+            self._metadata.get('no_upload', False)
+
+        use_branch = self._metadata.get('use_branch')
+        if use_branch is not None:
+            entropy_repository_instance.db_branch = use_branch
+
+        out_intf = self._metadata.get('output_interface')
+        if out_intf is not None:
+            entropy_repository_instance.updateProgress = out_intf.updateProgress
+            entropy_repository_instance.askQuestion = out_intf.askQuestion
+
         return 0
 
     def close_repo_hook(self, entropy_repository_instance):
@@ -74,12 +87,12 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             "ServerEntropyRepositoryPlugin: calling close_repo_hook => %s" % (
                 self,)
             )
+        repo = entropy_repository_instance.dbname
         dbfile = entropy_repository_instance.dbFile
         sts = ServerRepositoryStatus()
         if not sts.is_tainted(dbfile):
             # we can unlock it, no changes were made
-            self._server.MirrorsService.lock_mirrors(False,
-                repo = self._metadata['server_repo'])
+            self._server.MirrorsService.lock_mirrors(False, repo = repo)
         elif not sts.is_unlock_msg(dbfile):
             u_msg = _("Mirrors have not been unlocked. Remember to sync them.")
             self._server.updateProgress(
@@ -101,10 +114,10 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
         dbs = ServerRepositoryStatus()
         dbfile = entropy_repository_instance.dbFile
+        repo = entropy_repository_instance.dbname
 
         # taint the database status
-        taint_file = self._server.get_local_database_taint_file(
-            repo = self._metadata['server_repo'])
+        taint_file = self._server.get_local_database_taint_file(repo = repo)
         f = open(taint_file, "w")
         f.write(etpConst['currentarch']+" database tainted\n")
         f.flush()
@@ -121,7 +134,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             revision is incremented by 1.
             """
             revision_file = self._server.get_local_database_revision_file(
-                repo = self._metadata['server_repo'])
+                repo = repo)
             if not os.path.isfile(revision_file):
                 revision = 1
             else:
@@ -153,7 +166,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
     def _write_rss_for_removed_package(self, repo_db, idpackage):
 
         # setup variables we're going to use
-        srv_repo = self._metadata['server_repo']
+        srv_repo = repo_db.dbname
         rss_revision = repo_db.retrieveRevision(idpackage)
         rss_atom = "%s~%s" % (repo_db.retrieveAtom(idpackage), rss_revision,)
         status = ServerRepositoryStatus()
@@ -195,10 +208,10 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         # save to disk
         self.dump.dumpobj(rss_name, srv_updates)
 
-    def _write_rss_for_added_package(self, package_data):
+    def _write_rss_for_added_package(self, repo_db, package_data):
 
         # setup variables we're going to use
-        srv_repo = self._metadata['server_repo']
+        srv_repo = repo_db.dbname
         rss_atom = "%s~%s" % (package_data['atom'], package_data['revision'],)
         status = ServerRepositoryStatus()
         srv_updates = status.get_updates_log(srv_repo)
@@ -245,7 +258,8 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         # handle server-side repo RSS support
         sys_set_plug = self.srv_sys_settings_plugin
         if self.SystemSettings[sys_set_plug]['server']['rss']['enabled']:
-            self._write_rss_for_added_package(package_data)
+            self._write_rss_for_added_package(entropy_repository_instance,
+                package_data)
 
         try:
             descdata = self._get_category_description_from_disk(
@@ -1088,8 +1102,7 @@ class Server(Singleton, TextInterface):
 
         if mirrors is None:
             mirrors = []
-        dbc = self._open_memory_database(dbname = etpConst['serverdbid'] + \
-            repoid)
+        dbc = self._open_memory_database(repoid)
         Server._memory_db_instances[repoid] = dbc
 
         eapi3_port = int(etpConst['socket_service']['port'])
@@ -1115,13 +1128,15 @@ class Server(Singleton, TextInterface):
 
         etp_repo_meta = {
             'lock_remote': False,
-            'server_repo': repoid,
+            'no_upload': True,
+            'use_branch': None,
+            'output_interface': self,
         }
         srv_plug = ServerEntropyRepositoryPlugin(self, metadata = etp_repo_meta)
         dbc.add_plugin(srv_plug)
         return dbc
 
-    def _open_memory_database(self, dbname = None, output_interface = None):
+    def _open_memory_database(self, repo):
         """
         Open in-memory EntropyRepository interface.
 
@@ -1130,16 +1145,13 @@ class Server(Singleton, TextInterface):
         @keyword output_interface: entropy.output.TextInterface based instance
         @type output_interface: entropy.output.TextInterface based instance
         """
-        if dbname is None:
-            dbname = etpConst['genericdbid']
         conn = EntropyRepository(
             readOnly = False,
             dbFile = ':memory:',
-            clientDatabase = True,
-            dbname = dbname,
+            clientDatabase = False,
+            dbname = repo,
             xcache = False,
             indexing = False,
-            OutputInterface = output_interface,
             skipChecks = True
         )
         conn.initializeDatabase()
@@ -1197,14 +1209,16 @@ class Server(Singleton, TextInterface):
         conn = EntropyRepository(
             readOnly = read_only,
             dbFile = local_dbfile,
-            noUpload = no_upload,
-            OutputInterface = self,
-            dbname = etpConst['serverdbid']+repo,
-            useBranch = use_branch
+            dbname = repo,
+            xcache = False # always set to False, if you want to enable
+            # you need to make sure that client-side and server-side caches
+            # don't collide due to sharing EntropyRepository.dbname
         )
         etp_repo_meta = {
             'lock_remote': lock_remote,
-            'server_repo': repo,
+            'no_upload': no_upload,
+            'use_branch': use_branch,
+            'output_interface': self,
         }
         srv_plug = ServerEntropyRepositoryPlugin(self, metadata = etp_repo_meta)
         conn.add_plugin(srv_plug)

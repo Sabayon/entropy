@@ -56,7 +56,7 @@ except ImportError: # fallback to pysqlite
         )
 
 
-class EntropyRepositoryPlugin:
+class EntropyRepositoryPlugin(object):
     """
     This is the base class for implementing EntropyRepository plugin hooks.
     You have to subclass this, implement not implemented methods and provide
@@ -222,7 +222,7 @@ class EntropyRepositoryPluginStore(EntropyPluginStore):
         return EntropyPluginStore.remove_plugin(self, plugin_id)
 
 
-class EntropyRepository(EntropyRepositoryPluginStore):
+class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
     """
     EntropyRepository implements SQLite3 based storage. In a Model-View based
@@ -524,19 +524,15 @@ class EntropyRepository(EntropyRepositoryPluginStore):
     import entropy.tools as entropyTools
     import entropy.dump as dumpTools
     import threading
-    def __init__(self, readOnly = False, noUpload = False, dbFile = None,
-        clientDatabase = False, xcache = False, dbname = etpConst['serverdbid'],
-        indexing = True, OutputInterface = None, skipChecks = False,
-        useBranch = None):
+    def __init__(self, readOnly = False, dbFile = None,
+        clientDatabase = False, xcache = False, dbname = 'etpdb:',
+        indexing = True, OutputInterface = None, skipChecks = False):
 
         """
         EntropyRepository constructor.
 
         @keyword readOnly: open file in read-only mode
         @type readOnly: bool
-        @keyword noUpload: server-side setting for not allowing database
-            uploads when remote revision is lower than local
-        @type noUpload: bool
         @keyword dbFile: path to database to open
         @type dbFile: string
         @keyword clientDatabase: state that EntropyRepository instance is
@@ -553,28 +549,20 @@ class EntropyRepository(EntropyRepositoryPluginStore):
         @type OutputInterface: entropy.output.TextInterface based instance
         @keyword skipChecks: if True, skip integrity checks
         @type skipChecks: bool
-        @keyword useBranch: if True, it won't use SystemSettings' branch
-            setting but rather the one provided
-        @type useBranch: string
         """
         EntropyRepositoryPluginStore.__init__(self)
 
+        self.dbclosed = True
         self.SystemSettings = SystemSettings()
         self.dbMatchCacheKey = etpCache['dbMatch']
-        self.client_settings_plugin_id = etpConst['system_settings_plugins_ids']['client_plugin']
+        self.client_settings_plugin_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
         self.db_branch = self.SystemSettings['repositories']['branch']
         self.Cacher = EntropyCacher()
 
-        # default to None, used by entropy server
-        self.server_repo = None
         self.dbname = dbname
         if self.dbname == etpConst['clientdbid']:
             self.db_branch = None
-        if useBranch != None:
-            self.db_branch = useBranch
-
-        if OutputInterface is None:
-            OutputInterface = TextInterface()
 
         if dbFile is None:
             raise IncorrectParameter("IncorrectParameter: %s" % (
@@ -583,31 +571,16 @@ class EntropyRepository(EntropyRepositoryPluginStore):
         self.__write_mutex = self.threading.RLock()
         self.dbapi2 = dbapi2
         # setup output interface
-        self.OutputInterface = OutputInterface
-        self.updateProgress = self.OutputInterface.updateProgress
-        self.askQuestion = self.OutputInterface.askQuestion
+        if OutputInterface is not None:
+            self.updateProgress = OutputInterface.updateProgress
+            self.askQuestion = OutputInterface.askQuestion
         # setup service interface
         self.readOnly = readOnly
-        self.noUpload = noUpload
         self.clientDatabase = clientDatabase
         self.xcache = xcache
         self.indexing = indexing
         self.skipChecks = skipChecks
-        if not self.skipChecks:
-            if not self.entropyTools.is_user_in_entropy_group():
-                # forcing since we won't have write access to db
-                self.indexing = False
-            # live systems don't like wasting RAM
-            if self.entropyTools.islive():
-                self.indexing = False
         self.dbFile = dbFile
-        self.dbclosed = True
-
-        if not self.skipChecks:
-            # no caching for non root and server connections
-            if (self.dbname.startswith(etpConst['serverdbid'])) or \
-                (not self.entropyTools.is_user_in_entropy_group()):
-                self.xcache = False
         self.live_cache = {}
 
         # create connection
@@ -616,6 +589,14 @@ class EntropyRepository(EntropyRepositoryPluginStore):
         self.cursor = self.connection.cursor()
 
         if not self.skipChecks:
+
+            if not self.entropyTools.is_user_in_entropy_group():
+                # forcing since we won't have write access to db
+                self.indexing = False
+            # live systems don't like wasting RAM
+            if self.entropyTools.islive():
+                self.indexing = False
+
             try:
                 if os.access(self.dbFile, os.W_OK) and \
                     self._doesTableExist('baseinfo') and \
@@ -1254,8 +1235,6 @@ class EntropyRepository(EntropyRepositoryPluginStore):
                     continue
                 pkgdata['dependencies'][manual_dep] = etpConst['spm']['mdepend_id']
 
-
-
         if self.clientDatabase:
             remove_conflicting_packages(pkg_data)
             return self.addPackage(pkg_data, revision = forcedRevision,
@@ -1341,7 +1320,7 @@ class EntropyRepository(EntropyRepositoryPluginStore):
         if filter_similar:
             # filter out packages in the same scope that are allowed to stay
             idpkgs = self.SystemSettings[srv_ss_fs_plg]['repos'].get(
-                self.server_repo)
+                self.dbname)
             if idpkgs:
                 if -1 in idpkgs:
                     del searchsimilar[:]
@@ -2722,7 +2701,7 @@ class EntropyRepository(EntropyRepositoryPluginStore):
                     self.cursor.execute(
                     'INSERT into counters VALUES (?,?,?)',
                         (my_uid, idpackage, branch,))
-                elif self.dbname.startswith(etpConst['serverdbid']):
+                elif not self.clientDatabase:
                     raise
 
         return my_uid
@@ -3492,8 +3471,10 @@ class EntropyRepository(EntropyRepositoryPluginStore):
             dump_dir = os.path.dirname(dump_path)
             if os.path.isdir(dump_dir):
                 for item in os.listdir(dump_dir):
-                    try: os.remove(os.path.join(dump_dir, item))
-                    except OSError: pass
+                    try:
+                        os.remove(os.path.join(dump_dir, item))
+                    except OSError:
+                        pass
 
         do_clear("%s/%s/" % (self.dbMatchCacheKey, self.dbname,))
         if depends:
@@ -7532,7 +7513,7 @@ class EntropyRepository(EntropyRepositoryPluginStore):
             self.cursor.executemany('INSERT into dependstable VALUES (?,?)',
                 iterable)
             if (self.entropyTools.is_user_in_entropy_group()) and \
-                (self.dbname.startswith(etpConst['serverdbid'])):
+                (not self.clientDatabase):
                     # force commit even if readonly, this will allow
                     # to automagically fix dependstable server side
                     # we don't care much about syncing the
@@ -8035,7 +8016,8 @@ class EntropyRepository(EntropyRepositoryPluginStore):
         if self.dbname == etpConst['clientdbid']:
             return idpackage, 0
 
-        elif self.dbname.startswith(etpConst['serverdbid']):
+        elif not self.clientDatabase:
+            # server-side repositories don't make any use of idpackage validator
             return idpackage, 0
 
         reponame = self.dbname[len(etpConst['dbnamerepoprefix']):]
