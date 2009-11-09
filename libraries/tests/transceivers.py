@@ -54,4 +54,8 @@ class TransceiversTest(unittest.TestCase):
         os.remove(path_to_save)
 
 if __name__ == '__main__':
+    if "--debug" in sys.argv:
+        sys.argv.remove("--debug")
+        from entropy.const import etpUi
+        etpUi['debug'] = True
     unittest.main()

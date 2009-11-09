@@ -138,4 +138,8 @@ class SpmTest(unittest.TestCase):
         shutil.rmtree(tmp_path, True)
 
 if __name__ == '__main__':
+    if "--debug" in sys.argv:
+        sys.argv.remove("--debug")
+        from entropy.const import etpUi
+        etpUi['debug'] = True
     unittest.main()

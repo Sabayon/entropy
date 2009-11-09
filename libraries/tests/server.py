@@ -54,4 +54,8 @@ class EntropyRepositoryTest(unittest.TestCase):
         self.assertNotEqual(None, dbconn.retrieveAtom(1))
 
 if __name__ == '__main__':
+    if "--debug" in sys.argv:
+        sys.argv.remove("--debug")
+        from entropy.const import etpUi
+        etpUi['debug'] = True
     unittest.main()

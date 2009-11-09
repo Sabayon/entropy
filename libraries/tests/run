@@ -12,8 +12,12 @@ sys.path.insert(0,'../../client')
 sys.path.insert(0,'.')
 sys.path.insert(0,'../')
 # set unit testing mode
-from entropy.const import etpSys
+from entropy.const import etpSys, etpUi
 etpSys['unittest'] = True
+if "--debug" in sys.argv:
+    sys.argv.remove("--debug")
+    etpUi['debug'] = True
+
 from tests import db, client, server, misc, transceivers, tools, i18n, spm, qa
 rc = 0
 
