@@ -679,9 +679,6 @@ class Server(Singleton, TextInterface):
         if self.default_repository in srv_set['repositories']:
             self.ensure_paths(self.default_repository)
 
-        # NOW DISABLED, deprecated!
-        # self.migrate_repository_databases_to_new_branched_path()
-
         if self.default_repository not in srv_set['repositories']:
             raise PermissionDenied("PermissionDenied: %s %s" % (
                         self.default_repository,
@@ -728,56 +725,6 @@ class Server(Singleton, TextInterface):
             if (not os.path.isdir(mydir)) and (not os.path.lexists(mydir)):
                 os.makedirs(mydir)
                 const_setup_perms(mydir, etpConst['entropygid'])
-
-
-    def migrate_repository_databases_to_new_branched_path(self):
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        migrated_filename = '.branch_migrated'
-        for repoid in list(srv_set['repositories'].keys()):
-
-            if repoid == etpConst['clientserverrepoid']: continue
-            mydir = srv_set['repositories'][repoid]['database_dir']
-            if not os.path.isdir(mydir): # empty ?
-                continue
-
-            migrated_filepath = os.path.join(mydir, migrated_filename)
-            if os.path.isfile(migrated_filepath):
-                continue
-
-            my_branched_dir = self.get_local_database_dir(repoid)
-            if os.path.isdir(my_branched_dir): # wtf? do not touch
-                continue
-
-            self.updateProgress(
-                "[%s:%s] %s: %s, %s: %s" % (
-                        brown("repo"),
-                        purple(repoid),
-                        _("migrating database path from"),
-                        brown(mydir),
-                        _('to'),
-                        brown(my_branched_dir),
-                ),
-                importance = 1,
-                type = "info",
-                header = bold(" @@ ")
-            )
-
-            repo_files = [os.path.join(mydir, x) for x in os.listdir(mydir) if \
-                (os.path.isfile(os.path.join(mydir, x)) and \
-                os.access(os.path.join(mydir, x), os.W_OK))
-            ]
-            os.makedirs(my_branched_dir)
-            const_setup_perms(my_branched_dir, etpConst['entropygid'])
-
-            for repo_file in repo_files:
-                repo_filename = os.path.basename(repo_file)
-                shutil.move(repo_file,
-                    os.path.join(my_branched_dir, repo_filename))
-
-            f_migrated = open(migrated_filepath, "w")
-            f_migrated.write("done\n")
-            f_migrated.flush()
-            f_migrated.close()
 
     def setup_services(self):
         self.setup_entropy_settings()
