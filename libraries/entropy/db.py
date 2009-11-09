@@ -526,7 +526,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
     import threading
     def __init__(self, readOnly = False, dbFile = None,
         clientDatabase = False, xcache = False, dbname = 'etpdb:',
-        indexing = True, OutputInterface = None, skipChecks = False):
+        indexing = True, skipChecks = False):
 
         """
         EntropyRepository constructor.
@@ -544,9 +544,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type dbname: string
         @keyword indexing: enable database indexes
         @type indexing: bool
-        @keyword OutputInterface: interface used to communicate with the user.
-            must inherit entropy.output.TextInterface
-        @type OutputInterface: entropy.output.TextInterface based instance
         @keyword skipChecks: if True, skip integrity checks
         @type skipChecks: bool
         """
@@ -570,10 +567,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         self.__write_mutex = self.threading.RLock()
         self.dbapi2 = dbapi2
-        # setup output interface
-        if OutputInterface is not None:
-            self.updateProgress = OutputInterface.updateProgress
-            self.askQuestion = OutputInterface.askQuestion
         # setup service interface
         self.readOnly = readOnly
         self.clientDatabase = clientDatabase
