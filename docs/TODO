@@ -4,7 +4,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
-    - entropy.qa.QAInterfacePlugin: make use of the new EntropyPluginStore class
     - entropy.services ts completion
     - entropy.client ts completion
     - entropy.server ts completion
