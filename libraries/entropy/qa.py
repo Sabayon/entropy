@@ -23,14 +23,14 @@ import sys
 import subprocess
 import tempfile
 
-from entropy.const import etpConst, etpSys, const_debug_write
+from entropy.const import etpConst, etpSys, const_debug_write, const_debug_write
 from entropy.output import blue, darkgreen, red, darkred, bold, purple, brown
 from entropy.exceptions import IncorrectParameter, PermissionDenied, \
     SystemDatabaseError
 from entropy.i18n import _
+from entropy.core import EntropyPluginStore
 from entropy.core.settings.base import SystemSettings
 
-from entropy.const import const_debug_write
 from entropy.db import EntropyRepositoryPlugin
 
 class QAEntropyRepositoryPlugin(EntropyRepositoryPlugin):
@@ -52,6 +52,18 @@ class QAEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             self._metadata = {}
         else:
             self._metadata = metadata
+
+        # make sure we set client_repo metadata to True, this indicates
+        # EntropyRepository that we are a client-side repository
+        # Of course, it shouldn't make any diff to not set this, but we
+        # really want to make sure it's always enforced.
+        self._metadata['client_repo'] = True
+
+    def get_metadata(self):
+        return self._metadata
+
+    def get_id(self):
+        return "__qa__"
 
     def add_plugin_hook(self, entropy_repository_instance):
         const_debug_write(__name__,
@@ -93,7 +105,7 @@ class QAInterfacePlugin:
         """
         raise NotImplementedError()
 
-class QAInterface:
+class QAInterface(EntropyPluginStore):
 
     """
     Entropy QA interface. This class contains all the Entropy
@@ -120,7 +132,7 @@ class QAInterface:
         with proper signature.
         @type OutputInterface: TextInterface class or subclass instance
         """
-        self.__plugins = {}
+        EntropyPluginStore.__init__(self)
         self.Output = OutputInterface
         self.SystemSettings = SystemSettings()
 
@@ -141,17 +153,7 @@ class QAInterface:
         """
         if not isinstance(plugin, QAInterfacePlugin):
             raise AttributeError("Specify a QAInterfacePlugin based class")
-        self.__plugins[plugin.get_id()] = plugin
-
-    def remove_plugin(self, plugin_id):
-        """
-        Remove a QAInterface plugin from the testing list.
-
-        @param plugin_id: identifier of the QAInterfacePlugin already added
-        @type plugin_id: hashable object
-        @raise KeyError: if plugin_id is not found in QAInterface
-        """
-        del self.__plugins[plugin_id]
+        return EntropyPluginStore.add_plugin(self, plugin.get_id(), plugin)
 
     def test_depends_linking(self, idpackages, dbconn, repo = None):
         """
@@ -1045,7 +1047,6 @@ class QAInterface:
             dbc = EntropyRepository(
                 readOnly = False,
                 dbFile = tmp_path,
-                clientDatabase = True,
                 dbname = 'qa_testing',
                 xcache = False,
                 indexing = False,
@@ -1097,7 +1098,7 @@ class QAInterface:
         qa_methods = [self.__analyze_package_edb]
 
         # plugged ones
-        for plug_id, plug_inst in self.__plugins.items():
+        for plug_id, plug_inst in self.get_plugins().items():
             qa_methods += plug_inst.get_tests()
 
         # let's play!
