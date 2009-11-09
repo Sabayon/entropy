@@ -610,7 +610,7 @@ class Server(Singleton, TextInterface):
 
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         self.default_repository = default_repository
-        if self.default_repository == None:
+        if self.default_repository is None:
             self.default_repository = srv_set['default_repository_id']
 
         if self.default_repository in srv_set['repositories']:
@@ -809,7 +809,7 @@ class Server(Singleton, TextInterface):
             return
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
 
-        if save == None:
+        if save is None:
             save = self.__do_save_repository
         if repoid not in srv_set['repositories']:
             raise PermissionDenied("PermissionDenied: %s %s" % (
@@ -1012,7 +1012,7 @@ class Server(Singleton, TextInterface):
 
     def do_server_repository_sync_lock(self, repo, no_upload):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         # check if the database is locked locally
@@ -1130,7 +1130,7 @@ class Server(Singleton, TextInterface):
         @keyword output_interface: entropy.output.TextInterface based instance
         @type output_interface: entropy.output.TextInterface based instance
         """
-        if dbname == None:
+        if dbname is None:
             dbname = etpConst['genericdbid']
         conn = EntropyRepository(
             readOnly = False,
@@ -1161,7 +1161,7 @@ class Server(Singleton, TextInterface):
             do_treeupdates = True
         ):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         if repo == etpConst['clientserverrepoid'] and self.community_repo:
@@ -1292,9 +1292,9 @@ class Server(Singleton, TextInterface):
         In other words, it checks for /usr/portage/profiles/updates changes.
         """
 
-        if branch == None:
+        if branch is None:
             branch = self.SystemSettings['repositories']['branch']
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         etpConst['server_treeupdatescalled'].add(repo)
@@ -1788,7 +1788,7 @@ class Server(Singleton, TextInterface):
         dbconn.commitChanges()
 
     def create_empty_database(self, dbpath = None, repo = None):
-        if dbpath == None:
+        if dbpath is None:
             dbpath = self.get_local_database_file(repo)
 
         dbdir = os.path.dirname(dbpath)
@@ -1837,7 +1837,7 @@ class Server(Singleton, TextInterface):
             )
             return 1, package_tag
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         # sanity check
@@ -1886,7 +1886,7 @@ class Server(Singleton, TextInterface):
         """
 
         status = True
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         branch = self.SystemSettings['repositories']['branch']
 
@@ -2180,7 +2180,7 @@ class Server(Singleton, TextInterface):
     def move_packages(self, matches, to_repo, from_repo = None, ask = True,
         do_copy = False, new_tag = None, pull_deps = False):
 
-        if from_repo == None:
+        if from_repo is None:
             from_repo = self.default_repository
         switched = set()
 
@@ -2445,7 +2445,7 @@ class Server(Singleton, TextInterface):
 
     def package_injector(self, package_file, inject = False, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         upload_dir = os.path.join(self.get_local_upload_directory(repo),
@@ -2593,7 +2593,7 @@ class Server(Singleton, TextInterface):
     def add_packages_to_repository(self, packages_data, ask = True,
         repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         mycount = 0
@@ -2699,7 +2699,7 @@ class Server(Singleton, TextInterface):
 
     def inject_database_into_packages(self, injection_data, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         # now inject metadata into tbz2 packages
@@ -2798,7 +2798,7 @@ class Server(Singleton, TextInterface):
 
     def remove_packages(self, idpackages, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         dbconn = self.open_server_repository(read_only = False,
@@ -2828,7 +2828,7 @@ class Server(Singleton, TextInterface):
         )
 
     def taint_database(self, repo = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         # taint the database status
@@ -2849,90 +2849,90 @@ class Server(Singleton, TextInterface):
 
     def get_remote_mirrors(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['mirrors'][:]
 
     def get_remote_packages_relative_path(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['packages_relative_path']
 
     def get_remote_database_relative_path(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['database_relative_path']
 
     def get_local_database_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabasefile'])
 
     def get_local_store_directory(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['store_dir']
 
     def get_local_upload_directory(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['upload_dir']
 
     def get_local_packages_directory(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return srv_set['repositories'][repo]['packages_dir']
 
     def get_local_database_taint_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabasetaintfile'])
 
     def get_local_database_revision_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabaserevisionfile'])
 
     def get_local_database_timestamp_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabasetimestampfile'])
 
     def get_local_database_ca_cert_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabasecacertfile'])
 
     def get_local_database_server_cert_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabaseservercertfile'])
 
     def get_local_database_mask_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabasemaskfile'])
 
     def get_local_database_system_mask_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabasesytemmaskfile'])
 
     def get_local_database_confl_tagged_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabaseconflictingtaggedfile'])
@@ -2940,32 +2940,32 @@ class Server(Singleton, TextInterface):
     def get_local_database_licensewhitelist_file(self, repo = None,
         branch = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabaselicwhitelistfile'])
 
     def get_local_database_rss_file(self, repo = None, branch = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             srv_set['rss']['name'])
 
     def get_local_database_rsslight_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['rss-light-name'])
 
     def get_local_database_notice_board_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['rss-notice-board'])
 
     def get_local_database_treeupdates_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabaseupdatefile'])
@@ -2973,7 +2973,7 @@ class Server(Singleton, TextInterface):
     def get_local_database_compressed_metafiles_file(self, repo = None,
         branch = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabasemetafilesfile'])
@@ -2981,59 +2981,59 @@ class Server(Singleton, TextInterface):
     def get_local_database_metafiles_not_found_file(self, repo = None,
         branch = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabasemetafilesnotfound'])
 
     def get_local_exp_based_pkgs_rm_whitelist_file(self, repo = None,
         branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabaseexpbasedpkgsrm'])
 
     def get_local_pkglist_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabasepkglist'])
 
     def get_local_database_sets_dir(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['confsetsdirname'])
 
     def get_local_post_branch_mig_script(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etp_post_branch_hop_script'])
 
     def get_local_post_branch_upg_script(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etp_post_branch_upgrade_script'])
 
     def get_local_critical_updates_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabasecriticalfile'])
 
     def get_local_database_keywords_file(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabasekeywordsfile'])
 
     def get_local_database_dir(self, repo = None, branch = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
-        if branch == None:
+        if branch is None:
             branch = self.SystemSettings['repositories']['branch']
         return os.path.join(srv_set['repositories'][repo]['database_dir'],
             branch)
@@ -3041,17 +3041,17 @@ class Server(Singleton, TextInterface):
     def get_missing_dependencies_blacklist_file(self, repo = None,
         branch = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
-        if branch == None:
+        if branch is None:
             branch = self.SystemSettings['repositories']['branch']
         return os.path.join(srv_set['repositories'][repo]['database_dir'],
             branch, etpConst['etpdatabasemissingdepsblfile'])
 
     def get_missing_dependencies_blacklist(self, repo = None, branch = None):
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
-        if branch == None:
+        if branch is None:
             branch = self.SystemSettings['repositories']['branch']
         wl_file = self.get_missing_dependencies_blacklist_file(repo, branch)
         wl_data = []
@@ -3065,9 +3065,9 @@ class Server(Singleton, TextInterface):
     def add_missing_dependencies_blacklist_items(self, items, repo = None,
         branch = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
-        if branch == None:
+        if branch is None:
             branch = self.SystemSettings['repositories']['branch']
         wl_file = self.get_missing_dependencies_blacklist_file(repo, branch)
         wl_dir = os.path.dirname(wl_file)
@@ -3082,7 +3082,7 @@ class Server(Singleton, TextInterface):
 
     def get_local_database_revision(self, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         dbrev_file = self.get_local_database_revision_file(repo)
@@ -3111,7 +3111,7 @@ class Server(Singleton, TextInterface):
 
     def get_remote_database_revision(self, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         remote_status =  self.MirrorsService.get_remote_databases_status(repo)
@@ -3251,7 +3251,7 @@ class Server(Singleton, TextInterface):
                         spm_atom, "SLOT")
                     addkey = self.entropyTools.dep_getkey(spm_atom)
                     # workaround for ebuilds not having slot
-                    if addslot == None:
+                    if addslot is None:
                         addslot = '0'
                     # atomtag != None is for handling tagged pkgs correctly
                     if (atomkey == addkey) and \
@@ -3352,7 +3352,7 @@ class Server(Singleton, TextInterface):
     def initialize_server_database(self, empty = True, repo = None,
         warnings = True):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         self.close_server_databases()
@@ -3650,7 +3650,7 @@ class Server(Singleton, TextInterface):
 
     def verify_remote_packages(self, packages, ask = True, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         self.updateProgress(
@@ -3746,7 +3746,7 @@ class Server(Singleton, TextInterface):
                 checksum_ok = False
                 ck_remote = self.get_remote_package_checksum(repo,
                     os.path.basename(pkgfile), orig_branch)
-                if ck_remote == None:
+                if ck_remote is None:
                     self.updateProgress(
                         "[%s] %s: %s %s" % (
                             brown(crippled_uri),
@@ -3869,7 +3869,7 @@ class Server(Singleton, TextInterface):
 
     def verify_local_packages(self, packages, ask = True, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         self.updateProgress(
@@ -4152,7 +4152,7 @@ class Server(Singleton, TextInterface):
 
     def switch_packages_branch(self, from_branch, to_branch, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         if to_branch != self.SystemSettings['repositories']['branch']:
@@ -4288,9 +4288,9 @@ class Server(Singleton, TextInterface):
 
     def get_entropy_sets(self, repo = None, branch = None):
 
-        if branch == None:
+        if branch is None:
             branch = self.SystemSettings['repositories']['branch']
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         sets_dir = self.get_local_database_sets_dir(repo, branch)
@@ -4319,9 +4319,9 @@ class Server(Singleton, TextInterface):
     def get_configured_package_sets(self, repo = None, branch = None,
         validate = True):
 
-        if branch == None:
+        if branch is None:
             branch = self.SystemSettings['repositories']['branch']
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
 
         # portage sets
@@ -4349,10 +4349,10 @@ class Server(Singleton, TextInterface):
 
     def update_database_package_sets(self, repo = None, dbconn = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.default_repository
         package_sets = self.get_configured_package_sets(repo)
-        if dbconn == None:
+        if dbconn is None:
             dbconn = self.open_server_repository(
                 read_only = False, no_upload = True, repo = repo,
                 do_treeupdates = False)
