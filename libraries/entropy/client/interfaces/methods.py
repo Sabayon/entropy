@@ -185,7 +185,6 @@ class RepositoryMixin:
             conn = EntropyRepository(
                 readOnly = True,
                 dbFile = dbfile,
-                clientDatabase = True,
                 dbname = etpConst['dbnamerepoprefix']+repoid,
                 xcache = xcache,
                 indexing = indexing
@@ -478,7 +477,7 @@ class RepositoryMixin:
         else:
             try:
                 conn = EntropyRepository(readOnly = False, dbFile = db_path,
-                    clientDatabase = True, dbname = etpConst['clientdbid'],
+                    dbname = etpConst['clientdbid'],
                     xcache = self.xcache, indexing = self.indexing
                 )
                 self._add_plugin_to_client_repository(conn)
@@ -563,7 +562,6 @@ class RepositoryMixin:
         return EntropyRepository(
             readOnly = readOnly,
             dbFile = dbfile,
-            clientDatabase = True,
             dbname = dbname,
             xcache = xcache,
             indexing = indexing,
@@ -577,7 +575,6 @@ class RepositoryMixin:
         dbc = EntropyRepository(
             readOnly = False,
             dbFile = ':memory:',
-            clientDatabase = True,
             dbname = dbname,
             xcache = False,
             indexing = False,

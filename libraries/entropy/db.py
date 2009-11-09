@@ -79,6 +79,20 @@ class EntropyRepositoryPlugin(object):
         """
         return str(self)
 
+    def get_metadata(self):
+        """
+        Developers reimplementing EntropyRepositoryPlugin can provide metadata
+        along with every instance. This method just returns a copy of it.
+        Metadata format is a map-like object (dictionary, dict()).
+        By default this method does return an empty dict.
+        Make sure that your metadata dictionaries around don't have keys in
+        common, otherwise those will be randomly overwritten eachothers.
+
+        @return: plugin metadata
+        @rtype: dict
+        """
+        return {}
+
     def add_plugin_hook(self, entropy_repository_instance):
         """
         Called during EntropyRepository plugin addition.
@@ -195,6 +209,55 @@ class EntropyRepositoryPlugin(object):
         """
         return 0
 
+    def treeupdates_move_action_hook(self, entropy_repository_instance,
+        idpackage):
+        """
+        Called after EntropyRepository treeupdates move action execution for
+        given idpackage in given EntropyRepository instance.
+
+        @param entropy_repository_instance: EntropyRepository instance
+        @type entropy_repository_instance: EntropyRepository
+        @param idpackage: Entropy repository package identifier
+        @type idpackage: int
+        @return: execution status code, return nonzero for errors, this will
+            raise a RepositoryPluginError exception.
+        @rtype: int
+        """
+        return 0
+
+    def treeupdates_slot_move_action_hook(self, entropy_repository_instance,
+        idpackage):
+        """
+        Called after EntropyRepository treeupdates slot move action
+        execution for given idpackage in given EntropyRepository instance.
+
+        @param entropy_repository_instance: EntropyRepository instance
+        @type entropy_repository_instance: EntropyRepository
+        @param idpackage: Entropy repository package identifier
+        @type idpackage: int
+        @return: execution status code, return nonzero for errors, this will
+            raise a RepositoryPluginError exception.
+        @rtype: int
+        """
+        return 0
+
+    def reverse_dependencies_tree_generation_hook(self,
+        entropy_repository_instance):
+        """
+        This hook is called inside
+        EntropyRepository.generateReverseDependenciesMetadata() method at
+        the very end of the function code.
+        Every time that repository is "tainted" with new packages, sooner or
+        later that function is called.
+
+        @param entropy_repository_instance: EntropyRepository instance
+        @type entropy_repository_instance: EntropyRepository
+        @return: execution status code, return nonzero for errors, this will
+            raise a RepositoryPluginError exception.
+        @rtype: int
+        """
+        return 0
+
 
 class EntropyRepositoryPluginStore(EntropyPluginStore):
 
@@ -221,6 +284,18 @@ class EntropyRepositoryPluginStore(EntropyPluginStore):
             plug_inst.remove_plugin_hook(self)
         return EntropyPluginStore.remove_plugin(self, plugin_id)
 
+    def get_plugins_metadata(self):
+        """
+        Return EntropyRepositoryPluginStore registered plugins metadata.
+
+        @return: plugins metadata
+        @rtype: dict
+        """
+        plugins = self.get_plugins()
+        meta = {}
+        for plugin_id in plugins:
+            meta.update(plugins[plugin_id].get_metadata())
+        return meta
 
 class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
@@ -524,9 +599,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
     import entropy.tools as entropyTools
     import entropy.dump as dumpTools
     import threading
-    def __init__(self, readOnly = False, dbFile = None,
-        clientDatabase = False, xcache = False, dbname = 'etpdb:',
-        indexing = True, skipChecks = False):
+    def __init__(self, readOnly = False, dbFile = None, xcache = False,
+        dbname = 'etpdb:', indexing = True, skipChecks = False):
 
         """
         EntropyRepository constructor.
@@ -535,9 +609,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type readOnly: bool
         @keyword dbFile: path to database to open
         @type dbFile: string
-        @keyword clientDatabase: state that EntropyRepository instance is
-            a client-side one
-        @type clientDatabase: bool
         @keyword xcache: enable on-disk cache
         @type xcache: bool
         @keyword dbname: EntropyRepository instance identifier
@@ -569,7 +640,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         self.dbapi2 = dbapi2
         # setup service interface
         self.readOnly = readOnly
-        self.clientDatabase = clientDatabase
         self.xcache = xcache
         self.indexing = indexing
         self.skipChecks = skipChecks
@@ -664,7 +734,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         self.cursor.execute("vacuum")
 
-    def commitChanges(self, force = False):
+    def commitChanges(self, force = False, no_plugins = False):
         """
         Commit actual changes and make them permanently stored.
 
@@ -677,6 +747,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 self.connection.commit()
             except self.dbapi2.Error:
                 pass
+
+        if no_plugins:
+            return
 
         plugins = self.get_plugins()
         for plugin_id in sorted(plugins):
@@ -941,27 +1014,17 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.setAtom(idpackage, new_atom)
 
             # look for packages we need to quickpkg again
-            # note: quickpkg_queue is simply ignored if self.clientDatabase
             quickpkg_queue.add(key_to+":"+slot)
 
-            if not self.clientDatabase:
-
-                # check for injection and warn the developer
-                injected = self.isInjected(idpackage)
-                if injected:
-                    mytxt = "%s: %s %s. %s !!! %s." % (
-                        bold(_("INJECT")),
-                        blue(str(new_atom)),
-                        red(_("has been injected")),
-                        red(_("quickpkg manually to update embedded db")),
-                        red(_("Repository database updated anyway")),
-                    )
-                    self.updateProgress(
-                        mytxt,
-                        importance = 1,
-                        type = "warning",
-                        header = darkred(" * ")
-                    )
+            plugins = self.get_plugins()
+            for plugin_id in sorted(plugins):
+                plug_inst = plugins[plugin_id]
+                exec_rc = plug_inst.treeupdates_move_action_hook(self,
+                    idpackage)
+                if exec_rc:
+                    raise RepositoryPluginError(
+                        "[treeupdates_move_action_hook] %s: status: %s" % (
+                            plug_inst.get_id(), exec_rc,))
 
         iddeps = self.searchDependency(key_from, like = True, multi = True)
         for iddep in iddeps:
@@ -1029,27 +1092,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.setSlot(idpackage, slot_to)
 
             # look for packages we need to quickpkg again
-            # note: quickpkg_queue is simply ignored if self.clientDatabase
+            # note: quickpkg_queue is simply ignored if client_repo == True
             quickpkg_queue.add(atom+":"+slot_to)
-
-            if not self.clientDatabase:
-
-                # check for injection and warn the developer
-                injected = self.isInjected(idpackage)
-                if injected:
-                    mytxt = "%s: %s %s. %s !!! %s." % (
-                        bold(_("INJECT")),
-                        blue(str(atom)),
-                        red(_("has been injected")),
-                        red(_("quickpkg manually to update embedded db")),
-                        red(_("Repository database updated anyway")),
-                    )
-                    self.updateProgress(
-                        mytxt,
-                        importance = 1,
-                        type = "warning",
-                        header = darkred(" * ")
-                    )
 
             # only if we've found VALID matches !
             iddeps = self.searchDependency(atomkey, like = True, multi = True)
@@ -1070,6 +1114,16 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 self.setDependency(iddep, mydep)
                 # we have to repackage also package owning this iddep
                 iddependencies |= self.searchIdpackageFromIddependency(iddep)
+
+            plugins = self.get_plugins()
+            for plugin_id in sorted(plugins):
+                plug_inst = plugins[plugin_id]
+                exec_rc = plug_inst.treeupdates_slot_move_action_hook(self,
+                    idpackage)
+                if exec_rc:
+                    raise RepositoryPluginError(
+                        "[treeupdates_slot_move_action_hook] %s: status: %s" % (
+                            plug_inst.get_id(), exec_rc,))
 
         self.commitChanges()
         for idpackage_owner in iddependencies:
@@ -1226,9 +1280,15 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             for manual_dep in manual_deps:
                 if manual_dep in pkgdata['dependencies']:
                     continue
-                pkgdata['dependencies'][manual_dep] = etpConst['spm']['mdepend_id']
+                pkgdata['dependencies'][manual_dep] = \
+                    etpConst['spm']['mdepend_id']
 
-        if self.clientDatabase:
+        # FIXME: this is Entropy Client related but also part of the
+        # currently implemented metaphor, so let's wait to have a Rule
+        # Engine in place before removing the oddity of client_repo
+        # metadatum.
+        client_repo = self.get_plugins_metadata().get('client_repo')
+        if client_repo:
             remove_conflicting_packages(pkg_data)
             return self.addPackage(pkg_data, revision = forcedRevision,
                 formatted_content = formattedContent)
@@ -1291,6 +1351,16 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             # usually used server side btw
             return removelist
 
+        searchsimilar = self.searchPackagesByNameAndCategory(
+            name = name,
+            category = category,
+            sensitive = True
+        )
+
+        # FIXME: This is marginally, Entropy server-side stuff but also
+        # part of the currently implemented metaphor (that will be moved
+        # to separate class and used through future Rule Engine).
+
         # support for expiration-based packages handling, also internally
         # called Fat Scope.
         filter_similar = False
@@ -1298,18 +1368,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         srv_ss_fs_plg = \
             etpConst['system_settings_plugins_ids']['server_plugin_fatscope']
 
-        if not self.clientDatabase: # server-side db
-            srv_plug_settings = self.SystemSettings.get(srv_ss_plg)
-            if srv_plug_settings != None:
-                if srv_plug_settings['server']['exp_based_scope']:
-                    # in case support is enabled, return an empty set
-                    filter_similar = True
+        srv_plug_settings = self.SystemSettings.get(srv_ss_plg)
+        if srv_plug_settings is not None:
+            if srv_plug_settings['server']['exp_based_scope']:
+                # in case support is enabled, return an empty set
+                filter_similar = True
 
-        searchsimilar = self.searchPackagesByNameAndCategory(
-            name = name,
-            category = category,
-            sensitive = True
-        )
         if filter_similar:
             # filter out packages in the same scope that are allowed to stay
             idpkgs = self.SystemSettings[srv_ss_fs_plg]['repos'].get(
@@ -1320,6 +1384,10 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 else:
                     searchsimilar = [x for x in searchsimilar if x[1] \
                         not in idpkgs]
+
+        # :-)
+        # end of FIXME
+        # :-)
 
         for atom, idpackage in searchsimilar:
             # get the package slot
@@ -2686,16 +2754,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 self._migrateCountersTable()
                 self.cursor.execute('INSERT into counters VALUES (?,?,?)',
                     (my_uid, idpackage, branch,))
-            except:
-                if self.dbname == etpConst['clientdbid']:
-                    # force only for client database
-                    if self._doesTableExist("counters"):
-                        raise
-                    self.cursor.execute(
-                    'INSERT into counters VALUES (?,?,?)',
-                        (my_uid, idpackage, branch,))
-                elif not self.clientDatabase:
-                    raise
 
         return my_uid
 
@@ -4895,7 +4953,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         # (client database) dependstable will be always broken (trust me)
         # sanity check on the table
         if not self._isDependsTableSane(): # is empty, need generation
-            self.regenerateReverseDependenciesMetadata(verbose = False)
+            self.generateReverseDependenciesMetadata(verbose = False)
 
         excluded_deptypes_query = ""
         if exclude_deptypes != None:
@@ -4944,7 +5002,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         # dependstable will be always broken (trust me)
         # sanity check on the table
         if not self._isDependsTableSane(): # is empty, need generation
-            self.regenerateReverseDependenciesMetadata(verbose = False)
+            self.generateReverseDependenciesMetadata(verbose = False)
 
         cur = self.cursor.execute("""
         SELECT idpackage FROM baseinfo 
@@ -6417,7 +6475,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         # clear caches
         self.clearCache()
         self.commitChanges()
-        self.regenerateReverseDependenciesMetadata(verbose = False)
+        self.generateReverseDependenciesMetadata(verbose = False)
         dbconn.clearCache()
 
         # verify both checksums, if they don't match, bomb out
@@ -7331,9 +7389,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 );
             """)
 
+        # FIXME: this is going to be removed soon
+        client_repo = self.get_plugins_metadata().get('client_repo', False)
         with self.__write_mutex:
 
-            if self.clientDatabase and (self.dbname != etpConst['clientdbid']):
+            if client_repo and (self.dbname != etpConst['clientdbid']):
                 return do_create()
 
             mytxt = "%s: %s" % (
@@ -7505,13 +7565,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         with self.__write_mutex:
             self.cursor.executemany('INSERT into dependstable VALUES (?,?)',
                 iterable)
-            if (self.entropyTools.is_user_in_entropy_group()) and \
-                (not self.clientDatabase):
-                    # force commit even if readonly, this will allow
-                    # to automagically fix dependstable server side
-                    # we don't care much about syncing the
-                    # database since it's quite trivial
-                    self.connection.commit()
 
     def taintReverseDependenciesMetadata(self):
         """
@@ -7526,7 +7579,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             INSERT INTO dependstable VALUES (-1,-1);
         """)
 
-    def regenerateReverseDependenciesMetadata(self, verbose = True):
+    def generateReverseDependenciesMetadata(self, verbose = True):
         """
         Regenerate reverse (or inverse) dependencies metadata.
 
@@ -7568,6 +7621,15 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         # now validate dependstable
         self._sanitizeDependsTable()
+
+        plugins = self.get_plugins()
+        for plugin_id in sorted(plugins):
+            plug_inst = plugins[plugin_id]
+            exec_rc = plug_inst.reverse_dependencies_tree_generation_hook(self)
+            if exec_rc:
+                raise RepositoryPluginError(
+                    "[reverse_dependencies_tree_generation_hook] %s: status: %s" % (
+                        plug_inst.get_id(), exec_rc,))
 
     def moveSpmUidsToBranch(self, to_branch, from_branch = None):
         """
@@ -8009,7 +8071,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if self.dbname == etpConst['clientdbid']:
             return idpackage, 0
 
-        elif not self.clientDatabase:
+        # FIXME: this is Entropy Client related but also part of the
+        # currently implemented metaphor, so let's wait to have a Rule
+        # Engine in place before removing the oddity of client_repo
+        # metadatum.
+        client_repo = self.get_plugins_metadata().get('client_repo', False)
+        if not client_repo:
             # server-side repositories don't make any use of idpackage validator
             return idpackage, 0
 

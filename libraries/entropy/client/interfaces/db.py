@@ -32,6 +32,18 @@ class ClientEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         else:
             self._metadata = metadata
 
+        # make sure we set client_repo metadata to True, this indicates
+        # EntropyRepository that we are a client-side repository
+        # Of course, it shouldn't make any diff to not set this, but we
+        # really want to make sure it's always enforced.
+        self._metadata['client_repo'] = True
+
+    def get_id(self):
+        return "__client__"
+
+    def get_metadata(self):
+        return self._metadata
+
     def add_plugin_hook(self, entropy_repository_instance):
         const_debug_write(__name__,
             "ClientEntropyRepositoryPlugin: calling add_plugin_hook => %s" % (

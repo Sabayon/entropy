@@ -201,7 +201,7 @@ def database(options):
                         Equo.clientDbconn.removePackage(myidpackage)
 
         print_info(red("  %s..." % (_("Now generating depends caching table"),) ))
-        Equo.clientDbconn.regenerateReverseDependenciesMetadata()
+        Equo.clientDbconn.generateReverseDependenciesMetadata()
         print_info(red("  %s...") % (_("Now indexing tables"),) )
         Equo.clientDbconn.indexing = True
         Equo.clientDbconn.createAllIndexes()
@@ -366,7 +366,7 @@ def database(options):
         print_info(red("  %s." % (_("Database resurrected successfully"),)))
 
         print_info(red("  %s..." % (_("Now generating depends caching table"),)))
-        Equo.clientDbconn.regenerateReverseDependenciesMetadata()
+        Equo.clientDbconn.generateReverseDependenciesMetadata()
         print_info(red("  %s..." % (_("Now indexing tables"),)))
         Equo.clientDbconn.indexing = True
         Equo.clientDbconn.createAllIndexes()
@@ -382,7 +382,7 @@ def database(options):
             return rc
 
         print_info(red("  %s..." % (_("Regenerating depends caching table"),) ))
-        Equo.clientDbconn.regenerateReverseDependenciesMetadata()
+        Equo.clientDbconn.generateReverseDependenciesMetadata()
         print_info(red("  %s." % (_("Depends caching table regenerated successfully"),) ))
         return 0
 

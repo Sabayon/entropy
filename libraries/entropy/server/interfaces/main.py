@@ -58,6 +58,18 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         else:
             self._metadata = metadata
 
+        # make sure we set client_repo metadata to False, this indicates
+        # EntropyRepository that we are a server-side repository
+        # Of course, it shouldn't make any diff to not set this, but we
+        # really want to make sure it's always enforced.
+        self._metadata['client_repo'] = False
+
+    def get_id(self):
+        return "__server__"
+
+    def get_metadata(self):
+        return self._metadata
+
     def add_plugin_hook(self, entropy_repository_instance):
         const_debug_write(__name__,
             "ServerEntropyRepositoryPlugin: calling add_plugin_hook => %s" % (
@@ -287,6 +299,43 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             # store addPackage action
             self._write_rss_for_removed_package(entropy_repository_instance,
                 idpackage)
+
+        return 0
+
+    def treeupdates_move_action_hook(self, entropy_repository_instance,
+        idpackage):
+        # check for injection and warn the developer
+        injected = entropy_repository_instance.isInjected(idpackage)
+        new_atom = entropy_repository_instance.retrieveAtom(idpackage)
+        if injected:
+            mytxt = "%s: %s %s. %s !!! %s." % (
+                bold(_("INJECT")),
+                blue(str(new_atom)),
+                red(_("has been injected")),
+                red(_("quickpkg manually to update embedded db")),
+                red(_("Repository database updated anyway")),
+            )
+            self._server.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "warning",
+                header = darkred(" * ")
+            )
+        return 0
+
+    def treeupdates_slot_move_action_hook(self, entropy_repository_instance,
+        idpackage):
+        return self.treeupdates_move_action_hook(entropy_repository_instance,
+            idpackage)
+
+    def reverse_dependencies_tree_generation_hook(self,
+        entropy_repository_instance):
+        # force commit even if readonly, this will allow
+        # to automagically fix dependstable server side
+        # we don't care much about syncing the
+        # database since it's a quite trivial change
+        entropy_repository_instance.commitChanges(force = True,
+            no_plugins = True)
 
         return 0
 
@@ -1148,7 +1197,6 @@ class Server(Singleton, TextInterface):
         conn = EntropyRepository(
             readOnly = False,
             dbFile = ':memory:',
-            clientDatabase = False,
             dbname = repo,
             xcache = False,
             indexing = False,
@@ -1797,7 +1845,7 @@ class Server(Singleton, TextInterface):
     def depends_table_initialize(self, repo = None):
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
-        dbconn.regenerateReverseDependenciesMetadata()
+        dbconn.generateReverseDependenciesMetadata()
         self.taint_database(repo = repo)
         dbconn.commitChanges()
 
