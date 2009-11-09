@@ -21,9 +21,9 @@ import tempfile
 from entropy.i18n import _
 from entropy.const import *
 from entropy.exceptions import *
-from entropy.db import dbapi2, EntropyRepository, EntropyRepository
+from entropy.db import dbapi2, EntropyRepository
+from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown
-
 
 class RepositoryMixin:
 
@@ -188,9 +188,9 @@ class RepositoryMixin:
                 clientDatabase = True,
                 dbname = etpConst['dbnamerepoprefix']+repoid,
                 xcache = xcache,
-                indexing = indexing,
-                OutputInterface = self
+                indexing = indexing
             )
+            self._add_plugin_to_client_repository(conn)
 
         if (repoid not in etpConst['client_treeupdatescalled']) and \
             (self.entropyTools.is_root()) and \
@@ -439,6 +439,14 @@ class RepositoryMixin:
         # make sure settings are in sync
         self.SystemSettings.clear()
 
+    def _add_plugin_to_client_repository(self, entropy_client_repository):
+        etp_db_meta = {
+            'output_interface': self,
+        }
+        repo_plugin = ClientEntropyRepositoryPlugin(self,
+            metadata = etp_db_meta)
+        entropy_client_repository.add_plugin(repo_plugin)
+
     def open_client_repository(self):
 
         def load_db_from_ram():
@@ -471,9 +479,9 @@ class RepositoryMixin:
             try:
                 conn = EntropyRepository(readOnly = False, dbFile = db_path,
                     clientDatabase = True, dbname = etpConst['clientdbid'],
-                    xcache = self.xcache, indexing = self.indexing,
-                    OutputInterface = self
+                    xcache = self.xcache, indexing = self.indexing
                 )
+                self._add_plugin_to_client_repository(conn)
             except (self.dbapi2.DatabaseError,):
                 self.entropyTools.print_traceback(f = self.clientLog)
                 conn = load_db_from_ram()
@@ -559,9 +567,9 @@ class RepositoryMixin:
             dbname = dbname,
             xcache = xcache,
             indexing = indexing,
-            OutputInterface = self,
             skipChecks = skipChecks
         )
+        self._add_plugin_to_client_repository(conn)
 
     def open_memory_database(self, dbname = None):
         if dbname == None:
@@ -573,9 +581,9 @@ class RepositoryMixin:
             dbname = dbname,
             xcache = False,
             indexing = False,
-            OutputInterface = self,
             skipChecks = True
         )
+        self._add_plugin_to_client_repository(dbc)
         dbc.initializeDatabase()
         return dbc
 
