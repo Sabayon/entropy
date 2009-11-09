@@ -767,22 +767,15 @@ def search_package(packages, Equo = None):
     if Equo == None:
         Equo = EquoInterface()
 
-    foundPackages = {}
-
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("%s..." % (_("Searching"),) ))
+
     # search inside each available database
     repo_number = 0
     found = False
-    for repo in Equo.validRepositories:
-        foundPackages[repo] = {}
-        repo_number += 1
 
-        if not etpUi['quiet']:
-            print_info(blue("  #" + str(repo_number)) + \
-                bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
-
-        dbconn = Equo.open_repository(repo)
+    def do_search(dbconn, from_client = False):
+        my_found = False
         for package in packages:
             slot = Equo.entropyTools.dep_getslot(package)
             tag = Equo.entropyTools.dep_gettag(package)
@@ -798,14 +791,13 @@ def search_package(packages, Equo = None):
                         tag = tag)
                 if result:
 
-                    foundPackages[repo][package] = result
-                    found = True
-                    for pkg in foundPackages[repo][package]:
+                    my_found = True
+                    for pkg in result:
                         print_package_info(pkg[1], dbconn, Equo = Equo,
-                        extended = etpUi['verbose'])
+                        extended = etpUi['verbose'], clientSearch = from_client)
 
                     if not etpUi['quiet']:
-                        found_len = len(foundPackages[repo][package])
+                        found_len = len(result)
                         print_info(blue(" %s: " % (_("Keyword"),) ) + \
                             bold("\t"+package))
                         print_info(blue(" %s:   " % (_("Found"),) ) + \
@@ -814,6 +806,24 @@ def search_package(packages, Equo = None):
 
             except Equo.dbapi2.DatabaseError:
                 continue
+
+        return my_found
+
+    for repo in Equo.validRepositories:
+        repo_number += 1
+
+        if not etpUi['quiet']:
+            print_info(blue("  #" + str(repo_number)) + \
+                bold(" " + Equo.SystemSettings['repositories']['available'][repo]['description']))
+
+        dbconn = Equo.open_repository(repo)
+        my_found = do_search(dbconn)
+        if my_found:
+            found = True
+
+    # try to actually match something in installed packages db
+    if not found and (Equo.clientDbconn is not None):
+        do_search(Equo.clientDbconn, from_client = True)
 
     if not etpUi['quiet'] and not found:
         print_info(darkred(" @@ ") + darkgreen("%s." % (_("No matches"),) ))
@@ -1165,7 +1175,10 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         print_info(darkgreen("       %s:\t\t" % (_("Masked"),) ) + \
             blue(str(pkgmasked)) + masking_reason)
 
-    print_info(darkgreen("       %s:\t\t" % (_("Available"),) ) + \
+    avail_str = _("Available")
+    if clientSearch:
+        avail_str = _("Installed")
+    print_info(darkgreen("       %s:\t\t" % (avail_str,) ) + \
         blue("%s: " % (_("version"),) ) + bold(pkgver) + blue(" ~ tag: ") + \
         bold(pkgtag) + blue(" ~ %s: " % (_("revision"),) ) + bold(str(pkgrev)))
 
