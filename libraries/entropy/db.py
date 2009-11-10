@@ -82,7 +82,10 @@ class EntropyRepositoryPlugin(object):
     def get_metadata(self):
         """
         Developers reimplementing EntropyRepositoryPlugin can provide metadata
-        along with every instance. This method just returns a copy of it.
+        along with every instance.
+        If you want to provide read-only metadata, this method should really
+        return a copy of the metadata object, otherwise, return its direct
+        reference.
         Metadata format is a map-like object (dictionary, dict()).
         By default this method does return an empty dict.
         Make sure that your metadata dictionaries around don't have keys in
@@ -296,6 +299,37 @@ class EntropyRepositoryPluginStore(EntropyPluginStore):
         for plugin_id in plugins:
             meta.update(plugins[plugin_id].get_metadata())
         return meta
+
+    def get_plugin_metadata(self, plugin_id, key):
+        """
+        Return EntropyRepositoryPlugin metadata value referenced by "key".
+
+        @param plugin_id. EntropyRepositoryPlugin identifier
+        @type plugin_id: string
+        @param key: EntropyRepositoryPlugin metadatum identifier
+        @type key: string
+        @return: metadatum value
+        @rtype: any Python object
+        @raise KeyError: if provided key or plugin_id is not available
+        """
+        plugins = self.get_plugins()
+        return plugins[plugin_id][key]
+
+    def set_plugin_metadata(self, plugin_id, key, value):
+        """
+        Set EntropyRepositoryPlugin stored metadata.
+
+        @param plugin_id. EntropyRepositoryPlugin identifier
+        @type plugin_id: string
+        @param key: EntropyRepositoryPlugin metadatum identifier
+        @type key: string
+        @param value: value to set
+        @type value: any valid Python object
+        @raise KeyError: if plugin_id is not available
+        """
+        plugins = self.get_plugins()
+        plugins[plugin_id][key] = value
+
 
 class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
@@ -7390,7 +7424,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             """)
 
         # FIXME: this is going to be removed soon
-        client_repo = self.get_plugins_metadata().get('client_repo', False)
+        client_repo = self.get_plugins_metadata().get('client_repo')
         with self.__write_mutex:
 
             if client_repo and (self.dbname != etpConst['clientdbid']):
@@ -8075,7 +8109,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         # currently implemented metaphor, so let's wait to have a Rule
         # Engine in place before removing the oddity of client_repo
         # metadatum.
-        client_repo = self.get_plugins_metadata().get('client_repo', False)
+        client_repo = self.get_plugins_metadata().get('client_repo')
         if not client_repo:
             # server-side repositories don't make any use of idpackage validator
             return idpackage, 0
