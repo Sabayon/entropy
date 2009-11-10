@@ -802,7 +802,7 @@ class Server(Singleton, TextInterface):
                 self.__server_dbcache[item].closeDB()
             except self.dbapi2.ProgrammingError: # already closed?
                 pass
-            self.__server_dbcache.clear()
+        self.__server_dbcache.clear()
 
     def close_server_database(self, dbinstance):
         found = None
