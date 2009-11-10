@@ -350,6 +350,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         data = {
             'repositories': etpConst['server_repositories'].copy(),
+            'sync_speed_limit': None,
             'qa_langs': ["en_US", "C"],
             'default_repository_id': etpConst['officialserverrepositoryid'],
             'packages_expiration_days': etpConst['packagesexpirationdays'],
@@ -436,6 +437,14 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 fmt = split_line[1]
                 if fmt in etpConst['etpdatabasesupportedcformats']:
                     data['database_file_format'] = fmt
+
+            elif line.startswith("syncspeedlimit|") and (split_line_len == 2):
+
+                try:
+                    speed_limit = int(split_line[1])
+                except ValueError:
+                    speed_limit = None
+                data['sync_speed_limit'] = speed_limit
 
             elif line.startswith("rss-feed|") and (split_line_len == 2):
 

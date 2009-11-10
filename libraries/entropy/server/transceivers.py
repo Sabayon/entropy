@@ -12,7 +12,7 @@
 import os
 import sys
 import time
-from entropy.const import const_isstring
+from entropy.const import const_isstring, etpConst
 from entropy.output import darkred, blue, brown, darkgreen, red, bold
 from entropy.exceptions import *
 from entropy.i18n import _
@@ -23,14 +23,23 @@ class TransceiverServerHandler:
     import entropy.tools as entropyTools
     def __init__(self, txc_interface, entropy_interface, uris, files_to_upload,
         download = False, remove = False, txc_basedir = None, local_basedir = None,
-        critical_files = [], use_handlers = False, handlers_data = {}, repo = None):
+        critical_files = None, use_handlers = False, handlers_data = None,
+        repo = None):
+
+        if critical_files is None:
+            critical_files = []
+        if handlers_data is None:
+            handlers_data = {}
 
         self._txc = txc_interface
         self.Entropy = entropy_interface
         if not isinstance(uris, list):
-            raise InvalidDataType("InvalidDataType: %s" % (_("uris must be a list instance"),))
+            raise AttributeError("InvalidDataType: %s" % (
+                    _("uris must be a list instance"),
+                )
+            )
         if not isinstance(files_to_upload, (list, dict)):
-            raise InvalidDataType("InvalidDataType: %s" % (
+            raise AttributeError("InvalidDataType: %s" % (
                     _("files_to_upload must be a list or dict instance"),
                 )
             )
@@ -39,6 +48,14 @@ class TransceiverServerHandler:
             self.myfiles = files_to_upload[:]
         else:
             self.myfiles = sorted([x for x in files_to_upload])
+
+        self.SystemSettings = SystemSettings()
+        self.sys_settings_plugin_id = \
+            etpConst['system_settings_plugins_ids']['server_plugin']
+        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+
+        # server-side speed limit
+        self.speed_limit = srv_set['sync_speed_limit']
         self.download = download
         self.remove = remove
         self.repo = repo
@@ -50,21 +67,23 @@ class TransceiverServerHandler:
             self.use_handlers = False
         if not txc_basedir:
             # default to database directory
-            branch = SystemSettings()['repositories']['branch']
-            my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo), branch)
+            branch = self.SystemSettings['repositories']['branch']
+            my_path = os.path.join(
+                self.Entropy.get_remote_database_relative_path(repo), branch)
             self.txc_basedir = my_path
         else:
             self.txc_basedir = txc_basedir
         if not local_basedir:
             # default to database directory
-            self.local_basedir = os.path.dirname(self.Entropy.get_local_database_file(self.repo))
+            self.local_basedir = os.path.dirname(
+                self.Entropy.get_local_database_file(self.repo))
         else:
             self.local_basedir = local_basedir
         self.critical_files = critical_files
         self.handlers_data = handlers_data.copy()
 
     def handler_verify_upload(self, local_filepath, uri, counter, maxcount,
-            tries, remote_md5 = None):
+        tries, remote_md5 = None):
 
         crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
 
@@ -266,12 +285,15 @@ class TransceiverServerHandler:
                 header = blue(" @@ ")
             )
             try:
-                ftp = self._txc(uri, self.Entropy)
+                ftp = self._txc(uri, self.Entropy,
+                    speed_limit = self.speed_limit)
             except ConnectionError:
                 self.entropyTools.print_traceback()
                 return True, fine_uris, broken_uris # issues
             branch = SystemSettings()['repositories']['branch']
-            my_path = os.path.join(self.Entropy.get_remote_database_relative_path(self.repo), branch)
+            my_path = os.path.join(
+                self.Entropy.get_remote_database_relative_path(self.repo),
+                branch)
             self.Entropy.updateProgress(
                 "[%s|%s] %s %s..." % (
                     blue(crippled_uri),

@@ -38,6 +38,18 @@ officialserverrepositoryid|sabayonlinux.org
 # bz2 or gz
 database-format|bz2
 
+#
+#  syntax for syncspeedlimit:
+#
+#    syncspeedlimit: If you need a way to limit sync speed (upload/download),
+#                    this is the option you were looking for
+#    syncspeedlimit|<maximum allowed speed in kb/sec>
+#
+#    example:
+#    syncspeedlimit|30
+#
+# syncspeedlimit|
+
 # Server side LC_*, LANG, LANGUAGE default settings.
 # This setting is used by entropy.qa to validate packages and avoid weird
 # things happening. Please specify here a LC_*, LANG, LANGUAGE value that
