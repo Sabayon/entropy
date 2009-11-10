@@ -36,8 +36,8 @@ class Server:
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         self.Entropy = ServerInstance
-        from entropy.server.transceivers import FtpServerHandler
-        self.FtpServerHandler = FtpServerHandler
+        from entropy.server.transceivers import TransceiverServerHandler
+        self.TransceiverServerHandler = TransceiverServerHandler
         from entropy.cache import EntropyCacher
         self.Cacher = EntropyCacher()
         self.sys_settings_plugin_id = \
@@ -894,7 +894,7 @@ class Server:
         downloaded = False
         for uri in mirrors:
             crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
-            downloader = self.FtpServerHandler(
+            downloader = self.TransceiverServerHandler(
                 FtpInterface, self.Entropy, [uri],
                 [rss_path], download = True,
                 local_basedir = mytmpdir, critical_files = [rss_path],
@@ -939,7 +939,7 @@ class Server:
             header = blue(" @@ ")
         )
 
-        uploader = self.FtpServerHandler(
+        uploader = self.TransceiverServerHandler(
             FtpInterface,
             self.Entropy,
             mirrors,
@@ -1815,7 +1815,7 @@ class Server:
 
             if not pretend:
                 # upload
-                uploader = self.FtpServerHandler(
+                uploader = self.TransceiverServerHandler(
                     FtpInterface,
                     self.Entropy,
                     [uri],
@@ -1936,7 +1936,7 @@ class Server:
 
             if not pretend:
                 # download
-                downloader = self.FtpServerHandler(
+                downloader = self.TransceiverServerHandler(
                     FtpInterface, self.Entropy, [uri],
                     [download_data[x] for x in download_data], download = True,
                     local_basedir = mytmpdir, critical_files = critical,
@@ -2716,9 +2716,9 @@ class Server:
 
         ftp_basedir = os.path.join(
             self.Entropy.get_remote_packages_relative_path(repo), branch)
-        uploader = self.FtpServerHandler(FtpInterface,
+        uploader = self.TransceiverServerHandler(FtpInterface,
             self.Entropy, [uri], myqueue, critical_files = myqueue,
-            use_handlers = True, ftp_basedir = ftp_basedir,
+            use_handlers = True, txc_basedir = ftp_basedir,
             handlers_data = {'branch': branch }, repo = repo)
         errors, m_fine_uris, m_broken_uris = uploader.go()
         if errors:
@@ -2770,10 +2770,10 @@ class Server:
             self.Entropy.get_remote_packages_relative_path(repo), branch)
         local_basedir = os.path.join(
             self.Entropy.get_local_packages_directory(repo), branch)
-        downloader = self.FtpServerHandler(
+        downloader = self.TransceiverServerHandler(
             FtpInterface, self.Entropy, [uri], myqueue,
             critical_files = myqueue, use_handlers = True,
-            ftp_basedir = ftp_basedir, local_basedir = local_basedir,
+            txc_basedir = ftp_basedir, local_basedir = local_basedir,
             handlers_data = {'branch': branch }, download = True, repo = repo)
 
         errors, m_fine_uris, m_broken_uris = downloader.go()
@@ -3346,13 +3346,13 @@ class Server:
             )
 
             crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
-            destroyer = self.FtpServerHandler(
+            destroyer = self.TransceiverServerHandler(
                 FtpInterface,
                 self.Entropy,
                 [uri],
                 myqueue,
                 critical_files = [],
-                ftp_basedir = ftp_basedir,
+                txc_basedir = ftp_basedir,
                 remove = True,
                 repo = repo
             )

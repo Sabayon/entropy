@@ -2006,14 +2006,14 @@ class Server(Singleton, TextInterface):
                 ftp_basedir = os.path.join(remote_relative_path, from_branch)
 
                 downloader_queue = [x[0] for x in download_queue[from_branch]]
-                downloader = self.MirrorsService.FtpServerHandler(
+                downloader = self.MirrorsService.TransceiverServerHandler(
                     FtpInterface,
                     self,
                     [uri],
                     downloader_queue,
                     critical_files = downloader_queue,
                     use_handlers = True,
-                    ftp_basedir = ftp_basedir,
+                    txc_basedir = ftp_basedir,
                     local_basedir = tmp_down_dir,
                     download = True,
                     repo = repo

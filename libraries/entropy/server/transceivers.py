@@ -18,14 +18,14 @@ from entropy.exceptions import *
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 
-class FtpServerHandler:
+class TransceiverServerHandler:
 
     import entropy.tools as entropyTools
-    def __init__(self, ftp_interface, entropy_interface, uris, files_to_upload,
-        download = False, remove = False, ftp_basedir = None, local_basedir = None,
+    def __init__(self, txc_interface, entropy_interface, uris, files_to_upload,
+        download = False, remove = False, txc_basedir = None, local_basedir = None,
         critical_files = [], use_handlers = False, handlers_data = {}, repo = None):
 
-        self.FtpInterface = ftp_interface
+        self._txc = txc_interface
         self.Entropy = entropy_interface
         if not isinstance(uris, list):
             raise InvalidDataType("InvalidDataType: %s" % (_("uris must be a list instance"),))
@@ -48,13 +48,13 @@ class FtpServerHandler:
         if self.remove:
             self.download = False
             self.use_handlers = False
-        if not ftp_basedir:
+        if not txc_basedir:
             # default to database directory
             branch = SystemSettings()['repositories']['branch']
             my_path = os.path.join(self.Entropy.get_remote_database_relative_path(repo), branch)
-            self.ftp_basedir = my_path
+            self.txc_basedir = my_path
         else:
-            self.ftp_basedir = ftp_basedir
+            self.txc_basedir = txc_basedir
         if not local_basedir:
             # default to database directory
             self.local_basedir = os.path.dirname(self.Entropy.get_local_database_file(self.repo))
@@ -248,7 +248,7 @@ class FtpServerHandler:
         def ensure_ftp(ftp):
             try:
                 ftp.set_basedir()
-                ftp.set_cwd(self.ftp_basedir, dodir = True)
+                ftp.set_cwd(self.txc_basedir, dodir = True)
             except ftp.ftplib.error_temp:
                 ftp.reconnect_host()
 
@@ -266,7 +266,7 @@ class FtpServerHandler:
                 header = blue(" @@ ")
             )
             try:
-                ftp = self.FtpInterface(uri, self.Entropy)
+                ftp = self._txc(uri, self.Entropy)
             except ConnectionError:
                 self.entropyTools.print_traceback()
                 return True, fine_uris, broken_uris # issues
@@ -284,7 +284,7 @@ class FtpServerHandler:
                 header = blue(" @@ ")
             )
 
-            ftp.set_cwd(self.ftp_basedir, dodir = True)
+            ftp.set_cwd(self.txc_basedir, dodir = True)
             maxcount = len(self.myfiles)
             counter = 0
 
@@ -294,7 +294,8 @@ class FtpServerHandler:
 
                 mycwd = None
                 if isinstance(mypath, tuple):
-                    if len(mypath) < 2: continue
+                    if len(mypath) < 2:
+                        continue
                     mycwd = mypath[0]
                     mypath = mypath[1]
                     ftp.set_cwd(mycwd, dodir = True)
