@@ -775,7 +775,7 @@ class Server:
                 dlcount = 5
                 while dlcount:
                     dled = ftp.download_file(revfilename,
-                        etpConst['packagestmpdir'], True)
+                        etpConst['packagestmpdir'])
                     if dled:
                         break
                     dlcount -= 1
