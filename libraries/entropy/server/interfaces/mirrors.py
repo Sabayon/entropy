@@ -419,7 +419,7 @@ class Server:
             self.create_local_database_download_lockfile(repo)
             lock_file = self.get_database_download_lockfile(repo)
 
-        rc_upload = ftp_connection.upload_file(lock_file, ascii = True)
+        rc_upload = ftp_connection.upload_file(lock_file)
         if rc_upload:
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s %s" % (
