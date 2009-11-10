@@ -36,6 +36,7 @@ SERVER_QA_PLUGIN = "ServerQAInterfacePlugin"
 class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
     import entropy.dump as dump
+    PLUGIN_ID = "__server__"
 
     def __init__(self, server_interface, metadata = None):
         """
@@ -65,9 +66,13 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         self._metadata['client_repo'] = False
 
     def get_id(self):
-        return "__server__"
+        return ServerEntropyRepositoryPlugin.PLUGIN_ID
 
     def get_metadata(self):
+        """
+        This method should always return a direct reference to the object and
+        NOT a copy.
+        """
         return self._metadata
 
     def add_plugin_hook(self, entropy_repository_instance):
@@ -75,13 +80,6 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             "ServerEntropyRepositoryPlugin: calling add_plugin_hook => %s" % (
                 self,)
             )
-
-        # setup some settings expected to be there by Entropy Server
-        entropy_repository_instance.lockRemote = \
-            self._metadata.get('lock_remote', False)
-
-        entropy_repository_instance.noUpload = \
-            self._metadata.get('no_upload', False)
 
         use_branch = self._metadata.get('use_branch')
         if use_branch is not None:
@@ -1347,7 +1345,9 @@ class Server(Singleton, TextInterface):
 
             # force parameters
             repo_db.readOnly = False
-            repo_db.noUpload = True
+            # disable upload trigger
+            repo_db.set_plugin_metadata(
+                ServerEntropyRepositoryPlugin.PLUGIN_ID, "no_upload", True)
 
             # reset database tables
             repo_db.clearTreeupdatesEntries(repo)
@@ -1391,9 +1391,9 @@ class Server(Singleton, TextInterface):
                     header = brown(" * ")
                 )
                 # lock database
-                if repo_db.lockRemote:
-                    self.do_server_repository_sync_lock(
-                        repo, repo_db.noUpload)
+                if repo_db.get_plugins_metadata().get("lock_remote"):
+                    no_upload = repo_db.get_plugins_metadata().get("no_upload")
+                    self.do_server_repository_sync_lock(repo, no_upload)
                 # now run queue
                 try:
                     quickpkg_list = repo_db.runTreeUpdatesActions(
