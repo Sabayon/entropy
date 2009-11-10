@@ -1277,8 +1277,7 @@ class Server(Singleton, TextInterface):
                     ),
                 importance = 1,
                 type = "info",
-                header = brown(" @@ "),
-                back = True
+                header = brown(" @@ ")
             )
             conn.createAllIndexes()
 
