@@ -38,7 +38,8 @@ class UrlFetcher:
 
         self.__system_settings = SystemSettings()
         if speed_limit == None:
-            speed_limit = self.__system_settings['repositories']['transfer_limit']
+            speed_limit = \
+                self.__system_settings['repositories']['transfer_limit']
 
         self.progress = None
         import entropy.tools as entropyTools
@@ -634,10 +635,12 @@ class FtpInterface:
 
         if not hasattr(OutputInterface, 'updateProgress'):
             mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
+            raise AttributeError("AttributeError: %s, (! %s !)" % (
+                OutputInterface, mytxt,))
         elif not hasattr(OutputInterface.updateProgress, '__call__'):
             mytxt = _("OutputInterface does not have an updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s, (! %s !)" % (OutputInterface, mytxt,))
+            raise AttributeError("AttributeError: %s, (! %s !)" % (
+                OutputInterface, mytxt,))
 
         import socket, ftplib
         import entropy.tools as entropyTools
@@ -650,7 +653,8 @@ class FtpInterface:
         self.__speed_updater = None
         self.__currentdir = '.'
         self.__ftphost = self.entropyTools.extract_ftp_host_from_uri(self.__ftpuri)
-        self.__ftpuser, self.__ftppassword, self.__ftpport, self.__ftpdir = self.entropyTools.extract_ftp_data(ftpuri)
+        self.__ftpuser, self.__ftppassword, self.__ftpport, self.__ftpdir = \
+            self.entropyTools.extract_ftp_data(ftpuri)
 
         count = 10
         while True:
@@ -671,7 +675,9 @@ class FtpInterface:
         if self.__verbose:
             mytxt = _("connecting with user")
             self.Entropy.updateProgress(
-                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost), mytxt, blue(self.__ftpuser),),
+                "[ftp:%s] %s: %s" % (
+                    darkgreen(self.__ftphost), mytxt, blue(self.__ftpuser),
+                ),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -683,7 +689,9 @@ class FtpInterface:
         if self.__verbose:
             mytxt = _("switching to")
             self.Entropy.updateProgress(
-                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost), mytxt, blue(self.__ftpdir),),
+                "[ftp:%s] %s: %s" % (
+                    darkgreen(self.__ftphost), mytxt, blue(self.__ftpdir),
+                ),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -721,7 +729,9 @@ class FtpInterface:
         if self.__verbose:
             mytxt = _("reconnecting with user")
             self.Entropy.updateProgress(
-                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost), mytxt, blue(self.__ftpuser),),
+                "[ftp:%s] %s: %s" % (
+                    darkgreen(self.__ftphost), mytxt, blue(self.__ftpuser),
+                ),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
@@ -730,7 +740,9 @@ class FtpInterface:
         if self.__verbose:
             mytxt = _("switching to")
             self.Entropy.updateProgress(
-                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost), mytxt, blue(self.__ftpdir),),
+                "[ftp:%s] %s: %s" % (
+                    darkgreen(self.__ftphost), mytxt, blue(self.__ftpdir),
+                ),
                 importance = 1,
                 type = "info",
                 header = darkgreen(" * ")
