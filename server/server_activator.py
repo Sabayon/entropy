@@ -36,12 +36,12 @@ def sync(options, justTidy = False):
 
     print_info(green(" * ")+red("%s ..." % (_("Starting to sync data across mirrors (packages/database)"),) ))
 
+    old_default = Entropy.default_repository
     repos = [Entropy.default_repository]
     if sync_all:
         sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
         repos = sorted(Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys())
-        old_default = Entropy.default_repository
 
     for repo in repos:
 
