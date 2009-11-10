@@ -631,7 +631,8 @@ class MultipleUrlFetcher:
 class FtpInterface:
 
     # this must be run before calling the other functions
-    def __init__(self, ftpuri, OutputInterface, verbose = True):
+    def __init__(self, ftpuri, OutputInterface, verbose = True,
+        speed_limit = None):
 
         if not hasattr(OutputInterface, 'updateProgress'):
             mytxt = _("OutputInterface does not have an updateProgress method")
@@ -650,6 +651,7 @@ class FtpInterface:
         self.__init_vars()
         self.socket.setdefaulttimeout(60)
         self.__ftpuri = ftpuri
+        self.__speed_limit = speed_limit
         self.__speed_updater = None
         self.__currentdir = '.'
         self.__ftphost = self.entropyTools.extract_ftp_host_from_uri(self.__ftpuri)
@@ -839,11 +841,10 @@ class FtpInterface:
     def mkdir(self, directory):
         return self.__ftpconn.mkd(directory)
 
-    def upload_file(self, file, ascii = False):
+    def upload_file(self, file_path):
 
         # this function also supports callback, because storbinary doesn't
         def advanced_stor(cmd, fp):
-            ''' Store a file in binary mode. Our version supports a callback function'''
             self.__ftpconn.voidcmd('TYPE I')
             conn = self.__ftpconn.transfercmd(cmd)
             while True:
@@ -851,7 +852,9 @@ class FtpInterface:
                 if not buf:
                     break
                 conn.sendall(buf)
-                self.updateProgress(len(buf))
+                self._commit_buffer_update(len(buf))
+                self.updateProgress()
+                self._speed_limit_loop()
             conn.close()
 
             # that's another workaround
@@ -861,29 +864,27 @@ class FtpInterface:
             except:
                 self.reconnect_host()
                 return "226"
+
             return rc
 
         tries = 0
         while tries < 10:
 
             tries += 1
-            filename = os.path.basename(file)
+            filename = os.path.basename(file_path)
             self.__init_vars()
             self.__start_speed_counter()
             try:
 
-                with open(file, "r") as f:
+                with open(file_path, "r") as f:
 
-                    self.__filesize = round(float(self.entropyTools.get_file_size(file))/1024, 1)
+                    file_size = self.entropyTools.get_file_size(file_path)
+                    self.__filesize = round(float(file_size)/ 1024, 1)
                     self.__filekbcount = 0
 
                     # delete old one, if exists
                     self.delete_file(filename+".tmp")
-
-                    if ascii:
-                        rc = self.__ftpconn.storlines("STOR "+filename+".tmp", f)
-                    else:
-                        rc = advanced_stor("STOR "+filename+".tmp", f)
+                    rc = advanced_stor("STOR "+filename+".tmp", f)
 
                     # now we can rename the file with its original name
                     self.rename_file(filename+".tmp", filename)
@@ -914,12 +915,14 @@ class FtpInterface:
             finally:
                 self.__stop_speed_counter()
 
-    def download_file(self, filename, downloaddir, ascii = False):
+    def download_file(self, file_path, downloaddir):
 
         def df_up(buf):
             # writing file buffer
             f.write(buf)
-            self.updateProgress(len(buf))
+            self._commit_buffer_update(len(buf))
+            self.updateProgress()
+            self._speed_limit_loop()
 
         tries = 10
         while tries:
@@ -931,21 +934,18 @@ class FtpInterface:
 
                 self.__filekbcount = 0
                 # get the file size
-                self.__filesize = self.get_file_size_compat(filename)
+                self.__filesize = self.get_file_size_compat(file_path)
                 if (self.__filesize):
                     self.__filesize = round(float(int(self.__filesize))/1024, 1)
                     if (self.__filesize == 0):
                         self.__filesize = 1
-                elif not self.is_file_available(filename):
+                elif not self.is_file_available(file_path):
                     return False
                 else:
                     self.__filesize = 0
-                if not ascii:
-                    f = open(downloaddir+"/"+filename, "wb")
-                    rc = self.__ftpconn.retrbinary('RETR '+filename, df_up, 1024)
-                else:
-                    f = open(downloaddir+"/"+filename, "w")
-                    rc = self.__ftpconn.retrlines('RETR '+filename, f.write)
+
+                f = open(os.path.join(downloaddir, file_path), "wb")
+                rc = self.__ftpconn.retrbinary('RETR ' + file_path, df_up, 1024)
                 f.flush()
                 f.close()
                 if rc.find("226") != -1: # upload complete
@@ -1031,37 +1031,54 @@ class FtpInterface:
     def __update_speed(self):
         self.__elapsed += self.__transferpollingtime
         # we have the diff size
-        self.__datatransfer = (self.__transfersize-self.__startingposition) / self.__elapsed
+        self.__datatransfer = (self.__transfersize - self.__startingposition) / self.__elapsed
         if self.__datatransfer < 0:
             self.__datatransfer = 0
         try:
-            self.__time_remaining_secs = int(round((int(round(self.__filesize*1024, 0))-int(round(self.__transfersize, 0)))/self.__datatransfer, 0))
-            self.__time_remaining = self.entropyTools.convert_seconds_to_fancy_output(self.__time_remaining_secs)
+            self.__time_remaining_secs = int(round((int(round(self.__filesize*1024, 0)) - \
+                int(round(self.__transfersize, 0)))/self.__datatransfer, 0))
+            self.__time_remaining = \
+                self.entropyTools.convert_seconds_to_fancy_output(
+                    self.__time_remaining_secs)
         except:
             self.__time_remaining = "(%s)" % (_("infinite"),)
 
-    def updateProgress(self, buf_len):
+    def _speed_limit_loop(self):
+        if self.__speed_limit:
+            while self.__datatransfer > self.__speed_limit * 1024:
+                time.sleep(0.1)
+                self.updateProgress()
+
+    def _commit_buffer_update(self, buf_len):
         # get the buffer size
         self.__filekbcount += float(buf_len)/1024
         self.__transfersize += buf_len
-        # create percentage
-        myUploadPercentage = 100.0
-        if self.__filesize >= 1:
-            myUploadPercentage = round((round(self.__filekbcount, 1)/self.__filesize)*100, 1)
-        currentprogress = myUploadPercentage
-        myUploadSize = round(self.__filekbcount, 1)
-        if (currentprogress > self.__oldprogress+1.0) and \
-            (myUploadPercentage < 100.1) and \
-            (myUploadSize <= self.__filesize):
 
-            myUploadPercentage = str(myUploadPercentage)+"%"
+    def updateProgress(self):
+
+        # create percentage
+        upload_percent = 100.0
+        if self.__filesize >= 1:
+            kbcount_round = round(self.__filekbcount, 1)
+            upload_percent = round((kbcount_round / self.__filesize) * 100, 1)
+
+        currentprogress = upload_percent
+        upload_size = round(self.__filekbcount, 1)
+
+        if (currentprogress > self.__oldprogress + 0.5) and \
+            (upload_percent < 100.1) and \
+            (upload_size <= self.__filesize):
+
+            upload_percent = str(upload_percent)+"%"
             # create text
             mytxt = _("Transfer status")
-            currentText = brown("    <-> %s: " % (mytxt,)) + \
-                darkgreen(str(myUploadSize)) + "/" + red(str(self.__filesize)) + " kB " + \
-                brown("[") + str(myUploadPercentage) + brown("]") + " " + self.__time_remaining + \
-                " " + self.entropyTools.bytes_into_human(self.__datatransfer) + "/"+_("sec")
-            # WARN: re-enabled updateProgress, this may cause slowdowns
-            # print_info(currentText, back = True)
-            self.Entropy.updateProgress(currentText, back = True)
+            current_txt = brown("    <-> %s: " % (mytxt,)) + \
+                darkgreen(str(upload_size)) + "/" + \
+                red(str(self.__filesize)) + " kB " + \
+                brown("[") + str(upload_percent) + brown("]") + \
+                " " + self.__time_remaining + " " + \
+                self.entropyTools.bytes_into_human(self.__datatransfer) + \
+                "/" + _("sec")
+
+            self.Entropy.updateProgress(current_txt, back = True)
             self.__oldprogress = currentprogress
