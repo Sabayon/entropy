@@ -133,7 +133,7 @@ def package(options):
                 deepdeps = equoRequestDeep,
                 multifetch = equoRequestMultifetch,
                 dochecksum = equoRequestChecksum,
-                relaxed = equoRequestRelaxed)
+                relaxed_deps = equoRequestRelaxed)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
