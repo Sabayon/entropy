@@ -498,7 +498,7 @@ class CalculatorsMixin:
 
         return set_data.pop(0), True
 
-    def get_unsatisfied_dependencies(self, dependencies, deep_deps = False,
+    def _get_unsatisfied_dependencies(self, dependencies, deep_deps = False,
         relaxed_deps = False, depcache = None):
 
         # NOTE: to avoid user complaints, the magic toy is "relaxed_deps"
@@ -699,7 +699,8 @@ class CalculatorsMixin:
 
         return unsatisfied
 
-    def get_masked_packages_tree(self, match, atoms = False, flat = False, matchfilter = None):
+    def get_masked_packages_tree(self, match, atoms = False, flat = False,
+        matchfilter = None):
 
         if not isinstance(matchfilter, set):
             matchfilter = set()
@@ -790,8 +791,9 @@ class CalculatorsMixin:
 
 
     def generate_dependency_tree(self, matched_atom, empty_deps = False,
-        deep_deps = False, matchfilter = None, flat = False,
-        filter_unsat_cache = None, treecache = None, keyslotcache = None):
+        relaxed_deps = False, deep_deps = False, matchfilter = None,
+        flat = False, filter_unsat_cache = None, treecache = None,
+        keyslotcache = None):
 
         if matchfilter is None:
             matchfilter = set()
@@ -1040,8 +1042,9 @@ class CalculatorsMixin:
 
             if not empty_deps:
 
-                m_unsat_deplist = self.get_unsatisfied_dependencies(myundeps,
-                    deep_deps, depcache = filter_unsat_cache)
+                m_unsat_deplist = self._get_unsatisfied_dependencies(myundeps,
+                    deep_deps = deep_deps, relaxed_deps = relaxed_deps,
+                    depcache = filter_unsat_cache)
 
                 const_debug_write(__name__,
                     "generate_dependency_tree unsatisfied dependencies " + \
@@ -1414,7 +1417,7 @@ class CalculatorsMixin:
         return system_tree
 
     def get_required_packages(self, matched_atoms, empty_deps = False,
-        deep_deps = False, quiet = False):
+        deep_deps = False, relaxed_deps = False, quiet = False):
 
         c_hash = "%s%s" % (
             etpCache['dep_tree'],
@@ -1472,8 +1475,8 @@ class CalculatorsMixin:
             if matched_atom in matchfilter:
                 continue
             newtree, result = self.generate_dependency_tree(
-                matched_atom, empty_deps, deep_deps,
-                matchfilter = matchfilter,
+                matched_atom, empty_deps = empty_deps, deep_deps = deep_deps,
+                relaxed_deps = relaxed_deps, matchfilter = matchfilter,
                 filter_unsat_cache = filter_unsat_cache, treecache = treecache,
                 keyslotcache = keyslotcache
             )
@@ -1722,7 +1725,7 @@ class CalculatorsMixin:
                 atom_matches[atom] = (match_id, match_repo,)
                 atoms.add(atom)
 
-        atoms = self.get_unsatisfied_dependencies(atoms)
+        atoms = self._get_unsatisfied_dependencies(atoms)
         matches = [atom_matches.get(atom) for atom in atoms]
         data = (atoms, matches)
 
@@ -1923,7 +1926,8 @@ class CalculatorsMixin:
             pkg_match = "="+myatom+"~"+str(myrev)
             if mytag != None:
                 pkg_match += "#%s" % (mytag,)
-            pkg_unsatisfied = self.get_unsatisfied_dependencies([pkg_match], deep_deps = deep)
+            pkg_unsatisfied = self._get_unsatisfied_dependencies([pkg_match],
+                deep_deps = deep)
             if pkg_unsatisfied:
                 # does it really exist on current repos?
                 pkg_key = self.entropyTools.dep_getkey(myatom)
@@ -1972,12 +1976,13 @@ class CalculatorsMixin:
         return queue
 
     def get_install_queue(self, matched_atoms, empty_deps, deep_deps,
-        quiet = False):
+        relaxed_deps = False, quiet = False):
 
         install = []
         removal = []
         treepackages, result = self.get_required_packages(matched_atoms,
-            empty_deps, deep_deps, quiet = quiet)
+            empty_deps = empty_deps, deep_deps = deep_deps,
+            relaxed_deps = relaxed_deps, quiet = quiet)
 
         if result == -2:
             return treepackages, removal, result
