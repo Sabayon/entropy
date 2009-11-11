@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "EQUO 1"
-.TH EQUO 1 "2009-10-30" "perl v5.8.8" "Entropy"
+.TH EQUO 1 "2009-11-11" "perl v5.8.8" "Entropy"
 .SH "NAME"
 \&\fBequo\fR \- Official Sabayon Linux Package Manager Client
 .SH "SYNOPSIS"
@@ -316,7 +316,7 @@ show less details (useful for scripting)
 .RE
 .IP "\fBinstall\fR" 4
 .IX Item "install"
-install atoms or .tbz2 packages
+install atoms or binary packages
 .RS 4
 .IP "\fB\-\-ask (\-a)\fR" 4
 .IX Item "--ask (-a)"
@@ -342,6 +342,9 @@ remove downloaded packages after being used
 .IP "\fB\-\-empty\fR" 4
 .IX Item "--empty"
 pull all the dependencies in, regardless their state
+.IP "\fB\-\-relaxed\fR" 4
+.IX Item "--relaxed"
+calm down dependencies resolution algorithm (might be risky)
 .IP "\fB\-\-deep\fR" 4
 .IX Item "--deep"
 makes dependency rules stricter
@@ -373,6 +376,12 @@ ask before making any changes
 .IP "\fB\-\-pretend (\-p)\fR" 4
 .IX Item "--pretend (-p)"
 just show what would be done
+.IP "\fB\-\-nodeps\fR" 4
+.IX Item "--nodeps"
+do not pull in any dependency
+.IP "\fB\-\-relaxed\fR" 4
+.IX Item "--relaxed"
+calm down dependencies resolution algorithm (might be risky)
 .IP "\fB\-\-savehere\fR" 4
 .IX Item "--savehere"
 save sources in current working directory
@@ -392,6 +401,9 @@ just show what would be done
 .IP "\fB\-\-nodeps\fR" 4
 .IX Item "--nodeps"
 do not pull in any dependency
+.IP "\fB\-\-relaxed\fR" 4
+.IX Item "--relaxed"
+calm down dependencies resolution algorithm (might be risky)
 .IP "\fB\-\-multifetch\fR" 4
 .IX Item "--multifetch"
 download multiple packages in parallel (default 3)

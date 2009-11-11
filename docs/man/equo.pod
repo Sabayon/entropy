@@ -238,7 +238,7 @@ show less details (useful for scripting)
 
 =item B<install>
 
-install atoms or .tbz2 packages
+install atoms or binary packages
 
 =over
 
@@ -273,6 +273,10 @@ remove downloaded packages after being used
 =item B<--empty>
 
 pull all the dependencies in, regardless their state
+
+=item B<--relaxed>
+
+calm down dependencies resolution algorithm (might be risky)
 
 =item B<--deep>
 
@@ -314,6 +318,14 @@ ask before making any changes
 
 just show what would be done
 
+=item B<--nodeps>
+
+do not pull in any dependency
+
+=item B<--relaxed>
+
+calm down dependencies resolution algorithm (might be risky)
+
 =item B<--savehere>
 
 save sources in current working directory
@@ -337,6 +349,10 @@ just show what would be done
 =item B<--nodeps>
 
 do not pull in any dependency
+
+=item B<--relaxed>
+
+calm down dependencies resolution algorithm (might be risky)
 
 =item B<--multifetch>
 
