@@ -35,6 +35,7 @@ def package(options):
     equoRequestEmptyDeps = False
     equoRequestOnlyFetch = False
     equoRequestDeep = False
+    equoRequestRelaxed = False
     equoRequestConfigFiles = False
     equoRequestReplay = False
     equoRequestResume = False
@@ -56,6 +57,8 @@ def package(options):
             equoRequestDeps = False
         elif (opt == "--empty"):
             equoRequestEmptyDeps = True
+        elif (opt == "--relaxed"):
+            equoRequestRelaxed = True
         elif (opt == "--fetch"):
             equoRequestOnlyFetch = True
         elif (opt == "--deep"):
@@ -117,7 +120,8 @@ def package(options):
         if myopts or mytbz2paths:
             status, rc = downloadSources(myopts, deps = equoRequestDeps,
                 deepdeps = equoRequestDeep, tbz2 = mytbz2paths,
-                savecwd = equoRequestSaveHere)
+                savecwd = equoRequestSaveHere,
+                relaxed_deps = equoRequestRelaxed)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
@@ -128,7 +132,8 @@ def package(options):
             status, rc = downloadPackages(myopts, deps = equoRequestDeps,
                 deepdeps = equoRequestDeep,
                 multifetch = equoRequestMultifetch,
-                dochecksum = equoRequestChecksum)
+                dochecksum = equoRequestChecksum,
+                relaxed = equoRequestRelaxed)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
@@ -142,7 +147,8 @@ def package(options):
                 resume = equoRequestResume, skipfirst = equoRequestSkipfirst,
                 dochecksum = equoRequestChecksum,
                 multifetch = equoRequestMultifetch,
-                check_critical_updates = True)
+                check_critical_updates = True,
+                relaxed_deps = equoRequestRelaxed)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 127
@@ -609,14 +615,15 @@ def _showPackageInfo(foundAtoms, deps, action_name = None):
 
     return False, (0, 0)
 
-def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps):
+def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps, relaxeddeps):
 
     runQueue = []
     removalQueue = []
 
     if deps:
         print_info(red(" @@ ")+blue("%s ...") % (_("Calculating dependencies"),) )
-        runQueue, removalQueue, status = Equo.get_install_queue(foundAtoms, emptydeps, deepdeps)
+        runQueue, removalQueue, status = Equo.get_install_queue(foundAtoms, emptydeps, deepdeps,
+            relaxed_deps = relaxeddeps)
         if status == -2:
 
             print_error(red(" @@ ")+blue("%s: " % (_("Cannot find needed dependencies"),) ))
@@ -673,7 +680,7 @@ def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps):
     return False, runQueue, removalQueue
 
 def downloadSources(packages = None, deps = True, deepdeps = False, tbz2 = None,
-    savecwd = False):
+    savecwd = False, relaxed_deps = False):
 
     if packages is None:
         packages = []
@@ -692,7 +699,7 @@ def downloadSources(packages = None, deps = True, deepdeps = False, tbz2 = None,
         return myrc
 
     abort, runQueue, removalQueue = _generateRunQueue(foundAtoms, deps,
-        False, deepdeps)
+        False, deepdeps, relaxed_deps)
     if abort:
         return runQueue
 
@@ -796,7 +803,7 @@ def _fetchPackages(runQueue, multifetch = 1, dochecksum = True):
 
 
 def downloadPackages(packages = None, deps = True, deepdeps = False,
-    multifetch = 1, dochecksum = True):
+    multifetch = 1, dochecksum = True, relaxed_deps = False):
 
     if packages is None:
         packages = []
@@ -821,7 +828,7 @@ def downloadPackages(packages = None, deps = True, deepdeps = False,
         return myrc
 
     abort, runQueue, removalQueue = _generateRunQueue(foundAtoms, deps,
-        False, deepdeps)
+        False, deepdeps, relaxed_deps)
     if abort:
         return runQueue
 
@@ -833,7 +840,8 @@ def downloadPackages(packages = None, deps = True, deepdeps = False,
 def installPackages(packages = None, atomsdata = None, deps = True,
     emptydeps = False, onlyfetch = False, deepdeps = False,
     config_files = False, tbz2 = None, resume = False, skipfirst = False,
-    dochecksum = True, multifetch = 1, check_critical_updates = False):
+    dochecksum = True, multifetch = 1, check_critical_updates = False,
+    relaxed_deps = False):
 
     if packages is None:
         packages = []
@@ -889,7 +897,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
             return myrc
 
         abort, runQueue, removalQueue = _generateRunQueue(foundAtoms, deps,
-            emptydeps, deepdeps)
+            emptydeps, deepdeps, relaxed_deps)
         if abort:
             return runQueue
 
@@ -1132,6 +1140,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 resume_cache['onlyfetch'] = onlyfetch
                 resume_cache['emptydeps'] = emptydeps
                 resume_cache['deepdeps'] = deepdeps
+                resume_cache['relaxed_deps'] = relaxed_deps
                 Equo.dumpTools.dumpobj(etpCache['install'], resume_cache)
         except (IOError, OSError):
             pass
@@ -1153,6 +1162,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 onlyfetch = resume_cache['onlyfetch']
                 emptydeps = resume_cache['emptydeps']
                 deepdeps = resume_cache['deepdeps']
+                relaxed_deps = resume_cache['relaxed_deps']
                 print_warning(red("%s..." % (_("Resuming previous operations"),) ))
             except (KeyError, TypeError, AttributeError,):
                 print_error(red("%s." % (_("Resume cache corrupted"),) ))
@@ -1163,7 +1173,8 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 return 128, -1
 
             if skipfirst and runQueue:
-                runQueue, x, status = Equo.get_install_queue(runQueue[1:], emptydeps, deepdeps)
+                runQueue, x, status = Equo.get_install_queue(runQueue[1:],
+                    emptydeps, deepdeps, relaxed_deps = relaxed_deps)
                 del x # was removalQueue
                 # save new queues
                 resume_cache['runQueue'] = runQueue
