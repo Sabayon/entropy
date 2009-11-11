@@ -652,7 +652,6 @@ class FtpInterface:
         self.socket.setdefaulttimeout(60)
         self.__ftpuri = ftpuri
         self.__speed_limit = speed_limit
-        self.__speed_updater = None
         self.__currentdir = '.'
         self.__ftphost = self.entropyTools.extract_ftp_host_from_uri(self.__ftpuri)
         self.__ftpuser, self.__ftppassword, self.__ftpport, self.__ftpdir = \
@@ -709,7 +708,7 @@ class FtpInterface:
         self.__elapsed = 0.0
         self.__time_remaining_secs = 0
         self.__time_remaining = "(%s)" % (_("infinite"),)
-        self.__transferpollingtime = float(1)/4
+        self.__starttime = time.time()
 
     def set_basedir(self):
         return self.set_cwd(self.__ftpdir)
@@ -853,6 +852,7 @@ class FtpInterface:
                     break
                 conn.sendall(buf)
                 self._commit_buffer_update(len(buf))
+                self._update_speed()
                 self.updateProgress()
                 self._speed_limit_loop()
             conn.close()
@@ -873,7 +873,6 @@ class FtpInterface:
             tries += 1
             filename = os.path.basename(file_path)
             self.__init_vars()
-            self.__start_speed_counter()
             try:
 
                 with open(file_path, "r") as f:
@@ -912,15 +911,13 @@ class FtpInterface:
                 self.delete_file(filename)
                 self.delete_file(filename+".tmp")
 
-            finally:
-                self.__stop_speed_counter()
-
     def download_file(self, file_path, downloaddir):
 
         def df_up(buf):
             # writing file buffer
             f.write(buf)
             self._commit_buffer_update(len(buf))
+            self._update_speed()
             self.updateProgress()
             self._speed_limit_loop()
 
@@ -929,7 +926,6 @@ class FtpInterface:
             tries -= 1
 
             self.__init_vars()
-            self.__start_speed_counter()
             try:
 
                 self.__filekbcount = 0
@@ -968,9 +964,6 @@ class FtpInterface:
                     header = "  "
                     )
                 self.reconnect_host() # reconnect
-
-            finally:
-                self.__stop_speed_counter()
 
     # also used to move files
     def rename_file(self, fromfile, tofile):
@@ -1017,36 +1010,30 @@ class FtpInterface:
             # timeout, who cares!
             pass
 
-    def __start_speed_counter(self):
-        self.__speed_updater = TimeScheduled(
-            self.__transferpollingtime,
-            self.__update_speed,
-        )
-        self.__speed_updater.start()
-
-    def __stop_speed_counter(self):
-        if self.__speed_updater != None:
-            self.__speed_updater.kill()
-
-    def __update_speed(self):
-        self.__elapsed += self.__transferpollingtime
+    def _update_speed(self):
+        current_time = time.time()
+        self.__elapsed = current_time - self.__starttime
         # we have the diff size
-        self.__datatransfer = (self.__transfersize - self.__startingposition) / self.__elapsed
+        pos_diff = self.__transfersize - self.__startingposition
+        self.__datatransfer = pos_diff / self.__elapsed
         if self.__datatransfer < 0:
             self.__datatransfer = 0
         try:
-            self.__time_remaining_secs = int(round((int(round(self.__filesize*1024, 0)) - \
-                int(round(self.__transfersize, 0)))/self.__datatransfer, 0))
+            round_fsize = int(round(self.__filesize*1024, 0))
+            round_rsize = int(round(self.__transfersize, 0))
+            self.__time_remaining_secs = int(round((round_fsize - \
+                round_rsize)/self.__datatransfer, 0))
             self.__time_remaining = \
                 self.entropyTools.convert_seconds_to_fancy_output(
                     self.__time_remaining_secs)
-        except:
+        except (ValueError, TypeError,):
             self.__time_remaining = "(%s)" % (_("infinite"),)
 
     def _speed_limit_loop(self):
         if self.__speed_limit:
             while self.__datatransfer > self.__speed_limit * 1024:
                 time.sleep(0.1)
+                self._update_speed()
                 self.updateProgress()
 
     def _commit_buffer_update(self, buf_len):
