@@ -59,26 +59,7 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class CalculatorsMixin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__5" name="uml_class_diagram_for_entropy__5">
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#dependencies_test" title="entropy.client.interfaces.dep.CalculatorsMixin.dependencies_test" alt="" coords="17,36,1545,55"/>
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#find_belonging_dependency" title="entropy.client.interfaces.dep.CalculatorsMixin.find_belonging_dependency" alt="" coords="17,55,1545,73"/>
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#atom_match" title="entropy.client.interfaces.dep.CalculatorsMixin.atom_match" alt="" coords="17,73,1545,92"/>
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#packages_expand" title="entropy.client.interfaces.dep.CalculatorsMixin.packages_expand" alt="" coords="17,92,1545,111"/>
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_expand" title="entropy.client.interfaces.dep.CalculatorsMixin.package_set_expand" alt="" coords="17,111,1545,129"/>
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_list" title="entropy.client.interfaces.dep.CalculatorsMixin.package_set_list" alt="" coords="17,129,1545,148"/>
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_search" title="entropy.client.interfaces.dep.CalculatorsMixin.package_set_search" alt="" coords="17,148,1545,167"/>
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#package_set_match" title="entropy.client.interfaces.dep.CalculatorsMixin.package_set_match" alt="" coords="17,167,1545,185"/>
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_unsatisfied_dependencies" title="entropy.client.interfaces.dep.CalculatorsMixin.get_unsatisfied_dependencies" alt="" coords="17,185,1545,204"/>
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_masked_packages_tree" title="entropy.client.interfaces.dep.CalculatorsMixin.get_masked_packages_tree" alt="" coords="17,204,1545,223"/>
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#generate_dependency_tree" title="entropy.client.interfaces.dep.CalculatorsMixin.generate_dependency_tree" alt="" coords="17,223,1545,241"/>
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_required_packages" title="entropy.client.interfaces.dep.CalculatorsMixin.get_required_packages" alt="" coords="17,241,1545,260"/>
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#generate_depends_tree" title="entropy.client.interfaces.dep.CalculatorsMixin.generate_depends_tree" alt="" coords="17,260,1545,279"/>
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html#get_install_queue" title="entropy.client.interfaces.dep.CalculatorsMixin.get_install_queue" alt="" coords="17,297,1545,316"/>
-<area shape="rect" href="entropy.client.interfaces.dep.CalculatorsMixin-class.html" title="entropy.client.interfaces.dep.CalculatorsMixin" alt="" coords="16,11,1547,317"/>
-<area shape="rect" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="740,347,823,373"/>
-</map>
-  <img src="uml_class_diagram_for_entropy__5.gif" alt='' usemap="#uml_class_diagram_for_entropy__5" ismap="ismap" class="graph-without-title" />
-</center>
+
 </center>
 <hr />
 <!-- ==================== INSTANCE METHODS ==================== -->
@@ -254,25 +235,6 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_unsatisfied_dependencies"></a><span class="summary-sig-name">get_unsatisfied_dependencies</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">dependencies</span>,
-        <span class="summary-sig-arg">deep_deps</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">depcache</span>=<span class="summary-sig-default">None</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.get_unsatisfied_dependencies">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
           <td><span class="summary-sig"><a name="get_masked_packages_tree"></a><span class="summary-sig-name">get_masked_packages_tree</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">match</span>,
         <span class="summary-sig-arg">atoms</span>=<span class="summary-sig-default">False</span>,
@@ -296,6 +258,7 @@
           <td><span class="summary-sig"><a name="generate_dependency_tree"></a><span class="summary-sig-name">generate_dependency_tree</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">matched_atom</span>,
         <span class="summary-sig-arg">empty_deps</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">relaxed_deps</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">deep_deps</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">matchfilter</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">flat</span>=<span class="summary-sig-default">False</span>,
@@ -321,6 +284,7 @@
         <span class="summary-sig-arg">matched_atoms</span>,
         <span class="summary-sig-arg">empty_deps</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">deep_deps</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">relaxed_deps</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">quiet</span>=<span class="summary-sig-default">False</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.get_required_packages">source&nbsp;code</a></span>
@@ -465,9 +429,29 @@
         <span class="summary-sig-arg">matched_atoms</span>,
         <span class="summary-sig-arg">empty_deps</span>,
         <span class="summary-sig-arg">deep_deps</span>,
+        <span class="summary-sig-arg">relaxed_deps</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">quiet</span>=<span class="summary-sig-default">False</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.dep-pysrc.html#CalculatorsMixin.get_install_queue">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_unsatisfied_dependencies"></a><span class="summary-sig-name">get_unsatisfied_dependencies</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">dependencies</span>,
+        <span class="summary-sig-arg">deep_deps</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">depcache</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            
             
           </td>
         </tr>
@@ -507,7 +491,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:10 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:28 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

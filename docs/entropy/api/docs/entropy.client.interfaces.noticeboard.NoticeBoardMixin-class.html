@@ -59,21 +59,7 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class NoticeBoardMixin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__11" name="uml_class_diagram_for_entropy__11">
-<area shape="rect" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#are_noticeboards_marked_as_read" title="Return whether all available repository noticeboards are marked as read." alt="" coords="17,36,420,55"/>
-<area shape="rect" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#get_noticeboard" title="Return noticeboard RSS metadata (dict form) for given repository &#160;identifier." alt="" coords="17,55,420,73"/>
-<area shape="rect" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#get_noticeboard_item_read_status" title="Return noticeboard items read status for given repository identifier." alt="" coords="17,73,420,92"/>
-<area shape="rect" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#get_noticeboard_userdata" title="Return noticeboard user metadata dict for given repository identifier." alt="" coords="17,92,420,111"/>
-<area shape="rect" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#is_noticeboard_marked_as_read" title="Return whether noticeboard for given repository has been marked as &quot;read&quot; &#160;by user." alt="" coords="17,111,420,129"/>
-<area shape="rect" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#mark_noticeboard_items_as_read" title="Mark noticeboard items for given repository as &quot;read&quot;." alt="" coords="17,129,420,148"/>
-<area shape="rect" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#set_noticeboard_item_read_status" title="Set given noticeboard item read status." alt="" coords="17,148,420,167"/>
-<area shape="rect" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#store_noticeboard_userdata" title="Store given noticeboard metadata for given repository to disk." alt="" coords="17,167,420,185"/>
-<area shape="rect" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#unmark_noticeboard_items_as_read" title="Unmark noticeboard items for given repository as &quot;read&quot;." alt="" coords="17,185,420,204"/>
-<area shape="rect" href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html" title="Main interface for handling Repository Notice Board user data, such as notice board items status, metadata retrieval, etc." alt="" coords="16,11,421,205"/>
-<area shape="rect" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="177,235,260,261"/>
-</map>
-  <img src="uml_class_diagram_for_entropy__11.gif" alt='' usemap="#uml_class_diagram_for_entropy__11" ismap="ismap" class="graph-without-title" />
-</center>
+
 </center>
 <hr />
 <p>Main interface for handling Repository Notice Board user data, such as
@@ -89,24 +75,6 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">bool</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#are_noticeboards_marked_as_read" class="summary-sig-name">are_noticeboards_marked_as_read</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return whether all available repository noticeboards are marked as 
-      read.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.are_noticeboards_marked_as_read">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">dict</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -117,24 +85,6 @@
       identifier.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.get_noticeboard">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">set</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#get_noticeboard_item_read_status" class="summary-sig-name">get_noticeboard_item_read_status</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">repoid</span>)</span><br />
-      Return noticeboard items read status for given repository identifier.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.get_noticeboard_item_read_status">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -167,12 +117,50 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#is_noticeboard_marked_as_read" class="summary-sig-name">is_noticeboard_marked_as_read</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">repoid</span>)</span><br />
-      Return whether noticeboard for given repository has been marked as 
-      &quot;read&quot; by user.</td>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#store_noticeboard_userdata" class="summary-sig-name">store_noticeboard_userdata</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>,
+        <span class="summary-sig-arg">metadata</span>)</span><br />
+      Store given noticeboard metadata for given repository to disk.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.is_noticeboard_marked_as_read">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.store_noticeboard_userdata">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#set_noticeboard_item_read_status" class="summary-sig-name">set_noticeboard_item_read_status</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>,
+        <span class="summary-sig-arg">item_id</span>,
+        <span class="summary-sig-arg">read_status</span>)</span><br />
+      Set given noticeboard item read status.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.set_noticeboard_item_read_status">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">set</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#get_noticeboard_item_read_status" class="summary-sig-name">get_noticeboard_item_read_status</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>)</span><br />
+      Return noticeboard items read status for given repository identifier.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.get_noticeboard_item_read_status">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -204,50 +192,48 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#set_noticeboard_item_read_status" class="summary-sig-name">set_noticeboard_item_read_status</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">repoid</span>,
-        <span class="summary-sig-arg">item_id</span>,
-        <span class="summary-sig-arg">read_status</span>)</span><br />
-      Set given noticeboard item read status.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.set_noticeboard_item_read_status">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#store_noticeboard_userdata" class="summary-sig-name">store_noticeboard_userdata</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">repoid</span>,
-        <span class="summary-sig-arg">metadata</span>)</span><br />
-      Store given noticeboard metadata for given repository to disk.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.store_noticeboard_userdata">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
           <td><span class="summary-sig"><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#unmark_noticeboard_items_as_read" class="summary-sig-name">unmark_noticeboard_items_as_read</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">repoid</span>)</span><br />
       Unmark noticeboard items for given repository as &quot;read&quot;.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.unmark_noticeboard_items_as_read">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#is_noticeboard_marked_as_read" class="summary-sig-name">is_noticeboard_marked_as_read</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>)</span><br />
+      Return whether noticeboard for given repository has been marked as 
+      &quot;read&quot; by user.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.is_noticeboard_marked_as_read">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.noticeboard.NoticeBoardMixin-class.html#are_noticeboards_marked_as_read" class="summary-sig-name">are_noticeboards_marked_as_read</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return whether all available repository noticeboards are marked as 
+      read.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.are_noticeboards_marked_as_read">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -265,28 +251,6 @@
     <span class="table-header">Method Details</span></td>
 </tr>
 </table>
-<a name="are_noticeboards_marked_as_read"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">are_noticeboards_marked_as_read</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.are_noticeboards_marked_as_read">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return whether all available repository noticeboards are marked as 
-  read.</p>
-  <dl class="fields">
-    <dt>Returns: bool</dt>
-        <dd>read status</dd>
-  </dl>
-</td></tr></table>
-</div>
 <a name="get_noticeboard"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -317,33 +281,6 @@
     <dd><ul class="nomargin-top">
         <li><code><strong class='fraise'>KeyError</strong></code> - if given repository identifier is not available</li>
     </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_noticeboard_item_read_status"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_noticeboard_item_read_status</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">repoid</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.get_noticeboard_item_read_status">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return noticeboard items read status for given repository 
-  identifier.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>repoid</code></strong> (string) - repository identifier</li>
-    </ul></dd>
-    <dt>Returns: set</dt>
-        <dd>item identifiers marked as &quot;read&quot;</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -379,53 +316,33 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="is_noticeboard_marked_as_read"></a>
+<a name="store_noticeboard_userdata"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_noticeboard_marked_as_read</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">repoid</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">store_noticeboard_userdata</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">repoid</span>,
+        <span class="sig-arg">metadata</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.is_noticeboard_marked_as_read">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.store_noticeboard_userdata">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Return whether noticeboard for given repository has been marked as 
-  &quot;read&quot; by user.</p>
+  <p>Store given noticeboard metadata for given repository to disk.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>repoid</code></strong> (string) - repository identifier</li>
+        <li><strong class="pname"><code>metadata</code></strong> (dict) - repository user metadata to store</li>
     </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="mark_noticeboard_items_as_read"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">mark_noticeboard_items_as_read</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">repoid</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.mark_noticeboard_items_as_read">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Mark noticeboard items for given repository as &quot;read&quot;. 
-  &quot;read&quot; status will be automatically tainted when noticeboard 
-  changes.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
+    <dt>Raises:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>repoid</code></strong> (string) - repository identifier</li>
+        <li><code><strong class='fraise'>KeyError</strong></code> - if given repository identifier is not available</li>
+        <li><code><strong class='fraise'><a href="entropy.exceptions.RepositoryError-class.html">RepositoryError</a></strong></code> - if given repository directory is not available</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -464,33 +381,55 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="store_noticeboard_userdata"></a>
+<a name="get_noticeboard_item_read_status"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">store_noticeboard_userdata</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">repoid</span>,
-        <span class="sig-arg">metadata</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_noticeboard_item_read_status</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">repoid</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.store_noticeboard_userdata">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.get_noticeboard_item_read_status">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Store given noticeboard metadata for given repository to disk.</p>
+  <p>Return noticeboard items read status for given repository 
+  identifier.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>repoid</code></strong> (string) - repository identifier</li>
-        <li><strong class="pname"><code>metadata</code></strong> (dict) - repository user metadata to store</li>
     </ul></dd>
-    <dt>Raises:</dt>
+    <dt>Returns: set</dt>
+        <dd>item identifiers marked as &quot;read&quot;</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="mark_noticeboard_items_as_read"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">mark_noticeboard_items_as_read</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">repoid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.mark_noticeboard_items_as_read">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Mark noticeboard items for given repository as &quot;read&quot;. 
+  &quot;read&quot; status will be automatically tainted when noticeboard 
+  changes.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><code><strong class='fraise'>KeyError</strong></code> - if given repository identifier is not available</li>
-        <li><code><strong class='fraise'><a href="entropy.exceptions.RepositoryError-class.html">RepositoryError</a></strong></code> - if given repository directory is not available</li>
+        <li><strong class="pname"><code>repoid</code></strong> (string) - repository identifier</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -518,6 +457,53 @@
     <dd><ul class="nomargin-top">
         <li><strong class="pname"><code>repoid</code></strong> (string) - repository identifier</li>
     </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="is_noticeboard_marked_as_read"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_noticeboard_marked_as_read</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">repoid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.is_noticeboard_marked_as_read">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return whether noticeboard for given repository has been marked as 
+  &quot;read&quot; by user.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>repoid</code></strong> (string) - repository identifier</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="are_noticeboards_marked_as_read"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">are_noticeboards_marked_as_read</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.client.interfaces.noticeboard-pysrc.html#NoticeBoardMixin.are_noticeboards_marked_as_read">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return whether all available repository noticeboards are marked as 
+  read.</p>
+  <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>read status</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -553,7 +539,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:10 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:28 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

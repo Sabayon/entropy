@@ -57,27 +57,7 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class TimeScheduled</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.misc-pysrc.html#TimeScheduled">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__59" name="uml_class_diagram_for_entropy__59">
-<area shape="rect" href="entropy.misc.TimeScheduled-class.html#__init__" title="TimeScheduled constructor." alt="" coords="17,303,231,321"/>
-<area shape="rect" href="entropy.misc.TimeScheduled-class.html#set_delay" title="Change current delay in seconds." alt="" coords="17,321,231,340"/>
-<area shape="rect" href="entropy.misc.TimeScheduled-class.html#set_delay_before" title="Set whether delay before the execution of the function or not." alt="" coords="17,340,231,359"/>
-<area shape="rect" href="entropy.misc.TimeScheduled-class.html#set_accuracy" title="Set whether delay function must be accurate or not." alt="" coords="17,359,231,377"/>
-<area shape="rect" href="entropy.misc.TimeScheduled-class.html#run" title="This method is called automatically when start() is called." alt="" coords="17,377,231,396"/>
-<area shape="rect" href="entropy.misc.TimeScheduled-class.html#kill" title="Stop the execution of the timed function" alt="" coords="17,396,231,415"/>
-<area shape="rect" href="entropy.misc.TimeScheduled-class.html" title="Multithreading class that wraps Python threading.Thread." alt="" coords="16,277,232,416"/>
-<area shape="rect" href="javascript:void(0);" title="repr(x)" alt="" coords="41,97,207,116"/>
-<area shape="rect" href="javascript:void(0);" title="threading.Thread.start" alt="" coords="41,116,207,135"/>
-<area shape="rect" href="javascript:void(0);" title="threading.Thread.join" alt="" coords="41,135,207,153"/>
-<area shape="rect" href="javascript:void(0);" title="threading.Thread.getName" alt="" coords="41,153,207,172"/>
-<area shape="rect" href="javascript:void(0);" title="threading.Thread.setName" alt="" coords="41,172,207,191"/>
-<area shape="rect" href="javascript:void(0);" title="threading.Thread.isAlive" alt="" coords="41,191,207,209"/>
-<area shape="rect" href="javascript:void(0);" title="threading.Thread.isDaemon" alt="" coords="41,209,207,228"/>
-<area shape="rect" href="javascript:void(0);" title="threading.Thread.setDaemon" alt="" coords="41,228,207,247"/>
-<area shape="rect" href="javascript:void(0);" title="threading.Thread" alt="" coords="40,72,208,248"/>
-<area shape="rect" href="javascript:void(0);" title="threading._Verbose" alt="" coords="67,11,181,43"/>
-</map>
-  <img src="uml_class_diagram_for_entropy__59.gif" alt='' usemap="#uml_class_diagram_for_entropy__59" ismap="ismap" class="graph-without-title" />
-</center>
+
 </center>
 <hr />
 <p>Multithreading class that wraps Python threading.Thread. Specifically,
@@ -119,6 +99,24 @@
       TimeScheduled constructor.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.misc-pysrc.html#TimeScheduled.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.misc.TimeScheduled-class.html#pause" class="summary-sig-name">pause</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">pause</span>)</span><br />
+      Pause current internal timer countdown.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.misc-pysrc.html#TimeScheduled.pause">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -221,6 +219,7 @@
       <code>getName</code>,
       <code>isAlive</code>,
       <code>isDaemon</code>,
+      <code>is_alive</code>,
       <code>join</code>,
       <code>setDaemon</code>,
       <code>setName</code>,
@@ -228,13 +227,16 @@
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
+      <code>__format__</code>,
       <code>__getattribute__</code>,
       <code>__hash__</code>,
       <code>__new__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
       <code>__setattr__</code>,
-      <code>__str__</code>
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
       </p>
     </td>
   </tr>
@@ -249,6 +251,11 @@
 </tr>
   <tr>
     <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>threading.Thread</code></b>:
+      <code>daemon</code>,
+      <code>ident</code>,
+      <code>name</code>
+      </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__class__</code>
       </p>
@@ -295,6 +302,30 @@
     <dt>Overrides:
         object.__init__
     </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="pause"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">pause</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">pause</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.misc-pysrc.html#TimeScheduled.pause">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Pause current internal timer countdown.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>pause</code></strong> (bool) - True to pause timer</li>
+    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -431,7 +462,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:13 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:30 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

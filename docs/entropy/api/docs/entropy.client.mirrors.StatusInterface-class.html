@@ -58,33 +58,7 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class StatusInterface</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.client.mirrors-pysrc.html#StatusInterface">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__13" name="uml_class_diagram_for_entropy__13">
-<area shape="rect" href="entropy.client.mirrors.StatusInterface-class.html#__init__" title="x.__init__(...) initializes x; see x.__class__.__doc__ for signature" alt="" coords="17,372,305,391"/>
-<area shape="rect" href="entropy.client.mirrors.StatusInterface-class.html#add_failing_mirror" title="entropy.client.mirrors.StatusInterface.add_failing_mirror" alt="" coords="17,391,305,409"/>
-<area shape="rect" href="entropy.client.mirrors.StatusInterface-class.html#get_failing_mirror_status" title="entropy.client.mirrors.StatusInterface.get_failing_mirror_status" alt="" coords="17,409,305,428"/>
-<area shape="rect" href="entropy.client.mirrors.StatusInterface-class.html#set_failing_mirror_status" title="entropy.client.mirrors.StatusInterface.set_failing_mirror_status" alt="" coords="17,428,305,447"/>
-<area shape="rect" href="entropy.client.mirrors.StatusInterface-class.html#set_working_mirror" title="entropy.client.mirrors.StatusInterface.set_working_mirror" alt="" coords="17,447,305,465"/>
-<area shape="rect" href="entropy.client.mirrors.StatusInterface-class.html#add_failing_working_mirror" title="entropy.client.mirrors.StatusInterface.add_failing_working_mirror" alt="" coords="17,465,305,484"/>
-<area shape="rect" href="entropy.client.mirrors.StatusInterface-class.html#clear" title="Remove all items from D." alt="" coords="17,484,305,503"/>
-<area shape="rect" href="entropy.client.mirrors.StatusInterface-class.html" title="entropy.client.mirrors.StatusInterface" alt="" coords="16,347,307,504"/>
-<area shape="rect" href="javascript:void(0);" title="cmp(x,y)" alt="" coords="101,36,221,55"/>
-<area shape="rect" href="javascript:void(0);" title="dict.__contains__" alt="" coords="101,55,221,73"/>
-<area shape="rect" href="javascript:void(0);" title="del x[y]" alt="" coords="101,73,221,92"/>
-<area shape="rect" href="javascript:void(0);" title="x==y" alt="" coords="101,92,221,111"/>
-<area shape="rect" href="javascript:void(0);" title="x&gt;=y" alt="" coords="101,111,221,129"/>
-<area shape="rect" href="javascript:void(0);" title="x.__getattribute__(&#39;name&#39;) &lt;==&gt; x.name" alt="" coords="101,129,221,148"/>
-<area shape="rect" href="javascript:void(0);" title="x[y]" alt="" coords="101,148,221,167"/>
-<area shape="rect" href="javascript:void(0);" title="x&gt;y" alt="" coords="101,167,221,185"/>
-<area shape="rect" href="javascript:void(0);" title="hash(x)" alt="" coords="101,185,221,204"/>
-<area shape="rect" href="javascript:void(0);" title="iter(x)" alt="" coords="101,204,221,223"/>
-<area shape="rect" href="javascript:void(0);" title="x&lt;=y" alt="" coords="101,223,221,241"/>
-<area shape="rect" href="javascript:void(0);" title="len(x)" alt="" coords="101,241,221,260"/>
-<area shape="rect" href="javascript:void(0);" title="x&lt;y" alt="" coords="101,260,221,279"/>
-<area shape="rect" href="javascript:void(0);" title="dict.values" alt="" coords="101,297,221,316"/>
-<area shape="rect" href="javascript:void(0);" title="dict() &#45;&gt; new empty dictionary." alt="" coords="100,11,223,317"/>
-</map>
-  <img src="uml_class_diagram_for_entropy__13.gif" alt='' usemap="#uml_class_diagram_for_entropy__13" ismap="ismap" class="graph-without-title" />
-</center>
+
 </center>
 <hr />
 <!-- ==================== INSTANCE METHODS ==================== -->
@@ -230,7 +204,6 @@ new empty dictionary
       <code>__getattribute__</code>,
       <code>__getitem__</code>,
       <code>__gt__</code>,
-      <code>__hash__</code>,
       <code>__iter__</code>,
       <code>__le__</code>,
       <code>__len__</code>,
@@ -239,6 +212,7 @@ new empty dictionary
       <code>__new__</code>,
       <code>__repr__</code>,
       <code>__setitem__</code>,
+      <code>__sizeof__</code>,
       <code>copy</code>,
       <code>fromkeys</code>,
       <code>get</code>,
@@ -256,10 +230,28 @@ new empty dictionary
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
+      <code>__format__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
       <code>__setattr__</code>,
-      <code>__str__</code>
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>dict</code></b>:
+      <code>__hash__</code>
       </p>
     </td>
   </tr>
@@ -374,7 +366,7 @@ new empty dictionary
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:10 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:28 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -60,20 +60,7 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class SystemSettingsPlugin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.core.settings.plugins.skel-pysrc.html#SystemSettingsPlugin">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__23" name="uml_class_diagram_for_entropy__23">
-<area shape="rect" href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#BASE_PLUGIN_API_VERSION" title="This is a plugin base class for all SystemSettings plugins." alt="" coords="455,28,713,47"/>
-<area shape="rect" href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#__init__" title="SystemSettingsPlugin constructor." alt="" coords="455,49,713,68"/>
-<area shape="rect" href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#add_parser" title="You must call this method in order to add your custom parsers to the plugin." alt="" coords="455,68,713,87"/>
-<area shape="rect" href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#get_id" title="Returns the unique plugin id passed at construction time." alt="" coords="455,87,713,105"/>
-<area shape="rect" href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#parse" title="This method is called by SystemSettings instance when building its settings metadata." alt="" coords="455,105,713,124"/>
-<area shape="rect" href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#post_setup" title="This method is called by SystemSettings instance after having built all the SystemSettings metadata." alt="" coords="455,124,713,143"/>
-<area shape="rect" href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html" title="entropy.core.settings.plugins.skel.SystemSettingsPlugin" alt="" coords="453,11,715,144"/>
-<area shape="rect" href="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin-class.html" title="entropy.server.interfaces.main.ServerFatscopeSystemSettingsPlugin" alt="" coords="16,173,379,200"/>
-<area shape="rect" href="entropy.server.interfaces.main.ServerSystemSettingsPlugin-class.html" title="entropy.server.interfaces.main.ServerSystemSettingsPlugin" alt="" coords="429,173,739,200"/>
-<area shape="rect" href="entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html" title="entropy.client.interfaces.client.ClientSystemSettingsPlugin" alt="" coords="789,173,1096,200"/>
-</map>
-  <img src="uml_class_diagram_for_entropy__23.gif" alt='' usemap="#uml_class_diagram_for_entropy__23" ismap="ismap" class="graph-without-title" />
-</center>
+
 </center>
 <hr />
 <!-- ==================== INSTANCE METHODS ==================== -->
@@ -105,6 +92,23 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#get_id" class="summary-sig-name">get_id</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Returns the unique plugin id passed at construction time.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core.settings.plugins.skel-pysrc.html#SystemSettingsPlugin.get_id">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -116,23 +120,6 @@
 parsers to the plugin.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.core.settings.plugins.skel-pysrc.html#SystemSettingsPlugin.add_parser">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">string</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#get_id" class="summary-sig-name">get_id</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Returns the unique plugin id passed at construction time.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core.settings.plugins.skel-pysrc.html#SystemSettingsPlugin.get_id">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -182,6 +169,7 @@ parsers to the plugin.</td>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
+      <code>__format__</code>,
       <code>__getattribute__</code>,
       <code>__hash__</code>,
       <code>__new__</code>,
@@ -189,7 +177,9 @@ parsers to the plugin.</td>
       <code>__reduce_ex__</code>,
       <code>__repr__</code>,
       <code>__setattr__</code>,
-      <code>__str__</code>
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
       </p>
     </td>
   </tr>
@@ -269,6 +259,27 @@ parsers to the plugin.</td>
   </dl>
 </td></tr></table>
 </div>
+<a name="get_id"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_id</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core.settings.plugins.skel-pysrc.html#SystemSettingsPlugin.get_id">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Returns the unique plugin id passed at construction time.</p>
+  <dl class="fields">
+    <dt>Returns: string</dt>
+        <dd>plugin identifier</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="add_parser"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -308,27 +319,6 @@ method: another_fabulous_parser
 
 </pre>
   <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_id"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_id</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core.settings.plugins.skel-pysrc.html#SystemSettingsPlugin.get_id">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Returns the unique plugin id passed at construction time.</p>
-  <dl class="fields">
-    <dt>Returns: string</dt>
-        <dd>plugin identifier</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -472,7 +462,7 @@ method: another_fabulous_parser
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:11 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:28 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

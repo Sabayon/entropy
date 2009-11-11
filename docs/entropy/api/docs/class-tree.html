@@ -64,6 +64,8 @@
     </li>
     </ul>
     </li>
+    <li> <strong class="uidlink"><a href="entropy.services.system.executors.Base-class.html">entropy.services.system.executors.Base</a></strong>
+    </li>
     <li> <strong class="uidlink"><a href="entropy.client.services.ugc.commands.Base-class.html">entropy.client.services.ugc.commands.Base</a></strong>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.client.services.ugc.commands.Client-class.html">entropy.client.services.ugc.commands.Client</a></strong>
@@ -75,8 +77,6 @@
     </ul>
     </li>
     </ul>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.services.system.executors.Base-class.html">entropy.services.system.executors.Base</a></strong>
     </li>
     <li> <strong class="uidlink">urllib2.BaseHandler</strong>
     <ul>
@@ -129,11 +129,11 @@
     <li> <strong class="uidlink"><a href="entropy.misc.Callable-class.html">entropy.misc.Callable</a></strong>:
       <em class="summary">Fake class wrapping any callable object into a callable class.</em>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.client.services.ugc.interfaces.Client-class.html">entropy.client.services.ugc.interfaces.Client</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.services.ugc.interfaces.Client-class.html">entropy.services.ugc.interfaces.Client</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.services.system.interfaces.Client-class.html">entropy.client.services.system.interfaces.Client</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.client.services.ugc.interfaces.Client-class.html">entropy.client.services.ugc.interfaces.Client</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.CommandProcessor-class.html">entropy.services.interfaces.SocketHost.CommandProcessor</a></strong>
     </li>
@@ -151,10 +151,28 @@
     <li> <strong class="uidlink"><a href="entropy.core.EntropyPluginFactory-class.html">entropy.core.EntropyPluginFactory</a></strong>:
       <em class="summary">Generic Entropy Components Plugin Factory (loader).</em>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.client.interfaces.trigger.Trigger.EntropyPySandbox-class.html">entropy.client.interfaces.trigger.Trigger.EntropyPySandbox</a></strong>
-    </li>
+    <li> <strong class="uidlink"><a href="entropy.core.EntropyPluginStore-class.html">entropy.core.EntropyPluginStore</a></strong>:
+      <em class="summary">This is a base class for handling a map of plugin objects by 
+        providing generic add/remove functions.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.db.EntropyRepositoryPluginStore-class.html">entropy.db.EntropyRepositoryPluginStore</a></strong>:
+      <em class="summary">EntropyRepository plugin interface.</em>
+    <ul>
     <li> <strong class="uidlink"><a href="entropy.db.EntropyRepository-class.html">entropy.db.EntropyRepository</a></strong>:
       <em class="summary">EntropyRepository implements SQLite3 based storage.</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.qa.QAInterface-class.html">entropy.qa.QAInterface</a></strong>:
+      <em class="summary">Entropy QA interface.</em>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.core.settings.base.SystemSettings-class.html">entropy.core.settings.base.SystemSettings</a></strong>:
+      <em class="summary">This is the place where all the Entropy settings are stored if they
+        are not considered instance constants (etpConst).</em>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.client.interfaces.trigger.Trigger.EntropyPySandbox-class.html">entropy.client.interfaces.trigger.Trigger.EntropyPySandbox</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.interfaces.trigger.Trigger.EntropyShSandbox-class.html">entropy.client.interfaces.trigger.Trigger.EntropyShSandbox</a></strong>
     </li>
@@ -181,8 +199,6 @@ Content (UGC) infrastructure.</em>
     <li> <strong class="uidlink"><a href="entropy.client.misc.FileUpdates-class.html">entropy.client.misc.FileUpdates</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.transceivers.FtpInterface-class.html">entropy.transceivers.FtpInterface</a></strong>
-    </li>
-    <li> <strong class="uidlink"><a href="entropy.transceivers.FtpServerHandler-class.html">entropy.transceivers.FtpServerHandler</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.misc.Lifo-class.html">entropy.misc.Lifo</a></strong>:
       <em class="summary">This class can be used to build LIFO buffers, also commonly known 
@@ -221,8 +237,12 @@ Content (UGC) infrastructure.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.interfaces.package.Package-class.html">entropy.client.interfaces.package.Package</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.qa.QAInterface-class.html">entropy.qa.QAInterface</a></strong>:
-      <em class="summary">Entropy QA interface.</em>
+    <li> <strong class="uidlink"><a href="entropy.qa.QAInterfacePlugin-class.html">entropy.qa.QAInterfacePlugin</a></strong>:
+      <em class="summary">Inherit this class to create a QAInterface tests Plugin.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.server.interfaces.main.ServerQAInterfacePlugin-class.html">entropy.server.interfaces.main.ServerQAInterfacePlugin</a></strong>
+    </li>
+    </ul>
     </li>
     <li> <strong class="uidlink"><a href="entropy.misc.RSS-class.html">entropy.misc.RSS</a></strong>:
       <em class="summary">This is a base class for handling RSS (XML) files through Python's 
@@ -255,7 +275,8 @@ Content (UGC) infrastructure.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.server.interfaces.mirrors.Server-class.html">entropy.server.interfaces.mirrors.Server</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.services.skel.SocketAuthenticator-class.html">entropy.services.skel.SocketAuthenticator</a></strong>
+    <li> <strong class="uidlink"><a href="entropy.services.skel.SocketAuthenticator-class.html">entropy.services.skel.SocketAuthenticator</a></strong>:
+      <em class="summary">Base class for Entropy SocketHost RPC authentication.</em>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html">entropy.services.interfaces.SocketHost.BasicPamAuthenticator</a></strong>
     </li>
@@ -269,9 +290,9 @@ Content (UGC) infrastructure.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.BuiltInCommands-class.html">entropy.services.interfaces.SocketHost.BuiltInCommands</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.services.repository.commands.Repository-class.html">entropy.services.repository.commands.Repository</a></strong>
-    </li>
     <li> <strong class="uidlink"><a href="entropy.services.system.commands.Repository-class.html">entropy.services.system.commands.Repository</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.services.repository.commands.Repository-class.html">entropy.services.repository.commands.Repository</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.test.commands.Test-class.html">entropy.services.test.commands.Test</a></strong>
     </li>
@@ -299,6 +320,9 @@ Content (UGC) infrastructure.</em>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.client.interfaces.client.Client-class.html">entropy.client.interfaces.client.Client</a></strong>
     </li>
+    <li> <strong class="uidlink"><a href="entropy.db.EntropyRepository-class.html">entropy.db.EntropyRepository</a></strong>:
+      <em class="summary">EntropyRepository implements SQLite3 based storage.</em>
+    </li>
     <li> <strong class="uidlink"><a href="entropy.server.interfaces.main.Server-class.html">entropy.server.interfaces.main.Server</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.services.repository.interfaces.Server.ServiceInterface-class.html">entropy.services.repository.interfaces.Server.ServiceInterface</a></strong>
@@ -311,6 +335,8 @@ Content (UGC) infrastructure.</em>
     <li> <strong class="uidlink"><a href="entropy.services.interfaces.SocketHost.HostServerMixin-class.html">entropy.services.interfaces.SocketHost.HostServerMixin</a></strong>
     </li>
     </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.server.transceivers.TransceiverServerHandler-class.html">entropy.server.transceivers.TransceiverServerHandler</a></strong>
     </li>
     <li> <strong class="uidlink"><a href="entropy.client.interfaces.trigger.Trigger-class.html">entropy.client.interfaces.trigger.Trigger</a></strong>
     </li>
@@ -325,6 +351,9 @@ Content (UGC) infrastructure.</em>
     <li> <strong class="uidlink">exceptions.Exception</strong>:
       <em class="summary">Common base class for all non-exit exceptions.</em>
     <ul>
+    <li> <strong class="uidlink"><a href="entropy.exceptions.DumbException-class.html">entropy.exceptions.DumbException</a></strong>:
+      <em class="summary">Dumb exception class</em>
+    </li>
     <li> <strong class="uidlink"><a href="entropy.exceptions.EntropyException-class.html">entropy.exceptions.EntropyException</a></strong>:
       <em class="summary">General superclass for Entropy exceptions</em>
     <ul>
@@ -409,6 +438,9 @@ Content (UGC) infrastructure.</em>
     <li> <strong class="uidlink"><a href="entropy.exceptions.RepositoryError-class.html">entropy.exceptions.RepositoryError</a></strong>:
       <em class="summary">Cannot open repository database</em>
     </li>
+    <li> <strong class="uidlink"><a href="entropy.exceptions.RepositoryPluginError-class.html">entropy.exceptions.RepositoryPluginError</a></strong>:
+      <em class="summary">Error during EntropyRepositoryPlugin hook execution</em>
+    </li>
     <li> <strong class="uidlink"><a href="entropy.exceptions.SPMError-class.html">entropy.exceptions.SPMError</a></strong>:
       <em class="summary">Source Package Manager generic errors</em>
     </li>
@@ -430,9 +462,20 @@ Content (UGC) infrastructure.</em>
     </li>
     </ul>
     </li>
+    <li> <strong class="uidlink"><a href="entropy.db.EntropyRepositoryPlugin-class.html">entropy.db.EntropyRepositoryPlugin</a></strong>:
+      <em class="summary">This is the base class for implementing EntropyRepository plugin hooks.</em>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.client.interfaces.db.ClientEntropyRepositoryPlugin-class.html">entropy.client.interfaces.db.ClientEntropyRepositoryPlugin</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.qa.QAEntropyRepositoryPlugin-class.html">entropy.qa.QAEntropyRepositoryPlugin</a></strong>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.server.interfaces.main.ServerEntropyRepositoryPlugin-class.html">entropy.server.interfaces.main.ServerEntropyRepositoryPlugin</a></strong>
+    </li>
+    </ul>
+    </li>
     <li> <strong class="uidlink"><a href="entropy.core.Singleton-class.html">entropy.core.Singleton</a></strong>:
       <em class="summary">If your class wants to become a sexy Singleton, subclass this and 
-        replace __init__ with init_singleton</em>
+        replace __init__ with init_singleton.</em>
     <ul>
     <li> <strong class="uidlink"><a href="entropy.client.services.ugc.interfaces.AuthStore-class.html">entropy.client.services.ugc.interfaces.AuthStore</a></strong>
     </li>
@@ -443,7 +486,7 @@ Content (UGC) infrastructure.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.server.interfaces.main.Server-class.html">entropy.server.interfaces.main.Server</a></strong>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.db.ServerRepositoryStatus-class.html">entropy.db.ServerRepositoryStatus</a></strong>:
+    <li> <strong class="uidlink"><a href="entropy.server.interfaces.db.ServerRepositoryStatus-class.html">entropy.server.interfaces.db.ServerRepositoryStatus</a></strong>:
       <em class="summary">Server-side Repositories status information container.</em>
     </li>
     <li> <strong class="uidlink"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html">entropy.spm.plugins.skel.SpmPlugin</a></strong>:
@@ -506,7 +549,7 @@ Content (UGC) infrastructure.</em>
     </li>
     </ul>
     </li>
-    <li> <strong class="uidlink"><a href="entropy.xpak.tbz2-class.html">entropy.xpak.tbz2</a></strong>
+    <li> <strong class="uidlink"><a href="entropy.spm.plugins.interfaces.portage_plugin.xpak.tbz2-class.html">entropy.spm.plugins.interfaces.portage_plugin.xpak.tbz2</a></strong>
     </li>
 </ul>
 <!-- ==================== NAVIGATION BAR ==================== -->
@@ -540,7 +583,7 @@ Content (UGC) infrastructure.</em>
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:09 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:27 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

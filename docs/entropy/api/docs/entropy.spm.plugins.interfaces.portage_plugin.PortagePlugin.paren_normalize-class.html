@@ -46,7 +46,7 @@
         <a href="entropy.spm-module.html">Package&nbsp;spm</a> ::
         <a href="entropy.spm.plugins-module.html">Package&nbsp;plugins</a> ::
         <a href="entropy.spm.plugins.interfaces-module.html">Package&nbsp;interfaces</a> ::
-        <a href="entropy.spm.plugins.interfaces.portage_plugin-module.html">Module&nbsp;portage_plugin</a> ::
+        <a href="entropy.spm.plugins.interfaces.portage_plugin-module.html">Package&nbsp;portage_plugin</a> ::
         <a href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html">Class&nbsp;PortagePlugin</a> ::
         Class&nbsp;paren_normalize
       </span>
@@ -61,27 +61,7 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class paren_normalize</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePlugin.paren_normalize">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__89" name="uml_class_diagram_for_entropy__89">
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize-class.html#__init__" title="x.__init__(...) initializes x; see x.__class__.__doc__ for signature" alt="" coords="100,372,204,391"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize-class.html" title="Take a dependency structure as returned by paren_reduce or use_reduce and generate an equivalent structure that has no redundant lists." alt="" coords="99,347,205,392"/>
-<area shape="rect" href="javascript:void(0);" title="x+y" alt="" coords="17,36,287,55"/>
-<area shape="rect" href="javascript:void(0);" title="y in x" alt="" coords="17,55,287,73"/>
-<area shape="rect" href="javascript:void(0);" title="del x[y]" alt="" coords="17,73,287,92"/>
-<area shape="rect" href="javascript:void(0);" title="del x[i:j]" alt="" coords="17,92,287,111"/>
-<area shape="rect" href="javascript:void(0);" title="x==y" alt="" coords="17,111,287,129"/>
-<area shape="rect" href="javascript:void(0);" title="x&gt;=y" alt="" coords="17,129,287,148"/>
-<area shape="rect" href="javascript:void(0);" title="x.__getattribute__(&#39;name&#39;) &lt;==&gt; x.name" alt="" coords="17,148,287,167"/>
-<area shape="rect" href="javascript:void(0);" title="x[y]" alt="" coords="17,167,287,185"/>
-<area shape="rect" href="javascript:void(0);" title="x[i:j]" alt="" coords="17,185,287,204"/>
-<area shape="rect" href="javascript:void(0);" title="x&gt;y" alt="" coords="17,204,287,223"/>
-<area shape="rect" href="javascript:void(0);" title="hash(x)" alt="" coords="17,223,287,241"/>
-<area shape="rect" href="javascript:void(0);" title="x+=y" alt="" coords="17,241,287,260"/>
-<area shape="rect" href="javascript:void(0);" title="x*=y" alt="" coords="17,260,287,279"/>
-<area shape="rect" href="javascript:void(0);" title="stable sort *IN PLACE*; cmp(x, y) &#45;&gt; &#45;1, 0, 1" alt="" coords="17,297,287,316"/>
-<area shape="rect" href="javascript:void(0);" title="list() &#45;&gt; new list list(sequence) &#45;&gt; new list initialized from sequence&#39;s items" alt="" coords="16,11,288,317"/>
-</map>
-  <img src="uml_class_diagram_for_entropy__89.gif" alt='' usemap="#uml_class_diagram_for_entropy__89" ismap="ismap" class="graph-without-title" />
-</center>
+
 </center>
 <hr />
 <p>Take a dependency structure as returned by paren_reduce or use_reduce 
@@ -126,7 +106,6 @@
       <code>__getitem__</code>,
       <code>__getslice__</code>,
       <code>__gt__</code>,
-      <code>__hash__</code>,
       <code>__iadd__</code>,
       <code>__imul__</code>,
       <code>__iter__</code>,
@@ -141,6 +120,7 @@
       <code>__rmul__</code>,
       <code>__setitem__</code>,
       <code>__setslice__</code>,
+      <code>__sizeof__</code>,
       <code>append</code>,
       <code>count</code>,
       <code>extend</code>,
@@ -153,10 +133,28 @@
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
+      <code>__format__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
       <code>__setattr__</code>,
-      <code>__str__</code>
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>list</code></b>:
+      <code>__hash__</code>
       </p>
     </td>
   </tr>
@@ -245,7 +243,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:15 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:32 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

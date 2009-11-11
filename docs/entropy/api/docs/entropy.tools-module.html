@@ -55,7 +55,23 @@
 </table>
 <!-- ==================== MODULE DESCRIPTION ==================== -->
 <h1 class="epydoc">Module tools</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.tools-pysrc.html">source&nbsp;code</a></span></p>
-<!-- ==================== FUNCTIONS ==================== -->
+<hr />
+<div class="fields">      <p><strong>Author:</strong>
+        Fabio Erculiani &lt;lxnay@sabayonlinux.org&gt;
+      </p>
+      <p><strong>Contact:</strong>
+        lxnay@sabayonlinux.org
+      </p>
+      <p><strong>Copyright:</strong>
+        Fabio Erculiani
+      </p>
+      <p><strong>License:</strong>
+        GPL-2
+        <p><b>Entropy miscellaneous tools module</b>. In this module are 
+        enclosed all the miscellaneous functions used arount the Entropy 
+        codebase.</p>
+      </p>
+</div><!-- ==================== FUNCTIONS ==================== -->
 <a name="section-Functions"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
@@ -82,12 +98,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#is_user_in_entropy_group" class="summary-sig-name">is_user_in_entropy_group</a>(<span class="summary-sig-arg">uid</span>=<span class="summary-sig-default">None</span>)</span><br />
-      docstring_title</td>
+      Return whether UID or given UID (through uid keyword argument) is in 
+      the &quot;entropy&quot; group (see 
+      entropy.const.etpConst['sysgroup']).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#is_user_in_entropy_group">source&nbsp;code</a></span>
             
@@ -99,12 +117,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#get_uid_from_user" class="summary-sig-name">get_uid_from_user</a>(<span class="summary-sig-arg">username</span>)</span><br />
-      docstring_title</td>
+      Return UID for given username or -1 if not available.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#get_uid_from_user">source&nbsp;code</a></span>
             
@@ -116,12 +134,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#get_gid_from_group" class="summary-sig-name">get_gid_from_group</a>(<span class="summary-sig-arg">groupname</span>)</span><br />
-      docstring_title</td>
+      Return GID value for given system group name if exists, otherwise 
+      return -1.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#get_gid_from_group">source&nbsp;code</a></span>
             
@@ -133,12 +152,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">string or None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#get_user_from_uid" class="summary-sig-name">get_user_from_uid</a>(<span class="summary-sig-arg">uid</span>)</span><br />
-      docstring_title</td>
+      Return username belonging to given system UID.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#get_user_from_uid">source&nbsp;code</a></span>
             
@@ -150,12 +169,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">string or None</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#get_group_from_gid" class="summary-sig-name">get_group_from_gid</a>(<span class="summary-sig-arg">gid</span>)</span><br />
-      docstring_title</td>
+      Return group name belonging to given system GID</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#get_group_from_gid">source&nbsp;code</a></span>
             
@@ -172,7 +191,7 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#kill_threads" class="summary-sig-name">kill_threads</a>()</span><br />
-      docstring_title</td>
+      Call entropy.const's const_kill_threads() method.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#kill_threads">source&nbsp;code</a></span>
             
@@ -189,7 +208,8 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#print_traceback" class="summary-sig-name">print_traceback</a>(<span class="summary-sig-arg">f</span>=<span class="summary-sig-default">None</span>)</span><br />
-      docstring_title</td>
+      Function called by Entropy when an exception occurs with the aim to 
+      give user a clue of what went wrong.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#print_traceback">source&nbsp;code</a></span>
             
@@ -201,12 +221,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">string</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#get_traceback" class="summary-sig-name">get_traceback</a>()</span><br />
-      docstring_title</td>
+      Return last available Python traceback.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#get_traceback">source&nbsp;code</a></span>
             
@@ -218,12 +238,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">string</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#print_exception" class="summary-sig-name">print_exception</a>(<span class="summary-sig-arg">returndata</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      Print last Python exception and frame variables values (if available)
+      to stdout.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#print_exception">source&nbsp;code</a></span>
             
@@ -235,13 +256,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">string or bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#get_remote_data" class="summary-sig-name">get_remote_data</a>(<span class="summary-sig-arg">url</span>,
         <span class="summary-sig-arg">timeout</span>=<span class="summary-sig-default">5</span>)</span><br />
-      docstring_title</td>
+      Fetch data at given URL (all the ones supported by Python urllib) and
+      return it.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#get_remote_data">source&nbsp;code</a></span>
             
@@ -253,80 +275,13 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#is_png_file" class="summary-sig-name">is_png_file</a>(<span class="summary-sig-arg">path</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#is_png_file">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#is_jpeg_file" class="summary-sig-name">is_jpeg_file</a>(<span class="summary-sig-arg">path</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#is_jpeg_file">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#is_bmp_file" class="summary-sig-name">is_bmp_file</a>(<span class="summary-sig-arg">path</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#is_bmp_file">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#is_gif_file" class="summary-sig-name">is_gif_file</a>(<span class="summary-sig-arg">path</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#is_gif_file">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#is_supported_image_file" class="summary-sig-name">is_supported_image_file</a>(<span class="summary-sig-arg">path</span>)</span><br />
-      docstring_title</td>
+      Return whether passed image file path &quot;path&quot; references a 
+      valid image file.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#is_supported_image_file">source&nbsp;code</a></span>
             
@@ -338,12 +293,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#is_april_first" class="summary-sig-name">is_april_first</a>()</span><br />
-      docstring_title</td>
+      Return whether today is April, 1st.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#is_april_first">source&nbsp;code</a></span>
             
@@ -361,7 +316,7 @@
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#add_proxy_opener" class="summary-sig-name">add_proxy_opener</a>(<span class="summary-sig-arg">module</span>,
         <span class="summary-sig-arg">data</span>)</span><br />
-      docstring_title</td>
+      Add proxy opener to urllib module.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#add_proxy_opener">source&nbsp;code</a></span>
             
@@ -373,12 +328,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#is_valid_ascii" class="summary-sig-name">is_valid_ascii</a>(<span class="summary-sig-arg">string</span>)</span><br />
-      docstring_title</td>
+      Return whether passed string only contains valid ASCII characters.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#is_valid_ascii">source&nbsp;code</a></span>
             
@@ -395,7 +350,7 @@
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#is_valid_unicode" class="summary-sig-name">is_valid_unicode</a>(<span class="summary-sig-arg">string</span>)</span><br />
-      docstring_title</td>
+      Return whether passed string is unicode.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#is_valid_unicode">source&nbsp;code</a></span>
             
@@ -407,12 +362,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#is_valid_email" class="summary-sig-name">is_valid_email</a>(<span class="summary-sig-arg">email</span>)</span><br />
-      docstring_title</td>
+      Return whether passed string is contains a valid email address.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#is_valid_email">source&nbsp;code</a></span>
             
@@ -424,12 +379,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#islive" class="summary-sig-name">islive</a>()</span><br />
-      docstring_title</td>
+      Return whether System is running in Live mode (off a CD/DVD).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#islive">source&nbsp;code</a></span>
             
@@ -441,12 +396,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#get_file_size" class="summary-sig-name">get_file_size</a>(<span class="summary-sig-arg">file_path</span>)</span><br />
-      docstring_title</td>
+      Return size of given path passed in &quot;file_path&quot;.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#get_file_size">source&nbsp;code</a></span>
             
@@ -458,12 +413,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#sum_file_sizes" class="summary-sig-name">sum_file_sizes</a>(<span class="summary-sig-arg">file_list</span>)</span><br />
-      docstring_title</td>
+      Return file size sum of given list of paths.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#sum_file_sizes">source&nbsp;code</a></span>
             
@@ -475,13 +430,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#check_required_space" class="summary-sig-name">check_required_space</a>(<span class="summary-sig-arg">mountpoint</span>,
         <span class="summary-sig-arg">bytes_required</span>)</span><br />
-      docstring_title</td>
+      Check available space in mount point and if it satisfies the amount 
+      of required bytes given.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#check_required_space">source&nbsp;code</a></span>
             
@@ -510,14 +466,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#movefile" class="summary-sig-name">movefile</a>(<span class="summary-sig-arg">src</span>,
         <span class="summary-sig-arg">dest</span>,
         <span class="summary-sig-arg">src_basedir</span>=<span class="summary-sig-default">None</span>)</span><br />
-      docstring_title</td>
+      Move a file from source to destination in an atomic way.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#movefile">source&nbsp;code</a></span>
             
@@ -723,24 +679,6 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#getfd" class="summary-sig-name">getfd</a>(<span class="summary-sig-arg">filespec</span>,
-        <span class="summary-sig-arg">readOnly</span>=<span class="summary-sig-default">0</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#getfd">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#uncompress_file" class="summary-sig-name">uncompress_file</a>(<span class="summary-sig-arg">file_path</span>,
         <span class="summary-sig-arg">destination_path</span>,
         <span class="summary-sig-arg">opener</span>)</span><br />
@@ -856,95 +794,6 @@
       docstring_title</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#backup_client_repository">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#extract_xpak" class="summary-sig-name">extract_xpak</a>(<span class="summary-sig-arg">tbz2file</span>,
-        <span class="summary-sig-arg">tmpdir</span>=<span class="summary-sig-default">None</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#extract_xpak">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#read_xpak" class="summary-sig-name">read_xpak</a>(<span class="summary-sig-arg">tbz2file</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#read_xpak">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#unpack_xpak" class="summary-sig-name">unpack_xpak</a>(<span class="summary-sig-arg">xpakfile</span>,
-        <span class="summary-sig-arg">tmpdir</span>=<span class="summary-sig-default">None</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#unpack_xpak">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#suck_xpak" class="summary-sig-name">suck_xpak</a>(<span class="summary-sig-arg">tbz2file</span>,
-        <span class="summary-sig-arg">outputpath</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#suck_xpak">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#append_xpak" class="summary-sig-name">append_xpak</a>(<span class="summary-sig-arg">tbz2file</span>,
-        <span class="summary-sig-arg">atom</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#append_xpak">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1220,28 +1069,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#allocate_masked_file" class="summary-sig-name">allocate_masked_file</a>(<span class="summary-sig-arg">file</span>,
+          <td><span class="summary-sig"><a href="entropy.tools-module.html#allocate_masked_file" class="summary-sig-name">allocate_masked_file</a>(<span class="summary-sig-arg">maskfile</span>,
         <span class="summary-sig-arg">fromfile</span>)</span><br />
       docstring_title</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#allocate_masked_file">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#extract_elog" class="summary-sig-name">extract_elog</a>(<span class="summary-sig-arg">file</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#extract_elog">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1588,10 +1420,10 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#dep_get_portage_revision" class="summary-sig-name">dep_get_portage_revision</a>(<span class="summary-sig-arg">mydep</span>)</span><br />
+          <td><span class="summary-sig"><a href="entropy.tools-module.html#dep_get_spm_revision" class="summary-sig-name">dep_get_spm_revision</a>(<span class="summary-sig-arg">mydep</span>)</span><br />
       docstring_title</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#dep_get_portage_revision">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.tools-pysrc.html#dep_get_spm_revision">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1622,7 +1454,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#dep_gettag" class="summary-sig-name">dep_gettag</a>(<span class="summary-sig-arg">dep</span>)</span><br />
+          <td><span class="summary-sig"><a href="entropy.tools-module.html#dep_gettag" class="summary-sig-name">dep_gettag</a>(<span class="summary-sig-arg">mydep</span>)</span><br />
       Retrieve the slot on a depend.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#dep_gettag">source&nbsp;code</a></span>
@@ -1704,12 +1536,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#get_newer_version" class="summary-sig-name">get_newer_version</a>(<span class="summary-sig-arg">versions</span>)</span><br />
-      docstring_title</td>
+      Return a sorted list of versions</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#get_newer_version">source&nbsp;code</a></span>
             
@@ -1721,66 +1553,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#get_newer_version_stable" class="summary-sig-name">get_newer_version_stable</a>(<span class="summary-sig-arg">versions</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#get_newer_version_stable">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="g_e_n_w_cmp"></a><span class="summary-sig-name">g_e_n_w_cmp</span>(<span class="summary-sig-arg">a</span>,
-        <span class="summary-sig-arg">b</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#g_e_n_w_cmp">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.tools-module.html#get_entropy_newer_version" class="summary-sig-name">get_entropy_newer_version</a>(<span class="summary-sig-arg">versions</span>)</span><br />
-      docstring_title</td>
+      Sort a list of entropy package versions.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#get_entropy_newer_version">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="get_entropy_newer_version_stable"></a><span class="summary-sig-name">get_entropy_newer_version_stable</span>(<span class="summary-sig-arg">versions</span>)</span><br />
-      descendent order versions = 
-      [(version,tag,revision),(version,tag,revision)]</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#get_entropy_newer_version_stable">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1829,7 +1609,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#istext" class="summary-sig-name">istext</a>(<span class="summary-sig-arg">s</span>)</span><br />
+          <td><span class="summary-sig"><a href="entropy.tools-module.html#istext" class="summary-sig-name">istext</a>(<span class="summary-sig-arg">mystring</span>)</span><br />
       docstring_title</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#istext">source&nbsp;code</a></span>
@@ -2005,7 +1785,7 @@
           <td><span class="summary-sig"><a href="entropy.tools-module.html#uncompress_tar_bz2" class="summary-sig-name">uncompress_tar_bz2</a>(<span class="summary-sig-arg">filepath</span>,
         <span class="summary-sig-arg">extractPath</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">catchEmpty</span>=<span class="summary-sig-default">False</span>)</span><br />
-      docstring_title</td>
+      docstring_title # FIXME: rename this and make bz2 independent</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#uncompress_tar_bz2">source&nbsp;code</a></span>
             
@@ -2021,7 +1801,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#bytes_into_human" class="summary-sig-name">bytes_into_human</a>(<span class="summary-sig-arg">bytes</span>)</span><br />
+          <td><span class="summary-sig"><a href="entropy.tools-module.html#bytes_into_human" class="summary-sig-name">bytes_into_human</a>(<span class="summary-sig-arg">xbytes</span>)</span><br />
       docstring_title</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#bytes_into_human">source&nbsp;code</a></span>
@@ -2208,7 +1988,7 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#cleanup" class="summary-sig-name">cleanup</a>(<span class="summary-sig-arg">toCleanDirs</span>=<span class="summary-sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>)</span><br />
+          <td><span class="summary-sig"><a href="entropy.tools-module.html#cleanup" class="summary-sig-name">cleanup</a>(<span class="summary-sig-arg">toCleanDirs</span>=<span class="summary-sig-default">None</span>)</span><br />
       docstring_title</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.tools-pysrc.html#cleanup">source&nbsp;code</a></span>
@@ -2692,23 +2472,6 @@
       
     </td>
   </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.tools-module.html#list_to_utf8" class="summary-sig-name">list_to_utf8</a>(<span class="summary-sig-arg">mylist</span>)</span><br />
-      docstring_title</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.tools-pysrc.html#list_to_utf8">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
 </table>
 <!-- ==================== VARIABLES ==================== -->
 <a name="section-Variables"></a>
@@ -2789,6 +2552,13 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
         <a name="ldd_avail_check"></a><span class="summary-name">ldd_avail_check</span> = <code title="False">False</code>
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'entropy'"><code class="variable-quote">'</code><code class="variable-string">entropy</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
 </table>
 <!-- ==================== FUNCTION DETAILS ==================== -->
 <a name="section-FunctionDetails"></a>
@@ -2834,12 +2604,16 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether UID or given UID (through uid keyword argument) is in 
+  the &quot;entropy&quot; group (see 
+  entropy.const.etpConst['sysgroup']).</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>uid</code></strong> ()</li>
+        <li><strong class="pname"><code>uid</code></strong> (int) - valid system uid</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True, if UID is in the &quot;entropy&quot; group</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2857,12 +2631,14 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return UID for given username or -1 if not available.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>username</code></strong> ()</li>
+        <li><strong class="pname"><code>username</code></strong> (string) - valid system username</li>
     </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>UID if username is valid, otherwise -1</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2880,12 +2656,15 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return GID value for given system group name if exists, otherwise 
+  return -1.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>groupname</code></strong> ()</li>
+        <li><strong class="pname"><code>groupname</code></strong> (string) - valid system group</li>
     </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>resolved GID or -1 if not available</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2903,12 +2682,14 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return username belonging to given system UID.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>uid</code></strong> ()</li>
+        <li><strong class="pname"><code>uid</code></strong> (int) - valid system UID</li>
     </ul></dd>
+    <dt>Returns: string or None</dt>
+        <dd>username</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2926,12 +2707,14 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return group name belonging to given system GID</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>gid</code></strong> ()</li>
+        <li><strong class="pname"><code>gid</code></strong> (int) - valid system GID</li>
     </ul></dd>
+    <dt>Returns: string or None</dt>
+        <dd>group name</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2949,7 +2732,8 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Call entropy.const's const_kill_threads() method. Service function 
+  available also here.</p>
   <dl class="fields">
   </dl>
 </td></tr></table>
@@ -2968,11 +2752,12 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Function called by Entropy when an exception occurs with the aim to 
+  give user a clue of what went wrong.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>f</code></strong> ()</li>
+        <li><strong class="pname"><code>f</code></strong> (valid file handle) - write to f (file) object instead of stdout</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -2991,8 +2776,10 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return last available Python traceback.</p>
   <dl class="fields">
+    <dt>Returns: string</dt>
+        <dd>traceback data</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -3010,12 +2797,15 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Print last Python exception and frame variables values (if available) 
+  to stdout.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>returndata</code></strong> ()</li>
+        <li><strong class="pname"><code>returndata</code></strong> (bool) - do not print data but return</li>
     </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>exception data</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -3034,105 +2824,16 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Fetch data at given URL (all the ones supported by Python urllib) and 
+  return it.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>url</code></strong> ()</li>
-        <li><strong class="pname"><code>timeout</code></strong> ()</li>
+        <li><strong class="pname"><code>url</code></strong> (string) - URL string</li>
+        <li><strong class="pname"><code>timeout</code></strong> (int) - fetch timeout in seconds</li>
     </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="is_png_file"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_png_file</span>(<span class="sig-arg">path</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.tools-pysrc.html#is_png_file">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>path</code></strong> ()</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="is_jpeg_file"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_jpeg_file</span>(<span class="sig-arg">path</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.tools-pysrc.html#is_jpeg_file">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>path</code></strong> ()</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="is_bmp_file"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_bmp_file</span>(<span class="sig-arg">path</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.tools-pysrc.html#is_bmp_file">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>path</code></strong> ()</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="is_gif_file"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_gif_file</span>(<span class="sig-arg">path</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.tools-pysrc.html#is_gif_file">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>path</code></strong> ()</li>
-    </ul></dd>
+    <dt>Returns: string or bool</dt>
+        <dd>fetched data or False (when error occured)</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -3150,12 +2851,16 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether passed image file path &quot;path&quot; references a 
+  valid image file. Currently supported image file types are: PNG, JPEG, 
+  BMP, GIF.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>path</code></strong> ()</li>
+        <li><strong class="pname"><code>path</code></strong> (string) - path pointing to a possibly valid image file</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True if path references a valid image file</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -3173,8 +2878,10 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether today is April, 1st. Please keep the joke.</p>
   <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>True if April 1st</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -3193,12 +2900,12 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Add proxy opener to urllib module.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>module</code></strong> ()</li>
-        <li><strong class="pname"><code>data</code></strong> ()</li>
+        <li><strong class="pname"><code>module</code></strong> (Python module) - urllib module</li>
+        <li><strong class="pname"><code>data</code></strong> (dict) - proxy settings</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -3217,12 +2924,14 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether passed string only contains valid ASCII characters.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>string</code></strong> ()</li>
+        <li><strong class="pname"><code>string</code></strong> (string) - string to test</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True if string contains pure ASCII</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -3240,12 +2949,14 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether passed string is unicode.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>string</code></strong> ()</li>
+        <li><strong class="pname"><code>string</code></strong> (string) - string to test</li>
     </ul></dd>
+    <dt>Returns:</dt>
+        <dd>True if string is unicode</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -3263,12 +2974,14 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether passed string is contains a valid email address.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>email</code></strong> ()</li>
+        <li><strong class="pname"><code>email</code></strong> (string) - string to test</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True if string is a valid email</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -3286,8 +2999,11 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return whether System is running in Live mode (off a CD/DVD). See 
+  entropy.const.const_islive() for more information.</p>
   <dl class="fields">
+    <dt>Returns: bool</dt>
+        <dd>True if System is running in Live mode</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -3305,11 +3021,17 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return size of given path passed in &quot;file_path&quot;.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>file_path</code></strong> ()</li>
+        <li><strong class="pname"><code>file_path</code></strong> (string) - path to an existing file</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>file size in bytes</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>OSError</strong></code> - if file referenced in file_path is not available</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -3328,12 +3050,14 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return file size sum of given list of paths.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>file_list</code></strong> ()</li>
+        <li><strong class="pname"><code>file_list</code></strong> (list) - list of file paths</li>
     </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>summed size in bytes</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -3352,13 +3076,16 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Check available space in mount point and if it satisfies the amount of
+  required bytes given.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>mountpoint</code></strong> ()</li>
-        <li><strong class="pname"><code>bytes_required</code></strong> ()</li>
+        <li><strong class="pname"><code>mountpoint</code></strong> (string) - mount point</li>
+        <li><strong class="pname"><code>bytes_required</code></strong> (bool) - amount of bytes required to make function return True</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>if True, required space is available</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -3378,14 +3105,17 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Move a file from source to destination in an atomic way.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>src</code></strong> ()</li>
-        <li><strong class="pname"><code>dest</code></strong> ()</li>
-        <li><strong class="pname"><code>src_basedir</code></strong> ()</li>
+        <li><strong class="pname"><code>src</code></strong> (string) - source path</li>
+        <li><strong class="pname"><code>dest</code></strong> (string) - destination path</li>
+        <li><strong class="pname"><code>src_basedir</code></strong> (string) - source path base directory, used to properly handle symlink under
+          certain circumstances</li>
     </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True, if file was moved successfully</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -3644,31 +3374,6 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
   </dl>
 </td></tr></table>
 </div>
-<a name="getfd"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">getfd</span>(<span class="sig-arg">filespec</span>,
-        <span class="sig-arg">readOnly</span>=<span class="sig-default">0</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.tools-pysrc.html#getfd">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>filespec</code></strong> ()</li>
-        <li><strong class="pname"><code>readOnly</code></strong> ()</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
 <a name="uncompress_file"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -3841,129 +3546,6 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
   
   <p>docstring_title</p>
   <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="extract_xpak"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">extract_xpak</span>(<span class="sig-arg">tbz2file</span>,
-        <span class="sig-arg">tmpdir</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.tools-pysrc.html#extract_xpak">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>tbz2file</code></strong> ()</li>
-        <li><strong class="pname"><code>tmpdir</code></strong> ()</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="read_xpak"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">read_xpak</span>(<span class="sig-arg">tbz2file</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.tools-pysrc.html#read_xpak">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>tbz2file</code></strong> ()</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="unpack_xpak"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">unpack_xpak</span>(<span class="sig-arg">xpakfile</span>,
-        <span class="sig-arg">tmpdir</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.tools-pysrc.html#unpack_xpak">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>xpakfile</code></strong> ()</li>
-        <li><strong class="pname"><code>tmpdir</code></strong> ()</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="suck_xpak"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">suck_xpak</span>(<span class="sig-arg">tbz2file</span>,
-        <span class="sig-arg">outputpath</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.tools-pysrc.html#suck_xpak">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>tbz2file</code></strong> ()</li>
-        <li><strong class="pname"><code>outputpath</code></strong> ()</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="append_xpak"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">append_xpak</span>(<span class="sig-arg">tbz2file</span>,
-        <span class="sig-arg">atom</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.tools-pysrc.html#append_xpak">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>tbz2file</code></strong> ()</li>
-        <li><strong class="pname"><code>atom</code></strong> ()</li>
-    </ul></dd>
   </dl>
 </td></tr></table>
 </div>
@@ -4333,7 +3915,7 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">allocate_masked_file</span>(<span class="sig-arg">file</span>,
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">allocate_masked_file</span>(<span class="sig-arg">maskfile</span>,
         <span class="sig-arg">fromfile</span>)</span>
   </h3>
   </td><td align="right" valign="top"
@@ -4345,31 +3927,8 @@ d*)*)(-r(\d+))?$')">re.compile(r'^<code class="re-group">(</code>cvs\.<code clas
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>file</code></strong> ()</li>
+        <li><strong class="pname"><code>maskfile</code></strong> ()</li>
         <li><strong class="pname"><code>fromfile</code></strong> ()</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="extract_elog"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">extract_elog</span>(<span class="sig-arg">file</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.tools-pysrc.html#extract_elog">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>file</code></strong> ()</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -4911,17 +4470,17 @@ Removes dep components from the right side of an atom:
   </dl>
 </td></tr></table>
 </div>
-<a name="dep_get_portage_revision"></a>
+<a name="dep_get_spm_revision"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">dep_get_portage_revision</span>(<span class="sig-arg">mydep</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">dep_get_spm_revision</span>(<span class="sig-arg">mydep</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.tools-pysrc.html#dep_get_portage_revision">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.tools-pysrc.html#dep_get_spm_revision">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
@@ -4964,7 +4523,7 @@ Removes dep components from the right side of an atom:
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">dep_gettag</span>(<span class="sig-arg">dep</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">dep_gettag</span>(<span class="sig-arg">mydep</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.tools-pysrc.html#dep_gettag">source&nbsp;code</a></span>&nbsp;
@@ -5042,35 +4601,14 @@ Removes dep components from the right side of an atom:
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Return a sorted list of versions</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>versions</code></strong> ()</li>
+        <li><strong class="pname"><code>versions</code></strong> (list) - input version list</li>
     </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_newer_version_stable"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_newer_version_stable</span>(<span class="sig-arg">versions</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.tools-pysrc.html#get_newer_version_stable">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>versions</code></strong> ()</li>
-    </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>sorted version list</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -5088,12 +4626,14 @@ Removes dep components from the right side of an atom:
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>Sort a list of entropy package versions.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>versions</code></strong> ()</li>
+        <li><strong class="pname"><code>versions</code></strong> (list) - list of package versions</li>
     </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>sorted list</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -5152,7 +4692,7 @@ Removes dep components from the right side of an atom:
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">istext</span>(<span class="sig-arg">s</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">istext</span>(<span class="sig-arg">mystring</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.tools-pysrc.html#istext">source&nbsp;code</a></span>&nbsp;
@@ -5397,7 +4937,7 @@ Removes dep components from the right side of an atom:
     </td>
   </tr></table>
   
-  <p>docstring_title</p>
+  <p>docstring_title # FIXME: rename this and make bz2 independent</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
@@ -5415,7 +4955,7 @@ Removes dep components from the right side of an atom:
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">bytes_into_human</span>(<span class="sig-arg">bytes</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">bytes_into_human</span>(<span class="sig-arg">xbytes</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.tools-pysrc.html#bytes_into_human">source&nbsp;code</a></span>&nbsp;
@@ -5426,7 +4966,7 @@ Removes dep components from the right side of an atom:
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>bytes</code></strong> ()</li>
+        <li><strong class="pname"><code>xbytes</code></strong> ()</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -5656,7 +5196,7 @@ Removes dep components from the right side of an atom:
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">cleanup</span>(<span class="sig-arg">toCleanDirs</span>=<span class="sig-default"><code class="variable-group">[</code><code class="variable-group">]</code></span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">cleanup</span>(<span class="sig-arg">toCleanDirs</span>=<span class="sig-default">None</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.tools-pysrc.html#cleanup">source&nbsp;code</a></span>&nbsp;
@@ -6307,29 +5847,6 @@ Removes dep components from the right side of an atom:
   </dl>
 </td></tr></table>
 </div>
-<a name="list_to_utf8"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">list_to_utf8</span>(<span class="sig-arg">mylist</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.tools-pysrc.html#list_to_utf8">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>docstring_title</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>mylist</code></strong> ()</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
 <br />
 <!-- ==================== VARIABLES DETAILS ==================== -->
 <a name="section-VariablesDetails"></a>
@@ -6409,7 +5926,7 @@ d<code class="re-op">*</code><code class="re-group">)</code><code class="re-op">
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:09 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:27 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

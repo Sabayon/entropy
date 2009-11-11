@@ -59,37 +59,7 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class Server</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__62" name="uml_class_diagram_for_entropy__62">
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#init_singleton" title="entropy.server.interfaces.main.Server.init_singleton" alt="" coords="17,241,1175,260"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#destroy" title="entropy.server.interfaces.main.Server.destroy" alt="" coords="17,260,1175,279"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#is_destroyed" title="In our world, Singleton instances may be destroyed, this is done by setting a private bool var __is_destroyed" alt="" coords="17,279,1175,297"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#__del__" title="entropy.server.interfaces.main.Server.__del__" alt="" coords="17,297,1175,316"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#ensure_paths" title="entropy.server.interfaces.main.Server.ensure_paths" alt="" coords="17,316,1175,335"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#migrate_repository_databases_to_new_branched_path" title="entropy.server.interfaces.main.Server.migrate_repository_databases_to_new_branched_path" alt="" coords="17,335,1175,353"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#setup_services" title="entropy.server.interfaces.main.Server.setup_services" alt="" coords="17,353,1175,372"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#Spm" title="Get Source Package Manager interface instance." alt="" coords="17,372,1175,391"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#setup_entropy_settings" title="entropy.server.interfaces.main.Server.setup_entropy_settings" alt="" coords="17,391,1175,409"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#close_server_databases" title="entropy.server.interfaces.main.Server.close_server_databases" alt="" coords="17,409,1175,428"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#close_server_database" title="entropy.server.interfaces.main.Server.close_server_database" alt="" coords="17,428,1175,447"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#get_available_repositories" title="entropy.server.interfaces.main.Server.get_available_repositories" alt="" coords="17,447,1175,465"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#switch_default_repository" title="entropy.server.interfaces.main.Server.switch_default_repository" alt="" coords="17,465,1175,484"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html#update_database_package_sets" title="entropy.server.interfaces.main.Server.update_database_package_sets" alt="" coords="17,503,1175,521"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html" title="entropy.server.interfaces.main.Server" alt="" coords="16,216,1176,523"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="277,92,445,111"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#is_singleton" title="Return if the instance is a singleton" alt="" coords="277,111,445,129"/>
-<area shape="rect" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton" alt="" coords="276,67,447,131"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#updateProgress" title="Text output print function." alt="" coords="499,36,1163,55"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#askQuestion" title="Questions asking function." alt="" coords="499,55,1163,73"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#inputBox" title="Generic input box (form) creator and data collector." alt="" coords="499,73,1163,92"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#cycleDone" title="Not actually implemented." alt="" coords="499,92,1163,111"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#setTitle" title="Set application title." alt="" coords="499,111,1163,129"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#setTotalCycles" title="Not actually implemented." alt="" coords="499,129,1163,148"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#nocolor" title="Disable coloured output." alt="" coords="499,148,1163,167"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html#notitles" title="Disable the ability to effectively set the application title." alt="" coords="499,167,1163,185"/>
-<area shape="rect" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="497,11,1164,187"/>
-</map>
-  <img src="uml_class_diagram_for_entropy__62.gif" alt='' usemap="#uml_class_diagram_for_entropy__62" ismap="ismap" class="graph-without-title" />
-</center>
+
 </center>
 <hr />
 <!-- ==================== INSTANCE METHODS ==================== -->
@@ -195,9 +165,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="migrate_repository_databases_to_new_branched_path"></a><span class="summary-sig-name">migrate_repository_databases_to_new_branched_path</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a name="setup_services"></a><span class="summary-sig-name">setup_services</span>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.migrate_repository_databases_to_new_branched_path">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.setup_services">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -207,13 +177,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">entropy.qa.QAInterface instance</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="setup_services"></a><span class="summary-sig-name">setup_services</span>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.server.interfaces.main.Server-class.html#QA" class="summary-sig-name">QA</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get Entropy QA Interface instance.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.setup_services">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.QA">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -469,26 +440,10 @@
         <span class="summary-sig-arg">description</span>,
         <span class="summary-sig-arg">mirrors</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">community_repo</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">service_url</span>=<span class="summary-sig-default">None</span>)</span></td>
+        <span class="summary-sig-arg">service_url</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">set_as_default</span>=<span class="summary-sig-default">False</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.init_generic_memory_server_repository">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="open_memory_database"></a><span class="summary-sig-name">open_memory_database</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">dbname</span>=<span class="summary-sig-default">None</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.open_memory_database">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -623,23 +578,6 @@
         <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.depends_table_initialize">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="library_paths_table_initialize"></a><span class="summary-sig-name">library_paths_table_initialize</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.library_paths_table_initialize">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -830,6 +768,23 @@
         <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.remove_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="taint_database"></a><span class="summary-sig-name">taint_database</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.taint_database">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1839,18 +1794,21 @@
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
+      <code><a href="entropy.core.Singleton-class.html#__init__">__init__</a></code>,
       <code><a href="entropy.core.Singleton-class.html#is_singleton">is_singleton</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
+      <code>__format__</code>,
       <code>__getattribute__</code>,
       <code>__hash__</code>,
-      <code>__init__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
       <code>__repr__</code>,
       <code>__setattr__</code>,
-      <code>__str__</code>
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.output.TextInterface-class.html">output.TextInterface</a></code></b>:
       <code><a href="entropy.output.TextInterface-class.html#askQuestion">askQuestion</a></code>,
@@ -1929,6 +1887,27 @@
         <a href="entropy.core.Singleton-class.html#is_destroyed">core.Singleton.is_destroyed</a>
         <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="QA"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">QA</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.QA">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get Entropy QA Interface instance.</p>
+  <dl class="fields">
+    <dt>Returns: entropy.qa.QAInterface instance</dt>
+        <dd>Entropy QA Interface instance</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2040,7 +2019,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:14 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:30 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

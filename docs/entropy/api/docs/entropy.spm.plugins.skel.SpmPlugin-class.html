@@ -59,33 +59,7 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class SpmPlugin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__90" name="uml_class_diagram_for_entropy__90">
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#BASE_PLUGIN_API_VERSION" title="entropy.spm.plugins.skel.SpmPlugin.BASE_PLUGIN_API_VERSION" alt="" coords="17,140,689,159"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#PLUGIN_API_VERSION" title="entropy.spm.plugins.skel.SpmPlugin.PLUGIN_API_VERSION" alt="" coords="17,159,689,177"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#SUPPORTED_MATCH_TYPES" title="entropy.spm.plugins.skel.SpmPlugin.SUPPORTED_MATCH_TYPES" alt="" coords="17,177,689,196"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#add_installed_package" title="Add package installed by Entropy to SPM database too." alt="" coords="17,199,689,217"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#assign_uid_to_installed_package" title="Assign a new Unique Identifier to installed package and return it." alt="" coords="17,217,689,236"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#configure_installed_package" title="Configure installed package." alt="" coords="17,236,689,255"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#disable_package_compile_options" title="WARNING: this is an Entropy Server functionality." alt="" coords="17,255,689,273"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#enable_package_compile_options" title="WARNING: this is an Entropy Server functionality." alt="" coords="17,273,689,292"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#entropy_install_setup_hook" title="This function is called by Entropy Client during package metadata setup." alt="" coords="17,292,689,311"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#entropy_install_unpack_hook" title="This function is called by Entropy Client during package installation, &#160;unpack phase." alt="" coords="17,311,689,329"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#execute_package_phase" title="Execute Source Package Manager package phase (postinstall, preinstall, &#160;preremove, postremove, etc)." alt="" coords="17,329,689,348"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#extract_package_metadata" title="Extract Source Package Manager package metadata from given file." alt="" coords="17,348,689,367"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#generate_package" title="Generate a package tarball file for given package, from running system." alt="" coords="17,367,689,385"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_cache_directory" title="Return Source Package Manager cache directory path." alt="" coords="17,385,689,404"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_download_mirrors" title="Return list of download mirror URLs for given mirror name" alt="" coords="17,404,689,423"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_installed_package_build_script_path" title="Return build script path for given package looking into installed packages &#160;repository." alt="" coords="17,423,689,441"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#search_paths_owners" title="Return list of packages owning provided list of paths." alt="" coords="17,460,689,479"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html" title="Base class for Source Package Manager plugins" alt="" coords="16,123,691,480"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html" title="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin" alt="" coords="232,509,475,536"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="269,36,437,55"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#is_destroyed" title="In our world, Singleton instances may be destroyed, this is done by setting a private bool var __is_destroyed" alt="" coords="269,55,437,73"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#is_singleton" title="Return if the instance is a singleton" alt="" coords="269,73,437,92"/>
-<area shape="rect" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton" alt="" coords="268,11,439,93"/>
-</map>
-  <img src="uml_class_diagram_for_entropy__90.gif" alt='' usemap="#uml_class_diagram_for_entropy__90" ismap="ismap" class="graph-without-title" />
-</center>
+
 </center>
 <hr />
 <p>Base class for Source Package Manager plugins</p>
@@ -104,11 +78,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#add_installed_package" class="summary-sig-name">add_installed_package</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package_metadata</span>)</span><br />
-      Add package installed by Entropy to SPM database too.</td>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#init_singleton" class="summary-sig-name">init_singleton</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">output_interface</span>)</span><br />
+      Source Package Manager Plugin singleton method.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.add_installed_package">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.init_singleton">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -118,16 +92,126 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">int</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#assign_uid_to_installed_package" class="summary-sig-name">assign_uid_to_installed_package</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#package_metadata_keys" class="summary-sig-name">package_metadata_keys</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a list of package metadata keys available.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.package_metadata_keys">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#package_phases" class="summary-sig-name">package_phases</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a list of available and valid package build phases.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.package_phases">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_cache_directory" class="summary-sig-name">get_cache_directory</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">root</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Return Source Package Manager cache directory path.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_cache_directory">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_package_metadata" class="summary-sig-name">get_package_metadata</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package</span>,
+        <span class="summary-sig-arg">key</span>)</span><br />
+      Return package metadata referenced by &quot;key&quot; argument from 
+      available packages repositories.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_metadata">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string or None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_package_changelog" class="summary-sig-name">get_package_changelog</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package</span>)</span><br />
+      Return ChangeLog content for given package.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_changelog">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_package_build_script_path" class="summary-sig-name">get_package_build_script_path</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package</span>)</span><br />
+      Return build script path for given package looking through available 
+      packages repositories.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_build_script_path">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_installed_package_build_script_path" class="summary-sig-name">get_installed_package_build_script_path</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">package</span>,
         <span class="summary-sig-arg">root</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Assign a new Unique Identifier to installed package and return it.</td>
+      Return build script path for given package looking into installed 
+      packages repository.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.assign_uid_to_installed_package">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_installed_package_build_script_path">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -137,34 +221,18 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">string</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#configure_installed_package" class="summary-sig-name">configure_installed_package</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package_metadata</span>)</span><br />
-      Configure installed package.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.configure_installed_package">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">bool</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#disable_package_compile_options" class="summary-sig-name">disable_package_compile_options</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_installed_package_metadata" class="summary-sig-name">get_installed_package_metadata</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">package</span>,
-        <span class="summary-sig-arg">options</span>)</span><br />
-      WARNING: this is an Entropy Server functionality.</td>
+        <span class="summary-sig-arg">key</span>,
+        <span class="summary-sig-arg">root</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Return package metadata referenced by &quot;key&quot; argument from 
+      installed packages repository.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.disable_package_compile_options">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_installed_package_metadata">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -174,16 +242,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">bool</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#enable_package_compile_options" class="summary-sig-name">enable_package_compile_options</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package</span>,
-        <span class="summary-sig-arg">options</span>)</span><br />
-      WARNING: this is an Entropy Server functionality.</td>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_system_packages" class="summary-sig-name">get_system_packages</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return list of core (system) packages.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.enable_package_compile_options">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_system_packages">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -193,20 +259,14 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">int</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#execute_package_phase" class="summary-sig-name">execute_package_phase</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package</span>,
-        <span class="summary-sig-arg">build_script_path</span>,
-        <span class="summary-sig-arg">phase_name</span>,
-        <span class="summary-sig-arg">work_dir</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">licenses_accepted</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Execute Source Package Manager package phase (postinstall, 
-      preinstall, preremove, postremove, etc).</td>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_package_categories" class="summary-sig-name">get_package_categories</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return list of package categories in available packages repositories.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.execute_package_phase">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_categories">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -220,11 +280,220 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#extract_package_metadata" class="summary-sig-name">extract_package_metadata</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package_file</span>)</span><br />
-      Extract Source Package Manager package metadata from given file.</td>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_package_category_description_metadata" class="summary-sig-name">get_package_category_description_metadata</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">category</span>)</span><br />
+      Return metadata for given package category containing description in 
+      all the available languages.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.extract_package_metadata">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_category_description_metadata">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_security_packages" class="summary-sig-name">get_security_packages</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">security_property</span>)</span><br />
+      Return a list of packages affected by given security property 
+      argument.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_security_packages">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">dict</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_security_advisory_metadata" class="summary-sig-name">get_security_advisory_metadata</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">advisory_id</span>)</span><br />
+      Return Source Package Manager package security advisory metadata for 
+      given security advisory identifier.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_security_advisory_metadata">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_setting" class="summary-sig-name">get_setting</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">key</span>)</span><br />
+      Return Source Package Manager setting referenced by &quot;key&quot;</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_setting">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_user_installed_packages_file" class="summary-sig-name">get_user_installed_packages_file</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">root</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Return path to file containing list (one per line) of packages 
+      installed by user (in Portage world, this is the world file).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_user_installed_packages_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_merge_protected_paths" class="summary-sig-name">get_merge_protected_paths</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a list of paths (either directories or files) whose are 
+      protected from direct merge requiring user approval.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_merge_protected_paths">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_merge_protected_paths_mask"></a><span class="summary-sig-name">get_merge_protected_paths_mask</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a list of unprotected paths (either directories or files) 
+      which reside inside a protected path (see 
+      get_merge_protected_paths()).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_merge_protected_paths_mask">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_download_mirrors" class="summary-sig-name">get_download_mirrors</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">mirror_name</span>)</span><br />
+      Return list of download mirror URLs for given mirror name</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_download_mirrors">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="packages_repositories_metadata_update"></a><span class="summary-sig-name">packages_repositories_metadata_update</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Executes Source Package Manager available packages repositories 
+      metadata update.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.packages_repositories_metadata_update">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#log_message" class="summary-sig-name">log_message</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">message</span>)</span><br />
+      Log message string to logfile.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.log_message">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string or list or None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#match_package" class="summary-sig-name">match_package</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package</span>,
+        <span class="summary-sig-arg">match_type</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Match a package looking through available packages repositories using
+      the given match term argument (package) and match type (validity 
+      defined by subclasses).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.match_package">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string or list or None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#match_installed_package" class="summary-sig-name">match_installed_package</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package</span>,
+        <span class="summary-sig-arg">match_all</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">root</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Match a package looking through installed packages repository using 
+      the given match term argument (package).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.match_installed_package">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -254,15 +523,15 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">string</span>
+      <span class="summary-type">dict</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_cache_directory" class="summary-sig-name">get_cache_directory</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">root</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Return Source Package Manager cache directory path.</td>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#extract_package_metadata" class="summary-sig-name">extract_package_metadata</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package_file</span>)</span><br />
+      Extract Source Package Manager package metadata from given file.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_cache_directory">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.extract_package_metadata">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -272,35 +541,53 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">list</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_download_mirrors" class="summary-sig-name">get_download_mirrors</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">mirror_name</span>)</span><br />
-      Return list of download mirror URLs for given mirror name</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_download_mirrors">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">string</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_installed_package_build_script_path" class="summary-sig-name">get_installed_package_build_script_path</a>(<span class="summary-sig-arg">self</span>,
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#enable_package_compile_options" class="summary-sig-name">enable_package_compile_options</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">package</span>,
-        <span class="summary-sig-arg">root</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Return build script path for given package looking into installed 
-      packages repository.</td>
+        <span class="summary-sig-arg">options</span>)</span><br />
+      WARNING: this is an Entropy Server functionality.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_installed_package_build_script_path">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.enable_package_compile_options">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#disable_package_compile_options" class="summary-sig-name">disable_package_compile_options</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package</span>,
+        <span class="summary-sig-arg">options</span>)</span><br />
+      WARNING: this is an Entropy Server functionality.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.disable_package_compile_options">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">dict</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_package_compile_options" class="summary-sig-name">get_package_compile_options</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package</span>)</span><br />
+      WARNING: this is an Entropy Server functionality.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_compile_options">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -348,18 +635,16 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">string</span>
+      <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_installed_package_metadata" class="summary-sig-name">get_installed_package_metadata</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package</span>,
-        <span class="summary-sig-arg">key</span>,
-        <span class="summary-sig-arg">root</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Return package metadata referenced by &quot;key&quot; argument from 
-      installed packages repository.</td>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_packages" class="summary-sig-name">get_packages</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">categories</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">filter_reinstalls</span>=<span class="summary-sig-default">False</span>)</span><br />
+      Return list of packages found in available repositories.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_installed_package_metadata">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_packages">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -388,154 +673,6 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">list</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_merge_protected_paths" class="summary-sig-name">get_merge_protected_paths</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return a list of paths (either directories or files) whose are 
-      protected from direct merge requiring user approval.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_merge_protected_paths">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="get_merge_protected_paths_mask"></a><span class="summary-sig-name">get_merge_protected_paths_mask</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return a list of unprotected paths (either directories or files) 
-      which reside inside a protected path (see 
-      get_merge_protected_paths()).</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_merge_protected_paths_mask">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">string</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_package_build_script_path" class="summary-sig-name">get_package_build_script_path</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package</span>)</span><br />
-      Return build script path for given package looking through available 
-      packages repositories.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_build_script_path">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">list</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_package_categories" class="summary-sig-name">get_package_categories</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return list of package categories in available packages repositories.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_categories">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">dict</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_package_category_description_metadata" class="summary-sig-name">get_package_category_description_metadata</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">category</span>)</span><br />
-      Return metadata for given package category containing description in 
-      all the available languages.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_category_description_metadata">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">string or None</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_package_changelog" class="summary-sig-name">get_package_changelog</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package</span>)</span><br />
-      Return ChangeLog content for given package.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_changelog">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">dict</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_package_compile_options" class="summary-sig-name">get_package_compile_options</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package</span>)</span><br />
-      WARNING: this is an Entropy Server functionality.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_compile_options">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">string</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_package_metadata" class="summary-sig-name">get_package_metadata</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package</span>,
-        <span class="summary-sig-arg">key</span>)</span><br />
-      Return package metadata referenced by &quot;key&quot; argument from 
-      available packages repositories.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_metadata">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">dict</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -555,89 +692,16 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">list</span>
+      <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_packages" class="summary-sig-name">get_packages</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">categories</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">filter_reinstalls</span>=<span class="summary-sig-default">False</span>)</span><br />
-      Return list of packages found in available repositories.</td>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#assign_uid_to_installed_package" class="summary-sig-name">assign_uid_to_installed_package</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package</span>,
+        <span class="summary-sig-arg">root</span>=<span class="summary-sig-default">None</span>)</span><br />
+      Assign a new Unique Identifier to installed package and return it.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_packages">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">dict</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_security_advisory_metadata" class="summary-sig-name">get_security_advisory_metadata</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">advisory_id</span>)</span><br />
-      Return Source Package Manager package security advisory metadata for 
-      given security advisory identifier.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_security_advisory_metadata">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">list</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_security_packages" class="summary-sig-name">get_security_packages</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">security_property</span>)</span><br />
-      Return a list of packages affected by given security property 
-      argument.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_security_packages">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_setting" class="summary-sig-name">get_setting</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">key</span>)</span><br />
-      Return Source Package Manager setting referenced by &quot;key&quot;</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_setting">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">list</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_system_packages" class="summary-sig-name">get_system_packages</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return list of core (system) packages.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_system_packages">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.assign_uid_to_installed_package">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -651,12 +715,51 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#get_user_installed_packages_file" class="summary-sig-name">get_user_installed_packages_file</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">root</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Return path to file containing list (one per line) of packages 
-      installed by user (in Portage world, this is the world file).</td>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#convert_from_entropy_package_name" class="summary-sig-name">convert_from_entropy_package_name</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_package_name</span>)</span><br />
+      This function should be able to convert an Entropy package name 
+      (atom) to a Source Package Manager one.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_user_installed_packages_file">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.convert_from_entropy_package_name">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">dict</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#search_paths_owners" class="summary-sig-name">search_paths_owners</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">paths</span>,
+        <span class="summary-sig-arg">exact_match</span>=<span class="summary-sig-default">True</span>)</span><br />
+      Return list of packages owning provided list of paths.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.search_paths_owners">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#execute_package_phase" class="summary-sig-name">execute_package_phase</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package_metadata</span>,
+        <span class="summary-sig-arg">phase_name</span>)</span><br />
+      Execute Source Package Manager package phase (postinstall, 
+      preinstall, preremove, postremove, etc).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.execute_package_phase">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -670,123 +773,11 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#init_singleton" class="summary-sig-name">init_singleton</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">output_interface</span>)</span><br />
-      Source Package Manager Plugin singleton method.</td>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#add_installed_package" class="summary-sig-name">add_installed_package</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">package_metadata</span>)</span><br />
+      Add package installed by Entropy to SPM database too.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.init_singleton">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#log_message" class="summary-sig-name">log_message</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">message</span>)</span><br />
-      Log message string to logfile.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.log_message">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">string or list or None</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#match_installed_package" class="summary-sig-name">match_installed_package</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package</span>,
-        <span class="summary-sig-arg">match_all</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">root</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Match a package looking through installed packages repository using 
-      the given match term argument (package).</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.match_installed_package">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">string or list or None</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#match_package" class="summary-sig-name">match_package</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package</span>,
-        <span class="summary-sig-arg">match_type</span>=<span class="summary-sig-default">None</span>)</span><br />
-      Match a package looking through available packages repositories using
-      the given match term argument (package) and match type (validity 
-      defined by subclasses).</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.match_package">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">list</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#package_metadata_keys" class="summary-sig-name">package_metadata_keys</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return a list of package metadata keys available.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.package_metadata_keys">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">list</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#package_phases" class="summary-sig-name">package_phases</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return a list of available and valid package build phases.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.package_phases">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="packages_repositories_metadata_update"></a><span class="summary-sig-name">packages_repositories_metadata_update</span>(<span class="summary-sig-arg">self</span>)</span><br />
-      Executes Source Package Manager available packages repositories 
-      metadata update.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.packages_repositories_metadata_update">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.add_installed_package">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -814,16 +805,17 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">dict</span>
+      <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#search_paths_owners" class="summary-sig-name">search_paths_owners</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">paths</span>,
-        <span class="summary-sig-arg">exact_match</span>=<span class="summary-sig-default">True</span>)</span><br />
-      Return list of packages owning provided list of paths.</td>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#append_metadata_to_package" class="summary-sig-name">append_metadata_to_package</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_package_name</span>,
+        <span class="summary-sig-arg">package_path</span>)</span><br />
+      Append Source Package Manager metadata bits to an Entropy package, 
+      known its name and path.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.search_paths_owners">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.append_metadata_to_package">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -834,19 +826,22 @@
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
+      <code><a href="entropy.core.Singleton-class.html#__init__">__init__</a></code>,
       <code><a href="entropy.core.Singleton-class.html#is_destroyed">is_destroyed</a></code>,
       <code><a href="entropy.core.Singleton-class.html#is_singleton">is_singleton</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
+      <code>__format__</code>,
       <code>__getattribute__</code>,
       <code>__hash__</code>,
-      <code>__init__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
       <code>__repr__</code>,
       <code>__setattr__</code>,
-      <code>__str__</code>
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
       </p>
     </td>
   </tr>
@@ -859,6 +854,24 @@
   <td align="left" colspan="2" class="table-header">
     <span class="table-header">Static Methods</span></td>
 </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="get_package_groups"></a><span class="summary-sig-name">get_package_groups</span>()</span><br />
+      Return package groups available metadata (Spm categories are grouped 
+      into macro categories called &quot;groups&quot;).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_groups">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">int</span>
@@ -899,15 +912,15 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">tuple</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_package_groups"></a><span class="summary-sig-name">get_package_groups</span>()</span><br />
-      Return package groups available metadata (Spm categories are grouped 
-      into macro categories called &quot;groups&quot;).</td>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#execute_qa_tests" class="summary-sig-name">execute_qa_tests</a>(<span class="summary-sig-arg">package_path</span>)</span><br />
+      Execute Source Package Manager based QA tests on Entropy package 
+      files.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_groups">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.execute_qa_tests">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -952,6 +965,14 @@
         <a name="SUPPORTED_MATCH_TYPES"></a><span class="summary-name">SUPPORTED_MATCH_TYPES</span> = <code title="[]"><code class="variable-group">[</code><code class="variable-group">]</code></code>
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="PLUGIN_NAME"></a><span class="summary-name">PLUGIN_NAME</span> = <code title="None">None</code><br />
+      hash(x)
+    </td>
+  </tr>
 </table>
 <!-- ==================== PROPERTIES ==================== -->
 <a name="section-Properties"></a>
@@ -978,6 +999,1009 @@
     <span class="table-header">Method Details</span></td>
 </tr>
 </table>
+<a name="init_singleton"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">init_singleton</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">output_interface</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.init_singleton">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Source Package Manager Plugin singleton method. This method must be 
+  reimplemented by subclasses. At this stage, you should also consider to 
+  tweak etpConst['spm'] content (importing etpConst from 
+  entropy.const).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>output_interface</code></strong> (entropy.output.TextInterface based instances) - Entropy output interface</li>
+    </ul></dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>NotImplementedError()</strong></code> - when method is not reimplemented</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="package_metadata_keys"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">package_metadata_keys</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.package_metadata_keys">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a list of package metadata keys available.</p>
+  <dl class="fields">
+    <dt>Returns: list</dt>
+        <dd>list of package metadata</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="package_phases"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">package_phases</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.package_phases">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a list of available and valid package build phases. Default 
+  value is [&quot;setup&quot;, &quot;preinstall&quot;, 
+  &quot;postinstall&quot;, &quot;preremove&quot;, 
+  &quot;postremove&quot;]</p>
+  <dl class="fields">
+    <dt>Returns: list</dt>
+        <dd>list of available and valid package build phases</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_cache_directory"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_cache_directory</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_cache_directory">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return Source Package Manager cache directory path.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>cache directory</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_package_metadata"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_package_metadata</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package</span>,
+        <span class="sig-arg">key</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_metadata">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return package metadata referenced by &quot;key&quot; argument from 
+  available packages repositories.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
+        <li><strong class="pname"><code>key</code></strong> (string) - metadata key (name)</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>package metadata value</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_package_changelog"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_package_changelog</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_changelog">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return ChangeLog content for given package.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
+    </ul></dd>
+    <dt>Returns: string or None</dt>
+        <dd>changelog</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_package_build_script_path"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_package_build_script_path</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_build_script_path">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return build script path for given package looking through available 
+  packages repositories.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>build script path</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_installed_package_build_script_path"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_installed_package_build_script_path</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package</span>,
+        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_installed_package_build_script_path">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return build script path for given package looking into installed 
+  packages repository.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
+        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>build script path</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_installed_package_metadata"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_installed_package_metadata</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package</span>,
+        <span class="sig-arg">key</span>,
+        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_installed_package_metadata">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return package metadata referenced by &quot;key&quot; argument from 
+  installed packages repository.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package</code></strong> (string) - package identifier</li>
+        <li><strong class="pname"><code>key</code></strong> (string) - metadata key (name)</li>
+        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>package metadata value</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_system_packages"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_system_packages</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_system_packages">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return list of core (system) packages. Core packages are usually 
+  consider vital for basic system operativity.</p>
+  <dl class="fields">
+    <dt>Returns: list</dt>
+        <dd>list of system packages</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_package_categories"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_package_categories</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_categories">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return list of package categories in available packages 
+  repositories.</p>
+  <dl class="fields">
+    <dt>Returns: list</dt>
+        <dd>list of package categories</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_package_category_description_metadata"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_package_category_description_metadata</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">category</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_category_description_metadata">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return metadata for given package category containing description in 
+  all the available languages. Data is returned in dict form, locale names 
+  as key, description text as value.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>category</code></strong> (string) - package category name</li>
+    </ul></dd>
+    <dt>Returns: dict</dt>
+        <dd>category description metadata</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_security_packages"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_security_packages</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">security_property</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_security_packages">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a list of packages affected by given security property 
+  argument. Valid security_property values are: affected, new, all.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>security_property</code></strong> (string) - packages security property</li>
+    </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>list of packages affected by given security property</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_security_advisory_metadata"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_security_advisory_metadata</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">advisory_id</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_security_advisory_metadata">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return Source Package Manager package security advisory metadata for 
+  given security advisory identifier.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>advisory_id</code></strong> (string) - security advisory identifier</li>
+    </ul></dd>
+    <dt>Returns: dict</dt>
+        <dd>advisory metadata</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_setting"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_setting</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">key</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_setting">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return Source Package Manager setting referenced by 
+  &quot;key&quot;</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>key</code></strong> (string) - source package manager setting</li>
+    </ul></dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>KeyError</strong></code> - if setting is not available</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_user_installed_packages_file"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_user_installed_packages_file</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_user_installed_packages_file">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return path to file containing list (one per line) of packages 
+  installed by user (in Portage world, this is the world file).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>path to installed packages list file</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_merge_protected_paths"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_merge_protected_paths</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_merge_protected_paths">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a list of paths (either directories or files) whose are 
+  protected from direct merge requiring user approval.</p>
+  <dl class="fields">
+    <dt>Returns: list</dt>
+        <dd>list of protected paths</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_download_mirrors"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_download_mirrors</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">mirror_name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_download_mirrors">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return list of download mirror URLs for given mirror name</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>mirror_name</code></strong> (string) - mirror name</li>
+    </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>list of download URLs</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="log_message"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">log_message</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">message</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.log_message">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Log message string to logfile.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>message</code></strong> (string) - message string to log</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="match_package"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">match_package</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package</span>,
+        <span class="sig-arg">match_type</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.match_package">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Match a package looking through available packages repositories using 
+  the given match term argument (package) and match type (validity defined 
+  by subclasses).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package</code></strong> (string) - package string to match inside available repositories</li>
+        <li><strong class="pname"><code>match_type</code></strong> (string) - match type</li>
+    </ul></dd>
+    <dt>Returns: string or list or None</dt>
+        <dd>matched package (atom) or None</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>KeyError</strong></code> - if match_type is not valid</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="match_installed_package"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">match_installed_package</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package</span>,
+        <span class="sig-arg">match_all</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.match_installed_package">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Match a package looking through installed packages repository using 
+  the given match term argument (package).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package</code></strong> (string) - package string to match inside installed packages repository</li>
+        <li><strong class="pname"><code>match_all</code></strong> (bool) - return all the matching packages, not just the best</li>
+        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
+    </ul></dd>
+    <dt>Returns: string or list or None</dt>
+        <dd>matched package (atom) or None</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>KeyError</strong></code> - if match_type is not valid</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="generate_package"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">generate_package</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package</span>,
+        <span class="sig-arg">file_save_path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.generate_package">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Generate a package tarball file for given package, from running 
+  system. All the information is recomposed from system.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
+        <li><strong class="pname"><code>file_save_path</code></strong> (string) - exact path (including file name and extension) where package file
+          is saved</li>
+    </ul></dd>
+    <dt>Returns: None</dt>
+        <dd>None</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'><a href="entropy.exceptions.SPMError-class.html">entropy.exception.SPMError</a></strong></code> - if unable to satisfy the request</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="extract_package_metadata"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">extract_package_metadata</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package_file</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.extract_package_metadata">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Extract Source Package Manager package metadata from given file.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package_file</code></strong> (string) - path to valid SPM package file</li>
+    </ul></dd>
+    <dt>Returns: dict</dt>
+        <dd>package metadata extracted</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'><a href="entropy.exceptions.SPMError-class.html">entropy.exceptions.SPMError</a></strong></code> - when something went bad</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="enable_package_compile_options"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">enable_package_compile_options</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package</span>,
+        <span class="sig-arg">options</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.enable_package_compile_options">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>WARNING: this is an Entropy Server functionality. Enable compile 
+  options (also known as USE flags) for package. Compile options are 
+  intended to be features that package can expose to other packages or 
+  directly to user.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
+        <li><strong class="pname"><code>options</code></strong> (string) - list of compile options to enable</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>enable status, True if enabled, False if not</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="disable_package_compile_options"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">disable_package_compile_options</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package</span>,
+        <span class="sig-arg">options</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.disable_package_compile_options">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>WARNING: this is an Entropy Server functionality. Disable compile 
+  options (also known as USE flags) for package. Compile options are 
+  intended to be features that package can expose to other packages or 
+  directly to user.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
+        <li><strong class="pname"><code>options</code></strong> (string) - list of compile options to disable</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>enable status, True if disabled, False if not</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_package_compile_options"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_package_compile_options</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_compile_options">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>WARNING: this is an Entropy Server functionality. Return currently 
+  configured compile options (also known as USE flags) for given package. 
+  There can be different kinds of compile options so a dictionary should be
+  returned with compile options identifier as key and list of options as 
+  value. This method looks through available packages repositories.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
+    </ul></dd>
+    <dt>Returns: dict</dt>
+        <dd>compile options</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_installed_package_compile_options"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_installed_package_compile_options</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package</span>,
+        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_installed_package_compile_options">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>WARNING: this is an Entropy Server functionality. Return currently 
+  configured compile options (also known as USE flags) for given package. 
+  There can be different kinds of compile options so a dictionary should be
+  returned with compile options identifier as key and list of options as 
+  value. This method looks into installed packages repository.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
+        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
+    </ul></dd>
+    <dt>Returns: dict</dt>
+        <dd>compile options</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_installed_package_content"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_installed_package_content</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package</span>,
+        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_installed_package_content">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return list of files/directories owned by package.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
+        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
+    </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>list of files/directories owned by package</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_packages"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_packages</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">categories</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">filter_reinstalls</span>=<span class="sig-default">False</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_packages">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return list of packages found in available repositories. Extra 
+  &quot;filtering&quot; arguments can be passed like 
+  &quot;categories&quot;, which will make this method returning only 
+  packages found in given category list and &quot;filter_reinstalls&quot; 
+  which will actually filter out packages already installed (with no 
+  updates nor downgrades available).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>categories</code></strong> (iterable) - list of package categories to look into</li>
+        <li><strong class="pname"><code>filter_reinstalls</code></strong> (bool) - enable reinstall packages filter</li>
+    </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>list of available packages found</dd>
+  </dl>
+<div class="fields">      <p><strong>To Do:</strong>
+        improve method, move filter_reinstalls to another function?
+      </p>
+</div></td></tr></table>
+</div>
+<a name="get_installed_packages"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_installed_packages</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">categories</span>=<span class="sig-default">None</span>,
+        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_installed_packages">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return list of packages found in installed packages repository. Extra 
+  &quot;filtering&quot; arguments can be passed like 
+  &quot;categories&quot;, which will make this method returning only 
+  packages found in given category list.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>categories</code></strong> (iterable) - list of package categories to look into</li>
+        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
+    </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>list of installed packages found</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_package_sets"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_package_sets</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">builtin_sets</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_sets">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Package sets are groups of packages meant to ease user installation 
+  and removal of large amount of applications or libraries. The difference 
+  between package groups is that sets can be referenced anywhere inside 
+  Entropy, while the former is just a simple way to group pacakge 
+  categories, usually too hard to understand (for eg. &quot;sys-apps&quot; 
+  or &quot;app-misc&quot;, where user has no clue about the meaning of 
+  these). Third party implementations of SPM can just return empty data if 
+  this feature is not wanted or implementable.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>builtin_sets</code></strong> (bool) - if True, also return SPM built-in package sets</li>
+    </ul></dd>
+    <dt>Returns: dict</dt>
+        <dd>dictionary featuring set name as key, list (set) of package 
+          dependencies as value</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="assign_uid_to_installed_package"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">assign_uid_to_installed_package</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package</span>,
+        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.assign_uid_to_installed_package">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Assign a new Unique Identifier to installed package and return it.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
+        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>assigned Unique Identifier</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="convert_from_entropy_package_name"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">convert_from_entropy_package_name</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_package_name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.convert_from_entropy_package_name">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This function should be able to convert an Entropy package name (atom)
+  to a Source Package Manager one.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_package_name</code></strong> (string) - Entropy package name string</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>Source Package Manager package name string</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="search_paths_owners"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">search_paths_owners</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">paths</span>,
+        <span class="sig-arg">exact_match</span>=<span class="sig-default">True</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.search_paths_owners">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return list of packages owning provided list of paths. A dictionary is
+  returned containing package name as key and list of matched paths as 
+  value.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>paths</code></strong> (list) - list of paths to resolve</li>
+        <li><strong class="pname"><code>exact_match</code></strong> (bool) - match paths exactly</li>
+    </ul></dd>
+    <dt>Returns: dict</dt>
+        <dd>packages owning list of paths</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="execute_package_phase"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">execute_package_phase</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">package_metadata</span>,
+        <span class="sig-arg">phase_name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.execute_package_phase">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Execute Source Package Manager package phase (postinstall, preinstall,
+  preremove, postremove, etc).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package_metadata</code></strong> (dict) - Entropy package phase metadata</li>
+        <li><strong class="pname"><code>phase_name</code></strong> (string) - name of the phase to call, must be a valid phase contained in 
+          package_phases() output.</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>phase script exit status</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>KeyError</strong></code> - if phase is not available</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="add_installed_package"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -1013,53 +2037,24 @@ keys:
   </dl>
 </td></tr></table>
 </div>
-<a name="assign_uid_to_installed_package"></a>
+<a name="remove_installed_package"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">assign_uid_to_installed_package</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>,
-        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.assign_uid_to_installed_package">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Assign a new Unique Identifier to installed package and return it.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
-        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
-    </ul></dd>
-    <dt>Returns: int</dt>
-        <dd>assigned Unique Identifier</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="configure_installed_package"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">configure_installed_package</span>(<span class="sig-arg">self</span>,
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remove_installed_package</span>(<span class="sig-arg">self</span>,
         <span class="sig-arg">package_metadata</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.configure_installed_package">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.remove_installed_package">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
   <pre class="literalblock">
 
-Configure installed package. Some SPM require users to do manual
-stuff on packages.
+Remove installed package from SPM database.
 &quot;package_metadata&quot; is a dictionary featuring the following (relevant)
 keys:
     ['accept_license', 'imagedir', 'xpakpath', 'slot', 'pkgdbpath',
@@ -1075,68 +2070,6 @@ keys:
 
 </pre>
   <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="disable_package_compile_options"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">disable_package_compile_options</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>,
-        <span class="sig-arg">options</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.disable_package_compile_options">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>WARNING: this is an Entropy Server functionality. Disable compile 
-  options (also known as USE flags) for package. Compile options are 
-  intended to be features that package can expose to other packages or 
-  directly to user.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
-        <li><strong class="pname"><code>options</code></strong> (string) - list of compile options to disable</li>
-    </ul></dd>
-    <dt>Returns: bool</dt>
-        <dd>enable status, True if disabled, False if not</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="enable_package_compile_options"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">enable_package_compile_options</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>,
-        <span class="sig-arg">options</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.enable_package_compile_options">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>WARNING: this is an Entropy Server functionality. Enable compile 
-  options (also known as USE flags) for package. Compile options are 
-  intended to be features that package can expose to other packages or 
-  directly to user.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
-        <li><strong class="pname"><code>options</code></strong> (string) - list of compile options to enable</li>
-    </ul></dd>
-    <dt>Returns: bool</dt>
-        <dd>enable status, True if enabled, False if not</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1206,933 +2139,62 @@ keys:
   </dl>
 </td></tr></table>
 </div>
-<a name="execute_package_phase"></a>
+<a name="append_metadata_to_package"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">execute_package_phase</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>,
-        <span class="sig-arg">build_script_path</span>,
-        <span class="sig-arg">phase_name</span>,
-        <span class="sig-arg">work_dir</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">licenses_accepted</span>=<span class="sig-default">None</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">append_metadata_to_package</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_package_name</span>,
+        <span class="sig-arg">package_path</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.execute_package_phase">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.append_metadata_to_package">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Execute Source Package Manager package phase (postinstall, preinstall,
-  preremove, postremove, etc).</p>
+  <p>Append Source Package Manager metadata bits to an Entropy package, 
+  known its name and path.</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
-        <li><strong class="pname"><code>build_script_path</code></strong> (string) - path to Source Package Manager build script to call</li>
-        <li><strong class="pname"><code>phase_name</code></strong> (string) - name of the phase to call, must be a valid phase contained in 
-          package_phases() output.</li>
-        <li><strong class="pname"><code>work_dir</code></strong> (string) - specify a work directory if required by your SPM</li>
-        <li><strong class="pname"><code>licenses_accepted</code></strong> (list) - list of license names already accepted that can be given to 
-          Source Package Manager (to skip its license acceptance 
-          verification stuff, for example)</li>
+        <li><strong class="pname"><code>entropy_package_name</code></strong> (string) - Entropy package name</li>
+        <li><strong class="pname"><code>package_path</code></strong> (string) - Entropy package path</li>
     </ul></dd>
-    <dt>Returns: int</dt>
-        <dd>phase script exit status</dd>
-    <dt>Raises:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code><strong class='fraise'>KeyError</strong></code> - if phase is not available</li>
-    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True, if metadata has been appended succesfully</dd>
   </dl>
 </td></tr></table>
 </div>
-<a name="extract_package_metadata"></a>
+<a name="execute_qa_tests"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">extract_package_metadata</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package_file</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">execute_qa_tests</span>(<span class="sig-arg">package_path</span>)</span>
+    <br /><em class="fname">Static Method</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.extract_package_metadata">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.execute_qa_tests">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
-  <p>Extract Source Package Manager package metadata from given file.</p>
+  <p>Execute Source Package Manager based QA tests on Entropy package 
+  files. This method can be used to test Entropy produced packages to make 
+  sure that they are fine on this side too. It is called by Entropy QA 
+  module (entropy.qa).</p>
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package_file</code></strong> (string) - path to valid SPM package file</li>
+        <li><strong class="pname"><code>package_path</code></strong> (string) - path to Entropy package</li>
     </ul></dd>
-    <dt>Returns: dict</dt>
-        <dd>package metadata extracted</dd>
-    <dt>Raises:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code><strong class='fraise'><a href="entropy.exceptions.SPMError-class.html">entropy.exceptions.SPMError</a></strong></code> - when something went bad</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="generate_package"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">generate_package</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>,
-        <span class="sig-arg">file_save_path</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.generate_package">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Generate a package tarball file for given package, from running 
-  system. All the information is recomposed from system.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
-        <li><strong class="pname"><code>file_save_path</code></strong> (string) - exact path (including file name and extension) where package file
-          is saved</li>
-    </ul></dd>
-    <dt>Returns: None</dt>
-        <dd>None</dd>
-    <dt>Raises:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code><strong class='fraise'><a href="entropy.exceptions.SPMError-class.html">entropy.exception.SPMError</a></strong></code> - if unable to satisfy the request</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_cache_directory"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_cache_directory</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_cache_directory">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return Source Package Manager cache directory path.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
-    </ul></dd>
-    <dt>Returns: string</dt>
-        <dd>cache directory</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_download_mirrors"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_download_mirrors</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">mirror_name</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_download_mirrors">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return list of download mirror URLs for given mirror name</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>mirror_name</code></strong> (string) - mirror name</li>
-    </ul></dd>
-    <dt>Returns: list</dt>
-        <dd>list of download URLs</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_installed_package_build_script_path"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_installed_package_build_script_path</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>,
-        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_installed_package_build_script_path">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return build script path for given package looking into installed 
-  packages repository.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
-        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
-    </ul></dd>
-    <dt>Returns: string</dt>
-        <dd>build script path</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_installed_package_compile_options"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_installed_package_compile_options</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>,
-        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_installed_package_compile_options">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>WARNING: this is an Entropy Server functionality. Return currently 
-  configured compile options (also known as USE flags) for given package. 
-  There can be different kinds of compile options so a dictionary should be
-  returned with compile options identifier as key and list of options as 
-  value. This method looks into installed packages repository.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
-        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
-    </ul></dd>
-    <dt>Returns: dict</dt>
-        <dd>compile options</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_installed_package_content"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_installed_package_content</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>,
-        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_installed_package_content">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return list of files/directories owned by package.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
-        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
-    </ul></dd>
-    <dt>Returns: list</dt>
-        <dd>list of files/directories owned by package</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_installed_package_metadata"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_installed_package_metadata</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>,
-        <span class="sig-arg">key</span>,
-        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_installed_package_metadata">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return package metadata referenced by &quot;key&quot; argument from 
-  installed packages repository.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package identifier</li>
-        <li><strong class="pname"><code>key</code></strong> (string) - metadata key (name)</li>
-        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
-    </ul></dd>
-    <dt>Returns: string</dt>
-        <dd>package metadata value</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_installed_packages"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_installed_packages</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">categories</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_installed_packages">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return list of packages found in installed packages repository. Extra 
-  &quot;filtering&quot; arguments can be passed like 
-  &quot;categories&quot;, which will make this method returning only 
-  packages found in given category list.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>categories</code></strong> (iterable) - list of package categories to look into</li>
-        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
-    </ul></dd>
-    <dt>Returns: list</dt>
-        <dd>list of installed packages found</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_merge_protected_paths"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_merge_protected_paths</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_merge_protected_paths">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return a list of paths (either directories or files) whose are 
-  protected from direct merge requiring user approval.</p>
-  <dl class="fields">
-    <dt>Returns: list</dt>
-        <dd>list of protected paths</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_package_build_script_path"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_package_build_script_path</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_build_script_path">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return build script path for given package looking through available 
-  packages repositories.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
-    </ul></dd>
-    <dt>Returns: string</dt>
-        <dd>build script path</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_package_categories"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_package_categories</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_categories">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return list of package categories in available packages 
-  repositories.</p>
-  <dl class="fields">
-    <dt>Returns: list</dt>
-        <dd>list of package categories</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_package_category_description_metadata"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_package_category_description_metadata</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">category</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_category_description_metadata">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return metadata for given package category containing description in 
-  all the available languages. Data is returned in dict form, locale names 
-  as key, description text as value.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>category</code></strong> (string) - package category name</li>
-    </ul></dd>
-    <dt>Returns: dict</dt>
-        <dd>category description metadata</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_package_changelog"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_package_changelog</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_changelog">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return ChangeLog content for given package.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
-    </ul></dd>
-    <dt>Returns: string or None</dt>
-        <dd>changelog</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_package_compile_options"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_package_compile_options</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_compile_options">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>WARNING: this is an Entropy Server functionality. Return currently 
-  configured compile options (also known as USE flags) for given package. 
-  There can be different kinds of compile options so a dictionary should be
-  returned with compile options identifier as key and list of options as 
-  value. This method looks through available packages repositories.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
-    </ul></dd>
-    <dt>Returns: dict</dt>
-        <dd>compile options</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_package_metadata"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_package_metadata</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>,
-        <span class="sig-arg">key</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_metadata">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return package metadata referenced by &quot;key&quot; argument from 
-  available packages repositories.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package name</li>
-        <li><strong class="pname"><code>key</code></strong> (string) - metadata key (name)</li>
-    </ul></dd>
-    <dt>Returns: string</dt>
-        <dd>package metadata value</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_package_sets"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_package_sets</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">builtin_sets</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_package_sets">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Package sets are groups of packages meant to ease user installation 
-  and removal of large amount of applications or libraries. The difference 
-  between package groups is that sets can be referenced anywhere inside 
-  Entropy, while the former is just a simple way to group pacakge 
-  categories, usually too hard to understand (for eg. &quot;sys-apps&quot; 
-  or &quot;app-misc&quot;, where user has no clue about the meaning of 
-  these). Third party implementations of SPM can just return empty data if 
-  this feature is not wanted or implementable.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>builtin_sets</code></strong> (bool) - if True, also return SPM built-in package sets</li>
-    </ul></dd>
-    <dt>Returns: dict</dt>
-        <dd>dictionary featuring set name as key, list (set) of package 
-          dependencies as value</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_packages"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_packages</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">categories</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">filter_reinstalls</span>=<span class="sig-default">False</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_packages">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return list of packages found in available repositories. Extra 
-  &quot;filtering&quot; arguments can be passed like 
-  &quot;categories&quot;, which will make this method returning only 
-  packages found in given category list and &quot;filter_reinstalls&quot; 
-  which will actually filter out packages already installed (with no 
-  updates nor downgrades available).</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>categories</code></strong> (iterable) - list of package categories to look into</li>
-        <li><strong class="pname"><code>filter_reinstalls</code></strong> (bool) - enable reinstall packages filter</li>
-    </ul></dd>
-    <dt>Returns: list</dt>
-        <dd>list of available packages found</dd>
-  </dl>
-<div class="fields">      <p><strong>To Do:</strong>
-        improve method, move filter_reinstalls to another function?
-      </p>
-</div></td></tr></table>
-</div>
-<a name="get_security_advisory_metadata"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_security_advisory_metadata</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">advisory_id</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_security_advisory_metadata">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return Source Package Manager package security advisory metadata for 
-  given security advisory identifier.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>advisory_id</code></strong> (string) - security advisory identifier</li>
-    </ul></dd>
-    <dt>Returns: dict</dt>
-        <dd>advisory metadata</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_security_packages"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_security_packages</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">security_property</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_security_packages">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return a list of packages affected by given security property 
-  argument. Valid security_property values are: affected, new, all.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>security_property</code></strong> (string) - packages security property</li>
-    </ul></dd>
-    <dt>Returns: list</dt>
-        <dd>list of packages affected by given security property</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_setting"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_setting</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">key</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_setting">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return Source Package Manager setting referenced by 
-  &quot;key&quot;</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>key</code></strong> (string) - source package manager setting</li>
-    </ul></dd>
-    <dt>Raises:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code><strong class='fraise'>KeyError</strong></code> - if setting is not available</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_system_packages"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_system_packages</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_system_packages">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return list of core (system) packages. Core packages are usually 
-  consider vital for basic system operativity.</p>
-  <dl class="fields">
-    <dt>Returns: list</dt>
-        <dd>list of system packages</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_user_installed_packages_file"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_user_installed_packages_file</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.get_user_installed_packages_file">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return path to file containing list (one per line) of packages 
-  installed by user (in Portage world, this is the world file).</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
-    </ul></dd>
-    <dt>Returns: string</dt>
-        <dd>path to installed packages list file</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="init_singleton"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">init_singleton</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">output_interface</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.init_singleton">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Source Package Manager Plugin singleton method. This method must be 
-  reimplemented by subclasses. At this stage, you should also consider to 
-  tweak etpConst['spm'] content (importing etpConst from 
-  entropy.const).</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>output_interface</code></strong> (entropy.output.TextInterface based instances) - Entropy output interface</li>
-    </ul></dd>
-    <dt>Raises:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code><strong class='fraise'>NotImplementedError()</strong></code> - when method is not reimplemented</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="log_message"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">log_message</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">message</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.log_message">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Log message string to logfile.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>message</code></strong> (string) - message string to log</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="match_installed_package"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">match_installed_package</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>,
-        <span class="sig-arg">match_all</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">root</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.match_installed_package">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Match a package looking through installed packages repository using 
-  the given match term argument (package).</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package string to match inside installed packages repository</li>
-        <li><strong class="pname"><code>match_all</code></strong> (bool) - return all the matching packages, not just the best</li>
-        <li><strong class="pname"><code>root</code></strong> (string) - specify an alternative root directory &quot;/&quot;</li>
-    </ul></dd>
-    <dt>Returns: string or list or None</dt>
-        <dd>matched package (atom) or None</dd>
-    <dt>Raises:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code><strong class='fraise'>KeyError</strong></code> - if match_type is not valid</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="match_package"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">match_package</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>,
-        <span class="sig-arg">match_type</span>=<span class="sig-default">None</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.match_package">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Match a package looking through available packages repositories using 
-  the given match term argument (package) and match type (validity defined 
-  by subclasses).</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> (string) - package string to match inside available repositories</li>
-        <li><strong class="pname"><code>match_type</code></strong> (string) - match type</li>
-    </ul></dd>
-    <dt>Returns: string or list or None</dt>
-        <dd>matched package (atom) or None</dd>
-    <dt>Raises:</dt>
-    <dd><ul class="nomargin-top">
-        <li><code><strong class='fraise'>KeyError</strong></code> - if match_type is not valid</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="package_metadata_keys"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">package_metadata_keys</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.package_metadata_keys">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return a list of package metadata keys available.</p>
-  <dl class="fields">
-    <dt>Returns: list</dt>
-        <dd>list of package metadata</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="package_phases"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">package_phases</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.package_phases">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return a list of available and valid package build phases. Default 
-  value is [&quot;setup&quot;, &quot;preinstall&quot;, 
-  &quot;postinstall&quot;, &quot;preremove&quot;, 
-  &quot;postremove&quot;]</p>
-  <dl class="fields">
-    <dt>Returns: list</dt>
-        <dd>list of available and valid package build phases</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="remove_installed_package"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">remove_installed_package</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package_metadata</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.remove_installed_package">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <pre class="literalblock">
-
-Remove installed package from SPM database.
-&quot;package_metadata&quot; is a dictionary featuring the following (relevant)
-keys:
-    ['accept_license', 'imagedir', 'xpakpath', 'slot', 'pkgdbpath',
-     'versiontag', 'version', 'xpakstatus', 'unpackdir', 'revision',
-     'category', 'repository', 'xpakdir', 'name', 'install_source',
-     'removeatom'
-    ]
-
-@param package_metadata: Entropy package metadata
-@type package_metadata: dict
-@return: execution status
-@rtype: int
-
-</pre>
-  <dl class="fields">
-  </dl>
-</td></tr></table>
-</div>
-<a name="search_paths_owners"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">search_paths_owners</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">paths</span>,
-        <span class="sig-arg">exact_match</span>=<span class="sig-default">True</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.skel-pysrc.html#SpmPlugin.search_paths_owners">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return list of packages owning provided list of paths. A dictionary is
-  returned containing package name as key and list of matched paths as 
-  value.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>paths</code></strong> (list) - list of paths to resolve</li>
-        <li><strong class="pname"><code>exact_match</code></strong> (bool) - match paths exactly</li>
-    </ul></dd>
-    <dt>Returns: dict</dt>
-        <dd>packages owning list of paths</dd>
+    <dt>Returns: tuple</dt>
+        <dd>tuple composed by error status and error message (if any). Error 
+          status is an int with != 0 values if error occured.</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -2168,7 +2230,7 @@ keys:
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:16 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:32 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

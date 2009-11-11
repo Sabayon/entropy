@@ -46,7 +46,7 @@
         <a href="entropy.spm-module.html">Package&nbsp;spm</a> ::
         <a href="entropy.spm.plugins-module.html">Package&nbsp;plugins</a> ::
         <a href="entropy.spm.plugins.interfaces-module.html">Package&nbsp;interfaces</a> ::
-        <a href="entropy.spm.plugins.interfaces.portage_plugin-module.html">Module&nbsp;portage_plugin</a> ::
+        <a href="entropy.spm.plugins.interfaces.portage_plugin-module.html">Package&nbsp;portage_plugin</a> ::
         Class&nbsp;PortagePlugin
       </span>
     </td>
@@ -60,38 +60,7 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class PortagePlugin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePlugin">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__88" name="uml_class_diagram_for_entropy__88">
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#builtin_pkg_sets" title="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.builtin_pkg_sets" alt="" coords="17,247,409,265"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#package_phases_map" title="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.package_phases_map" alt="" coords="17,265,409,284"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#PLUGIN_API_VERSION" title="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.PLUGIN_API_VERSION" alt="" coords="17,284,409,303"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#SUPPORTED_MATCH_TYPES" title="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.SUPPORTED_MATCH_TYPES" alt="" coords="17,303,409,321"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize-class.html" title="Take a dependency structure as returned by paren_reduce or use_reduce and &#160;generate an equivalent structure that has no redundant lists." alt="" coords="17,321,409,340"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#init_singleton" title="Source Package Manager Plugin singleton method." alt="" coords="17,343,409,361"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_package_groups" title="Return package groups available metadata (Spm categories are grouped into &#160;macro categories called &quot;groups&quot;)." alt="" coords="17,361,409,380"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#package_metadata_keys" title="Reimplemented from SpmPlugin class." alt="" coords="17,380,409,399"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_cache_directory" title="Reimplemented from SpmPlugin class." alt="" coords="17,399,409,417"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_package_metadata" title="Reimplemented from SpmPlugin class." alt="" coords="17,417,409,436"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_package_changelog" title="Reimplemented from SpmPlugin class." alt="" coords="17,436,409,455"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_package_build_script_path" title="Reimplemented from SpmPlugin class." alt="" coords="17,455,409,473"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_installed_package_build_script_path" title="Reimplemented from SpmPlugin class." alt="" coords="17,473,409,492"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_installed_package_metadata" title="Reimplemented from SpmPlugin class." alt="" coords="17,492,409,511"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_system_packages" title="Reimplemented from SpmPlugin class." alt="" coords="17,511,409,529"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_package_categories" title="Reimplemented from SpmPlugin class." alt="" coords="17,529,409,548"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_package_category_description_metadata" title="Reimplemented from SpmPlugin class." alt="" coords="17,548,409,567"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#get_security_packages" title="Reimplemented from SpmPlugin class." alt="" coords="17,567,409,585"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#entropy_install_unpack_hook" title="Reimplemented from SpmPlugin class." alt="" coords="17,604,409,623"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html" title="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin" alt="" coords="16,229,411,624"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#BASE_PLUGIN_API_VERSION" title="entropy.spm.plugins.skel.SpmPlugin.BASE_PLUGIN_API_VERSION" alt="" coords="119,140,308,159"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#log_message" title="Log message string to logfile." alt="" coords="119,161,308,180"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html#package_phases" title="Return a list of available and valid package build phases." alt="" coords="119,180,308,199"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html" title="Base class for Source Package Manager plugins" alt="" coords="117,123,309,200"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="129,36,297,55"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#is_destroyed" title="In our world, Singleton instances may be destroyed, this is done by setting a private bool var __is_destroyed" alt="" coords="129,55,297,73"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#is_singleton" title="Return if the instance is a singleton" alt="" coords="129,73,297,92"/>
-<area shape="rect" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton" alt="" coords="128,11,299,93"/>
-</map>
-  <img src="uml_class_diagram_for_entropy__88.gif" alt='' usemap="#uml_class_diagram_for_entropy__88" ismap="ismap" class="graph-without-title" />
-</center>
+
 </center>
 <hr />
 <!-- ==================== NESTED CLASSES ==================== -->
@@ -689,6 +658,24 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#convert_from_entropy_package_name" class="summary-sig-name">convert_from_entropy_package_name</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_package_name</span>)</span><br />
+      Reimplemented from SpmPlugin class.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePlugin.convert_from_entropy_package_name">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -727,16 +714,32 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#append_metadata_to_package" class="summary-sig-name">append_metadata_to_package</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_package_name</span>,
+        <span class="summary-sig-arg">package_path</span>)</span><br />
+      Reimplemented from SpmPlugin class.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePlugin.append_metadata_to_package">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">int</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
           <td><span class="summary-sig"><a href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#execute_package_phase" class="summary-sig-name">execute_package_phase</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package</span>,
-        <span class="summary-sig-arg">build_script_path</span>,
-        <span class="summary-sig-arg">phase_name</span>,
-        <span class="summary-sig-arg">work_dir</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">licenses_accepted</span>=<span class="summary-sig-default">None</span>)</span><br />
+        <span class="summary-sig-arg">package_metadata</span>,
+        <span class="summary-sig-arg">phase_name</span>)</span><br />
       Reimplemented from SpmPlugin class.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePlugin.execute_package_phase">source&nbsp;code</a></span>
@@ -783,24 +786,6 @@
       
     </td>
   </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#configure_installed_package" class="summary-sig-name">configure_installed_package</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">package_metadata</span>)</span><br />
-      Reimplemented from SpmPlugin class.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePlugin.configure_installed_package">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.spm.plugins.skel.SpmPlugin-class.html">skel.SpmPlugin</a></code></b>:
@@ -808,19 +793,22 @@
       <code><a href="entropy.spm.plugins.skel.SpmPlugin-class.html#package_phases">package_phases</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
+      <code><a href="entropy.core.Singleton-class.html#__init__">__init__</a></code>,
       <code><a href="entropy.core.Singleton-class.html#is_destroyed">is_destroyed</a></code>,
       <code><a href="entropy.core.Singleton-class.html#is_singleton">is_singleton</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
+      <code>__format__</code>,
       <code>__getattribute__</code>,
       <code>__hash__</code>,
-      <code>__init__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
       <code>__repr__</code>,
       <code>__setattr__</code>,
-      <code>__str__</code>
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
       </p>
     </td>
   </tr>
@@ -844,6 +832,23 @@
       into macro categories called &quot;groups&quot;).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePlugin.get_package_groups">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">tuple</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#execute_qa_tests" class="summary-sig-name">execute_qa_tests</a>(<span class="summary-sig-arg">package_path</span>)</span><br />
+      Reimplemented from SpmPlugin class.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePlugin.execute_qa_tests">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -948,6 +953,35 @@
  'match-visible',
  'minimum-all',
  'minimum-visible']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">bestmatch-visible</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">cp-list</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">list</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html#CACHE" class="summary-name">CACHE</a> = <code title="{'binarytree': {}, 'config': {}, 'portagetree': {}, 'vartree': {}}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">binarytree</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-group">}</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">config</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-group">}</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">portagetree</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-group">}</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">v</code><code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="PLUGIN_NAME"></a><span class="summary-name">PLUGIN_NAME</span> = <code title="'portage'"><code class="variable-quote">'</code><code class="variable-string">portage</code><code class="variable-quote">'</code></code><br />
+      hash(x)
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="ENV_FILE_COMP"></a><span class="summary-name">ENV_FILE_COMP</span> = <code title="'environment.bz2'"><code class="variable-quote">'</code><code class="variable-string">environment.bz2</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="EBUILD_EXT"></a><span class="summary-name">EBUILD_EXT</span> = <code title="'.ebuild'"><code class="variable-quote">'</code><code class="variable-string">.ebuild</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
   <tr>
@@ -1926,6 +1960,35 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="convert_from_entropy_package_name"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">convert_from_entropy_package_name</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_package_name</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePlugin.convert_from_entropy_package_name">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Reimplemented from SpmPlugin class.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_package_name</code></strong> - Entropy package name string</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>Source Package Manager package name string</dd>
+    <dt>Overrides:
+        <a href="entropy.spm.plugins.skel.SpmPlugin-class.html#convert_from_entropy_package_name">skel.SpmPlugin.convert_from_entropy_package_name</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
 <a name="assign_uid_to_installed_package"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -1988,6 +2051,37 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="append_metadata_to_package"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">append_metadata_to_package</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_package_name</span>,
+        <span class="sig-arg">package_path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePlugin.append_metadata_to_package">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Reimplemented from SpmPlugin class.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_package_name</code></strong> - Entropy package name</li>
+        <li><strong class="pname"><code>package_path</code></strong> - Entropy package path</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True, if metadata has been appended succesfully</dd>
+    <dt>Overrides:
+        <a href="entropy.spm.plugins.skel.SpmPlugin-class.html#append_metadata_to_package">skel.SpmPlugin.append_metadata_to_package</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
 <a name="execute_package_phase"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -1996,11 +2090,8 @@
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">execute_package_phase</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package</span>,
-        <span class="sig-arg">build_script_path</span>,
-        <span class="sig-arg">phase_name</span>,
-        <span class="sig-arg">work_dir</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">licenses_accepted</span>=<span class="sig-default">None</span>)</span>
+        <span class="sig-arg">package_metadata</span>,
+        <span class="sig-arg">phase_name</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePlugin.execute_package_phase">source&nbsp;code</a></span>&nbsp;
@@ -2011,14 +2102,9 @@
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>package</code></strong> - package name</li>
-        <li><strong class="pname"><code>build_script_path</code></strong> - path to Source Package Manager build script to call</li>
+        <li><strong class="pname"><code>package_metadata</code></strong> - Entropy package phase metadata</li>
         <li><strong class="pname"><code>phase_name</code></strong> - name of the phase to call, must be a valid phase contained in 
           package_phases() output.</li>
-        <li><strong class="pname"><code>work_dir</code></strong> - specify a work directory if required by your SPM</li>
-        <li><strong class="pname"><code>licenses_accepted</code></strong> - list of license names already accepted that can be given to 
-          Source Package Manager (to skip its license acceptance 
-          verification stuff, for example)</li>
     </ul></dd>
     <dt>Returns: int</dt>
         <dd>phase script exit status</dd>
@@ -2078,25 +2164,32 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="configure_installed_package"></a>
+<a name="execute_qa_tests"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">configure_installed_package</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">package_metadata</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">execute_qa_tests</span>(<span class="sig-arg">package_path</span>)</span>
+    <br /><em class="fname">Static Method</em>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePlugin.configure_installed_package">source&nbsp;code</a></span>&nbsp;
+    ><span class="codelink"><a href="entropy.spm.plugins.interfaces.portage_plugin-pysrc.html#PortagePlugin.execute_qa_tests">source&nbsp;code</a></span>&nbsp;
     </td>
   </tr></table>
   
   <p>Reimplemented from SpmPlugin class.</p>
   <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>package_path</code></strong> - path to Entropy package</li>
+    </ul></dd>
+    <dt>Returns: tuple</dt>
+        <dd>tuple composed by error status and error message (if any). Error 
+          status is an int with != 0 values if error occured.</dd>
     <dt>Overrides:
-        <a href="entropy.spm.plugins.skel.SpmPlugin-class.html#configure_installed_package">skel.SpmPlugin.configure_installed_package</a>
+        <a href="entropy.spm.plugins.skel.SpmPlugin-class.html#execute_qa_tests">skel.SpmPlugin.execute_qa_tests</a>
     </dt>
   </dl>
 </td></tr></table>
@@ -2246,6 +2339,24 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="CACHE"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">CACHE</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">binarytree</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-group">}</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">config</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-group">}</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">portagetree</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-group">}</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">vartree</code><code class="variable-quote">'</code><code class="variable-op">: </code><code class="variable-group">{</code><code class="variable-group">}</code><code class="variable-group">}</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
@@ -2278,7 +2389,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:15 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:32 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

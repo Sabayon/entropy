@@ -57,26 +57,13 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class Singleton</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.core-pysrc.html#Singleton">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__21" name="uml_class_diagram_for_entropy__21">
-<area shape="rect" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="660,36,828,55"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#is_destroyed" title="In our world, Singleton instances may be destroyed, this is done by setting a private bool var __is_destroyed" alt="" coords="660,55,828,73"/>
-<area shape="rect" href="entropy.core.Singleton-class.html#is_singleton" title="Return if the instance is a singleton" alt="" coords="660,73,828,92"/>
-<area shape="rect" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton" alt="" coords="659,11,829,93"/>
-<area shape="rect" href="entropy.cache.EntropyCacher-class.html" title="Entropy asynchronous and synchronous cache writer and reader." alt="" coords="16,123,155,149"/>
-<area shape="rect" href="entropy.server.interfaces.main.Server-class.html" title="entropy.server.interfaces.main.Server" alt="" coords="205,123,387,149"/>
-<area shape="rect" href="entropy.db.ServerRepositoryStatus-class.html" title="Server&#45;side Repositories status information container." alt="" coords="437,123,605,149"/>
-<area shape="rect" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="656,123,832,149"/>
-<area shape="rect" href="entropy.core.settings.base.SystemSettings-class.html" title="This is the place where all the Entropy settings are stored if they are not considered instance constants (etpConst)." alt="" coords="883,123,1072,149"/>
-<area shape="rect" href="entropy.client.services.ugc.interfaces.AuthStore-class.html" title="entropy.client.services.ugc.interfaces.AuthStore" alt="" coords="1123,123,1365,149"/>
-<area shape="rect" href="entropy.spm.plugins.skel.SpmPlugin-class.html" title="Base class for Source Package Manager plugins" alt="" coords="1416,123,1595,149"/>
-<area shape="rect" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html" title="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin" alt="" coords="1347,179,1664,205"/>
-</map>
-  <img src="uml_class_diagram_for_entropy__21.gif" alt='' usemap="#uml_class_diagram_for_entropy__21" ismap="ismap" class="graph-without-title" />
-</center>
+
 </center>
 <hr />
 <p>If your class wants to become a sexy Singleton, subclass this and 
-  replace __init__ with init_singleton</p>
+  replace __init__ with init_singleton. Your subclass can expose a method 
+  called &quot;is_destroyed()&quot; that returns a bool stating if 
+  singleton instance has been destroyed.</p>
 
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
@@ -88,6 +75,25 @@
 </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.core.Singleton-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
+      This is a fake method, necessary for Python 3.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.core-pysrc.html#Singleton.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">bool</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -96,7 +102,7 @@
       In our world, Singleton instances may be destroyed, this is done by 
       setting a private bool var __is_destroyed</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#Singleton.is_destroyed">source&nbsp;code</a></span>
+            
             
           </td>
         </tr>
@@ -113,7 +119,7 @@
           <td><span class="summary-sig"><a href="entropy.core.Singleton-class.html#is_singleton" class="summary-sig-name">is_singleton</a>(<span class="summary-sig-arg">self</span>)</span><br />
       Return if the instance is a singleton</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#Singleton.is_singleton">source&nbsp;code</a></span>
+            
             
           </td>
         </tr>
@@ -125,14 +131,16 @@
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
+      <code>__format__</code>,
       <code>__getattribute__</code>,
       <code>__hash__</code>,
-      <code>__init__</code>,
       <code>__reduce__</code>,
       <code>__reduce_ex__</code>,
       <code>__repr__</code>,
       <code>__setattr__</code>,
-      <code>__str__</code>
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
       </p>
     </td>
   </tr>
@@ -216,6 +224,31 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#Singleton.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This is a fake method, necessary for Python 3.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        object.__init__
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
 <a name="is_destroyed"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -226,7 +259,7 @@
   <h3 class="epydoc"><span class="sig"><span class="sig-name">is_destroyed</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#Singleton.is_destroyed">source&nbsp;code</a></span>&nbsp;
+    >&nbsp;
     </td>
   </tr></table>
   
@@ -248,7 +281,7 @@
   <h3 class="epydoc"><span class="sig"><span class="sig-name">is_singleton</span>(<span class="sig-arg">self</span>)</span>
   </h3>
   </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#Singleton.is_singleton">source&nbsp;code</a></span>&nbsp;
+    >&nbsp;
     </td>
   </tr></table>
   
@@ -291,7 +324,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:11 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:28 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

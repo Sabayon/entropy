@@ -1,0 +1,832 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.db.EntropyRepositoryPlugin</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.db-module.html">Module&nbsp;db</a> ::
+        Class&nbsp;EntropyRepositoryPlugin
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class EntropyRepositoryPlugin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin">source&nbsp;code</a></span></p>
+<center>
+
+</center>
+<hr />
+<pre class="literalblock">
+
+This is the base class for implementing EntropyRepository plugin hooks.
+You have to subclass this, implement not implemented methods and provide
+it to EntropyRepository class as described below.
+
+Every plugin hook function features this signature:
+    int something_hook(entropy_repository_instance)
+Where entropy_repository_instance is the calling EntropyRepository instance.
+Every method should return a return status code which, when nonzero causes
+a RepositoryPluginError exception to be thrown.
+Every method returns 0 in the base class implementation.
+
+</pre>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepositoryPlugin-class.html#accept_license_hook" class="summary-sig-name">accept_license_hook</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_repository_instance</span>)</span><br />
+      Called during EntropyRepository acceptLicense call.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.accept_license_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepositoryPlugin-class.html#add_package_hook" class="summary-sig-name">add_package_hook</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_repository_instance</span>,
+        <span class="summary-sig-arg">package_data</span>)</span><br />
+      Called after the addition of a package from EntropyRepository.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.add_package_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepositoryPlugin-class.html#add_plugin_hook" class="summary-sig-name">add_plugin_hook</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_repository_instance</span>)</span><br />
+      Called during EntropyRepository plugin addition.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.add_plugin_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepositoryPlugin-class.html#clear_cache_hook" class="summary-sig-name">clear_cache_hook</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_repository_instance</span>)</span><br />
+      Called during EntropyRepository cache cleanup (clearCache).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.clear_cache_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepositoryPlugin-class.html#close_repo_hook" class="summary-sig-name">close_repo_hook</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_repository_instance</span>)</span><br />
+      Called during EntropyRepository instance shutdown (closeDB).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.close_repo_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepositoryPlugin-class.html#commit_hook" class="summary-sig-name">commit_hook</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_repository_instance</span>)</span><br />
+      Called during EntropyRepository data commit.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.commit_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepositoryPlugin-class.html#get_id" class="summary-sig-name">get_id</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return string identifier of myself.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.get_id">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">dict</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepositoryPlugin-class.html#get_metadata" class="summary-sig-name">get_metadata</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Developers reimplementing EntropyRepositoryPlugin can provide 
+      metadata along with every instance.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.get_metadata">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepositoryPlugin-class.html#initialize_repo_hook" class="summary-sig-name">initialize_repo_hook</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_repository_instance</span>)</span><br />
+      Called during EntropyRepository data initialization (not instance 
+      init).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.initialize_repo_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepositoryPlugin-class.html#remove_package_hook" class="summary-sig-name">remove_package_hook</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_repository_instance</span>,
+        <span class="summary-sig-arg">idpackage</span>,
+        <span class="summary-sig-arg">from_add_package</span>)</span><br />
+      Called after the removal of a package from EntropyRepository.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.remove_package_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepositoryPlugin-class.html#remove_plugin_hook" class="summary-sig-name">remove_plugin_hook</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_repository_instance</span>)</span><br />
+      Called during EntropyRepository plugin removal.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.remove_plugin_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepositoryPlugin-class.html#reverse_dependencies_tree_generation_hook" class="summary-sig-name">reverse_dependencies_tree_generation_hook</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_repository_instance</span>)</span><br />
+      This hook is called inside 
+      EntropyRepository.generateReverseDependenciesMetadata() method at the
+      very end of the function code.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.reverse_dependencies_tree_generation_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepositoryPlugin-class.html#treeupdates_move_action_hook" class="summary-sig-name">treeupdates_move_action_hook</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_repository_instance</span>,
+        <span class="summary-sig-arg">idpackage</span>)</span><br />
+      Called after EntropyRepository treeupdates move action execution for 
+      given idpackage in given EntropyRepository instance.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.treeupdates_move_action_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">int</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepositoryPlugin-class.html#treeupdates_slot_move_action_hook" class="summary-sig-name">treeupdates_slot_move_action_hook</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_repository_instance</span>,
+        <span class="summary-sig-arg">idpackage</span>)</span><br />
+      Called after EntropyRepository treeupdates slot move action execution
+      for given idpackage in given EntropyRepository instance.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.treeupdates_slot_move_action_hook">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__init__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="accept_license_hook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">accept_license_hook</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_repository_instance</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.accept_license_hook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called during EntropyRepository acceptLicense call.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_repository_instance</code></strong> (EntropyRepository) - EntropyRepository instance</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status code, return nonzero for errors, this will raise
+          a RepositoryPluginError exception.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="add_package_hook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">add_package_hook</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_repository_instance</span>,
+        <span class="sig-arg">package_data</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.add_package_hook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called after the addition of a package from EntropyRepository.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_repository_instance</code></strong> (EntropyRepository) - EntropyRepository instance</li>
+        <li><strong class="pname"><code>package_data</code></strong> (dict) - package metadata used for insertion (see addPackage)</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status code, return nonzero for errors, this will raise
+          a RepositoryPluginError exception.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="add_plugin_hook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">add_plugin_hook</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_repository_instance</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.add_plugin_hook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called during EntropyRepository plugin addition.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_repository_instance</code></strong> (EntropyRepository) - EntropyRepository instance</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status code, return nonzero for errors, this will raise
+          a RepositoryPluginError exception.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="clear_cache_hook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">clear_cache_hook</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_repository_instance</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.clear_cache_hook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called during EntropyRepository cache cleanup (clearCache).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_repository_instance</code></strong> (EntropyRepository) - EntropyRepository instance</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status code, return nonzero for errors, this will raise
+          a RepositoryPluginError exception.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="close_repo_hook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">close_repo_hook</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_repository_instance</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.close_repo_hook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called during EntropyRepository instance shutdown (closeDB).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_repository_instance</code></strong> (EntropyRepository) - EntropyRepository instance</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status code, return nonzero for errors, this will raise
+          a RepositoryPluginError exception.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="commit_hook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">commit_hook</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_repository_instance</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.commit_hook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called during EntropyRepository data commit.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_repository_instance</code></strong> (EntropyRepository) - EntropyRepository instance</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status code, return nonzero for errors, this will raise
+          a RepositoryPluginError exception.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_id"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_id</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.get_id">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return string identifier of myself.</p>
+  <dl class="fields">
+    <dt>Returns: string</dt>
+        <dd>EntropyRepositoryPlugin identifier.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_metadata"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_metadata</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.get_metadata">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Developers reimplementing EntropyRepositoryPlugin can provide metadata
+  along with every instance. If you want to provide read-only metadata, 
+  this method should really return a copy of the metadata object, 
+  otherwise, return its direct reference. Metadata format is a map-like 
+  object (dictionary, dict()). By default this method does return an empty 
+  dict. Make sure that your metadata dictionaries around don't have keys in
+  common, otherwise those will be randomly overwritten eachothers.</p>
+  <dl class="fields">
+    <dt>Returns: dict</dt>
+        <dd>plugin metadata</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="initialize_repo_hook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">initialize_repo_hook</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_repository_instance</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.initialize_repo_hook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called during EntropyRepository data initialization (not instance 
+  init).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_repository_instance</code></strong> (EntropyRepository) - EntropyRepository instance</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status code, return nonzero for errors, this will raise
+          a RepositoryPluginError exception.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remove_package_hook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remove_package_hook</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_repository_instance</span>,
+        <span class="sig-arg">idpackage</span>,
+        <span class="sig-arg">from_add_package</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.remove_package_hook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called after the removal of a package from EntropyRepository.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_repository_instance</code></strong> (EntropyRepository) - EntropyRepository instance</li>
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - Entropy repository package identifier</li>
+        <li><strong class="pname"><code>from_add_package</code></strong> - inform whether removePackage() is called inside addPackage()</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status code, return nonzero for errors, this will raise
+          a RepositoryPluginError exception.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remove_plugin_hook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remove_plugin_hook</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_repository_instance</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.remove_plugin_hook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called during EntropyRepository plugin removal.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_repository_instance</code></strong> (EntropyRepository) - EntropyRepository instance</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status code, return nonzero for errors, this will raise
+          a RepositoryPluginError exception.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="reverse_dependencies_tree_generation_hook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">reverse_dependencies_tree_generation_hook</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_repository_instance</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.reverse_dependencies_tree_generation_hook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This hook is called inside 
+  EntropyRepository.generateReverseDependenciesMetadata() method at the 
+  very end of the function code. Every time that repository is 
+  &quot;tainted&quot; with new packages, sooner or later that function is 
+  called.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_repository_instance</code></strong> (EntropyRepository) - EntropyRepository instance</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status code, return nonzero for errors, this will raise
+          a RepositoryPluginError exception.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="treeupdates_move_action_hook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">treeupdates_move_action_hook</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_repository_instance</span>,
+        <span class="sig-arg">idpackage</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.treeupdates_move_action_hook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called after EntropyRepository treeupdates move action execution for 
+  given idpackage in given EntropyRepository instance.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_repository_instance</code></strong> (EntropyRepository) - EntropyRepository instance</li>
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - Entropy repository package identifier</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status code, return nonzero for errors, this will raise
+          a RepositoryPluginError exception.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="treeupdates_slot_move_action_hook"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">treeupdates_slot_move_action_hook</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_repository_instance</span>,
+        <span class="sig-arg">idpackage</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepositoryPlugin.treeupdates_slot_move_action_hook">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called after EntropyRepository treeupdates slot move action execution 
+  for given idpackage in given EntropyRepository instance.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_repository_instance</code></strong> (EntropyRepository) - EntropyRepository instance</li>
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - Entropy repository package identifier</li>
+    </ul></dd>
+    <dt>Returns: int</dt>
+        <dd>execution status code, return nonzero for errors, this will raise
+          a RepositoryPluginError exception.</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:29 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

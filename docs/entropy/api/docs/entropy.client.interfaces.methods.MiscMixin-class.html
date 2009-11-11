@@ -59,28 +59,7 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class MiscMixin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__9" name="uml_class_diagram_for_entropy__9">
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#RESOURCES_LOCK_F_COUNT" title="entropy.client.interfaces.methods.MiscMixin.RESOURCES_LOCK_F_COUNT" alt="" coords="17,28,313,47"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#RESOURCES_LOCK_F_REF" title="entropy.client.interfaces.methods.MiscMixin.RESOURCES_LOCK_F_REF" alt="" coords="17,47,313,65"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#reload_constants" title="entropy.client.interfaces.methods.MiscMixin.reload_constants" alt="" coords="17,68,313,87"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#setup_default_file_perms" title="entropy.client.interfaces.methods.MiscMixin.setup_default_file_perms" alt="" coords="17,87,313,105"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#resources_create_lock" title="entropy.client.interfaces.methods.MiscMixin.resources_create_lock" alt="" coords="17,105,313,124"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#resources_remove_lock" title="entropy.client.interfaces.methods.MiscMixin.resources_remove_lock" alt="" coords="17,124,313,143"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#resources_check_lock" title="entropy.client.interfaces.methods.MiscMixin.resources_check_lock" alt="" coords="17,143,313,161"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#check_pid_file_lock" title="entropy.client.interfaces.methods.MiscMixin.check_pid_file_lock" alt="" coords="17,161,313,180"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#create_pid_file_lock" title="entropy.client.interfaces.methods.MiscMixin.create_pid_file_lock" alt="" coords="17,180,313,199"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#application_lock_check" title="entropy.client.interfaces.methods.MiscMixin.application_lock_check" alt="" coords="17,199,313,217"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#lock_check" title="entropy.client.interfaces.methods.MiscMixin.lock_check" alt="" coords="17,217,313,236"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#backup_constant" title="entropy.client.interfaces.methods.MiscMixin.backup_constant" alt="" coords="17,236,313,255"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#set_priority" title="entropy.client.interfaces.methods.MiscMixin.set_priority" alt="" coords="17,255,313,273"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#reload_repositories_config" title="entropy.client.interfaces.methods.MiscMixin.reload_repositories_config" alt="" coords="17,273,313,292"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#switch_chroot" title="entropy.client.interfaces.methods.MiscMixin.switch_chroot" alt="" coords="17,292,313,311"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html#get_package_groups" title="Return Entropy Package Groups metadata." alt="" coords="17,329,313,348"/>
-<area shape="rect" href="entropy.client.interfaces.methods.MiscMixin-class.html" title="entropy.client.interfaces.methods.MiscMixin" alt="" coords="16,11,315,349"/>
-<area shape="rect" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="124,379,207,405"/>
-</map>
-  <img src="uml_class_diagram_for_entropy__9.gif" alt='' usemap="#uml_class_diagram_for_entropy__9" ismap="ismap" class="graph-without-title" />
-</center>
+
 </center>
 <hr />
 <!-- ==================== INSTANCE METHODS ==================== -->
@@ -519,6 +498,23 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">dict</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.client.interfaces.methods.MiscMixin-class.html#get_package_groups" class="summary-sig-name">get_package_groups</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return Entropy Package Groups metadata.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.get_package_groups">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -700,29 +696,11 @@
         <span class="summary-sig-arg">pkgdata</span>,
         <span class="summary-sig-arg">dirpath</span>,
         <span class="summary-sig-arg">edb</span>=<span class="summary-sig-default">True</span>,
-        <span class="summary-sig-arg">portdbPath</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">fake</span>=<span class="summary-sig-default">False</span>,
         <span class="summary-sig-arg">compression</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">bz2</code><code class="variable-quote">'</code></span>,
         <span class="summary-sig-arg">shiftpath</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string"></code><code class="variable-quote">'</code></span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.quickpkg_handler">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">dict</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.client.interfaces.methods.MiscMixin-class.html#get_package_groups" class="summary-sig-name">get_package_groups</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return Entropy Package Groups metadata.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.client.interfaces.methods-pysrc.html#MiscMixin.get_package_groups">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -743,14 +721,15 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="RESOURCES_LOCK_F_COUNT"></a><span class="summary-name">RESOURCES_LOCK_F_COUNT</span> = <code title="0">0</code>
+        <a name="RESOURCES_LOCK_F_REF"></a><span class="summary-name">RESOURCES_LOCK_F_REF</span> = <code title="None">None</code><br />
+      hash(x)
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="RESOURCES_LOCK_F_REF"></a><span class="summary-name">RESOURCES_LOCK_F_REF</span> = <code title="None">None</code>
+        <a name="RESOURCES_LOCK_F_COUNT"></a><span class="summary-name">RESOURCES_LOCK_F_COUNT</span> = <code title="0">0</code>
     </td>
   </tr>
 </table>
@@ -843,7 +822,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:10 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:28 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

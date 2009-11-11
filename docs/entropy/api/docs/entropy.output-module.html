@@ -552,7 +552,8 @@
         <tr>
           <td><span class="summary-sig"><a href="entropy.output-module.html#print_error" class="summary-sig-name">print_error</a>(<span class="summary-sig-arg">msg</span>,
         <span class="summary-sig-arg">back</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">flush</span>=<span class="summary-sig-default">True</span>)</span><br />
+        <span class="summary-sig-arg">flush</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">end</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">\n</code><code class="variable-quote">'</code></span>)</span><br />
       Service function used by Entropy text client (will be moved from 
       here) to write error messages to stdout (not stderr, atm).</td>
           <td align="right" valign="top">
@@ -572,7 +573,8 @@
         <tr>
           <td><span class="summary-sig"><a href="entropy.output-module.html#print_info" class="summary-sig-name">print_info</a>(<span class="summary-sig-arg">msg</span>,
         <span class="summary-sig-arg">back</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">flush</span>=<span class="summary-sig-default">True</span>)</span><br />
+        <span class="summary-sig-arg">flush</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">end</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">\n</code><code class="variable-quote">'</code></span>)</span><br />
       Service function used by Entropy text client (will be moved from 
       here) to write info messages to stdout (not stderr, atm).</td>
           <td align="right" valign="top">
@@ -592,7 +594,8 @@
         <tr>
           <td><span class="summary-sig"><a href="entropy.output-module.html#print_warning" class="summary-sig-name">print_warning</a>(<span class="summary-sig-arg">msg</span>,
         <span class="summary-sig-arg">back</span>=<span class="summary-sig-default">False</span>,
-        <span class="summary-sig-arg">flush</span>=<span class="summary-sig-default">True</span>)</span><br />
+        <span class="summary-sig-arg">flush</span>=<span class="summary-sig-default">True</span>,
+        <span class="summary-sig-arg">end</span>=<span class="summary-sig-default"><code class="variable-quote">'</code><code class="variable-string">\n</code><code class="variable-quote">'</code></span>)</span><br />
       Service function used by Entropy text client (will be moved from 
       here) to write warning messages to stdout (not stderr, atm).</td>
           <td align="right" valign="top">
@@ -606,11 +609,12 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">None</span>
+      <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.output-module.html#print_generic" class="summary-sig-name">print_generic</a>(<span class="summary-sig-arg">msg</span>)</span><br />
+          <td><span class="summary-sig"><a href="entropy.output-module.html#print_generic" class="summary-sig-name">print_generic</a>(<span class="summary-sig-arg">*args</span>,
+        <span class="summary-sig-arg">**kwargs</span>)</span><br />
       Service function used by Entropy text client (will be moved from 
       here) to write generic messages to stdout (not stderr, atm).</td>
           <td align="right" valign="top">
@@ -761,14 +765,23 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="default_xterm_title"></a><span class="summary-name">default_xterm_title</span> = <code title="None">None</code>
+        <a name="default_xterm_title"></a><span class="summary-name">default_xterm_title</span> = <code title="None">None</code><br />
+      hash(x)
     </td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="nc"></a><span class="summary-name">nc</span> = <code title="None">None</code>
+        <a name="nc"></a><span class="summary-name">nc</span> = <code title="None">None</code><br />
+      hash(x)
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'entropy'"><code class="variable-quote">'</code><code class="variable-string">entropy</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
 </table>
@@ -1282,7 +1295,8 @@
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">print_error</span>(<span class="sig-arg">msg</span>,
         <span class="sig-arg">back</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">flush</span>=<span class="sig-default">True</span>)</span>
+        <span class="sig-arg">flush</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">end</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">\n</code><code class="variable-quote">'</code></span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.output-pysrc.html#print_error">source&nbsp;code</a></span>&nbsp;
@@ -1313,7 +1327,8 @@
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">print_info</span>(<span class="sig-arg">msg</span>,
         <span class="sig-arg">back</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">flush</span>=<span class="sig-default">True</span>)</span>
+        <span class="sig-arg">flush</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">end</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">\n</code><code class="variable-quote">'</code></span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.output-pysrc.html#print_info">source&nbsp;code</a></span>&nbsp;
@@ -1344,7 +1359,8 @@
   <tr valign="top"><td>
   <h3 class="epydoc"><span class="sig"><span class="sig-name">print_warning</span>(<span class="sig-arg">msg</span>,
         <span class="sig-arg">back</span>=<span class="sig-default">False</span>,
-        <span class="sig-arg">flush</span>=<span class="sig-default">True</span>)</span>
+        <span class="sig-arg">flush</span>=<span class="sig-default">True</span>,
+        <span class="sig-arg">end</span>=<span class="sig-default"><code class="variable-quote">'</code><code class="variable-string">\n</code><code class="variable-quote">'</code></span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.output-pysrc.html#print_warning">source&nbsp;code</a></span>&nbsp;
@@ -1373,7 +1389,8 @@
 <tr><td>
   <table width="100%" cellpadding="0" cellspacing="0" border="0">
   <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">print_generic</span>(<span class="sig-arg">msg</span>)</span>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">print_generic</span>(<span class="sig-arg">*args</span>,
+        <span class="sig-arg">**kwargs</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.output-pysrc.html#print_generic">source&nbsp;code</a></span>&nbsp;
@@ -1384,12 +1401,6 @@
   to write generic messages to stdout (not stderr, atm). NOTE: don't use 
   this directly but rather subclass TextInterface class.</p>
   <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>msg</code></strong> (string) - text message to print</li>
-    </ul></dd>
-    <dt>Returns: None</dt>
-        <dd>None</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -1610,7 +1621,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:09 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:27 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

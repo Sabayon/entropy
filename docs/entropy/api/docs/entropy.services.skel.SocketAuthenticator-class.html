@@ -58,17 +58,11 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class SocketAuthenticator</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.services.skel-pysrc.html#SocketAuthenticator">source&nbsp;code</a></span></p>
 <center>
-<center>  <map id="uml_class_diagram_for_entropy__78" name="uml_class_diagram_for_entropy__78">
-<area shape="rect" href="entropy.services.skel.SocketAuthenticator-class.html#__init__" title="entropy.services.skel.SocketAuthenticator.__init__" alt="" coords="208,36,371,55"/>
-<area shape="rect" href="entropy.services.skel.SocketAuthenticator-class.html#set_session" title="entropy.services.skel.SocketAuthenticator.set_session" alt="" coords="208,55,371,73"/>
-<area shape="rect" href="entropy.services.skel.SocketAuthenticator-class.html" title="entropy.services.skel.SocketAuthenticator" alt="" coords="207,11,372,75"/>
-<area shape="rect" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator" alt="" coords="16,104,299,131"/>
-<area shape="rect" href="entropy.services.authenticators.phpBB3-class.html" title="entropy.services.authenticators.phpBB3" alt="" coords="349,104,496,131"/>
-</map>
-  <img src="uml_class_diagram_for_entropy__78.gif" alt='' usemap="#uml_class_diagram_for_entropy__78" ismap="ismap" class="graph-without-title" />
-</center>
+
 </center>
 <hr />
+<p>Base class for Entropy SocketHost RPC authentication.</p>
+
 <!-- ==================== INSTANCE METHODS ==================== -->
 <a name="section-InstanceMethods"></a>
 <table class="summary" border="1" cellpadding="3"
@@ -100,8 +94,9 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="set_session"></a><span class="summary-sig-name">set_session</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">session</span>)</span></td>
+          <td><span class="summary-sig"><a href="entropy.services.skel.SocketAuthenticator-class.html#set_session" class="summary-sig-name">set_session</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">session</span>)</span><br />
+      Set Entropy SocketHost connection session id.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.services.skel-pysrc.html#SocketAuthenticator.set_session">source&nbsp;code</a></span>
             
@@ -111,7 +106,174 @@
       
     </td>
   </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.services.skel.SocketAuthenticator-class.html#hide_login_data" class="summary-sig-name">hide_login_data</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">args</span>)</span><br />
+      Given Entropy SocketHost RPC login command in list form, hide 
+      password data (which is going to be stored in log file).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.skel-pysrc.html#SocketAuthenticator.hide_login_data">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.services.skel.SocketAuthenticator-class.html#set_exc_permissions" class="summary-sig-name">set_exc_permissions</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">uid</span>,
+        <span class="summary-sig-arg">gid</span>)</span><br />
+      Set execution permissions (setuid, setgid) for the running process.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.skel-pysrc.html#SocketAuthenticator.set_exc_permissions">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.services.skel.SocketAuthenticator-class.html#terminate_instance" class="summary-sig-name">terminate_instance</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      This function is called when the Authenticator is going to be 
+      destroyed.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.services.skel-pysrc.html#SocketAuthenticator.terminate_instance">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
 </table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="set_session"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_session</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">session</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.services.skel-pysrc.html#SocketAuthenticator.set_session">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set Entropy SocketHost connection session id.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>session</code></strong> (int) - connection session</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="hide_login_data"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">hide_login_data</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">args</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.services.skel-pysrc.html#SocketAuthenticator.hide_login_data">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Given Entropy SocketHost RPC login command in list form, hide password
+  data (which is going to be stored in log file). NOTE: this method MUST be
+  reimplemented</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>args</code></strong> (list) - arguments of RPC login command</li>
+    </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>filtered list</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="set_exc_permissions"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_exc_permissions</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">uid</span>,
+        <span class="sig-arg">gid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.services.skel-pysrc.html#SocketAuthenticator.set_exc_permissions">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set execution permissions (setuid, setgid) for the running 
+  process.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>uid</code></strong> - user id</li>
+        <li><strong class="pname"><code>gid</code></strong> - group id</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="terminate_instance"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">terminate_instance</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.services.skel-pysrc.html#SocketAuthenticator.terminate_instance">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This function is called when the Authenticator is going to be 
+  destroyed. You can reimplement this to execute arbitrary code (for eg. 
+  terminate a database connection). NOTE: there is no need to reimplement 
+  this if you are not using any fancy stuff.</p>
+  <dl class="fields">
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -143,7 +305,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Fri Sep  4 11:50:15 2009
+    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:31 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
