@@ -498,7 +498,10 @@ class CalculatorsMixin:
 
         return set_data.pop(0), True
 
-    def get_unsatisfied_dependencies(self, dependencies, deep_deps = False, depcache = None):
+    def get_unsatisfied_dependencies(self, dependencies, deep_deps = False,
+        relaxed_deps = False, depcache = None):
+
+        # NOTE: to avoid user complaints, the magic toy is "relaxed_deps"
 
         if self.xcache:
             c_data = sorted(dependencies)
@@ -506,14 +509,15 @@ class CalculatorsMixin:
             c_hash = hash("%s|%s|%s" % (c_data, deep_deps, client_checksum,))
             c_hash = "%s%s" % (etpCache['filter_satisfied_deps'], c_hash,)
             cached = self.Cacher.pop(c_hash)
-            if cached != None: return cached
+            if cached is not None:
+                return cached
 
         const_debug_write(__name__,
             "get_unsatisfied_dependencies (not cached, deep: %s) for => %s" % (
                 deep_deps, dependencies,))
 
-        if not isinstance(depcache, dict):
-            depcache = {}
+        if depcache is None:
+            depcache = set()
 
         # satisfied dependencies filter support
         # package.satisfied file support
@@ -531,8 +535,6 @@ class CalculatorsMixin:
             self.SystemSettings[satisfied_kw] = satisfied_data
 
         cdb_am = self.clientDbconn.atomMatch
-        am = self.atom_match
-        open_repo = self.open_repository
         intf_error = self.dbapi2.InterfaceError
         cdb_getversioning = self.clientDbconn.getVersioningData
         cdb_retrieveBranch = self.clientDbconn.retrieveBranch
@@ -540,54 +542,76 @@ class CalculatorsMixin:
         etp_cmp = self.entropyTools.entropy_compare_versions
         etp_get_rev = self.entropyTools.dep_get_entropy_revision
 
-        def fm_dep(dependency):
+        unsatisfied = set()
+        for dependency in dependencies:
 
-            cached = depcache.get(dependency)
-            if cached != None:
+            if dependency in depcache:
+                # already analized ?
                 const_debug_write(__name__,
                     "get_unsatisfied_dependencies control cached for => %s" % (
                         dependency,))
                 const_debug_write(__name__, "...")
-                return cached
+                continue
+
+            # push to cache
+            depcache.add(dependency)
 
             ### conflict
             if dependency.startswith("!"):
                 idpackage, rc = cdb_am(dependency[1:])
                 if idpackage != -1:
-                    depcache[dependency] = dependency
                     const_debug_write(__name__,
                         "get_unsatisfied_dependencies conflict not found on system for => %s" % (
                             dependency,))
                     const_debug_write(__name__, "...")
-                    return dependency
-                depcache[dependency] = 0
+                    unsatisfied.add(dependency)
+                    continue
+
                 const_debug_write(__name__, "...")
-                return 0
+                continue
 
             c_ids, c_rc = cdb_am(dependency, multiMatch = True)
             if c_rc != 0:
-                depcache[dependency] = dependency
                 const_debug_write(__name__,
                     "get_unsatisfied_dependencies not satisfied on system for => %s" % (
                         dependency,))
                 const_debug_write(__name__, "...")
-                return dependency
+                unsatisfied.add(dependency)
+                continue
 
-            r_id, r_repo = am(dependency)
+            # support for app-foo/foo-123~-1
+            # -1 revision means, always pull the latest
+            do_rev_deep = False
+            if not deep_deps:
+                string_rev = etp_get_rev(dependency)
+                if string_rev == -1:
+                    do_rev_deep = True
+
+            # force_unsatisfied is another way to see "deep_deps".
+            # in this case, we are going to consider valid any dep that
+            # matches something in installed packages repo.
+            if c_ids and (not deep_deps) and (not do_rev_deep) and (relaxed_deps):
+                const_debug_write(__name__,
+                    "get_unsatisfied_dependencies (force unsat) SATISFIED => %s" % (
+                        dependency,))
+                const_debug_write(__name__, "...")
+                continue
+
+            r_id, r_repo = self.atom_match(dependency)
             if r_id == -1:
-                depcache[dependency] = dependency
                 const_debug_write(__name__,
                     "get_unsatisfied_dependencies repository match not found for => %s" % (
                         dependency,))
                 const_debug_write(__name__, "...")
-                return dependency
+                unsatisfied.add(dependency)
+                continue
 
             # satisfied dependencies filter support
             # package.satisfied file support
             if (r_id, r_repo,) in satisfied_data:
-                return 0 # satisfied
+                continue # satisfied
 
-            dbconn = open_repo(r_repo)
+            dbconn = self.open_repository(r_repo)
             try:
                 repo_pkgver, repo_pkgtag, repo_pkgrev = dbconn.getVersioningData(r_id)
                 # note: read rationale below
@@ -598,7 +622,8 @@ class CalculatorsMixin:
                     "get_unsatisfied_dependencies repository entry broken for match => %s" % (
                         (r_id, r_repo),))
                 const_debug_write(__name__, "...")
-                return dependency
+                unsatisfied.add(dependency)
+                continue
 
             client_data = set()
             for c_id in c_ids:
@@ -614,16 +639,9 @@ class CalculatorsMixin:
                 client_data.add((installedVer, installedTag, installedRev,
                     installedDigest,))
 
-            # support for app-foo/foo-123~-1
-            # -1 revision means, always pull the latest
-            do_deep = deep_deps
-            if not do_deep:
-                string_rev = etp_get_rev(dependency)
-                if string_rev == -1:
-                    do_deep = True
-
             # this is required for multi-slotted packages (like python)
             # and when people mix Entropy and Portage
+            do_cont = False
             for installedVer, installedTag, installedRev, cdigest in client_data:
 
                 vcmp = etp_cmp((repo_pkgver, repo_pkgtag, repo_pkgrev,),
@@ -634,38 +652,47 @@ class CalculatorsMixin:
                 if (vcmp == 0) and (cdigest != repo_digest):
                     vcmp = 1
 
-                if (vcmp == 0):
+                if vcmp == 0:
                     const_debug_write(__name__,
-                        "get_unsatisfied_dependencies SATISFIED equals (not cached, deep: %s) => %s" % (
-                            deep_deps, dependency,))
-                    depcache[dependency] = 0
+                        "get_unsatisfied_dependencies SATISFIED equals " + \
+                            "(not cached, deep: %s) => %s" % (
+                                deep_deps, dependency,))
                     const_debug_write(__name__, "...")
-                    return 0
+                    do_cont = True
+                    break
 
                 ver_tag_repo = (repo_pkgver, repo_pkgtag,)
                 ver_tag_inst = (installedVer, installedTag,)
                 rev_match = repo_pkgrev != installedRev
 
-                if not do_deep and (ver_tag_repo == ver_tag_inst) and rev_match:
+                if do_rev_deep and rev_match and (ver_tag_repo == ver_tag_inst):
+                    # this is unsatisfied then, need to continue to exit from
+                    # for cycle and add it to unsatisfied
+                    continue
 
-                    depcache[dependency] = 0
+                if deep_deps:
+                    # also this is clearly unsatisfied if deep is enabled
+                    continue
+
+                if (ver_tag_repo == ver_tag_inst) and rev_match:
                     const_debug_write(__name__,
-                        "get_unsatisfied_dependencies SATISFIED w/o rev (not cached, deep: %s) => %s" % (
-                            deep_deps, dependency,))
+                        "get_unsatisfied_dependencies SATISFIED " + \
+                            "w/o rev (not cached, deep: %s) => %s" % (
+                                deep_deps, dependency,))
                     const_debug_write(__name__, "...")
-                    return 0
+                    do_cont = True
+                    break
+
+            if do_cont:
+                continue
 
             # if we get here it means that there are no matching packages
             const_debug_write(__name__,
                 "get_unsatisfied_dependencies NOT SATISFIED (not cached, deep: %s) => %s" % (
                     deep_deps, dependency,))
 
-            depcache[dependency] = dependency
             const_debug_write(__name__, "...")
-            return dependency
-
-        unsatisfied = list(map(fm_dep, dependencies))
-        unsatisfied = set([x for x in unsatisfied if x != 0])
+            unsatisfied.add(dependency)
 
         if self.xcache:
             self.Cacher.push(c_hash, unsatisfied)
@@ -762,17 +789,17 @@ class CalculatorsMixin:
         return maskedtree
 
 
-    def generate_dependency_tree(self,
-        matched_atom, empty_deps = False, deep_deps = False, matchfilter = None,
-        flat = False, filter_unsat_cache = None, treecache = None, keyslotcache = None):
+    def generate_dependency_tree(self, matched_atom, empty_deps = False,
+        deep_deps = False, matchfilter = None, flat = False,
+        filter_unsat_cache = None, treecache = None, keyslotcache = None):
 
-        if not isinstance(matchfilter, set):
+        if matchfilter is None:
             matchfilter = set()
-        if not isinstance(filter_unsat_cache, dict):
-            filter_unsat_cache = {}
-        if not isinstance(treecache, set):
+        if filter_unsat_cache is None:
+            filter_unsat_cache = set()
+        if treecache is None:
             treecache = set()
-        if not isinstance(keyslotcache, set):
+        if keyslotcache is None:
             keyslotcache = set()
 
         mydbconn = self.open_repository(matched_atom[1])
@@ -791,16 +818,13 @@ class CalculatorsMixin:
 
         virgin = True
         open_repo = self.open_repository
-        atom_match = self.atom_match
         cdb_atom_match = self.clientDbconn.atomMatch
-        lookup_conflict_replacement = self._lookup_conflict_replacement
-        lookup_library_breakages = self._lookup_library_breakages
-        lookup_inverse_dependencies = self._lookup_inverse_dependencies
-        get_unsatisfied_deps = self.get_unsatisfied_dependencies
 
         def my_dep_filter(x):
-            if x in treecache: return False
-            if tuple(x.split(":")) in keyslotcache: return False
+            if x in treecache:
+                return False
+            if tuple(x.split(":")) in keyslotcache:
+                return False
             return True
 
         while mydep:
@@ -841,8 +865,8 @@ class CalculatorsMixin:
             if dep_atom[0] == "!":
                 c_idpackage, xst = cdb_atom_match(dep_atom[1:])
                 if c_idpackage != -1:
-                    myreplacement = lookup_conflict_replacement(dep_atom[1:],
-                        c_idpackage, deep_deps = deep_deps)
+                    myreplacement = self._lookup_conflict_replacement(
+                        dep_atom[1:], c_idpackage, deep_deps = deep_deps)
 
                     const_debug_write(__name__,
                         "generate_dependency_tree conflict replacement => %s" % (
@@ -852,6 +876,7 @@ class CalculatorsMixin:
                         mybuffer.push((dep_level+1, myreplacement))
                     else:
                         conflicts.add(c_idpackage)
+
                 try:
                     mydep = mybuffer.pop()
                 except ValueError:
@@ -876,7 +901,7 @@ class CalculatorsMixin:
                     m_idpackage = -1
 
             else:
-                m_idpackage, m_repo = atom_match(dep_atom)
+                m_idpackage, m_repo = self.atom_match(dep_atom)
                 const_debug_write(__name__,
                     "generate_dependency_tree matching %s => (%s, %s)" % (
                         dep_atom, m_idpackage, m_repo,))
@@ -962,18 +987,19 @@ class CalculatorsMixin:
             # extra hooks
             cm_idpackage, cm_result = cdb_atom_match(matchkey,
                 matchSlot = matchslot)
+
             if cm_idpackage != -1:
 
                 broken_children_atoms = self._lookup_library_drops(match,
                     (cm_idpackage, cm_result,))
 
-                broken_atoms = lookup_library_breakages(match,
+                broken_atoms = self._lookup_library_breakages(match,
                     (cm_idpackage, cm_result,))
                 const_debug_write(__name__,
                     "generate_dependency_tree lib broken atoms for %s => %s" % (
                         matchkey+":"+matchslot, broken_atoms,))
 
-                inverse_deps = lookup_inverse_dependencies(match,
+                inverse_deps = self._lookup_inverse_dependencies(match,
                     (cm_idpackage, cm_result,))
                 const_debug_write(__name__,
                     "generate_dependency_tree inverse deps for %s => %s" % (
@@ -983,9 +1009,12 @@ class CalculatorsMixin:
                     deptree.remove((dep_level, match))
                     for ikey, islot in inverse_deps:
                         iks_str = '%s:%s' % (ikey, islot,)
-                        if ((ikey, islot) not in keyslotcache) and (iks_str not in treecache):
+                        if ((ikey, islot) not in keyslotcache) and \
+                            (iks_str not in treecache):
+
                             mybuffer.push((dep_level, iks_str))
                             keyslotcache.add((ikey, islot))
+
                     deptree.add((treedepth, match))
                     treedepth += 1
 
@@ -1003,7 +1032,7 @@ class CalculatorsMixin:
                 "generate_dependency_tree dependency list for %s => %s" % (
                     m_idpackage, m_deplist,))
 
-            myundeps = list(filter(my_dep_filter, m_deplist))
+            myundeps = [x for x in m_deplist if my_dep_filter(x)]
 
             const_debug_write(__name__,
                 "generate_dependency_tree filtered dependency list => %s" % (
@@ -1011,42 +1040,31 @@ class CalculatorsMixin:
 
             if not empty_deps:
 
-                m_unsat_deplist = get_unsatisfied_deps(myundeps, deep_deps,
-                    depcache = filter_unsat_cache)
+                m_unsat_deplist = self.get_unsatisfied_dependencies(myundeps,
+                    deep_deps, depcache = filter_unsat_cache)
 
                 const_debug_write(__name__,
-                    "generate_dependency_tree unsatisfied dependencies (deep: %s) => %s" % (
-                        deep_deps, m_unsat_deplist,))
+                    "generate_dependency_tree unsatisfied dependencies " + \
+                        "(deep: %s) => %s" % (deep_deps, m_unsat_deplist,))
 
-                myundeps = list(filter(my_dep_filter, m_unsat_deplist))
+                myundeps = [x for x in m_unsat_deplist if my_dep_filter(x)]
 
                 const_debug_write(__name__,
-                    "generate_dependency_tree filtered UNSATISFIED dependencies => %s" % (
-                        myundeps,))
+                    "generate_dependency_tree filtered UNSATISFIED " + \
+                        "dependencies => %s" % (myundeps,))
 
             # PDEPENDs support
             if myundeps:
-
-                post_deps = [x for x in \
-                    matchdb.retrievePostDependencies(m_idpackage) if x \
-                    in myundeps]
+                myundeps, post_deps = self.__lookup_post_dependencies(matchdb,
+                    m_idpackage, myundeps)
 
                 const_debug_write(__name__,
-                    "generate_dependency_tree POST dependencies => %s" % (
-                        post_deps,))
+                    "generate_dependency_tree POST dependencies ADDED => %s" % (
+                        myundeps,))
 
-                if post_deps:
-
-                    # do some filtering
-                    # it is correct to not use my_dep_filter here
-                    myundeps = [x for x in myundeps if x not in post_deps]
-
-                    const_debug_write(__name__,
-                        "generate_dependency_tree POST dependencies ADDED => %s" % (
-                            myundeps,))
-
+                # always after the package itself
                 for x in post_deps:
-                    mybuffer.push((-1, x)) # always after the package itself
+                    mybuffer.push((-1, x))
 
             for x in myundeps:
                 mybuffer.push((treedepth, x))
@@ -1056,7 +1074,9 @@ class CalculatorsMixin:
             except ValueError:
                 const_debug_write(__name__, "---empty7---")
                 break # stack empty
+
             const_debug_write(__name__, "---")
+
 
         if deps_not_found:
             return list(deps_not_found), -2
@@ -1075,6 +1095,26 @@ class CalculatorsMixin:
         newdeptree[0] = conflicts
 
         return newdeptree, 0 # note: newtree[0] contains possible conflicts
+
+    def __lookup_post_dependencies(self, repo_db, repo_idpackage,
+        unsatisfied_deps):
+
+        post_deps = [x for x in \
+            repo_db.retrievePostDependencies(repo_idpackage) if x \
+            in unsatisfied_deps]
+
+        const_debug_write(__name__,
+            "__lookup_post_dependencies POST dependencies => %s" % (
+                post_deps,))
+
+        if post_deps:
+
+            # do some filtering
+            # it is correct to not use my_dep_filter here
+            unsatisfied_deps = [x for x in unsatisfied_deps \
+                if x not in post_deps]
+
+        return unsatisfied_deps, post_deps
 
 
     def _lookup_system_mask_repository_deps(self):
@@ -1096,7 +1136,8 @@ class CalculatorsMixin:
                 # check if not found
                 myaction = self.get_package_action(mymatch)
                 # only if the package is not installed
-                if myaction == 1: mydata.append(mymatch)
+                if myaction == 1:
+                    mydata.append(mymatch)
             cached_items.add(mymatch)
         return mydata
 
@@ -1372,7 +1413,8 @@ class CalculatorsMixin:
 
         return system_tree
 
-    def get_required_packages(self, matched_atoms, empty_deps = False, deep_deps = False, quiet = False):
+    def get_required_packages(self, matched_atoms, empty_deps = False,
+        deep_deps = False, quiet = False):
 
         c_hash = "%s%s" % (
             etpCache['dep_tree'],
@@ -1401,31 +1443,38 @@ class CalculatorsMixin:
         forced_matches = self._lookup_system_mask_repository_deps()
         if forced_matches:
             if isinstance(matched_atoms, list):
-                matched_atoms = forced_matches + [x for x in matched_atoms if x not in forced_matches]
-            elif isinstance(matched_atoms, set): # we cannot do anything about the order here
+                matched_atoms = forced_matches + [x for x in matched_atoms \
+                    if x not in forced_matches]
+
+            elif isinstance(matched_atoms, set):
+                # we cannot do anything about the order here
                 matched_atoms |= set(forced_matches)
 
         sort_dep_text = _("Sorting dependencies")
-        filter_unsat_cache = {}
+        filter_unsat_cache = set()
         treecache = set()
         keyslotcache = set()
         matchfilter = set()
         for matched_atom in matched_atoms:
+
             const_debug_write(__name__,
                 "get_required_packages matched_atom => %s" % (matched_atom,))
 
             if not quiet:
                 count += 1
                 if (count%10 == 0) or (count == atomlen) or (count == 1):
-                    self.updateProgress(sort_dep_text, importance = 0, type = "info",
-                        back = True, header = ":: ", footer = " ::",
-                        percent = True, count = (count, atomlen))
+                    self.updateProgress(sort_dep_text, importance = 0,
+                        type = "info", back = True, header = ":: ",
+                        footer = " ::", percent = True,
+                        count = (count, atomlen)
+                    )
 
             if matched_atom in matchfilter:
                 continue
             newtree, result = self.generate_dependency_tree(
                 matched_atom, empty_deps, deep_deps,
-                matchfilter = matchfilter, filter_unsat_cache = filter_unsat_cache, treecache = treecache,
+                matchfilter = matchfilter,
+                filter_unsat_cache = filter_unsat_cache, treecache = treecache,
                 keyslotcache = keyslotcache
             )
 
@@ -1922,7 +1971,8 @@ class CalculatorsMixin:
             for x in range(len(treeview))[::-1]: queue.extend(treeview[x])
         return queue
 
-    def get_install_queue(self, matched_atoms, empty_deps, deep_deps, quiet = False):
+    def get_install_queue(self, matched_atoms, empty_deps, deep_deps,
+        quiet = False):
 
         install = []
         removal = []
