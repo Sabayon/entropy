@@ -1065,7 +1065,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         try:
             tx_limit = int(os.getenv("ETP_DOWNLOAD_KB"))
-        except ValueError:
+        except (ValueError, TypeError,):
             tx_limit = None
         if tx_limit is not None:
             data['transfer_limit'] = tx_limit
