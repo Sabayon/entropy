@@ -25,7 +25,7 @@ from entropy.output import TextInterface, darkblue, darkred, purple, blue, \
     brown, darkgreen, red, bold
 from entropy.exceptions import *
 from entropy.i18n import _
-from entropy.misc import TimeScheduled, ParallelTask
+from entropy.misc import ParallelTask
 from entropy.core.settings.base import SystemSettings
 
 class UrlFetcher:
@@ -82,7 +82,6 @@ class UrlFetcher:
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
     def _init_vars(self):
-
         self.__resumed = False
         self.__buffersize = 8192
         self.__status = None
@@ -98,7 +97,7 @@ class UrlFetcher:
         self.__time_remaining_secs = 0
         self.__elapsed = 0.0
         self.__updatestep = 0.2
-        self.__transferpollingtime = float(1)/4
+        self.__starttime = time.time()
         self.__existed_before = False
         if os.path.lexists(self.__path_to_save):
             self.__existed_before = True
@@ -106,7 +105,6 @@ class UrlFetcher:
         self._setup_proxy()
 
     def __setup_resume_support(self):
-
         # if client uses this instance more than
         # once, make sure we close previously opened
         # files.
@@ -160,11 +158,6 @@ class UrlFetcher:
     def download(self):
 
         self._init_vars()
-        self.speedUpdater = TimeScheduled(
-            self.__transferpollingtime,
-            self.__update_speed,
-        )
-        self.speedUpdater.start()
         # set timeout
         self.socket.setdefaulttimeout(20)
 
@@ -271,7 +264,7 @@ class UrlFetcher:
                 self.__close(True)
                 self.__status = "-3"
                 return self.__status
-            self.__commit(rsx)
+            self._commit(rsx)
             if self.__show_speed:
                 self.handle_statistics(self.__th_id, self.__downloadedsize,
                     self.__remotesize, self.__average, self.__oldaverage,
@@ -283,6 +276,7 @@ class UrlFetcher:
             if self.__speedlimit:
                 while self.__datatransfer > self.__speedlimit*1024:
                     time.sleep(0.1)
+                    self._update_speed()
                     if self.__show_speed:
                         self.updateProgress()
                         self.__oldaverage = self.__average
@@ -299,15 +293,17 @@ class UrlFetcher:
         self.__status = "-2"
         return self.__status
 
-    def __commit(self, mybuffer):
+    def _commit(self, mybuffer):
         # writing file buffer
         self.localfile.write(mybuffer)
         # update progress info
         self.__downloadedsize = self.localfile.tell()
         kbytecount = float(self.__downloadedsize)/1024
         self.__average = int((kbytecount/self.__remotesize)*100)
+        self._update_speed()
 
     def __close(self, errored):
+        self._update_speed()
         try:
             if const_isfileobj(self.localfile):
                 self.localfile.flush()
@@ -323,11 +319,11 @@ class UrlFetcher:
             self.__remotefile.close()
         except:
             pass
-        self.speedUpdater.kill()
         self.socket.setdefaulttimeout(2)
 
-    def __update_speed(self):
-        self.__elapsed += self.__transferpollingtime
+    def _update_speed(self):
+        cur_time = time.time()
+        self.__elapsed = cur_time - self.__starttime
         # we have the diff size
         x_delta = self.__downloadedsize - self.__startingposition
         self.__datatransfer = x_delta / self.__elapsed
@@ -339,8 +335,10 @@ class UrlFetcher:
             x_delta = rounded_remote - rounded_downloaded
             tx_round = int(round(x_delta/self.__datatransfer, 0))
             self.__time_remaining_secs = tx_round
-            self.__time_remaining = self.entropyTools.convert_seconds_to_fancy_output(self.__time_remaining_secs)
-        except:
+            self.__time_remaining = \
+                self.entropyTools.convert_seconds_to_fancy_output(
+                    self.__time_remaining_secs)
+        except (ValueError, TypeError,):
             self.__time_remaining = "(%s)" % (_("infinite"),)
 
     def get_transfer_rate(self):
@@ -648,7 +646,7 @@ class FtpInterface:
         self.socket, self.ftplib, self.entropyTools = socket, ftplib, entropyTools
         self.Entropy = OutputInterface
         self.__verbose = verbose
-        self.__init_vars()
+        self._init_vars()
         self.socket.setdefaulttimeout(60)
         self.__ftpuri = ftpuri
         self.__speed_limit = speed_limit
@@ -699,7 +697,7 @@ class FtpInterface:
             )
         self.set_cwd(self.__ftpdir, dodir = True)
 
-    def __init_vars(self):
+    def _init_vars(self):
         self.__oldprogress = 0.0
         self.__filesize = 0
         self.__filekbcount = 0
@@ -872,7 +870,7 @@ class FtpInterface:
 
             tries += 1
             filename = os.path.basename(file_path)
-            self.__init_vars()
+            self._init_vars()
             try:
 
                 with open(file_path, "r") as f:
@@ -925,7 +923,7 @@ class FtpInterface:
         while tries:
             tries -= 1
 
-            self.__init_vars()
+            self._init_vars()
             try:
 
                 self.__filekbcount = 0
