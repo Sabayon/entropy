@@ -1063,6 +1063,13 @@ class SystemSettings(Singleton, EntropyPluginStore):
                 except (IndexError, ValueError, TypeError,):
                     continue
 
+        try:
+            tx_limit = int(os.getenv("ETP_DOWNLOAD_KB"))
+        except ValueError:
+            tx_limit = None
+        if tx_limit is not None:
+            data['transfer_limit'] = tx_limit
+
         return data
 
     def _clear_repository_cache(self, repoid = None):
