@@ -269,10 +269,18 @@ class EntropyRepositoryPluginStore(EntropyPluginStore):
     aimed to handle connected plugins.
     """
 
+    _PERMANENT_PLUGINS = {}
+
     def __init__(self):
         EntropyPluginStore.__init__(self)
+        permanent_plugs = EntropyRepositoryPluginStore.get_permanent_plugins()
+        for plug in permanent_plugs.values():
+            plug.add_plugin_hook(self)
 
     def add_plugin(self, entropy_repository_plugin):
+        """
+        Overloaded from EntropyPluginStore, adds support for hooks execution.
+        """
         inst = entropy_repository_plugin
         if not isinstance(inst, EntropyRepositoryPlugin):
             raise AttributeError("EntropyRepositoryPluginStore: " + \
@@ -281,11 +289,64 @@ class EntropyRepositoryPluginStore(EntropyPluginStore):
         inst.add_plugin_hook(self)
 
     def remove_plugin(self, plugin_id):
+        """
+        Overloaded from EntropyPluginStore, adds support for hooks execution.
+        """
         plugins = self.get_plugins()
         plug_inst = plugins.get(plugin_id)
         if plug_inst is not None:
             plug_inst.remove_plugin_hook(self)
         return EntropyPluginStore.remove_plugin(self, plugin_id)
+
+    @staticmethod
+    def add_permanent_plugin(entropy_repository_plugin):
+        """
+        Add EntropyRepository permanent plugin. This plugin object will be
+        used across all the instantiated EntropyRepositoryPluginStore classes.
+        Each time a new instance is created, add_plugin_hook will be executed
+        for all the permanent plugins.
+
+        @param entropy_repository_plugin: EntropyRepositoryPlugin instance
+        @type entropy_repository_plugin: EntropyRepositoryPlugin instance
+        """
+        inst = entropy_repository_plugin
+        if not isinstance(inst, EntropyRepositoryPlugin):
+            raise AttributeError("EntropyRepositoryPluginStore: " + \
+                    "expected valid EntropyRepositoryPlugin instance")
+        EntropyRepositoryPluginStore._PERMANENT_PLUGINS[inst.get_id()] = inst
+
+    @staticmethod
+    def remove_permanent_plugin(plugin_id):
+        """
+        Remove EntropyRepository permanent plugin. This plugin object will be
+        removed across all the EntropyRepository instances around.
+        Please note: due to the fact that there are no destructors around,
+        the "remove_plugin_hook" callback won't be executed when calling this
+        static method.
+
+        @param plugin_id: EntropyRepositoryPlugin identifier
+        @type plugin_id: string
+        @raise KeyError: in case of unavailable plugin identifier
+        """
+        del EntropyRepositoryPluginStore._PERMANENT_PLUGINS[plugin_id]
+
+    @staticmethod
+    def get_permanent_plugins():
+        """
+        Return EntropyRepositoryStore installed permanent plugins.
+
+        @return: copy of internal permanent plugins dict
+        @rtype: dict
+        """
+        return EntropyRepositoryPluginStore._PERMANENT_PLUGINS.copy()
+
+    def get_plugins(self):
+        """
+        Overloaded from EntropyPluginStore, adds support for permanent plugins.
+        """
+        plugins = EntropyPluginStore.get_plugins(self)
+        plugins.update(EntropyRepositoryPluginStore.get_permanent_plugins())
+        return plugins
 
     def get_plugins_metadata(self):
         """
@@ -941,7 +1002,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             spm.packages_repositories_metadata_update()
         except:
             self.entropyTools.print_traceback()
-            pass
 
         spm_moves = set()
         quickpkg_atoms = set()
