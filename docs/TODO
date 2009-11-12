@@ -4,11 +4,11 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta1:
 
+    - move etpConst['spm'] to entropy.spm (to do this =>
+        EntropyRepository.regenerateSpmUidTable should be reworked)
     - make entropy.db matching rules externally inferred
-    - --nodeep on dep calculation?
     - provide repository digital key, fetch it when syncing repos and check if
       it matches and all file match
-    - move etpConst['spm'] to entropy.spm
     - entropy.tools + entropy.transceivers API docs merge
     - remove entropy spm (sort_update_files) from entropy.server
     - move sensible pkgs to alt dir
