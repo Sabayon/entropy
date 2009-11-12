@@ -2353,7 +2353,7 @@
                                           <widget class="GtkTable" id="table7">
                                             <property name="visible">True</property>
                                             <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
-                                            <property name="n_rows">3</property>
+                                            <property name="n_rows">4</property>
                                             <property name="n_columns">2</property>
                                             <child>
                                               <widget class="GtkComboBox" id="collisionProtectionCombo">
@@ -2434,12 +2434,44 @@ Install+Removal</property>
                                                 <property name="y_options"></property>
                                               </packing>
                                             </child>
+                                            <child>
+                                              <widget class="GtkLabel" id="label6">
+                                                <property name="visible">True</property>
+                                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                                <property name="xalign">0</property>
+                                                <property name="label" translatable="yes">Dependencies algorithm</property>
+                                              </widget>
+                                              <packing>
+                                                <property name="top_attach">3</property>
+                                                <property name="bottom_attach">4</property>
+                                                <property name="y_options"></property>
+                                              </packing>
+                                            </child>
+                                            <child>
+                                              <widget class="GtkComboBox" id="depResAlgoCombo">
+                                                <property name="visible">True</property>
+                                                <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                                                <property name="has_tooltip">True</property>
+                                                <property name="tooltip" translatable="yes">Prevents files belonging to a package being overwritten by another</property>
+                                                <property name="items" translatable="yes">Reliable
+Relaxed</property>
+                                                <signal name="changed" handler="on_Preferences_toggled"/>
+                                              </widget>
+                                              <packing>
+                                                <property name="left_attach">1</property>
+                                                <property name="right_attach">2</property>
+                                                <property name="top_attach">3</property>
+                                                <property name="bottom_attach">4</property>
+                                                <property name="y_options">GTK_FILL</property>
+                                              </packing>
+                                            </child>
                                           </widget>
                                           <packing>
                                             <property name="left_attach">1</property>
                                             <property name="right_attach">2</property>
                                             <property name="top_attach">1</property>
                                             <property name="bottom_attach">2</property>
+                                            <property name="y_options">GTK_EXPAND</property>
                                           </packing>
                                         </child>
                                         <child>

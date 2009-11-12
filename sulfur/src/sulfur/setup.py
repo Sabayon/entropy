@@ -155,6 +155,7 @@ class SulfurConf:
     debug = False
     plugins = True
     usecache = False
+    relaxed_deps = 0
     proxy = ""
     font_console = 'Monospace 8'
     font_pkgdesc = 'Monospace 8'
@@ -224,6 +225,7 @@ class SulfurConf:
             "color_error_on_color_background": validate_color_conf,
             "color_package_category": validate_color_conf,
             "simple_mode": foo_validator,
+            "relaxed_deps": foo_validator,
         }
         return config_data
 
@@ -251,6 +253,7 @@ class SulfurConf:
             "color_error_on_color_background": SulfurConf.color_error_on_color_background,
             "color_package_category": SulfurConf.color_package_category,
             "simple_mode": SulfurConf.simple_mode,
+            "relaxed_deps": SulfurConf.relaxed_deps,
         }
         return config_data
 

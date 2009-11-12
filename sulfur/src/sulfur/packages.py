@@ -404,7 +404,8 @@ class Queue:
             return status
 
         (runQueue, removalQueue, status) = self.Entropy.get_install_queue(
-            xlist, False, deep_deps, quiet = True)
+            xlist, False, deep_deps, relaxed_deps = (SulfurConf.relaxed_deps == 1),
+            quiet = True)
         if status == -2: # dependencies not found
             confirmDialog = self.dialogs.ConfirmationDialog( self.ui.main,
                 runQueue,

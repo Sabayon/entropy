@@ -20,7 +20,7 @@
 import gtk
 import sys
 import time
-from sulfur.setup import const
+from sulfur.setup import const, SulfurConf
 from sulfur.dialogs import LicenseDialog, okDialog, choiceDialog, inputDialog
 import gobject
 
@@ -101,7 +101,7 @@ class QueueExecutor:
         conflicts_queue = []
         if install_queue:
             runQueue, conflicts_queue, status = self.Entropy.get_install_queue(
-                install_queue, False, False)
+                install_queue, False, False, relaxed_deps = (SulfurConf.relaxed_deps == 1))
         if removal_queue:
             removalQueue += [(x, False) for x in removal_queue if x \
                 not in conflicts_queue]

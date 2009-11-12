@@ -679,6 +679,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def setup_preferences(self):
 
+        # dep resolution algorithm combo
+        dep_combo = self.ui.depResAlgoCombo
+        if SulfurConf.relaxed_deps:
+            dep_combo.set_active(1)
+        else:
+            dep_combo.set_active(0)
+
         # config protect
         self.configProtectView = self.ui.configProtectView
         for mycol in self.configProtectView.get_columns():
@@ -803,6 +810,14 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 )
                 return
             wgwrite(data)
+
+        def fill_sulfurconf(name, mytype, wgwrite, data):
+            setattr(SulfurConf, name, data)
+
+        def save_sulfurconf(config_file, name, myvariable, mytype, data):
+            setattr(SulfurConf, name, data)
+            SulfurConf.save()
+            return True
 
         def save_setting_view(config_file, name, setting, mytype, model, view):
 
@@ -940,7 +955,16 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     saveSetting,
                     self.ui.filesBackupCheckbutton.set_active,
                     self.ui.filesBackupCheckbutton.get_active,
-                )
+                ),
+                (
+                    'relaxed_deps',
+                    SulfurConf.relaxed_deps,
+                    int,
+                    fill_sulfurconf,
+                    save_sulfurconf,
+                    self.ui.depResAlgoCombo.set_active,
+                    self.ui.depResAlgoCombo.get_active,
+                ),
             ],
             etpConst['repositoriesconf']: [
                 (
