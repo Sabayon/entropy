@@ -69,6 +69,12 @@ class ConnectionError(EntropyException):
 class InterruptError(EntropyException):
     """Raised to interrupt a thread or process"""
 
+class UriHandlerNotFound(EntropyException):
+    """
+    Raised when URI handler (in entropy.transceivers.EntropyTransceiver)
+    for given URI is not available.
+    """
+
 class FtpError(EntropyException):
     """FTP errors"""
 

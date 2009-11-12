@@ -20,7 +20,7 @@ else:
     import urllib2 as urlmod_error
 
 import time
-from entropy.const import etpConst, const_isfileobj
+from entropy.const import etpConst, const_isfileobj, const_isnumber
 from entropy.output import TextInterface, darkblue, darkred, purple, blue, \
     brown, darkgreen, red, bold
 from entropy.exceptions import *
@@ -626,9 +626,289 @@ class MultipleUrlFetcher:
         self.__old_average = average
 
 
+class EntropyTransceiver(TextInterface):
+
+    _URI_HANDLERS = []
+
+    """
+    Base class for Entropy transceivers. This provides a common API across
+    all the available URI handlers.
+
+    # FIXME: allow to provide other OutputInterfaces
+
+    How to use this class:
+      Let's consider that we have a valid EntropyUriHandler for ftp:// protocol
+      already installed via "add_uri_handler".
+
+      >> txc = EntropyTransceiver("ftp://myuser:mypwd@myhost")
+      >> txc.set_speed_limit(150) # set speed limit to 150kb/sec
+      >> handler = txc.swallow()
+      >> handler.download("ftp://myuser:mypwd@myhost/myfile.txt", "/tmp")
+         # download 
+
+    """
+
+    @staticmethod
+    def add_uri_handler(entropy_uri_handler_class):
+        """
+        Add custom URI handler to EntropyTransceiver class.
+
+        @param entropy_uri_handler_class: EntropyUriHandler based class
+        @type entropy_uri_handler_class; EntropyUriHandler instance
+        """
+        if not issubclass(entropy_uri_handler_class, EntropyUriHandler):
+            raise AttributeError("EntropyUriHandler based class expected")
+        EntropyTransceiver._URI_HANDLERS.append(entropy_uri_handler_class)
+
+    @staticmethod
+    def remove_uri_handler(entropy_uri_handler_class):
+        """
+        Remove custom URI handler to EntropyTransceiver class.
+
+        @param entropy_uri_handler_class: EntropyUriHandler based instance
+        @type entropy_uri_handler_class; EntropyUriHandler instance
+        @raise ValueError: if provided EntropyUriHandler is not in storage.
+        """
+        if not issubclass(entropy_uri_handler_class, EntropyUriHandler):
+            raise AttributeError("EntropyUriHandler based class expected")
+        EntropyTransceiver._URI_HANDLERS.remove(entropy_uri_handler_class)
+
+    @staticmethod
+    def get_uri_handlers():
+        """
+        Return a copy of the internal list of URI handler instances.
+
+        @return: URI handlers instances list
+        @rtype: list
+        """
+        return EntropyTransceiver._URI_HANDLERS[:]
+
+    def __init__(self, uri):
+        """
+        EntropyTransceiver constructor, just pass the friggin URI(tm).
+
+        @param uri: URI to handle
+        @type uri: string
+        """
+        self._uri = uri
+        self._speed_limit = 0
+        self._verbose = False
+
+    def set_speed_limit(self, speed_limit):
+        """
+        Set download/upload speed limit in kb/sec form.
+        Zero value will be considered as "disable speed limiter".
+
+        @param speed_limit: speed limit in kb/sec form.
+        @type speed_limit: int
+        @raise AttributeError: if speed_limit is not an integer
+        """
+        if not const_isnumber(speed_limit):
+            raise AttributeError("expected a valid number")
+        self._speed_limit = speed_limit
+
+    def set_verbosity(self, verbosity):
+        """
+        Set transceiver verbosity.
+
+        @param verbosity: verbosity value
+        @type verbosity: bool
+        """
+        if not isinstance(verbosity, bool):
+            raise AttributeError("expected a valid bool")
+        self._verbose = verbosity
+
+    def swallow(self):
+        """
+        Given the URI at the constructor, this method returns the first valid
+        URI handler instance found that can be used to do required action.
+
+        @raise entropy.exceptions.UriHandlerNotFound: when URI handler for given
+            URI is not available.
+        """
+        handlers = EntropyTransceiver.get_uri_handlers()
+        for handler in handlers:
+            if handler.approve_uri(self._uri):
+                return handler(self._uri)
+
+        raise UriHandlerNotFound(
+            "no URI handler available for %s" % (self._uri,))
+
+
+class EntropyUriHandler(object):
+    """
+    Base class for EntropyTransceiver URI handler interfaces. This provides
+    a common API for implementing custom URI handlers.
+
+    To add your URI handler to EntropyTransceiver, do the following:
+    >>> EntropyTransceiver.add_uri_handler(my_entropy_transceiver_based_instance)
+    "add_uri_handler" is a EntropyTransceiver static method.
+    """
+    def __init__(self, uri):
+        """
+        EntropyUriHandler constructor.
+
+        @param uri: URI to handle
+        @type uri: string
+        """
+        self._uri = uri
+        self._verbose = False
+        self._silent = False
+
+    @staticmethod
+    def approve_uri(uri):
+        """
+        Approve given URI by returning True or False depending if this
+        class is able to handle it.
+
+        @param uri: URI to handle
+        @type uri: string
+        @return: True, if URI can be handled by this class
+        @rtype: bool
+        """
+        raise NotImplementedError()
+
+    def get_uri(self):
+        """
+        Return copy of previously stored URI.
+
+        @return: stored URI
+        @rtype: string
+        """
+        return self._uri[:]
+
+    def set_speed_limit(self, speed_limit):
+        """
+        Set download/upload speed limit in kb/sec form.
+
+        @param speed_limit: speed limit in kb/sec form.
+        @type speed_limit: int
+        """
+        raise NotImplementedError()
+
+    def set_silent(self, silent):
+        """
+        Disable transceiver verbosity.
+
+        @param verbosity: verbosity value
+        @type verbosity: bool
+        """
+        self._silent = silent
+
+    def set_verbosity(self, verbosity):
+        """
+        Set transceiver verbosity.
+
+        @param verbosity: verbosity value
+        @type verbosity: bool
+        """
+        self._verbose = verbosity
+
+    def download(self, uri, save_path):
+        """
+        Download URI and save it to save_path.
+
+        @param uri: URI to handle
+        @type uri: string
+        @param save_path: complete path where to store file from uri.
+            If directory doesn't exist, it will be created with default
+            Entropy permissions.
+        @type save_path: string
+        """
+        raise NotImplementedError()
+
+    def upload(self, load_path, uri):
+        """
+        Upload URI from load_path location to uri.
+
+        @param load_path: URI to handle
+        @type load_path: string
+        @param uri: URI to handle
+        @type uri: string
+        """
+        raise NotImplementedError()
+
+    def rename(self, uri_old, uri_new):
+        """
+        Rename URI old to URI new.
+
+        @param uri_old: URI to handle
+        @type uri_old: string
+        @param uri_new: URI to create
+        @type uri_new: string
+        """
+        raise NotImplementedError()
+
+    def get_md5(self, uri):
+        """
+        Return MD5 checksum of file at URI.
+
+        @param uri: URI to handle
+        @type uri: string
+        @return: MD5 checksum in hexdigest form
+        @rtype: string
+        """
+        raise NotImplementedError()
+
+    def list_content(self, uri):
+        """
+        List content of directory referenced at URI.
+
+        @param uri: URI to handle
+        @type uri: string
+        @return: content
+        @rtype: list
+        """
+        raise NotImplementedError()
+
+    def list_content_metadata(self, uri):
+        """
+        List content of directory referenced at URI with metadata like
+        permissions, owner, size.
+
+        @param uri: URI to handle
+        @type uri: string
+        @return: content
+        @rtype: list
+        """
+        raise NotImplementedError()
+
+    def is_uri_available(self, uri):
+        """
+        Given a URI (which can point to dir or file), determine whether it's
+        available or not.
+
+        @param uri: URI to handle
+        @type uri: string
+        @return: availability
+        @rtype: bool
+        """
+        raise NotImplementedError()
+
+    def makedirs(self, uri):
+        """
+        Given a URI, recursively create all the missing directories.
+
+        @param uri: URI to handle
+        @type uri: string
+        """
+        raise NotImplementedError()
+
+    def keep_alive(self):
+        """
+        Send a keep-alive ping to handler.
+        """
+        raise NotImplementedError()
+
+    def close(self):
+        """
+        Called when requesting to close connection completely.
+        """
+        raise NotImplementedError()
+
+
 class FtpInterface:
 
-    # this must be run before calling the other functions
     def __init__(self, ftpuri, OutputInterface, verbose = True,
         speed_limit = None):
 
@@ -748,16 +1028,16 @@ class FtpInterface:
             )
         self.set_cwd(self.__currentdir)
 
-    def get_host(self):
+    def _get_host(self):
         return self.__ftphost
 
-    def get_port(self):
+    def _get_port(self):
         return self.__ftpport
 
-    def get_dir(self):
+    def _get_dir(self):
         return self.__ftpdir
 
-    def get_cwd(self):
+    def _get_cwd(self):
         pwd = self.__ftpconn.pwd()
         return pwd
 
@@ -780,23 +1060,24 @@ class FtpInterface:
             self.__ftpconn.cwd(mydir)
         except self.ftplib.error_perm as e:
             if e[0][:3] == '550' and dodir:
-                self.recursive_mkdir(mydir)
+                self._recursive_mkdir(mydir)
                 self.__ftpconn.cwd(mydir)
             else:
                 raise
         self.__currentdir = self.get_cwd()
 
-    def set_pasv(self, bool):
+    def _set_pasv(self, bool):
         self.__ftpconn.set_pasv(bool)
 
-    def set_chmod(self, chmodvalue, file):
-        return self.__ftpconn.voidcmd("SITE CHMOD "+str(chmodvalue)+" "+str(file))
+    def _set_chmod(self, chmodvalue, filename):
+        return self.__ftpconn.voidcmd("SITE CHMOD " + str(chmodvalue) + " " + \
+            str(filename))
 
-    def get_file_mtime(self, path):
-        rc = self.__ftpconn.sendcmd("mdtm "+path)
+    def _get_file_mtime(self, path):
+        rc = self.__ftpconn.sendcmd("mdtm " + path)
         return rc.split()[-1]
 
-    def send_cmd(self, cmd):
+    def _send_cmd(self, cmd):
         return self.__ftpconn.sendcmd(cmd)
 
     def list_dir(self):
@@ -821,7 +1102,7 @@ class FtpInterface:
             return True
         return False
 
-    def recursive_mkdir(self, mypath):
+    def _recursive_mkdir(self, mypath):
         mydirs = [x for x in mypath.split("/") if x]
         mycurpath = ""
         for mydir in mydirs:
@@ -928,7 +1209,7 @@ class FtpInterface:
 
                 self.__filekbcount = 0
                 # get the file size
-                self.__filesize = self.get_file_size_compat(file_path)
+                self.__filesize = self._get_file_size_compat(file_path)
                 if (self.__filesize):
                     self.__filesize = round(float(int(self.__filesize))/1024, 1)
                     if (self.__filesize == 0):
@@ -979,12 +1260,13 @@ class FtpInterface:
         except (IndexError, TypeError,): # wrong output
             return None
 
-    def get_file_size(self, filename):
+    def _get_file_size(self, filename):
         return self.__ftpconn.size(filename)
 
-    def get_file_size_compat(self, filename):
+    def _get_file_size_compat(self, filename):
         try:
-            data = [x.split() for x in self.__ftpconn.sendcmd("stat %s" % (filename,)).split("\n")]
+            sc = self.__ftpconn.sendcmd
+            data = [x.split() for x in sc("stat %s" % (filename,)).split("\n")]
         except self.ftplib.error_temp:
             return ""
         for item in data:
