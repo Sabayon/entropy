@@ -389,7 +389,8 @@ class EntropyRepositoryPluginStore(EntropyPluginStore):
         @raise KeyError: if plugin_id is not available
         """
         plugins = self.get_plugins()
-        plugins[plugin_id][key] = value
+        meta = plugins[plugin_id].get_metadata()
+        meta[key] = value
 
 
 class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
