@@ -506,7 +506,8 @@ class CalculatorsMixin:
         if self.xcache:
             c_data = sorted(dependencies)
             client_checksum = self.clientDbconn.checksum()
-            c_hash = hash("%s|%s|%s" % (c_data, deep_deps, client_checksum,))
+            c_hash = hash("%s|%s|%s|%s" % (c_data, deep_deps,
+                client_checksum, relaxed_deps,))
             c_hash = "%s%s" % (etpCache['filter_satisfied_deps'], c_hash,)
             cached = self.Cacher.pop(c_hash)
             if cached is not None:
@@ -1421,10 +1422,11 @@ class CalculatorsMixin:
 
         c_hash = "%s%s" % (
             etpCache['dep_tree'],
-            hash("%s|%s|%s|%s|%s" % (
+            hash("%s|%s|%s|%s|%s|%s" % (
                 hash(frozenset(sorted(matched_atoms))),
                 empty_deps,
                 deep_deps,
+                relaxed_deps,
                 self.clientDbconn.checksum(),
                 # needed when users do bogus things like editing config files
                 # manually (branch setting)
