@@ -1089,7 +1089,8 @@ class FtpInterface:
         def cb(x):
             if x == filename: xx.append(x)
         self.__ftpconn.retrlines('NLST', cb)
-        if xx: return True
+        if xx:
+            return True
         return False
 
     def delete_file(self, file):
@@ -1135,7 +1136,6 @@ class FtpInterface:
                 self._update_speed()
                 self.updateProgress()
                 self._speed_limit_loop()
-            conn.close()
 
             # that's another workaround
             #return "226"
