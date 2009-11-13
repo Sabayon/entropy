@@ -11,6 +11,7 @@
 """
 import os
 import sys
+import time
 
 if sys.hexversion >= 0x3000000:
     import urllib.request as urlmod
@@ -19,14 +20,18 @@ else:
     import urllib2 as urlmod
     import urllib2 as urlmod_error
 
-import time
+from entropy.tools import extract_ftp_host_from_uri, \
+    print_traceback, get_file_size, convert_seconds_to_fancy_output, \
+    bytes_into_human
 from entropy.const import etpConst, const_isfileobj, const_isnumber
 from entropy.output import TextInterface, darkblue, darkred, purple, blue, \
     brown, darkgreen, red, bold
-from entropy.exceptions import *
+
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 from entropy.core.settings.base import SystemSettings
+
+from entropy.exceptions import *
 
 class UrlFetcher:
 
@@ -1013,6 +1018,510 @@ class EntropyUriHandler(TextInterface):
         """
         raise NotImplementedError()
 
+
+class EntropyFtpUriHandler(EntropyUriHandler):
+
+    """
+    EntropyUriHandler based FTP transceiver plugin.
+    """
+
+    _DEFAULT_TIMEOUT = 60
+
+    @staticmethod
+    def approve_uri(uri):
+        if uri.startswith("ftp://"):
+            return True
+        return False
+
+    def __init__(self, uri):
+        EntropyUriHandler.__init__(self, uri)
+
+        import socket, ftplib
+        from entropy.tools import extract_ftp_data
+        self.socket, self.ftplib = socket, ftplib
+        self.__connected = False
+        self.__ftpconn = None
+        self.__currentdir = '.'
+        self.__ftphost = extract_ftp_host_from_uri(self._uri)
+        self.__ftpuser, self.__ftppassword, self.__ftpport, self.__ftpdir = \
+            extract_ftp_data(self._uri)
+
+        self._init_vars()
+
+        # as documentation suggests
+        # test out connection first
+        self._connect()
+        self._disconnect()
+
+    def __connect_if_not(self):
+        """
+        Handy internal method.
+        """
+        if not self.__connected:
+            self._connect()
+        try:
+            self.keep_alive()
+        except ConnectionError:
+            self._connect()
+
+    def _connect(self):
+        """
+        Connect to FTP host.
+        """
+        timeout = self._timeout
+        if timeout is None:
+            # default timeout set to 60 seconds
+            timeout = EntropyFtpUriHandler._DEFAULT_TIMEOUT
+
+        count = 10
+        while True:
+            count -= 1
+            try:
+                self.__ftpconn = self.ftplib.FTP()
+                self.__ftpconn.connect(self.__ftphost, self.__ftpport, timeout)
+                break
+            except (self.socket.gaierror,) as e:
+                raise ConnectionError('ConnectionError: %s' % (e,))
+            except (self.socket.error,) as e:
+                if not count:
+                    raise ConnectionError('ConnectionError: %s' % (e,))
+            except:
+                if not count:
+                    raise
+
+        if self._verbose:
+            mytxt = _("connecting with user")
+            self.updateProgress(
+                "[ftp:%s] %s: %s" % (
+                    darkgreen(self.__ftphost), mytxt, blue(self.__ftpuser),
+                ),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
+        try:
+            self.__ftpconn.login(self.__ftpuser, self.__ftppassword)
+        except self.ftplib.error_perm as e:
+            raise ConnectionError('ConnectionError: %s' % (e,))
+
+        if self._verbose:
+            mytxt = _("switching to")
+            self.updateProgress(
+                "[ftp:%s] %s: %s" % (
+                    darkgreen(self.__ftphost), mytxt, blue(self.__ftpdir),
+                ),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
+        # create dirs if they don't exist
+        self._set_cwd(self.__ftpdir, dodir = True)
+        self.__connected = True
+
+    def _disconnect(self):
+        if self.__ftpconn is not None:
+            # try to disconnect
+            try:
+                self.__ftpconn.quit()
+            except (EOFError, self.socket, self.socket.timeout,
+                self.ftplib.error_reply,):
+                # AttributeError is raised when socket gets trashed
+                # EOFError is raised when the connection breaks
+                # timeout, who cares!
+                pass
+            self.__ftpconn = None
+        self.__connected = False
+
+    def _reconnect(self):
+        self._disconnect()
+        self._connect()
+
+    def _init_vars(self):
+        self.__oldprogress = 0.0
+        self.__filesize = 0
+        self.__filekbcount = 0
+        self.__transfersize = 0
+        self.__startingposition = 0
+        self.__elapsed = 0.0
+        self.__time_remaining_secs = 0
+        self.__time_remaining = "(%s)" % (_("infinite"),)
+        self.__starttime = time.time()
+
+    def _get_cwd(self):
+        pwd = self.__ftpconn.pwd()
+        return pwd
+
+    def _set_cwd(self, mydir, dodir = False):
+        try:
+            return self.__set_cwd(mydir, dodir)
+        except self.ftplib.error_perm as e:
+            raise FtpError('FtpError: %s' % (e,))
+
+    def __set_cwd(self, mydir, dodir = False):
+        if self._verbose:
+            mytxt = _("switching to")
+            self.updateProgress(
+                "[ftp:%s] %s: %s" % (darkgreen(self.__ftphost),
+                    mytxt, blue(mydir),),
+                importance = 1,
+                type = "info",
+                header = darkgreen(" * ")
+            )
+        try:
+            self.__ftpconn.cwd(mydir)
+        except self.ftplib.error_perm as e:
+            if e[0][:3] == '550' and dodir:
+                self.makedirs(mydir)
+                self.__ftpconn.cwd(mydir)
+            else:
+                raise
+        self.__currentdir = self._get_cwd()
+
+    def _set_pasv(self, pasv):
+        self.__ftpconn.set_pasv(pasv)
+
+    def _set_chmod(self, chmodvalue, filename):
+        return self.__ftpconn.voidcmd("SITE CHMOD " + str(chmodvalue) + " " + \
+            str(filename))
+
+    def _get_file_mtime(self, path):
+        rc = self.__ftpconn.sendcmd("mdtm " + path)
+        return rc.split()[-1]
+
+    def _send_cmd(self, cmd):
+        return self.__ftpconn.sendcmd(cmd)
+
+    def _update_speed(self):
+        current_time = time.time()
+        self.__elapsed = current_time - self.__starttime
+        # we have the diff size
+        pos_diff = self.__transfersize - self.__startingposition
+        self.__datatransfer = pos_diff / self.__elapsed
+        if self.__datatransfer < 0:
+            self.__datatransfer = 0
+        try:
+            round_fsize = int(round(self.__filesize*1024, 0))
+            round_rsize = int(round(self.__transfersize, 0))
+            self.__time_remaining_secs = int(round((round_fsize - \
+                round_rsize)/self.__datatransfer, 0))
+            self.__time_remaining = \
+                convert_seconds_to_fancy_output(self.__time_remaining_secs)
+        except (ValueError, TypeError,):
+            self.__time_remaining = "(%s)" % (_("infinite"),)
+
+    def _speed_limit_loop(self):
+        if self._speed_limit:
+            while self.__datatransfer > self._speed_limit * 1024:
+                time.sleep(0.1)
+                self._update_speed()
+                self._update_progress()
+
+    def _commit_buffer_update(self, buf_len):
+        # get the buffer size
+        self.__filekbcount += float(buf_len)/1024
+        self.__transfersize += buf_len
+
+    def _update_progress(self):
+
+        # create percentage
+        upload_percent = 100.0
+        if self.__filesize >= 1:
+            kbcount_round = round(self.__filekbcount, 1)
+            upload_percent = round((kbcount_round / self.__filesize) * 100, 1)
+
+        currentprogress = upload_percent
+        upload_size = round(self.__filekbcount, 1)
+
+        if (currentprogress > self.__oldprogress + 0.5) and \
+            (upload_percent < 100.1) and \
+            (upload_size <= self.__filesize):
+
+            upload_percent = str(upload_percent)+"%"
+            # create text
+            mytxt = _("Transfer status")
+            current_txt = brown("    <-> %s: " % (mytxt,)) + \
+                darkgreen(str(upload_size)) + "/" + \
+                red(str(self.__filesize)) + " kB " + \
+                brown("[") + str(upload_percent) + brown("]") + \
+                " " + self.__time_remaining + " " + \
+                bytes_into_human(self.__datatransfer) + \
+                "/" + _("sec")
+
+            self.updateProgress(current_txt, back = True)
+            self.__oldprogress = currentprogress
+
+    def _get_file_size(self, filename):
+        return self.__ftpconn.size(filename)
+
+    def _get_file_size_compat(self, filename):
+        try:
+            sc = self.__ftpconn.sendcmd
+            data = [x.split() for x in sc("stat %s" % (filename,)).split("\n")]
+        except self.ftplib.error_temp:
+            return ""
+        for item in data:
+            if item[-1] == filename:
+                return item[4]
+        return ""
+
+    def _mkdir(self, directory):
+        return self.__ftpconn.mkd(directory)
+
+    def download(self, remote_path, save_path):
+
+        self.__connect_if_not()
+        path = os.path.join(self.__ftpdir, remote_path)
+        tmp_save_path = save_path + ".dtmp"
+
+        def writer(buf):
+            # writing file buffer
+            f.write(buf)
+            self._commit_buffer_update(len(buf))
+            self._update_speed()
+            self._update_progress()
+            self._speed_limit_loop()
+
+        tries = 10
+        while tries:
+            tries -= 1
+
+            self._init_vars()
+            try:
+
+                self.__filekbcount = 0
+                # get the file size
+                self.__filesize = self._get_file_size_compat(path)
+                if (self.__filesize):
+                    self.__filesize = round(float(int(self.__filesize))/1024, 1)
+                    if (self.__filesize == 0):
+                        self.__filesize = 1
+                elif not self.is_path_available(path):
+                    return False
+                else:
+                    self.__filesize = 0
+
+                with open(tmp_save_path, "wb") as f:
+                    rc = self.__ftpconn.retrbinary('RETR ' + path, writer, 1024)
+                    f.flush()
+
+                done = rc.find("226") != -1
+                if done:
+                    # download complete, atomic mv
+                    os.rename(tmp_save_path, save_path)
+
+                return done
+
+            except Exception as e: # connection reset by peer
+
+                print_traceback()
+                mytxt = red("%s: %s, %s... #%s") % (
+                    _("Download issue"),
+                    e,
+                    _("retrying"),
+                    tries+1,
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = "  "
+                    )
+                self._reconnect() # reconnect
+
+    def __ftp_advanced_stor(self, cmd, fp):
+        """
+        this function also supports callback, because storbinary doesn't
+        """
+        self.__ftpconn.voidcmd('TYPE I')
+        conn = self.__ftpconn.transfercmd(cmd)
+        while True:
+            buf = fp.readline()
+            if not buf:
+                break
+            conn.sendall(buf)
+            self._commit_buffer_update(len(buf))
+            self._update_speed()
+            self._update_progress()
+            self._speed_limit_loop()
+
+        # that's another workaround
+        #return "226"
+        try:
+            rc = self.__ftpconn.voidresp()
+        except:
+            self._reconnect()
+            return "226"
+
+        return rc
+
+    def upload(self, load_path, remote_path):
+
+        self.__connect_if_not()
+        path = os.path.join(self.__ftpdir, remote_path)
+
+        tmp_path = path + ".dtmp"
+        tries = 0
+
+        while tries < 10:
+
+            tries += 1
+            self._init_vars()
+
+            try:
+
+                with open(load_path, "r") as f:
+
+                    file_size = get_file_size(load_path)
+                    self.__filesize = round(float(file_size)/ 1024, 1)
+                    self.__filekbcount = 0
+
+                    rc = self.__ftp_advanced_stor("STOR " + tmp_path, f)
+
+                    # now we can rename the file with its original name
+                    self.rename(tmp_path, path)
+
+                done = rc.find("226") != -1
+                return done
+
+            except Exception as e: # connection reset by peer
+
+                print_traceback()
+                mytxt = red("%s: %s, %s... #%s") % (
+                    _("Upload issue"),
+                    e,
+                    _("retrying"),
+                    tries+1,
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = "  "
+                    )
+                self._reconnect() # reconnect
+                self.delete(tmp_path)
+                self.delete(path)
+
+    def rename(self, remote_path_old, remote_path_new):
+
+        self.__connect_if_not()
+
+        old = os.path.join(self.__ftpdir, remote_path_old)
+        new = os.path.join(self.__ftpdir, remote_path_new)
+        rc = self.__ftpconn.rename(old, new)
+        done = rc.find("250") != -1
+        return done
+
+    def delete(self, remote_path):
+
+        self.__connect_if_not()
+        path = os.path.join(self.__ftpdir, remote_path)
+
+        done = False
+        try:
+            rc = self.__ftpconn.delete(path)
+            if rc.startswith("250"):
+                done = True
+        except self.ftplib.error_perm as e:
+            if e[0][:3] == '550':
+                done = True
+            # otherwise not found
+
+        return done
+
+    def get_md5(self, remote_path):
+        # PROFTPD with mod_md5 supports it!
+        self.__connect_if_not()
+        path = os.path.join(self.__ftpdir, remote_path)
+
+        try:
+            rc_data = self.__ftpconn.sendcmd("SITE MD5 %s" % (path,))
+        except self.ftplib.error_perm:
+            return None # not supported
+
+        try:
+            return rc_data.split("\n")[0].split("\t")[0].split("-")[1]
+        except (IndexError, TypeError,): # wrong output
+            return None
+
+    def list_content(self, remote_path):
+        self.__connect_if_not()
+        path = os.path.join(self.__ftpdir, remote_path)
+        return [os.path.basename(x) for x in self.__ftpconn.nlst(path)]
+
+    def list_content_metadata(self, remote_path):
+        self.__connect_if_not()
+        path = os.path.join(self.__ftpdir, remote_path)
+
+        mybuffer = []
+        def bufferizer(buf):
+            mybuffer.append(buf)
+        self.__ftpconn.dir(path, bufferizer)
+
+        data = []
+        for item in mybuffer:
+            item = item.split()
+            name, size, owner, group, perms = item[8], item[4], item[2], \
+                item[3], item[0]
+            data.append((name, size, owner, group, perms,))
+
+        return data
+
+    def _is_path_available(self, full_path):
+
+        path, fn = os.path.split(full_path)
+        content = []
+        def cb(x):
+            y = os.path.basename(x)
+            if y == fn:
+                content.append(y)
+
+        self.__ftpconn.retrlines('NLST %s' % (path,), cb)
+
+        if content:
+            return True
+        return False
+
+    def is_path_available(self, remote_path):
+        self.__connect_if_not()
+        path = os.path.join(self.__ftpdir, remote_path)
+        return self._is_path_available(path)
+
+    def makedirs(self, remote_path):
+        self.__connect_if_not()
+        path = os.path.join(self.__ftpdir, remote_path)
+        mydirs = [x for x in path.split("/") if x]
+
+        mycurpath = ""
+        for mydir in mydirs:
+            mycurpath = os.path.join(mycurpath, mydir)
+            if not self._is_path_available(mycurpath):
+                try:
+                    self._mkdir(mycurpath)
+                except self.ftplib.error_perm as e:
+                    if e[0].lower().find("permission denied") != -1:
+                        raise
+                    elif e[0][:3] != '550':
+                        raise
+
+    def keep_alive(self):
+        """
+        Send a keep-alive ping to handler.
+        """
+        if not self.__connected:
+            raise ConnectionError("keep_alive when not connected")
+        try:
+            self.__ftpconn.sendcmd("NOOP")
+        except (self.ftplib.error_temp, self.ftplib.error_reply,):
+            raise ConnectionError("cannot execute keep_alive")
+
+    def close(self):
+        """ just call our disconnect method """
+        self._disconnect()
+
+
+# register FTP URI handler
+EntropyTransceiver.add_uri_handler(EntropyFtpUriHandler)
 
 class FtpInterface:
 
