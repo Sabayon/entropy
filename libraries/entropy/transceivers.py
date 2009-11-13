@@ -693,6 +693,24 @@ class EntropyTransceiver(TextInterface):
         self._uri = uri
         self._speed_limit = 0
         self._verbose = False
+        self._timeout = None
+        self._silent = None
+        self._output_interface = None
+
+    def set_output_interface(self, output_interface):
+        """
+        Provide alternative Entropy output interface (must be based on
+        entropy.output.TextInterface)
+
+        @param output_interface: new entropy.output.TextInterface instance to
+            use
+        @type output_interface: entropy.output.TextInterface based instance
+        @raise AttributeError: if argument passed is not correct
+        """
+        if not isinstance(output_interface, TextInterface):
+            raise AttributeError(
+                "expected a valid TextInterface based instance")
+        self._output_interface = output_interface
 
     def set_speed_limit(self, speed_limit):
         """
@@ -706,6 +724,26 @@ class EntropyTransceiver(TextInterface):
         if not const_isnumber(speed_limit):
             raise AttributeError("expected a valid number")
         self._speed_limit = speed_limit
+
+    def set_timeout(self, timeout):
+        """
+        Set transceiver tx/rx timeout value in seconds.
+
+        @param timeout: timeout in seconds
+        @type timeout: int
+        """
+        if not const_isnumber(timeout):
+            raise AttributeError("not a number")
+        self._timeout = timeout
+
+    def set_silent(self, silent):
+        """
+        Disable transceivers verbosity.
+
+        @param verbosity: verbosity value
+        @type verbosity: bool
+        """
+        self._silent = silent
 
     def set_verbosity(self, verbosity):
         """
@@ -729,13 +767,23 @@ class EntropyTransceiver(TextInterface):
         handlers = EntropyTransceiver.get_uri_handlers()
         for handler in handlers:
             if handler.approve_uri(self._uri):
-                return handler(self._uri)
+                handler_instance = handler(self._uri)
+                if self._output_interface is not None:
+                    handler_instance.set_output_interface(
+                        self._output_interface)
+                if const_isnumber(self._speed_limit):
+                    handler_instance.set_speed_limit(self._speed_limit)
+                handler_instance.set_verbosity(self._verbose)
+                handler_instance.set_silent(self._silent)
+                if const_isnumber(self._timeout):
+                    handler_instance.set_timeout(self._timeout)
+                return handler_instance
 
         raise UriHandlerNotFound(
             "no URI handler available for %s" % (self._uri,))
 
 
-class EntropyUriHandler(object):
+class EntropyUriHandler(TextInterface):
     """
     Base class for EntropyTransceiver URI handler interfaces. This provides
     a common API for implementing custom URI handlers.
@@ -747,13 +795,18 @@ class EntropyUriHandler(object):
     def __init__(self, uri):
         """
         EntropyUriHandler constructor.
+        When constructor is called, instance should perform a connection and
+        permissions check and raise entropy.exceptions.ConnectionError in case
+        of issues.
 
         @param uri: URI to handle
         @type uri: string
         """
         self._uri = uri
+        self._speed_limit = 0
         self._verbose = False
         self._silent = False
+        self._timeout = None
 
     @staticmethod
     def approve_uri(uri):
@@ -777,6 +830,22 @@ class EntropyUriHandler(object):
         """
         return self._uri[:]
 
+    def set_output_interface(self, output_interface):
+        """
+        Provide alternative Entropy output interface (must be based on
+        entropy.output.TextInterface)
+
+        @param output_interface: new entropy.output.TextInterface instance to
+            use
+        @type output_interface: entropy.output.TextInterface based instance
+        @raise AttributeError: if argument passed is not correct
+        """
+        if not isinstance(output_interface, TextInterface):
+            raise AttributeError(
+                "expected a valid TextInterface based instance")
+        self.updateProgress = output_interface.updateProgress
+        self.askQuestion = output_interface.askQuestion
+
     def set_speed_limit(self, speed_limit):
         """
         Set download/upload speed limit in kb/sec form.
@@ -784,7 +853,20 @@ class EntropyUriHandler(object):
         @param speed_limit: speed limit in kb/sec form.
         @type speed_limit: int
         """
-        raise NotImplementedError()
+        if not const_isnumber(speed_limit):
+            raise AttributeError("not a number")
+        self._speed_limit = speed_limit
+
+    def set_timeout(self, timeout):
+        """
+        Set transceiver tx/rx timeout value in seconds.
+
+        @param timeout: timeout in seconds
+        @type timeout: int
+        """
+        if not const_isnumber(timeout):
+            raise AttributeError("not a number")
+        self._timeout = timeout
 
     def set_silent(self, silent):
         """
@@ -804,99 +886,124 @@ class EntropyUriHandler(object):
         """
         self._verbose = verbosity
 
-    def download(self, uri, save_path):
+    def download(self, remote_path, save_path):
         """
         Download URI and save it to save_path.
 
-        @param uri: URI to handle
-        @type uri: string
+        @param remote_path: remote path to handle
+        @type remote_path: string
         @param save_path: complete path where to store file from uri.
             If directory doesn't exist, it will be created with default
             Entropy permissions.
         @type save_path: string
+        @return: execution status, True if done
+        @rtype: bool
+        @raise ConnectionError: if problems happen
         """
         raise NotImplementedError()
 
-    def upload(self, load_path, uri):
+    def upload(self, load_path, remote_path):
         """
         Upload URI from load_path location to uri.
 
-        @param load_path: URI to handle
+        @param load_path: remote path to handle
         @type load_path: string
-        @param uri: URI to handle
-        @type uri: string
+        @param remote_path: remote path to handle ("directory"/"file name" !)
+        @type remote_path: string
+        @return: execution status, True if done
+        @rtype: bool
+        @raise ConnectionError: if problems happen
         """
         raise NotImplementedError()
 
-    def rename(self, uri_old, uri_new):
+    def rename(self, remote_path_old, remote_path_new):
         """
         Rename URI old to URI new.
 
-        @param uri_old: URI to handle
-        @type uri_old: string
-        @param uri_new: URI to create
-        @type uri_new: string
+        @param remote_path_old: remote path to handle
+        @type remote_path_old: string
+        @param remote_path_new: remote path to create
+        @type remote_path_new: string
+        @return: execution status, True if done
+        @rtype: bool
+        @raise ConnectionError: if problems happen
         """
         raise NotImplementedError()
 
-    def get_md5(self, uri):
+    def delete(self, remote_path):
+        """
+        Remove the remote path (must be a file).
+
+        @param remote_path_old: remote path to remove (only file allowed)
+        @type remote_path_old: string
+        @return: True, if operation went successful
+        @rtype: bool
+        @return: execution status, True if done
+        @rtype: bool
+        @raise ConnectionError: if problems happen
+        """
+        raise NotImplementedError()
+
+    def get_md5(self, remote_path):
         """
         Return MD5 checksum of file at URI.
 
-        @param uri: URI to handle
-        @type uri: string
+        @param remote_path: remote path to handle
+        @type remote_path: string
         @return: MD5 checksum in hexdigest form
-        @rtype: string
+        @rtype: string or None (if not supported)
         """
         raise NotImplementedError()
 
-    def list_content(self, uri):
+    def list_content(self, remote_path):
         """
         List content of directory referenced at URI.
 
-        @param uri: URI to handle
-        @type uri: string
+        @param remote_path: remote path to handle
+        @type remote_path: string
         @return: content
         @rtype: list
         """
         raise NotImplementedError()
 
-    def list_content_metadata(self, uri):
+    def list_content_metadata(self, remote_path):
         """
-        List content of directory referenced at URI with metadata like
-        permissions, owner, size.
+        List content of directory referenced at URI with metadata in this form:
+        [(name, size, owner, group, permissions<drwxr-xr-x>,), ...]
+        permissions, owner, group, size, name.
 
-        @param uri: URI to handle
-        @type uri: string
+        @param remote_path: remote path to handle
+        @type remote_path: string
         @return: content
         @rtype: list
         """
         raise NotImplementedError()
 
-    def is_uri_available(self, uri):
+    def is_path_available(self, remote_path):
         """
-        Given a URI (which can point to dir or file), determine whether it's
-        available or not.
+        Given a remote path (which can point to dir or file), determine whether
+        it's available or not.
 
-        @param uri: URI to handle
-        @type uri: string
+        @param remote_path: URI to handle
+        @type remote_path: string
         @return: availability
         @rtype: bool
         """
         raise NotImplementedError()
 
-    def makedirs(self, uri):
+    def makedirs(self, remote_path):
         """
-        Given a URI, recursively create all the missing directories.
+        Given a remote path, recursively create all the missing directories.
 
-        @param uri: URI to handle
-        @type uri: string
+        @param remote_path: URI to handle
+        @type remote_path: string
         """
         raise NotImplementedError()
 
     def keep_alive(self):
         """
         Send a keep-alive ping to handler.
+        @raise ConnectionError: if problems happen
         """
         raise NotImplementedError()
 
