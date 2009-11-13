@@ -1065,7 +1065,7 @@ class FtpInterface:
                 self.__ftpconn.cwd(mydir)
             else:
                 raise
-        self.__currentdir = self.get_cwd()
+        self.__currentdir = self._get_cwd()
 
     def _set_pasv(self, bool):
         self.__ftpconn.set_pasv(bool)
