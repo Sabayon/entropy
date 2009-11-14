@@ -702,7 +702,8 @@ class FtpInterface:
         while 1:
             counter -= 1
             try:
-                self.__ftpconn = self.ftplib.FTP(self.__ftphost)
+                self.__ftpconn = self.ftplib.FTP()
+                self.__ftpconn.connect(self.__ftphost, self.__ftpport, 60)
                 break
             except:
                 if not counter:
