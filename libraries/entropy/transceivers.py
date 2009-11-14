@@ -1547,7 +1547,7 @@ class FtpInterface:
         self.__ftpuri = ftpuri
         self.__speed_limit = speed_limit
         self.__currentdir = '.'
-        self.__ftphost = self.entropyTools.extract_ftp_host_from_uri(self.__ftpuri)
+        self.__ftphost = extract_ftp_host_from_uri(self.__ftpuri)
         self.__ftpuser, self.__ftppassword, self.__ftpport, self.__ftpdir = \
             self.entropyTools.extract_ftp_data(ftpuri)
 
@@ -1616,7 +1616,8 @@ class FtpInterface:
         while True:
             counter -= 1
             try:
-                self.__ftpconn = self.ftplib.FTP(self.__ftphost)
+                self.__ftpconn = self.ftplib.FTP()
+                self.__ftpconn.connect(self.__ftphost, self.__ftpport)
                 break
             except:
                 if not counter:
