@@ -688,6 +688,46 @@ class EntropyTransceiver(TextInterface):
         """
         return EntropyTransceiver._URI_HANDLERS[:]
 
+    @staticmethod
+    def get_uri_name(uri):
+        """
+        Given an URI, extract and return the URI name (hostname).
+
+        @param uri: URI to handle
+        @type uri: string
+        @return: URI name
+        @rtype: string
+        @raise UriHandlerNotFound: if no URI handlers can deal with given URI
+            string
+        """
+        handlers = EntropyTransceiver.get_uri_handlers()
+        for handler in handlers:
+            if handler.approve_uri(uri):
+                return handler.get_uri_name(uri)
+
+        raise UriHandlerNotFound(
+            "no URI handler available for %s" % (uri,))
+
+    @staticmethod
+    def hide_sensible_data(uri):
+        """
+        Given an URI, hide sensible data from string and return it back.
+
+        @param uri: URI to handle
+        @type uri: string
+        @return: URI cleaned
+        @rtype: string
+        @raise UriHandlerNotFound: if no URI handlers can deal with given URI
+            string
+        """
+        handlers = EntropyTransceiver.get_uri_handlers()
+        for handler in handlers:
+            if handler.approve_uri(uri):
+                return handler.hide_sensible_data(uri)
+
+        raise UriHandlerNotFound(
+            "no URI handler available for %s" % (uri,))
+
     def __init__(self, uri):
         """
         EntropyTransceiver constructor, just pass the friggin URI(tm).
@@ -823,6 +863,31 @@ class EntropyUriHandler(TextInterface):
         @type uri: string
         @return: True, if URI can be handled by this class
         @rtype: bool
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def get_uri_name(uri):
+        """
+        Given a valid URI (meaning that implementation can handle the provided
+        URI), it extracts and returns the URI name (hostname).
+
+        @param uri: URI to handle
+        @type uri: string
+        @return: URI name
+        @rtype: string
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def hide_sensible_data(uri):
+        """
+        Given an URI, hide sensible data from string and return it back.
+
+        @param uri: URI to handle
+        @type uri: string
+        @return: URI cleaned
+        @rtype: string
         """
         raise NotImplementedError()
 
@@ -1032,6 +1097,25 @@ class EntropyFtpUriHandler(EntropyUriHandler):
         if uri.startswith("ftp://"):
             return True
         return False
+
+    @staticmethod
+    def get_uri_name(uri):
+        myuri = spliturl(uri)[1]
+        # remove username:pass@
+        myuri = myuri.split("@")[len(myuri.split("@"))-1]
+        return myuri
+
+    @staticmethod
+    def hide_sensible_data(uri):
+        ftppassword = uri.split("@")[:-1]
+        if not ftppassword:
+            return uri
+        ftppassword = '@'.join(ftppassword)
+        ftppassword = ftppassword.split(":")[-1]
+        if not ftppassword:
+            return uri
+        newuri = uri.replace(ftppassword, "xxxxxxxx")
+        return newuri
 
     def __init__(self, uri):
         EntropyUriHandler.__init__(self, uri)
