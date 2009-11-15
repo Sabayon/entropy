@@ -181,7 +181,7 @@ msgstr "scompattamento database compresso"
 
 #: ../../libraries/entropy/services/repository/interfaces.py:192
 msgid "unlocking and indexing database"
-msgstr "sbloccamento e indicizzazione database"
+msgstr "sbloccaggio e indicizzazione database"
 
 #: ../../libraries/entropy/services/repository/interfaces.py:193
 msgid "hash"
@@ -1101,7 +1101,7 @@ msgstr "ricerca file su mirror"
 #: ../../libraries/entropy/server/interfaces/mirrors.py:230
 #: ../../libraries/entropy/server/interfaces/mirrors.py:320
 msgid "unlocking"
-msgstr "sbloccamento"
+msgstr "sbloccaggio"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:232
 #: ../../libraries/entropy/server/interfaces/mirrors.py:322
@@ -1150,7 +1150,7 @@ msgstr "mirror sbloccato con successo"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:502
 msgid "unlock error"
-msgstr "errore sbloccamento"
+msgstr "errore sbloccaggio"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:504
 msgid "mirror not unlocked"
