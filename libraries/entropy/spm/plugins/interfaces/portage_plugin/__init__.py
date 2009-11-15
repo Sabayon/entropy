@@ -2095,11 +2095,13 @@ class PortagePlugin(SpmPlugin):
         lc_found = False
         msg = None
         lc_all_str = const_convert_to_rawstring("LC_ALL")
+        found_lang = None
         try:
             for line in bz_f.readlines():
                 if not line.startswith(lc_all_str):
                     continue
                 lc_found = True
+                found_lang = line.strip()
                 for lang in qa_rlangs:
                     if line.startswith(lang):
                         valid_lc_all = True
@@ -2109,7 +2111,7 @@ class PortagePlugin(SpmPlugin):
 
         env_rc = 0
         if lc_found and (not valid_lc_all):
-            msg = "LC_ALL not set to => %s" % (qa_langs,)
+            msg = "LC_ALL not set to => %s (but: %s)" % (qa_langs, found_lang,)
             env_rc = 1
         shutil.rmtree(tmp_path)
 
