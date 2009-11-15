@@ -28,7 +28,7 @@ from entropy.output import TextInterface, darkblue, darkred, purple, blue, \
     brown, darkgreen, red, bold
 
 from entropy.i18n import _
-from entropy.misc import ParallelTask
+from entropy.misc import ParallelTask, Lifo
 from entropy.core.settings.base import SystemSettings
 
 from entropy.exceptions import *
@@ -741,6 +741,24 @@ class EntropyTransceiver(TextInterface):
         self._timeout = None
         self._silent = None
         self._output_interface = None
+        self.__with_stack = Lifo()
+
+    def __enter__(self):
+        """
+        Support for "with" statement, this method will execute swallow() and
+        return a valid EntropyUriHandler instance.
+        """
+        handler = self.swallow()
+        self.__with_stack.push(handler)
+        return handler
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """
+        Support for "with" statement, this method will automagically close the
+        previously created EntropyUriHandler instance connection.
+        """
+        handler = self.__with_stack.pop() # if this fails, it's not a good sign
+        handler.close()
 
     def set_output_interface(self, output_interface):
         """
@@ -852,6 +870,20 @@ class EntropyUriHandler(TextInterface):
         self._verbose = False
         self._silent = False
         self._timeout = None
+
+    def __enter__(self):
+        """
+        Support for "with" statement, this will trigger UriHandler connection
+        setup.
+        """
+        raise NotImplementedError()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        """
+        Support for "with" statement, this will trigger UriHandler connection
+        hang up.
+        """
+        raise NotImplementedError()
 
     @staticmethod
     def approve_uri(uri):
@@ -1033,6 +1065,7 @@ class EntropyUriHandler(TextInterface):
         @type remote_path: string
         @return: content
         @rtype: list
+        @raise ValueError: if remote_path does not exist
         """
         raise NotImplementedError()
 
@@ -1046,6 +1079,7 @@ class EntropyUriHandler(TextInterface):
         @type remote_path: string
         @return: content
         @rtype: list
+        @raise ValueError: if remote_path does not exist
         """
         raise NotImplementedError()
 
@@ -1057,6 +1091,30 @@ class EntropyUriHandler(TextInterface):
         @param remote_path: URI to handle
         @type remote_path: string
         @return: availability
+        @rtype: bool
+        """
+        raise NotImplementedError()
+
+    def is_dir(self, remote_path):
+        """
+        Given a remote path (which can point to dir or file), determine whether
+        it's a directory.
+
+        @param remote_path: URI to handle
+        @type remote_path: string
+        @return: True, if remote_path is a directory
+        @rtype: bool
+        """
+        raise NotImplementedError()
+
+    def is_file(self, remote_path):
+        """
+        Given a remote path (which can point to dir or file), determine whether
+        it's a file.
+
+        @param remote_path: URI to handle
+        @type remote_path: string
+        @return: True, if remote_path is a file
         @rtype: bool
         """
         raise NotImplementedError()
@@ -1136,6 +1194,49 @@ class EntropyFtpUriHandler(EntropyUriHandler):
         # test out connection first
         self._connect()
         self._disconnect()
+
+    def __enter__(self):
+        pass # self.__connect_if_not()
+
+    def __exit__(self, exc_type, exc_value, traceback):
+        self.close()
+
+    def __extract_ftp_data(self, ftpuri):
+        ftpuser = ftpuri.split("ftp://")[-1].split(":")[0]
+        if (not ftpuser):
+            ftpuser = "anonymous@"
+            ftppassword = "anonymous"
+        else:
+            ftppassword = ftpuri.split("@")[:-1]
+            if len(ftppassword) > 1:
+                ftppassword = '@'.join(ftppassword)
+                ftppassword = ftppassword.split(":")[-1]
+                if (not ftppassword):
+                    ftppassword = "anonymous"
+            else:
+                ftppassword = ftppassword[0]
+                ftppassword = ftppassword.split(":")[-1]
+                if not ftppassword:
+                    ftppassword = "anonymous"
+
+        ftpport = ftpuri.split(":")[-1]
+        try:
+            ftpport = int(ftpport)
+        except ValueError:
+            ftpport = 21
+
+        ftpdir = '/'
+        if ftpuri.count("/") > 2:
+            if ftpuri.startswith("ftp://"):
+                ftpdir = ftpuri[6:]
+            ftpdir = "/" + ftpdir.split("/", 1)[-1]
+            ftpdir = ftpdir.split(":")[0]
+            if not ftpdir:
+                ftpdir = '/'
+            elif ftpdir.endswith("/") and (ftpdir != "/"):
+                ftpdir = ftpdir[:-1]
+
+        return ftpuser, ftppassword, ftpport, ftpdir
 
     def __connect_if_not(self):
         """
@@ -1385,7 +1486,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                     self.__filesize = 0
 
                 with open(tmp_save_path, "wb") as f:
-                    rc = self.__ftpconn.retrbinary('RETR ' + path, writer, 1024)
+                    rc = self.__ftpconn.retrbinary('RETR ' + path, writer, 8192)
                     f.flush()
 
                 done = rc.find("226") != -1
@@ -1412,32 +1513,6 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                     )
                 self._reconnect() # reconnect
 
-    def __ftp_advanced_stor(self, cmd, fp):
-        """
-        this function also supports callback, because storbinary doesn't
-        """
-        self.__ftpconn.voidcmd('TYPE I')
-        conn = self.__ftpconn.transfercmd(cmd)
-        while True:
-            buf = fp.readline()
-            if not buf:
-                break
-            conn.sendall(buf)
-            self._commit_buffer_update(len(buf))
-            self._update_speed()
-            self._update_progress()
-            self._speed_limit_loop()
-
-        # that's another workaround
-        #return "226"
-        try:
-            rc = self.__ftpconn.voidresp()
-        except:
-            self._reconnect()
-            return "226"
-
-        return rc
-
     def upload(self, load_path, remote_path):
 
         self.__connect_if_not()
@@ -1445,6 +1520,12 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
         tmp_path = path + ".dtmp"
         tries = 0
+
+        def updater(buf):
+            self._commit_buffer_update(len(buf))
+            self._update_speed()
+            self._update_progress()
+            self._speed_limit_loop()
 
         while tries < 10:
 
@@ -1459,7 +1540,8 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                     self.__filesize = round(float(file_size)/ 1024, 1)
                     self.__filekbcount = 0
 
-                    rc = self.__ftp_advanced_stor("STOR " + tmp_path, f)
+                    rc = self.__ftpconn.storbinary("STOR " + tmp_path, f,
+                        8192, updater)
 
                     # now we can rename the file with its original name
                     self.rename(tmp_path, path)
@@ -1531,7 +1613,10 @@ class EntropyFtpUriHandler(EntropyUriHandler):
     def list_content(self, remote_path):
         self.__connect_if_not()
         path = os.path.join(self.__ftpdir, remote_path)
-        return [os.path.basename(x) for x in self.__ftpconn.nlst(path)]
+        try:
+            return [os.path.basename(x) for x in self.__ftpconn.nlst(path)]
+        except self.ftplib.error_temp:
+            raise ValueError("No such file or directory")
 
     def list_content_metadata(self, remote_path):
         self.__connect_if_not()
@@ -1540,7 +1625,11 @@ class EntropyFtpUriHandler(EntropyUriHandler):
         mybuffer = []
         def bufferizer(buf):
             mybuffer.append(buf)
-        self.__ftpconn.dir(path, bufferizer)
+
+        try:
+            self.__ftpconn.dir(path, bufferizer)
+        except self.ftplib.error_temp:
+            raise ValueError("No such file or directory")
 
         data = []
         for item in mybuffer:
@@ -1551,6 +1640,28 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
         return data
 
+    def is_dir(self, remote_path):
+
+        self.__connect_if_not()
+        path = os.path.join(self.__ftpdir, remote_path)
+
+        cwd = self._get_cwd()
+        data = True
+        try:
+            self.__set_cwd(path)
+        except self.ftplib.error_perm:
+            data = False
+        finally:
+            self.__set_cwd(cwd)
+
+        return data
+
+    def is_file(self, remote_path):
+
+        if self.is_dir(remote_path):
+            return False
+        return self.is_path_available(remote_path)
+
     def _is_path_available(self, full_path):
 
         path, fn = os.path.split(full_path)
@@ -1560,7 +1671,12 @@ class EntropyFtpUriHandler(EntropyUriHandler):
             if y == fn:
                 content.append(y)
 
-        self.__ftpconn.retrlines('NLST %s' % (path,), cb)
+        try:
+            self.__ftpconn.retrlines('NLST %s' % (path,), cb)
+        except self.ftplib.error_temp as err:
+            if not str(err).startswith("450"):
+                raise # wtf?
+            # path does not exist if FTP error 450 is raised
 
         if content:
             return True
