@@ -760,7 +760,7 @@ def main():
         print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
         raise SystemExit(101)
 
-    except FtpError as e:
+    except TransceiverError as e:
 
         print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
         raise SystemExit(101)

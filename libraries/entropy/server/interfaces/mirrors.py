@@ -14,13 +14,13 @@ import tempfile
 import shutil
 import time
 from entropy.exceptions import OnlineMirrorError, IncorrectParameter, \
-    ConnectionError, InvalidDataType, EntropyPackageException, FtpError
+    ConnectionError, InvalidDataType, EntropyPackageException, TransceiverError
 from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
     darkblue, purple
 from entropy.const import etpConst, etpSys
 from entropy.i18n import _
 from entropy.misc import RSS
-from entropy.transceivers import FtpInterface
+from entropy.transceivers import EntropyTransceiver
 from entropy.db import dbapi2
 
 class Server:
@@ -30,15 +30,16 @@ class Server:
     import entropy.tools as entropyTools
     def __init__(self,  ServerInstance, repo = None):
 
+        from entropy.cache import EntropyCacher
+        from entropy.server.transceivers import TransceiverServerHandler
         from entropy.server.interfaces.main import Server as MainServer
+
         if not isinstance(ServerInstance, MainServer):
             mytxt = _("entropy.server.interfaces.main.Server needed")
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         self.Entropy = ServerInstance
-        from entropy.server.transceivers import TransceiverServerHandler
         self.TransceiverServerHandler = TransceiverServerHandler
-        from entropy.cache import EntropyCacher
         self.Cacher = EntropyCacher()
         self.sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
@@ -53,7 +54,7 @@ class Server:
         )
         mytxt = _("mirror")
         for mirror in self.Entropy.get_remote_mirrors(repo):
-            mirror = self.entropyTools.hide_ftp_password(mirror)
+            mirror = EntropyTransceiver.hide_sensible_data(mirror)
             self.Entropy.updateProgress(
                 blue("%s: %s") % (mytxt, darkgreen(mirror),),
                 importance = 0,
@@ -72,7 +73,7 @@ class Server:
         @rtype: set
         """
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         remote_branches = set()
@@ -81,7 +82,7 @@ class Server:
         mirrors = self.Entropy.get_remote_mirrors(repo)
         for uri in mirrors:
 
-            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+            crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
             self.Entropy.updateProgress(
                 "[repo:%s] %s: %s" % (
@@ -94,29 +95,21 @@ class Server:
                 header = brown(" @@ ")
             )
 
-            ftp = FtpInterface(uri, self.Entropy, verbose = False)
-            try:
-
+            txc = self.Entropy.Transceiver(uri)
+            txc.set_verbosity(False)
+            with txc as handler:
                 branches_path = self.Entropy.get_remote_database_relative_path(
                     repo)
-                try:
-                    ftp.set_cwd(branches_path)
-                except FtpError:
-                    continue # no branches in this mirror
 
-                branches = ftp.list_dir()
+                try:
+                    branches = handler.list_content(branches_path)
+                except ValueError:
+                    branches = [] # dir is empty
+
                 for branch in branches:
                     mypath = os.path.join("/", branches_path, branch)
-                    try:
-                        ftp.set_cwd(mypath)
-                    except FtpError:
-                        # not a dir
-                        continue
-                    if ftp.is_file_available(ts_file):
+                    if handler.is_dir(mypath):
                         remote_branches.add(branch)
-
-            finally:
-                ftp.close()
 
         return remote_branches
 
@@ -136,16 +129,16 @@ class Server:
             {'4': 'abcd\n', '5': 'defg\n'}
         @rtype: dict
         """
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
-        if excluded_branches == None:
+        if excluded_branches is None:
             excluded_branches = []
 
         branch_data = {}
         mirrors = self.Entropy.get_remote_mirrors(repo)
         for uri in mirrors:
 
-            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+            crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
             self.Entropy.updateProgress(
                 "[repo:%s] %s: %s => %s" % (
@@ -159,17 +152,13 @@ class Server:
                 header = brown(" @@ ")
             )
 
-            ftp = FtpInterface(uri, self.Entropy, verbose = False)
-            try:
+            branches_path = self.Entropy.get_remote_database_relative_path(repo)
+            txc = self.Entropy.Transceiver(uri)
+            txc.set_verbosity(False)
 
-                branches_path = self.Entropy.get_remote_database_relative_path(
-                    repo)
-                try:
-                    ftp.set_cwd(branches_path)
-                except FtpError:
-                    continue # no branches in this mirror
+            with txc as handler:
 
-                branches = ftp.list_dir()
+                branches = handler.list_content(branches_path)
                 for branch in branches:
 
                     # is branch excluded ?
@@ -180,43 +169,36 @@ class Server:
                         # already read
                         continue
 
-                    mypath = os.path.join("/", branches_path, branch)
-                    try:
-                        ftp.set_cwd(mypath)
-                    except FtpError:
-                        # not a dir
-                        continue
-
-                    if not ftp.is_file_available(filename):
-                        # nothing to do, no file here
+                    mypath = os.path.join("/", branches_path, branch, filename)
+                    if not handler.is_file(mypath):
+                        # nothing to do, not a file
                         continue
 
                     tmp_dir = tempfile.mkdtemp()
+                    down_path = os.path.join(tmp_dir,
+                        os.path.basename(filename))
                     tries = 4
                     success = False
                     while tries:
-                        downloaded = ftp.download_file(filename, tmp_dir)
+                        downloaded = handler.download(mypath, down_path)
                         if not downloaded:
                             tries -= 1
                             continue # argh!
                         success = True
                         break
 
-                    down_path = os.path.join(tmp_dir, filename)
                     if success and os.path.isfile(down_path):
                         down_f = open(down_path)
                         branch_data[branch] = down_f.read()
                         down_f.close()
-                    shutil.rmtree(tmp_dir)
 
-            finally:
-                ftp.close()
+                    shutil.rmtree(tmp_dir, True)
 
         return branch_data
 
     def lock_mirrors(self, lock = True, mirrors = None, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         if not mirrors:
@@ -225,7 +207,7 @@ class Server:
         issues = False
         for uri in mirrors:
 
-            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+            crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
             lock_text = _("unlocking")
             if lock:
@@ -243,49 +225,48 @@ class Server:
                 back = True
             )
 
-            try:
-                ftp = FtpInterface(uri, self.Entropy)
-            except ConnectionError:
-                self.entropyTools.print_traceback()
-                return True # issues
-            my_path = os.path.join(
+            base_path = os.path.join(
                 self.Entropy.get_remote_database_relative_path(repo),
                 self.SystemSettings['repositories']['branch'])
-            ftp.set_cwd(my_path, dodir = True)
+            lock_file = os.path.join(base_path,
+                etpConst['etpdatabaselockfile'])
 
-            lock_file = etpConst['etpdatabaselockfile']
-            if lock and ftp.is_file_available(lock_file):
-                self.Entropy.updateProgress(
-                    "[repo:%s|%s] %s" % (
-                            brown(repo),
-                            darkgreen(crippled_uri),
-                            blue(_("mirror already locked")),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = darkgreen(" * ")
-                )
-                ftp.close()
-                continue
-            elif not lock and not ftp.is_file_available(lock_file):
-                self.Entropy.updateProgress(
-                    "[repo:%s|%s] %s" % (
-                            brown(repo),
-                            darkgreen(crippled_uri),
-                            blue(_("mirror already unlocked")),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = darkgreen(" * ")
-                )
-                ftp.close()
-                continue
+            txc = self.Entropy.Transceiver(uri)
+            txc.set_verbosity(False)
 
-            if lock:
-                rc_lock = self.do_mirror_lock(uri, ftp, repo = repo)
-            else:
-                rc_lock = self.do_mirror_unlock(uri, ftp, repo = repo)
-            ftp.close()
+            with txc as handler:
+
+                if lock and handler.is_file(lock_file):
+                    self.Entropy.updateProgress(
+                        "[repo:%s|%s] %s" % (
+                                brown(repo),
+                                darkgreen(crippled_uri),
+                                blue(_("mirror already locked")),
+                        ),
+                        importance = 1,
+                        type = "info",
+                        header = darkgreen(" * ")
+                    )
+                    continue
+
+                elif not lock and not handler.is_file(lock_file):
+                    self.Entropy.updateProgress(
+                        "[repo:%s|%s] %s" % (
+                                brown(repo),
+                                darkgreen(crippled_uri),
+                                blue(_("mirror already unlocked")),
+                        ),
+                        importance = 1,
+                        type = "info",
+                        header = darkgreen(" * ")
+                    )
+                    continue
+
+                if lock:
+                    rc_lock = self._do_mirror_lock(uri, handler, repo = repo)
+                else:
+                    rc_lock = self._do_mirror_unlock(uri, handler, repo = repo)
+
             if not rc_lock:
                 issues = True
 
@@ -299,14 +280,16 @@ class Server:
 
     def lock_mirrors_for_download(self, lock = True, mirrors = None,
         repo = None):
-        # this functions makes entropy clients to not download anything
-        # from the chosen mirrors. it is used to avoid clients to
-        # download databases while we're uploading a new one
+        """
+        This functions makes entropy clients to not download anything
+        from the chosen mirrors. it is used to avoid clients to
+        download databases while we're uploading a new one
+        """
 
-        if mirrors == None:
+        if mirrors is None:
             mirrors = []
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         if not mirrors:
@@ -315,7 +298,7 @@ class Server:
         issues = False
         for uri in mirrors:
 
-            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+            crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
             lock_text = _("unlocking")
             if lock:
@@ -333,81 +316,68 @@ class Server:
                 back = True
             )
 
-            try:
-                ftp = FtpInterface(uri, self.Entropy)
-            except ConnectionError:
-                self.entropyTools.print_traceback()
-                return True # issues
+            lock_file = etpConst['etpdatabasedownloadlockfile']
             my_path = os.path.join(
                 self.Entropy.get_remote_database_relative_path(repo),
                 self.SystemSettings['repositories']['branch'])
-            ftp.set_cwd(my_path, dodir = True)
+            lock_file = os.path.join(my_path, lock_file)
 
-            lock_file = etpConst['etpdatabasedownloadlockfile']
+            txc = self.Entropy.Transceiver(uri)
+            txc.set_verbosity(False)
 
-            if lock and ftp.is_file_available(lock_file):
-                self.Entropy.updateProgress(
-                    "[repo:%s|%s] %s" % (
-                        blue(repo),
-                        red(crippled_uri),
-                        blue(_("mirror already locked for download")),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = red(" @@ ")
-                )
-                ftp.close()
-                continue
+            with txc as handler:
 
-            elif not lock and not ftp.is_file_available(lock_file):
-                self.Entropy.updateProgress(
-                    "[repo:%s|%s] %s" % (
-                        blue(repo),
-                        red(crippled_uri),
-                        blue(_("mirror already unlocked for download")),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = red(" @@ ")
-                )
-                ftp.close()
-                continue
+                if lock and handler.is_file(lock_file):
+                    self.Entropy.updateProgress(
+                        "[repo:%s|%s] %s" % (
+                            blue(repo),
+                            red(crippled_uri),
+                            blue(_("mirror already locked for download")),
+                        ),
+                        importance = 1,
+                        type = "info",
+                        header = red(" @@ ")
+                    )
+                    continue
 
-            if lock:
-                rc_lock = self.do_mirror_lock(uri, ftp, dblock = False,
-                    repo = repo)
-            else:
-                rc_lock = self.do_mirror_unlock(uri, ftp, dblock = False,
-                    repo = repo)
-            ftp.close()
-            if not rc_lock:
-                issues = True
+                elif not lock and not handler.is_file(lock_file):
+                    self.Entropy.updateProgress(
+                        "[repo:%s|%s] %s" % (
+                            blue(repo),
+                            red(crippled_uri),
+                            blue(_("mirror already unlocked for download")),
+                        ),
+                        importance = 1,
+                        type = "info",
+                        header = red(" @@ ")
+                    )
+                    continue
+
+                if lock:
+                    rc_lock = self._do_mirror_lock(uri, handler, dblock = False,
+                        repo = repo)
+                else:
+                    rc_lock = self._do_mirror_unlock(uri, handler,
+                        dblock = False, repo = repo)
+                if not rc_lock:
+                    issues = True
 
         return issues
 
-    def do_mirror_lock(self, uri, ftp_connection = None, dblock = True,
-        repo = None):
+    def _do_mirror_lock(self, uri, txc_handler, dblock = True, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         my_path = os.path.join(
             self.Entropy.get_remote_database_relative_path(repo),
             self.SystemSettings['repositories']['branch'])
-        if not ftp_connection:
-            try:
-                ftp_connection = FtpInterface(uri, self.Entropy)
-            except ConnectionError:
-                self.entropyTools.print_traceback()
-                return False # issues
-            ftp_connection.set_cwd(my_path, dodir = True)
-        else:
-            mycwd = ftp_connection.get_cwd()
-            if mycwd != my_path:
-                ftp_connection.set_basedir()
-                ftp_connection.set_cwd(my_path, dodir = True)
 
-        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+        # create path to lock file if it doesn't exist
+        if not txc_handler.is_dir(my_path):
+            txc_handler.makedirs(my_path)
+
+        crippled_uri = EntropyTransceiver.get_uri_name(uri)
         lock_string = ''
 
         if dblock:
@@ -419,7 +389,9 @@ class Server:
             self.create_local_database_download_lockfile(repo)
             lock_file = self.get_database_download_lockfile(repo)
 
-        rc_upload = ftp_connection.upload_file(lock_file)
+        remote_path = os.path.join(my_path, os.path.basename(lock_file))
+
+        rc_upload = txc_handler.upload(lock_file, remote_path)
         if rc_upload:
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s %s" % (
@@ -451,34 +423,26 @@ class Server:
         return rc_upload
 
 
-    def do_mirror_unlock(self, uri, ftp_connection, dblock = True, repo = None):
+    def _do_mirror_unlock(self, uri, txc_handler, dblock = True, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         my_path = os.path.join(
             self.Entropy.get_remote_database_relative_path(repo),
             self.SystemSettings['repositories']['branch'])
-        if not ftp_connection:
-            try:
-                ftp_connection = FtpInterface(uri, self.Entropy)
-            except ConnectionError:
-                self.entropyTools.print_traceback()
-                return False # issues
-            ftp_connection.set_cwd(my_path)
-        else:
-            mycwd = ftp_connection.get_cwd()
-            if mycwd != my_path:
-                ftp_connection.set_basedir()
-                ftp_connection.set_cwd(my_path)
 
-        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+        crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
         if dblock:
             dbfile = etpConst['etpdatabaselockfile']
         else:
             dbfile = etpConst['etpdatabasedownloadlockfile']
-        rc_delete = ftp_connection.delete_file(dbfile)
+
+        # make sure
+        remote_path = os.path.join(my_path, os.path.basename(dbfile))
+
+        rc_delete = txc_handler.delete(remote_path)
         if rc_delete:
             self.Entropy.updateProgress(
                 "[repo:%s|%s] %s" % (
@@ -511,19 +475,19 @@ class Server:
         return rc_delete
 
     def get_database_lockfile(self, repo = None):
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
         return os.path.join(self.Entropy.get_local_database_dir(repo),
             etpConst['etpdatabaselockfile'])
 
     def get_database_download_lockfile(self, repo = None):
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
         return os.path.join(self.Entropy.get_local_database_dir(repo),
             etpConst['etpdatabasedownloadlockfile'])
 
     def create_local_database_download_lockfile(self, repo = None):
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
         lock_file = self.get_database_download_lockfile(repo)
         f_lock = open(lock_file, "w")
@@ -532,7 +496,7 @@ class Server:
         f_lock.close()
 
     def create_local_database_lockfile(self, repo = None):
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
         lock_file = self.get_database_lockfile(repo)
         f_lock = open(lock_file, "w")
@@ -541,14 +505,14 @@ class Server:
         f_lock.close()
 
     def remove_local_database_lockfile(self, repo = None):
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
         lock_file = self.get_database_lockfile(repo)
         if os.path.isfile(lock_file):
             os.remove(lock_file)
 
     def remove_local_database_download_lockfile(self, repo = None):
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
         lock_file = self.get_database_download_lockfile(repo)
         if os.path.isfile(lock_file):
@@ -556,153 +520,142 @@ class Server:
 
     def download_package(self, uri, pkg_relative_path, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
-        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+        pkg_to_join_path = '/'.join(pkg_relative_path.split('/')[2:])
+        pkgfile = os.path.basename(pkg_relative_path)
+        crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
         tries = 0
-
-        try:
-            ftp = FtpInterface(uri, self.Entropy)
-        except ConnectionError:
-            self.entropyTools.print_traceback()
-            return False # issues
-
         while tries < 5:
+
             tries += 1
+            txc = self.Entropy.Transceiver(uri)
+            with txc as handler:
 
-            pkg_to_join_path = '/'.join(pkg_relative_path.split('/')[2:])
-            pkg_to_join_dirpath = os.path.dirname(pkg_to_join_path)
-            pkgfile = os.path.basename(pkg_relative_path)
-
-            self.Entropy.updateProgress(
-                "[repo:%s|%s|#%s] %s: %s" % (
-                    brown(repo),
-                    darkgreen(crippled_uri),
-                    brown(str(tries)),
-                    blue(_("connecting to download package")),
-                    darkgreen(pkg_to_join_path),
-                ),
-                importance = 1,
-                type = "info",
-                header = darkgreen(" * "),
-                back = True
-            )
-
-            dirpath = os.path.join(
-                self.Entropy.get_remote_packages_relative_path(repo),
-                pkg_to_join_dirpath)
-            ftp.set_cwd(dirpath, dodir = True)
-
-            self.Entropy.updateProgress(
-                "[repo:%s|%s|#%s] %s: %s" % (
-                    brown(repo),
-                    darkgreen(crippled_uri),
-                    brown(str(tries)),
-                    blue(_("downloading package")),
-                    darkgreen(pkg_to_join_path),
-                ),
-                importance = 1,
-                type = "info",
-                header = darkgreen(" * ")
-            )
-
-            download_path = os.path.join(
-                self.Entropy.get_local_packages_directory(repo),
-                pkg_to_join_dirpath)
-            if (not os.path.isdir(download_path)) and \
-                (not os.access(download_path, os.R_OK)):
-                os.makedirs(download_path)
-            rc_download = ftp.download_file(pkgfile, download_path)
-            if not rc_download:
                 self.Entropy.updateProgress(
-                    "[repo:%s|%s|#%s] %s: %s %s" % (
+                    "[repo:%s|%s|#%s] %s: %s" % (
                         brown(repo),
                         darkgreen(crippled_uri),
                         brown(str(tries)),
-                        blue(_("package")),
+                        blue(_("connecting to download package")),
                         darkgreen(pkg_to_join_path),
-                        blue(_("does not exist")),
                     ),
                     importance = 1,
-                    type = "error",
-                    header = darkred(" !!! ")
+                    type = "info",
+                    header = darkgreen(" * "),
+                    back = True
                 )
-                ftp.close()
-                return rc_download
 
-            dbconn = self.Entropy.open_server_repository(read_only = True,
-                no_upload = True, repo = repo)
-            idpackage = dbconn.getIDPackageFromDownload(pkg_relative_path)
-            if idpackage == -1:
+                remote_path = os.path.join(
+                    self.Entropy.get_remote_packages_relative_path(repo),
+                    pkg_to_join_path)
+                download_path = os.path.join(
+                    self.Entropy.get_local_packages_directory(repo),
+                    pkg_to_join_path)
+                download_dir = os.path.dirname(download_path)
+
                 self.Entropy.updateProgress(
-                    "[repo:%s|%s|#%s] %s: %s %s" % (
+                    "[repo:%s|%s|#%s] %s: %s" % (
                         brown(repo),
                         darkgreen(crippled_uri),
                         brown(str(tries)),
-                        blue(_("package")),
-                        darkgreen(pkgfile),
-                        blue(_("is not listed in the repository !")),
-                    ),
-                    importance = 1,
-                    type = "error",
-                    header = darkred(" !!! ")
-                )
-                ftp.close()
-                return False
-
-            storedmd5 = dbconn.retrieveDigest(idpackage)
-            self.Entropy.updateProgress(
-                "[repo:%s|%s|#%s] %s: %s" % (
-                    brown(repo),
-                    darkgreen(crippled_uri),
-                    brown(str(tries)),
-                    blue(_("verifying checksum of package")),
-                    darkgreen(pkgfile),
-                ),
-                importance = 1,
-                type = "info",
-                header = darkgreen(" * "),
-                back = True
-            )
-
-            pkg_path = os.path.join(download_path, pkgfile)
-            md5check = self.entropyTools.compare_md5(pkg_path, storedmd5)
-            if md5check:
-                self.Entropy.updateProgress(
-                    "[repo:%s|%s|#%s] %s: %s %s" % (
-                        brown(repo),
-                        darkgreen(crippled_uri),
-                        brown(str(tries)),
-                        blue(_("package")),
-                        darkgreen(pkgfile),
-                        blue(_("downloaded successfully")),
+                        blue(_("downloading package")),
+                        darkgreen(remote_path),
                     ),
                     importance = 1,
                     type = "info",
                     header = darkgreen(" * ")
                 )
-                ftp.close()
-                return True
-            else:
+
+                if (not os.path.isdir(download_dir)) and \
+                    (not os.access(download_dir, os.R_OK)):
+                    os.makedirs(download_dir)
+
+                rc_download = handler.download(remote_path, download_path)
+                if not rc_download:
+                    self.Entropy.updateProgress(
+                        "[repo:%s|%s|#%s] %s: %s %s" % (
+                            brown(repo),
+                            darkgreen(crippled_uri),
+                            brown(str(tries)),
+                            blue(_("package")),
+                            darkgreen(pkg_to_join_path),
+                            blue(_("does not exist")),
+                        ),
+                        importance = 1,
+                        type = "error",
+                        header = darkred(" !!! ")
+                    )
+                    return rc_download
+
+                dbconn = self.Entropy.open_server_repository(read_only = True,
+                    no_upload = True, repo = repo)
+                idpackage = dbconn.getIDPackageFromDownload(pkg_relative_path)
+                if idpackage == -1:
+                    self.Entropy.updateProgress(
+                        "[repo:%s|%s|#%s] %s: %s %s" % (
+                            brown(repo),
+                            darkgreen(crippled_uri),
+                            brown(str(tries)),
+                            blue(_("package")),
+                            darkgreen(pkg_relative_path),
+                            blue(_("is not listed in the repository !")),
+                        ),
+                        importance = 1,
+                        type = "error",
+                        header = darkred(" !!! ")
+                    )
+                    return False
+
+                storedmd5 = dbconn.retrieveDigest(idpackage)
                 self.Entropy.updateProgress(
-                    "[repo:%s|%s|#%s] %s: %s %s" % (
+                    "[repo:%s|%s|#%s] %s: %s" % (
                         brown(repo),
                         darkgreen(crippled_uri),
                         brown(str(tries)),
-                        blue(_("package")),
-                        darkgreen(pkgfile),
-                        blue(_("checksum does not match. re-downloading...")),
+                        blue(_("verifying checksum of package")),
+                        darkgreen(pkg_relative_path),
                     ),
                     importance = 1,
-                    type = "warning",
-                    header = darkred(" * ")
+                    type = "info",
+                    header = darkgreen(" * "),
+                    back = True
                 )
-                if os.path.isfile(pkg_path):
-                    os.remove(pkg_path)
 
-            continue
+                md5check = self.entropyTools.compare_md5(download_path, storedmd5)
+                if md5check:
+                    self.Entropy.updateProgress(
+                        "[repo:%s|%s|#%s] %s: %s %s" % (
+                            brown(repo),
+                            darkgreen(crippled_uri),
+                            brown(str(tries)),
+                            blue(_("package")),
+                            darkgreen(pkg_relative_path),
+                            blue(_("downloaded successfully")),
+                        ),
+                        importance = 1,
+                        type = "info",
+                        header = darkgreen(" * ")
+                    )
+                    return True
+                else:
+                    self.Entropy.updateProgress(
+                        "[repo:%s|%s|#%s] %s: %s %s" % (
+                            brown(repo),
+                            darkgreen(crippled_uri),
+                            brown(str(tries)),
+                            blue(_("package")),
+                            darkgreen(pkg_relative_path),
+                            blue(_("checksum does not match. re-downloading...")),
+                        ),
+                        importance = 1,
+                        type = "warning",
+                        header = darkred(" * ")
+                    )
+                    if os.path.isfile(download_path):
+                        os.remove(download_path)
 
         # if we get here it means the files hasn't been downloaded properly
         self.Entropy.updateProgress(
@@ -711,138 +664,127 @@ class Server:
                 darkgreen(crippled_uri),
                 brown(str(tries)),
                 blue(_("package")),
-                darkgreen(pkgfile),
+                darkgreen(pkg_relative_path),
                 blue(_("seems broken. Consider to re-package it. Giving up!")),
             ),
             importance = 1,
             type = "error",
             header = darkred(" !!! ")
         )
-        ftp.close()
         return False
 
+    def _get_remote_db_status(self, uri, repo):
+
+        sys_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+        db_format = sys_set['database_file_format']
+        cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
+        if cmethod is None:
+            raise InvalidDataType("InvalidDataType: %s." % (
+                    _("Wrong database compression method passed"),
+                )
+            )
+        remote_dir = os.path.join(
+            self.Entropy.get_remote_database_relative_path(repo),
+            self.SystemSettings['repositories']['branch'])
+
+        # let raise exception if connection is impossible
+        txc = self.Entropy.Transceiver(uri)
+        with txc as handler:
+
+            compressedfile = etpConst[cmethod[2]]
+            rc1 = handler.is_file(os.path.join(remote_dir, compressedfile))
+
+            rev_file = self.Entropy.get_local_database_revision_file(repo)
+            revfilename = os.path.basename(rev_file)
+            rc2 = handler.is_file(os.path.join(remote_dir, revfilename))
+
+            revision = 0
+            if not (rc1 and rc2):
+                return [uri, revision]
+
+            tmp_fd, rev_tmp_path = tempfile.mkstemp()
+
+            dlcount = 5
+            dled = False
+            while dlcount:
+                remote_rev_path = os.path.join(remote_dir, revfilename)
+                dled = handler.download(remote_rev_path, rev_tmp_path)
+                if dled:
+                    break
+                dlcount -= 1
+            os.close(tmp_fd)
+
+            crippled_uri = EntropyTransceiver.get_uri_name(uri)
+
+            if os.access(rev_tmp_path, os.R_OK) and \
+                os.path.isfile(rev_tmp_path):
+
+                f_rev = open(rev_tmp_path, "r")
+                try:
+                    revision = int(f_rev.readline().strip())
+                except ValueError:
+                    mytxt = _("mirror hasn't valid database revision file")
+                    self.Entropy.updateProgress(
+                        "[repo:%s|%s] %s: %s" % (
+                            brown(repo),
+                            darkgreen(crippled_uri),
+                            blue(mytxt),
+                            bold(revision),
+                        ),
+                        importance = 1,
+                        type = "error",
+                        header = darkred(" !!! ")
+                    )
+                    revision = 0
+                f_rev.close()
+
+            elif dlcount == 0:
+                self.Entropy.updateProgress(
+                    "[repo:%s|%s] %s: %s" % (
+                        brown(repo),
+                        darkgreen(crippled_uri),
+                        blue(_("unable to download repository revision")),
+                        bold(revision),
+                    ),
+                    importance = 1,
+                    type = "error",
+                    header = darkred(" !!! ")
+                )
+                revision = 0
+
+            else:
+                self.Entropy.updateProgress(
+                    "[repo:%s|%s] %s: %s" % (
+                        brown(repo),
+                        darkgreen(crippled_uri),
+                        blue(_("mirror doesn't have valid revision file")),
+                        bold(revision),
+                    ),
+                    importance = 1,
+                    type = "error",
+                    header = darkred(" !!! ")
+                )
+                revision = 0
+
+            os.remove(rev_tmp_path)
+            return [uri, revision]
 
     def get_remote_databases_status(self, repo = None, mirrors = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
-
         if not mirrors:
             mirrors = self.Entropy.get_remote_mirrors(repo)
 
         data = []
         for uri in mirrors:
-
-            # let it raise an exception if connection is impossible
-            ftp = FtpInterface(uri, self.Entropy)
-            try:
-                my_path = os.path.join(
-                    self.Entropy.get_remote_database_relative_path(repo),
-                    self.SystemSettings['repositories']['branch'])
-                ftp.set_cwd(my_path, dodir = True)
-            except ftp.ftplib.error_perm:
-                crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
-                self.Entropy.updateProgress(
-                    "[repo:%s|%s] %s !" % (
-                            brown(repo),
-                            darkgreen(crippled_uri),
-                            blue(_("mirror has invalid directory structure")),
-                    ),
-                    importance = 1,
-                    type = "warning",
-                    header = darkred(" !!! ")
-                )
-                ftp.close()
-                continue
-            sys_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-            db_format = sys_set['database_file_format']
-            cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
-            if cmethod == None:
-                raise InvalidDataType("InvalidDataType: %s." % (
-                        _("Wrong database compression method passed"),
-                    )
-                )
-            compressedfile = etpConst[cmethod[2]]
-
-            revision = 0
-            rc1 = ftp.is_file_available(compressedfile)
-            revfilename = os.path.basename(
-                self.Entropy.get_local_database_revision_file(repo))
-            rc2 = ftp.is_file_available(revfilename)
-            if rc1 and rc2:
-                revision_localtmppath = os.path.join(etpConst['packagestmpdir'],
-                    revfilename)
-                dlcount = 5
-                while dlcount:
-                    dled = ftp.download_file(revfilename,
-                        etpConst['packagestmpdir'])
-                    if dled:
-                        break
-                    dlcount -= 1
-
-                crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
-                if os.access(revision_localtmppath, os.R_OK) and \
-                    os.path.isfile(revision_localtmppath):
-
-                    f_rev = open(revision_localtmppath, "r")
-                    try:
-                        revision = int(f_rev.readline().strip())
-                    except ValueError:
-                        mytxt = _("mirror hasn't valid database revision file")
-                        self.Entropy.updateProgress(
-                            "[repo:%s|%s] %s: %s" % (
-                                brown(repo),
-                                darkgreen(crippled_uri),
-                                blue(mytxt),
-                                bold(revision),
-                            ),
-                            importance = 1,
-                            type = "error",
-                            header = darkred(" !!! ")
-                        )
-                        revision = 0
-                    f_rev.close()
-
-                elif dlcount == 0:
-                    self.Entropy.updateProgress(
-                        "[repo:%s|%s] %s: %s" % (
-                            brown(repo),
-                            darkgreen(crippled_uri),
-                            blue(_("unable to download repository revision")),
-                            bold(revision),
-                        ),
-                        importance = 1,
-                        type = "error",
-                        header = darkred(" !!! ")
-                    )
-                    revision = 0
-
-                else:
-                    self.Entropy.updateProgress(
-                        "[repo:%s|%s] %s: %s" % (
-                            brown(repo),
-                            darkgreen(crippled_uri),
-                            blue(_("mirror doesn't have valid revision file")),
-                            bold(revision),
-                        ),
-                        importance = 1,
-                        type = "error",
-                        header = darkred(" !!! ")
-                    )
-                    revision = 0
-
-                if os.path.isfile(revision_localtmppath):
-                    os.remove(revision_localtmppath)
-
-            info = [uri, revision]
-            data.append(info)
-            ftp.close()
+            data.append(self._get_remote_db_status(uri, repo))
 
         return data
 
     def is_local_database_locked(self, repo = None):
         local_repo = repo
-        if local_repo == None:
+        if local_repo is None:
             local_repo = self.Entropy.default_repository
         lock_file = self.get_database_lockfile(local_repo)
         return os.path.isfile(lock_file)
@@ -850,30 +792,32 @@ class Server:
     def get_mirrors_lock(self, repo = None):
 
         dbstatus = []
+        remote_dir = os.path.join(
+            self.Entropy.get_remote_database_relative_path(repo),
+            self.SystemSettings['repositories']['branch'])
+        lock_file = os.path.join(remote_dir, etpConst['etpdatabaselockfile'])
+        down_lock_file = os.path.join(remote_dir,
+            etpConst['etpdatabasedownloadlockfile'])
+
         for uri in self.Entropy.get_remote_mirrors(repo):
             data = [uri, False, False]
-            ftp = FtpInterface(uri, self.Entropy)
-            try:
-                my_path = os.path.join(
-                    self.Entropy.get_remote_database_relative_path(repo),
-                    self.SystemSettings['repositories']['branch'])
-                ftp.set_cwd(my_path)
-            except ftp.ftplib.error_perm:
-                ftp.close()
-                continue
-            if ftp.is_file_available(etpConst['etpdatabaselockfile']):
-                # upload locked
-                data[1] = True
-            if ftp.is_file_available(etpConst['etpdatabasedownloadlockfile']):
-                # download locked
-                data[2] = True
-            ftp.close()
-            dbstatus.append(data)
+
+            # let raise exception if connection is impossible
+            txc = self.Entropy.Transceiver(uri)
+            with txc as handler:
+                if handler.is_file(lock_file):
+                    # upload locked
+                    data[1] = True
+                if handler.is_file(down_lock_file):
+                    # download locked
+                    data[2] = True
+                dbstatus.append(data)
+
         return dbstatus
 
     def download_notice_board(self, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
         mirrors = self.Entropy.get_remote_mirrors(repo)
         rss_path = self.Entropy.get_local_database_notice_board_file(repo)
@@ -893,9 +837,9 @@ class Server:
 
         downloaded = False
         for uri in mirrors:
-            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+            crippled_uri = EntropyTransceiver.get_uri_name(uri)
             downloader = self.TransceiverServerHandler(
-                FtpInterface, self.Entropy, [uri],
+                self.Entropy, [uri],
                 [rss_path], download = True,
                 local_basedir = mytmpdir, critical_files = [rss_path],
                 repo = repo
@@ -923,7 +867,7 @@ class Server:
 
     def upload_notice_board(self, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
         mirrors = self.Entropy.get_remote_mirrors(repo)
         rss_path = self.Entropy.get_local_database_notice_board_file(repo)
@@ -940,7 +884,6 @@ class Server:
         )
 
         uploader = self.TransceiverServerHandler(
-            FtpInterface,
             self.Entropy,
             mirrors,
             [rss_path],
@@ -950,7 +893,7 @@ class Server:
         errors, m_fine_uris, m_broken_uris = uploader.go()
         if errors:
             m_broken_uris = sorted(m_broken_uris)
-            m_broken_uris = [self.entropyTools.extract_ftp_host_from_uri(x) \
+            m_broken_uris = [EntropyTransceiver.get_uri_name(x) \
                 for x in m_broken_uris]
             self.Entropy.updateProgress(
                 "[repo:%s] %s %s" % (
@@ -1016,7 +959,7 @@ class Server:
 
     def update_rss_feed(self, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         product = self.SystemSettings['repositories']['product']
@@ -1129,7 +1072,7 @@ class Server:
     def get_files_to_sync(self, cmethod, download = False, repo = None,
         disabled_eapis = None):
 
-        if disabled_eapis == None:
+        if disabled_eapis is None:
             disabled_eapis = []
 
         critical = []
@@ -1386,7 +1329,7 @@ class Server:
     def _show_eapi2_upload_messages(self, crippled_uri, database_path,
         upload_data, cmethod, repo):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         self.Entropy.updateProgress(
@@ -1507,87 +1450,68 @@ class Server:
             os.remove(compressed_dest_path)
         self.entropyTools.compress_files(compressed_dest_path, found_file_list)
 
-    def create_mirror_directories(self, ftp_connection, path_to_create):
-        bdir = ""
-        for mydir in path_to_create.split("/"):
-            bdir += "/"+mydir
-            if not ftp_connection.is_file_available(bdir):
-                try:
-                    ftp_connection.mkdir(bdir)
-                except Exception as err:
-                    error = repr(err)
-                    if (error.find("550") == -1) and \
-                        (error.find("File exist") == -1):
-
-                        mytxt = "%s %s, %s: %s" % (
-                            _("cannot create mirror directory"),
-                            bdir,
-                            _("error"),
-                            err,
-                        )
-                        raise OnlineMirrorError("OnlineMirrorError:  %s" % (
-                            mytxt,))
-                    raise
-
     def mirror_lock_check(self, uri, repo = None):
+        """
+        Return whether mirror is locked.
+        """
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
-
         gave_up = False
-        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
-        try:
-            ftp = FtpInterface(uri, self.Entropy)
-        except ConnectionError:
-            self.entropyTools.print_traceback()
-            return True # gave up
-        my_path = os.path.join(
-            self.Entropy.get_remote_database_relative_path(repo),
-            self.SystemSettings['repositories']['branch'])
-        ftp.set_cwd(my_path, dodir = True)
 
         lock_file = self.get_database_lockfile(repo)
         lock_filename = os.path.basename(lock_file)
-        if not os.path.isfile(lock_file) and \
-            ftp.is_file_available(lock_filename):
 
-            self.Entropy.updateProgress(
-                "[repo:%s|%s|%s] %s, %s" % (
-                    brown(str(repo)),
-                    darkgreen(crippled_uri),
-                    red(_("locking")),
-                    darkblue(_("mirror already locked")),
-                    blue(_("waiting up to 2 minutes before giving up")),
-                ),
-                importance = 1,
-                type = "warning",
-                header = brown(" * "),
-                back = True
-            )
-            unlocked = False
-            count = 0
-            while count < 120:
-                count += 1
-                time.sleep(1)
-                if not ftp.is_file_available(os.path.basename(lock_file)):
-                    self.Entropy.updateProgress(
-                        red("[repo:%s|%s|%s] %s !" % (
-                                repo,
-                                crippled_uri,
-                                _("locking"),
-                                _("mirror unlocked"),
-                            )
-                        ),
-                        importance = 1,
-                        type = "info",
-                        header = darkgreen(" * ")
-                    )
-                    unlocked = True
-                    break
-            if not unlocked:
-                gave_up = True
+        remote_dir = os.path.join(
+            self.Entropy.get_remote_database_relative_path(repo),
+            self.SystemSettings['repositories']['branch'])
+        remote_lock_file = os.path.join(remote_dir, lock_filename)
 
-        ftp.close()
+        txc = self.Entropy.Transceiver(uri)
+        with txc as handler:
+
+            if not os.path.isfile(lock_file) and \
+                handler.is_file(remote_lock_file):
+
+                crippled_uri = EntropyTransceiver.get_uri_name(uri)
+                self.Entropy.updateProgress(
+                    "[repo:%s|%s|%s] %s, %s" % (
+                        brown(str(repo)),
+                        darkgreen(crippled_uri),
+                        red(_("locking")),
+                        darkblue(_("mirror already locked")),
+                        blue(_("waiting up to 2 minutes before giving up")),
+                    ),
+                    importance = 1,
+                    type = "warning",
+                    header = brown(" * "),
+                    back = True
+                )
+
+                unlocked = False
+                count = 0
+                while count < 120:
+                    count += 1
+                    time.sleep(1)
+                    if not handler.is_file(remote_lock_file):
+                        self.Entropy.updateProgress(
+                            red("[repo:%s|%s|%s] %s !" % (
+                                    repo,
+                                    crippled_uri,
+                                    _("locking"),
+                                    _("mirror unlocked"),
+                                )
+                            ),
+                            importance = 1,
+                            type = "info",
+                            header = darkgreen(" * ")
+                        )
+                        unlocked = True
+                        break
+
+                if not unlocked:
+                    gave_up = True
+
         return gave_up
 
     def shrink_database_and_close(self, repo = None):
@@ -1601,7 +1525,7 @@ class Server:
         self.Entropy.close_server_database(dbconn)
 
     def update_repository_timestamp(self, repo = None):
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
         ts_file = self.Entropy.get_local_database_timestamp_file(repo)
         current_ts = self.Entropy.get_current_timestamp()
@@ -1612,7 +1536,7 @@ class Server:
 
     def sync_database_treeupdates(self, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
         dbconn = self.Entropy.open_server_repository(read_only = False,
             no_upload = True, repo = repo, do_treeupdates = False)
@@ -1660,7 +1584,7 @@ class Server:
     def upload_database(self, uris, lock_check = False, pretend = False,
             repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
@@ -1677,13 +1601,13 @@ class Server:
 
             db_format = srv_set['database_file_format']
             cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
-            if cmethod == None:
+            if cmethod is None:
                 raise InvalidDataType("InvalidDataType: %s." % (
                         _("wrong database compression method passed"),
                     )
                 )
 
-            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+            crippled_uri = EntropyTransceiver.get_uri_name(uri)
             database_path = self.Entropy.get_local_database_file(repo)
 
             if disabled_eapis:
@@ -1816,7 +1740,6 @@ class Server:
             if not pretend:
                 # upload
                 uploader = self.TransceiverServerHandler(
-                    FtpInterface,
                     self.Entropy,
                     [uri],
                     [upload_data[x] for x in upload_data],
@@ -1826,7 +1749,7 @@ class Server:
                 errors, m_fine_uris, m_broken_uris = uploader.go()
                 if errors:
                     my_broken_uris = sorted([
-                        (self.entropyTools.extract_ftp_host_from_uri(x[0]),
+                        (EntropyTransceiver.get_uri_name(x[0]),
                             x[1]) for x in m_broken_uris])
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|%s] %s" % (
@@ -1872,7 +1795,7 @@ class Server:
     def download_database(self, uris, lock_check = False, pretend = False,
         repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         download_errors = False
@@ -1885,13 +1808,13 @@ class Server:
 
             db_format = srv_set['database_file_format']
             cmethod = etpConst['etpdatabasecompressclasses'].get(db_format)
-            if cmethod == None:
+            if cmethod is None:
                 raise InvalidDataType("InvalidDataType: %s." % (
                         _("wrong database compression method passed"),
                     )
                 )
 
-            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+            crippled_uri = EntropyTransceiver.get_uri_name(uri)
             database_path = self.Entropy.get_local_database_file(repo)
             database_dir_path = os.path.dirname(
                 self.Entropy.get_local_database_file(repo))
@@ -1937,7 +1860,7 @@ class Server:
             if not pretend:
                 # download
                 downloader = self.TransceiverServerHandler(
-                    FtpInterface, self.Entropy, [uri],
+                    self.Entropy, [uri],
                     [download_data[x] for x in download_data], download = True,
                     local_basedir = mytmpdir, critical_files = critical,
                     repo = repo
@@ -1945,7 +1868,7 @@ class Server:
                 errors, m_fine_uris, m_broken_uris = downloader.go()
                 if errors:
                     my_broken_uris = sorted([
-                        (self.entropyTools.extract_ftp_host_from_uri(x[0]),
+                        (EntropyTransceiver.get_uri_name(x[0]),
                             x[1]) for x in m_broken_uris])
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|%s] %s" % (
@@ -2006,7 +1929,7 @@ class Server:
 
     def calculate_database_sync_queues(self, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         remote_status =  self.get_remote_databases_status(repo)
@@ -2038,7 +1961,7 @@ class Server:
     def sync_databases(self, no_upload = False, unlock_mirrors = False,
         repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         while True:
@@ -2364,43 +2287,36 @@ class Server:
             header = blue(" @@ ")
         )
 
-
-    def calculate_remote_package_files(self, uri, branch, ftp_connection = None,
+    def _calculate_remote_package_files(self, uri, branch, txc_handler,
         repo = None):
 
-        remote_files = 0
-        close_conn = False
-        remote_packages_data = {}
-
-        my_path = os.path.join(
+        remote_dir = os.path.join(
             self.Entropy.get_remote_packages_relative_path(repo), branch)
-        if ftp_connection == None:
-            close_conn = True
-            # let it raise an exception if things go bad
-            ftp_connection = FtpInterface(uri, self.Entropy)
-        ftp_connection.set_cwd(my_path, dodir = True)
 
-        remote_packages = ftp_connection.list_dir()
-        remote_packages_info = ftp_connection.get_raw_list()
-        if close_conn:
-            ftp_connection.close()
+        # create path to lock file if it doesn't exist
+        if not txc_handler.is_dir(remote_dir):
+            txc_handler.makedirs(remote_dir)
 
-        for tbz2 in remote_packages:
-            if tbz2.endswith(etpConst['packagesext']):
+        remote_packages_info = txc_handler.list_content_metadata(remote_dir)
+        remote_packages = [x[0] for x in remote_packages_info]
+
+        remote_files = 0
+        for pkg in remote_packages:
+            if pkg.endswith(etpConst['packagesext']):
                 remote_files += 1
 
-        for remote_package in remote_packages_info:
-            remote_packages_data[remote_package.split()[8]] = \
-                int(remote_package.split()[4])
+        remote_packages_data = {}
+        for pkg in remote_packages_info:
+            remote_packages_data[pkg[0]] = int(pkg[1])
 
         return remote_files, remote_packages, remote_packages_data
 
     def calculate_packages_to_sync(self, uri, branch, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
-        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+        crippled_uri = EntropyTransceiver.get_uri_name(uri)
         upload_files, upload_packages = self.calculate_local_upload_files(
             branch, repo)
         local_files, local_packages = self.calculate_local_package_files(branch,
@@ -2413,8 +2329,13 @@ class Server:
             type = "info",
             header = red(" @@ ")
         )
-        remote_files, remote_packages, remote_packages_data = \
-            self.calculate_remote_package_files(uri, branch, repo = repo)
+
+        txc = self.Entropy.Transceiver(uri)
+        with txc as handler:
+            remote_files, remote_packages, remote_packages_data = \
+                self._calculate_remote_package_files(uri, branch, handler,
+                    repo = repo)
+
         self.Entropy.updateProgress(
             "%s:\t\t\t%s %s" % (
                 blue(_("remote packages")),
@@ -2466,7 +2387,7 @@ class Server:
 
                 local_size = self.entropyTools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(local_package)
-                if remote_size == None:
+                if remote_size is None:
                     remote_size = 0
                 if (local_size != remote_size):
                     # size does not match, adding to the upload queue
@@ -2487,7 +2408,7 @@ class Server:
                     local_package)
                 local_size = self.entropyTools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(local_package)
-                if remote_size == None:
+                if remote_size is None:
                     remote_size = 0
                 if (local_size != remote_size) and (local_size != 0):
                     # size does not match, adding to the upload queue
@@ -2506,7 +2427,7 @@ class Server:
                     remote_package)
                 local_size = self.entropyTools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(remote_package)
-                if remote_size == None:
+                if remote_size is None:
                     remote_size = 0
                 if (local_size != remote_size) and (local_size != 0):
                     # size does not match, remove first
@@ -2587,7 +2508,7 @@ class Server:
                 self.Entropy.get_local_upload_directory(repo), branch, item)
             if not os.path.isfile(local_filepath):
                 size = remote_packages_data.get(item)
-                if size == None:
+                if size is None:
                     size = 0
                 size = int(size)
                 metainfo['removal'] += size
@@ -2616,7 +2537,7 @@ class Server:
 
     def _sync_run_removal_queue(self, removal_queue, branch, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         for itemdata in removal_queue:
@@ -2661,7 +2582,7 @@ class Server:
 
     def _sync_run_copy_queue(self, copy_queue, branch, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         for itemdata in copy_queue:
@@ -2701,10 +2622,10 @@ class Server:
 
     def _sync_run_upload_queue(self, uri, upload_queue, branch, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
-        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+        crippled_uri = EntropyTransceiver.get_uri_name(uri)
         myqueue = []
         for itemdata in upload_queue:
             upload_item = itemdata[0]
@@ -2714,16 +2635,18 @@ class Server:
             myqueue.append(hash_file)
             myqueue.append(upload_item)
 
-        ftp_basedir = os.path.join(
+        remote_dir = os.path.join(
             self.Entropy.get_remote_packages_relative_path(repo), branch)
-        uploader = self.TransceiverServerHandler(FtpInterface,
-            self.Entropy, [uri], myqueue, critical_files = myqueue,
-            use_handlers = True, txc_basedir = ftp_basedir,
+
+        uploader = self.TransceiverServerHandler(self.Entropy, [uri],
+            myqueue, critical_files = myqueue,
+            use_handlers = True, txc_basedir = remote_dir,
             handlers_data = {'branch': branch }, repo = repo)
+
         errors, m_fine_uris, m_broken_uris = uploader.go()
         if errors:
             my_broken_uris = [
-                (self.entropyTools.extract_ftp_host_from_uri(x[0]), x[1]) for \
+                (EntropyTransceiver.get_uri_name(x[0]), x[1]) for \
                     x in m_broken_uris]
             reason = my_broken_uris[0][1]
             self.Entropy.updateProgress(
@@ -2756,30 +2679,30 @@ class Server:
     def _sync_run_download_queue(self, uri, download_queue, branch,
             repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
-        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+        crippled_uri = EntropyTransceiver.get_uri_name(uri)
         myqueue = []
         for package in download_queue:
             hash_file = package + etpConst['packagesmd5fileext']
             myqueue.append(package)
             myqueue.append(hash_file)
 
-        ftp_basedir = os.path.join(
+        remote_dir = os.path.join(
             self.Entropy.get_remote_packages_relative_path(repo), branch)
         local_basedir = os.path.join(
             self.Entropy.get_local_packages_directory(repo), branch)
         downloader = self.TransceiverServerHandler(
-            FtpInterface, self.Entropy, [uri], myqueue,
+            self.Entropy, [uri], myqueue,
             critical_files = myqueue, use_handlers = True,
-            txc_basedir = ftp_basedir, local_basedir = local_basedir,
+            txc_basedir = remote_dir, local_basedir = local_basedir,
             handlers_data = {'branch': branch }, download = True, repo = repo)
 
         errors, m_fine_uris, m_broken_uris = downloader.go()
         if errors:
             my_broken_uris = [
-                (self.entropyTools.extract_ftp_host_from_uri(x), y,) \
+                (EntropyTransceiver.get_uri_name(x), y,) \
                     for x, y in m_broken_uris]
             reason = my_broken_uris[0][1]
             self.Entropy.updateProgress(
@@ -2814,7 +2737,7 @@ class Server:
 
     def run_package_files_qa_checks(self, packages_list, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         my_qa = self.Entropy.QA()
@@ -2864,7 +2787,7 @@ class Server:
     def sync_packages(self, ask = True, pretend = False, packages_check = False,
         repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         self.Entropy.updateProgress(
@@ -2890,7 +2813,7 @@ class Server:
 
         for uri in self.Entropy.get_remote_mirrors(repo):
 
-            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+            crippled_uri = EntropyTransceiver.get_uri_name(uri)
             mirror_errors = False
 
             self.Entropy.updateProgress(
@@ -3061,7 +2984,7 @@ class Server:
                         red(_("sync")),
                         self.SystemSettings['repositories']['branch'],
                         darkred(_("you must package them again")),
-                        Exception,
+                        EntropyPackageException,
                         _("error"),
                         err,
                     ),
@@ -3131,7 +3054,7 @@ class Server:
 
     def remove_expiration_files(self, branch, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         branch_dir = os.path.join(
@@ -3213,7 +3136,7 @@ class Server:
 
     def tidy_mirrors(self, ask = True, pretend = False, repo = None):
 
-        if repo == None:
+        if repo is None:
             repo = self.Entropy.default_repository
 
         self.Entropy.updateProgress(
@@ -3331,7 +3254,7 @@ class Server:
             myqueue.append(package+etpConst['packagesmd5fileext'])
             myqueue.append(package)
 
-        ftp_basedir = os.path.join(
+        remote_dir = os.path.join(
             self.Entropy.get_remote_packages_relative_path(repo), branch)
         for uri in self.Entropy.get_remote_mirrors(repo):
 
@@ -3345,21 +3268,20 @@ class Server:
                 header = blue(" @@ ")
             )
 
-            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+            crippled_uri = EntropyTransceiver.get_uri_name(uri)
             destroyer = self.TransceiverServerHandler(
-                FtpInterface,
                 self.Entropy,
                 [uri],
                 myqueue,
                 critical_files = [],
-                txc_basedir = ftp_basedir,
+                txc_basedir = remote_dir,
                 remove = True,
                 repo = repo
             )
             errors, m_fine_uris, m_broken_uris = destroyer.go()
             if errors:
                 my_broken_uris = [
-                    (self.entropyTools.extract_ftp_host_from_uri(x[0]), x[1]) \
+                    (EntropyTransceiver.get_uri_name(x[0]), x[1]) \
                         for x in m_broken_uris]
 
                 reason = my_broken_uris[0][1]

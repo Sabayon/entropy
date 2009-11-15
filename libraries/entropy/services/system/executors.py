@@ -16,6 +16,7 @@ from entropy.const import etpConst
 from entropy.output import blue, red
 from entropy.exceptions import InvalidAtom
 from entropy.i18n import _
+from entropy.transceivers import EntropyTransceiver
 
 class Base:
 
@@ -780,7 +781,7 @@ class Base:
 
                     for uri in Entropy.get_remote_mirrors(repoid):
 
-                        crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+                        crippled_uri = EntropyTransceiver.get_uri_name(uri)
 
                         repo_data[repoid][crippled_uri] = {}
                         repo_data[repoid][crippled_uri]['packages'] = {}
@@ -821,7 +822,7 @@ class Base:
                             'current_revision': current_revision,
                             'remote_revision': remote_revision,
                             'download_latest': download_latest,
-                            'upload_queue': [(self.entropyTools.extract_ftp_host_from_uri(x[0]), x[1],) for x in upload_queue]
+                            'upload_queue': [(EntropyTransceiver.get_uri_name(x[0]), x[1],) for x in upload_queue]
                         }
 
                 return True, repo_data
@@ -861,7 +862,7 @@ class Base:
                 header = " * "
             )
             for myuri, myrev in rdb_status:
-                Entropy.updateProgress("\t %s:\t %s" % (_("Host"), self.entropyTools.extract_ftp_host_from_uri(myuri),))
+                Entropy.updateProgress("\t %s:\t %s" % (_("Host"), EntropyTransceiver.get_uri_name(myuri),))
                 Entropy.updateProgress("\t  * %s: %s" % (_("Database revision"), myrev,))
             local_revision = Entropy.get_local_database_revision(repoid)
             Entropy.updateProgress("\t  * %s: %s" % (_("Database local revision currently at"), local_revision,))
@@ -872,7 +873,7 @@ class Base:
             remote_status = Entropy.MirrorsService.get_remote_databases_status(repoid)
             Entropy.updateProgress(" * %s: " % (_("Remote Entropy Database Repository Status"),))
             for myuri, myrev in remote_status:
-                Entropy.updateProgress("\t %s:\t%s" % (_("Host"), Entropy.entropyTools.extract_ftp_host_from_uri(myuri),))
+                Entropy.updateProgress("\t %s:\t%s" % (_("Host"), EntropyTransceiver.get_uri_name(myuri),))
                 Entropy.updateProgress("\t  * %s: %s" % (_("Database revision"), myrev,) )
 
             return errors, fine_uris, broken_uris
@@ -891,7 +892,8 @@ class Base:
                 for repoid in repository_data:
 
                     # avoid __default__
-                    if repoid == etpConst['clientserverrepoid']: continue
+                    if repoid == etpConst['clientserverrepoid']:
+                        continue
 
                     successfull_mirrors = set()
                     mirrors_errors = False
@@ -924,7 +926,8 @@ class Base:
                         repo_data[repoid]['broken_mirrors'] = broken_mirrors
                         repo_data[repoid]['check_data'] = check_data
 
-                        if (not successfull_mirrors) and (not repository_data[repoid]['pretend']): continue
+                        if (not successfull_mirrors) and (not repository_data[repoid]['pretend']):
+                            continue
 
                     if (not mirrors_errors) and repository_data[repoid]['db']:
 
@@ -937,7 +940,8 @@ class Base:
                         repo_data[repoid]['db_errors'] = errors
                         repo_data[repoid]['db_fine'] = fine.copy()
                         repo_data[repoid]['db_broken'] = broken.copy()
-                        if errors: continue
+                        if errors:
+                            continue
                         Entropy.MirrorsService.lock_mirrors(lock = False, repo = repoid)
                         Entropy.MirrorsService.tidy_mirrors(
                             repo = repoid, ask = False,

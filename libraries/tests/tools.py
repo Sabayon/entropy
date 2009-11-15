@@ -577,11 +577,6 @@ class ToolsTest(unittest.TestCase):
         end = 'casdasdas""asdasdasd""+sadasd+'
         self.assertEqual(et.escape(begin), end)
 
-    def test_extract_ftp_host_from_uri(self):
-        begin = "ftp://test:test@192.168.1.1/home/folder"
-        end = "192.168.1.1"
-        self.assertEqual(et.extract_ftp_host_from_uri(begin), end)
-
     def test_spliturl(self):
         begin = "http://www.sabayon.org/download"
         end = ['http', 'www.sabayon.org', '/download', '', '']
@@ -607,16 +602,6 @@ class ToolsTest(unittest.TestCase):
         begin = 102400020
         end = '97.7MB'
         self.assertEqual(et.bytes_into_human(begin), end)
-
-    def test_hide_ftp_password(self):
-        begin = "ftp://test:test@192.168.1.1/home/folder"
-        end = 'ftp://xxxxxxxx:xxxxxxxx@192.168.1.1/home/folder'
-        self.assertEqual(et.hide_ftp_password(begin), end)
-
-    def test_extract_ftp_data(self):
-        begin = "ftp://test:test@192.168.1.1/home/folder"
-        end = ('test', 'test', 21, '/home/folder')
-        self.assertEqual(et.extract_ftp_data(begin), end)
 
     def test_get_random_temp_file(self):
         self.assert_(et.get_random_temp_file())

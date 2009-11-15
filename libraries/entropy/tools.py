@@ -2514,20 +2514,6 @@ def unescape_list(*args):
         arg_lst.append(unescape(x))
     return tuple(arg_lst)
 
-def extract_ftp_host_from_uri(uri):
-    """
-    docstring_title
-
-    @param uri: 
-    @type uri: 
-    @return: 
-    @rtype: 
-    """
-    myuri = spliturl(uri)[1]
-    # remove username:pass@
-    myuri = myuri.split("@")[len(myuri.split("@"))-1]
-    return myuri
-
 def spliturl(url):
     """
     docstring_title
@@ -2733,70 +2719,6 @@ def bytes_into_human(xbytes):
         size = str(round(float(size)/1024, 1))
         size += "MB"
     return size
-
-def hide_ftp_password(uri):
-    """
-    docstring_title
-
-    @param uri: 
-    @type uri: 
-    @return: 
-    @rtype: 
-    """
-    ftppassword = uri.split("@")[:-1]
-    if not ftppassword:
-        return uri
-    ftppassword = '@'.join(ftppassword)
-    ftppassword = ftppassword.split(":")[-1]
-    if not ftppassword:
-        return uri
-    newuri = uri.replace(ftppassword, "xxxxxxxx")
-    return newuri
-
-def extract_ftp_data(ftpuri):
-    """
-    docstring_title
-
-    @param ftpuri: 
-    @type ftpuri: 
-    @return: 
-    @rtype: 
-    """
-    ftpuser = ftpuri.split("ftp://")[-1].split(":")[0]
-    if (not ftpuser):
-        ftpuser = "anonymous@"
-        ftppassword = "anonymous"
-    else:
-        ftppassword = ftpuri.split("@")[:-1]
-        if len(ftppassword) > 1:
-            ftppassword = '@'.join(ftppassword)
-            ftppassword = ftppassword.split(":")[-1]
-            if (not ftppassword):
-                ftppassword = "anonymous"
-        else:
-            ftppassword = ftppassword[0]
-            ftppassword = ftppassword.split(":")[-1]
-            if not ftppassword:
-                ftppassword = "anonymous"
-
-    ftpport = ftpuri.split(":")[-1]
-    try:
-        ftpport = int(ftpport)
-    except ValueError:
-        ftpport = 21
-
-    ftpdir = '/'
-    if ftpuri.count("/") > 2:
-        if ftpuri.startswith("ftp://"):
-            ftpdir = ftpuri[6:]
-        ftpdir = "/" + ftpdir.split("/", 1)[-1]
-        ftpdir = ftpdir.split(":")[0]
-        if not ftpdir:
-            ftpdir = '/'
-        elif ftpdir.endswith("/") and (ftpdir != "/"):
-            ftpdir = ftpdir[:-1]
-
-    return ftpuser, ftppassword, ftpport, ftpdir
 
 def get_file_unix_mtime(path):
     """

@@ -75,7 +75,7 @@ class UriHandlerNotFound(EntropyException):
     for given URI is not available.
     """
 
-class FtpError(EntropyException):
+class TransceiverError(EntropyException):
     """FTP errors"""
 
 class SystemDatabaseError(EntropyException):

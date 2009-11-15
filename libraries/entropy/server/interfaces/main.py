@@ -24,7 +24,7 @@ from entropy.server.interfaces.mirrors import Server as MirrorsServer
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
-from entropy.transceivers import FtpInterface
+from entropy.transceivers import EntropyTransceiver
 from entropy.db import EntropyRepository, EntropyRepositoryPlugin
 from entropy.server.interfaces.db import ServerRepositoryStatus
 from entropy.spm.plugins.factory import get_default_instance as get_spm, \
@@ -97,13 +97,17 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             "ServerEntropyRepositoryPlugin: calling close_repo_hook => %s" % (
                 self,)
             )
+
+        # this happens because close_server_repositories() might be called
+        # before setup_services() and in general, at any time, so, in this
+        # case, there is no need to print bullshit to dev.
+        if self._server.MirrorsService is None:
+            return 0
+
         repo = entropy_repository_instance.dbname
         dbfile = entropy_repository_instance.dbFile
         sts = ServerRepositoryStatus()
-        if not sts.is_tainted(dbfile):
-            # we can unlock it, no changes were made
-            self._server.MirrorsService.lock_mirrors(False, repo = repo)
-        elif not sts.is_unlock_msg(dbfile):
+        if sts.is_tainted(dbfile) and not sts.is_unlock_msg(dbfile):
             u_msg = _("Mirrors have not been unlocked. Remember to sync them.")
             self._server.updateProgress(
                 darkgreen(u_msg),
@@ -113,6 +117,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             )
             # avoid spamming
             sts.set_unlock_msg(dbfile)
+
         return 0
 
     def commit_hook(self, entropy_repository_instance):
@@ -135,7 +140,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         const_setup_file(taint_file, etpConst['entropygid'], 0o664)
         dbs.set_tainted(dbfile)
 
-        if (dbs.is_tainted(dbfile)) and (not dbs.is_bumped(dbfile)):
+        if not dbs.is_bumped(dbfile):
             # bump revision, setting DatabaseBump causes
             # the session to just bump once
             dbs.set_bumped(dbfile)
@@ -779,6 +784,19 @@ class Server(Singleton, TextInterface):
         """
         return get_spm(self)
 
+    def Transceiver(self, uri):
+        """
+        Get EntropyTransceiver interface instance.
+
+        @param uri: EntropyTransceiver URI
+        @type uri: string
+        @return: EntropyTransceiver instance
+        @rtype: entropy.transceivers.EntropyTransceiver
+        """
+        txc = EntropyTransceiver(uri)
+        txc.set_output_interface(self)
+        return txc
+
     def setup_entropy_settings(self, repo = None):
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
         backup_list = [
@@ -1052,11 +1070,12 @@ class Server(Singleton, TextInterface):
                 back = True
             )
             for uri in self.get_remote_mirrors(repo):
+
+                crippled_uri = EntropyTransceiver.get_uri_name(uri)
+
                 given_up = self.MirrorsService.mirror_lock_check(uri,
                     repo = repo)
                 if given_up:
-                    crippled_uri = \
-                        self.entropyTools.extract_ftp_host_from_uri(uri)
                     mytxt = "%s:" % (_("Mirrors status table"),)
                     self.updateProgress(
                         darkgreen(mytxt),
@@ -1073,8 +1092,7 @@ class Server(Singleton, TextInterface):
                         if db_st2:
                             db_st2_info = red(_("Locked"))
 
-                        crippled_uri = \
-                            self.entropyTools.extract_ftp_host_from_uri(db_uri)
+                        crippled_uri = EntropyTransceiver.get_uri_name(db_uri)
                         self.updateProgress(
                             "%s: [%s: %s] [%s: %s]" % (
                                 bold(crippled_uri),
@@ -2010,18 +2028,17 @@ class Server(Singleton, TextInterface):
 
             for uri in self.get_remote_mirrors(repo):
 
-                crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
-                ftp_basedir = os.path.join(remote_relative_path, from_branch)
+                crippled_uri = EntropyTransceiver.get_uri_name(uri)
+                basedir = os.path.join(remote_relative_path, from_branch)
 
                 downloader_queue = [x[0] for x in download_queue[from_branch]]
                 downloader = self.MirrorsService.TransceiverServerHandler(
-                    FtpInterface,
                     self,
                     [uri],
                     downloader_queue,
                     critical_files = downloader_queue,
                     use_handlers = True,
-                    txc_basedir = ftp_basedir,
+                    txc_basedir = basedir,
                     local_basedir = tmp_down_dir,
                     download = True,
                     repo = repo
@@ -2073,7 +2090,7 @@ class Server(Singleton, TextInterface):
                     reason = _("wrong md5")
                     if m_broken_uris:
                         my_broken_uris = [
-                        (self.entropyTools.extract_ftp_host_from_uri(x), y,) \
+                        (EntropyTransceiver.get_uri_name(x), y,) \
                             for x, y in m_broken_uris]
                         reason = my_broken_uris[0][1]
 
@@ -3725,7 +3742,7 @@ class Server(Singleton, TextInterface):
 
         for uri in self.get_remote_mirrors(repo):
 
-            crippled_uri = self.entropyTools.extract_ftp_host_from_uri(uri)
+            crippled_uri = EntropyTransceiver.get_uri_name(uri)
             self.updateProgress(
                 "[repo:%s] %s: %s" % (
                     darkgreen(repo),
