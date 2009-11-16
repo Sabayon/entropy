@@ -1320,7 +1320,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
         self._connect()
 
     def _init_vars(self):
-        self.__oldprogress = 0.0
+        self.__oldprogress_t = time.time()
         self.__filesize = 0
         self.__filekbcount = 0
         self.__transfersize = 0
@@ -1405,18 +1405,16 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
     def _update_progress(self):
 
-        # create percentage
         upload_percent = 100.0
+        upload_size = round(self.__filekbcount, 1)
+
         if self.__filesize >= 1:
             kbcount_round = round(self.__filekbcount, 1)
             upload_percent = round((kbcount_round / self.__filesize) * 100, 1)
 
-        currentprogress = upload_percent
-        upload_size = round(self.__filekbcount, 1)
-
-        if (currentprogress > self.__oldprogress + 0.5) and \
-            (upload_percent < 100.1) and \
-            (upload_size <= self.__filesize):
+        delta_secs = 0.5
+        cur_t = time.time()
+        if cur_t > (self.__oldprogress_t + delta_secs):
 
             upload_percent = str(upload_percent)+"%"
             # create text
@@ -1430,7 +1428,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 "/" + _("sec")
 
             self.updateProgress(current_txt, back = True)
-            self.__oldprogress = currentprogress
+            self.__oldprogress_t = cur_t
 
     def _get_file_size(self, filename):
         return self.__ftpconn.size(filename)
@@ -1485,6 +1483,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 with open(tmp_save_path, "wb") as f:
                     rc = self.__ftpconn.retrbinary('RETR ' + path, writer, 8192)
                     f.flush()
+                self._update_progress()
 
                 done = rc.find("226") != -1
                 if done:
@@ -1531,17 +1530,17 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
             try:
 
+                file_size = get_file_size(load_path)
+                self.__filesize = round(float(file_size)/ 1024, 1)
+                self.__filekbcount = 0
+
                 with open(load_path, "r") as f:
-
-                    file_size = get_file_size(load_path)
-                    self.__filesize = round(float(file_size)/ 1024, 1)
-                    self.__filekbcount = 0
-
                     rc = self.__ftpconn.storbinary("STOR " + tmp_path, f,
                         8192, updater)
 
-                    # now we can rename the file with its original name
-                    self.rename(tmp_path, path)
+                self._update_progress()
+                # now we can rename the file with its original name
+                self.rename(tmp_path, path)
 
                 done = rc.find("226") != -1
                 return done
