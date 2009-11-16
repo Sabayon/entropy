@@ -2,20 +2,36 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
-  1.0_beta1:
+  0.99.10:
 
+    - entropy client download timeout setting
+    - analyze etp reports
     - move etpConst['spm'] to entropy.spm (to do this =>
         EntropyRepository.regenerateSpmUidTable should be reworked)
+    - remove entropy spm (sort_update_files) from entropy.server
+
+  0.99.20:
+
     - make entropy.db matching rules externally inferred
     - provide repository digital key, fetch it when syncing repos and check if
       it matches and all file match
-    - entropy.tools + entropy.transceivers API docs merge
-    - remove entropy spm (sort_update_files) from entropy.server
+    - entropy.transceivers API docs merge
+
+  0.99.30:
+
+    - entropy.tools API docs merge
+    - entropy.server API rework
     - move sensible pkgs to alt dir
-    - entropy.server API docs merge
+
+  0.99.40:
+
     - portage storing LC_* in environment?
     - move all the portage related stuff in entropy.tools to entropy.spm
         => prototype class defining transformations (collect them from tools)
+
+  1.0_beta1:
+
+    - complete API documentation
     - Transform Sulfur into Entropy Store:
         - UGC for more coolness
         - title change
@@ -23,6 +39,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta2:
 
+    - Python 3.x support
     - PackageKit integration
 
   1.0 - deprecations:
