@@ -1403,7 +1403,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
         self.__filekbcount += float(buf_len)/1024
         self.__transfersize += buf_len
 
-    def _update_progress(self):
+    def _update_progress(self, force = False):
 
         upload_percent = 100.0
         upload_size = round(self.__filekbcount, 1)
@@ -1414,7 +1414,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
         delta_secs = 0.5
         cur_t = time.time()
-        if cur_t > (self.__oldprogress_t + delta_secs):
+        if (cur_t > (self.__oldprogress_t + delta_secs)) or force:
 
             upload_percent = str(upload_percent)+"%"
             # create text
@@ -1483,7 +1483,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                 with open(tmp_save_path, "wb") as f:
                     rc = self.__ftpconn.retrbinary('RETR ' + path, writer, 8192)
                     f.flush()
-                self._update_progress()
+                self._update_progress(force = True)
 
                 done = rc.find("226") != -1
                 if done:
@@ -1538,7 +1538,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
                     rc = self.__ftpconn.storbinary("STOR " + tmp_path, f,
                         8192, updater)
 
-                self._update_progress()
+                self._update_progress(force = True)
                 # now we can rename the file with its original name
                 self.rename(tmp_path, path)
 
