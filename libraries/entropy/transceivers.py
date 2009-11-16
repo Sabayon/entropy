@@ -1321,6 +1321,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
     def _init_vars(self):
         self.__oldprogress_t = time.time()
+        self.__datatransfer = 0
         self.__filesize = 0
         self.__filekbcount = 0
         self.__transfersize = 0
