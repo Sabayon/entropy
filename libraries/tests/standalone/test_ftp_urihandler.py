@@ -1,5 +1,5 @@
 import sys, os
-sys.path.insert(0, "../../libraries")
+sys.path.insert(0, "../../")
 from entropy.transceivers import EntropyTransceiver
 
 txc = EntropyTransceiver("uri://")
