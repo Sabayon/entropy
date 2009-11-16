@@ -49,6 +49,7 @@ class UrlFetcher:
         import entropy.tools as entropyTools
         import socket
         self.entropyTools, self.socket = entropyTools, socket
+        self.__timeout = 20
         self.__th_id = 0
         self.__resume = resume
         self.__url = self.__encode_url(url)
@@ -94,6 +95,7 @@ class UrlFetcher:
         self.__average = 0
         self.__remotesize = 0
         self.__oldaverage = 0.0
+        self.__last_output_time = time.time()
         # transfer status data
         self.__startingposition = 0
         self.__datatransfer = 0
@@ -162,8 +164,6 @@ class UrlFetcher:
     def download(self):
 
         self._init_vars()
-        # set timeout
-        self.socket.setdefaulttimeout(20)
 
         if self.__url.startswith("http://"):
             headers = { 'User-Agent' : self.user_agent }
@@ -175,7 +175,7 @@ class UrlFetcher:
         while True:
             # get file size if available
             try:
-                self.__remotefile = urlmod.urlopen(req)
+                self.__remotefile = urlmod.urlopen(req, None, self.__timeout)
             except KeyboardInterrupt:
                 self.__close(False)
                 raise
@@ -188,6 +188,12 @@ class UrlFetcher:
                 self.__close(True)
                 self.__status = "-3"
                 return self.__status
+
+            except urlmod_error.URLError as err: # timeout error
+                self.__close(True)
+                self.__status = "-3"
+                return self.__status
+
             except:
                 self.entropyTools.print_traceback()
                 raise
@@ -228,7 +234,7 @@ class UrlFetcher:
                 self.__close(False)
                 return self.__prepare_return()
 
-            self.__remotefile = urlmod.urlopen(request)
+            self.__remotefile = urlmod.urlopen(request, None, self.__timeout)
         except KeyboardInterrupt:
             self.__close(False)
             raise
@@ -268,6 +274,7 @@ class UrlFetcher:
                 self.__close(True)
                 self.__status = "-3"
                 return self.__status
+
             self._commit(rsx)
             if self.__show_speed:
                 self.handle_statistics(self.__th_id, self.__downloadedsize,
@@ -285,6 +292,7 @@ class UrlFetcher:
                         self.updateProgress()
                         self.__oldaverage = self.__average
 
+        self._push_progress_to_output()
         # kill thread
         self.__close(False)
         return self.__prepare_return()
@@ -337,11 +345,12 @@ class UrlFetcher:
             rounded_remote = int(round(self.__remotesize*1024, 0))
             rounded_downloaded = int(round(self.__downloadedsize, 0))
             x_delta = rounded_remote - rounded_downloaded
-            tx_round = int(round(x_delta/self.__datatransfer, 0))
+            tx_round = 0
+            if self.__datatransfer > 0:
+                tx_round = int(round(x_delta/self.__datatransfer, 0))
             self.__time_remaining_secs = tx_round
             self.__time_remaining = \
-                self.entropyTools.convert_seconds_to_fancy_output(
-                    self.__time_remaining_secs)
+                convert_seconds_to_fancy_output(self.__time_remaining_secs)
         except (ValueError, TypeError,):
             self.__time_remaining = "(%s)" % (_("infinite"),)
 
@@ -356,40 +365,53 @@ class UrlFetcher:
             time_remaining, time_remaining_secs):
         return
 
-    def updateProgress(self):
+    def _push_progress_to_output(self):
 
         mytxt = _("[F]")
         eta_txt = _("ETA")
         sec_txt = _("sec") # as in XX kb/sec
 
-        currentText = darkred("    %s: " % (mytxt,)) + \
-            darkgreen(str(round(float(self.__downloadedsize)/1024, 1))) + "/" + \
-            red(str(round(self.__remotesize, 1))) + " kB"
+        current_txt = darkred("    %s: " % (mytxt,)) + \
+            darkgreen(str(round(float(self.__downloadedsize)/1024, 1))) + "/" \
+            + red(str(round(self.__remotesize, 1))) + " kB"
         # create progress bar
         barsize = 10
         bartext = "["
         curbarsize = 1
-        if self.__average > self.__oldaverage+self.__updatestep:
-            averagesize = (self.__average*barsize)/100
-            while averagesize > 0:
-                curbarsize += 1
-                bartext += "="
-                averagesize -= 1
-            bartext += ">"
-            diffbarsize = barsize-curbarsize
-            while diffbarsize > 0:
-                bartext += " "
-                diffbarsize -= 1
-            if self.__show_speed:
-                bartext += "] => %s" % (self.entropyTools.bytes_into_human(self.__datatransfer),)
-                bartext += "/%s : %s: %s" % (sec_txt, eta_txt, self.__time_remaining,)
-            else:
-                bartext += "]"
-            average = str(self.__average)
-            if len(average) < 2:
-                average = " "+average
-            currentText += " <->  "+average+"% "+bartext
-            self.__Output.updateProgress(currentText, back = True)
+
+        averagesize = (self.__average*barsize)/100
+        while averagesize > 0:
+            curbarsize += 1
+            bartext += "="
+            averagesize -= 1
+        bartext += ">"
+        diffbarsize = barsize - curbarsize
+        while diffbarsize > 0:
+            bartext += " "
+            diffbarsize -= 1
+        if self.__show_speed:
+            bartext += "] => %s" % (bytes_into_human(self.__datatransfer),)
+            bartext += "/%s : %s: %s" % (sec_txt, eta_txt,
+                self.__time_remaining,)
+        else:
+            bartext += "]"
+        average = str(self.__average)
+        if len(average) < 2:
+            average = " "+average
+        current_txt += " <->  "+average+"% "+bartext
+        self.__Output.updateProgress(current_txt, back = True)
+
+    def updateProgress(self):
+        """
+        Main fetch progress callback. You can reimplement this to refresh
+        your output devices.
+        """
+        update_time_delta = 0.5
+        cur_t = time.time()
+        if cur_t > (self.__last_output_time + update_time_delta):
+            self.__last_output_time = cur_t
+            self._push_progress_to_output()
+
 
 class MultipleUrlFetcher:
 
@@ -454,6 +476,7 @@ class MultipleUrlFetcher:
         self.__average = 0
         self.__old_average = 0
         self.__time_remaining_sec = 0
+        self.__progress_update_t = time.time()
 
     def download(self):
         self._init_vars()
@@ -472,6 +495,9 @@ class MultipleUrlFetcher:
 
             def updateProgress(self):
                 return self.__multiple_fetcher.updateProgress()
+
+            def _push_progress_to_output(self):
+                return
 
             def handle_statistics(self, *args, **kwargs):
                 return self.__multiple_fetcher.handle_statistics(*args,
@@ -497,6 +523,7 @@ class MultipleUrlFetcher:
             self.__thread_pool[th_id] = t
             t.start()
 
+        self._push_progress_to_output(force = True)
         self.show_download_files_info()
         self.__show_progress = True
 
@@ -563,16 +590,13 @@ class MultipleUrlFetcher:
         }
         self.__progress_data[th_id] = data
 
-    def updateProgress(self):
+    def _push_progress_to_output(self, force = False):
 
-        eta_txt = _("ETA")
-        sec_txt = _("sec") # as in XX kb/sec
         downloaded_size = 0
         total_size = 0
         time_remaining = 0
         data_transfer = 0
         update_step = 0
-        average = 100
         pd = self.__progress_data.copy()
         pdlen = len(pd)
 
@@ -586,22 +610,35 @@ class MultipleUrlFetcher:
             if tr > 0: time_remaining += tr
             update_step += data.get('update_step', 0)
 
+        average = 100
         # total_size is in kbytes
         # downloaded_size is in bytes
         if total_size > 0:
             average = int(float(downloaded_size/1024)/total_size * 100)
+
         self.__data_transfer = data_transfer
         self.__average = average
-        update_step = update_step/pdlen
+        if pdlen > 0:
+            update_step = update_step/pdlen
+        else:
+            update_step = 0
+        time_remaining = convert_seconds_to_fancy_output(time_remaining)
         self.__time_remaining_sec = time_remaining
-        time_remaining = self.entropyTools.convert_seconds_to_fancy_output(time_remaining)
 
-        if ((average > self.__old_average+update_step) or \
-            (self.__first_refreshes > 0)) and self.__show_progress:
+        update_time_delta = 0.5
+        cur_t = time.time()
+        if ((cur_t > (self.__progress_update_t + update_time_delta)) \
+            or force or (self.__first_refreshes > 0)) and self.__show_progress:
 
             self.__first_refreshes -= 1
-            currentText = darkgreen(str(round(float(downloaded_size)/1024, 1))) + "/" + \
-                red(str(round(total_size, 1))) + " kB"
+            self.__progress_update_t = cur_t
+
+            eta_txt = _("ETA")
+            sec_txt = _("sec") # as in XX kb/sec
+            down_size_txt = str(round(float(downloaded_size)/1024, 1))
+            total_size_txt = str(round(total_size, 1))
+            current_txt = darkgreen(down_size_txt) + "/" + red(total_size_txt)
+            current_txt += " kB"
             # create progress bar
             barsize = 10
             bartext = "["
@@ -617,17 +654,20 @@ class MultipleUrlFetcher:
                 bartext += " "
                 diffbarsize -= 1
             if self.__show_speed:
-                bartext += "] => %s" % (self.entropyTools.bytes_into_human(data_transfer),)
+                bartext += "] => %s" % (bytes_into_human(data_transfer),)
                 bartext += "/%s : %s: %s" % (sec_txt, eta_txt, time_remaining,)
             else:
                 bartext += "]"
             myavg = str(average)
             if len(myavg) < 2:
                 myavg = " "+myavg
-            currentText += " <->  "+myavg+"% "+bartext+" "
-            self.__Output.updateProgress(currentText, back = True)
+            current_txt += " <->  "+myavg+"% "+bartext+" "
+            self.__Output.updateProgress(current_txt, back = True)
 
         self.__old_average = average
+
+    def updateProgress(self):
+        return self._push_progress_to_output()
 
 
 class EntropyTransceiver(TextInterface):
