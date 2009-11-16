@@ -296,15 +296,12 @@ class TransceiverServerHandler:
 
                 mypath_fn = os.path.basename(mypath)
                 remote_path = os.path.join(base_dir, mypath_fn)
-                print "base_dir", base_dir
-                print "mypath", mypath
 
                 syncer = handler.upload
                 myargs = (mypath, remote_path)
                 if self.download:
                     syncer = handler.download
                     local_path = os.path.join(self.local_basedir, mypath_fn)
-                    print "local_path", local_path
                     myargs = (remote_path, local_path)
                 elif self.remove:
                     syncer = handler.delete
