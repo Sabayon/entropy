@@ -477,6 +477,7 @@ class MultipleUrlFetcher:
         self.__old_average = 0
         self.__time_remaining_sec = 0
         self.__progress_update_t = time.time()
+        self.__startup_time = time.time()
 
     def download(self):
         self._init_vars()
@@ -595,7 +596,6 @@ class MultipleUrlFetcher:
         downloaded_size = 0
         total_size = 0
         time_remaining = 0
-        data_transfer = 0
         update_step = 0
         pd = self.__progress_data.copy()
         pdlen = len(pd)
@@ -605,10 +605,19 @@ class MultipleUrlFetcher:
             data = pd.get(th_id)
             downloaded_size += data.get('downloaded_size', 0)
             total_size += data.get('total_size', 0)
-            data_transfer += data.get('data_transfer', 0)
+            # data_transfer from Python threading bullshit is not reliable
+            # with multiple threads and causes inaccurate informations to be
+            # printed
+            # data_transfer += data.get('data_transfer', 0)
             tr = data.get('time_remaining_secs', 0)
             if tr > 0: time_remaining += tr
             update_step += data.get('update_step', 0)
+
+        elapsed_t = time.time() - self.__startup_time
+        if elapsed_t < 0.1:
+            elapsed_t = 0.1
+        data_transfer = downloaded_size / elapsed_t
+        self.__data_transfer = data_transfer
 
         average = 100
         # total_size is in kbytes
@@ -616,7 +625,6 @@ class MultipleUrlFetcher:
         if total_size > 0:
             average = int(float(downloaded_size/1024)/total_size * 100)
 
-        self.__data_transfer = data_transfer
         self.__average = average
         if pdlen > 0:
             update_step = update_step/pdlen
