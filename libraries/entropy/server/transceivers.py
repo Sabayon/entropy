@@ -279,9 +279,9 @@ class TransceiverServerHandler:
         maxcount = len(self.myfiles)
         counter = 0
 
-        for mypath in self.myfiles:
+        with txc as handler:
 
-            with txc as handler:
+            for mypath in self.myfiles:
 
                 base_dir = self.txc_basedir
 
@@ -311,6 +311,7 @@ class TransceiverServerHandler:
                 tries = 0
                 done = False
                 lastrc = None
+
                 while tries < 5:
                     tries += 1
                     self.Entropy.updateProgress(
@@ -327,7 +328,7 @@ class TransceiverServerHandler:
                         header = red(" @@ ")
                     )
                     rc = syncer(*myargs)
-                    if rc and not self.download:
+                    if rc and not (self.download or self.remove):
                         # try with "SITE MD5 command first"
                         # proftpd's mod_md5 supports it
                         remote_md5 = handler.get_md5(remote_path)
