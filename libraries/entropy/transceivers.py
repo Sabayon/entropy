@@ -1207,7 +1207,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
     def get_uri_name(uri):
         myuri = spliturl(uri)[1]
         # remove username:pass@
-        myuri = myuri.split("@")[len(myuri.split("@"))-1]
+        myuri = myuri.split("@")[-1]
         return myuri
 
     @staticmethod
@@ -1619,7 +1619,15 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
         old = os.path.join(self.__ftpdir, remote_path_old)
         new = os.path.join(self.__ftpdir, remote_path_new)
-        rc = self.__ftpconn.rename(old, new)
+        try:
+            rc = self.__ftpconn.rename(old, new)
+        except self.ftplib.error_perm as err:
+            # if err[0][:3] in ('553',):
+            # workaround for some servers
+            # try to delete old file first, and then call rename again
+            self.delete(remote_path_new)
+            rc = self.__ftpconn.rename(old, new)
+
         done = rc.find("250") != -1
         return done
 
@@ -1633,8 +1641,8 @@ class EntropyFtpUriHandler(EntropyUriHandler):
             rc = self.__ftpconn.delete(path)
             if rc.startswith("250"):
                 done = True
-        except self.ftplib.error_perm as e:
-            if e[0][:3] == '550':
+        except self.ftplib.error_perm as err:
+            if err[0][:3] == '550':
                 done = True
             # otherwise not found
 
