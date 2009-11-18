@@ -11,6 +11,10 @@
 #
 # Sabayon Linux Official Repository
 repository|sabayonlinux.org|Sabayon Linux Official Repository||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy,sabayon.org
+repository|sabayonlinux.org||http://riksun.riken.go.jp/pub/pub/Linux/sabayon/entropy|
+repository|sabayonlinux.org||http://ftp2.cz.freebsd.org/pub/sabayon/entropy|
+repository|sabayonlinux.org||http://debian.mirror.dkm.cz/sabayon/entropy|
+repository|sabayonlinux.org||http://mirror.umoss.org/sabayonlinux/entropy|
 repository|sabayonlinux.org||http://mirrors.cs.wmich.edu/sabayon/entropy|
 repository|sabayonlinux.org||http://ftp.cc.uoc.gr/mirrors/linux/SabayonLinux/entropy|
 repository|sabayonlinux.org||http://mirror.dun.nu/sabayonlinux/entropy|
