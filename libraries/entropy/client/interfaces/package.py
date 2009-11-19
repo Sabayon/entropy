@@ -88,6 +88,12 @@ class Package:
         if signatures is None:
             signatures = self.pkgmeta['signatures']
 
+        sys_settings = self.Entropy.SystemSettings
+
+        sys_set_plg_id = \
+            etpConst['system_settings_plugins_ids']['client_plugin']
+        enabled_hashes = sys_settings[sys_set_plg_id]['misc']['packagehashes']
+
         def do_signatures_validation(signatures):
             # check signatures, if available
             if isinstance(signatures, dict):
@@ -98,6 +104,17 @@ class Package:
                     if hash_val in signatures:
                         continue
                     elif hash_val is None:
+                        continue
+                    elif hash_type not in enabled_hashes:
+                        self.Entropy.updateProgress(
+                            "%s %s" % (
+                                purple(hash_type.upper()),
+                                darkgreen(_("disabled")),
+                            ),
+                            importance = 0,
+                            type = "info",
+                            header = "      : "
+                        )
                         continue
                     elif not hasattr(entropy.tools, 'compare_%s' % (hash_type,)):
                         continue

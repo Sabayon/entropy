@@ -452,6 +452,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         data = {
             'filesbackup': etpConst['filesbackup'],
             'forcedupdates': etpConst['forcedupdates'],
+            'packagehashes': etpConst['packagehashes'],
             'ignore_spm_downgrades': etpConst['spm']['ignore-spm-downgrades'],
             'collisionprotect': etpConst['collisionprotect'],
             'configprotect': etpConst['configprotect'][:],
@@ -485,6 +486,16 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                     data['forcedupdates'] = False
                 else:
                     data['forcedupdates'] = True
+
+            elif line.startswith("packagehashes|") and (split_line_len == 2):
+
+                opts = split_line[1].strip().lower().split()
+                hashes = []
+                for opt in opts:
+                    if opt in etpConst['packagehashes']:
+                        hashes.append(opt)
+                if hashes:
+                    data['packagehashes'] = tuple(hashes)
 
             elif line.startswith("ignore-spm-downgrades|") and \
                 (split_line_len == 2):

@@ -386,6 +386,8 @@ def const_default_settings(rootdir):
         'packagessha512fileext': ".sha512",
         'packagessha256fileext': ".sha256",
         'packagessha1fileext': ".sha1",
+        # Supported Entropy Client package hashes encodings
+        'packagehashes': ("sha1", "sha256", "sha512"),
         # Extension of the file that "contains" expiration mtime
         'packagesexpirationfileext': ".expired",
         # number of days after a package will be removed from mirrors
