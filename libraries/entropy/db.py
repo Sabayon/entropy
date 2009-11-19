@@ -747,6 +747,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             check_same_thread = False)
         self.cursor = self.connection.cursor()
 
+        structure_update = False
+
         if not self.skipChecks:
 
             if not self.entropyTools.is_user_in_entropy_group():
@@ -763,9 +765,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                     if self.entropyTools.islive(): # this works
                         if etpConst['systemroot']:
-                            self._databaseStructureUpdates()
+                            structure_update = True
                     else:
-                        self._databaseStructureUpdates()
+                        structure_update = True
 
             except self.dbapi2.Error:
                 self.cursor.close()
@@ -774,6 +776,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         # now we can set this to False
         self.dbclosed = False
+
+        if structure_update:
+            self._databaseStructureUpdates()
 
     def setCacheSize(self, size):
         """
@@ -2323,6 +2328,10 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             tuples of length 3 containing library name, path and ELF class.
         @type libs_metadata: list
         """
+        # TODO: remove this in future
+        if not self._doesTableExist('provided_libs'):
+            self._createProvidedLibs()
+
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT INTO provided_libs VALUES (?,?,?,?)
@@ -2389,6 +2398,10 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @param idpackage: package indentifier
         @type idpackage: int
         """
+        # TODO: remove this in future
+        if not self._doesTableExist('provided_libs'):
+            self._createProvidedLibs()
+
         with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM provided_libs WHERE idpackage = (?)
@@ -4380,7 +4393,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             class
         @rtype: list
         """
-        # FIXME backward compatibility
+        # TODO: remove this in future, backward compat.
         if not self._doesTableExist('provided_libs'):
             return set()
 
@@ -5234,6 +5247,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @return: list of packages owning given library
         @rtype: list or set
         """
+        # TODO: remove this in future, backward compat.
+        if not self._doesTableExist('provided_libs'):
+            self._createProvidedLibs()
 
         args = (needed,)
         elfclass_txt = ''
@@ -6410,9 +6426,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if not self._doesTableExist('entropy_branch_migration'):
             self._createEntropyBranchMigrationTable()
 
-        if not self._doesTableExist('provided_libs'):
-            self._createProvidedLibs()
-
         if not self._doesTableExist('dependstable'):
             self._createDependsTable()
 
@@ -7484,7 +7497,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 );
             """)
 
-        # FIXME: this is going to be removed soon
+        # TODO: this is going to be removed soon
         client_repo = self.get_plugins_metadata().get('client_repo')
         with self.__write_mutex:
 
