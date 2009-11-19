@@ -1276,8 +1276,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
         ftpdir = '/'
         if ftpuri.count("/") > 2:
-            if ftpuri.startswith("ftp://"):
-                ftpdir = ftpuri[6:]
+            ftpdir = ftpuri[6:]
             ftpdir = "/" + ftpdir.split("/", 1)[-1]
             ftpdir = ftpdir.split(":")[0]
             if not ftpdir:
@@ -1834,7 +1833,9 @@ class EntropySshUriHandler(EntropyUriHandler):
     def __extract_scp_data(self, uri):
 
         no_ssh_split = uri.split("ssh://")[-1]
-        user = no_ssh_split.split("@")[0].split(":")[0]
+        user = ''
+        if "@" in no_ssh_split:
+            user = no_ssh_split.split("@")[0]
 
         port = uri.split(":")[-1]
         try:
@@ -1842,16 +1843,10 @@ class EntropySshUriHandler(EntropyUriHandler):
         except ValueError:
             port = EntropySshUriHandler._DEFAULT_PORT
 
-        sdir = '/'
-        if uri.count("/") > 2:
-            if uri.startswith("ssh://"):
-                sdir = uri[6:]
-            sdir = "/" + sdir.split("/", 1)[-1]
-            sdir = sdir.split(":")[0]
-            if not sdir:
-                sdir = '/'
-            elif sdir.endswith("/") and (sdir != "/"):
-                sdir = sdir[:-1]
+        sdir = '~/'
+        proposed_sdir = no_ssh_split.split(":", 1)[-1].split(":")[0]
+        if proposed_sdir:
+            sdir = proposed_sdir
 
         return user, port, sdir
 
