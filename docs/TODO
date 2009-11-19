@@ -4,8 +4,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   0.99.10:
 
-    - Magneto: fix notification icon position
-    - Undefined license blah blah
     - move etpConst['spm'] to entropy.spm (to do this =>
         EntropyRepository.regenerateSpmUidTable should be reworked)
     - remove entropy spm (sort_update_files) from entropy.server
