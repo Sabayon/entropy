@@ -32,7 +32,8 @@ from entropy.i18n import _
 from entropy.misc import ParallelTask, Lifo
 from entropy.core.settings.base import SystemSettings
 
-from entropy.exceptions import *
+from entropy.exceptions import UriHandlerNotFound, ConnectionError, \
+    TransceiverError
 
 class UrlFetcher:
 
@@ -84,10 +85,10 @@ class UrlFetcher:
             self.__Output = TextInterface()
         elif not hasattr(self.__Output, 'updateProgress'):
             mytxt = _("Output interface passed doesn't have the updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            raise AttributeError("IncorrectParameter: %s" % (mytxt,))
         elif not hasattr(self.__Output.updateProgress, '__call__'):
             mytxt = _("Output interface passed doesn't have the updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            raise AttributeError("IncorrectParameter: %s" % (mytxt,))
 
     def _init_vars(self):
         self.__resumed = False
@@ -453,10 +454,10 @@ class MultipleUrlFetcher:
             self.__Output = TextInterface()
         elif not hasattr(self.__Output, 'updateProgress'):
             mytxt = _("Output interface passed doesn't have the updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            raise AttributeError("IncorrectParameter: %s" % (mytxt,))
         elif not hasattr(self.__Output.updateProgress, '__call__'):
             mytxt = _("Output interface passed doesn't have the updateProgress method")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            raise AttributeError("IncorrectParameter: %s" % (mytxt,))
 
         self.__url_fetcher = UrlFetcherClass
         if self.__url_fetcher == None:
