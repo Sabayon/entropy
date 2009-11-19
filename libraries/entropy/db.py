@@ -6691,7 +6691,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         except:
             pass
         self.updateProgress(
-            red(_("Database Export completed.")),
+            red(_("Database Export complete.")),
             importance = 0,
             type = "info",
             header = "   "
