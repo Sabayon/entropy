@@ -6724,14 +6724,13 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         return self._cur2list(cur)
 
     def _doesTableExist(self, table):
+
         cur = self.cursor.execute("""
         select name from SQLITE_MASTER where type = "table" and name = (?)
         LIMIT 1
         """, (table,))
         rslt = cur.fetchone()
-        if rslt is None:
-            return False
-        return True
+        return rslt is not None
 
     def _doesColumnInTableExist(self, table, column):
         cur = self.cursor.execute('PRAGMA table_info( %s )' % (table,))
