@@ -1242,7 +1242,10 @@ def installPackages(packages = None, atomsdata = None, deps = True,
 
     if not etpUi['clean'] or onlyfetch:
         # Before starting the real install, fetch packages and verify checksum.
-        _fetchPackages(runQueue, multifetch, dochecksum)
+        func_rc, fetch_rc = _fetchPackages(runQueue, multifetch, dochecksum)
+        if func_rc != 0:
+            print_info(red(" @@ ")+blue("%s." % (_("Download incomplete"),) ))
+            return func_rc, fetch_rc
 
         def spawn_ugc():
             try:
