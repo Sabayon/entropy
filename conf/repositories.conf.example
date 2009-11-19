@@ -72,6 +72,18 @@ officialrepositoryid|sabayonlinux.org
 # downloadspeedlimit|
 
 #
+#  syntax for downloadtimeout:
+#
+#    downloadtimeout: If you are on a slow network, you may want to raise the
+#                     download timeout value (by default, it's set to 10 secs)
+#    downloadtimeout|<maximum allowed speed in kb/sec>
+#
+#    example:
+#    downloadtimeout|20
+#
+# downloadtimeout|20
+
+#
 #  syntax for securityurl:
 #
 #    securityurl: Entropy compatible Security Advisories (GLSAs) package URL

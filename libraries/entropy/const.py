@@ -499,6 +499,8 @@ def const_default_settings(rootdir):
         'gentle_nice': 15,
         'current_nice': 0,
         'default_nice': 0,
+        # Default download socket timeout for Entropy Client transceivers
+        'default_download_timeout': 20,
         'server_treeupdatescalled': set(),
         'client_treeupdatescalled': set(),
         'spm': {

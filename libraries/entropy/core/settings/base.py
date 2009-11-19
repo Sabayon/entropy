@@ -959,6 +959,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'branch': etpConst['branch'],
             'default_repository': etpConst['officialrepositoryid'],
             'transfer_limit': etpConst['downloadspeedlimit'],
+            'timeout': etpConst['default_download_timeout'],
             'security_advisories_url': etpConst['securityurl'],
         }
 
@@ -1054,6 +1055,15 @@ class SystemSettings(Singleton, EntropyPluginStore):
                         data['transfer_limit'] = None
                 except (ValueError, IndexError,):
                     data['transfer_limit'] = None
+
+            elif (line.find("downloadtimeout|") != -1) and \
+                (not line.startswith("#")) and (split_line_len == 2):
+
+                try:
+                    myval = int(split_line[1])
+                    data['timeout'] = myval
+                except (ValueError, IndexError,):
+                    continue
 
             elif (line.find("securityurl|") != -1) and \
                 (not line.startswith("#")) and (split_line_len == 2):
