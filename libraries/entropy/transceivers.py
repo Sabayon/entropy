@@ -1860,7 +1860,7 @@ class EntropySshUriHandler(EntropyUriHandler):
         line_data = line.strip().split()
         if len(line_data) < 5:
             # mmh... not possible to properly parse data
-            self.updateProgress(line, back = True)
+            self.updateProgress(line.strip(), back = True)
             return
 
         percent = line_data[1]
