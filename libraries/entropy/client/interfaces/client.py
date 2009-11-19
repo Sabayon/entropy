@@ -478,7 +478,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 if compatopt in ("disable", "disabled", "false", "0", "no",):
                     data['filesbackup'] = False
 
-            if line.startswith("forcedupdates|") and (split_line_len == 2):
+            elif line.startswith("forcedupdates|") and (split_line_len == 2):
 
                 compatopt = split_line[1].strip().lower()
                 if compatopt in ("disable", "disabled", "false", "0", "no",):
