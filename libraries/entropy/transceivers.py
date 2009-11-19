@@ -1795,7 +1795,7 @@ class EntropySshUriHandler(EntropyUriHandler):
 
     @staticmethod
     def get_uri_name(uri):
-        myuri = uri.split("/")[2:][0]
+        myuri = uri.split("/")[2:][0].split(":")[0]
         myuri = myuri.split("@")[-1]
         return myuri
 
