@@ -242,10 +242,12 @@ def ugcDocuments(options):
     rc = -10
     repository = options[0]
     options = options[1:]
-    if not options: return rc
+    if not options:
+        return rc
     cmd = options[0]
     options = options[1:]
-    if not options: return rc
+    if not options:
+        return rc
     pkgkey = options[0]
     options = options[1:]
     rc = 0
@@ -596,4 +598,5 @@ def _my_formatted_print(data,header,reset_columns, min_chars = 25, color = None)
             fcount = 0
             print_info(desc_text)
             desc_text = reset_columns
-    if fcount > 0: print_info(desc_text)
+    if fcount > 0:
+        print_info(desc_text)
