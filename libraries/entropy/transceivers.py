@@ -51,7 +51,8 @@ class UrlFetcher:
         import entropy.tools as entropyTools
         import socket
         self.entropyTools, self.socket = entropyTools, socket
-        self.__timeout = 20
+        self.__timeout = \
+            self.__system_settings['repositories']['timeout']
         self.__th_id = 0
         self.__resume = resume
         self.__url = self.__encode_url(url)
@@ -333,7 +334,6 @@ class UrlFetcher:
             self.__remotefile.close()
         except:
             pass
-        self.socket.setdefaulttimeout(2)
 
     def _update_speed(self):
         cur_time = time.time()
