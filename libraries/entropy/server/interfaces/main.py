@@ -25,7 +25,8 @@ from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 from entropy.transceivers import EntropyTransceiver
-from entropy.db import EntropyRepository, EntropyRepositoryPlugin
+from entropy.db import EntropyRepository
+from entropy.db.skel import EntropyRepositoryPlugin
 from entropy.server.interfaces.db import ServerRepositoryStatus
 from entropy.spm.plugins.factory import get_default_instance as get_spm, \
     get_default_class as get_spm_class

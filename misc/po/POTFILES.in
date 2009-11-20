@@ -1,3 +1,6 @@
+../libraries/entropy/db/__init__.py
+../libraries/entropy/db/plugin_store.py
+../libraries/entropy/db/skel.py
 ../libraries/entropy/core/__init__.py
 ../libraries/entropy/core/settings/base.py
 ../libraries/entropy/core/settings/__init__.py
@@ -28,6 +31,7 @@
 ../libraries/entropy/services/skel.py
 ../libraries/entropy/server/__init__.py
 ../libraries/entropy/server/transceivers.py
+../libraries/entropy/server/interfaces/db.py
 ../libraries/entropy/server/interfaces/__init__.py
 ../libraries/entropy/server/interfaces/main.py
 ../libraries/entropy/server/interfaces/mirrors.py
@@ -44,6 +48,7 @@
 ../libraries/entropy/client/misc.py
 ../libraries/entropy/client/interfaces/cache.py
 ../libraries/entropy/client/interfaces/client.py
+../libraries/entropy/client/interfaces/db.py
 ../libraries/entropy/client/interfaces/dep.py
 ../libraries/entropy/client/interfaces/fetch.py
 ../libraries/entropy/client/interfaces/__init__.py
@@ -56,7 +61,6 @@
 ../libraries/entropy/client/interfaces/trigger.py
 ../libraries/entropy/cache.py
 ../libraries/entropy/const.py
-../libraries/entropy/db.py
 ../libraries/entropy/dump.py
 ../libraries/entropy/exceptions.py
 ../libraries/entropy/i18n.py

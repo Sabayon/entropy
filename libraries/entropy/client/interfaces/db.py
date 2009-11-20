@@ -10,7 +10,7 @@
 
 """
 from entropy.const import const_debug_write
-from entropy.db import EntropyRepositoryPlugin
+from entropy.db.skel import EntropyRepositoryPlugin
 
 class ClientEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 

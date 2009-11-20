@@ -30,8 +30,7 @@ from entropy.exceptions import IncorrectParameter, PermissionDenied, \
 from entropy.i18n import _
 from entropy.core import EntropyPluginStore
 from entropy.core.settings.base import SystemSettings
-
-from entropy.db import EntropyRepositoryPlugin
+from entropy.db.skel import EntropyRepositoryPlugin
 
 class QAEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
