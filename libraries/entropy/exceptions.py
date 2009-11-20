@@ -60,6 +60,9 @@ class InvalidDataType(EntropyException):
 class RepositoryError(EntropyException):
     """Cannot open repository database"""
 
+class EntropyRepositoryError(EntropyException):
+    """ An Entropy-related error occured in EntropyRepository class methods """
+
 class RepositoryPluginError(EntropyException):
     """Error during EntropyRepositoryPlugin hook execution"""
 
