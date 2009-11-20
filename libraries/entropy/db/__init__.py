@@ -32,7 +32,7 @@ from entropy.const import etpConst, etpCache, const_setup_file, \
     const_isunicode, const_convert_to_unicode, const_get_buffer, \
     const_convert_to_rawstring, const_cmp
 from entropy.exceptions import IncorrectParameter, InvalidAtom, \
-    SystemDatabaseError, OperationNotPermitted, RepositoryPluginError
+    SystemDatabaseError, OperationNotPermitted, RepositoryPluginError, SPMError
 from entropy.i18n import _
 from entropy.output import brown, bold, red, blue, purple, darkred, darkgreen, \
     TextInterface
@@ -54,10 +54,6 @@ except ImportError: # fallback to pysqlite
                 e,
             )
         )
-
-
-
-
 
 class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
@@ -7015,85 +7011,45 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 PRIMARY KEY(idpackage, branch)
             );
             """)
-            idpackages = self.listAllIdpackages()
-            # assign a counter to an idpackage
-            counter_path = etpConst['spm']['xpak_entries']['counter']
-            for myid in idpackages:
+            insert_data = []
+            for myid in self.listAllIdpackages():
 
-                # get atom
-                myatom = self.retrieveAtom(myid)
+                try:
+                    spm_uid = spm.resolve_package_uid(self, myid)
+                except SPMError as err:
+                    if verbose:
+                        mytxt = "%s: %s: %s" % (
+                            bold(_("ATTENTION")),
+                            red(_("Spm error occured")),
+                            str(err),
+                        )
+                        self.updateProgress(
+                            mytxt,
+                            importance = 1,
+                            type = "warning"
+                        )
+                    continue
+
+                if spm_uid is None:
+                    if verbose:
+                        mytxt = "%s: %s: %s" % (
+                            bold(_("ATTENTION")),
+                            red(_("Spm Unique Identifier not found for")),
+                            self.retrieveAtom(myid),
+                        )
+                        self.updateProgress(
+                            mytxt,
+                            importance = 1,
+                            type = "warning"
+                        )
+                    continue
+
                 mybranch = self.retrieveBranch(myid)
-                myatom = self.entropyTools.remove_tag(myatom)
-                build_path = spm.get_installed_package_build_script_path(myatom)
-                myatomcounterpath = os.path.join(os.path.dirname(build_path),
-                    counter_path)
+                insert_data.append((spm_uid, myid, mybranch))
 
-                if not (os.access(myatomcounterpath, os.R_OK) and \
-                    os.path.isfile(myatomcounterpath)):
-
-                    if verbose:
-                        mytxt = "%s: %s: %s" % (
-                            bold(_("ATTENTION")),
-                            red(_("Spm counter path not found in")),
-                            bold(myatomcounterpath),
-                        )
-                        self.updateProgress(
-                            mytxt,
-                            importance = 1,
-                            type = "warning"
-                        )
-                    continue
-
-                try:
-                    with open(myatomcounterpath, "r") as f:
-                        counter = int(f.readline().strip())
-                except ValueError:
-                    # counter is not int, and fucked up
-                    if verbose:
-                        mytxt = "%s: %s: %s" % (
-                            bold(_("ATTENTION")),
-                            red(_("Spm id is not valid for")),
-                            bold(myatom),
-                        )
-                        self.updateProgress(
-                            mytxt,
-                            importance = 1,
-                            type = "warning"
-                        )
-                    continue
-                except Exception as e:
-                    if verbose:
-                        mytxt = "%s: %s: %s [%s]" % (
-                            bold(_("ATTENTION")),
-                            red(_("cannot open Spm id file for")),
-                            bold(myatom),
-                            e,
-                        )
-                        self.updateProgress(
-                            mytxt,
-                            importance = 1,
-                            type = "warning"
-                        )
-                    continue
-                # insert id+counter
-                try:
-                    self.cursor.execute("""
-                    INSERT into counters_regen VALUES (?,?,?)
-                    """, (counter, myid, mybranch,))
-                except self.dbapi2.IntegrityError:
-                    if verbose:
-                        mytxt = "%s: %s: %s" % (
-                            bold(_("ATTENTION")),
-                            red(_("id for atom is duplicated, ignoring")),
-                            bold(myatom),
-                        )
-                        self.updateProgress(
-                            mytxt,
-                            importance = 1,
-                            type = "warning"
-                        )
-                    continue
-                    # don't trust counters, they might not be unique
+            self.cursor.executemany("""
+            INSERT OR REPLACE into counters_regen VALUES (?,?,?)
+            """, insert_data)
 
             self.cursor.executescript("""
             DELETE FROM counters;
