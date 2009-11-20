@@ -1212,7 +1212,7 @@ class PortagePlugin(SpmPlugin):
             return None # not found
 
         try:
-            with open(myatomcounterpath, "r") as f:
+            with open(atom_counter_path, "r") as f:
                 counter = int(f.readline().strip())
         except ValueError:
             raise SPMError("invalid Unique Identifier found")
