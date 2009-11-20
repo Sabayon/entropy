@@ -18,7 +18,7 @@ from entropy.misc import LogFile
 class SpmPlugin(Singleton):
     """Base class for Source Package Manager plugins"""
 
-    BASE_PLUGIN_API_VERSION = 0
+    BASE_PLUGIN_API_VERSION = 1
 
     # this must be reimplemented by subclasses and value
     # must match BASE_PLUGIN_API_VERSION
@@ -487,6 +487,27 @@ class SpmPlugin(Singleton):
         @type root: string
         @return: assigned Unique Identifier
         @rtype: int
+        """
+        raise NotImplementedError()
+
+    def resolve_package_uid(self, entropy_repository,
+        entropy_repository_package_id):
+        """
+        This is the bridge between Entropy package repository and its Source
+        Package Manager backend. Given an EntropyRepository instance and its
+        package identifier (which is available inside it). Return the package
+        Unique Identifier that is bound to it, if available, otherwise return
+        None. This function is used by EntropyRepository to regenerate
+        Entropy<->Spm package bindings.
+
+        @param entropy_repository: EntropyRepository instance
+        @param entropy_repository_package_id: EntropyRepository instance package
+            identifier
+        @type entropy_repository: EntropyRepository
+        @type entropy_repository_package_id: int
+        @return: bound Source Package Manager Unique Identifier
+        @rtype: int
+        @raise SPMError: in case of critical issues
         """
         raise NotImplementedError()
 

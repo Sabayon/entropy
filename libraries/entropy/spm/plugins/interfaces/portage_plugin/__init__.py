@@ -126,7 +126,7 @@ class PortagePlugin(SpmPlugin):
         'configure': 'config',
     }
 
-    PLUGIN_API_VERSION = 0
+    PLUGIN_API_VERSION = 1
 
     SUPPORTED_MATCH_TYPES = [
         "bestmatch-visible", "cp-list", "list-visible", "match-all",
@@ -1192,6 +1192,34 @@ class PortagePlugin(SpmPlugin):
             count_f.flush()
 
         return new_counter
+
+    def resolve_package_uid(self, entropy_repository,
+        entropy_repository_package_id):
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        counter_path = etpConst['spm']['xpak_entries']['counter']
+        entropy_atom = entropy_repository.retrieveAtom(
+            entropy_repository_package_id)
+
+        spm_name = self.convert_from_entropy_package_name(entropy_atom)
+        build_path = self.get_installed_package_build_script_path(spm_name)
+        atom_counter_path = os.path.join(os.path.dirname(build_path),
+            counter_path)
+
+        if not (os.access(atom_counter_path, os.R_OK) and \
+            os.path.isfile(atom_counter_path)):
+            return None # not found
+
+        try:
+            with open(myatomcounterpath, "r") as f:
+                counter = int(f.readline().strip())
+        except ValueError:
+            raise SPMError("invalid Unique Identifier found")
+        except Exception as e:
+            raise SPMError("General SPM Error: %s" % (e,))
+
+        return counter
 
     def search_paths_owners(self, paths, exact_match = True):
         """
