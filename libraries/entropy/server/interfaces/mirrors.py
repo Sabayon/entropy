@@ -2640,7 +2640,7 @@ class Server:
 
         uploader = self.TransceiverServerHandler(self.Entropy, [uri],
             myqueue, critical_files = myqueue,
-            use_handlers = True, txc_basedir = remote_dir,
+            txc_basedir = remote_dir,
             handlers_data = {'branch': branch }, repo = repo)
 
         errors, m_fine_uris, m_broken_uris = uploader.go()
@@ -2695,7 +2695,7 @@ class Server:
             self.Entropy.get_local_packages_directory(repo), branch)
         downloader = self.TransceiverServerHandler(
             self.Entropy, [uri], myqueue,
-            critical_files = myqueue, use_handlers = True,
+            critical_files = myqueue,
             txc_basedir = remote_dir, local_basedir = local_basedir,
             handlers_data = {'branch': branch }, download = True, repo = repo)
 

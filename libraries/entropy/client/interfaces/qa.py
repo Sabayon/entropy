@@ -50,7 +50,7 @@ class UGCErrorReportInterface(ErrorReportInterface):
         self.__system_settings = SystemSettings()
 
         if repository_id == None:
-            repository_id = etpConst['officialserverrepositoryid']
+            repository_id = etpConst['officialrepositoryid']
 
         self.entropy = Client()
         self.__repository_id = repository_id

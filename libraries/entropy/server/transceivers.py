@@ -24,7 +24,7 @@ class TransceiverServerHandler:
 
     def __init__(self, entropy_interface, uris, files_to_upload,
         download = False, remove = False, txc_basedir = None,
-        local_basedir = None, critical_files = None, use_handlers = False,
+        local_basedir = None, critical_files = None,
         handlers_data = None, repo = None):
 
         if critical_files is None:
@@ -61,10 +61,8 @@ class TransceiverServerHandler:
         self.repo = repo
         if self.repo == None:
             self.repo = self.Entropy.default_repository
-        self.use_handlers = use_handlers
         if self.remove:
             self.download = False
-            self.use_handlers = False
 
         if not txc_basedir:
             # default to database directory
@@ -162,98 +160,7 @@ class TransceiverServerHandler:
                 )
                 valid_remote_md5 = False
 
-        if not self.use_handlers:
-            # handlers usage is disabled
-            return valid_remote_md5 # always valid
-
-        checksum = self.Entropy.get_remote_package_checksum(
-            self.repo,
-            os.path.basename(local_filepath),
-            self.handlers_data['branch']
-        )
-        if checksum == None:
-            self.Entropy.updateProgress(
-                "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                    blue(crippled_uri),
-                    darkgreen(str(tries)),
-                    blue(str(counter)),
-                    bold(str(maxcount)),
-                    blue(_("digest verification")),
-                    os.path.basename(local_filepath),
-                    darkred(_("not supported")),
-                ),
-                importance = 0,
-                type = "info",
-                header = red(" @@ ")
-            )
-            return valid_remote_md5
-        elif isinstance(checksum, bool) and not checksum:
-            self.Entropy.updateProgress(
-                "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                    blue(crippled_uri),
-                    darkgreen(str(tries)),
-                    blue(str(counter)),
-                    bold(str(maxcount)),
-                    blue(_("digest verification")),
-                    os.path.basename(local_filepath),
-                    bold(_("file not found")),
-                ),
-                importance = 0,
-                type = "warning",
-                header = brown(" @@ ")
-            )
-            return False
-        elif is_valid_md5(checksum):
-            # valid? checking
-            ckres = compare_md5(local_filepath, checksum)
-            if ckres:
-                self.Entropy.updateProgress(
-                    "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                        blue(crippled_uri),
-                        darkgreen(str(tries)),
-                        blue(str(counter)),
-                        bold(str(maxcount)),
-                        blue(_("digest verification")),
-                        os.path.basename(local_filepath),
-                        darkgreen(_("so far, so good!")),
-                    ),
-                    importance = 0,
-                    type = "info",
-                    header = red(" @@ ")
-                )
-                return True
-            else:
-                self.Entropy.updateProgress(
-                    "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                        blue(crippled_uri),
-                        darkgreen(str(tries)),
-                        blue(str(counter)),
-                        bold(str(maxcount)),
-                        blue(_("digest verification")),
-                        os.path.basename(local_filepath),
-                        darkred(_("invalid checksum")),
-                    ),
-                    importance = 0,
-                    type = "warning",
-                    header = brown(" @@ ")
-                )
-                return False
-        else:
-            self.Entropy.updateProgress(
-                "[%s|#%s|(%s/%s)] %s: %s: %s" % (
-                    blue(crippled_uri),
-                    darkgreen(str(tries)),
-                    blue(str(counter)),
-                    bold(str(maxcount)),
-                    blue(_("digest verification")),
-                    os.path.basename(local_filepath),
-                    darkred(_("unknown data returned")),
-                ),
-                importance = 0,
-                type = "warning",
-                header = brown(" @@ ")
-            )
-            return valid_remote_md5
+        return valid_remote_md5 # always valid
 
     def _transceive(self, uri):
 
@@ -329,8 +236,6 @@ class TransceiverServerHandler:
                     )
                     rc = syncer(*myargs)
                     if rc and not (self.download or self.remove):
-                        # try with "SITE MD5 command first"
-                        # proftpd's mod_md5 supports it
                         remote_md5 = handler.get_md5(remote_path)
                         rc = self.handler_verify_upload(mypath, uri,
                             counter, maxcount, tries, remote_md5 = remote_md5)

@@ -18,7 +18,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         sys.stdout.write("%s called\n" % (self,))
         sys.stdout.flush()
         self.default_repo = "foo"
-        etpConst['officialserverrepositoryid'] = self.default_repo
+        etpConst['defaultserverrepositoryid'] = self.default_repo
         etpConst['uid'] = 0
         self.SystemSettings = SystemSettings()
 

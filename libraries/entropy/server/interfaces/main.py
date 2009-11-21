@@ -358,7 +358,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             'repositories': etpConst['server_repositories'].copy(),
             'sync_speed_limit': None,
             'qa_langs': ["en_US", "C"],
-            'default_repository_id': etpConst['officialserverrepositoryid'],
+            'default_repository_id': etpConst['defaultserverrepositoryid'],
             'packages_expiration_days': etpConst['packagesexpirationdays'],
             'database_file_format': etpConst['etpdatabasefileformat'],
             'disabled_eapis': set(),
@@ -382,16 +382,30 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
         with open(etpConst['serverconf'], "r") as server_f:
             serverconf = [x.strip() for x in server_f.readlines() if x.strip()]
 
+        default_repo_changed = False
+
         for line in serverconf:
 
             split_line = line.split("|")
             split_line_len = len(split_line)
 
+            # TODO: remove this in future, supported for backward compat.
             if (line.find("officialserverrepositoryid|") != -1) and \
+                (not line.startswith("#")) and (split_line_len == 2):
+
+                # TODO: added for backward and mixed compat.
+                if default_repo_changed:
+                    continue
+
+                if not fake_instance:
+                    data['default_repository_id'] = split_line[1].strip()
+
+            elif (line.find("default-repository|") != -1) and \
                 (not line.startswith("#")) and (split_line_len == 2):
 
                 if not fake_instance:
                     data['default_repository_id'] = split_line[1].strip()
+                default_repo_changed = True
 
             elif line.startswith("expiration-days|") and (split_line_len == 2):
 
@@ -963,12 +977,12 @@ class Server(Singleton, TextInterface):
             found = False
             new_content = []
             for line in content:
-                if line.strip().startswith("officialserverrepositoryid|"):
-                    line = "officialserverrepositoryid|%s" % (repoid,)
+                if line.strip().startswith("default-repository|"):
+                    line = "default-repository|%s" % (repoid,)
                     found = True
                 new_content.append(line)
             if not found:
-                new_content.append("officialserverrepositoryid|%s" % (repoid,))
+                new_content.append("default-repository|%s" % (repoid,))
             f_srv_t = open(etpConst['serverconf']+".save_default_repo_tmp", "w")
             for line in new_content:
                 f_srv_t.write(line+"\n")
@@ -978,7 +992,7 @@ class Server(Singleton, TextInterface):
                 etpConst['serverconf'])
         else:
             f_srv = open(etpConst['serverconf'], "w")
-            f_srv.write("officialserverrepositoryid|%s\n" % (repoid,))
+            f_srv.write("default-repository|%s\n" % (repoid,))
             f_srv.flush()
             f_srv.close()
 
@@ -1144,7 +1158,7 @@ class Server(Singleton, TextInterface):
 
         etpConst['server_repositories'][repoid] = repodata
         if set_as_default:
-            etpConst['officialserverrepositoryid'] = repoid
+            etpConst['defaultserverrepositoryid'] = repoid
         sys_set = SystemSettings()
         sys_set.clear()
 
@@ -2038,7 +2052,6 @@ class Server(Singleton, TextInterface):
                     [uri],
                     downloader_queue,
                     critical_files = downloader_queue,
-                    use_handlers = True,
                     txc_basedir = basedir,
                     local_basedir = tmp_down_dir,
                     download = True,
@@ -3639,50 +3652,6 @@ class Server(Singleton, TextInterface):
                     )
             return idpackages, False
 
-    def get_remote_package_checksum(self, repo, filename, branch):
-
-        if sys.hexversion >= 0x3000000:
-            import urllib.request as urlmod
-            import urllib.error as urlmod_error
-        else:
-            import urllib2 as urlmod
-            import urllib2 as urlmod_error
-
-        srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        if 'handler' not in srv_set['repositories'][repo]:
-            return None
-        url = srv_set['repositories'][repo]['handler']
-
-        # does the package has "#" (== tag) ? hackish thing that works
-        filename = filename.replace("#", "%23")
-        # "+"
-        filename = filename.replace("+", "%2b")
-        request = os.path.join(url, etpConst['handlers']['md5sum'])
-        request += filename+"&branch="+branch
-
-        proxy_settings = self.SystemSettings['system']['proxy']
-        try:
-            mydict = {}
-            if proxy_settings['ftp']:
-                mydict['ftp'] = proxy_settings['ftp']
-            if proxy_settings['http']:
-                mydict['http'] = proxy_settings['http']
-            if mydict:
-                mydict['username'] = proxy_settings['username']
-                mydict['password'] = proxy_settings['password']
-                self.entropyTools.add_proxy_opener(urlmod, mydict)
-            else:
-                # unset
-                urlmod._opener = None
-            item = urlmod.urlopen(request)
-            result = item.readline().strip()
-            item.close()
-            del item
-            return result
-        except (urlmod_error.URLError, urlmod_error.HTTPError,):
-            # no HTTP support?
-            return None
-
     def verify_remote_packages(self, packages, ask = True, repo = None):
 
         if repo is None:
@@ -3758,79 +3727,71 @@ class Server(Singleton, TextInterface):
 
             totalcounter = len(idpackages)
             currentcounter = 0
-            for idpackage in idpackages:
 
-                currentcounter += 1
-                pkgfile = dbconn.retrieveDownloadURL(idpackage)
-                orig_branch = self.get_branch_from_download_relative_uri(
-                    pkgfile)
+            txc = self.Transceiver(uri)
+            txc.set_verbosity(False)
+            with txc as handler:
 
-                self.updateProgress(
-                    "[%s] %s: %s" % (
-                        brown(crippled_uri),
-                        blue(_("checking hash")),
-                        darkgreen(pkgfile),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = blue(" @@ "),
-                    back = True,
-                    count = (currentcounter, totalcounter,)
-                )
+                for idpackage in idpackages:
 
-                checksum_ok = False
-                ck_remote = self.get_remote_package_checksum(repo,
-                    os.path.basename(pkgfile), orig_branch)
-                if ck_remote is None:
-                    self.updateProgress(
-                        "[%s] %s: %s %s" % (
-                            brown(crippled_uri),
-                            blue(_("digest verification of")),
-                            bold(pkgfile),
-                            blue(_("not supported")),
-                        ),
-                        importance = 1,
-                        type = "info",
-                        header = blue(" @@ "),
-                        count = (currentcounter, totalcounter,)
-                    )
-                elif len(ck_remote) == 32:
+                    currentcounter += 1
+                    pkgfile = dbconn.retrieveDownloadURL(idpackage) 
                     pkghash = dbconn.retrieveDigest(idpackage)
-                    if ck_remote == pkghash:
-                        checksum_ok = True
-                else:
+
                     self.updateProgress(
-                        "[%s] %s: %s %s" % (
+                        "[%s] %s: %s" % (
                             brown(crippled_uri),
-                            blue(_("digest verification of")),
-                            bold(pkgfile),
-                            blue(_("failed for unknown reasons")),
+                            blue(_("checking hash")),
+                            darkgreen(pkgfile),
                         ),
                         importance = 1,
                         type = "info",
                         header = blue(" @@ "),
+                        back = True,
                         count = (currentcounter, totalcounter,)
                     )
 
-                if checksum_ok:
-                    match.add(idpackage)
-                else:
-                    not_match.add(idpackage)
-                    self.updateProgress(
-                        "[%s] %s: %s %s" % (
-                            brown(crippled_uri),
-                            blue(_("package")),
-                            bold(pkgfile),
-                            red(_("NOT healthy")),
-                        ),
-                        importance = 1,
-                        type = "warning",
-                        header = darkred(" !!! "),
-                        count = (currentcounter, totalcounter,)
-                    )
-                    if crippled_uri not in broken_packages:
-                        broken_packages[crippled_uri] = []
-                    broken_packages[crippled_uri].append(pkgfile)
+                    pkg_rel_path = '/'.join(pkgfile.split("/")[2:])
+
+                    pkgfile = os.path.join(
+                        self.get_remote_packages_relative_path(repo),
+                        pkg_rel_path)
+
+                    ck_remote = handler.get_md5(pkgfile)
+                    if ck_remote is None:
+                        self.updateProgress(
+                            "[%s] %s: %s %s" % (
+                                brown(crippled_uri),
+                                blue(_("digest verification of")),
+                                bold(pkgfile),
+                                blue(_("not supported")),
+                            ),
+                            importance = 1,
+                            type = "info",
+                            header = blue(" @@ "),
+                            count = (currentcounter, totalcounter,)
+                        )
+                        continue
+
+                    if ck_remote == pkghash:
+                        match.add(idpackage)
+                    else:
+                        not_match.add(idpackage)
+                        self.updateProgress(
+                            "[%s] %s: %s %s" % (
+                                brown(crippled_uri),
+                                blue(_("package")),
+                                bold(pkgfile),
+                                red(_("NOT healthy")),
+                            ),
+                            importance = 1,
+                            type = "warning",
+                            header = darkred(" !!! "),
+                            count = (currentcounter, totalcounter,)
+                        )
+                        if crippled_uri not in broken_packages:
+                            broken_packages[crippled_uri] = []
+                        broken_packages[crippled_uri].append(pkgfile)
 
             if broken_packages:
                 mytxt = blue("%s:") % (

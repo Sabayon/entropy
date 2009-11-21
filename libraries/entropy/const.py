@@ -455,8 +455,7 @@ def const_default_settings(rootdir):
         # and handle the removal through expiration (using creation date)
         'expiration_based_scope': False,
         # our official repository name
-        'officialserverrepositoryid': "sabayonlinux.org",
-        # our official repository name
+        'defaultserverrepositoryid': None,
         'officialrepositoryid': "sabayonlinux.org",
         'conntestlink': "http://www.sabayonlinux.org",
         # tag to append to .tbz2 file before entropy database (must be 32bytes)
@@ -707,12 +706,6 @@ def const_default_settings(rootdir):
         },
         'ugc_accessfile': default_etp_ugc_confdir+"/access.xml",
         'ugc_voterange': list(range(1, 6)),
-
-        # handler settings
-        'handlers': {
-            # md5sum handler,
-            'md5sum': "md5sum.php?arch="+etpSys['arch']+"&package=",
-        },
 
     }
 
@@ -1196,13 +1189,12 @@ def const_extract_srv_repo_params(repostring, product = None):
     repoid = repostring.split("|")[1].strip()
     repodesc = repostring.split("|")[2].strip()
     repouris = repostring.split("|")[3].strip()
-    repohandlers = repostring.split("|")[4].strip()
 
     service_url = None
     eapi3_port = int(etpConst['socket_service']['port'])
     eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
-    if len(repostring.split("|")) > 5:
-        service_url = repostring.split("|")[5].strip()
+    if len(repostring.split("|")) > 4:
+        service_url = repostring.split("|")[4].strip()
 
         eapi3_formatcolon = service_url.rfind("#")
         if eapi3_formatcolon != -1:
@@ -1224,9 +1216,6 @@ def const_extract_srv_repo_params(repostring, product = None):
     mydata['service_url'] = service_url
     mydata['service_port'] = eapi3_port
     mydata['ssl_service_port'] = eapi3_ssl_port
-    if repohandlers:
-        repohandlers = os.path.join(repohandlers, product, repoid, "handlers")
-        mydata['handler'] = repohandlers
     uris = repouris.split()
     for uri in uris:
         mydata['mirrors'].append(uri)

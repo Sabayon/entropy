@@ -15,22 +15,25 @@
 
 
 #
-#  syntax for officialserverrepositoryid:
+#  syntax for default-repository:
 #
-#    officialserverrepositoryid: Repository identifier for the official main distribution repository
-#    officialserverrepositoryid|<repository identifier>
+#    default-repository: Currently working repository identifier (if you have
+#        more than one server-side repository, this indicates the one which
+#        Entropy Server is authorized to work on)
+#    default-repository|<repository identifier>
 #
-officialserverrepositoryid|sabayonlinux.org
+default-repository|sabayonlinux.org
 
 #
-#  syntax for repositories:
+#  syntax for repository:
 #
 #    repository: server-side repositories configuration
-#    note: default repository setting is in repositories.conf (officialrepositoryid)
-#|   repository|repository_id|repository description|<ftp upload URI 1> <2>|<http handlers uri>|<remote server hostname>#<service port>,<ssl service port>
+#    Currently supported upload URI protocols are ftp:// and ssh://
+#      => repository|<repository_id>|<repository description>|<upload URI 1> <2>[|<EAPI3 remote server hostname>#<service port>,<ssl service port>]
+#    (EAPI3 part is optional)
 #
 #    example:
-#|       repository|sabayonlinux.org|Sabayon Linux Official Repository|ftp://user:pass@111.111.111.111/|http://svn.sabayonlinux.org/entropy|svn.sabayonlinux.org#1026,1027
+#      => repository|myserverrepo|My Server Repository|ftp://user:pass@111.111.111.111/ ssh://username@host:~user/path:port|hostname.tld#1026,1027
 #
 # repository|
 
