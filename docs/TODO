@@ -4,8 +4,8 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   0.99.10:
 
-    - move etpConst['spm'] to entropy.spm
     - remove entropy spm (sort_update_files) from entropy.server
+    - move etpConst['spm'] to entropy.spm
 
   0.99.20:
 
