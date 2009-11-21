@@ -2,13 +2,10 @@ TODO list
 
 Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
-  0.99.10:
+  0.99.20:
 
     - remove entropy spm (sort_update_files) from entropy.server
     - move etpConst['spm'] to entropy.spm
-
-  0.99.20:
-
     - entropy.transceivers.EntropyTransceiver to use Entropy plugin factory
     - make entropy.db matching rules externally inferred
     - provide repository digital key, fetch it when syncing repos and check if
