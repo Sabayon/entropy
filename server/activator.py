@@ -1,4 +1,5 @@
 #!/usr/bin/python2 -O
+# -*- coding: utf-8 -*-
 """
 
     @author: Fabio Erculiani <lxnay@sabayonlinux.org>
@@ -73,13 +74,6 @@ if (' '.join(options).find("--version") != -1) or (' '.join(options).find(" -V")
     print_generic("activator: "+etpConst['entropyversion'])
     raise SystemExit(0)
 
-# print help
-if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(options).find(" -h") != -1:
-    print_menu(myopts)
-    if len(options) < 1:
-        print_error("not enough parameters")
-    raise SystemExit(1)
-
 import re
 opt_r = re.compile("^(\\-)([a-z]+)$")
 for n in range(len(options)):
@@ -104,6 +98,13 @@ for opt in options:
     else:
         _options.append(opt)
 options = _options
+
+# print help
+if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(options).find(" -h") != -1:
+    print_menu(myopts)
+    if len(options) < 1:
+        print_error("not enough parameters")
+    raise SystemExit(1)
 
 rc = 1
 if not entropyTools.is_root():
