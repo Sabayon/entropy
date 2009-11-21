@@ -356,13 +356,14 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         data = {
             'repositories': etpConst['server_repositories'].copy(),
-            'sync_speed_limit': None,
             'qa_langs': ["en_US", "C"],
             'default_repository_id': etpConst['defaultserverrepositoryid'],
+            'base_repository_id': None,
             'packages_expiration_days': etpConst['packagesexpirationdays'],
             'database_file_format': etpConst['etpdatabasefileformat'],
             'disabled_eapis': set(),
             'exp_based_scope': etpConst['expiration_based_scope'],
+            'sync_speed_limit': None,
             'rss': {
                 'enabled': etpConst['rss-feed'],
                 'name': etpConst['rss-name'],
@@ -452,6 +453,10 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
                 else:
                     data['repositories'][repoid] = repodata.copy()
 
+                # base_repository_id support
+                if data['base_repository_id'] is None:
+                    data['base_repository_id'] = repoid
+
             elif line.startswith("database-format|") and (split_line_len == 2):
 
                 fmt = split_line[1]
@@ -518,6 +523,8 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             mydata['mirrors'] = []
             mydata['community'] = False
             data['repositories'][etpConst['clientserverrepoid']].update(mydata)
+            # installed packages repository is now the base repository
+            data['base_repository_id'] = etpConst['clientserverrepoid']
 
         # expand paths
         for repoid in data['repositories']:

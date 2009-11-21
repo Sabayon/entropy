@@ -32,6 +32,9 @@ default-repository|sabayonlinux.org
 #      => repository|<repository_id>|<repository description>|<upload URI 1> <2>[|<EAPI3 remote server hostname>#<service port>,<ssl service port>]
 #    (EAPI3 part is optional)
 #
+#    PLEASE NOTE: the first repository listed is going to be considered the
+#                 "base" repository
+#
 #    example:
 #      => repository|myserverrepo|My Server Repository|ftp://user:pass@111.111.111.111/ ssh://username@host:~user/path:port|hostname.tld#1026,1027
 #

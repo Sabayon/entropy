@@ -2030,8 +2030,21 @@ class Server:
 
             # XXX QA checks,
             # please group them into entropy.qa
+
+            srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
+            base_repo = srv_set['base_repository_id']
+            if base_repo is None:
+                base_repo = repo
+
+            base_deps_not_found = set()
+            if base_repo != repo:
+                base_deps_not_found = self.Entropy.dependencies_test(
+                    repo = repo)
+
             deps_not_found = self.Entropy.dependencies_test(repo = repo)
-            if deps_not_found and not self.Entropy.community_repo:
+            if (deps_not_found or base_deps_not_found) \
+                and not self.Entropy.community_repo:
+
                 self.Entropy.updateProgress(
                     "[repo:%s|%s] %s: %s" % (
                         brown(repo),
