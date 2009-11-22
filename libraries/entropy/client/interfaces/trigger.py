@@ -428,7 +428,14 @@ class Trigger:
             ETP_LOGLEVEL_NORMAL,
             "[POST] Running env-update"
         )
-        subprocess.call([Trigger.ENV_UPDATE_HOOK])
+        kwargs = {}
+        if etpUi['mute']:
+            kwargs['stdout'] = self.Entropy.clientLog
+            kwargs['stderr'] = self.Entropy.clientLog
+
+        args = (Trigger.ENV_UPDATE_HOOK,)
+        proc = subprocess.Popen(args, **kwargs)
+        proc.wait()
 
     def trigger_spm_postinstall(self):
 
