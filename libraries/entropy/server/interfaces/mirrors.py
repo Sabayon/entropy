@@ -2039,7 +2039,7 @@ class Server:
             base_deps_not_found = set()
             if base_repo != repo:
                 base_deps_not_found = self.Entropy.dependencies_test(
-                    repo = repo)
+                    repo = base_repo)
 
             deps_not_found = self.Entropy.dependencies_test(repo = repo)
             if (deps_not_found or base_deps_not_found) \
