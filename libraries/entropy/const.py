@@ -76,8 +76,10 @@ etpUi = {
     'clean': False,
     'warn': True,
 }
-if "--debug" in sys.argv:
+if ("--debug" in sys.argv) or os.getenv("ETP_DEBUG"):
     etpUi['debug'] = True
+if os.getenv('ETP_MUTE'):
+    etpUi['mute'] = True
 
 # static logging stuff
 ETP_LOGLEVEL_NORMAL = 1
