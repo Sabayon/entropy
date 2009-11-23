@@ -191,7 +191,7 @@ class RepositoryMixin:
             )
             self._add_plugin_to_client_repository(conn)
 
-        if (repoid not in etpConst['client_treeupdatescalled']) and \
+        if (repoid not in self._treeupdates_repos) and \
             (self.entropyTools.is_root()) and \
             (not repoid.endswith(etpConst['packagesext'])):
                 # only as root due to Portage

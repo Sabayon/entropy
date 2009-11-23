@@ -649,6 +649,7 @@ class ServerQAInterfacePlugin(QAInterfacePlugin):
 class Server(Singleton, TextInterface):
 
     _memory_db_instances = {}
+    _treeupdates_repos = set()
 
     def init_singleton(self, default_repository = None, save_repository = False,
             community_repo = False, fake_default_repo = False,
@@ -1290,7 +1291,7 @@ class Server(Singleton, TextInterface):
 
         # verify if we need to update the database to sync
         # with portage updates, we just ignore being readonly in the case
-        if (repo not in etpConst['server_treeupdatescalled']) and \
+        if (repo not in Server._treeupdates_repos) and \
             (not just_reading):
             # sometimes, when filling a new server db
             # we need to avoid tree updates
@@ -1352,18 +1353,18 @@ class Server(Singleton, TextInterface):
         if repo is None:
             repo = self.default_repository
 
-        etpConst['server_treeupdatescalled'].add(repo)
+        Server._treeupdates_repos.add(repo)
 
         repo_updates_file = self.get_local_database_treeupdates_file(repo)
-        doRescan = False
+        do_rescan = False
 
         stored_digest = repo_db.retrieveRepositoryUpdatesDigest(repo)
         if stored_digest == -1:
-            doRescan = True
+            do_rescan = True
 
-        # check portage files for changes if doRescan is still false
+        # check portage files for changes if do_rescan is still false
         portage_dirs_digest = "0"
-        if not doRescan:
+        if not do_rescan:
 
             if repo in self.repository_treeupdate_digests:
                 portage_dirs_digest = self.repository_treeupdate_digests.get(
@@ -1389,7 +1390,7 @@ class Server(Singleton, TextInterface):
                     self.repository_treeupdate_digests[repo] = \
                         portage_dirs_digest
 
-        if doRescan or (str(stored_digest) != str(portage_dirs_digest)):
+        if do_rescan or (str(stored_digest) != str(portage_dirs_digest)):
 
             # force parameters
             repo_db.readOnly = False

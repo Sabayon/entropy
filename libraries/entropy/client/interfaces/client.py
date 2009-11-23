@@ -557,6 +557,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             load_ugc = True, url_fetcher = None,
             multiple_url_fetcher = None):
 
+        self._treeupdates_repos = set()
         self._can_run_sys_set_hooks = False
         const_debug_write(__name__, "debug enabled")
         self.sys_settings_client_plugin_id = \
@@ -723,7 +724,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             # nothing to do if client db is not availabe
             return False
 
-        etpConst['client_treeupdatescalled'].add(repository_identifier)
+        self._treeupdates_repos.add(repository_identifier)
 
         doRescan = False
         shell_rescan = os.getenv("ETP_TREEUPDATES_RESCAN")

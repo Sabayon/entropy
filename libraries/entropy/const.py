@@ -504,8 +504,6 @@ def const_default_settings(rootdir):
         'default_nice': 0,
         # Default download socket timeout for Entropy Client transceivers
         'default_download_timeout': 20,
-        'server_treeupdatescalled': set(),
-        'client_treeupdatescalled': set(),
         'spm': {
             '(r)depend_id': 0,
             'pdepend_id': 1,
