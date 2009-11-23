@@ -2849,9 +2849,6 @@ class Server(Singleton, TextInterface):
             return True
         return False
 
-    def quickpkg(self, atom, storedir):
-        return self.Spm().generate_package(atom, storedir)
-
     def remove_packages(self, idpackages, repo = None):
 
         if repo is None:
