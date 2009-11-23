@@ -431,7 +431,8 @@ def update(options):
         for x in toBeAdded:
             print_info(brown("    # ")+red(x[0]+"..."))
             try:
-                Entropy.quickpkg(x[0], Entropy.get_local_store_directory())
+                return Entropy.Spm().generate_package(x[0],
+                    Entropy.get_local_store_directory())
             except OSError:
                 entropy.tools.print_traceback()
                 print_info(brown("    !!! ")+bold("%s..." % (_("Ignoring broken Spm entry, please recompile it"),) ))

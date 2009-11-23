@@ -557,7 +557,7 @@ class Base:
                 for repoid in to_add:
                     store_dir = Entropy.get_local_store_directory(repo = repoid)
                     for atom in to_add[repoid]:
-                        Entropy.quickpkg(atom, store_dir)
+                        Entropy.Spm().generate_package(atom, store_dir)
 
                 # inject new into db
                 avail_repos = Entropy.get_available_repositories()
