@@ -726,24 +726,24 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
 
         self._treeupdates_repos.add(repository_identifier)
 
-        doRescan = False
+        do_rescan = False
         shell_rescan = os.getenv("ETP_TREEUPDATES_RESCAN")
         if shell_rescan:
-            doRescan = True
+            do_rescan = True
 
         # check database digest
         stored_digest = repo_db.retrieveRepositoryUpdatesDigest(
             repository_identifier)
         if stored_digest == -1:
-            doRescan = True
+            do_rescan = True
 
         # check stored value in client database
         client_digest = "0"
-        if not doRescan:
+        if not do_rescan:
             client_digest = self.clientDbconn.retrieveRepositoryUpdatesDigest(
                 repository_identifier)
 
-        if doRescan or (str(stored_digest) != str(client_digest)) or force:
+        if do_rescan or (str(stored_digest) != str(client_digest)) or force:
 
             # reset database tables
             self.clientDbconn.clearTreeupdatesEntries(repository_identifier)
