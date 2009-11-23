@@ -109,6 +109,44 @@ class PortagePackageGroups(dict):
         }
         self.update(data)
 
+
+class PortageMetaphor:
+
+    """
+    This class (will) contains Portage packages metaphor related functions.
+    It is intended for internal (plugin) use only. So, go away from here ;)
+    """
+
+    # used to properly sort /usr/portage/profiles/updates files
+    @staticmethod
+    def sort_update_files(update_list):
+        """
+        docstring_title
+
+        @param update_list: 
+        @type update_list: 
+        @return: 
+        @rtype: 
+        """
+        sort_dict = {}
+        # sort per year
+        for item in update_list:
+            # get year
+            year = item.split("-")[1]
+            if year in sort_dict:
+                sort_dict[year].append(item)
+            else:
+                sort_dict[year] = []
+                sort_dict[year].append(item)
+        new_list = []
+        keys = sorted(sort_dict.keys())
+        for key in keys:
+            sort_dict[key].sort()
+            new_list += sort_dict[key]
+        del sort_dict
+        return new_list
+
+
 class PortagePlugin(SpmPlugin):
 
     builtin_pkg_sets = [
@@ -126,7 +164,7 @@ class PortagePlugin(SpmPlugin):
         'configure': 'config',
     }
 
-    PLUGIN_API_VERSION = 1
+    PLUGIN_API_VERSION = 2
 
     SUPPORTED_MATCH_TYPES = [
         "bestmatch-visible", "cp-list", "list-visible", "match-all",
@@ -231,6 +269,8 @@ class PortagePlugin(SpmPlugin):
             self.portage_exception = self.portage.exception
         else: # portage <2.2 workaround
             self.portage_exception = Exception
+
+        self.__entropy_repository_treeupdate_digests = {}
 
     @staticmethod
     def get_package_groups():
@@ -1763,7 +1803,6 @@ class PortagePlugin(SpmPlugin):
                 except OSError:
                     pass
 
-
     def _pkg_preinst(self, package_metadata):
         return self._pkg_fooinst(package_metadata, "preinst")
 
@@ -1827,6 +1866,210 @@ class PortagePlugin(SpmPlugin):
             tbz2.recompose(dbdir)
             return True
         return False
+
+    def __run_pkg_sync_quickpkg(self, entropy_server, atoms, repo_db, repo):
+        """
+        Executes packages regeneration for given atoms.
+        """
+        package_paths = set()
+        runatoms = set()
+        for myatom in atoms:
+            mymatch = repo_db.atomMatch(myatom)
+            if mymatch[0] == -1:
+                continue
+            myatom = repo_db.retrieveAtom(mymatch[0])
+            myatom = entropy.tools.remove_tag(myatom)
+            runatoms.add(myatom)
+
+        for myatom in runatoms:
+
+            self.updateProgress(
+                red("%s: " % (_("repackaging"),) )+blue(myatom),
+                importance = 1,
+                type = "warning",
+                header = blue("  # ")
+            )
+            mydest = entropy_server.get_local_store_directory(repo = repo)
+            try:
+                mypath = self.generate_package(myatom, mydest)
+            except:
+                # remove broken bin before raising
+                mypath = os.path.join(mydest,
+                    os.path.basename(myatom) + etpConst['packagesext'])
+                if os.path.isfile(mypath):
+                    os.remove(mypath)
+                entropy.tools.print_traceback()
+                mytxt = "%s: %s: %s, %s." % (
+                    bold(_("WARNING")),
+                    red(_("Cannot complete quickpkg for atom")),
+                    blue(myatom),
+                    _("do it manually"),
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning",
+                    header = darkred(" * ")
+                )
+                continue
+            package_paths.add(mypath)
+        packages_data = [(x, False,) for x in package_paths]
+        idpackages = entropy_server.add_packages_to_repository(packages_data,
+            repo = repo)
+
+        if not idpackages:
+
+            mytxt = "%s: %s. %s." % (
+                bold(_("ATTENTION")),
+                red(_("package files rebuild did not run properly")),
+                red(_("Please update packages manually")),
+            )
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "warning",
+                header = darkred(" * ")
+            )
+
+    def package_names_update(self, entropy_repository, entropy_repository_id,
+        entropy_server, entropy_branch):
+
+        repo_updates_file = entropy_server.get_local_database_treeupdates_file(
+            entropy_repository_id)
+        do_rescan = False
+
+        stored_digest = entropy_repository.retrieveRepositoryUpdatesDigest(
+            entropy_repository_id)
+        if stored_digest == -1:
+            do_rescan = True
+
+        # check portage files for changes if do_rescan is still false
+        portage_dirs_digest = "0"
+        if not do_rescan:
+
+            if entropy_repository_id in \
+                self.__entropy_repository_treeupdate_digests:
+
+                portage_dirs_digest = \
+                    self.__entropy_repository_treeupdate_digests.get(
+                        entropy_repository_id)
+            else:
+
+                # grab portdir
+                updates_dir = etpConst['systemroot'] + \
+                    self.get_setting("PORTDIR") + "/profiles/updates"
+                if os.path.isdir(updates_dir):
+                    # get checksum
+                    mdigest = entropy.tools.md5obj_directory(updates_dir)
+                    # also checksum etpConst['etpdatabaseupdatefile']
+                    if os.path.isfile(repo_updates_file):
+                        f = open(repo_updates_file)
+                        block = f.read(1024)
+                        while block:
+                            mdigest.update(block)
+                            block = f.read(1024)
+                        f.close()
+                    portage_dirs_digest = mdigest.hexdigest()
+                    self.__entropy_repository_treeupdate_digests[repo] = \
+                        portage_dirs_digest
+
+        if do_rescan or (str(stored_digest) != str(portage_dirs_digest)):
+
+            # force parameters
+            entropy_repository.readOnly = False
+            # disable upload trigger
+            entropy_repository.set_plugin_metadata(
+                ServerEntropyRepositoryPlugin.PLUGIN_ID, "no_upload", True)
+
+            # reset database tables
+            entropy_repository.clearTreeupdatesEntries(entropy_repository_id)
+
+            updates_dir = etpConst['systemroot'] + \
+                self.get_setting("PORTDIR") + "/profiles/updates"
+            update_files = PortageMetaphor.sort_update_files(
+                os.listdir(updates_dir))
+            update_files = [os.path.join(updates_dir, x) for x in update_files]
+            # now load actions from files
+            update_actions = []
+            for update_file in update_files:
+                f = open(update_file, "r")
+                mycontent = f.readlines()
+                f.close()
+                lines = [x.strip() for x in mycontent if x.strip()]
+                update_actions.extend(lines)
+
+            # add entropy packages.db.repo_updates content
+            if os.path.isfile(repo_updates_file):
+                f = open(repo_updates_file, "r")
+                mycontent = f.readlines()
+                f.close()
+                lines = [x.strip() for x in mycontent if x.strip() and \
+                    not x.strip().startswith("#")]
+                update_actions.extend(lines)
+            # now filter the required actions
+            update_actions = entropy_repository.filterTreeUpdatesActions(
+                update_actions)
+            if update_actions:
+
+                mytxt = "%s: %s. %s %s" % (
+                    bold(_("ATTENTION")),
+                    red(_("forcing package updates")),
+                    red(_("Syncing with")),
+                    blue(updates_dir),
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "info",
+                    header = brown(" * ")
+                )
+                # lock database
+                if entropy_repository.get_plugins_metadata().get("lock_remote"):
+                    no_upload = entropy_repository.get_plugins_metadata().get(
+                        "no_upload")
+                    entropy_server.do_server_repository_sync_lock(
+                        entropy_repository_id, no_upload)
+                # now run queue
+                try:
+                    quickpkg_list = entropy_repository.runTreeUpdatesActions(
+                        update_actions)
+                except:
+                    # destroy digest
+                    entropy_repository.setRepositoryUpdatesDigest(
+                        entropy_repository_id, "-1")
+                    raise
+
+                if quickpkg_list:
+                    # quickpkg package and packages owning it as a dependency
+                    try:
+                        self.__run_pkg_sync_quickpkg(
+                            entropy_server,
+                            quickpkg_list, entropy_repository,
+                            entropy_repository_id)
+                    except:
+                        entropy.tools.print_traceback()
+                        mytxt = "%s: %s: %s, %s." % (
+                            bold(_("WARNING")),
+                            red(_("Cannot complete quickpkg for atoms")),
+                            blue(str(sorted(quickpkg_list))),
+                            _("do it manually"),
+                        )
+                        self.updateProgress(
+                            mytxt,
+                            importance = 1,
+                            type = "warning",
+                            header = darkred(" * ")
+                        )
+                    entropy_repository.commitChanges()
+
+                # store new actions
+                entropy_repository.addRepositoryUpdatesActions(
+                    entropy_repository_id, update_actions, entropy_branch)
+
+            # store new digest into database
+            entropy_repository.setRepositoryUpdatesDigest(
+                entropy_repository_id, portage_dirs_digest)
+            entropy_repository.commitChanges()
 
     def execute_package_phase(self, package_metadata, phase_name):
         """

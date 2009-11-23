@@ -1387,34 +1387,6 @@ def md5string(string):
     m.update(string)
     return m.hexdigest()
 
-# used to properly sort /usr/portage/profiles/updates files
-def sort_update_files(update_list):
-    """
-    docstring_title
-
-    @param update_list: 
-    @type update_list: 
-    @return: 
-    @rtype: 
-    """
-    sort_dict = {}
-    # sort per year
-    for item in update_list:
-        # get year
-        year = item.split("-")[1]
-        if year in sort_dict:
-            sort_dict[year].append(item)
-        else:
-            sort_dict[year] = []
-            sort_dict[year].append(item)
-    new_list = []
-    keys = sorted(sort_dict.keys())
-    for key in keys:
-        sort_dict[key].sort()
-        new_list += sort_dict[key]
-    del sort_dict
-    return new_list
-
 def generic_file_content_parser(filepath):
     """
     docstring_title

@@ -18,7 +18,7 @@ from entropy.misc import LogFile
 class SpmPlugin(Singleton):
     """Base class for Source Package Manager plugins"""
 
-    BASE_PLUGIN_API_VERSION = 1
+    BASE_PLUGIN_API_VERSION = 2
 
     # this must be reimplemented by subclasses and value
     # must match BASE_PLUGIN_API_VERSION
@@ -393,7 +393,7 @@ class SpmPlugin(Singleton):
 
     def get_installed_package_compile_options(self, package, root = None):
         """
-        WARNING: this is an Entropy Server functionality.
+
         Return currently configured compile options (also known as USE flags)
         for given package.
         There can be different kinds of compile options so a dictionary should
@@ -565,6 +565,32 @@ class SpmPlugin(Singleton):
         @type package_path: string
         @return: True, if metadata has been appended succesfully
         @rtype: bool
+        """
+        raise NotImplementedError()
+
+    def package_names_update(self, entropy_repository, entropy_repository_id,
+        entropy_server, entropy_branch):
+        """
+        WARNING: this is an Entropy Server functionality.
+        Execute the synchronization (if needed) of Source Package Manager
+        package names with Entropy ones, stored inside the passed
+        EntropyRepository instance (entropy_repository) referenced by an unique
+        identifier (entropy_repository_id) for the given Entropy packages branch
+        (entropy_branch). This method must also take care of the Entropy package
+        names update file returned by Entropy server instance (entropy_server)
+        method "get_local_database_treeupdates_file".
+        If your Source Package Manager packages are subject to name changes, you
+        must implement this method to effectively keep Entropy aligned with it.
+
+        @param entropy_repository: EntropyRepository instance
+        @type entropy_repository: entropy.db.EntropyRepository
+        @param entropy_repository_id: Entropy Repository unique identifier
+        @type entropy_repository_id: string
+        @param entropy_server: Entropy Server instance
+        @type entropy_server: entropy.server.interfaces.Server instance
+        @param entropy_branch: Entropy branch string (may be handy to selectively
+            execute updates based on working branch)
+        @type entropy_branch: string (SystemSettings['repositories']['branch'])
         """
         raise NotImplementedError()
 
