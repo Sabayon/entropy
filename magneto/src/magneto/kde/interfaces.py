@@ -117,9 +117,9 @@ class Magneto(MagnetoCore):
         else:
             self.disable_applet()
         if not self._dbus_service_available:
-            self.show_service_not_available()
+            QTimer.singleShot(30000, self.show_service_not_available)
         else:
-            self.show_service_available()
+            QTimer.singleShot(30000, self.show_service_available)
             self.__do_first_check()
 
         # Notice Window instance
