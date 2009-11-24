@@ -124,7 +124,7 @@ def package(options):
                 relaxed_deps = equoRequestRelaxed)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
-            rc = 127
+            rc = 126
 
     elif (options[0] == "fetch"):
 
@@ -136,11 +136,11 @@ def package(options):
                 relaxed_deps = equoRequestRelaxed)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
-            rc = 127
+            rc = 126
 
     elif (options[0] == "install"):
         if (myopts) or (mytbz2paths) or (equoRequestResume):
-            status, rc = installPackages(myopts, deps = equoRequestDeps,
+            rc, garbage = installPackages(myopts, deps = equoRequestDeps,
                 emptydeps = equoRequestEmptyDeps,
                 onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep,
                 config_files = equoRequestConfigFiles, tbz2 = mytbz2paths,
@@ -151,7 +151,7 @@ def package(options):
                 relaxed_deps = equoRequestRelaxed)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
-            rc = 127
+            rc = 126
 
     elif (options[0] in ("world", "upgrade",)):
         status, rc = worldUpdate(onlyfetch = equoRequestOnlyFetch,
@@ -166,7 +166,7 @@ def package(options):
             status, rc = branchHop(myopts[0])
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
-            rc = 127
+            rc = 126
 
     elif (options[0] == "remove"):
         if myopts or equoRequestResume:
@@ -175,14 +175,14 @@ def package(options):
             resume = equoRequestResume)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
-            rc = 127
+            rc = 126
 
     elif (options[0] == "config"):
         if myopts:
             status, rc = configurePackages(myopts)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
-            rc = 127
+            rc = 126
 
     else:
         rc = -10
@@ -672,7 +672,7 @@ def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps, relaxeddeps):
                         for crying_atomdata in crying_atoms:
                             print_error(red("        # ")+" ["+blue(_("from"))+":"+brown(crying_atomdata[1])+"] "+darkred(crying_atomdata[0]))
 
-            return True, (127, -1), []
+            return True, (125, -1), []
     else:
         for atomInfo in foundAtoms:
             runQueue.append(atomInfo)
@@ -691,7 +691,7 @@ def downloadSources(packages = None, deps = True, deepdeps = False, tbz2 = None,
     # are there packages in foundAtoms?
     if not foundAtoms:
         print_error( red("%s." % (_("No packages found"),) ))
-        return 127, -1
+        return 125, -1
 
     action = darkgreen(_("Source code download"))
     abort, myrc = _showPackageInfo(foundAtoms, deps, action_name = action)
@@ -820,7 +820,7 @@ def downloadPackages(packages = None, deps = True, deepdeps = False,
     # are there packages in foundAtoms?
     if not foundAtoms:
         print_error( red("%s." % (_("No packages found"),) ))
-        return 127, -1
+        return 125, -1
 
     action = brown(_("Download"))
     abort, myrc = _showPackageInfo(foundAtoms, deps, action_name = action)
@@ -890,7 +890,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
         # are there packages in foundAtoms?
         if (not foundAtoms):
             print_error( red("%s." % (_("No packages found"),) ))
-            return 127, -1
+            return 125, -1
 
         abort, myrc = _showPackageInfo(foundAtoms, deps)
         if abort:
@@ -1280,7 +1280,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
 
         rc = Package.run(xterm_header = xterm_header)
         if rc != 0:
-            return -1, rc
+            return 1, rc
 
         # there's a buffer inside, better remove otherwise cPickle will complain
         del Package.pkgmeta['triggers']

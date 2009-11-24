@@ -516,7 +516,7 @@ def main():
 
             import text_ui
             rc = text_ui.package(options)
-            if options[0] not in ("hop",):
+            if (options[0] not in ("hop",)) and (rc not in (125, 126, -10)):
                 load_conf_cache()
             else:
                 text_ui.Equo.destroy()
