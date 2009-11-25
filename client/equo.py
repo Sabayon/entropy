@@ -546,43 +546,9 @@ def main():
             import text_cache
             rc = text_cache.cache(options[1:])
 
-        elif (options[0] == "search"):
-            rc = -10
-            if len(options) > 1:
-                import text_query
-                rc = text_query.search_package(options[1:])
-            else:
-                rc = -10
-
-        elif (options[0] == "match"):
-            rc = -10
-            multiMatch = False
-            multiRepo = False
-            showRepo = False
-            showDesc = False
-            myoptions = []
-            for opt in options:
-                if opt == "--multimatch":
-                    multiMatch = True
-                elif opt == "--multirepo":
-                    multiRepo = True
-                elif opt == "--showrepo":
-                    showRepo = True
-                elif opt == "--showdesc":
-                    showDesc = True
-                else:
-                    myoptions.append(opt)
-            if len(myoptions) > 1:
-                import text_query
-                # repoMatch can be made using @repository  
-                rc = text_query.match_package(myoptions[1:],
-                                                multiMatch = multiMatch,
-                                                multiRepo = multiRepo,
-                                                showRepo = showRepo,
-                                                showDesc = showDesc
-                                            )
-            else:
-                rc = -10
+        elif (options[0] in ("match", "search")):
+            import text_query
+            rc = text_query.query(options)
 
         elif (options[0] == "database"):
             import text_rescue

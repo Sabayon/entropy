@@ -53,6 +53,11 @@ def package(options):
         if not Equo.entropyTools.is_valid_unicode(opt):
             print_error(red(" %s." % (_("Malformed command"),) ))
             return -10
+        try:
+            opt = const_convert_to_unicode(opt, 'utf-8')
+        except (UnicodeDecodeError, UnicodeEncodeError,):
+            print_error(red(" %s." % (_("Malformed command"),) ))
+            return -10
         if (opt == "--nodeps"):
             equoRequestDeps = False
         elif (opt == "--empty"):

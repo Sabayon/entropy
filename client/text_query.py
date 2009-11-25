@@ -12,7 +12,7 @@
 
 import os
 from entropy.const import etpUi, const_convert_to_unicode, \
-    const_convert_to_rawstring
+    const_convert_to_rawstring, const_convert_to_unicode
 from entropy.output import darkgreen, darkred, red, blue, \
     brown, purple, bold, print_info, print_error, print_generic
 from entropy.client.interfaces import Client as EquoInterface
@@ -28,10 +28,32 @@ def query(options):
         return -10
 
     do_deep = False
+    multi_match = False
+    multi_repo = False
+    show_repo = False
+    show_desc = False
+
     myopts = []
+    first_opt = None
     for opt in options:
-        if (opt == "--deep"):
+        try:
+            opt = const_convert_to_unicode(opt, 'utf-8')
+        except (UnicodeDecodeError, UnicodeEncodeError,):
+            print_error(red(" %s." % (_("Malformed command"),) ))
+            return -10
+        if first_opt is None:
+            first_opt = opt
+
+        if opt == "--deep":
             do_deep = True
+        elif (opt == "--multimatch") and (first_opt == "match"):
+            multi_match = True
+        elif (opt == "--multirepo") and (first_opt == "match"):
+            multi_repo = True
+        elif (opt == "--showrepo") and (first_opt == "match"):
+            show_repo = True
+        elif (opt == "--showdesc") and (first_opt == "match"):
+            showDesc = True
         elif opt.startswith("--"):
             print_error(red(" %s." % (_("Wrong parameters"),) ))
             return -10
@@ -42,7 +64,17 @@ def query(options):
     if not myopts:
         return -10
 
-    if myopts[0] == "installed":
+    if myopts[0] == "match":
+        rc_status = match_package(myopts[1:],
+            multiMatch = multi_match,
+            multiRepo = multi_repo,
+            showRepo = show_repo,
+            showDesc = show_desc)
+
+    elif myopts[0] == "search":
+        rc_status = search_package(myopts[1:])
+
+    elif myopts[0] == "installed":
         rc_status = search_installed_packages(myopts[1:])
 
     elif myopts[0] == "belongs":
@@ -844,7 +876,7 @@ def match_package(packages, multiMatch = False, multiRepo = False,
     for package in packages:
 
         if not etpUi['quiet']:
-            print_info(blue("  # ")+bold(package))
+            print_info("%s: %s" % (blue("  # "), bold(package),))
 
         match = Equo.atom_match(package, multiMatch = multiMatch,
             multiRepo = multiRepo, packagesFilter = False)
