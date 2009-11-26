@@ -5,10 +5,10 @@ sys.path.insert(0, '.')
 sys.path.insert(0, '../')
 import unittest
 import tests._misc as _misc
-from entropy.transceivers import UrlFetcher, MultipleUrlFetcher
+from entropy.fetchers import UrlFetcher, MultipleUrlFetcher
 from entropy.const import etpUi
 
-class TransceiversTest(unittest.TestCase):
+class FetchersTest(unittest.TestCase):
 
     def setUp(self):
         sys.stdout.write("%s called\n" % (self,))

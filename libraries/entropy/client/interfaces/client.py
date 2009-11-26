@@ -593,10 +593,10 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self.MultipleUrlFetcher = multiple_url_fetcher
         self.urlFetcher = url_fetcher
         if self.urlFetcher == None:
-            from entropy.transceivers import UrlFetcher
+            from entropy.fetchers import UrlFetcher
             self.urlFetcher = UrlFetcher
         if self.MultipleUrlFetcher == None:
-            from entropy.transceivers import MultipleUrlFetcher
+            from entropy.fetchers import MultipleUrlFetcher
             self.MultipleUrlFetcher = MultipleUrlFetcher
 
         from entropy.cache import EntropyCacher
