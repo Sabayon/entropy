@@ -407,6 +407,9 @@ def const_default_settings(rootdir):
         # previous branch file container
         'etp_previous_branch_file': default_etp_confdir+"/.previous_branch",
         'etp_in_branch_upgrade_file': default_etp_confdir+"/.in_branch_upgrade",
+        # entropy client post repository update script (this is executed
+        # every time)
+        'etp_post_repo_update_script': default_etp_dbfile+".post_update.sh",
 
         # proxy configuration constants, used system wide
         'proxy': {
@@ -813,8 +816,9 @@ def const_extract_cli_repo_params(repostring, branch = None, product = None):
     mydata['packages'] = []
     mydata['plain_packages'] = []
 
-    mydata['dbpath'] = etpConst['etpdatabaseclientdir'] + "/" + reponame + \
-        "/" + product + "/" + etpConst['currentarch'] + "/" + branch
+    mydata['dbpath'] = etpConst['etpdatabaseclientdir'] + os.path.sep + \
+        reponame + os.path.sep + product + os.path.sep + \
+        etpConst['currentarch'] + os.path.sep + branch
 
     mydata['dbcformat'] = dbformat
     if not dbformat in etpConst['etpdatabasesupportedcformats']:
@@ -822,17 +826,17 @@ def const_extract_cli_repo_params(repostring, branch = None, product = None):
 
     mydata['plain_database'] = repodatabase
 
-    mydata['database'] = repodatabase + "/" + product + "/" + \
+    mydata['database'] = repodatabase + os.path.sep + product + os.path.sep + \
         reponame + "/database/" + etpConst['currentarch'] + \
-        "/" + branch
+        os.path.sep + branch
 
-    mydata['notice_board'] = mydata['database'] + "/" + \
+    mydata['notice_board'] = mydata['database'] + os.path.sep + \
         etpConst['rss-notice-board']
 
-    mydata['local_notice_board'] = mydata['dbpath'] + "/" + \
+    mydata['local_notice_board'] = mydata['dbpath'] + os.path.sep + \
         etpConst['rss-notice-board']
 
-    mydata['local_notice_board_userdata'] = mydata['dbpath'] + "/" + \
+    mydata['local_notice_board_userdata'] = mydata['dbpath'] + os.path.sep + \
         etpConst['rss-notice-board-userdata']
 
     mydata['dbrevision'] = "0"
@@ -844,10 +848,12 @@ def const_extract_cli_repo_params(repostring, branch = None, product = None):
 
 
     # setup script paths
-    mydata['post_branch_hop_script'] = mydata['dbpath'] + "/" + \
+    mydata['post_branch_hop_script'] = mydata['dbpath'] + os.path.sep + \
         etpConst['etp_post_branch_hop_script']
-    mydata['post_branch_upgrade_script'] = mydata['dbpath'] + "/" + \
+    mydata['post_branch_upgrade_script'] = mydata['dbpath'] + os.path.sep + \
         etpConst['etp_post_branch_upgrade_script']
+    mydata['post_repo_update_script'] = mydata['dbpath'] + os.path.sep + \
+        etpConst['etp_post_repo_update_script']
 
     # initialize CONFIG_PROTECT
     # will be filled the first time the db will be opened
@@ -863,7 +869,8 @@ def const_extract_cli_repo_params(repostring, branch = None, product = None):
         except (UnicodeDecodeError, UnicodeEncodeError,):
             continue
         mydata['plain_packages'].append(repo_package)
-        mydata['packages'].append(repo_package + "/" + product + "/" + reponame)
+        mydata['packages'].append(
+            repo_package + os.path.sep + product + os.path.sep + reponame)
 
     return reponame, mydata
 
