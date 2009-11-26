@@ -7956,7 +7956,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         identifer and execution status.
 
         @param atom: atom or dependency to match in repository
-        @type atom: string
+        @type atom: unicode string
         @keyword caseSensitive: match in case sensitive mode
         @type caseSensitive: bool
         @keyword matchSlot: match packages with given slot
