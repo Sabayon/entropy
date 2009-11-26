@@ -1824,11 +1824,18 @@ class EntropySshUriHandler(EntropyUriHandler):
         self.close()
 
     def __test_connection(self):
-        try:
-            self._socket.create_connection((self.__host, self.__port), 5)
-        except self._socket.error:
-            raise ConnectionError("cannot connect to %s on port %s" % (
-                self.__host, self.__port,))
+        tries = 5
+        while tries:
+            tries -= 1
+            try:
+                self._socket.create_connection((self.__host, self.__port), 5)
+                break
+            except self._socket.error:
+                time.sleep(1)
+                continue
+
+        raise ConnectionError("cannot connect to %s on port %s" % (
+            self.__host, self.__port,))
 
     def __extract_scp_data(self, uri):
 
