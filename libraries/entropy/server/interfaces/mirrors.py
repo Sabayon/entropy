@@ -1097,6 +1097,11 @@ class Server:
             data['database_post_branch_upgrade_script'] = post_branch_upg_file
             extra_text_files.append(data['database_post_branch_upgrade_script'])
 
+        post_repo_update_file = self.Entropy.get_local_post_repo_update_script(
+            repo)
+        if os.path.isfile(post_repo_update_file) or download:
+            data['database_post_repo_update_script'] = post_repo_update_file
+            extra_text_files.append(data['database_post_repo_update_script'])
 
         database_ts_file = self.Entropy.get_local_database_timestamp_file(repo)
         if os.path.isfile(database_ts_file) or download:

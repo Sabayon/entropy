@@ -2875,6 +2875,12 @@ class Server(Singleton, TextInterface):
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etp_post_branch_upgrade_script'])
 
+    def get_local_post_repo_update_script(self, repo = None, branch = None):
+        if repo is None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etp_post_repo_update_script'])
+
     def get_local_critical_updates_file(self, repo = None, branch = None):
         if repo is None:
             repo = self.default_repository
