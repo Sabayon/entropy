@@ -1,3 +1,8 @@
+../libraries/entropy/transceivers/uri_handlers/__init__.py
+../libraries/entropy/transceivers/uri_handlers/skel.py
+../libraries/entropy/transceivers/uri_handlers/plugins/factory.py
+../libraries/entropy/transceivers/uri_handlers/plugins/__init__.py
+../libraries/entropy/transceivers/__init__.py
 ../libraries/entropy/db/__init__.py
 ../libraries/entropy/db/plugin_store.py
 ../libraries/entropy/db/skel.py
@@ -63,6 +68,7 @@
 ../libraries/entropy/const.py
 ../libraries/entropy/dump.py
 ../libraries/entropy/exceptions.py
+../libraries/entropy/fetchers.py
 ../libraries/entropy/i18n.py
 ../libraries/entropy/__init__.py
 ../libraries/entropy/misc.py
@@ -70,7 +76,6 @@
 ../libraries/entropy/qa.py
 ../libraries/entropy/security.py
 ../libraries/entropy/tools.py
-../libraries/entropy/transceivers.py
 ../client/equo.py
 ../client/text_cache.py
 ../client/text_configuration.py
