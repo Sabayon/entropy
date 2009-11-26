@@ -5,7 +5,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
   0.99.20:
 
     - move etpConst['spm'] to entropy.spm
-    - entropy.transceivers.EntropyTransceiver to use Entropy plugin factory
     - make entropy.db matching rules externally inferred
     - provide repository digital key, fetch it when syncing repos and check if
       it matches and all file match
