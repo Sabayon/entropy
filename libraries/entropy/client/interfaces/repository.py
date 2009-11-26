@@ -11,6 +11,7 @@
 """
 
 import os
+import sys
 import time
 import shutil
 import subprocess
@@ -900,6 +901,35 @@ class Repository:
         mydbconn.closeDB()
         return result
 
+    def _run_post_update_repository_hook(self, repoid):
+        my_repos = self.Entropy.SystemSettings['repositories']
+        branch = my_repos['branch']
+        avail_data = my_repos['available']
+        repo_data = avail_data[repoid]
+        post_update_script = repo_data['post_repo_update_script']
+
+        if not (os.path.isfile(post_update_script) and \
+            os.access(post_update_script, os.R_OK)):
+            # not found!
+            const_debug_write(__name__,
+                "_run_post_update_repository_hook: not found")
+            return 0
+
+        args = ["/bin/sh", post_update_script, repoid, 
+            etpConst['systemroot'] + "/", branch]
+        const_debug_write(__name__,
+            "_run_post_update_repository_hook: run: %s" % (args,))
+        proc = subprocess.Popen(args, stdin = sys.stdin,
+            stdout = sys.stdout, stderr = sys.stderr)
+        # it is possible to ignore errors because
+        # if it's a critical thing, upstream dev just have to fix
+        # the script and will be automagically re-run
+        br_rc = proc.wait()
+        const_debug_write(__name__,
+            "_run_post_update_repository_hook: rc: %s" % (br_rc,))
+
+        return br_rc
+
     def run_sync(self):
 
         self.dbupdated = False
@@ -935,11 +965,16 @@ class Repository:
             db_checksum_down_status = False
             do_db_update_transfer = False
             rc = 0
+
+            my_repos = self.Entropy.SystemSettings['repositories']
+            avail_data = my_repos['available']
+            repo_data = avail_data[repo]
+
             # some variables
-            dumpfile = os.path.join(
-                self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'],
+            dumpfile = os.path.join(repo_data['dbpath'],
                 etpConst['etpdatabasedumplight'])
-            dbfile = os.path.join(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'], etpConst['etpdatabasefile'])
+            dbfile = os.path.join(repo_data['dbpath'],
+                etpConst['etpdatabasefile'])
             dbfile_old = dbfile+".sync"
             cmethod = self.__validate_compression_method(repo)
 
@@ -1093,7 +1128,7 @@ class Repository:
             self.Entropy.update_repository_revision(repo)
             if self.Entropy.indexing:
                 self.do_database_indexing(repo)
-            def_repoid = self.Entropy.SystemSettings['repositories']['default_repository']
+            def_repoid = my_repos['default_repository']
             if repo == def_repoid:
                 try:
                     self.run_config_files_updates(repo)
@@ -1105,6 +1140,10 @@ class Repository:
                     )
                     self.Entropy.updateProgress(mytxt, importance = 0,
                         type = "info", header = blue("  # "),)
+
+            # execute post update repo hook
+            self._run_post_update_repository_hook(repo)
+
             self.updated_repos.add(repo)
             self.Entropy.cycleDone()
 
