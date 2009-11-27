@@ -311,7 +311,10 @@ class UrlFetcher:
         # update progress info
         self.__downloadedsize = self.localfile.tell()
         kbytecount = float(self.__downloadedsize)/1024
-        self.__average = int((kbytecount/self.__remotesize)*100)
+        average = int((kbytecount/self.__remotesize)*100)
+        if average > 100:
+            average = 100
+        self.__average = average
         self._update_speed()
 
     def __close(self, errored):
