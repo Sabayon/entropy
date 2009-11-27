@@ -13,6 +13,7 @@
 import os
 import sys
 import time
+import tempfile
 import shutil
 import subprocess
 import random
@@ -38,12 +39,9 @@ class Repository:
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
 
         self.supported_download_items = (
-            "db", "dblight", "rev", "ck", "cklight", "compck",
-            "lock", "mask", "system_mask", "dbdump", "conflicting_tagged",
-            "dbdumplight", "dbdumplightck", "dbdumpck", "lic_whitelist",
-            "make.conf", "package.mask", "package.unmask", "package.keywords",
-            "profile.link", "package.use", "server.cert", "ca.cert",
-            "meta_file", "notice_board", "critical_updates", "keywords"
+            "db", "dblight", "ck", "cklight", "compck",
+            "lock", "dbdump", "dbdumplight", "dbdumplightck", "dbdumpck",
+            "meta_file", "notice_board"
         )
         self.big_socket_timeout = 10
         self.Entropy = EquoInstance
@@ -171,26 +169,14 @@ class Repository:
                 mytxt = _("For %s, cmethod can't be None") % (item,)
                 raise InvalidData("InvalidData: %s" % (mytxt,))
 
-        repo_db = self.Entropy.SystemSettings['repositories']['available'][repo]['database']
-        repo_dbpath = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']
-        ec_rev = etpConst['etpdatabaserevisionfile']
+        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        repo_data = avail_data[repo]
+
+        repo_db = repo_data['database']
+        repo_dbpath = repo_data['dbpath']
         ec_hash = etpConst['etpdatabasehashfile']
-        ec_maskfile = etpConst['etpdatabasemaskfile']
-        ec_sysmaskfile = etpConst['etpdatabasesytemmaskfile']
-        ec_keywords = etpConst['etpdatabasekeywordsfile']
-        ec_confl_taged = etpConst['etpdatabaseconflictingtaggedfile']
-        ec_crit_updates = etpConst['etpdatabasecriticalfile']
-        make_conf_file = os.path.basename(etpConst['spm']['global_make_conf'])
-        pkg_mask_file = os.path.basename(etpConst['spm']['global_package_mask'])
-        pkg_unmask_file = os.path.basename(etpConst['spm']['global_package_unmask'])
-        pkg_keywords_file = os.path.basename(etpConst['spm']['global_package_keywords'])
-        pkg_use_file = os.path.basename(etpConst['spm']['global_package_use'])
-        sys_profile_lnk = etpConst['spm']['global_make_profile_link_name']
-        pkg_lic_wl_file = etpConst['etpdatabaselicwhitelistfile']
         repo_lock_file = etpConst['etpdatabasedownloadlockfile']
-        ca_cert_file = etpConst['etpdatabasecacertfile']
-        server_cert_file = etpConst['etpdatabaseservercertfile']
-        notice_board_filename = os.path.basename(self.Entropy.SystemSettings['repositories']['available'][repo]['notice_board'])
+        notice_board_filename = os.path.basename(repo_data['notice_board'])
         meta_file = etpConst['etpdatabasemetafilesfile']
         md5_ext = etpConst['packagesmd5fileext']
         ec_cm2 = None
@@ -214,28 +200,13 @@ class Repository:
             'dblight': ("%s/%s" % (repo_db, ec_cm7,), "%s/%s" % (repo_dbpath, ec_cm7,),),
             'dbdump': ("%s/%s" % (repo_db, ec_cm3,), "%s/%s" % (repo_dbpath, ec_cm3,),),
             'dbdumplight': ("%s/%s" % (repo_db, ec_cm5,), "%s/%s" % (repo_dbpath, ec_cm5,),),
-            'rev': ("%s/%s" % (repo_db, ec_rev,), "%s/%s" % (repo_dbpath, ec_rev,),),
             'ck': ("%s/%s" % (repo_db, ec_hash,), "%s/%s" % (repo_dbpath, ec_hash,),),
             'cklight': ("%s/%s" % (repo_db, ec_cm8,), "%s/%s" % (repo_dbpath, ec_cm8,),),
             'compck': ("%s/%s%s" % (repo_db, ec_cm2, md5_ext,), "%s/%s%s" % (repo_dbpath, ec_cm2, md5_ext,),),
             'dbdumpck': ("%s/%s" % (repo_db, ec_cm4,), "%s/%s" % (repo_dbpath, ec_cm4,),),
             'dbdumplightck': ("%s/%s" % (repo_db, ec_cm6,), "%s/%s" % (repo_dbpath, ec_cm6,),),
-            'mask': ("%s/%s" % (repo_db, ec_maskfile,), "%s/%s" % (repo_dbpath, ec_maskfile,),),
-            'keywords': ("%s/%s" % (repo_db, ec_keywords,), "%s/%s" % (repo_dbpath, ec_keywords,),),
-            'system_mask': ("%s/%s" % (repo_db, ec_sysmaskfile,), "%s/%s" % (repo_dbpath, ec_sysmaskfile,),),
-            'conflicting_tagged': ("%s/%s" % (repo_db, ec_confl_taged,), "%s/%s" % (repo_dbpath, ec_confl_taged,),),
-            'critical_updates': ("%s/%s" % (repo_db, ec_crit_updates,), "%s/%s" % (repo_dbpath, ec_crit_updates,),),
-            'make.conf': ("%s/%s" % (repo_db, make_conf_file,), "%s/%s" % (repo_dbpath, make_conf_file,),),
-            'package.mask': ("%s/%s" % (repo_db, pkg_mask_file,), "%s/%s" % (repo_dbpath, pkg_mask_file,),),
-            'package.unmask': ("%s/%s" % (repo_db, pkg_unmask_file,), "%s/%s" % (repo_dbpath, pkg_unmask_file,),),
-            'package.keywords': ("%s/%s" % (repo_db, pkg_keywords_file,), "%s/%s" % (repo_dbpath, pkg_keywords_file,),),
-            'package.use': ("%s/%s" % (repo_db, pkg_use_file,), "%s/%s" % (repo_dbpath, pkg_use_file,),),
-            'profile.link': ("%s/%s" % (repo_db, sys_profile_lnk,), "%s/%s" % (repo_dbpath, sys_profile_lnk,),),
-            'lic_whitelist': ("%s/%s" % (repo_db, pkg_lic_wl_file,), "%s/%s" % (repo_dbpath, pkg_lic_wl_file,),),
             'lock': ("%s/%s" % (repo_db, repo_lock_file,), "%s/%s" % (repo_dbpath, repo_lock_file,),),
-            'server.cert': ("%s/%s" % (repo_db, server_cert_file,), "%s/%s" % (repo_dbpath, server_cert_file,),),
-            'ca.cert': ("%s/%s" % (repo_db, ca_cert_file,), "%s/%s" % (repo_dbpath, ca_cert_file,),),
-            'notice_board': (self.Entropy.SystemSettings['repositories']['available'][repo]['notice_board'], "%s/%s" % (repo_dbpath, notice_board_filename,),),
+            'notice_board': (repo_data['notice_board'], "%s/%s" % (repo_dbpath, notice_board_filename,),),
             'meta_file': ("%s/%s" % (repo_db, meta_file,), "%s/%s" % (repo_dbpath, meta_file,),),
         }
 
@@ -405,11 +376,13 @@ class Repository:
 
     def clear_repository_cache(self, repo):
         self.__validate_repository_id(repo)
-        self.Entropy.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'], etpConst['dbnamerepoprefix'], repo,))
-        self.Entropy.clear_dump_cache("%s/%s%s/" % (etpCache['dbSearch'], etpConst['dbnamerepoprefix'], repo,))
+        self.Entropy.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'],
+            etpConst['dbnamerepoprefix'], repo,))
+        self.Entropy.clear_dump_cache("%s/%s%s/" % (etpCache['dbSearch'],
+            etpConst['dbnamerepoprefix'], repo,))
 
-    # this function can be reimplemented
-    def download_item(self, item, repo, cmethod = None, lock_status_func = None, disallow_redirect = True):
+    def download_item(self, item, repo, cmethod = None, lock_status_func = None,
+        disallow_redirect = True):
 
         self.__validate_repository_id(repo)
         url, filepath = self._construct_paths(item, repo, cmethod)
@@ -508,28 +481,34 @@ class Repository:
 
     def show_repository_information(self, repo, count_info):
 
+        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        repo_data = avail_data[repo]
+
         self.Entropy.updateProgress(
-            bold("%s") % ( self.Entropy.SystemSettings['repositories']['available'][repo]['description'] ),
+            bold("%s") % ( repo_data['description'] ),
             importance = 2,
             type = "info",
             count = count_info,
             header = blue("  # ")
         )
-        mytxt = "%s: %s" % (red(_("Database URL")), darkgreen(self.Entropy.SystemSettings['repositories']['available'][repo]['database']),)
+        mytxt = "%s: %s" % (red(_("Database URL")),
+            darkgreen(repo_data['database']),)
         self.Entropy.updateProgress(
             mytxt,
             importance = 1,
             type = "info",
             header = blue("  # ")
         )
-        mytxt = "%s: %s" % (red(_("Database local path")), darkgreen(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']),)
+        mytxt = "%s: %s" % (red(_("Database local path")),
+            darkgreen(repo_data['dbpath']),)
         self.Entropy.updateProgress(
             mytxt,
             importance = 0,
             type = "info",
             header = blue("  # ")
         )
-        mytxt = "%s: %s" % (red(_("Database EAPI")), darkgreen(str(self.dbformat_eapi)),)
+        mytxt = "%s: %s" % (red(_("Database EAPI")),
+            darkgreen(str(self.dbformat_eapi)),)
         self.Entropy.updateProgress(
             mytxt,
             importance = 0,
@@ -539,10 +518,14 @@ class Repository:
 
     def get_eapi3_local_database(self, repo):
 
-        dbfile = os.path.join(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'], etpConst['etpdatabasefile'])
+        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        repo_data = avail_data[repo]
+
+        dbfile = os.path.join(repo_data['dbpath'], etpConst['etpdatabasefile'])
         mydbconn = None
         try:
-            mydbconn = self.Entropy.open_generic_database(dbfile, xcache = False, indexing_override = False)
+            mydbconn = self.Entropy.open_generic_database(dbfile,
+                xcache = False, indexing_override = False)
             mydbconn.validateDatabase()
         except (
             self.Entropy.dbapi2.OperationalError,
@@ -597,7 +580,9 @@ class Repository:
         try:
             mydbconn = self.get_eapi3_local_database(repo)
             myidpackages = mydbconn.listAllIdpackages()
-        except (self.dbapi2.DatabaseError, self.dbapi2.IntegrityError, self.dbapi2.OperationalError, AttributeError,):
+        except (self.dbapi2.DatabaseError, self.dbapi2.IntegrityError,
+            self.dbapi2.OperationalError, AttributeError,):
+
             prepare_exit(eapi3_interface, session)
             return False
 
@@ -614,7 +599,8 @@ class Repository:
         elif not checksum: # {added_ids, removed_ids, checksum} == False
             mydbconn.closeDB()
             prepare_exit(eapi3_interface, session)
-            mytxt = "%s: %s" % ( blue(_("EAPI3 Service status")), darkred(_("remote database suddenly locked")),)
+            mytxt = "%s: %s" % ( blue(_("EAPI3 Service status")),
+                darkred(_("remote database suddenly locked")),)
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 0,
@@ -626,8 +612,11 @@ class Repository:
         # is it worth it?
         if len(added_ids) > threshold:
             mytxt = "%s: %s (%s: %s/%s)" % (
-                blue(_("EAPI3 Service")), darkred(_("skipping differential sync")),
-                brown(_("threshold")), blue(str(len(added_ids))), darkred(str(threshold)),
+                blue(_("EAPI3 Service")),
+                darkred(_("skipping differential sync")),
+                brown(_("threshold")),
+                blue(str(len(added_ids))),
+                darkred(str(threshold)),
             )
             self.Entropy.updateProgress(
                 mytxt,
@@ -853,7 +842,9 @@ class Repository:
         for idpackage in removed_ids:
             myatom = atoms_map.get(idpackage)
             count += 1
-            mytxt = "%s: %s" % (blue(_("Removing package")), darkred(str(myatom)),)
+            mytxt = "%s: %s" % (
+                blue(_("Removing package")),
+                darkred(str(myatom)),)
             self.Entropy.updateProgress(
                 mytxt, importance = 0, type = "info",
                 header = "\t", back = True, count = (count, maxcount,)
@@ -994,8 +985,8 @@ class Repository:
                         do_skip = True
                         skip_this_repo = True
                         continue
-                    db_checksum_down_status = self.handle_database_checksum_download(
-                        repo, cmethod)
+                    db_checksum_down_status = \
+                        self.handle_database_checksum_download(repo, cmethod)
                     break
 
                 elif self.dbformat_eapi == 3 and not \
@@ -1211,109 +1202,137 @@ class Repository:
     def _config_updates_make_conf(self, repo):
 
         ## WARNING: it doesn't handle multi-line variables, yet. remember this.
-        url, repo_make_conf = self._construct_paths("make.conf", repo, None)
         system_make_conf = etpConst['spm']['global_make_conf']
+
+        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        repo_dbpath = avail_data[repo]['dbpath']
+        repo_make_conf = os.path.join(repo_dbpath,
+            os.path.basename(system_make_conf))
+
+        if not (os.path.isfile(repo_make_conf) and \
+            os.access(repo_make_conf, os.R_OK)):
+            return
+
         make_conf_variables_check = ["CHOST"]
 
-        if os.path.isfile(repo_make_conf) and os.access(repo_make_conf, os.R_OK):
+        if not os.path.isfile(system_make_conf):
+            self.Entropy.updateProgress(
+                "%s %s. %s." % (
+                    red(system_make_conf),
+                    blue(_("does not exist")), blue(_("Overwriting")),
+                ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
+            if os.path.lexists(system_make_conf):
+                shutil.move(
+                    system_make_conf,
+                    "%s.backup_%s" % (system_make_conf,
+                        self.entropyTools.get_random_number(),)
+                )
+            shutil.copy2(repo_make_conf, system_make_conf)
 
-            if not os.path.isfile(system_make_conf):
+        elif os.access(system_make_conf, os.W_OK):
+
+            repo_f = open(repo_make_conf, "r")
+            sys_f = open(system_make_conf, "r")
+            repo_make_c = [x.strip() for x in repo_f.readlines()]
+            sys_make_c = [x.strip() for x in sys_f.readlines()]
+            repo_f.close()
+            sys_f.close()
+
+            # read repository settings
+            repo_data = {}
+            for setting in make_conf_variables_check:
+                for line in repo_make_c:
+                    if line.startswith(setting+"="):
+                        # there can't be bash vars with a space
+                        # after its name on declaration
+                        repo_data[setting] = line
+                        # I don't break, because there might be
+                        # other overlapping settings
+
+            differences = {}
+            # update make.conf data in memory
+            for setting in repo_data:
+                for idx in range(len(sys_make_c)):
+                    line = sys_make_c[idx]
+
+                    if line.startswith(setting+"=") and \
+                        (line != repo_data[setting]):
+
+                        # there can't be bash vars with a
+                        # space after its name on declaration
+                        self.Entropy.updateProgress(
+                            "%s: %s %s. %s." % (
+                                red(system_make_conf), bold(repr(setting)),
+                                blue(_("variable differs")), red(_("Updating")),
+                            ),
+                            importance = 1,
+                            type = "info",
+                            header = blue(" @@ ")
+                        )
+                        differences[setting] = repo_data[setting]
+                        line = repo_data[setting]
+                    sys_make_c[idx] = line
+
+            if differences:
+
                 self.Entropy.updateProgress(
-                    "%s %s. %s." % (red(system_make_conf), blue(_("does not exist")), blue(_("Overwriting")),),
+                    "%s: %s." % (
+                        red(system_make_conf),
+                        blue(_("updating critical variables")),
+                    ),
                     importance = 1,
                     type = "info",
                     header = blue(" @@ ")
                 )
-                if os.path.lexists(system_make_conf):
-                    shutil.move(
-                        system_make_conf,
-                        "%s.backup_%s" % (system_make_conf, self.entropyTools.get_random_number(),)
-                    )
-                shutil.copy2(repo_make_conf, system_make_conf)
+                # backup user make.conf
+                shutil.copy2(system_make_conf,
+                    "%s.entropy_backup" % (system_make_conf,))
 
-            elif os.access(system_make_conf, os.W_OK):
+                self.Entropy.updateProgress(
+                    "%s: %s." % (
+                        red(system_make_conf),
+                        darkgreen("writing changes to disk"),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = blue(" @@ ")
+                )
+                # write to disk, safely
+                tmp_make_conf = "%s.entropy_write" % (system_make_conf,)
+                f = open(tmp_make_conf, "w")
+                for line in sys_make_c: f.write(line+"\n")
+                f.flush()
+                f.close()
+                shutil.move(tmp_make_conf, system_make_conf)
 
-                repo_f = open(repo_make_conf, "r")
-                sys_f = open(system_make_conf, "r")
-                repo_make_c = [x.strip() for x in repo_f.readlines()]
-                sys_make_c = [x.strip() for x in sys_f.readlines()]
-                repo_f.close()
-                sys_f.close()
-
-                # read repository settings
-                repo_data = {}
-                for setting in make_conf_variables_check:
-                    for line in repo_make_c:
-                        if line.startswith(setting+"="):
-                            # there can't be bash vars with a space after its name on declaration
-                            repo_data[setting] = line
-                            # I don't break, because there might be other overlapping settings
-
-                differences = {}
-                # update make.conf data in memory
-                for setting in repo_data:
-                    for idx in range(len(sys_make_c)):
-                        line = sys_make_c[idx]
-                        if line.startswith(setting+"=") and (line != repo_data[setting]):
-                            # there can't be bash vars with a space after its name on declaration
-                            self.Entropy.updateProgress(
-                                "%s: %s %s. %s." % (
-                                    red(system_make_conf), bold(repr(setting)),
-                                    blue(_("variable differs")), red(_("Updating")),
-                                ),
-                                importance = 1,
-                                type = "info",
-                                header = blue(" @@ ")
-                            )
-                            differences[setting] = repo_data[setting]
-                            line = repo_data[setting]
-                        sys_make_c[idx] = line
-
-                if differences:
-
-                    self.Entropy.updateProgress(
-                        "%s: %s." % (red(system_make_conf), blue(_("updating critical variables")),),
-                        importance = 1,
-                        type = "info",
-                        header = blue(" @@ ")
-                    )
-                    # backup user make.conf
-                    shutil.copy2(system_make_conf, "%s.entropy_backup" % (system_make_conf,))
-
-                    self.Entropy.updateProgress(
-                        "%s: %s." % (
-                            red(system_make_conf), darkgreen("writing changes to disk"),
-                        ),
-                        importance = 1,
-                        type = "info",
-                        header = blue(" @@ ")
-                    )
-                    # write to disk, safely
-                    tmp_make_conf = "%s.entropy_write" % (system_make_conf,)
-                    f = open(tmp_make_conf, "w")
-                    for line in sys_make_c: f.write(line+"\n")
-                    f.flush()
-                    f.close()
-                    shutil.move(tmp_make_conf, system_make_conf)
-
-                # update environment
-                for var in differences:
-                    try:
-                        myval = '='.join(differences[var].strip().split("=")[1:])
-                        if myval:
-                            if myval[0] in ("'", '"',): myval = myval[1:]
-                            if myval[-1] in ("'", '"',): myval = myval[:-1]
-                    except IndexError:
-                        myval = ''
-                    os.environ[var] = myval
+            # update environment
+            for var in differences:
+                try:
+                    myval = '='.join(differences[var].strip().split("=")[1:])
+                    if myval:
+                        if myval[0] in ("'", '"',): myval = myval[1:]
+                        if myval[-1] in ("'", '"',): myval = myval[:-1]
+                except IndexError:
+                    myval = ''
+                os.environ[var] = myval
 
     def _config_updates_make_profile(self, repo):
-        url, repo_make_profile = self._construct_paths("profile.link",
-            repo, None)
-        system_make_profile = etpConst['spm']['global_make_profile']
+
+        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        repo_dbpath = avail_data[repo]['dbpath']
+        profile_link_name = etpConst['spm']['global_make_profile_link_name']
+
+        repo_make_profile = os.path.join(repo_dbpath, profile_link_name)
+
         if not (os.path.isfile(repo_make_profile) and \
             os.access(repo_make_profile, os.R_OK)):
             return
+
+        system_make_profile = etpConst['spm']['global_make_profile']
 
         f = open(repo_make_profile, "r")
         repo_profile_link_data = f.readline().strip()
@@ -1358,7 +1377,8 @@ class Repository:
         rc = False
         if not self.noEquoCheck:
             try:
-                rc, pkg_match = self.Entropy.check_package_update("sys-apps/entropy", deep = True)
+                rc, pkg_match = self.Entropy.check_package_update(
+                    "sys-apps/entropy", deep = True)
             except:
                 pass
         if rc:
@@ -1513,7 +1533,8 @@ class Repository:
                 return False
 
         if not down_status:
-            mytxt = "%s: %s." % (bold(_("Attention")), red(_("database does not exist online")),)
+            mytxt = "%s: %s." % (bold(_("Attention")),
+                red(_("database does not exist online")),)
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 1,
@@ -1528,7 +1549,8 @@ class Repository:
         # check if database is already updated to the latest revision
         update = self.is_repository_updatable(repo)
         if not update:
-            mytxt = "%s: %s." % (bold(_("Attention")), red(_("database is already up to date")),)
+            mytxt = "%s: %s." % (bold(_("Attention")),
+                red(_("database is already up to date")),)
             self.Entropy.updateProgress(
                 mytxt,
                 importance = 1,
@@ -1540,7 +1562,8 @@ class Repository:
         if self.dbformat_eapi == 3:
             locked = self.is_repository_eapi3_locked(repo)
             if locked:
-                mytxt = "%s: %s." % (bold(_("Attention")), red(_("database will be ready soon")),)
+                mytxt = "%s: %s." % (bold(_("Attention")),
+                    red(_("database will be ready soon")),)
                 self.Entropy.updateProgress(
                     mytxt,
                     importance = 1,
@@ -1603,11 +1626,11 @@ class Repository:
             type = "info",
             header = "\t"
         )
-        dbconn = self.Entropy.open_generic_database(dbfile, xcache = False, indexing_override = False)
+        dbconn = self.Entropy.open_generic_database(dbfile,
+            xcache = False, indexing_override = False)
         rc = dbconn.doDatabaseImport(dumpfile, dbfile)
         dbconn.closeDB()
         return rc
-
 
     def do_update_security_advisories(self):
         # update Security Advisories
@@ -1626,12 +1649,9 @@ class Repository:
 
     def do_standard_items_download(self, repo):
 
-        g_make_conf = os.path.basename(etpConst['spm']['global_make_conf'])
-        pkg_unmask = os.path.basename(etpConst['spm']['global_package_unmask'])
-        pkg_keywords = os.path.basename(etpConst['spm']['global_package_keywords'])
-        pkg_use = os.path.basename(etpConst['spm']['global_package_use'])
-        profile_link = etpConst['spm']['global_make_profile_link_name']
-        notice_board = os.path.basename(self.Entropy.SystemSettings['repositories']['available'][repo]['local_notice_board'])
+        repos_data = self.Entropy.SystemSettings['repositories']
+        repo_data = repos_data['available'][repo]
+        notice_board = os.path.basename(repo_data['local_notice_board'])
 
         objects_to_unpack = ("meta_file",)
 
@@ -1639,150 +1659,10 @@ class Repository:
             (
                 "meta_file",
                 etpConst['etpdatabasemetafilesfile'],
-                True,
+                False,
                 "%s %s %s" % (
                     red(_("Downloading repository metafile")),
                     darkgreen(etpConst['etpdatabasemetafilesfile']),
-                    red("..."),
-                )
-            ),
-            (
-                "ca.cert",
-                etpConst['etpdatabasecacertfile'],
-                True,
-                "%s %s %s" % (
-                    red(_("Downloading SSL CA certificate")),
-                    darkgreen(etpConst['etpdatabasecacertfile']),
-                    red("..."),
-                )
-            ),
-            (
-                "server.cert",
-                etpConst['etpdatabaseservercertfile'],
-                True,
-                "%s %s %s" % (
-                    red(_("Downloading SSL Server certificate")),
-                    darkgreen(etpConst['etpdatabaseservercertfile']),
-                    red("..."),
-                )
-            ),
-            (
-                "mask",
-                etpConst['etpdatabasemaskfile'],
-                True,
-                "%s %s %s" % (
-                    red(_("Downloading package mask")),
-                    darkgreen(etpConst['etpdatabasemaskfile']),
-                    red("..."),
-                )
-            ),
-            (
-                "system_mask",
-                etpConst['etpdatabasesytemmaskfile'],
-                True,
-                "%s %s %s" % (
-                    red(_("Downloading packages system mask")),
-                    darkgreen(etpConst['etpdatabasesytemmaskfile']),
-                    red("..."),
-                )
-            ),
-            (
-                "keywords",
-                etpConst['etpdatabasekeywordsfile'],
-                True,
-                "%s %s %s" % (
-                    red(_("Downloading repository provided package keywords")),
-                    darkgreen(etpConst['etpdatabasekeywordsfile']),
-                    red("..."),
-                )
-            ),
-            (
-                "conflicting_tagged",
-                etpConst['etpdatabaseconflictingtaggedfile'],
-                True,
-                "%s %s %s" % (
-                    red(_("Downloading conflicting tagged packages file")),
-                    darkgreen(etpConst['etpdatabaseconflictingtaggedfile']),
-                    red("..."),
-                )
-            ),
-            (
-                "critical_updates",
-                etpConst['etpdatabasecriticalfile'],
-                True,
-                "%s %s %s" % (
-                    red(_("Downloading critical updates file")),
-                    darkgreen(etpConst['etpdatabasecriticalfile']),
-                    red("..."),
-                )
-            ),
-            (
-                "lic_whitelist",
-                etpConst['etpdatabaselicwhitelistfile'],
-                True,
-                "%s %s %s" % (
-                    red(_("Downloading license whitelist")),
-                    darkgreen(etpConst['etpdatabaselicwhitelistfile']),
-                    red("..."),
-                )
-            ),
-            (
-                "rev",
-                etpConst['etpdatabaserevisionfile'],
-                False,
-                "%s %s %s" % (
-                    red(_("Downloading revision")),
-                    darkgreen(etpConst['etpdatabaserevisionfile']),
-                    red("..."),
-                )
-            ),
-            (
-                "make.conf",
-                g_make_conf,
-                True,
-                "%s %s %s" % (
-                    red(_("Downloading SPM global configuration")),
-                    darkgreen(g_make_conf),
-                    red("..."),
-                )
-            ),
-            (
-                "package.unmask",
-                pkg_unmask,
-                True,
-                "%s %s %s" % (
-                    red(_("Downloading SPM package unmasking configuration")),
-                    darkgreen(pkg_unmask),
-                    red("..."),
-                )
-            ),
-            (
-                "package.keywords",
-                pkg_keywords,
-                True,
-                "%s %s %s" % (
-                    red(_("Downloading SPM package keywording configuration")),
-                    darkgreen(pkg_keywords),
-                    red("..."),
-                )
-            ),
-            (
-                "package.use",
-                pkg_use,
-                True,
-                "%s %s %s" % (
-                    red(_("Downloading SPM package USE flags configuration")),
-                    darkgreen(pkg_use),
-                    red("..."),
-                )
-            ),
-            (
-                "profile.link",
-                profile_link,
-                True,
-                "%s %s %s" % (
-                    red(_("Downloading SPM Profile configuration")),
-                    darkgreen(profile_link),
                     red("..."),
                 )
             ),
@@ -1795,7 +1675,7 @@ class Repository:
                     darkgreen(notice_board),
                     red("..."),
                 )
-            )
+            ),
         ]
 
         def my_show_info(txt):
@@ -1821,11 +1701,13 @@ class Repository:
                 header = blue("\t  << ")
             )
 
-        downloaded_by_unpack = set()
-        for item, myfile, ignorable, mytxt in download_items:
+        def my_show_file_rm(fp):
+            self.Entropy.updateProgress(
+                "%s: %s" % (darkgreen(_("removed meta file")), purple(fp),),
+                header = blue("\t  << ")
+            )
 
-            # if it's been already downloaded, skip
-            if myfile in downloaded_by_unpack: continue
+        for item, myfile, ignorable, mytxt in download_items:
 
             my_show_info(mytxt)
             mystatus = self.download_item(item, repo, disallow_redirect = True)
@@ -1834,56 +1716,70 @@ class Repository:
             # download failed, is it critical?
             if not mystatus:
                 if ignorable:
-                    message = "%s: %s." % (blue(myfile), red(_("not available, it's ok")))
+                    message = "%s: %s." % (blue(myfile),
+                        red(_("not available, it's ok")))
                 else:
                     mytype = 'warning'
-                    message = "%s: %s." % (blue(myfile), darkred(_("not available, not much ok!")))
+                    message = "%s: %s." % (blue(myfile),
+                        darkred(_("not available, not very ok!")))
                 my_show_down_status(message, mytype)
                 continue
 
             myurl, mypath = self._construct_paths(item, repo, None)
-            message = "%s: %s." % (blue(myfile), darkgreen(_("available, w00t!")))
+            message = "%s: %s." % (blue(myfile),
+                darkgreen(_("available, w00t!")))
             my_show_down_status(message, mytype)
-            if item not in objects_to_unpack: continue
-            if not (os.path.isfile(mypath) and os.access(mypath, os.R_OK)): continue
+            if item not in objects_to_unpack:
+                continue
+            if not (os.path.isfile(mypath) and os.access(mypath, os.R_OK)):
+                continue
 
-            while True:
-                tmpdir = os.path.join(os.path.dirname(mypath), "meta_unpack_%s" % (random.randint(1, 10000),))
-                if not os.path.lexists(tmpdir): break
-            os.makedirs(tmpdir, 0o775)
-
-            repo_dir = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']
+            tmpdir = tempfile.mkdtemp()
+            repo_dir = repo_data['dbpath']
             try:
-                done = self.entropyTools.universal_uncompress(mypath, tmpdir, catch_empty = True)
-                if not done: continue
+                done = self.entropyTools.universal_uncompress(mypath, tmpdir,
+                    catch_empty = True)
+                if not done:
+                    mytype = 'warning'
+                    message = "%s: %s." % (blue(myfile),
+                        darkred(_("cannot be unpacked, not very ok!")))
+                    my_show_down_status(message, mytype)
+                    continue
                 myfiles_to_move = set(os.listdir(tmpdir))
 
                 # exclude files not available by default
                 files_not_found_file = etpConst['etpdatabasemetafilesnotfound']
                 if files_not_found_file in myfiles_to_move:
                     myfiles_to_move.remove(files_not_found_file)
-                    try:
-                        with open(os.path.join(tmpdir, files_not_found_file), "r") as f:
+                    fnf_path = os.path.join(tmpdir, files_not_found_file)
+
+                    if os.path.isfile(fnf_path) and \
+                        os.access(fnf_path, os.R_OK):
+                        with open(fnf_path, "r") as f:
                             f_nf = [x.strip() for x in f.readlines()]
-                            downloaded_by_unpack |= set(f_nf)
-                    except IOError:
-                        pass
+
+                        for myfile in f_nf:
+                            myfile = os.path.basename(myfile) # avoid lamerz
+                            myfpath = os.path.join(repo_dir, myfile)
+                            if os.path.isfile(myfpath) and \
+                                os.access(myfpath, os.W_OK):
+                                try:
+                                    os.remove(myfpath)
+                                    my_show_file_rm(myfile)
+                                except OSError:
+                                    pass
 
                 for myfile in sorted(myfiles_to_move):
                     from_mypath = os.path.join(tmpdir, myfile)
                     to_mypath = os.path.join(repo_dir, myfile)
                     try:
                         os.rename(from_mypath, to_mypath)
-                        downloaded_by_unpack.add(myfile)
                         my_show_file_unpack(myfile)
                     except OSError:
                         continue
 
             finally:
-
                 shutil.rmtree(tmpdir, True)
-                try: os.rmdir(tmpdir)
-                except OSError: pass
 
 
         mytxt = "%s: %s" % (
@@ -1896,8 +1792,6 @@ class Repository:
             type = "info",
             header = "\t"
         )
-
-
 
     def do_database_indexing(self, repo):
 
@@ -1924,7 +1818,6 @@ class Repository:
             except:
                 pass
         self.Entropy.set_priority(old_prio)
-
 
     def sync(self):
 
@@ -1968,4 +1861,3 @@ class Repository:
             return 1
 
         return 0
-
