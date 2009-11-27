@@ -16,8 +16,11 @@ import time
 import tempfile
 import shutil
 import subprocess
+import socket
+
 from entropy.i18n import _
 from entropy.db import dbapi2, EntropyRepository
+from entropy.cache import EntropyCacher
 from entropy.misc import TimeScheduled
 from entropy.const import etpConst, etpCache, const_setup_perms, \
     const_debug_write
@@ -29,7 +32,6 @@ from entropy.dump import dumpobj
 
 class Repository:
 
-    import socket
     def __init__(self, EquoInstance, reponames = [], forceUpdate = False,
         noEquoCheck = False, fetchSecurity = True):
 
@@ -46,7 +48,6 @@ class Repository:
         )
         self.big_socket_timeout = 10
         self.Entropy = EquoInstance
-        from entropy.cache import EntropyCacher
         self.Cacher = EntropyCacher()
         self.dbapi2 = dbapi2
         self.reponames = reponames
@@ -93,15 +94,16 @@ class Repository:
                 output_header = "\t", socket_timeout = self.big_socket_timeout)
             eapi3_socket.connect(dburl, port)
             return eapi3_socket
-        except (ConnectionError, self.socket.error,):
+        except (ConnectionError, socket.error,):
             return None
 
     def check_eapi3_availability(self, repository):
         conn = self.get_eapi3_connection(repository)
-        if conn == None: return False
+        if conn is None:
+            return False
         try:
             conn.disconnect()
-        except (self.socket.error, AttributeError,):
+        except (socket.error, AttributeError,):
             return False
         return True
 
@@ -143,7 +145,7 @@ class Repository:
         repo_settings = self.Entropy.SystemSettings['repositories']
         dbc_format = repo_settings['available'][repo]['dbcformat']
         cmethod = etpConst['etpdatabasecompressclasses'].get(dbc_format)
-        if cmethod == None:
+        if cmethod is None:
             mytxt = "Wrong database compression method"
             raise AttributeError(mytxt)
 
@@ -173,7 +175,7 @@ class Repository:
             "db", "dblight", "cklight", "dbdump", "dbdumpck",
             "dbdumplight", "dbdumplightck", "compck",
         )
-        if (item in items_needing_cmethod) and (cmethod == None):
+        if (item in items_needing_cmethod) and (cmethod is None):
                 mytxt = "For %s, cmethod can't be None" % (item,)
                 raise AttributeError(mytxt)
 
@@ -570,11 +572,11 @@ class Repository:
 
     def get_eapi3_repository_metadata(self, eapi3_interface, repo, session):
         product = self.Entropy.SystemSettings['repositories']['product']
-        self.socket.setdefaulttimeout(self.big_socket_timeout)
         data = eapi3_interface.CmdInterface.get_repository_metadata(
             session, repo, etpConst['currentarch'], product
         )
-        if not isinstance(data, dict): return {}
+        if not isinstance(data, dict):
+            return {}
         return data
 
     def handle_eapi3_database_sync(self, repo, threshold = 1500,
@@ -585,15 +587,16 @@ class Repository:
                 if session != None:
                     mysock.close_session(session)
                 mysock.disconnect()
-            except (self.socket.error,):
+            except (socket.error,):
                 pass
 
         eapi3_interface = self.get_eapi3_connection(repo)
-        if eapi3_interface == None: return False
+        if eapi3_interface is None:
+            return False
 
         session = eapi3_interface.open_session()
 
-        # AttributeError because mydbconn can be == None
+        # AttributeError because mydbconn can be is None
         try:
             mydbconn = self.get_eapi3_local_database(repo)
             myidpackages = mydbconn.listAllIdpackages()
@@ -686,7 +689,7 @@ class Repository:
                 pkgdata = cmd_intf.get_strict_package_information(
                     session, segment, repo, etpConst['currentarch'], product
                 )
-                if pkgdata == None:
+                if pkgdata is None:
                     mytxt = "%s: %s" % ( blue(_("Fetch error on segment")),
                         darkred(str(segment)),)
                     self.Entropy.updateProgress(
@@ -816,7 +819,7 @@ class Repository:
             count += 1
             mydata = self.Cacher.pop("%s%s" % (
                 etpCache['eapi3_fetch'], idpackage,))
-            if mydata == None:
+            if mydata is None:
                 mytxt = "%s: %s" % (
                     blue(_("Fetch error on segment while adding")),
                     darkred(str(segment)),
@@ -1023,10 +1026,10 @@ class Repository:
                     status = False
                     try:
                         status = self.handle_eapi3_database_sync(repo)
-                    except self.socket.error as e:
+                    except socket.error as err:
                         mytxt = "%s: %s" % (
                             blue(_("EAPI3 Service error")),
-                            darkred(repr(e)),
+                            darkred(repr(err)),
                         )
                         self.Entropy.updateProgress(
                             mytxt,
@@ -1039,7 +1042,7 @@ class Repository:
                         self.__remove_repository_files(repo, cmethod)
                         raise
 
-                    if status == None: # remote db not available anymore ?
+                    if status is None: # remote db not available anymore ?
                         time.sleep(5)
                         locked = self.handle_repository_lock(repo)
                         if locked:
