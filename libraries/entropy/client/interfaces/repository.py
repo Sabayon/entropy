@@ -848,8 +848,10 @@ class Repository:
         # now remove
         maxcount = len(removed_ids)
         count = 0
+        # preload atoms names to improve speed during removePackage
+        atoms_map = dict((x, mydbconn.retrieveAtom(x),) for x in removed_ids)
         for idpackage in removed_ids:
-            myatom = mydbconn.retrieveAtom(idpackage)
+            myatom = atoms_map.get(idpackage)
             count += 1
             mytxt = "%s: %s" % (blue(_("Removing package")), darkred(str(myatom)),)
             self.Entropy.updateProgress(
