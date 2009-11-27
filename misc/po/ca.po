@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: ca\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-11-26 20:08+0100\n"
-"PO-Revision-Date: 2009-10-11 18:25+0200\n"
+"PO-Revision-Date: 2009-11-27 16:18+0100\n"
 "Last-Translator: Roger Calvó <rcalvoi@yahoo.com>\n"
 "Language-Team: Catalan <kde-i18n-ca@kde.org>\n"
 "MIME-Version: 1.0\n"
@@ -67,7 +67,7 @@ msgstr "acció"
 
 #: ../../libraries/entropy/db/__init__.py:699
 msgid "package move actions complete"
-msgstr "s'ha completat l'acció de moviment del paquet"
+msgstr "s'ha desplaçat el paquet"
 
 #: ../../libraries/entropy/db/__init__.py:713
 #: ../../libraries/entropy/server/interfaces/main.py:3271
@@ -76,11 +76,11 @@ msgstr "AVÍS"
 
 #: ../../libraries/entropy/db/__init__.py:714
 msgid "Cannot run SPM cleanup, error"
-msgstr "No es pot executar la supressió SPM, error"
+msgstr "No es pot executar la neteja SPM, error"
 
 #: ../../libraries/entropy/db/__init__.py:722
 msgid "package moves completed successfully"
-msgstr "s'han completat les accions de moviment dels paquets"
+msgstr "s'han desplaçat els paquets"
 
 #: ../../libraries/entropy/db/__init__.py:939
 msgid "Moving old entry"
@@ -130,7 +130,6 @@ msgid "Exporting database table"
 msgstr "S'està exportant la taula de la base de dades"
 
 #: ../../libraries/entropy/db/__init__.py:6369
-#, fuzzy
 msgid "Database Export complete."
 msgstr "S'ha completat l'exportació de la base de dades"
 
@@ -147,18 +146,16 @@ msgid "ATTENTION"
 msgstr "ATENCIÓ"
 
 #: ../../libraries/entropy/db/__init__.py:7023
-#, fuzzy
 msgid "Spm error occured"
-msgstr "s'ha desbloquejat la rèplica"
+msgstr "Hi ha hagut un error Spm"
 
 #: ../../libraries/entropy/db/__init__.py:7037
-#, fuzzy
 msgid "Spm Unique Identifier not found for"
-msgstr "el camí al contador Spm no s'ha trobat a"
+msgstr "No s'ha trobat un Identificador Únic Spm per a "
 
 #: ../../libraries/entropy/db/__init__.py:7131
 msgid "generating provided_libs metadata, please wait!"
-msgstr "s'estan generant les metadades de provided_libs, espereu si us plau."
+msgstr "s'estan generant les metadades de provided_libs, espereu"
 
 #: ../../libraries/entropy/services/system/executors.py:464
 msgid "Calculating updates..."
@@ -297,11 +294,11 @@ msgstr "en el port"
 
 #: ../../libraries/entropy/services/ugc/interfaces.py:2272
 msgid "Successfully connected to host"
-msgstr "S'ha connectat amb l'ordinador central amb èxit"
+msgstr "S'ha connectat correctament amb l'ordinador central"
 
 #: ../../libraries/entropy/services/ugc/interfaces.py:2312
 msgid "Successfully disconnected from host"
-msgstr "S'ha desconnectat de l'ordinador central amb èxit"
+msgstr "S'ha desconnectat de l'ordinador central correctament"
 
 #: ../../libraries/entropy/services/repository/interfaces.py:109
 msgid "database does not exist. Locking services for it"
@@ -352,7 +349,7 @@ msgstr "no s'ha trobat l'usuari"
 msgid "you need to login on the website to update your password format"
 msgstr ""
 "heu d'iniciar la sessió a la pàgina web per actualitzar el format de la "
-"vostra contrasenya"
+"contrasenya"
 
 #: ../../libraries/entropy/services/auth_interfaces.py:294
 msgid "wrong password"
@@ -424,7 +421,7 @@ msgstr "la md5 remota no és vàlida"
 
 #: ../../libraries/entropy/server/transceivers.py:250
 msgid "successful"
-msgstr "amb èxit"
+msgstr "correctament"
 
 #: ../../libraries/entropy/server/transceivers.py:268
 msgid "failed, retrying"
@@ -450,9 +447,8 @@ msgid "connecting to mirror"
 msgstr "s'està connectant amb la rèplica"
 
 #: ../../libraries/entropy/server/transceivers.py:354
-#, fuzzy
 msgid "setting directory to"
-msgstr "s'està canviant el directori a"
+msgstr "s'estableix el directori en"
 
 #: ../../libraries/entropy/server/interfaces/main.py:112
 msgid "Mirrors have not been unlocked. Remember to sync them."
@@ -493,7 +489,7 @@ msgstr "El repositori predeterminat no està inicialitzat"
 
 #: ../../libraries/entropy/server/interfaces/main.py:912
 msgid "Do you want to initialize your default repository ?"
-msgstr "Voleu inicialitzar el vostre repositori predeterminat?"
+msgstr "Voleu inicialitzar el repositori predeterminat?"
 
 #. masked ?
 #: ../../libraries/entropy/server/interfaces/main.py:913
@@ -684,7 +680,7 @@ msgstr "El fitxer de base de dades d'Entropy"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1676
 msgid "successfully initialized"
-msgstr "s'ha inicialitzat amb èxit"
+msgstr "s'ha inicialitzat correctament"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1696
 msgid "Invalid tag specified"
@@ -746,7 +742,7 @@ msgstr "raó"
 #: ../../libraries/entropy/server/interfaces/main.py:1947
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2747
 msgid "download completed successfully"
-msgstr "la baixada s'ha completat amb èxit"
+msgstr "la baixada s'ha completat correctament"
 
 #: ../../libraries/entropy/server/interfaces/main.py:1961
 msgid "error downloading packages from mirrors"
@@ -770,7 +766,7 @@ msgstr "No es pot accedir a la base de dades del sistema"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2069
 msgid "Preparing to move selected packages to"
-msgstr "S'està preparant per moure els paquets seleccionats a"
+msgstr "S'està preparant per desplaçar els paquets seleccionats a"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2071
 msgid "Preparing to copy selected packages to"
@@ -811,7 +807,7 @@ msgstr "no es pot commutar, el paquet no s'ha trobat, s'omet"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2219
 msgid "moving file"
-msgstr "s'està movent el fitxer"
+msgstr "S'està desplaçant el fitxer"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2235
 msgid "loading data from source database"
@@ -827,7 +823,7 @@ msgstr "s'està eliminant l'entrada de la base de dades origen"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2292
 msgid "successfully handled atom"
-msgstr "l'àtom s'ha tractat amb èxit"
+msgstr "l'àtom s'ha tractat correctament"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2322
 #: ../../libraries/entropy/server/interfaces/main.py:2472
@@ -849,7 +845,7 @@ msgstr "dependències manuals per a"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2495
 msgid "Exception caught, closing tasks"
-msgstr "S'ha produït una excepció, s'aturen les tasques"
+msgstr "S'ha produït una excepció, es tanquen les tasques"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2570
 msgid "Injecting entropy metadata into built packages"
@@ -894,7 +890,7 @@ msgstr "la revisió de la base de dades és no és vàlida"
 
 #: ../../libraries/entropy/server/interfaces/main.py:2965
 msgid "defaulting to 0"
-msgstr "s'estableix predeterminat a 0"
+msgstr "s'estableix per defecte a 0"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3229
 msgid "Initializing Entropy database"
@@ -944,7 +940,7 @@ msgstr "Sí"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3357
 msgid "Reinitializing Entropy database for branch"
-msgstr "S'està reinicialitzant la base de dades d'Entropy per la branca"
+msgstr "S'està reinicialitzant la base de dades d'Entropy per a la branca"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3359
 msgid "using Packages in the repository"
@@ -1062,7 +1058,7 @@ msgstr "disponible"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3739
 msgid "upload/ignored"
-msgstr "carregat/ignorat"
+msgstr "pujat/ignorat"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3774
 msgid "Starting to download missing files"
@@ -1074,11 +1070,11 @@ msgstr "S'estan cercant fitxers necessaris o trencats en una altra rèplica"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3806
 msgid "Binary packages downloaded successfully."
-msgstr "Tots els paquets binaris s'han baixat amb èxit."
+msgstr "Els paquets binaris s'han baixat correctament."
 
 #: ../../libraries/entropy/server/interfaces/main.py:3815
 msgid "These are the packages that cannot be found online"
-msgstr "Aquests són els paquets que no es troben en línia"
+msgstr "Aquests són els paquets que no hi ha en línia"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3831
 msgid "They won't be checked"
@@ -1094,7 +1090,7 @@ msgstr "està malmès, s'ha desat la suma de verificació"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3913
 msgid "checked packages"
-msgstr "paquets seleccionats"
+msgstr "paquets comprovats"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3923
 msgid "healthy packages"
@@ -1110,7 +1106,7 @@ msgstr "paquets baixats"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3953
 msgid "failed downloads"
-msgstr "descàrregues fallides"
+msgstr "baixades fallides"
 
 #: ../../libraries/entropy/server/interfaces/main.py:3972
 msgid "Please setup your branch to"
@@ -1201,7 +1197,7 @@ msgstr "per baixar"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:400
 msgid "mirror successfully locked"
-msgstr "la rèplica s'ha bloquejat amb èxit"
+msgstr "la rèplica s'ha bloquejat correctament"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:414
 msgid "mirror not locked"
@@ -1209,7 +1205,7 @@ msgstr "la rèplica no està bloquejada"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:451
 msgid "mirror successfully unlocked"
-msgstr "la rèplica s'ha desbloquejat amb èxit"
+msgstr "la rèplica s'ha desbloquejat correctament"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:466
 msgid "unlock error"
@@ -1244,7 +1240,7 @@ msgstr "s'està comprovant la suma de verificació del paquet"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:636
 msgid "downloaded successfully"
-msgstr "s'ha baixat amb èxit"
+msgstr "s'ha baixat correctament"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:651
 msgid "checksum does not match. re-downloading..."
@@ -1276,7 +1272,7 @@ msgstr "s'està baixant el tauler de notícies de les rèpliques a"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:852
 msgid "notice board downloaded successfully from"
-msgstr "el tauler de notícies s'ha baixat amb èxit des de"
+msgstr "el tauler de notícies s'ha baixat correctament des de"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:878
 msgid "uploading notice board from"
@@ -1351,7 +1347,7 @@ msgstr "s'ha desbloquejat la rèplica"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1573
 msgid "Troubles with treeupdates"
-msgstr "Hi ha problemes amb els arbres d'actualitzacions"
+msgstr "Hi ha problemes amb treeupdates"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:1576
 msgid "Bumping old data back"
@@ -1459,7 +1455,7 @@ msgstr "problemes de càrrega"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2104
 msgid "database sync completed successfully"
-msgstr "la base de dades s'ha sincronitzat amb èxit"
+msgstr "la base de dades s'ha sincronitzat correctament"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2159
 msgid "Local statistics"
@@ -1494,7 +1490,7 @@ msgstr "Paquets a eliminar"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2260
 msgid "Packages to be moved locally"
-msgstr "Paquets a moure localment"
+msgstr "Paquets a desplaçar localment"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2269
 msgid "Packages to be uploaded"
@@ -1542,7 +1538,7 @@ msgstr "errors de càrrega"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2687
 msgid "upload completed successfully"
-msgstr "la càrrega s'ha completat amb èxit"
+msgstr "la càrrega s'ha completat correctament"
 
 #: ../../libraries/entropy/server/interfaces/mirrors.py:2772
 msgid "QA checking package file"
@@ -1644,7 +1640,7 @@ msgstr ""
 
 #: ../../libraries/entropy/client/services/ugc/commands.py:62
 msgid "feature not supported remotely"
-msgstr "la característica no està suportada de forma remota"
+msgstr "la característica no està implementada de forma remota"
 
 #: ../../libraries/entropy/client/services/ugc/commands.py:65
 #: ../../libraries/entropy/client/services/ugc/commands.py:83
@@ -1754,7 +1750,7 @@ msgstr "D'acord"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:155
 msgid "Login successful. Do you want to save these credentials ?"
-msgstr "La sessió s'ha iniciat amb èxit. Voleu desar aquestes credencials?"
+msgstr "La sessió s'ha iniciat correctament. Voleu desar aquestes credencials?"
 
 #: ../../libraries/entropy/client/services/ugc/interfaces.py:464
 msgid "A valid UGC Client interface based instance is needed"
@@ -1886,7 +1882,7 @@ msgstr "Text addicional"
 
 #: ../../libraries/entropy/client/services/system/methods.py:96
 msgid "Remove item from pinboard"
-msgstr "Elimina elements del poinboard"
+msgstr "Elimina elements del pinboard"
 
 #: ../../libraries/entropy/client/services/system/methods.py:97
 #: ../../libraries/entropy/client/services/system/methods.py:104
@@ -1964,7 +1960,7 @@ msgstr "Només descarrega"
 #: ../../libraries/entropy/client/services/system/methods.py:186
 #: ../../sulfur/src/sulfur/dialogs.py:3298
 msgid "Build only"
-msgstr "Només contrueix"
+msgstr "Només construeix"
 
 #: ../../libraries/entropy/client/services/system/methods.py:187
 #: ../../server/server_reagent.py:178 ../../server/server_reagent.py:183
@@ -2107,7 +2103,7 @@ msgstr "Cerca cadena"
 
 #: ../../libraries/entropy/client/services/system/methods.py:314
 msgid "Move or copy a package from a repository to another"
-msgstr "Mou o copia un paquet d'un repositori a un altre"
+msgstr "Desplaça o copia un paquet d'un repositori a un altre"
 
 #: ../../libraries/entropy/client/services/system/methods.py:316
 msgid "Package identifiers"
@@ -2124,7 +2120,7 @@ msgstr "Al repositori"
 
 #: ../../libraries/entropy/client/services/system/methods.py:319
 msgid "Copy instead of move?"
-msgstr "Copia enlloc de moure?"
+msgstr "Copia enlloc de desplaçar?"
 
 #: ../../libraries/entropy/client/services/system/methods.py:325
 msgid ""
@@ -2320,7 +2316,7 @@ msgstr "llindar màxim de fallada aconseguit"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:173
 msgid "success"
-msgstr "èxit"
+msgstr "correcte"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:182
 msgid "Aggregated transfer rate"
@@ -2377,7 +2373,7 @@ msgstr "S'està baixant des de"
 #: ../../libraries/entropy/client/interfaces/fetch.py:436
 #: ../../libraries/entropy/client/interfaces/package.py:1605
 msgid "Successfully downloaded from"
-msgstr "S'ha baixat amb èxit des de"
+msgstr "S'ha baixat correctament des de"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:439
 #: ../../libraries/entropy/client/interfaces/package.py:1608
@@ -2390,9 +2386,8 @@ msgid "file not available on this mirror"
 msgstr "el fitxer no està disponible en aquesta rèplica"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:467
-#, fuzzy
 msgid "Disabling resume"
-msgstr "Desactivant"
+msgstr "S'està desactivant la represa"
 
 #: ../../libraries/entropy/client/interfaces/fetch.py:475
 msgid "timeout, retrying on this mirror"
@@ -2507,7 +2502,7 @@ msgstr "No es pot comprimir"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:634
 msgid "Database backed up successfully"
-msgstr "La base de dades s'ha copiat amb èxit"
+msgstr "La base de dades s'ha copiat correctament"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:642
 #: ../../libraries/entropy/client/interfaces/methods.py:693
@@ -2531,13 +2526,13 @@ msgstr "No es pot empaquetar"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:683
 msgid "Database restored successfully"
-msgstr "La base de dades s'ha restaurat amb èxit"
+msgstr "La base de dades s'ha restaurat correctament"
 
 #: ../../libraries/entropy/client/interfaces/methods.py:1063
 msgid ""
 "Another Entropy instance is currently active, cannot satisfy your request."
 msgstr ""
-"S'està executant una altra instància d'Entropy. No es pot satisfer la vostra "
+"S'està executant una altra instància d'Entropy. No es pot satisfer la "
 "demanda."
 
 #: ../../libraries/entropy/client/interfaces/methods.py:1083
@@ -2610,9 +2605,8 @@ msgid "Action must be in"
 msgstr "L'acció ha de ser a"
 
 #: ../../libraries/entropy/client/interfaces/package.py:112
-#, fuzzy
 msgid "disabled"
-msgstr "Desactivat"
+msgstr "inhabilitat"
 
 #: ../../libraries/entropy/client/interfaces/package.py:123
 msgid "Checking package hash"
@@ -2718,7 +2712,7 @@ msgstr "s'esperava un fitxer i s'ha trobat un directori"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1318
 msgid "File move error"
-msgstr "Error en moure el fitxer"
+msgstr "Error en desplaçar el fitxer"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1321
 msgid "please report"
@@ -2796,7 +2790,7 @@ msgstr "S'ha produït un error mentre s'estava intentant desempaquetar"
 #: ../../libraries/entropy/client/interfaces/package.py:1807
 #: ../../libraries/entropy/client/interfaces/package.py:1844
 msgid "Check if your system is healthy"
-msgstr "Comproveu si el vostre sistema està sa"
+msgstr "Comprova si el sistema està sa"
 
 #: ../../libraries/entropy/client/interfaces/package.py:1822
 msgid "Installing package"
@@ -2834,7 +2828,7 @@ msgstr "S'ha produït un error mentre s'estava intentant configurar el paquet"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2019
 msgid "Make sure that your system is healthy"
-msgstr "Comproveu si el vostre sistema està sa"
+msgstr "Assegureu-vos que el sistema està sa"
 
 #: ../../libraries/entropy/client/interfaces/package.py:2039
 msgid "It seems that Source Package Manager entry is missing"
@@ -3480,7 +3474,7 @@ msgstr "element/s"
 #: ../../libraries/entropy/output.py:648
 #: ../../sulfur/src/sulfur/entropyapi.py:364
 msgid "Entropy needs your attention"
-msgstr "Entropy reclama la vostra atenció"
+msgstr "Entropy us reclama l'atenció"
 
 #: ../../libraries/entropy/output.py:784
 msgid "Entropy got a question for you"
@@ -3687,7 +3681,7 @@ msgstr "s'estan obtenint els últims GLSAs"
 
 #: ../../libraries/entropy/security.py:761
 msgid "updated successfully"
-msgstr "s'ha actualitzat amb èxit"
+msgstr "s'ha actualitzat correctament"
 
 #: ../../libraries/entropy/security.py:766
 msgid "already up to date"
@@ -3962,9 +3956,8 @@ msgid "show less details (useful for scripting)"
 msgstr "mostra menys detalls (útil per fer scripts)"
 
 #: ../../client/equo.py:117
-#, fuzzy
 msgid "install atoms or binary packages"
-msgstr "instal·la àtoms o paquets .tbz2"
+msgstr "instal·la àtoms o paquets binaris"
 
 #: ../../client/equo.py:120 ../../client/equo.py:141
 msgid "just download packages without doing the install"
@@ -3990,7 +3983,7 @@ msgstr ""
 
 #: ../../client/equo.py:126 ../../client/equo.py:138 ../../client/equo.py:145
 msgid "calm down dependencies resolution algorithm (might be risky)"
-msgstr ""
+msgstr "calma l'algorisme de resolució de dependències (pot ser arriscat)"
 
 #: ../../client/equo.py:127
 msgid "makes dependency rules stricter"
@@ -4174,7 +4167,7 @@ msgstr ""
 
 #: ../../client/equo.py:216
 msgid "recreate an Entropy package from your System"
-msgstr "recrea un paquet Entropy del vostre sistema"
+msgstr "recrea un paquet Entropy del sistema"
 
 #: ../../client/equo.py:217 ../../client/equo.py:219 ../../client/equo.py:221
 msgid "save new packages into the specified directory"
@@ -4430,7 +4423,7 @@ msgstr ""
 
 #: ../../client/equo.py:290 ../../server/reagent.py:84
 msgid "move packages from a repository to another"
-msgstr "mou els paquets d'un repositori a un altre"
+msgstr "desplaça els paquets d'un repositori a un altre"
 
 #: ../../client/equo.py:291 ../../client/equo.py:293
 #: ../../server/reagent.py:85 ../../server/reagent.py:87
@@ -4676,14 +4669,14 @@ msgstr "No es pot continuar"
 
 #: ../../client/equo.py:754
 msgid "Cannot continue. Your hard disk is probably faulty."
-msgstr "No es pot continuar. El vostre disc dur probablement està malmès."
+msgstr "No es pot continuar. El disc dur probablement està malmès."
 
 #: ../../client/equo.py:776
 msgid ""
 "Your hard drive is full! Next time remember to have a look at it before "
 "starting. I'm sorry, there's nothing I can do for you. It's your fault :-("
 msgstr ""
-"El vostre disc dur està ple! Una altra vegada recordeu comprovar-ho abans de "
+"El disc dur està ple! Una altra vegada recordeu comprovar-ho abans de "
 "començar. No puc fer-hi res :-("
 
 #: ../../client/equo.py:790
@@ -4745,11 +4738,11 @@ msgstr ""
 
 #: ../../client/equo.py:826
 msgid "Your Full name:"
-msgstr "El vostre nom complet:"
+msgstr "El nom complet:"
 
 #: ../../client/equo.py:827
 msgid "Your E-Mail address:"
-msgstr "La vostra adreça de correu electrònic:"
+msgstr "L'adreça de correu electrònic:"
 
 #: ../../client/equo.py:828
 msgid "What you were doing:"
@@ -4862,7 +4855,7 @@ msgstr "Altres opcions són:"
 #: ../../client/text_repositories.py:230
 #: ../../magneto/src/magneto/core/interfaces.py:148
 msgid "Exit"
-msgstr "Sortir"
+msgstr "Surt"
 
 #: ../../client/text_configuration.py:263
 msgid "Automerge all the files asking you one by one"
@@ -5433,7 +5426,7 @@ msgstr "Segur?"
 
 #: ../../client/text_rescue.py:75
 msgid "This is your last chance"
-msgstr "Aquesta és la vostra última oportunitat"
+msgstr "Aquesta és l'última oportunitat"
 
 #: ../../client/text_rescue.py:75
 msgid "Ok?"
@@ -5510,7 +5503,7 @@ msgstr "S'estan indexant les taules"
 
 #: ../../client/text_rescue.py:208 ../../client/text_rescue.py:373
 msgid "Database reinitialized successfully"
-msgstr "La base de dades s'ha reinicialitzat amb èxit"
+msgstr "La base de dades s'ha reinicialitzat correctament"
 
 #: ../../client/text_rescue.py:220
 msgid "database does not exist or is badly broken"
@@ -5591,7 +5584,7 @@ msgstr "S'està afegint"
 
 #: ../../client/text_rescue.py:366
 msgid "Database resurrected successfully"
-msgstr "La base de dades s'ha ressuscitat amb èxit"
+msgstr "La base de dades s'ha ressuscitat correctament"
 
 #: ../../client/text_rescue.py:375
 msgid ""
@@ -5607,7 +5600,7 @@ msgstr "S'està regenerant la taula de captura de dependents"
 
 #: ../../client/text_rescue.py:386
 msgid "Depends caching table regenerated successfully"
-msgstr "La captura de la taula de dependents s'ha regenerat amb èxit"
+msgstr "La captura de la taula de dependents s'ha regenerat correctament"
 
 #: ../../client/text_rescue.py:399
 msgid "Regenerating counters table"
@@ -5965,7 +5958,7 @@ msgstr "Si us plau, desconnecteu-vos primer"
 
 #: ../../client/text_ugc.py:79
 msgid "Successfully logged in as"
-msgstr "S'ha connectat amb èxit com a"
+msgstr "S'ha connectat correctament com a"
 
 #: ../../client/text_ugc.py:81
 msgid "From now on, any UGC action will be committed as this user"
@@ -6001,7 +5994,7 @@ msgstr "Afegeix vot"
 
 #: ../../client/text_ugc.py:161
 msgid "Insert your vote (from 1 to 5)"
-msgstr "Inseriu el vostre vot (de l'1 al 5)"
+msgstr "Inseriu el vot (de l'1 al 5)"
 
 #: ../../client/text_ugc.py:163
 msgid "Entropy UGC vote submission"
@@ -6311,9 +6304,8 @@ msgid "Probably needed by"
 msgstr "Probablement és necessari per"
 
 #: ../../client/text_ui.py:701
-#, fuzzy
 msgid "Source code download"
-msgstr "Ordena per descàrregues"
+msgstr "Baixa el codi fint"
 
 #: ../../client/text_ui.py:727
 msgid "sources fetch"
@@ -6438,9 +6430,8 @@ msgid "License saved into"
 msgstr "La llicència s'ha desat a"
 
 #: ../../client/text_ui.py:1252
-#, fuzzy
 msgid "Download incomplete"
-msgstr "S'ha completat la baixada"
+msgstr "La baixada no s'ha completat"
 
 #: ../../client/text_ui.py:1266
 msgid "Download complete"
@@ -6869,8 +6860,7 @@ msgstr "No es pot sobreescriure un fitxer que ja existeix"
 #: ../../server/server_reagent.py:509
 msgid "Switching branch, be sure to have your packages in sync."
 msgstr ""
-"S'està commutant de branca, assegureu-vos que teniu els vostres paquets a "
-"sync."
+"S'està commutant de branca, assegureu-vos que teniu els paquets a sync."
 
 #: ../../server/server_reagent.py:516
 msgid "Collecting packages that would be marked"
@@ -7078,7 +7068,7 @@ msgstr "Elimina els paquets"
 
 #: ../../sulfur/src/sulfur/dialogs.py:860
 msgid "Copy/move packages"
-msgstr "Copia/mou paquets"
+msgstr "Copia/desplaça paquets"
 
 #: ../../sulfur/src/sulfur/dialogs.py:865
 msgid "Compile selected"
@@ -7201,7 +7191,7 @@ msgstr "Segur que voleu eliminar els paquets seleccionats? (Per SEMPRE!)"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1669
 msgid "This is your last chance, are you really really really sure?"
-msgstr "Aquesta és la vostra última oportunitat, n'esteu completament segur?"
+msgstr "Aquesta és l'última oportunitat, n'esteu completament segur?"
 
 #: ../../sulfur/src/sulfur/dialogs.py:1697
 #: ../../sulfur/src/sulfur/dialogs.py:3248
@@ -7220,7 +7210,7 @@ msgstr "Inseriu els paràmetres de l'ordre"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2113
 msgid "Cannot move/copy packages from different repositories"
-msgstr "No es poden moure/copiar paquets des de diferents repositoris"
+msgstr "No es poden deplaçar/copiar paquets des de diferents repositoris"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2132
 msgid "Execute copy"
@@ -7228,7 +7218,7 @@ msgstr "Executa còpia"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2135
 msgid "Entropy packages move/copy"
-msgstr "Moure/copiar paquets Entropy"
+msgstr "Desplaçar/copiar paquets Entropy"
 
 #: ../../sulfur/src/sulfur/dialogs.py:2294
 msgid "Notice title"
@@ -7467,7 +7457,7 @@ msgstr "Registre de canvis de paquets"
 #: ../../sulfur/src/sulfur/dialogs.py:4399
 #: ../../sulfur/src/sulfur/views.py:1615
 msgid "Vote registered successfully"
-msgstr "El vot s'ha registrat amb èxit"
+msgstr "El vot s'ha registrat correctament"
 
 #: ../../sulfur/src/sulfur/dialogs.py:4401
 #: ../../sulfur/src/sulfur/views.py:1619
@@ -7584,11 +7574,11 @@ msgstr "Error UGC"
 
 #: ../../sulfur/src/sulfur/dialogs.py:5155
 msgid "Document added successfully. Thank you"
-msgstr "El document s'ha afegit amb èxit. Gràcies!"
+msgstr "El document s'ha afegit correctament. Gràcies!"
 
 #: ../../sulfur/src/sulfur/dialogs.py:5155
 msgid "Success!"
-msgstr "Èxit!"
+msgstr "Ha funcionat!"
 
 #: ../../sulfur/src/sulfur/dialogs.py:5210
 msgid "Write your document"
@@ -7604,8 +7594,7 @@ msgstr "Al repositori"
 
 #: ../../sulfur/src/sulfur/dialogs.py:5297
 msgid "These are the packages that must be enabled to satisfy your request"
-msgstr ""
-"Aquests són els paquets que s'han d'habilitar per satisfer la vostra demanda"
+msgstr "Aquests són els paquets que s'han d'habilitar per satisfer la demanda"
 
 #: ../../sulfur/src/sulfur/dialogs.py:5299
 msgid "Some packages are masked"
@@ -7710,7 +7699,7 @@ msgstr "El Sulfur ha petat! S'ha produït un error inesperat."
 
 #: ../../sulfur/src/sulfur/dialogs.py:6564
 msgid "Your report has been submitted successfully! Thanks a lot."
-msgstr "El vostre informe s'ha enviat correctament! Moltes gràcies."
+msgstr "L'informe s'ha enviat correctament! Moltes gràcies."
 
 #: ../../sulfur/src/sulfur/dialogs.py:6566
 msgid "Cannot submit your report. Not connected to Internet?"
@@ -8014,7 +8003,7 @@ msgid ""
 "Some configuration options are critical for the health of your System. Be "
 "careful."
 msgstr ""
-"Algunes opcions de configuració són crítiques pel vostre sistema. Aneu amb "
+"Algunes opcions de configuració són crítiques pel sistema. Aneu amb "
 "compte!"
 
 #: ../../sulfur/src/sulfur/__init__.py:775
@@ -8214,7 +8203,7 @@ msgid ""
 "blocking your request:"
 msgstr ""
 "Hi ha paquets que no es poden instal·lar al mateix temps. Alguns estan "
-"blocant la vostra sol·licitud:"
+"blocant la sol·licitud:"
 
 #: ../../sulfur/src/sulfur/packages.py:145
 msgid "These are the needed packages"
@@ -8226,7 +8215,7 @@ msgid ""
 "your last selection. Do you agree?"
 msgstr ""
 "Aquests paquets s'han d'eliminar de la cua de desinstal·lació perquè depenen "
-"de la vostra última selecció. D'acord?"
+"de l'última selecció. D'acord?"
 
 #: ../../sulfur/src/sulfur/packages.py:202
 msgid "These packages must be excluded"
@@ -8237,8 +8226,8 @@ msgid ""
 "These packages must be removed from the queue because they depend on your "
 "last selection. Do you agree?"
 msgstr ""
-"Cal eliminar aquests paquets de la cua de processos perquè depenen de la "
-"vostra última selecció. Hi esteu d'acord?"
+"Cal eliminar aquests paquets de la cua de processos perquè depenen de "
+"l'última selecció. Hi esteu d'acord?"
 
 #: ../../sulfur/src/sulfur/packages.py:413
 msgid ""
@@ -8291,7 +8280,7 @@ msgstr "No hi ha actualitzacions disponibles"
 
 #: ../../sulfur/src/sulfur/packages.py:963
 msgid "It seems that your system is already up-to-date. Good!"
-msgstr "Sembla que el vostre sistema està actualitzat. Bé!"
+msgstr "El sistema està actualitzat. Bé!"
 
 #: ../../sulfur/src/sulfur/packages.py:973
 msgid "No packages found means nothing to show!"
@@ -8785,9 +8774,8 @@ msgid "Dep. test"
 msgstr "Verificació de dependències"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:57
-#, fuzzy
 msgid "Dependencies algorithm"
-msgstr "Prova de dependències"
+msgstr "Algorisme de dependències"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:58
 msgid "Dependencies test"
@@ -8854,7 +8842,7 @@ msgstr "Gestor del Servei de Connexions Entropy"
 #: ../../sulfur/src/sulfur/sulfur.glade.h:76
 msgid "Entropy can keep a backup of your updated configuration files"
 msgstr ""
-"Entropy pot desar una còpia de seguretat dels vostres fitxers de "
+"Entropy pot desar una còpia de seguretat dels fitxers de "
 "configuració actualitzats"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:78
@@ -9206,6 +9194,8 @@ msgid ""
 "Reliable\n"
 "Relaxed"
 msgstr ""
+"Fiable\n"
+"Relaxat"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:185
 msgid "Reload"
@@ -9457,7 +9447,7 @@ msgstr "Desfés l'acció d'eliminar"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:257
 msgid "Undo Update"
-msgstr "Nos actualitzis"
+msgstr "No actualitzis"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:258
 msgid "Undo Update action"
@@ -9501,11 +9491,11 @@ msgstr ""
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:272
 msgid "Your E-mail"
-msgstr "La vostra adreça de correu electrònic"
+msgstr "L'adreça de correu electrònic"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:273
 msgid "Your Full Name"
-msgstr "El vostre nom sencer"
+msgstr "El nom sencer"
 
 #: ../../sulfur/src/sulfur/sulfur.glade.h:274
 msgid "_Abort"
@@ -9675,84 +9665,3 @@ msgstr "Notificador d'actualitzacions de l'aplicació Magneto"
 msgid "_Load Package Manager"
 msgstr "Carrega e_l gestor de paquets"
 
-#~ msgid "Spm id is not valid for"
-#~ msgstr "La identitat Spm no és vàlida per"
-
-#~ msgid "cannot open Spm id file for"
-#~ msgstr "no es pot obrir el fitxer d'identitat Spm per"
-
-#~ msgid "id for atom is duplicated, ignoring"
-#~ msgstr "la identitat de l'àtom està duplicada. S'ignora"
-
-#~ msgid "file not found"
-#~ msgstr "no s'ha trobat el fitxer"
-
-#~ msgid "invalid checksum"
-#~ msgstr "la suma de verificació no és vàlida"
-
-#~ msgid "unknown data returned"
-#~ msgstr "s'han retornat dades desconegudes"
-
-#~ msgid "forcing package updates"
-#~ msgstr "s'està forçant l'actualització dels paquets"
-
-#~ msgid "Syncing with"
-#~ msgstr "S'està sincronitzant amb"
-
-#~ msgid "Cannot complete quickpkg for atoms"
-#~ msgstr "No es pot acabar quickpkg pels àtoms"
-
-#~ msgid "do it manually"
-#~ msgstr "feu-ho manualment"
-
-#~ msgid "repackaging"
-#~ msgstr "s'està empaquetant de nou"
-
-#~ msgid "Cannot complete quickpkg for atom"
-#~ msgstr "No s'ha pogut completar quickpkg per l'àtom"
-
-#~ msgid "package files rebuild did not run properly"
-#~ msgstr ""
-#~ "la reconstrucció de fitxers dels paquets no s'ha executat correctament"
-
-#~ msgid "Please update packages manually"
-#~ msgstr "Si us plau, actualitzeu els paquets manualment"
-
-#~ msgid "failed for unknown reasons"
-#~ msgstr "ha fallat per causes desconegudes"
-
-#~ msgid "connecting with user"
-#~ msgstr "s'està connectant amb l'usuari"
-
-#~ msgid "switching to"
-#~ msgstr "s'està commutant a"
-
-#~ msgid "Transfer status"
-#~ msgstr "Estat de la transferència"
-
-#~ msgid "Download issue"
-#~ msgstr "Problemes de baixada"
-
-#~ msgid "retrying"
-#~ msgstr "s'està reintentant"
-
-#~ msgid "Upload issue"
-#~ msgstr "Hi ha un problema en la pujada"
-
-#~ msgid "mirror has invalid directory structure"
-#~ msgstr "la rèplica no té una estructura de directoris vàlida"
-
-#~ msgid "cannot create mirror directory"
-#~ msgstr "no es pot crear un directori de rèplica"
-
-#~ msgid "reconnecting with user"
-#~ msgstr "s'està reconnectant amb l'usuari"
-
-#~ msgid "migrating database path from"
-#~ msgstr "s'està migrant el camí de la base de dades des de"
-
-#~ msgid "repository metadata is malformed"
-#~ msgstr "les metadades del repositori estan mal formades"
-
-#~ msgid "Would you like to continue with the installation ?"
-#~ msgstr "Voleu continuar amb la instal·lació?"
