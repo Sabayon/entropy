@@ -16,18 +16,19 @@ import time
 import tempfile
 import shutil
 import subprocess
-import random
 from entropy.i18n import _
 from entropy.db import dbapi2, EntropyRepository
 from entropy.misc import TimeScheduled
-from entropy.const import *
-from entropy.exceptions import *
-from entropy.output import *
+from entropy.const import etpConst, etpCache, const_setup_perms, \
+    const_debug_write
+from entropy.exceptions import RepositoryError, SystemDatabaseError, \
+    ConnectionError
+from entropy.output import blue, darkred, red, darkgreen, purple, brown, bold
+import entropy.tools
+from entropy.dump import dumpobj
 
 class Repository:
 
-    import entropy.dump as dumpTools
-    import entropy.tools as entropyTools
     import socket
     def __init__(self, EquoInstance, reponames = [], forceUpdate = False,
         noEquoCheck = False, fetchSecurity = True):
@@ -35,8 +36,8 @@ class Repository:
         self.LockScanner = None
         from entropy.client.interfaces import Client
         if not isinstance(EquoInstance, Client):
-            mytxt = _("A valid Equo instance or subclass is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            mytxt = "A valid Entropy Client instance or subclass is needed"
+            raise AttributeError(mytxt)
 
         self.supported_download_items = (
             "db", "dblight", "ck", "cklight", "compck",
@@ -62,13 +63,15 @@ class Repository:
         self.current_repository_got_locked = False
         self.updated_repos = set()
 
+        avail_data = self.Entropy.SystemSettings['repositories']['available']
         # check self.Entropy.SystemSettings['repositories']['available']
-        if not self.Entropy.SystemSettings['repositories']['available']:
-            mytxt = _("No repositories specified in %s") % (etpConst['repositoriesconf'],)
-            raise MissingParameter("MissingParameter: %s" % (mytxt,))
+        if not avail_data:
+            mytxt = "No repositories specified in %s" % (
+                etpConst['repositoriesconf'],)
+            raise AttributeError(mytxt)
 
         if not self.reponames:
-            self.reponames.extend(list(self.Entropy.SystemSettings['repositories']['available'].keys())[:])
+            self.reponames.extend(list(avail_data.keys()))
 
     def __del__(self):
         if self.LockScanner != None:
@@ -111,10 +114,11 @@ class Repository:
                 self.dbformat_eapi = 3
 
         # FIXME, find a way to do that without needing sqlite3 exec.
-        if not os.access("/usr/bin/sqlite3", os.X_OK) or self.entropyTools.islive():
+        if not os.access("/usr/bin/sqlite3", os.X_OK) or entropy.tools.islive():
             self.dbformat_eapi = 1
         else:
-            rc = subprocess.call("/usr/bin/sqlite3 -version &> /dev/null", shell = True)
+            rc = subprocess.call("/usr/bin/sqlite3 -version &> /dev/null",
+                shell = True)
             if rc != 0: self.dbformat_eapi = 1
 
         eapi_env = os.getenv("FORCE_EAPI")
@@ -129,8 +133,8 @@ class Repository:
 
     def __validate_repository_id(self, repoid):
         if repoid not in self.reponames:
-            mytxt = _("Repository is not listed in self.reponames")
-            raise InvalidData("InvalidData: %s" % (mytxt,))
+            mytxt = "Repository is not listed in self.reponames"
+            raise AttributeError(mytxt)
 
     def __validate_compression_method(self, repo):
 
@@ -140,8 +144,8 @@ class Repository:
         dbc_format = repo_settings['available'][repo]['dbcformat']
         cmethod = etpConst['etpdatabasecompressclasses'].get(dbc_format)
         if cmethod == None:
-            mytxt = _("Wrong database compression method")
-            raise InvalidDataType("InvalidDataType: %s" % (mytxt,))
+            mytxt = "Wrong database compression method"
+            raise AttributeError(mytxt)
 
         return cmethod
 
@@ -149,25 +153,29 @@ class Repository:
 
         self.__validate_repository_id(repo)
 
-        # create dir if it doesn't exist
-        if not os.path.isdir(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']):
-            os.makedirs(self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath'], 0o775)
+        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        repo_data = avail_data[repo]
 
-        const_setup_perms(etpConst['etpdatabaseclientdir'], etpConst['entropygid'])
+        # create dir if it doesn't exist
+        if not os.path.isdir(repo_data['dbpath']):
+            os.makedirs(repo_data['dbpath'], 0o775)
+
+        const_setup_perms(etpConst['etpdatabaseclientdir'],
+            etpConst['entropygid'])
 
     def _construct_paths(self, item, repo, cmethod):
 
         if item not in self.supported_download_items:
-            mytxt = _("Supported items: %s") % (self.supported_download_items,)
-            raise InvalidData("InvalidData: %s" % (mytxt,))
+            mytxt = "Supported items: %s" % (self.supported_download_items,)
+            raise AttributeError(mytxt)
 
         items_needing_cmethod = (
             "db", "dblight", "cklight", "dbdump", "dbdumpck",
             "dbdumplight", "dbdumplightck", "compck",
         )
         if (item in items_needing_cmethod) and (cmethod == None):
-                mytxt = _("For %s, cmethod can't be None") % (item,)
-                raise InvalidData("InvalidData: %s" % (mytxt,))
+                mytxt = "For %s, cmethod can't be None" % (item,)
+                raise AttributeError(mytxt)
 
         avail_data = self.Entropy.SystemSettings['repositories']['available']
         repo_data = avail_data[repo]
@@ -251,8 +259,8 @@ class Repository:
             if os.path.isfile(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile']):
                 os.remove(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile'])
         else:
-            mytxt = _("self.dbformat_eapi must be in (1,2,3,)")
-            raise InvalidData('InvalidData: %s' % (mytxt,))
+            mytxt = "self.dbformat_eapi must be in (1,2,3,)"
+            raise AttributeError(mytxt)
 
     def __unpack_downloaded_database(self, repo, cmethod):
 
@@ -269,7 +277,7 @@ class Repository:
         if self.dbformat_eapi in (1, 2,):
             try:
 
-                myfunc = getattr(self.entropyTools, cmethod[1])
+                myfunc = getattr(entropy.tools, cmethod[1])
                 path = myfunc(myfile)
                 # rename path correctly
                 if self.dbformat_eapi == 1:
@@ -284,8 +292,8 @@ class Repository:
                 os.remove(myfile)
 
         else:
-            mytxt = _("self.dbformat_eapi must be in (1,2)")
-            raise InvalidData('InvalidData: %s' % (mytxt,))
+            mytxt = "self.dbformat_eapi must be in (1,2)"
+            raise AttributeError(mytxt)
 
         if rc == 0:
             self.Entropy.setup_default_file_perms(path)
@@ -297,7 +305,7 @@ class Repository:
         md5hash = ck_f.readline().strip()
         md5hash = md5hash.split()[0]
         ck_f.close()
-        return self.entropyTools.compare_md5(file_path, md5hash)
+        return entropy.tools.compare_md5(file_path, md5hash)
 
     def __verify_database_checksum(self, repo, cmethod = None):
 
@@ -305,17 +313,18 @@ class Repository:
         sys_settings_repos = self.Entropy.SystemSettings['repositories']
         avail_config = sys_settings_repos['available'][repo]
 
+        sep = os.path.sep
         if self.dbformat_eapi == 1:
-            dbfile = avail_config['dbpath'] + "/" + etpConst[cmethod[7]]
-            md5file = avail_config['dbpath'] + "/" + etpConst[cmethod[8]]
+            dbfile = avail_config['dbpath'] + sep + etpConst[cmethod[7]]
+            md5file = avail_config['dbpath'] + sep + etpConst[cmethod[8]]
 
         elif self.dbformat_eapi == 2:
-            dbfile = avail_config['dbpath'] + "/" + etpConst[cmethod[5]]
-            md5file = avail_config['dbpath'] + "/" + etpConst[cmethod[6]]
+            dbfile = avail_config['dbpath'] + sep + etpConst[cmethod[5]]
+            md5file = avail_config['dbpath'] + sep + etpConst[cmethod[6]]
 
         else:
-            mytxt = _("self.dbformat_eapi must be in (1,2)")
-            raise InvalidData('InvalidData: %s' % (mytxt,))
+            mytxt = "self.dbformat_eapi must be in (1,2)"
+            raise AttributeError(mytxt)
 
         if not (os.access(md5file, os.R_OK) and os.path.isfile(md5file)):
             return -1
@@ -327,9 +336,11 @@ class Repository:
     def get_online_repository_revision(self, repo):
 
         self.__validate_repository_id(repo)
+        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        repo_data = avail_data[repo]
 
-        url = self.Entropy.SystemSettings['repositories']['available'][repo]['database']+"/"+etpConst['etpdatabaserevisionfile']
-        status = self.entropyTools.get_remote_data(url,
+        url = repo_data['database'] + "/" + etpConst['etpdatabaserevisionfile']
+        status = entropy.tools.get_remote_data(url,
             timeout = self.big_socket_timeout)
         if status:
             status = status[0].strip()
@@ -343,8 +354,12 @@ class Repository:
 
     def get_online_eapi3_lock(self, repo):
         self.__validate_repository_id(repo)
-        url = self.Entropy.SystemSettings['repositories']['available'][repo]['database']+"/"+etpConst['etpdatabaseeapi3lockfile']
-        data = self.entropyTools.get_remote_data(url)
+
+        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        repo_data = avail_data[repo]
+
+        url = repo_data['database'] + "/" + etpConst['etpdatabaseeapi3lockfile']
+        data = entropy.tools.get_remote_data(url)
         if not data:
             return False
         return True
@@ -536,7 +551,8 @@ class Repository:
                 mydbconn = None
         return mydbconn
 
-    def get_eapi3_database_differences(self, eapi3_interface, repo, idpackages, session):
+    def get_eapi3_database_differences(self, eapi3_interface, repo, idpackages,
+        session):
 
         product = self.Entropy.SystemSettings['repositories']['product']
         data = eapi3_interface.CmdInterface.differential_packages_comparison(
@@ -561,7 +577,8 @@ class Repository:
         if not isinstance(data, dict): return {}
         return data
 
-    def handle_eapi3_database_sync(self, repo, threshold = 1500, chunk_size = 12):
+    def handle_eapi3_database_sync(self, repo, threshold = 1500,
+        chunk_size = 12):
 
         def prepare_exit(mysock, session = None):
             try:
@@ -665,7 +682,8 @@ class Repository:
                     return False
 
                 fetch_count += 1
-                pkgdata = eapi3_interface.CmdInterface.get_strict_package_information(
+                cmd_intf = eapi3_interface.CmdInterface
+                pkgdata = cmd_intf.get_strict_package_information(
                     session, segment, repo, etpConst['currentarch'], product
                 )
                 if pkgdata == None:
@@ -704,7 +722,7 @@ class Repository:
 
                 try:
                     for idpackage in pkgdata:
-                        self.dumpTools.dumpobj(
+                        dumpobj(
                             "%s%s" % (etpCache['eapi3_fetch'], idpackage,),
                             pkgdata[idpackage],
                             ignore_exceptions = False
@@ -796,7 +814,8 @@ class Repository:
         maxcount = len(added_ids)
         for idpackage in added_ids:
             count += 1
-            mydata = self.Cacher.pop("%s%s" % (etpCache['eapi3_fetch'], idpackage,))
+            mydata = self.Cacher.pop("%s%s" % (
+                etpCache['eapi3_fetch'], idpackage,))
             if mydata == None:
                 mytxt = "%s: %s" % (
                     blue(_("Fetch error on segment while adding")),
@@ -809,7 +828,10 @@ class Repository:
                 mydbconn.closeDB()
                 return False
 
-            mytxt = "%s %s" % (blue(_("Injecting package")), darkgreen(mydata['atom']),)
+            mytxt = "%s %s" % (
+                blue(_("Injecting package")),
+                darkgreen(mydata['atom']),
+            )
             self.Entropy.updateProgress(
                 mytxt, importance = 0, type = "info",
                 header = "\t", back = True, count = (count, maxcount,)
@@ -1126,7 +1148,7 @@ class Repository:
                 try:
                     self.run_config_files_updates(repo)
                 except Exception as e:
-                    self.entropyTools.print_traceback()
+                    entropy.tools.print_traceback()
                     mytxt = "%s: %s" % (
                         blue(_("Configuration files update error, not critical, continuing")),
                         darkred(repr(e)),
@@ -1156,7 +1178,7 @@ class Repository:
                 self.do_update_security_advisories()
             # do treeupdates
             if isinstance(self.Entropy.clientDbconn, EntropyRepository) and \
-                self.entropyTools.is_root(): # only as root due to Portage
+                entropy.tools.is_root(): # only as root due to Portage
                 for repo in self.reponames:
                     try:
                         dbc = self.Entropy.open_repository(repo)
@@ -1229,7 +1251,7 @@ class Repository:
                 shutil.move(
                     system_make_conf,
                     "%s.backup_%s" % (system_make_conf,
-                        self.entropyTools.get_random_number(),)
+                        entropy.tools.get_random_number(),)
                 )
             shutil.copy2(repo_make_conf, system_make_conf)
 
@@ -1357,7 +1379,7 @@ class Repository:
             )
             merge_sfx = ".entropy_merge"
             os.symlink(repo_profile_link_data, system_make_profile+merge_sfx)
-            if self.entropyTools.is_valid_path(system_make_profile+merge_sfx):
+            if entropy.tools.is_valid_path(system_make_profile+merge_sfx):
                 os.rename(system_make_profile+merge_sfx, system_make_profile)
             else:
                 # revert change, link does not exist yet
@@ -1483,7 +1505,7 @@ class Repository:
     def repository_lock_scanner_status(self):
         # raise an exception if repo got suddenly locked
         if self.current_repository_got_locked:
-            mytxt = _("Current repository got suddenly locked. Download aborted.")
+            mytxt = "Current repository got suddenly locked. Download aborted."
             raise RepositoryError('RepositoryError %s' % (mytxt,))
 
     def handle_database_download(self, repo, cmethod):
@@ -1638,7 +1660,7 @@ class Repository:
             securityConn = self.Entropy.Security()
             securityConn.fetch_advisories()
         except Exception as e:
-            self.entropyTools.print_traceback(f = self.Entropy.clientLog)
+            entropy.tools.print_traceback(f = self.Entropy.clientLog)
             mytxt = "%s: %s" % (red(_("Advisories fetch error")), e,)
             self.Entropy.updateProgress(
                 mytxt,
@@ -1737,7 +1759,7 @@ class Repository:
             tmpdir = tempfile.mkdtemp()
             repo_dir = repo_data['dbpath']
             try:
-                done = self.entropyTools.universal_uncompress(mypath, tmpdir,
+                done = entropy.tools.universal_uncompress(mypath, tmpdir,
                     catch_empty = True)
                 if not done:
                     mytype = 'warning'
