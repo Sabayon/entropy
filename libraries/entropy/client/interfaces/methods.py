@@ -559,7 +559,7 @@ class RepositoryMixin:
             indexing = self.indexing
         if dbname == None:
             dbname = etpConst['genericdbid']
-        return EntropyRepository(
+        conn = EntropyRepository(
             readOnly = readOnly,
             dbFile = dbfile,
             dbname = dbname,
@@ -568,6 +568,7 @@ class RepositoryMixin:
             skipChecks = skipChecks
         )
         self._add_plugin_to_client_repository(conn)
+        return conn
 
     def open_memory_database(self, dbname = None):
         if dbname == None:
