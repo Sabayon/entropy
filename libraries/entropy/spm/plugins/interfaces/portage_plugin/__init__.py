@@ -19,7 +19,7 @@ from entropy.const import etpConst, etpUi, const_get_stringtype, \
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
     InvalidData, InvalidAtom
 from entropy.output import darkred, darkgreen, brown, darkblue, purple, red, \
-    bold
+    bold, blue
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.misc import LogFile
@@ -1934,6 +1934,9 @@ class PortagePlugin(SpmPlugin):
     def package_names_update(self, entropy_repository, entropy_repository_id,
         entropy_server, entropy_branch):
 
+        # TODO: remove this
+        from entropy.server.interfaces.main import ServerEntropyRepositoryPlugin
+
         repo_updates_file = entropy_server.get_local_database_treeupdates_file(
             entropy_repository_id)
         do_rescan = False
@@ -1970,7 +1973,7 @@ class PortagePlugin(SpmPlugin):
                             block = f.read(1024)
                         f.close()
                     portage_dirs_digest = mdigest.hexdigest()
-                    self.__entropy_repository_treeupdate_digests[repo] = \
+                    self.__entropy_repository_treeupdate_digests[entropy_repository_id] = \
                         portage_dirs_digest
 
         if do_rescan or (str(stored_digest) != str(portage_dirs_digest)):
