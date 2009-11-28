@@ -28,7 +28,7 @@ import gobject
 from entropy.const import etpConst
 from entropy.output import print_generic
 from entropy.client.interfaces import Client as EquoInterface
-from entropy.transceivers import UrlFetcher
+from entropy.fetchers import UrlFetcher
 from entropy.i18n import _
 from entropy.misc import ParallelTask
 
