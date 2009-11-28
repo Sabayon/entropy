@@ -11,6 +11,7 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   0.99.30:
 
+    - add splitdebug support?
     - entropy.tools API docs merge
     - entropy.server API rework
     - move sensible pkgs to alt dir
