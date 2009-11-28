@@ -22,6 +22,11 @@ import gtk
 import gobject
 import time
 
+try:
+    from subprocess import getoutput
+except ImportError:
+    from commands import getoutput
+
 from entropy.exceptions import QueueError
 import entropy.tools
 from entropy.const import etpConst, const_extract_cli_repo_params, \
@@ -198,7 +203,7 @@ class SulfurApplicationEventsMixin:
         red_tt = mybuffer.create_tag("red", foreground = "red")
         green_tt = mybuffer.create_tag("green", foreground = "darkgreen")
 
-        for line in subprocess.getoutput(diffcmd).split("\n"):
+        for line in getoutput(diffcmd).split("\n"):
             myiter = mybuffer.get_end_iter()
             if line.startswith("+"):
                 mybuffer.insert_with_tags(myiter, line+"\n", green_tt)
