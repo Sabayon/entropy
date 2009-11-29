@@ -431,7 +431,7 @@ def update(options):
         for x in toBeAdded:
             print_info(brown("    # ")+red(x[0]+"..."))
             try:
-                return Entropy.Spm().generate_package(x[0],
+                Entropy.Spm().generate_package(x[0],
                     Entropy.get_local_store_directory())
             except OSError:
                 entropy.tools.print_traceback()
