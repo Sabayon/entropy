@@ -73,7 +73,7 @@ class EntropySshUriHandler(EntropyUriHandler):
             tries -= 1
             try:
                 self._socket.create_connection((self.__host, self.__port), 5)
-                break
+                return
             except self._socket.error:
                 time.sleep(1)
                 continue
