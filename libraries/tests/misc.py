@@ -76,8 +76,7 @@ class MiscTest(unittest.TestCase):
         def do_t():
             self.t_sched_run = True
 
-        t = TimeScheduled(0.1, do_t)
-        t.set_delay_before(True)
+        t = TimeScheduled(5, do_t)
         t.start()
         t.kill()
         t.join()
