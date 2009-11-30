@@ -41,7 +41,7 @@ from entropy.exceptions import PermissionDenied, RepositoryError, \
     MissingParameter
 import entropy.tools as entropyTools
 from entropy.client.interfaces import Client
-from entropy.transceivers import UrlFetcher
+from entropy.fetchers import UrlFetcher
 from entropy.const import etpConst, const_setup_entropy_pid, \
     const_remove_entropy_pid
 from entropy.core.settings.base import SystemSettings as SysSet
