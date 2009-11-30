@@ -13,6 +13,7 @@
 import subprocess
 from entropy.const import *
 from entropy.output import *
+from entropy.exceptions import InvalidAtom
 from entropy.server.interfaces import Server
 from entropy.i18n import _
 import entropy.tools
@@ -329,7 +330,11 @@ def update(options):
                 if myatom in tba:
                     tb_added_new.add(tba.get(myatom))
                     continue
-                inst_myatom = Entropy.Spm().match_installed_package(myatom)
+                try:
+                    inst_myatom = Entropy.Spm().match_installed_package(myatom)
+                except InvalidAtom:
+                    print_warning(darkred("  !!! ")+red(_("Invalid atom"))+" "+bold(myatom))
+                    continue
                 if inst_myatom in tba:
                     tb_added_new.add(tba.get(inst_myatom))
             toBeAdded = tb_added_new
