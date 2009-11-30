@@ -11,7 +11,7 @@
     This module contains Entropy Framework exceptions classes.
 
 """
-from entropy.const import const_isstring
+from entropy.const import const_isstring, const_convert_to_unicode
 
 class DumbException(Exception):
     """Dumb exception class"""
@@ -21,6 +21,11 @@ class EntropyException(Exception):
     def __init__(self, value):
         self.value = value[:]
         Exception.__init__(self)
+
+    def __unicode__(self):
+        if const_isstring(self.value):
+            return const_convert_to_unicode(self.value)
+        return const_convert_to_unicode(repr(self.value))
 
     def __str__(self):
         if const_isstring(self.value):
