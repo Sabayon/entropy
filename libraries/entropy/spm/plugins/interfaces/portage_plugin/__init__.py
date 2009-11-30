@@ -181,6 +181,7 @@ class PortagePlugin(SpmPlugin):
     PLUGIN_NAME = 'portage'
     ENV_FILE_COMP = "environment.bz2"
     EBUILD_EXT = ".ebuild"
+    KERNEL_CATEGORY = "sys-kernel"
 
     sys.path.append("/usr/lib/gentoolkit/pym")
 
@@ -639,6 +640,51 @@ class PortagePlugin(SpmPlugin):
             )
         )
 
+    def _add_kernel_dependency_to_pkg(self, pkg_data):
+
+        kmod_pfx = "/lib/modules"
+        content = [x for x in pkg_data['content'] if x.startswith(kmod_pfx)]
+        content = [x for x in content if x != kmod_pfx]
+        if not content:
+            return
+        content.sort()
+
+        for item in content:
+
+            k_base = os.path.basename(item)
+            if k_base.startswith("."):
+                continue # hidden file
+            # hope that is fine!
+
+            owners = self.search_paths_owners([item])
+            if not owners:
+                continue
+
+            # MUST match SLOT (for triggers here, to be able to handle
+            # multiple packages correctly and set back slot).
+            pkg_data['versiontag'] = k_base
+
+            owner_data = None
+            for k_atom, k_slot in owners:
+                k_cat, k_name, k_ver, k_rev = entropy.tools.catpkgsplit(k_atom)
+                if k_cat == PortagePlugin.KERNEL_CATEGORY:
+                    owner_data = (k_cat, k_name, k_ver, k_rev,)
+                    break
+
+            # no kernel found
+            if owner_data is None:
+                continue
+
+            k_cat, k_name, k_ver, k_rev = owner_data
+            if k_rev != "r0":
+                k_ver += "-%s" % (k_rev,)
+
+            # overwrite slot, yeah
+            pkg_data['slot'] = k_base
+            kern_dep_key = "=%s~-1" % (k_atom,)
+
+            return kern_dep_key
+
     def extract_package_metadata(self, package_file):
         """
         Reimplemented from SpmPlugin class.
@@ -739,49 +785,10 @@ class PortagePlugin(SpmPlugin):
 
         # [][][] Kernel dependent packages hook [][][]
         data['versiontag'] = ''
-        kernelstuff = False
-        kernelstuff_kernel = False
-        kmod_pfx = "/lib/modules"
         kern_dep_key = None
 
-        for item in sorted(data['content']):
-
-            if item == kmod_pfx:
-                continue
-            if not item.startswith(kmod_pfx):
-                continue
-
-            k_base = os.path.basename(item)
-            if k_base.startswith("."):
-                continue # hidden file
-            # hope that is fine!
-
-            owners = self.search_paths_owners([item])
-            if not owners:
-                continue
-
-            kernelstuff = True
-            if data['category'] == "sys-kernel":
-                kernelstuff_kernel = True
-
-            # this, if kernelstuff_kernel is False,
-            # MUST match SLOT (for triggers here, to be able to handle
-            # multiple packages correctly and set back slot).
-            data['versiontag'] = k_base
-
-            k_atom, k_slot = list(owners.keys())[0]
-            k_cat, k_name, k_ver, k_rev = entropy.tools.catpkgsplit(k_atom)
-            if k_rev != "r0":
-                k_ver += "-%s" % (k_rev,)
-
-            if not kernelstuff_kernel:
-                # overwrite slot, yeah
-                data['slot'] = k_base
-
-            if not kernelstuff_kernel:
-                kern_dep_key = "=%s~-1" % (k_atom,)
-
-            break
+        if data['category'] != PortagePlugin.KERNEL_CATEGORY:
+            kern_dep_key = self._add_kernel_dependency_to_pkg(data)
 
         file_ext = etpConst['spm']['ebuild_file_extension']
         ebuilds_in_path = [x for x in os.listdir(meta_dir) if \
