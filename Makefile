@@ -1,6 +1,6 @@
 PKGNAME = entropy
 PYTHON = python2
-SUBDIRS = client conf docs handlers libraries misc/po misc server sulfur
+SUBDIRS = client conf docs libraries misc/po misc server sulfur
 SERVER_INSPKGS = reagent.py activator.py server_reagent.py server_activator.py repository-admin-daemon repository-services-daemon.example server_query.py
 PREFIX = /usr
 BINDIR = $(PREFIX)/bin
