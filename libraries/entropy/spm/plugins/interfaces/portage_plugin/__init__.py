@@ -266,11 +266,6 @@ class PortagePlugin(SpmPlugin):
         except ImportError:
             self.glsa = None
 
-        if hasattr(self.portage, 'exception'):
-            self.portage_exception = self.portage.exception
-        else: # portage <2.2 workaround
-            self.portage_exception = Exception
-
         self.__entropy_repository_treeupdate_digests = {}
 
     @staticmethod
@@ -555,7 +550,7 @@ class PortagePlugin(SpmPlugin):
             raise KeyError
         try:
             return self.portage.portdb.xmatch(match_type, package)
-        except self.portage_exception:
+        except self.portage.exception.PortageException:
             raise InvalidAtom(package)
 
     def match_installed_package(self, package, match_all = False, root = None):
@@ -566,7 +561,10 @@ class PortagePlugin(SpmPlugin):
             root = etpConst['systemroot'] + os.path.sep
 
         vartree = self._get_portage_vartree(root = root)
-        matches = vartree.dep_match(package) or []
+        try:
+            matches = vartree.dep_match(package) or []
+        except self.portage.exception.InvalidAtom as err:
+            raise InvalidAtom(str(err))
 
         if match_all:
             return matches
@@ -993,7 +991,7 @@ class PortagePlugin(SpmPlugin):
                 matched_slot,
             )
             installed_atom = self.match_installed_package(inst_key)
-        except self.portage_exception:
+        except self.portage.exception.PortageException:
             installed_atom = ''
 
         if installed_atom:
