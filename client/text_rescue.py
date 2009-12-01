@@ -690,12 +690,7 @@ def database(options):
     else:
         return -10
 
-'''
-    @description: prints entropy configuration information
-    @input: dict (bool) -> if True, returns a dictionary with packed info. if False, just print to STDOUT
-    @output:	dictionary or STDOUT
-'''
-def getinfo(dict = False):
+def getinfo():
 
     # sysinfo
     info = {}
@@ -754,10 +749,7 @@ def getinfo(dict = False):
             info['Repository databases'][x]['Total available packages'] = len(dbconn.listAllIdpackages())
             info['Repository databases'][x]['Database revision'] = Equo.get_repository_revision(x)
 
-    if (dict):
-        return info
-
-    keys = sorted(info.keys())
+    keys = sorted(info)
     for x in keys:
         #print type(info[x])
         if isinstance(info[x], dict):
