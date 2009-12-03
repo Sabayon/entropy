@@ -860,7 +860,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'proxy': etpConst['proxy'].copy(),
             'name': etpConst['systemname'],
             'log_level': etpConst['entropyloglevel'],
-            'spm_backend': etpConst['spm']['backend'],
+            'spm_backend': None,
         }
 
         etp_conf = self.__setting_files['system']

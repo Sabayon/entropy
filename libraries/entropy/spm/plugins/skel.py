@@ -18,7 +18,7 @@ from entropy.misc import LogFile
 class SpmPlugin(Singleton):
     """Base class for Source Package Manager plugins"""
 
-    BASE_PLUGIN_API_VERSION = 2
+    BASE_PLUGIN_API_VERSION = 3
 
     # this must be reimplemented by subclasses and value
     # must match BASE_PLUGIN_API_VERSION
@@ -31,12 +31,16 @@ class SpmPlugin(Singleton):
     # Name of your Spm Plugin
     PLUGIN_NAME = None
 
+    # At least one of your SpmPlugin classes must be set as default
+    # by setting IS_DEFAULT = True
+    # There can't be more than _one_ default SPM plugin, in that case
+    # the first (alphabetically) one will be automatically selected
+    IS_DEFAULT = False
+
     def init_singleton(self, output_interface):
         """
         Source Package Manager Plugin singleton method.
         This method must be reimplemented by subclasses.
-        At this stage, you should also consider to tweak etpConst['spm']
-        content (importing etpConst from entropy.const).
 
         @param output_interface: Entropy output interface
         @type output_interface: entropy.output.TextInterface based instances
@@ -61,7 +65,8 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
-    def package_phases(self):
+    @staticmethod
+    def package_phases():
         """
         Return a list of available and valid package build phases.
         Default value is ["setup", "preinstall", "postinstall", "preremove",
@@ -72,6 +77,29 @@ class SpmPlugin(Singleton):
         """
         return ["setup", "preinstall", "postinstall", "preremove",
             "postremove", "configure"]
+
+    @staticmethod
+    def package_phases_map():
+        """
+        Return a map of phases names between Entropy (as keys) and
+        Source Package Manager.
+
+        @return: map of package phases
+        @rtype: dict
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def config_files_map():
+        """
+        Return a map composed by configuration file identifiers and their
+        path on disk. These configuration files are related to Source Package
+        Manager.
+
+        @return: configuration files map
+        @rtype: dict
+        """
+        raise NotImplementedError()
 
     def get_cache_directory(self, root = None):
         """
@@ -441,6 +469,133 @@ class SpmPlugin(Singleton):
         """
         raise NotImplementedError()
 
+    def compile_packages(self, packages, stdin = None, stdout = None,
+        stderr = None, environ = None, pid_write_func = None,
+        pretend = False, verbose = False, fetch_only = False,
+        build_only = False, no_dependencies = False,
+        ask = False, coloured_output = False, oneshot = False):
+        """
+        Compile given packages using given compile options. Extra compiler
+        options can be set via environmental variables (CFLAGS, LDFLAGS, etc).
+        By default, this function writes to stdout and can potentially interact
+        with user via stdin/stdout/stderr.
+        By default, when build_only=False, compiled packages are installed onto
+        the running system.
+
+        @param packages: list of Source Package Manager package names
+        @type packages: list
+        @keyword stdin: custom standard input
+        @type stdin: file object or valid file descriptor number
+        @keyword stdout: custom standard output
+        @type stdout: file object or valid file descriptor number
+        @keyword stderr: custom standard error
+        @type stderr: file object or valid file descriptor number
+        @keyword environ: dict
+        @type environ: map of environmental variables
+        @keyword pid_write_func: function to call with execution pid number
+        @type pid_write_func: callable function, signature func(int_pid_number)
+        @keyword pretend: just show what would be done
+        @type pretend: bool
+        @keyword verbose: execute compilation in verbose mode
+        @type verbose: bool
+        @keyword fetch_only: fetch source code only
+        @type fetch_only: bool
+        @keyword build_only: do not actually touch live system (don't install
+            compiled
+        @type build_only: bool
+        @keyword no_dependencies: ignore possible build time dependencies
+        @type no_dependencies: bool
+        @keyword ask: ask user via stdin before executing the required tasks
+        @type ask: bool
+        @keyword coloured_output: allow coloured output
+        @type coloured_output: bool
+        @keyword oneshot: when compiled packages are intended to not get
+            recorded into personal user compile preferences (if you are not
+            using a Portage-based SPM, just ignore this)
+        @type oneshot: bool
+        @return: execution status
+        @rtype: int
+        """
+        raise NotImplementedError()
+
+    def remove_packages(self, packages, stdin = None, stdout = None,
+        stderr = None, environ = None, pid_write_func = None,
+        pretend = False, verbose = False, no_dependencies = False, ask = False,
+        coloured_output = False):
+        """
+        Compile given packages using given compile options. Extra compiler
+        options can be set via environmental variables (CFLAGS, LDFLAGS, etc).
+        By default, this function writes to stdout and can potentially interact
+        with user via stdin/stdout/stderr.
+        By default, when build_only=False, compiled packages are installed onto
+        the running system.
+
+        @param packages: list of Source Package Manager package names
+        @type packages: list
+        @keyword stdin: custom standard input
+        @type stdin: file object or valid file descriptor number
+        @keyword stdout: custom standard output
+        @type stdout: file object or valid file descriptor number
+        @keyword stderr: custom standard error
+        @type stderr: file object or valid file descriptor number
+        @keyword environ: dict
+        @type environ: map of environmental variables
+        @keyword pid_write_func: function to call with execution pid number
+        @type pid_write_func: callable function, signature func(int_pid_number)
+        @keyword pretend: just show what would be done
+        @type pretend: bool
+        @keyword verbose: execute compilation in verbose mode
+        @type verbose: bool
+        @keyword no_dependencies: ignore possible build time dependencies
+        @type no_dependencies: bool
+        @keyword ask: ask user via stdin before executing the required tasks
+        @type ask: bool
+        @keyword coloured_output: allow coloured output
+        @type coloured_output: bool
+        @return: execution status
+        @rtype: int
+        """
+        raise NotImplementedError()
+
+    def print_build_environment_info(self, stdin = None, stdout = None,
+        stderr = None, environ = None, pid_write_func = None,
+        coloured_output = False):
+        """
+        Print build environment info to stdout.
+
+        @keyword stdin: custom standard input
+        @type stdin: file object or valid file descriptor number
+        @keyword stdout: custom standard output
+        @type stdout: file object or valid file descriptor number
+        @keyword stderr: custom standard error
+        @type stderr: file object or valid file descriptor number
+        @keyword environ: dict
+        @type environ: map of environmental variables
+        @keyword pid_write_func: function to call with execution pid number
+        @type pid_write_func: callable function, signature func(int_pid_number)
+        @keyword coloured_output: allow coloured output
+        @type coloured_output: bool
+        @return: execution status
+        @rtype: int
+        """
+        raise NotImplementedError()
+
+    def environment_update(self, stdout = None, stderr = None):
+        """
+        Hook used by Entropy Client and Entropy Server to ask Source Package
+        Manager to update /etc/profile* and other environment settings around.
+        Since this is part of the Source Package Manager metaphor it must stay
+        in this class.
+
+        @keyword stdout: custom standard output
+        @type stdout: file object or valid file descriptor number
+        @keyword stderr: custom standard error
+        @type stderr: file object or valid file descriptor number
+        @return: execution status
+        @rtype: int
+        """
+        raise NotImplementedError()
+
     def get_installed_packages(self, categories = None, root = None):
         """
         Return list of packages found in installed packages repository.
@@ -640,6 +795,23 @@ class SpmPlugin(Singleton):
 
         @param package_metadata: Entropy package metadata
         @type package_metadata: dict
+        @return: execution status
+        @rtype: int
+        """
+        raise NotImplementedError()
+
+    @staticmethod
+    def entropy_client_post_repository_update_hook(entropy_client,
+        entropy_repository_id):
+        """
+        This function is called by Entropy Client when updating Entropy
+        repositories. Place here all your Source Package Manager bullshit and,
+        remember to return an int form execution status.
+
+        @param entropy_client: Entropy Client interface instance
+        @type entropy_client: entropy.client.interfaces.Client.Client
+        @param entropy_repository_id: Entropy Repository unique identifier
+        @type: string
         @return: execution status
         @rtype: int
         """

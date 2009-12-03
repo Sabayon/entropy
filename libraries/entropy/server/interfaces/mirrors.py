@@ -22,6 +22,7 @@ from entropy.i18n import _
 from entropy.misc import RSS
 from entropy.transceivers import EntropyTransceiver
 from entropy.db import dbapi2
+import entropy.tools
 
 class Server:
 
@@ -1252,33 +1253,32 @@ class Server:
                 critical.append(ssl_server_cert)
 
         # Some information regarding how packages are built
-        spm_files = [
-            (etpConst['spm']['global_make_conf'], "global_make_conf"),
-            (etpConst['spm']['global_package_keywords'],
-                "global_package_keywords"),
-            (etpConst['spm']['global_package_use'], "global_package_use"),
-            (etpConst['spm']['global_package_mask'], "global_package_mask"),
-            (etpConst['spm']['global_package_unmask'], "global_package_unmask"),
-        ]
-        for myfile, myname in spm_files:
+        spm_files_map = self.Entropy.Spm_class().config_files_map()
+        spm_syms = {}
+        for myname, myfile in spm_files_map.items():
+            if os.path.islink(myfile):
+                spm_syms[myname] = myfile
+                continue # we don't want symlinks
             if os.path.isfile(myfile) and os.access(myfile, os.R_OK):
                 data[myname] = myfile
             extra_text_files.append(myfile)
 
-        make_profile = etpConst['spm']['global_make_profile']
-        rnd_tmp_file = self.Entropy.entropyTools.get_random_temp_file()
-        mytmpdir = os.path.dirname(rnd_tmp_file)
-        mytmpfile = os.path.join(mytmpdir,
-            etpConst['spm']['global_make_profile_link_name'])
-        extra_text_files.append(mytmpfile)
+        # XXX/FIXME: for symlinks, we read their link and send a file with that
+        # content. This is the default behaviour for now and allows to send
+        # /etc/make.profile link pointer correctly.
+        for symname, symfile in spm_syms.items():
 
-        if os.path.islink(make_profile):
-            mylink = os.readlink(make_profile)
+            tmp_file = entropy.tools.get_random_temp_file()
+            mytmpdir = os.path.dirname(tmp_file)
+            mytmpfile = os.path.join(mytmpdir, os.path.basename(symfile))
+            extra_text_files.append(mytmpfile)
+
+            mylink = os.readlink(symfile)
             f_mkp = open(mytmpfile, "w")
             f_mkp.write(mylink)
             f_mkp.flush()
             f_mkp.close()
-            data['global_make_profile'] = mytmpfile
+            data[symname] = mytmpfile
 
         return data, critical, extra_text_files
 
@@ -3033,7 +3033,7 @@ class Server:
                     header = darkred(" !!! ")
                 )
 
-                exc_txt = self.Entropy.entropyTools.print_exception(
+                exc_txt = entropy.tools.print_exception(
                     returndata = True)
                 for line in exc_txt:
                     self.Entropy.updateProgress(

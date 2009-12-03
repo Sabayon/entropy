@@ -24,7 +24,7 @@ class CalculatorsMixin:
         # get all the installed packages
         installed_packages = dbconn.listAllIdpackages()
 
-        pdepend_id = etpConst['spm']['pdepend_id']
+        pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
         deps_not_matched = set()
         # now look
         length = len(installed_packages)
@@ -1553,7 +1553,7 @@ class CalculatorsMixin:
         monotree = set(idpackages) # monodimensional tree
 
         # post-dependencies won't be pulled in
-        pdepend_id = etpConst['spm']['pdepend_id']
+        pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
         # check if dependstable is sane before beginning
         self.clientDbconn.retrieveReverseDependencies(idpackages[0])
         count = 0

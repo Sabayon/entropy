@@ -155,87 +155,85 @@ class Base:
             stdout_err.close()
         return True, rc
 
-    def compile_atoms(  self,
-                        queue_id, atoms,
-                        pretend = False, oneshot = False,
-                        verbose = True, nocolor = True,
-                        fetchonly = False, buildonly = False,
-                        nodeps = False, custom_use = '', ldflags = '', cflags = ''
-        ):
+    def compile_atoms(
+            self,
+            queue_id, atoms,
+            pretend = False, oneshot = False,
+            verbose = True, nocolor = True,
+            fetchonly = False, buildonly = False,
+            nodeps = False, custom_use = '', ldflags = '', cflags = ''):
 
-        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
+        sys_intf = self.SystemManagerExecutor.SystemInterface
+        queue_data, key = sys_intf.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
             return False, 'no item in queue'
 
+        def set_proc_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
         stdout_err = open(queue_data['stdout'], "a+")
-
-        cmd = [etpConst['spm']['env_update_cmd'], "&&"]
-        cmd += etpConst['spm']['source_profile']+["&&"]
-        if custom_use:
-            cmd += ['export USE="']+custom_use.strip().split()+['"', '&&']
-        if ldflags:
-            cmd += ['export LDFLAGS="']+custom_use.strip().split()+['"', '&&']
-        if cflags:
-            cmd += ['export CFLAGS="']+custom_use.strip().split()+['"', '&&']
-        cmd += [etpConst['spm']['exec']]+atoms
-        if pretend:
-            cmd.append(etpConst['spm']['pretend_cmd'])
-        if verbose:
-            cmd.append(etpConst['spm']['verbose_cmd'])
-        if oneshot:
-            cmd.append(etpConst['spm']['oneshot_cmd'])
-        if nocolor:
-            cmd.append(etpConst['spm']['nocolor_cmd'])
-        if fetchonly:
-            cmd.append(etpConst['spm']['fetchonly_cmd'])
-        if buildonly:
-            cmd.append(etpConst['spm']['buildonly_cmd'])
-        if nodeps:
-            cmd.append(etpConst['spm']['nodeps_cmd'])
-
-        stdout_err.write("Preparing to spawn parameter: '%s'. Good luck mate!\n" % (' '.join(cmd),))
+        stdout_err.write("Preparing to spawn compilation of: '%s'"
+            ". Good luck mate!\n" % (' '.join(atoms),))
         stdout_err.flush()
 
+        env = {}
+        if ldflags:
+            env['LDFLAGS'] = ldflags
+        if cflags:
+            env['CFLAGS'] = cflags
+
         try:
-            p = subprocess.Popen(' '.join(cmd), stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id), shell = True)
-            self._set_processing_pid(queue_id, p.pid)
-            rc = p.wait()
+
+            spm = sys_intf.Entropy.Spm()
+            status = spm.compile_packages(atoms,
+                stdin = self._get_stdin(queue_id),
+                stdout = stdour_err, stderr = stdout_err, environ = env,
+                pid_write_func = set_proc_pid, pretend = pretend,
+                verbose = verbose, fetch_only = fetchonly,
+                build_only = buildonly, no_dependencies = nodeps,
+                coloured_output = not nocolor, oneshot = oneshot)
+
         finally:
+
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
-        return True, rc
+
+        return True, status
 
     def spm_remove_atoms(self, queue_id, atoms, pretend = True, verbose = True, nocolor = True):
 
-        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
+        sys_intf = self.SystemManagerExecutor.SystemInterface
+        queue_data, key = sys_intf.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
             return False, 'no item in queue'
 
+        def set_proc_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
         stdout_err = open(queue_data['stdout'], "a+")
-
-        cmd = [etpConst['spm']['env_update_cmd'], "&&"]
-        cmd += etpConst['spm']['source_profile']+["&&"]
-        cmd += [etpConst['spm']['exec'], etpConst['spm']['remove_cmd']]+atoms
-        if pretend:
-            cmd.append(etpConst['spm']['pretend_cmd'])
-        if verbose:
-            cmd.append(etpConst['spm']['verbose_cmd'])
-        if nocolor:
-            cmd.append(etpConst['spm']['nocolor_cmd'])
-
-        stdout_err.write("Preparing to spawn parameter: '%s'. Good luck mate!\n" % (' '.join(cmd),))
+        stdout_err.write("Preparing to spawn removal of: '%s'"
+            ". Good luck mate!\n" % (' '.join(atoms),))
         stdout_err.flush()
 
         try:
-            p = subprocess.Popen(' '.join(cmd), stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id), shell = True)
-            self._set_processing_pid(queue_id, p.pid)
-            rc = p.wait()
+
+            spm = sys_intf.Entropy.Spm()
+            status = spm.remove_packages(atoms,
+                stdin = self._get_stdin(queue_id),
+                stdout = stdour_err, stderr = stdout_err,
+                pid_write_func = set_proc_pid, pretend = pretend,
+                verbose = verbose, fetch_only = fetchonly,
+                build_only = buildonly, no_dependencies = nodeps,
+                coloured_output = not nocolor, oneshot = oneshot)
+
         finally:
+
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
-        return True, rc
+
+        return True, status
 
     def enable_uses_for_atoms(self, queue_id, atoms, useflags):
 
@@ -350,26 +348,33 @@ class Base:
 
     def run_spm_info(self, queue_id):
 
-        queue_data, key = self.SystemManagerExecutor.SystemInterface.get_item_by_queue_id(queue_id, copy = True)
+        sys_intf = self.SystemManagerExecutor.SystemInterface
+        queue_data, key = sys_intf.get_item_by_queue_id(queue_id, copy = True)
         if queue_data == None:
             return False, 'no item in queue'
 
+        def set_proc_pid(pid):
+            self._set_processing_pid(queue_id, pid)
+
         stdout_err = open(queue_data['stdout'], "a+")
-
-        cmd = [etpConst['spm']['exec'], etpConst['spm']['info_cmd']]
-
-        stdout_err.write("Preparing to spawn parameter: '%s'. Good luck mate!\n" % (' '.join(cmd),))
+        stdout_err.write("Preparing to spawn SPM info. Good luck mate!\n")
         stdout_err.flush()
 
         try:
-            p = subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id))
-            self._set_processing_pid(queue_id, p.pid)
-            rc = p.wait()
+
+            spm = sys_intf.Entropy.Spm()
+            status = spm.print_build_environment_info(
+                stdin = self._get_stdin(queue_id),
+                stdout = stdour_err, stderr = stdout_err,
+                pid_write_func = set_proc_pid, coloured_output = False)
+
         finally:
+
             stdout_err.write("\n### Done ###\n")
             stdout_err.flush()
             stdout_err.close()
-        return True, rc
+
+        return True, status
 
     def run_custom_shell_command(self, queue_id, command):
 
@@ -379,16 +384,14 @@ class Base:
 
         stdout_err = open(queue_data['stdout'], "a+")
 
-        cmd = [etpConst['spm']['env_update_cmd'], "&&"]
-        cmd += etpConst['spm']['source_profile']+[";"]
-        cmd += command.split()
-
+        cmd = command.split()
         cmd = ' '.join(cmd)
         stdout_err.write("Preparing to spawn parameter: '%s'. Good luck mate!\n" % (cmd,))
         stdout_err.flush()
 
         try:
-            p = subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err, stdin = self._get_stdin(queue_id), shell = True)
+            p = subprocess.Popen(cmd, stdout = stdout_err, stderr = stdout_err,
+                stdin = self._get_stdin(queue_id), shell = True)
             self._set_processing_pid(queue_id, p.pid)
             rc = p.wait()
         finally:

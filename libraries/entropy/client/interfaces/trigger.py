@@ -17,18 +17,11 @@ from entropy.const import *
 from entropy.exceptions import *
 from entropy.output import *
 from entropy.i18n import _
+import entropy.tools
 
 class Trigger:
 
     VALID_PHASES = ("preinstall", "postinstall", "preremove", "postremove",)
-    ENV_VARS_DIR = etpConst['spm']['env_dir_reference']
-    ENV_UPDATE_HOOK = etpConst['spm']['env_update_cmd']
-    PHASES = {
-        'preinstall': "preinstall",
-        'postinstall': "postinstall",
-        'preremove': "preremove",
-        'postremove': "postremove",
-    }
 
     import entropy.tools as entropyTools
     def __init__(self, entropy_client, phase, pkgdata, package_action = None):
@@ -89,22 +82,20 @@ class Trigger:
         functions = []
 
         if self.spm_support:
+            spm_class = self.Entropy.Spm_class()
+            phases_map = spm_class.package_phases_map()
             while True:
-                if self.pkgdata['spm_phases'] != None:
-                    if etpConst['spm']['postinst_phase'] not \
+                if self.pkgdata['spm_phases'] is not None:
+                    if phases_map.get('postinstall') not \
                         in self.pkgdata['spm_phases']:
                         break
                 functions.append(self.trigger_spm_postinstall)
                 break
 
         cont_dirs = set((os.path.dirname(x) for x in self.pkgdata['content']))
-
-        if Trigger.ENV_VARS_DIR in cont_dirs:
+        ldpaths = entropy.tools.collect_linker_paths()
+        if len(cont_dirs) != len(cont_dirs - set(ldpaths)):
             functions.append(self.trigger_env_update)
-        else:
-            ldpaths = self.Entropy.entropyTools.collect_linker_paths()
-            if len(cont_dirs) != len(cont_dirs - set(ldpaths)):
-                functions.append(self.trigger_env_update)
 
         if self.pkgdata['trigger']:
             functions.append(self.trigger_call_ext_postinstall)
@@ -117,9 +108,11 @@ class Trigger:
 
         # Portage phases
         if self.spm_support:
+            spm_class = self.Entropy.Spm_class()
+            phases_map = spm_class.package_phases_map()
             while True:
                 if self.pkgdata['spm_phases'] != None:
-                    if etpConst['spm']['preinst_phase'] not \
+                    if phases_map.get('preinstall') not \
                         in self.pkgdata['spm_phases']:
                         break
                 functions.append(self.trigger_spm_preinstall)
@@ -137,12 +130,9 @@ class Trigger:
         cont_dirs = set((os.path.dirname(x) for x in \
             self.pkgdata['removecontent']))
 
-        if Trigger.ENV_VARS_DIR in cont_dirs:
+        ldpaths = entropy.tools.collect_linker_paths()
+        if len(cont_dirs) != len(cont_dirs - set(ldpaths)):
             functions.append(self.trigger_env_update)
-        else:
-            ldpaths = self.Entropy.entropyTools.collect_linker_paths()
-            if len(cont_dirs) != len(cont_dirs - set(ldpaths)):
-                functions.append(self.trigger_env_update)
 
         if self.pkgdata['trigger']:
             functions.append(self.trigger_call_ext_postremove)
@@ -156,10 +146,12 @@ class Trigger:
 
         # Portage hook
         if self.spm_support:
+            spm_class = self.Entropy.Spm_class()
+            phases_map = spm_class.package_phases_map()
 
             while True:
                 if self.pkgdata['spm_phases'] != None:
-                    if etpConst['spm']['prerm_phase'] not \
+                    if phases_map.get('preremove') not \
                         in self.pkgdata['spm_phases']:
                         break
                 functions.append(self.trigger_spm_preremove)
@@ -169,7 +161,7 @@ class Trigger:
             # in place and also because doesn't make any difference
             while True:
                 if self.pkgdata['spm_phases'] != None:
-                    if etpConst['spm']['postrm_phase'] not \
+                    if phases_map.get('postremove') not \
                         in self.pkgdata['spm_phases']:
                         break
                 functions.append(self.trigger_spm_postremove)
@@ -386,7 +378,7 @@ class Trigger:
 
         tg_pfx = "%s/trigger-" % (etpConst['entropyunpackdir'],)
         while True:
-            triggerfile = "%s%s" % (tg_pfx, self.Entropy.entropyTools.get_random_number(),)
+            triggerfile = "%s%s" % (tg_pfx, entropy.tools.get_random_number(),)
             if not os.path.isfile(triggerfile): break
 
         triggerdir = os.path.dirname(triggerfile)
@@ -422,20 +414,13 @@ class Trigger:
         return my.run(self.phase, self.pkgdata, triggerfile)
 
     def trigger_env_update(self):
-
         self.Entropy.clientLog.log(
             ETP_LOGPRI_INFO,
             ETP_LOGLEVEL_NORMAL,
-            "[POST] Running env-update"
+            "[POST] Running env_update"
         )
-        kwargs = {}
-        if etpUi['mute']:
-            kwargs['stdout'] = self.Entropy.clientLog
-            kwargs['stderr'] = self.Entropy.clientLog
-
-        args = (Trigger.ENV_UPDATE_HOOK,)
-        proc = subprocess.Popen(args, **kwargs)
-        proc.wait()
+        self.Spm.environment_update(stdin = self.Entropy.clientLog,
+            stdout = self.Entropy.clientLog)
 
     def trigger_spm_postinstall(self):
 
@@ -444,8 +429,7 @@ class Trigger:
             importance = 0,
             header = red("   ## ")
         )
-        return self.Spm.execute_package_phase(self.pkgdata,
-            Trigger.PHASES['postinstall'])
+        return self.Spm.execute_package_phase(self.pkgdata, 'postinstall')
 
     def trigger_spm_preinstall(self):
 
@@ -454,8 +438,7 @@ class Trigger:
             importance = 0,
             header = red("   ## ")
         )
-        return self.Spm.execute_package_phase(self.pkgdata,
-            Trigger.PHASES['preinstall'])
+        return self.Spm.execute_package_phase(self.pkgdata, 'preinstall')
 
     def trigger_spm_preremove(self):
 
@@ -464,8 +447,7 @@ class Trigger:
             importance = 0,
             header = red("   ## ")
         )
-        return self.Spm.execute_package_phase(self.pkgdata,
-            Trigger.PHASES['preremove'])
+        return self.Spm.execute_package_phase(self.pkgdata, 'preremove')
 
     def trigger_spm_postremove(self):
 
@@ -474,5 +456,4 @@ class Trigger:
             importance = 0,
             header = red("   ## ")
         )
-        return self.Spm.execute_package_phase(self.pkgdata,
-            Trigger.PHASES['postremove'])
+        return self.Spm.execute_package_phase(self.pkgdata, 'postremove')

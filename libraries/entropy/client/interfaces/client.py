@@ -453,7 +453,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'filesbackup': etpConst['filesbackup'],
             'forcedupdates': etpConst['forcedupdates'],
             'packagehashes': etpConst['packagehashes'],
-            'ignore_spm_downgrades': etpConst['spm']['ignore-spm-downgrades'],
+            'ignore_spm_downgrades': False,
             'collisionprotect': etpConst['collisionprotect'],
             'configprotect': etpConst['configprotect'][:],
             'configprotectmask': etpConst['configprotectmask'][:],

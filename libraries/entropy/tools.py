@@ -20,6 +20,7 @@ import os
 import time
 import shutil
 import tarfile
+import tempfile
 import subprocess
 import grp
 import pwd
@@ -2710,14 +2711,9 @@ def get_random_temp_file():
     @return: 
     @rtype: 
     """
-    if not os.path.isdir(etpConst['packagestmpdir']):
-        os.makedirs(etpConst['packagestmpdir'])
-    path = os.path.join(etpConst['packagestmpdir'],
-        "temp_"+str(get_random_number()))
-    while os.path.lexists(path):
-        path = os.path.join(etpConst['packagestmpdir'],
-            "temp_"+str(get_random_number()))
-    return path
+    fd, tmp_path = tempfile.mkstemp()
+    os.close(fd)
+    return tmp_path
 
 def get_file_timestamp(path):
     """

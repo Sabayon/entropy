@@ -1043,7 +1043,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 if manual_dep in pkgdata['dependencies']:
                     continue
                 pkgdata['dependencies'][manual_dep] = \
-                    etpConst['spm']['mdepend_id']
+                    etpConst['dependency_type_ids']['mdepend_id']
 
         # FIXME: this is Entropy Client related but also part of the
         # currently implemented metaphor, so let's wait to have a Rule
@@ -1261,7 +1261,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             for manual_dep in manual_deps:
                 if manual_dep in dep_dict:
                     continue
-                dep_dict[manual_dep] = etpConst['spm']['mdepend_id']
+                dep_dict[manual_dep] = \
+                    etpConst['dependency_type_ids']['mdepend_id']
 
         else:
             # force to None
@@ -1937,7 +1938,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         mydict = {}
         for manual_dep in manual_deps:
-            mydict[manual_dep] = etpConst['spm']['mdepend_id']
+            mydict[manual_dep] = etpConst['dependency_type_ids']['mdepend_id']
         return self.insertDependencies(idpackage, mydict)
 
     def removeContent(self, idpackage):
@@ -4127,7 +4128,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type extended: bool
         """
         return self.retrieveDependencies(idpackage, extended = extended,
-            deptype = etpConst['spm']['pdepend_id'])
+            deptype = etpConst['dependency_type_ids']['pdepend_id'])
 
     def retrieveManualDependencies(self, idpackage, extended = False):
         """
@@ -4141,7 +4142,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type extended: bool
         """
         return self.retrieveDependencies(idpackage, extended = extended,
-            deptype = etpConst['spm']['mdepend_id'])
+            deptype = etpConst['dependency_type_ids']['mdepend_id'])
 
     def retrieveDependencies(self, idpackage, extended = False, deptype = None,
         exclude_deptypes = None):
@@ -4154,7 +4155,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             composed by dependency name and dependency type)
         @type extended: bool
         @keyword deptype: return only given type of dependencies
-            see etpConst['spm']['*depend_id'] for dependency type
+            see etpConst['dependency_type_ids']['*depend_id'] for dependency type
             identifiers
         @type deptype: bool
         @keyword exclude_deptypes: list of dependency types to exclude

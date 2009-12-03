@@ -170,7 +170,8 @@ def repositories(options):
         for idpackage in idpackages:
             atom = dbconn.retrieveAtom(idpackage)
             orig_deps = dbconn.retrieveDependencies(idpackage, extended = True)
-            atom_deps = [x for x in orig_deps if x[1] != etpConst['spm']['mdepend_id']]
+            atom_deps = [x for x in orig_deps if x[1] != \
+                etpConst['dependency_type_ids']['mdepend_id']]
             atom_manual_deps = [x for x in orig_deps if x not in atom_deps]
             print_info(brown(" @@ ")+"%s: %s:" % (blue(atom), darkgreen(_("package dependencies")),))
             for dep_str, dep_id in atom_deps:
@@ -196,7 +197,8 @@ def repositories(options):
                 continue
 
             w_dbconn = Entropy.open_server_repository(repo = repo, read_only = False)
-            atom_deps += [(x, etpConst['spm']['mdepend_id'],) for x in new_mdeps]
+            atom_deps += [(x, etpConst['dependency_type_ids']['mdepend_id'],) \
+                for x in new_mdeps]
             deps_dict = {}
             for atom_dep, dep_id in atom_deps:
                 deps_dict[atom_dep] = dep_id
@@ -762,15 +764,16 @@ def spm_compile_categories(options, do_list = False):
             except ValueError:
                 break
 
+    spm = Entropy.Spm()
     categories = sorted(set(options))
-    packages = Entropy.Spm().get_packages(categories)
+    packages = spm.get_packages(categories)
     packages = sorted(packages)
 
     # remove older packages from list (through slot)
     if not oldslots:
         oldslots_meta = {}
         for package in packages:
-            pkg_slot = Entropy.Spm().get_package_metadata(package, "SLOT")
+            pkg_slot = spm.get_package_metadata(package, "SLOT")
             pkg_key = entropy.tools.dep_getkey(package)
             obj = oldslots_meta.setdefault(pkg_key, set())
             obj.add((pkg_slot, package,))
@@ -782,10 +785,8 @@ def spm_compile_categories(options, do_list = False):
     if do_list:
         print_generic(' '.join(["="+x for x in packages]))
     else:
-        args = [etpConst['spm']['exec'], etpConst['spm']['ask_cmd'],
-            etpConst['spm']['verbose_cmd']]
-        args.extend(["="+x for x in packages])
-        return subprocess.call(args)
+        return spm.compile_atoms(["="+x for x in packages],
+            ask = True, verbose = True)
     return 0
 
 def spm_compile_pkgset(pkgsets, do_rebuild = False, do_dbupdate = False,
@@ -804,33 +805,26 @@ def spm_compile_pkgset(pkgsets, do_rebuild = False, do_dbupdate = False,
                 _("package set not found"), pkgset,) ))
             return 1
 
-    extra_args = []
-    if etpUi['ask']:
-        extra_args.append(etpConst['spm']['ask_cmd'])
-    if etpUi['verbose']:
-        extra_args.append(etpConst['spm']['verbose_cmd'])
-    if etpUi['pretend']:
-        extra_args.append(etpConst['spm']['pretend_cmd'])
+    spm = Entropy.Spm()
+    
 
     done_atoms = set()
 
     # expand package sets
     for pkgset in pkgsets:
 
-        set_atoms = [Entropy.Spm().match_package(x) for x in avail_sets[pkgset]]
+        set_atoms = [spm.match_package(x) for x in avail_sets[pkgset]]
         set_atoms = [x for x in set_atoms if x]
 
         if not do_rebuild:
             set_atoms = [x for x in set_atoms if not \
-                Entropy.Spm().match_installed_package(x)]
+                spm.match_installed_package(x)]
         set_atoms = ["="+x for x in set_atoms]
         if not set_atoms:
             continue
 
-        args = [etpConst['spm']['exec']]
-        args.extend(extra_args)
-        args.extend(set_atoms)
-        rc = subprocess.call(args)
+        rc = spm.compile_packages(set_atoms, verbose = etpUi['verbose'],
+            ask = etpUi['ask'], pretend = etpUi['pretend'])
         if rc != 0:
             return rc
         done_atoms.update(set_atoms)

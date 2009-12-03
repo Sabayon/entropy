@@ -1146,18 +1146,19 @@ class Repository:
             self.Entropy.update_repository_revision(repo)
             if self.Entropy.indexing:
                 self.do_database_indexing(repo)
-            def_repoid = my_repos['default_repository']
-            if repo == def_repoid:
-                try:
-                    self.run_config_files_updates(repo)
-                except Exception as e:
-                    entropy.tools.print_traceback()
-                    mytxt = "%s: %s" % (
-                        blue(_("Configuration files update error, not critical, continuing")),
-                        darkred(repr(e)),
-                    )
-                    self.Entropy.updateProgress(mytxt, importance = 0,
-                        type = "info", header = blue("  # "),)
+
+            try:
+                spm_class = self.Entropy.Spm_class()
+                spm_class.entropy_post_repository_update_hook(self.Entropy,
+                    repo)
+            except Exception as e:
+                entropy.tools.print_traceback()
+                mytxt = "%s: %s" % (
+                    blue(_("Configuration files update error, not critical, continuing")),
+                    darkred(repr(e)),
+                )
+                self.Entropy.updateProgress(mytxt, importance = 0,
+                    type = "info", header = blue("  # "),)
 
             # execute post update repo hook
             self._run_post_update_repository_hook(repo)
@@ -1206,197 +1207,6 @@ class Repository:
             self.check_entropy_updates()
 
         return 0
-
-    def run_config_files_updates(self, repo):
-
-        # are we root?
-        if etpConst['uid'] != 0:
-            self.Entropy.updateProgress(
-                brown(_("Skipping configuration files update, you are not root.")),
-                importance = 1,
-                type = "info",
-                header = blue(" @@ ")
-            )
-            return
-
-        # make.conf
-        self._config_updates_make_conf(repo)
-        self._config_updates_make_profile(repo)
-
-
-    def _config_updates_make_conf(self, repo):
-
-        ## WARNING: it doesn't handle multi-line variables, yet. remember this.
-        system_make_conf = etpConst['spm']['global_make_conf']
-
-        avail_data = self.Entropy.SystemSettings['repositories']['available']
-        repo_dbpath = avail_data[repo]['dbpath']
-        repo_make_conf = os.path.join(repo_dbpath,
-            os.path.basename(system_make_conf))
-
-        if not (os.path.isfile(repo_make_conf) and \
-            os.access(repo_make_conf, os.R_OK)):
-            return
-
-        make_conf_variables_check = ["CHOST"]
-
-        if not os.path.isfile(system_make_conf):
-            self.Entropy.updateProgress(
-                "%s %s. %s." % (
-                    red(system_make_conf),
-                    blue(_("does not exist")), blue(_("Overwriting")),
-                ),
-                importance = 1,
-                type = "info",
-                header = blue(" @@ ")
-            )
-            if os.path.lexists(system_make_conf):
-                shutil.move(
-                    system_make_conf,
-                    "%s.backup_%s" % (system_make_conf,
-                        entropy.tools.get_random_number(),)
-                )
-            shutil.copy2(repo_make_conf, system_make_conf)
-
-        elif os.access(system_make_conf, os.W_OK):
-
-            repo_f = open(repo_make_conf, "r")
-            sys_f = open(system_make_conf, "r")
-            repo_make_c = [x.strip() for x in repo_f.readlines()]
-            sys_make_c = [x.strip() for x in sys_f.readlines()]
-            repo_f.close()
-            sys_f.close()
-
-            # read repository settings
-            repo_data = {}
-            for setting in make_conf_variables_check:
-                for line in repo_make_c:
-                    if line.startswith(setting+"="):
-                        # there can't be bash vars with a space
-                        # after its name on declaration
-                        repo_data[setting] = line
-                        # I don't break, because there might be
-                        # other overlapping settings
-
-            differences = {}
-            # update make.conf data in memory
-            for setting in repo_data:
-                for idx in range(len(sys_make_c)):
-                    line = sys_make_c[idx]
-
-                    if line.startswith(setting+"=") and \
-                        (line != repo_data[setting]):
-
-                        # there can't be bash vars with a
-                        # space after its name on declaration
-                        self.Entropy.updateProgress(
-                            "%s: %s %s. %s." % (
-                                red(system_make_conf), bold(repr(setting)),
-                                blue(_("variable differs")), red(_("Updating")),
-                            ),
-                            importance = 1,
-                            type = "info",
-                            header = blue(" @@ ")
-                        )
-                        differences[setting] = repo_data[setting]
-                        line = repo_data[setting]
-                    sys_make_c[idx] = line
-
-            if differences:
-
-                self.Entropy.updateProgress(
-                    "%s: %s." % (
-                        red(system_make_conf),
-                        blue(_("updating critical variables")),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = blue(" @@ ")
-                )
-                # backup user make.conf
-                shutil.copy2(system_make_conf,
-                    "%s.entropy_backup" % (system_make_conf,))
-
-                self.Entropy.updateProgress(
-                    "%s: %s." % (
-                        red(system_make_conf),
-                        darkgreen("writing changes to disk"),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = blue(" @@ ")
-                )
-                # write to disk, safely
-                tmp_make_conf = "%s.entropy_write" % (system_make_conf,)
-                f = open(tmp_make_conf, "w")
-                for line in sys_make_c: f.write(line+"\n")
-                f.flush()
-                f.close()
-                shutil.move(tmp_make_conf, system_make_conf)
-
-            # update environment
-            for var in differences:
-                try:
-                    myval = '='.join(differences[var].strip().split("=")[1:])
-                    if myval:
-                        if myval[0] in ("'", '"',): myval = myval[1:]
-                        if myval[-1] in ("'", '"',): myval = myval[:-1]
-                except IndexError:
-                    myval = ''
-                os.environ[var] = myval
-
-    def _config_updates_make_profile(self, repo):
-
-        avail_data = self.Entropy.SystemSettings['repositories']['available']
-        repo_dbpath = avail_data[repo]['dbpath']
-        profile_link_name = etpConst['spm']['global_make_profile_link_name']
-
-        repo_make_profile = os.path.join(repo_dbpath, profile_link_name)
-
-        if not (os.path.isfile(repo_make_profile) and \
-            os.access(repo_make_profile, os.R_OK)):
-            return
-
-        system_make_profile = etpConst['spm']['global_make_profile']
-
-        f = open(repo_make_profile, "r")
-        repo_profile_link_data = f.readline().strip()
-        f.close()
-        current_profile_link = ''
-        if os.path.islink(system_make_profile) and \
-            os.access(system_make_profile, os.R_OK):
-
-            current_profile_link = os.readlink(system_make_profile)
-
-        if (repo_profile_link_data != current_profile_link) and \
-            repo_profile_link_data:
-
-            self.Entropy.updateProgress(
-                "%s: %s %s. %s." % (
-                    red(system_make_profile), blue("link"),
-                    blue(_("differs")), red(_("Updating")),
-                ),
-                importance = 1,
-                type = "info",
-                header = blue(" @@ ")
-            )
-            merge_sfx = ".entropy_merge"
-            os.symlink(repo_profile_link_data, system_make_profile+merge_sfx)
-            if entropy.tools.is_valid_path(system_make_profile+merge_sfx):
-                os.rename(system_make_profile+merge_sfx, system_make_profile)
-            else:
-                # revert change, link does not exist yet
-                self.Entropy.updateProgress(
-                    "%s: %s %s. %s." % (
-                        red(system_make_profile), blue("new link"),
-                        blue(_("does not exist")), red(_("Reverting")),
-                    ),
-                    importance = 1,
-                    type = "info",
-                    header = blue(" @@ ")
-                )
-                os.remove(system_make_profile+merge_sfx)
-
 
     def check_entropy_updates(self):
         rc = False

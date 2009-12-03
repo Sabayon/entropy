@@ -14,6 +14,7 @@ import bz2
 import sys
 import shutil
 import tempfile
+import subprocess
 from entropy.const import etpConst, etpUi, const_get_stringtype, \
     const_convert_to_unicode, const_convert_to_rawstring
 from entropy.exceptions import FileNotFound, SPMError, InvalidDependString, \
@@ -155,7 +156,52 @@ class PortagePlugin(SpmPlugin):
         "downgrade", "unavailable"
     ]
 
-    package_phases_map = {
+    xpak_entries = {
+        'description': "DESCRIPTION",
+        'homepage': "HOMEPAGE",
+        'chost': "CHOST",
+        'category': "CATEGORY",
+        'cflags': "CFLAGS",
+        'cxxflags': "CXXFLAGS",
+        'license': "LICENSE",
+        'src_uri': "SRC_URI",
+        'use': "USE",
+        'iuse': "IUSE",
+        'slot': "SLOT",
+        'provide': "PROVIDE",
+        'depend': "DEPEND",
+        'rdepend': "RDEPEND",
+        'pdepend': "PDEPEND",
+        'needed': "NEEDED",
+        'inherited': "INHERITED",
+        'keywords': "KEYWORDS",
+        'contents': "CONTENTS",
+        'counter': "COUNTER",
+        'defined_phases': "DEFINED_PHASES",
+        'pf': "PF",
+    }
+
+    _ebuild_entries = {
+        'ebuild_pkg_tag_var': "ENTROPY_PROJECT_TAG",
+    }
+
+    _cmd_map = {
+        'env_update_cmd': "/usr/sbin/env-update",
+        'ask_cmd': "--ask",
+        'info_cmd': "--info",
+        'remove_cmd': "-C",
+        'nodeps_cmd': "--nodeps",
+        'fetchonly_cmd': "--fetchonly",
+        'buildonly_cmd': "--buildonly",
+        'oneshot_cmd': "--oneshot",
+        'pretend_cmd': "--pretend",
+        'verbose_cmd': "--verbose",
+        'nocolor_cmd': "--color=n",
+        'source_profile_cmd': ["source", "/etc/profile"],
+        'exec_cmd': "/usr/bin/emerge",
+    }
+
+    _package_phases_map = {
         'setup': 'setup',
         'preinstall': 'preinst',
         'postinstall': 'postinst',
@@ -164,7 +210,16 @@ class PortagePlugin(SpmPlugin):
         'configure': 'config',
     }
 
-    PLUGIN_API_VERSION = 2
+    _config_files_map = {
+        'global_make_conf': "/etc/make.conf",
+        'global_package_keywords': "/etc/portage/package.keywords",
+        'global_package_use': "/etc/portage/package.use",
+        'global_package_mask': "/etc/portage/package.mask",
+        'global_package_unmask': "/etc/portage/package.unmask",
+        'global_make_profile': "/etc/make.profile",
+    }
+
+    PLUGIN_API_VERSION = 3
 
     SUPPORTED_MATCH_TYPES = [
         "bestmatch-visible", "cp-list", "list-visible", "match-all",
@@ -178,6 +233,7 @@ class PortagePlugin(SpmPlugin):
         'portagetree': {},
     }
 
+    IS_DEFAULT = True
     PLUGIN_NAME = 'portage'
     ENV_FILE_COMP = "environment.bz2"
     EBUILD_EXT = ".ebuild"
@@ -349,7 +405,6 @@ class PortagePlugin(SpmPlugin):
         for package in self.portage.settings.packages:
             pkgs = self.match_installed_package(package, match_all = True)
             system.extend(pkgs)
-        system.extend(etpConst['spm']['system_packages'])
         return system
 
     def get_package_categories(self):
@@ -768,12 +823,12 @@ class PortagePlugin(SpmPlugin):
 
         data['keywords'] = set(data['keywords'])
         needed_file = os.path.join(meta_dir,
-            etpConst['spm']['xpak_entries']['needed'])
+            PortagePlugin.xpak_entries['needed'])
 
         data['needed'] = self._extract_pkg_metadata_needed(needed_file)
 
         content_file = os.path.join(meta_dir,
-            etpConst['spm']['xpak_entries']['contents'])
+            PortagePlugin.xpak_entries['contents'])
         data['content'] = self._extract_pkg_metadata_content(content_file,
             package_file)
         data['disksize'] = entropy.tools.sum_file_sizes(data['content'])
@@ -788,9 +843,9 @@ class PortagePlugin(SpmPlugin):
         if data['category'] != PortagePlugin.KERNEL_CATEGORY:
             kern_dep_key = self._add_kernel_dependency_to_pkg(data)
 
-        file_ext = etpConst['spm']['ebuild_file_extension']
+        file_ext = PortagePlugin.EBUILD_EXT
         ebuilds_in_path = [x for x in os.listdir(meta_dir) if \
-            x.endswith(".%s" % (file_ext,))]
+            x.endswith(file_ext)]
 
         if not data['versiontag'] and ebuilds_in_path:
             # has the user specified a custom package tag inside the ebuild
@@ -853,12 +908,14 @@ class PortagePlugin(SpmPlugin):
         for x in portage_metadata['RDEPEND'].split():
             if x.startswith("!") or (x in ("(", "||", ")", "")):
                 continue
-            data['dependencies'][x] = etpConst['spm']['(r)depend_id']
+            data['dependencies'][x] = \
+                etpConst['dependency_type_ids']['(r)depend_id']
 
         for x in portage_metadata['PDEPEND'].split():
             if x.startswith("!") or (x in ("(", "||", ")", "")):
                 continue
-            data['dependencies'][x] = etpConst['spm']['pdepend_id']
+            data['dependencies'][x] = \
+                etpConst['dependency_type_ids']['pdepend_id']
 
         data['conflicts'] = [x.replace("!", "") for x in \
             portage_metadata['RDEPEND'].split() + \
@@ -866,7 +923,8 @@ class PortagePlugin(SpmPlugin):
             x.startswith("!") and not x in ("(", "||", ")", "")]
 
         if kern_dep_key is not None:
-            data['dependencies'][kern_dep_key] = etpConst['spm']['(r)depend_id']
+            data['dependencies'][kern_dep_key] = \
+                etpConst['dependency_type_ids']['(r)depend_id']
 
         # Conflicting tagged packages support
         # Needs Entropy Client System Settings Plugin,
@@ -1172,6 +1230,119 @@ class PortagePlugin(SpmPlugin):
 
         return available
 
+    def compile_packages(self, packages, stdin = None, stdout = None,
+        stderr = None, environ = None, pid_write_func = None,
+        pretend = False, verbose = False, fetch_only = False,
+        build_only = False, no_dependencies = False,
+        ask = False, coloured_output = False, oneshot = False):
+
+        cmd = [PortagePlugin._cmd_map['exec_cmd']]
+        if pretend:
+            cmd.append(PortagePlugin._cmd_map['pretend_cmd'])
+        if verbose:
+            cmd.append(PortagePlugin._cmd_map['verbose_cmd'])
+        if ask:
+            cmd.append(PortagePlugin._cmd_map['ask_cmd'])
+        if oneshot:
+            cmd.append(PortagePlugin._cmd_map['oneshot_cmd'])
+        if not coloured_output:
+            cmd.append(PortagePlugin._cmd_map['nocolor_cmd'])
+        if fetch_only:
+            cmd.append(PortagePlugin._cmd_map['fetchonly_cmd'])
+        if build_only:
+            cmd.append(PortagePlugin._cmd_map['buildonly_cmd'])
+        if no_dependencies:
+            cmd.append(PortagePlugin._cmd_map['nodeps_cmd'])
+
+        cmd.extend(packages)
+        cmd_string = """\
+        %s && %s && %s
+        """ % (PortagePlugin._cmd_map['env_update_cmd'],
+            PortagePlugin._cmd_map['source_profile_cmd'],
+            ' '.join(cmd)
+        )
+
+        env = os.environ.copy()
+        if environ is not None:
+            env.update(environ)
+
+        proc = subprocess.Popen(cmd_string, stdout = stdout, stderr = stderr,
+            stdin = stdin, env = env, shell = True)
+        if pid_write_func is not None:
+            pid_write_func(proc.pid)
+        return proc.wait()
+
+    def remove_packages(self, packages, stdin = None, stdout = None,
+        stderr = None, environ = None, pid_write_func = None,
+        pretend = False, verbose = False, no_dependencies = False, ask = False,
+        coloured_output = False):
+
+        cmd = [PortagePlugin._cmd_map['exec_cmd'],
+            PortagePlugin._cmd_map['remove_cmd']]
+        if pretend:
+            cmd.append(PortagePlugin._cmd_map['pretend_cmd'])
+        if verbose:
+            cmd.append(PortagePlugin._cmd_map['verbose_cmd'])
+        if ask:
+            cmd.append(PortagePlugin._cmd_map['ask_cmd'])
+        if not coloured_output:
+            cmd.append(PortagePlugin._cmd_map['nocolor_cmd'])
+        if no_dependencies:
+            cmd.append(PortagePlugin._cmd_map['nodeps_cmd'])
+
+        cmd.extend(packages)
+        cmd_string = """\
+        %s && %s && %s
+        """ % (PortagePlugin._cmd_map['env_update_cmd'],
+            PortagePlugin._cmd_map['source_profile_cmd'],
+            ' '.join(cmd)
+        )
+
+        env = os.environ.copy()
+        if environ is not None:
+            env.update(environ)
+
+        proc = subprocess.Popen(cmd_string, stdout = stdout, stderr = stderr,
+            stdin = stdin, env = env, shell = True)
+        if pid_write_func is not None:
+            pid_write_func(proc.pid)
+        return proc.wait()
+
+    def environment_update(self, stdout = None, stderr = None):
+        kwargs = {}
+        if etpUi['mute']:
+            kwargs['stdout'] = stdout
+            kwargs['stderr'] = stderr
+        args = (PortagePlugin._cmd_map['env_update_cmd'],)
+        proc = subprocess.Popen(args, **kwargs)
+        proc.wait()
+
+    def print_build_environment_info(self, stdin = None, stdout = None,
+        stderr = None, environ = None, pid_write_func = None,
+        coloured_output = False):
+
+        cmd = [PortagePlugin._cmd_map['exec_cmd'],
+            PortagePlugin._cmd_map['info_cmd']]
+        if not coloured_output:
+            cmd.append(PortagePlugin._cmd_map['nocolor_cmd'])
+
+        cmd_string = """\
+        %s && %s && %s
+        """ % (PortagePlugin._cmd_map['env_update_cmd'],
+            PortagePlugin._cmd_map['source_profile_cmd'],
+            ' '.join(cmd)
+        )
+
+        env = os.environ.copy()
+        if environ is not None:
+            env.update(environ)
+
+        proc = subprocess.Popen(cmd_string, stdout = stdout, stderr = stderr,
+            stdin = stdin, env = env, shell = True)
+        if pid_write_func is not None:
+            pid_write_func(proc.pid)
+        return proc.wait()
+
     def get_installed_packages(self, categories = None, root = None):
         """
         Reimplemented from SpmPlugin class.
@@ -1225,7 +1396,7 @@ class PortagePlugin(SpmPlugin):
             root = root)
 
         counter_dir = os.path.dirname(dbbuild)
-        counter_name = etpConst['spm']['xpak_entries']['counter']
+        counter_name = PortagePlugin.xpak_entries['counter']
         counter_path = os.path.join(counter_dir, counter_name)
 
         if not os.access(counter_dir, os.W_OK):
@@ -1243,7 +1414,7 @@ class PortagePlugin(SpmPlugin):
         """
         Reimplemented from SpmPlugin class.
         """
-        counter_path = etpConst['spm']['xpak_entries']['counter']
+        counter_path = PortagePlugin.xpak_entries['counter']
         entropy_atom = entropy_repository.retrieveAtom(
             entropy_repository_package_id)
 
@@ -2079,11 +2250,25 @@ class PortagePlugin(SpmPlugin):
                 entropy_repository_id, portage_dirs_digest)
             entropy_repository.commitChanges()
 
+    @staticmethod
+    def package_phases_map():
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        return PortagePlugin._package_phases_map.copy()
+
+    @staticmethod
+    def config_files_map():
+        """
+        Reimplemented from SpmPlugin class.
+        """
+        return PortagePlugin._config_files_map.copy()
+
     def execute_package_phase(self, package_metadata, phase_name):
         """
         Reimplemented from SpmPlugin class.
         """
-        portage_phase = PortagePlugin.package_phases_map[phase_name]
+        portage_phase = PortagePlugin._package_phases_map[phase_name]
         phase_calls = {
             'setup': self._pkg_setup,
             'preinst': self._pkg_preinst,
@@ -2395,6 +2580,207 @@ class PortagePlugin(SpmPlugin):
         shutil.rmtree(tmp_path)
 
         return env_rc, msg
+
+    @staticmethod
+    def _config_updates_make_conf(entropy_client, repo):
+
+        ## WARNING: it doesn't handle multi-line variables, yet. remember this.
+        system_make_conf = PortagePlugin._config_files_map['global_make_conf']
+
+        avail_data = entropy_client.SystemSettings['repositories']['available']
+        repo_dbpath = avail_data[repo]['dbpath']
+        repo_make_conf = os.path.join(repo_dbpath,
+            os.path.basename(system_make_conf))
+
+        if not (os.path.isfile(repo_make_conf) and \
+            os.access(repo_make_conf, os.R_OK)):
+            return
+
+        make_conf_variables_check = ["CHOST"]
+
+        if not os.path.isfile(system_make_conf):
+            entropy_client.updateProgress(
+                "%s %s. %s." % (
+                    red(system_make_conf),
+                    blue(_("does not exist")), blue(_("Overwriting")),
+                ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
+            if os.path.lexists(system_make_conf):
+                shutil.move(
+                    system_make_conf,
+                    "%s.backup_%s" % (system_make_conf,
+                        entropy.tools.get_random_number(),)
+                )
+            shutil.copy2(repo_make_conf, system_make_conf)
+
+        elif os.access(system_make_conf, os.W_OK):
+
+            repo_f = open(repo_make_conf, "r")
+            sys_f = open(system_make_conf, "r")
+            repo_make_c = [x.strip() for x in repo_f.readlines()]
+            sys_make_c = [x.strip() for x in sys_f.readlines()]
+            repo_f.close()
+            sys_f.close()
+
+            # read repository settings
+            repo_data = {}
+            for setting in make_conf_variables_check:
+                for line in repo_make_c:
+                    if line.startswith(setting+"="):
+                        # there can't be bash vars with a space
+                        # after its name on declaration
+                        repo_data[setting] = line
+                        # I don't break, because there might be
+                        # other overlapping settings
+
+            differences = {}
+            # update make.conf data in memory
+            for setting in repo_data:
+                for idx in range(len(sys_make_c)):
+                    line = sys_make_c[idx]
+
+                    if line.startswith(setting+"=") and \
+                        (line != repo_data[setting]):
+
+                        # there can't be bash vars with a
+                        # space after its name on declaration
+                        entropy_client.updateProgress(
+                            "%s: %s %s. %s." % (
+                                red(system_make_conf), bold(repr(setting)),
+                                blue(_("variable differs")), red(_("Updating")),
+                            ),
+                            importance = 1,
+                            type = "info",
+                            header = blue(" @@ ")
+                        )
+                        differences[setting] = repo_data[setting]
+                        line = repo_data[setting]
+                    sys_make_c[idx] = line
+
+            if differences:
+
+                entropy_client.updateProgress(
+                    "%s: %s." % (
+                        red(system_make_conf),
+                        blue(_("updating critical variables")),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = blue(" @@ ")
+                )
+                # backup user make.conf
+                shutil.copy2(system_make_conf,
+                    "%s.entropy_backup" % (system_make_conf,))
+
+                entropy_client.updateProgress(
+                    "%s: %s." % (
+                        red(system_make_conf),
+                        darkgreen("writing changes to disk"),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = blue(" @@ ")
+                )
+                # write to disk, safely
+                tmp_make_conf = "%s.entropy_write" % (system_make_conf,)
+                f = open(tmp_make_conf, "w")
+                for line in sys_make_c:
+                    f.write(line+"\n")
+                f.flush()
+                f.close()
+                shutil.move(tmp_make_conf, system_make_conf)
+
+            # update environment
+            for var in differences:
+                try:
+                    myval = '='.join(differences[var].strip().split("=")[1:])
+                    if myval:
+                        if myval[0] in ("'", '"',): myval = myval[1:]
+                        if myval[-1] in ("'", '"',): myval = myval[:-1]
+                except IndexError:
+                    myval = ''
+                os.environ[var] = myval
+
+    @staticmethod
+    def _config_updates_make_profile(entropy_client, repo):
+
+        avail_data = entropy_client.SystemSettings['repositories']['available']
+        repo_dbpath = avail_data[repo]['dbpath']
+        profile_link = PortagePlugin._config_files_map['global_make_profile']
+        profile_link_name = os.path.basename(profile_link)
+
+        repo_make_profile = os.path.join(repo_dbpath, profile_link_name)
+
+        if not (os.path.isfile(repo_make_profile) and \
+            os.access(repo_make_profile, os.R_OK)):
+            return
+
+        system_make_profile = \
+            PortagePlugin._config_files_map['global_make_profile']
+
+        f = open(repo_make_profile, "r")
+        repo_profile_link_data = f.readline().strip()
+        f.close()
+        current_profile_link = ''
+        if os.path.islink(system_make_profile) and \
+            os.access(system_make_profile, os.R_OK):
+
+            current_profile_link = os.readlink(system_make_profile)
+
+        if (repo_profile_link_data != current_profile_link) and \
+            repo_profile_link_data:
+
+            entropy_client.updateProgress(
+                "%s: %s %s. %s." % (
+                    red(system_make_profile), blue("link"),
+                    blue(_("differs")), red(_("Updating")),
+                ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
+            merge_sfx = ".entropy_merge"
+            os.symlink(repo_profile_link_data, system_make_profile+merge_sfx)
+            if entropy.tools.is_valid_path(system_make_profile+merge_sfx):
+                os.rename(system_make_profile+merge_sfx, system_make_profile)
+            else:
+                # revert change, link does not exist yet
+                entropy_client.updateProgress(
+                    "%s: %s %s. %s." % (
+                        red(system_make_profile), blue("new link"),
+                        blue(_("does not exist")), red(_("Reverting")),
+                    ),
+                    importance = 1,
+                    type = "info",
+                    header = blue(" @@ ")
+                )
+                os.remove(system_make_profile+merge_sfx)
+
+    @staticmethod
+    def entropy_client_post_repository_update_hook(entropy_client,
+        entropy_repository_id):
+
+        # are we root?
+        if etpConst['uid'] != 0:
+            entropy_client.updateProgress(
+                brown(_("Skipping configuration files update, you are not root.")),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
+            return 0
+
+        default_repo = \
+            entropy_client.SystemSettings['repositories']['default_repository']
+
+        if default_repo == entropy_repository_id:
+            PortagePlugin._config_updates_make_conf(entropy_repository_id)
+            PortagePlugin._config_updates_make_profile(entropy_repository_id)
+
+        return 0
 
     @staticmethod
     def entropy_install_setup_hook(entropy_client, package_metadata):
@@ -3280,83 +3666,83 @@ class PortagePlugin(SpmPlugin):
     def _extract_pkg_metadata_generate_extraction_dict(self):
         data = {
             'pf': {
-                'path': etpConst['spm']['xpak_entries']['pf'],
+                'path': PortagePlugin.xpak_entries['pf'],
                 'critical': True,
             },
             'chost': {
-                'path': etpConst['spm']['xpak_entries']['chost'],
+                'path': PortagePlugin.xpak_entries['chost'],
                 'critical': True,
             },
             'description': {
-                'path': etpConst['spm']['xpak_entries']['description'],
+                'path': PortagePlugin.xpak_entries['description'],
                 'critical': False,
             },
             'homepage': {
-                'path': etpConst['spm']['xpak_entries']['homepage'],
+                'path': PortagePlugin.xpak_entries['homepage'],
                 'critical': False,
             },
             'slot': {
-                'path': etpConst['spm']['xpak_entries']['slot'],
+                'path': PortagePlugin.xpak_entries['slot'],
                 'critical': False,
             },
             'cflags': {
-                'path': etpConst['spm']['xpak_entries']['cflags'],
+                'path': PortagePlugin.xpak_entries['cflags'],
                 'critical': False,
             },
             'cxxflags': {
-                'path': etpConst['spm']['xpak_entries']['cxxflags'],
+                'path': PortagePlugin.xpak_entries['cxxflags'],
                 'critical': False,
             },
             'category': {
-                'path': etpConst['spm']['xpak_entries']['category'],
+                'path': PortagePlugin.xpak_entries['category'],
                 'critical': True,
             },
             'rdepend': {
-                'path': etpConst['spm']['xpak_entries']['rdepend'],
+                'path': PortagePlugin.xpak_entries['rdepend'],
                 'critical': False,
             },
             'pdepend': {
-                'path': etpConst['spm']['xpak_entries']['pdepend'],
+                'path': PortagePlugin.xpak_entries['pdepend'],
                 'critical': False,
             },
             'depend': {
-                'path': etpConst['spm']['xpak_entries']['depend'],
+                'path': PortagePlugin.xpak_entries['depend'],
                 'critical': False,
             },
             'use': {
-                'path': etpConst['spm']['xpak_entries']['use'],
+                'path': PortagePlugin.xpak_entries['use'],
                 'critical': False,
             },
             'iuse': {
-                'path': etpConst['spm']['xpak_entries']['iuse'],
+                'path': PortagePlugin.xpak_entries['iuse'],
                 'critical': False,
             },
             'license': {
-                'path': etpConst['spm']['xpak_entries']['license'],
+                'path': PortagePlugin.xpak_entries['license'],
                 'critical': False,
             },
             'provide': {
-                'path': etpConst['spm']['xpak_entries']['provide'],
+                'path': PortagePlugin.xpak_entries['provide'],
                 'critical': False,
             },
             'sources': {
-                'path': etpConst['spm']['xpak_entries']['src_uri'],
+                'path': PortagePlugin.xpak_entries['src_uri'],
                 'critical': False,
             },
             'eclasses': {
-                'path': etpConst['spm']['xpak_entries']['inherited'],
+                'path': PortagePlugin.xpak_entries['inherited'],
                 'critical': False,
             },
             'counter': {
-                'path': etpConst['spm']['xpak_entries']['counter'],
+                'path': PortagePlugin.xpak_entries['counter'],
                 'critical': False,
             },
             'keywords': {
-                'path': etpConst['spm']['xpak_entries']['keywords'],
+                'path': PortagePlugin.xpak_entries['keywords'],
                 'critical': False,
             },
             'spm_phases': {
-                'path': etpConst['spm']['xpak_entries']['defined_phases'],
+                'path': PortagePlugin.xpak_entries['defined_phases'],
                 'critical': False,
             },
         }
@@ -3567,7 +3953,7 @@ class PortagePlugin(SpmPlugin):
         return pkg_links
 
     def _extract_pkg_metadata_ebuild_entropy_tag(self, ebuild):
-        search_tag = etpConst['spm']['ebuild_pkg_tag_var']
+        search_tag = PortagePlugin._ebuild_entries['ebuild_pkg_tag_var']
         ebuild_tag = ''
         # open in unicode fmt
         f = open(ebuild, "r")
