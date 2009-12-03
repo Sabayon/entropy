@@ -173,6 +173,7 @@ class EntropyPluginFactory:
         self.__fallback_plugin_name = fallback_plugin_name
         self.__egg_entry_group = egg_entry_point_group
         self.__cache = None
+        self.__inspect_cache = None
 
     def clear_cache(self):
         """
@@ -180,6 +181,7 @@ class EntropyPluginFactory:
         module object is parsed again.
         """
         self.__cache = None
+        self.__inspect_cache = None
 
     def _inspect_object(self, obj):
         """
@@ -189,17 +191,33 @@ class EntropyPluginFactory:
         @rtype: bool
         """
 
+        if self.__inspect_cache is None:
+            self.__inspect_cache = {}
+
+        # use memory position
+        obj_memory_pos = id(obj)
+        # To avoid infinite recursion and improve
+        # objects inspection, check if obj has been already
+        # analyzed
+        inspected_rc = self.__inspect_cache.get(obj_memory_pos)
+        if inspected_rc is not None:
+            # avoid infinite recursion
+            return inspected_rc
+
         base_api = self.__base_class.BASE_PLUGIN_API_VERSION
 
         if not inspect.isclass(obj):
+            self.__inspect_cache[obj_memory_pos] = False
             return False
 
         if not issubclass(obj, self.__base_class):
+            self.__inspect_cache[obj_memory_pos] = False
             return False
 
         if hasattr(obj, '__subclasses__'):
             # new style class
             if obj.__subclasses__(): # only lower classes taken
+                self.__inspect_cache[obj_memory_pos] = False
                 return False
         else:
             sys.stderr.write("!!! Entropy Plugin warning: " \
@@ -208,23 +226,28 @@ class EntropyPluginFactory:
         if obj is self.__base_class:
             # in this case, obj is our base class,
             # so we are very sure that obj is not valid
+            self.__inspect_cache[obj_memory_pos] = False
             return False
 
         if not hasattr(obj, "PLUGIN_API_VERSION"):
             sys.stderr.write("!!! Entropy Plugin warning: " \
                 "no PLUGIN_API_VERSION in %s !!!\n" % (obj,))
+            self.__inspect_cache[obj_memory_pos] = False
             return False
 
         if obj.PLUGIN_API_VERSION != base_api:
             sys.stderr.write("!!! Entropy Plugin warning: " \
                 "PLUGIN_API_VERSION mismatch in %s !!!\n" % (obj,))
+            self.__inspect_cache[obj_memory_pos] = False
             return False
 
         if hasattr(obj, 'PLUGIN_DISABLED'):
             if obj.PLUGIN_DISABLED:
                 # this plugin has been disabled
+                self.__inspect_cache[obj_memory_pos] = False
                 return False
 
+        self.__inspect_cache[obj_memory_pos] = True
         return True
 
     def _scan_dir(self):
