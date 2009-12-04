@@ -131,6 +131,10 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         dbs = ServerRepositoryStatus()
         dbfile = entropy_repository_instance.dbFile
         repo = entropy_repository_instance.dbname
+        read_only = entropy_repository_instance.readOnly
+        if read_only:
+            # do not taint database
+            return 0
 
         # taint the database status
         taint_file = self._server.get_local_database_taint_file(repo = repo)
