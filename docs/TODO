@@ -1,10 +1,6 @@
-TODO list
-
-Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   0.99.20:
 
-    - make entropy.db matching rules externally inferred
     - provide repository digital key, fetch it when syncing repos and check if
       it matches and all file match
 
@@ -31,7 +27,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   1.0_beta2:
 
-    - Python 3.x support
     - PackageKit integration
 
   1.0 - deprecations:
@@ -42,5 +37,6 @@ Proposed for Entropy 1.0 (before and after) (requires API changes, perhaps):
 
   2.0:
 
+    - Abstract Source Package Manager metaphor
     - PackageKit improved support
     - UGC based on XML requests (all the commands into one string)
