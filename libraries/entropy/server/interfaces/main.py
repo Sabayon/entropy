@@ -1533,6 +1533,9 @@ class Server(Singleton, TextInterface):
             header = red(" @@ ")
         )
 
+        real_brokenexecs = [os.path.realpath(x) for x in brokenexecs if \
+            x != os.path.realpath(x)]
+        brokenexecs.update(real_brokenexecs)
         packages = self.Spm().search_paths_owners(brokenexecs)
 
         if packages:
