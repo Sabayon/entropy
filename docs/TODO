@@ -40,3 +40,22 @@
     - Abstract Source Package Manager metaphor
     - PackageKit improved support
     - UGC based on XML requests (all the commands into one string)
+
+  Portage split install project (backward compat):
+
+   app-office/openoffice example:
+    - define EPACKAGES="core kde gnome templates java"
+      => this will install:
+         app-office/openoffice-core
+         app-office/openoffice-kde
+         app-office/openoffice-gnome
+         app-office/openoffice-templates
+         app-office/openoffice-java
+     - src_prepare, src_unpack, src_compile are the same
+     - pkg_preinst, pkg_postinst, pkg_prerm, pkg_postrm are the same
+     - for every EPACKAGES entry there must be a defined epackage_${EPACKAGE}_src_install, if not: die
+     - every EPACKAGES entry can have extra epackage_${EPACKAGE}_pkg_{preinst,postinst,prerm,postrm}
+     - every EPACKAGES entry must feature RDEPEND/DEPEND/PDEPEND separate entries, for example:
+         => EPACKAGE_${EPACKAGE}_{R,P}DEPEND
+     - every EPACKAGE entry automatically depends on app-office/openoffice
+
