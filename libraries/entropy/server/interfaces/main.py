@@ -810,6 +810,12 @@ class Server(Singleton, TextInterface):
         """
         return get_spm(self)
 
+    def Spm_class(self):
+        """
+        Get Source Package Manager interface class.
+        """
+        return get_spm_class()
+
     def Transceiver(self, uri):
         """
         Get EntropyTransceiver interface instance.
