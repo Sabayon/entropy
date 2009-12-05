@@ -1149,8 +1149,8 @@ class Repository:
 
             try:
                 spm_class = self.Entropy.Spm_class()
-                spm_class.entropy_post_repository_update_hook(self.Entropy,
-                    repo)
+                spm_class.entropy_client_post_repository_update_hook(
+                    self.Entropy, repo)
             except Exception as e:
                 entropy.tools.print_traceback()
                 mytxt = "%s: %s" % (
