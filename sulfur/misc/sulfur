@@ -26,7 +26,7 @@ def setup_env():
     de_session = os.getenv('DESKTOP_SESSION')
     if de_session == None: de_session = ''
     path = os.getenv('PATH').split(":")
-    if de_session.find("kde") != -1:
+    if de_session.lower().find("kde") != -1:
         for item in path:
             itempath = os.path.join(item,'kdesu')
             if os.access(itempath,os.X_OK):
