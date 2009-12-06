@@ -2777,8 +2777,10 @@ class PortagePlugin(SpmPlugin):
             entropy_client.SystemSettings['repositories']['default_repository']
 
         if default_repo == entropy_repository_id:
-            PortagePlugin._config_updates_make_conf(entropy_repository_id)
-            PortagePlugin._config_updates_make_profile(entropy_repository_id)
+            PortagePlugin._config_updates_make_conf(entropy_client,
+                entropy_repository_id)
+            PortagePlugin._config_updates_make_profile(entropy_client,
+                entropy_repository_id)
 
         return 0
 
