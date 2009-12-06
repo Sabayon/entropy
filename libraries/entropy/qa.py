@@ -509,13 +509,25 @@ class QAInterface(EntropyPluginStore):
 
         broken_syms_list_regexp = []
         for broken_sym in broken_syms_list:
-            reg_sym = re.compile(broken_sym)
+            if broken_sym.startswith("r:"):
+                broken_sym = broken_sym[2:]
+                if not broken_sym:
+                    continue
+                reg_sym = re.compile(broken_sym)
+            else:
+                reg_sym = re.compile(re.escape(broken_sym))
             broken_syms_list_regexp.append(reg_sym)
 
         broken_libs_mask_regexp = []
         broken_libs_paths_mask_regexp = []
         for broken_lib in broken_libs_mask:
-            reg_lib = re.compile(broken_lib)
+            if broken_lib.startswith("r:"):
+                broken_lib = broken_lib[2:]
+                if not broken_lib:
+                    continue
+                reg_lib = re.compile(broken_lib)
+            else:
+                reg_lib = re.compile(re.escape(broken_lib))
             if os.path.sep in broken_lib:
                 # it's a path, not a lib name
                 broken_libs_paths_mask_regexp.append(reg_lib)
