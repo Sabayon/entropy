@@ -25,6 +25,10 @@ from entropy.const import *
 from entropy.core.settings.base import SystemSettings
 SysSettings = SystemSettings()
 
+# Check if we need to disable colors
+if not is_stdout_a_tty():
+    nocolor()
+
 myopts = [
     None,
     (0, " ~ "+SysSettings['system']['name']+" ~ "+sys.argv[0]+" ~ ", 1, 'Entropy Package Manager - (C) %s' % (entropyTools.get_year(),) ),

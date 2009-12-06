@@ -155,6 +155,16 @@ codes["INFORM"] = codes["darkgreen"]
 codes["UNMERGE_WARN"] = codes["red"]
 codes["MERGE_LIST_PROGRESS"] = codes["yellow"]
 
+def is_stdout_a_tty():
+    """
+    Return whether current stdout is a TTY.
+
+    @return: tty? => True
+    @rtype: bool
+    """
+    fn = sys.stdout.fileno()
+    return os.isatty(fn)
+
 def xtermTitle(mystr, raw = False):
     """
     Set new xterm title.
@@ -538,7 +548,8 @@ def _print_prio(msg, color_func, back = False, flush = True, end = '\n'):
     if not back:
         setcols()
     reset_cursor()
-    writechar("\r")
+    if is_stdout_a_tty():
+        writechar("\r")
     if back:
         msg = color_func(">>") + " " + msg
     else:

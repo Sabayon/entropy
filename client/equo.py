@@ -54,6 +54,10 @@ etpExitMessages = {
     7: _("Go to hell."),
 }
 
+# Check if we need to disable colors
+if not is_stdout_a_tty():
+    nocolor()
+
 myopts = [
     None,
     (0, " ~ %s ~ " % (SysSettings['system']['name'],), 1, 'Entropy Package Manager - (C) %s' % (entropyTools.get_year(),) ),
