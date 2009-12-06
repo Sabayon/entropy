@@ -986,6 +986,9 @@ class CalculatorsMixin:
             matchfilter.add(match)
             treedepth = dep_level+1
             deptree.add((dep_level, match)) # add match
+            const_debug_write(__name__,
+                "generate_dependency_tree adding to deptree %s => %s" % (
+                    mydep, match,))
 
             # extra hooks
             cm_idpackage, cm_result = cdb_atom_match(matchkey,
