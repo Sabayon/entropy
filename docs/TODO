@@ -1,6 +1,19 @@
 
   0.99.20:
 
+<<<<<<< Updated upstream
+=======
+    >>  @@ [repo:sabayonlinux.org|41121] injection complete: x11-drivers:nvidia-drivers-185.18.36-r1#2.6.31-sabayon~2.tbz2
+    >>  @@ Running dependencies test ...
+    >> Repository sabayonlinux.org hasn't been downloaded yet.
+    >>  @@ Every dependency is satisfied. It's all fine.
+    >>  * Mirrors have not been unlocked. Remember to sync them.
+    >>  * Mirrors have not been unlocked. Remember to sync them.
+
+
+    - move etpConst['spm'] to entropy.spm
+    - make entropy.db matching rules externally inferred
+>>>>>>> Stashed changes
     - provide repository digital key, fetch it when syncing repos and check if
       it matches and all file match
 
