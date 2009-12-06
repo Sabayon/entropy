@@ -419,7 +419,7 @@ class Trigger:
             ETP_LOGLEVEL_NORMAL,
             "[POST] Running env_update"
         )
-        self.Spm.environment_update(stdin = self.Entropy.clientLog,
+        self.Spm.environment_update(stderr = self.Entropy.clientLog,
             stdout = self.Entropy.clientLog)
 
     def trigger_spm_postinstall(self):
