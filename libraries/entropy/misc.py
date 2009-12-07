@@ -86,6 +86,21 @@ class Lifo:
             idx = 0
         self.__buf[idx] = item
 
+    def insert(self, item):
+        """
+        Insert item at the bottom of the stack.
+
+        @param item: any Python object
+        @type item: Python object
+        @return: None
+        @rtype: None
+        """
+        try:
+            idx = min(self.__buf)-1
+        except ValueError:
+            idx = -1
+        self.__buf[idx] = item
+
     def clear(self):
         """
         Clear the stack.
@@ -116,7 +131,7 @@ class Lifo:
         @return: None
         @rtype: None
         """
-        for key, buf_entry in list(self.__buf.items()):
+        for key, buf_entry in self.__buf.items():
             # identity is generally faster, so try
             # this first
             if self.__buf is None: # shutting down py
