@@ -6,6 +6,7 @@
 
   0.99.30:
 
+    - entropy.output API names update
     - add splitdebug support?
     - entropy.tools API docs merge
     - entropy.server API rework
