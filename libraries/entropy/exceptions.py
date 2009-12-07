@@ -41,6 +41,12 @@ class CacheCorruptionError(EntropyException):
 class InvalidDependString(EntropyException):
     """An invalid depend string has been encountered"""
 
+class DependenciesNotFound(EntropyException):
+    """
+    During dependencies calculation, dependencies were not found,
+    list (set) of missing dependencies are in the .value attribute
+    """
+
 class InvalidVersionString(EntropyException):
     """An invalid version string has been encountered"""
 
