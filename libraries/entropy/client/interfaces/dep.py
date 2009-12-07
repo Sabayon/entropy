@@ -9,9 +9,10 @@
     B{Entropy Package Manager Client Dependency handling Interface}.
 
 """
-from entropy.misc import Lifo
 from entropy.const import *
 from entropy.exceptions import *
+from entropy.graph import Graph
+from entropy.misc import Lifo
 from entropy.output import bold, darkgreen, darkred, blue, red
 from entropy.i18n import _
 
@@ -514,11 +515,8 @@ class CalculatorsMixin:
                 return cached
 
         const_debug_write(__name__,
-            "get_unsatisfied_dependencies (not cached, deep: %s) for => %s" % (
+            "_get_unsatisfied_dependencies (not cached, deep: %s) for => %s" % (
                 deep_deps, dependencies,))
-
-        if depcache is None:
-            depcache = set()
 
         # satisfied dependencies filter support
         # package.satisfied file support
@@ -543,41 +541,51 @@ class CalculatorsMixin:
         etp_cmp = self.entropyTools.entropy_compare_versions
         etp_get_rev = self.entropyTools.dep_get_entropy_revision
 
+        if depcache is None:
+            depcache = {}
+
+        def push_to_cache(dependency, is_unsat):
+            # push to cache
+            depcache[dependency] = is_unsat
+
         unsatisfied = set()
         for dependency in dependencies:
 
             if dependency in depcache:
                 # already analized ?
+                is_unsat = depcache[dependency]
+                if is_unsat:
+                    unsatisfied.add(dependency)
                 const_debug_write(__name__,
-                    "get_unsatisfied_dependencies control cached for => %s" % (
+                    "_get_unsatisfied_dependencies control cached for => %s" % (
                         dependency,))
                 const_debug_write(__name__, "...")
                 continue
-
-            # push to cache
-            depcache.add(dependency)
 
             ### conflict
             if dependency.startswith("!"):
                 idpackage, rc = cdb_am(dependency[1:])
                 if idpackage != -1:
                     const_debug_write(__name__,
-                        "get_unsatisfied_dependencies conflict not found on system for => %s" % (
+                        "_get_unsatisfied_dependencies conflict not found on system for => %s" % (
                             dependency,))
                     const_debug_write(__name__, "...")
                     unsatisfied.add(dependency)
+                    push_to_cache(dependency, True)
                     continue
 
                 const_debug_write(__name__, "...")
+                push_to_cache(dependency, False)
                 continue
 
             c_ids, c_rc = cdb_am(dependency, multiMatch = True)
             if c_rc != 0:
                 const_debug_write(__name__,
-                    "get_unsatisfied_dependencies not satisfied on system for => %s" % (
+                    "_get_unsatisfied_dependencies not satisfied on system for => %s" % (
                         dependency,))
                 const_debug_write(__name__, "...")
                 unsatisfied.add(dependency)
+                push_to_cache(dependency, True)
                 continue
 
             # support for app-foo/foo-123~-1
@@ -593,23 +601,26 @@ class CalculatorsMixin:
             # matches something in installed packages repo.
             if c_ids and (not deep_deps) and (not do_rev_deep) and (relaxed_deps):
                 const_debug_write(__name__,
-                    "get_unsatisfied_dependencies (force unsat) SATISFIED => %s" % (
+                    "_get_unsatisfied_dependencies (force unsat) SATISFIED => %s" % (
                         dependency,))
                 const_debug_write(__name__, "...")
+                push_to_cache(dependency, False)
                 continue
 
             r_id, r_repo = self.atom_match(dependency)
             if r_id == -1:
                 const_debug_write(__name__,
-                    "get_unsatisfied_dependencies repository match not found for => %s" % (
+                    "_get_unsatisfied_dependencies repository match not found for => %s" % (
                         dependency,))
                 const_debug_write(__name__, "...")
                 unsatisfied.add(dependency)
+                push_to_cache(dependency, True)
                 continue
 
             # satisfied dependencies filter support
             # package.satisfied file support
             if (r_id, r_repo,) in satisfied_data:
+                push_to_cache(dependency, False)
                 continue # satisfied
 
             dbconn = self.open_repository(r_repo)
@@ -620,10 +631,11 @@ class CalculatorsMixin:
             except (intf_error, TypeError,):
                 # package entry is broken
                 const_debug_write(__name__,
-                    "get_unsatisfied_dependencies repository entry broken for match => %s" % (
+                    "_get_unsatisfied_dependencies repository entry broken for match => %s" % (
                         (r_id, r_repo),))
                 const_debug_write(__name__, "...")
                 unsatisfied.add(dependency)
+                push_to_cache(dependency, True)
                 continue
 
             client_data = set()
@@ -655,11 +667,12 @@ class CalculatorsMixin:
 
                 if vcmp == 0:
                     const_debug_write(__name__,
-                        "get_unsatisfied_dependencies SATISFIED equals " + \
+                        "_get_unsatisfied_dependencies SATISFIED equals " + \
                             "(not cached, deep: %s) => %s" % (
                                 deep_deps, dependency,))
                     const_debug_write(__name__, "...")
                     do_cont = True
+                    push_to_cache(dependency, False)
                     break
 
                 ver_tag_repo = (repo_pkgver, repo_pkgtag,)
@@ -677,11 +690,12 @@ class CalculatorsMixin:
 
                 if (ver_tag_repo == ver_tag_inst) and rev_match:
                     const_debug_write(__name__,
-                        "get_unsatisfied_dependencies SATISFIED " + \
+                        "_get_unsatisfied_dependencies SATISFIED " + \
                             "w/o rev (not cached, deep: %s) => %s" % (
                                 deep_deps, dependency,))
                     const_debug_write(__name__, "...")
                     do_cont = True
+                    push_to_cache(dependency, False)
                     break
 
             if do_cont:
@@ -689,11 +703,12 @@ class CalculatorsMixin:
 
             # if we get here it means that there are no matching packages
             const_debug_write(__name__,
-                "get_unsatisfied_dependencies NOT SATISFIED (not cached, deep: %s) => %s" % (
+                "_get_unsatisfied_dependencies NOT SATISFIED (not cached, deep: %s) => %s" % (
                     deep_deps, dependency,))
 
             const_debug_write(__name__, "...")
             unsatisfied.add(dependency)
+            push_to_cache(dependency, True)
 
         if self.xcache:
             self.Cacher.push(c_hash, unsatisfied)
@@ -790,320 +805,188 @@ class CalculatorsMixin:
 
         return maskedtree
 
+    def __generate_dependency_tree_inst_hooks(self, installed_match, pkg_match,
+        stack):
 
-    def generate_dependency_tree(self, matched_atom, empty_deps = False,
-        relaxed_deps = False, deep_deps = False, matchfilter = None,
-        flat = False, filter_unsat_cache = None, treecache = None,
-        keyslotcache = None):
+        broken_children_matches = self._lookup_library_drops(pkg_match,
+            installed_match)
 
-        if matchfilter is None:
-            matchfilter = set()
-        if filter_unsat_cache is None:
-            filter_unsat_cache = set()
-        if treecache is None:
-            treecache = set()
-        if keyslotcache is None:
-            keyslotcache = set()
+        broken_matches = self._lookup_library_breakages(pkg_match,
+            installed_match)
 
-        mydbconn = self.open_repository(matched_atom[1])
-        myatom = mydbconn.retrieveAtom(matched_atom[0])
+        inverse_deps = self._lookup_inverse_dependencies(pkg_match,
+            installed_match)
+        for inv_match in inverse_deps:
+            stack.push(inv_match)
 
-        # caches
-        # special events
+        # broken children atoms can be added to broken atoms
+        # and pulled into dep calculation
+        broken_matches |= broken_children_matches
+        for br_match in broken_matches:
+            stack.push(br_match)
+
+    def __generate_dependency_tree_analyze_conflict(self, conflict_str,
+        conflicts, stack, deep_deps):
+
+        conflict_atom = conflict_str[1:]
+        c_idpackage, xst = self.clientDbconn.atomMatch(conflict_atom)
+        if c_idpackage == -1:
+            return # conflicting pkg is not installed
+
+        confl_replacement = self._lookup_conflict_replacement(
+            conflict_atom, c_idpackage, deep_deps = deep_deps)
+
+        const_debug_write(__name__,
+            "__generate_dependency_tree_analyze_conflict "
+            "replacement => %s" % (confl_replacement,))
+
+        if confl_replacement is not None:
+            stack.push(confl_replacement)
+            return
+
+        # conflict is installed, we need to record it
+        conflicts.add(c_idpackage)
+
+    def __generate_dependency_tree_analyze_deplist(self, pkg_match, repo_db,
+        stack, deps_not_found, conflicts, unsat_cache, relaxed_deps, deep_deps,
+        empty_deps):
+
+        pkg_id, repo_id = pkg_match
+        myundeps = repo_db.retrieveDependenciesList(pkg_id)
+
+        # check conflicts
+        my_conflicts = set([x for x in myundeps if x.startswith("!")])
+        if my_conflicts:
+            myundeps -= my_conflicts
+            for my_conflict in my_conflicts:
+                self.__generate_dependency_tree_analyze_conflict(my_conflict,
+                    conflicts, stack, deep_deps)
+
+        const_debug_write(__name__,
+            "__generate_dependency_tree_analyze_deplist filtered "
+            "dependency list => %s" % (myundeps,))
+
+        if not empty_deps:
+
+            myundeps = self._get_unsatisfied_dependencies(myundeps,
+                deep_deps = deep_deps, relaxed_deps = relaxed_deps,
+                depcache = unsat_cache)
+
+            const_debug_write(__name__,
+                "__generate_dependency_tree_analyze_deplist " + \
+                    "filtered UNSATISFIED dependencies => %s" % (myundeps,))
+
+        post_deps = []
+        # PDEPENDs support
+        if myundeps:
+            myundeps, post_deps = self._lookup_post_dependencies(repo_db,
+                pkg_id, myundeps)
+
+            const_debug_write(__name__,
+                "generate_dependency_tree POST dependencies ADDED => %s" % (
+                    post_deps,))
+
+        deps = set()
+        for unsat_dep in myundeps:
+            match_pkg_id, match_repo_id = self.atom_match(unsat_dep)
+            if match_pkg_id == -1:
+                # dependency not found !
+                deps_not_found.add(unsat_dep)
+                continue
+            deps.add((match_pkg_id, match_repo_id))
+            stack.push((match_pkg_id, match_repo_id))
+
+        post_deps_matches = set()
+        for post_dep in post_deps:
+            match_pkg_id, match_repo_id = self.atom_match(post_dep)
+            # if post dependency is not found, we can happily ignore the fact
+            if match_pkg_id == -1:
+                # not adding to deps_not_found
+                continue
+            post_deps_matches.add((match_pkg_id, match_repo_id))
+            stack.push((match_pkg_id, match_repo_id))
+
+        return deps, post_deps_matches
+
+    def _generate_dependency_tree(self, matched_atom, graph,
+        empty_deps = False, relaxed_deps = False, deep_deps = False,
+        unsatisfied_deps_cache = None, elements_cache = None):
+
+        # this cache avoids adding the same element to graph
+        # several times, when it is supposed to be already handled
+        if elements_cache is None:
+            elements_cache = set()
+        if unsatisfied_deps_cache is None:
+            unsatisfied_deps_cache = {}
         deps_not_found = set()
         conflicts = set()
+        first_element = True
 
-        mydep = (1, myatom)
-        mybuffer = Lifo()
-        deptree = set()
-        if matched_atom not in matchfilter:
-            deptree.add((1, matched_atom))
+        stack = Lifo()
+        stack.push(matched_atom)
 
-        virgin = True
-        open_repo = self.open_repository
-        cdb_atom_match = self.clientDbconn.atomMatch
 
-        def my_dep_filter(x):
-            if x in treecache:
-                return False
-            if tuple(x.split(":")) in keyslotcache:
-                return False
-            return True
+        while stack.is_filled():
 
-        while mydep:
+            # get item from stack
+            pkg_id, repo_id = stack.pop()
+            pkg_match = (pkg_id, repo_id)
 
-            const_debug_write(__name__,
-                "generate_dependency_tree analyzing => %s" % (
-                    mydep,))
-
-            dep_level, dep_atom = mydep
-
-            # already analyzed in this call
-            if dep_atom in treecache:
-                const_debug_write(__name__,
-                    "generate_dependency_tree already in treecache => %s" % (
-                        dep_atom,))
-                try:
-                    mydep = mybuffer.pop()
-                except ValueError:
-                    const_debug_write(__name__, "---empty--")
-                    break # stack empty
-                const_debug_write(__name__, "---")
+            if pkg_match in elements_cache:
+                # already pushed to graph
                 continue
-            treecache.add(dep_atom)
+            elements_cache.add(pkg_match)
 
-            if dep_atom is None: # corrupted entry
-                const_debug_write(__name__,
-                    "generate_dependency_tree broken entry in DB => %s" % (
-                        mydep,))
-                try:
-                    mydep = mybuffer.pop()
-                except ValueError:
-                    const_debug_write(__name__, "---empty2--")
-                    break # stack empty
-                const_debug_write(__name__, "---")
-                continue
+            # now we are ready to open repository
+            repo_db = self.open_repository(repo_id)
 
-            # conflicts
-            if dep_atom[0] == "!":
-                c_idpackage, xst = cdb_atom_match(dep_atom[1:])
-                if c_idpackage != -1:
-                    myreplacement = self._lookup_conflict_replacement(
-                        dep_atom[1:], c_idpackage, deep_deps = deep_deps)
+            ## first element checks
+            if first_element:
+                first_element = False
+                # we need to check if first element is masked because of
+                # course, we don't trust function caller.
+                mask_pkg_id, idreason = repo_db.idpackageValidator(pkg_id)
+                if mask_pkg_id == -1:
+                    mask_atom = repo_db.retrieveAtom(pkg_id)
+                    if mask_atom is None:
+                        mask_atom = 'N/A' # wtf?
+                    deps_not_found.add(mask_atom)
+                    continue # back to while
 
-                    const_debug_write(__name__,
-                        "generate_dependency_tree conflict replacement => %s" % (
-                            myreplacement,))
-
-                    if (myreplacement != None) and (myreplacement not in treecache):
-                        mybuffer.push((dep_level+1, myreplacement))
-                    else:
-                        conflicts.add(c_idpackage)
-
-                try:
-                    mydep = mybuffer.pop()
-                except ValueError:
-                    const_debug_write(__name__, "---empty3---")
-                    break # stack empty
-                const_debug_write(__name__, "---")
-                continue
-
-            # atom found?
-            if virgin:
-
-                virgin = False
-                m_idpackage, m_repo = matched_atom
-                dbconn = open_repo(m_repo)
-                myidpackage, idreason = dbconn.idpackageValidator(m_idpackage)
-
-                const_debug_write(__name__,
-                    "generate_dependency_tree virgin match masked? => %s - %s" % (
-                        myidpackage, idreason,))
-
-                if myidpackage == -1:
-                    m_idpackage = -1
-
-            else:
-                m_idpackage, m_repo = self.atom_match(dep_atom)
-                const_debug_write(__name__,
-                    "generate_dependency_tree matching %s => (%s, %s)" % (
-                        dep_atom, m_idpackage, m_repo,))
-
-            if m_idpackage == -1:
-
-                const_debug_write(__name__,
-                    "generate_dependency_tree dep not found => %s" % (
-                        dep_atom,))
-
-                deps_not_found.add(dep_atom)
-                try:
-                    mydep = mybuffer.pop()
-                except ValueError:
-                    const_debug_write(__name__, "---empty3---")
-                    break # stack empty
-                const_debug_write(__name__, "---")
-                continue
-
-            # check if atom has been already pulled in
-            matchdb = open_repo(m_repo)
-            matchatom = matchdb.retrieveAtom(m_idpackage)
-            matchkey, matchslot = matchdb.retrieveKeySlot(m_idpackage)
-
-            const_debug_write(__name__,
-                "generate_dependency_tree idpackage %s => %s - %s:%s" % (
-                    m_idpackage, matchatom, matchkey, matchslot))
-
-            if (dep_atom != matchatom) and (matchatom in treecache):
-                try:
-                    mydep = mybuffer.pop()
-                except ValueError:
-                    const_debug_write(__name__, "---empty4---")
-                    break # stack empty
-                const_debug_write(__name__,
-                    "generate_dependency_tree matchatom %s already in cache" % (
-                        matchatom,))
-                const_debug_write(__name__, "---")
-                continue
-
-            treecache.add(matchatom)
-
-            const_debug_write(__name__,
-                "generate_dependency_tree check if key + slot cache => %s" % (
-                    (matchslot, matchkey),))
-
-            # check if key + slot has been already pulled in
-            if (matchslot, matchkey) in keyslotcache:
-                try:
-                    mydep = mybuffer.pop()
-                except ValueError:
-                    const_debug_write(__name__, "---empty5---")
-                    break # stack empty
-                const_debug_write(__name__, "---")
-                continue
-            else:
-                keyslotcache.add((matchslot, matchkey))
-
-            const_debug_write(__name__,
-                "generate_dependency_tree not in key + slot cache => %s" % (
-                    (matchslot, matchkey),))
-
-            match = (m_idpackage, m_repo,)
-            # result already analyzed?
-            if match in matchfilter:
-                try:
-                    mydep = mybuffer.pop()
-                except ValueError:
-                    const_debug_write(__name__, "---empty6---")
-                    break # stack empty
-                const_debug_write(__name__, "---")
-                continue
-
-            const_debug_write(__name__,
-                "generate_dependency_tree match NOT already analyzed => %s" % (
-                    match,))
-
-            # all checks passed, well done
-            matchfilter.add(match)
-            treedepth = dep_level+1
-            deptree.add((dep_level, match)) # add match
-            const_debug_write(__name__,
-                "generate_dependency_tree adding to deptree %s => %s" % (
-                    mydep, match,))
-
-            # extra hooks
-            cm_idpackage, cm_result = cdb_atom_match(matchkey,
-                matchSlot = matchslot)
+            # search inside installed packages repository if there's something
+            # in the same slot, if so, do some extra checks first.
+            pkg_key, pkg_slot = repo_db.retrieveKeySlot(pkg_id)
+            cm_idpackage, cm_result = self.clientDbconn.atomMatch(pkg_key,
+                matchSlot = pkg_slot)
 
             if cm_idpackage != -1:
+                # this method does:
+                # - broken libraries detection
+                # - inverse dependencies check
+                # - broken "dropped" libraries check (see _lookup_library_drops)
+                self.__generate_dependency_tree_inst_hooks(
+                    (cm_idpackage, cm_result), pkg_match, stack)
 
-                broken_children_atoms = self._lookup_library_drops(match,
-                    (cm_idpackage, cm_result,))
+            dep_matches, post_dep_matches = \
+                self.__generate_dependency_tree_analyze_deplist(
+                    pkg_match, repo_db, stack, deps_not_found,
+                    conflicts, unsatisfied_deps_cache,
+                    relaxed_deps, deep_deps, empty_deps)
 
-                broken_atoms = self._lookup_library_breakages(match,
-                    (cm_idpackage, cm_result,))
-                const_debug_write(__name__,
-                    "generate_dependency_tree lib broken atoms for %s => %s" % (
-                        matchkey+":"+matchslot, broken_atoms,))
-
-                inverse_deps = self._lookup_inverse_dependencies(match,
-                    (cm_idpackage, cm_result,))
-                const_debug_write(__name__,
-                    "generate_dependency_tree inverse deps for %s => %s" % (
-                        matchkey+":"+matchslot, inverse_deps,))
-
-                if inverse_deps:
-                    deptree.remove((dep_level, match))
-                    for ikey, islot in inverse_deps:
-                        iks_str = '%s:%s' % (ikey, islot,)
-                        if ((ikey, islot) not in keyslotcache) and \
-                            (iks_str not in treecache):
-
-                            mybuffer.push((dep_level, iks_str))
-                            keyslotcache.add((ikey, islot))
-
-                    deptree.add((treedepth, match))
-                    treedepth += 1
-
-                # broken children atoms can be added to broken atoms
-                # and pulled into dep calculation
-                broken_atoms |= broken_children_atoms
-                for x in broken_atoms:
-                    if (tuple(x.split(":")) not in keyslotcache) and \
-                        (x not in treecache):
-                        mybuffer.push((treedepth, x))
-
-            m_deplist = matchdb.retrieveDependenciesList(m_idpackage)
-
-            const_debug_write(__name__,
-                "generate_dependency_tree dependency list for %s => %s" % (
-                    m_idpackage, m_deplist,))
-
-            myundeps = [x for x in m_deplist if my_dep_filter(x)]
-
-            const_debug_write(__name__,
-                "generate_dependency_tree filtered dependency list => %s" % (
-                    myundeps,))
-
-            if not empty_deps:
-
-                m_unsat_deplist = self._get_unsatisfied_dependencies(myundeps,
-                    deep_deps = deep_deps, relaxed_deps = relaxed_deps,
-                    depcache = filter_unsat_cache)
-
-                const_debug_write(__name__,
-                    "generate_dependency_tree unsatisfied dependencies " + \
-                        "(deep: %s) => %s" % (deep_deps, m_unsat_deplist,))
-
-                myundeps = [x for x in m_unsat_deplist if my_dep_filter(x)]
-
-                const_debug_write(__name__,
-                    "generate_dependency_tree filtered UNSATISFIED " + \
-                        "dependencies => %s" % (myundeps,))
-
-            # PDEPENDs support
-            if myundeps:
-                myundeps, post_deps = self.__lookup_post_dependencies(matchdb,
-                    m_idpackage, myundeps)
-
-                const_debug_write(__name__,
-                    "generate_dependency_tree POST dependencies ADDED => %s" % (
-                        myundeps,))
-
-                # always after the package itself
-                for x in post_deps:
-                    mybuffer.push((-1, x))
-
-            for x in myundeps:
-                mybuffer.push((treedepth, x))
-
-            try:
-                mydep = mybuffer.pop()
-            except ValueError:
-                const_debug_write(__name__, "---empty7---")
-                break # stack empty
-
-            const_debug_write(__name__, "---")
+            # eventually add our package match to depgraph
+            graph.add(pkg_match, dep_matches)
+            for post_dep_match in post_dep_matches:
+                graph.add(post_dep_match, set([pkg_match]))
 
 
+        # if deps not found, we won't do dep-sorting at all
         if deps_not_found:
-            return list(deps_not_found), -2
+            del stack
+            raise DependenciesNotFound(deps_not_found)
 
-        if flat:
-            return [x[1] for x in deptree], 0
+        return graph, conflicts
 
-        newdeptree = {}
-        for key, item in deptree:
-            if key >= 0:
-                # this makes sure that key is never = 0
-                key += 1
-            obj = newdeptree.setdefault(key, set())
-            obj.add(item)
-        # conflicts
-        newdeptree[0] = conflicts
-
-        return newdeptree, 0 # note: newtree[0] contains possible conflicts
-
-    def __lookup_post_dependencies(self, repo_db, repo_idpackage,
+    def _lookup_post_dependencies(self, repo_db, repo_idpackage,
         unsatisfied_deps):
 
         post_deps = [x for x in \
@@ -1111,7 +994,7 @@ class CalculatorsMixin:
             in unsatisfied_deps]
 
         const_debug_write(__name__,
-            "__lookup_post_dependencies POST dependencies => %s" % (
+            "_lookup_post_dependencies POST dependencies => %s" % (
                 post_deps,))
 
         if post_deps:
@@ -1150,62 +1033,70 @@ class CalculatorsMixin:
 
     def _lookup_conflict_replacement(self, conflict_atom, client_idpackage, deep_deps):
         if self.entropyTools.isjustname(conflict_atom):
-            return None
+            return
+
         conflict_match = self.atom_match(conflict_atom)
         mykey, myslot = self.clientDbconn.retrieveKeySlot(client_idpackage)
         new_match = self.atom_match(mykey, matchSlot = myslot)
         if (conflict_match == new_match) or (new_match[1] == 1):
-            return None
+            return
+
         action = self.get_package_action(new_match)
         if (action == 0) and (not deep_deps):
-            return None
-        return "%s:%s" % (mykey, myslot,)
+            return
+
+        return new_match
 
     def _lookup_inverse_dependencies(self, match, clientmatch):
 
         cmpstat = self.get_package_action(match)
-        if cmpstat == 0: return set()
+        if cmpstat == 0:
+            return set()
 
-        keyslots = set()
-        mydepends = self.clientDbconn.retrieveReverseDependencies(clientmatch[0])
-        am = self.atom_match
+        keyslots_cache = set()
+        match_cache = {}
+        results = set()
+
         cdb_rdeps = self.clientDbconn.retrieveDependencies
         cdb_rks = self.clientDbconn.retrieveKeySlot
         gpa = self.get_package_action
-        keyslots_cache = set()
-        match_cache = {}
+        mydepends = \
+            self.clientDbconn.retrieveReverseDependencies(clientmatch[0])
 
         for idpackage in mydepends:
             try:
                 key, slot = cdb_rks(idpackage)
             except TypeError:
                 continue
-            if (key, slot) in keyslots_cache: continue
+
+            if (key, slot) in keyslots_cache:
+                continue
             keyslots_cache.add((key, slot))
-            if (key, slot) in keyslots: continue
+
             # grab its deps
             mydeps = cdb_rdeps(idpackage)
             found = False
             for mydep in mydeps:
                 mymatch = match_cache.get(mydep, 0)
                 if mymatch == 0:
-                    mymatch = am(mydep)
+                    mymatch = self.atom_match(mydep)
                     match_cache[mydep] = mymatch
                 if mymatch == match:
                     found = True
                     break
-            if not found:
-                mymatch = am(key, matchSlot = slot)
-                if mymatch[0] == -1: continue
-                cmpstat = gpa(mymatch)
-                if cmpstat == 0: continue
-                keyslots.add((key, slot))
 
-        return keyslots
+            if not found:
+                mymatch = self.atom_match(key, matchSlot = slot)
+                if mymatch[0] == -1:
+                    continue
+                cmpstat = gpa(mymatch)
+                if cmpstat == 0:
+                    continue
+                results.add(mymatch)
+
+        return results
 
     def _lookup_library_drops(self, match, client_match):
-
-        broken_atoms = set()
 
         match_id, match_repo = match
         match_db = self.open_repository(match_repo)
@@ -1219,6 +1110,7 @@ class CalculatorsMixin:
         for lib, path, elf in removed_libs:
             idpackages |= self.clientDbconn.searchNeeded(lib, elfclass = elf)
 
+        broken_matches = set()
         for c_idpackage in idpackages:
 
             keyslot = self.clientDbconn.retrieveKeySlotAggregated(c_idpackage)
@@ -1232,9 +1124,9 @@ class CalculatorsMixin:
             if cmpstat == 0:
                 continue
 
-            broken_atoms.add(keyslot)
+            broken_matches.add((idpackage, repo))
 
-        return broken_atoms
+        return broken_matches
 
 
     def __get_lib_breaks_client_and_repo_side(self, match_db, match_idpackage,
@@ -1286,11 +1178,6 @@ class CalculatorsMixin:
             cached = self.Cacher.pop(c_hash)
             if cached is not None:
                 return cached
-
-        # these should be pulled in before
-        repo_atoms = set()
-        # these can be pulled in after
-        client_atoms = set()
 
         matchdb = self.open_repository(match[1])
         reponeeded, lib_removes, client_side, repo_side = \
@@ -1347,12 +1234,16 @@ class CalculatorsMixin:
                 if found:
                     break
 
+        # these should be pulled in before
+        repo_matches = set()
+        # these can be pulled in after
+        client_matches = set()
+
         for idpackage, repo in found_matches:
             cmpstat = self.get_package_action((idpackage, repo))
             if cmpstat == 0:
                 continue
-            mydbc = self.open_repository(repo)
-            repo_atoms.add(mydbc.retrieveAtom(idpackage))
+            repo_matches.add((idpackage, repo))
 
         for key, slot in client_keyslots:
             idpackage, repo = self.atom_match(key, matchSlot = slot)
@@ -1361,64 +1252,14 @@ class CalculatorsMixin:
             cmpstat = self.get_package_action((idpackage, repo))
             if cmpstat == 0:
                 continue
-            mydbc = self.open_repository(repo)
-            client_atoms.add(mydbc.retrieveAtom(idpackage))
+            client_matches.add((idpackage, repo))
 
-        client_atoms |= repo_atoms
+        client_matches |= repo_matches
 
         if self.xcache:
-            self.Cacher.push(c_hash, client_atoms)
+            self.Cacher.push(c_hash, client_matches)
 
-        return client_atoms
-
-    def __deptree_prioritize_systempkgs(self, deptree):
-
-
-        conflicts_key = 0
-        # save list of conflicts, actually at key 0
-        conflicts = deptree.get(conflicts_key, set()).copy()
-
-        system_tree = {}
-        normal_tree = {}
-        system_pkgs_cache = {}
-
-
-        for deplevel in deptree:
-
-            if deplevel == conflicts_key: # skip conflicts
-                continue
-
-            for idpackage, repoid in deptree[deplevel]:
-
-                if repoid not in system_pkgs_cache:
-                    repodb = self.open_repository(repoid)
-                    system_pkgs_cache[repoid] = repodb.getSystemPackages()
-
-                if idpackage in system_pkgs_cache[repoid]:
-                    obj = system_tree.setdefault(deplevel, set())
-                    obj.add((idpackage, repoid,))
-                else:
-                    obj = normal_tree.setdefault(deplevel, set())
-                    obj.add((idpackage, repoid,))
-
-        # now create new deptree
-        # system_tree is used because it's already half ready
-        # it just needs entries from normal tree
-        if system_tree:
-            min_deplevel = max(system_tree)
-        else:
-            min_deplevel = conflicts_key
-
-        for deplevel in normal_tree:
-
-            # start from the next available
-            min_deplevel += 1
-            system_tree[min_deplevel] = normal_tree[deplevel]
-
-        # add conflicts back
-        system_tree[conflicts_key] = conflicts
-
-        return system_tree
+        return client_matches
 
     def get_required_packages(self, matched_atoms, empty_deps = False,
         deep_deps = False, relaxed_deps = False, quiet = False):
@@ -1440,9 +1281,8 @@ class CalculatorsMixin:
             if cached is not None:
                 return cached
 
-        deptree = {}
-        deptree[0] = set()
-
+        graph = Graph()
+        deptree_conflicts = set()
         atomlen = len(matched_atoms); count = 0
         error_generated = 0
         error_tree = set()
@@ -1459,9 +1299,8 @@ class CalculatorsMixin:
                 matched_atoms |= set(forced_matches)
 
         sort_dep_text = _("Sorting dependencies")
-        filter_unsat_cache = set()
-        treecache = set()
-        keyslotcache = set()
+        unsat_deps_cache = {}
+        elements_cache = set()
         matchfilter = set()
         for matched_atom in matched_atoms:
 
@@ -1479,41 +1318,44 @@ class CalculatorsMixin:
 
             if matched_atom in matchfilter:
                 continue
-            newtree, result = self.generate_dependency_tree(
-                matched_atom, empty_deps = empty_deps, deep_deps = deep_deps,
-                relaxed_deps = relaxed_deps, matchfilter = matchfilter,
-                filter_unsat_cache = filter_unsat_cache, treecache = treecache,
-                keyslotcache = keyslotcache
-            )
 
-            const_debug_write(__name__,
-                "get_required_packages deptree => %s -- %s" % (
-                    newtree, result,))
-
-            if result == -2: # deps not found
+            try:
+                mygraph, conflicts = self._generate_dependency_tree(
+                    matched_atom, graph, empty_deps = empty_deps,
+                    deep_deps = deep_deps, relaxed_deps = relaxed_deps,
+                    unsatisfied_deps_cache = unsat_deps_cache,
+                    elements_cache = elements_cache
+                )
+            except DependenciesNotFound as err:
                 error_generated = -2
-                error_tree |= set(newtree) # it is a list, we convert it into set and update error_tree
-            elif result != 0:
-                return newtree, result
-            elif newtree:
-                # add conflicts
-                max_parent_key = max(deptree)
-                deptree[0] |= newtree.pop(0)
-                levelcount = 0
-                for mylevel in sorted(newtree.keys(), reverse = True):
-                    levelcount += 1
-                    deptree[max_parent_key+levelcount] = newtree.get(mylevel)
+                error_tree |= err.value
+
+            deptree_conflicts |= conflicts
 
         if error_generated != 0:
+            del graph
             return error_tree, error_generated
 
-        # now we need to move system packages at the top
-        deptree = self.__deptree_prioritize_systempkgs(deptree)
+        # solve depgraph and append conflicts
+        deptree = graph.solve()
+        if 0 in deptree:
+            del graph
+            raise KeyError("Graph contains a dep_level == 0")
+
+        # reverse ketys in deptree, this allows correct order (not inverse)
+        level_count = 0
+        reverse_tree = {}
+        for key in sorted(deptree.keys(), reverse = True):
+            level_count += 1
+            reverse_tree[level_count] = deptree[key]
+
+        del deptree, graph
+        reverse_tree[0] = deptree_conflicts
 
         if self.xcache:
-            self.Cacher.push(c_hash, (deptree, 0))
+            self.Cacher.push(c_hash, (reverse_tree, 0))
 
-        return deptree, 0
+        return reverse_tree, 0
 
     def _filter_depends_multimatched_atoms(self, idpackage, depends, monotree):
         remove_depends = set()
@@ -1521,7 +1363,8 @@ class CalculatorsMixin:
             mydeps = self.clientDbconn.retrieveDependencies(d_idpackage)
             for mydep in mydeps:
                 matches, rslt = self.clientDbconn.atomMatch(mydep, multiMatch = True)
-                if rslt == 1: continue
+                if rslt == 1:
+                    continue
                 if idpackage in matches and len(matches) > 1:
                     # are all in depends?
                     for mymatch in matches:

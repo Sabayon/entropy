@@ -23,6 +23,7 @@ from entropy.i18n import _
 from entropy.const import *
 from entropy.exceptions import *
 from entropy.output import print_generic
+from entropy.graph import Graph
 
 from sulfur.setup import SulfurConf, cleanMarkupString, const
 from sulfur.package import EntropyPackage, DummyEntropyPackage
@@ -165,7 +166,8 @@ class Queue:
             return mynew
 
         dep_tree, st = self.Entropy.get_required_packages(proposed_matches[:])
-        if st != 0: return proposed_matches, False # wtf?
+        if st != 0:
+            return proposed_matches, False # wtf?
         if 0 in dep_tree: dep_tree.pop(0)
         new_deptree = flatten(dep_tree)
 
@@ -175,14 +177,24 @@ class Queue:
 
         # we need to get a list of packages that must be "undo-removed"
         crying_items = []
+
         for match in proposed_matches:
-            match_tree, rc = self.Entropy.generate_dependency_tree(match, flat = True)
-            if rc != 0: return proposed_matches, False # wtf?
-            mm = [x for x in matches_to_be_removed if x in match_tree]
-            if mm: crying_items.append(match)
+
+            graph = Graph()
+            try:
+                xgraph, conflicts = self.Entropy._generate_dependency_tree(
+                    match, graph)
+            except DependenciesNotFound:
+                return proposed_matches, False # wtf?
+
+            mm = [x for x in matches_to_be_removed if x in graph.raw()]
+            if mm:
+                crying_items.append(match)
+            del graph
 
         # just to make sure...
-        if not crying_items: return proposed_matches, False
+        if not crying_items:
+            return proposed_matches, False
 
         atoms = []
         for idpackage, repoid in crying_items:
