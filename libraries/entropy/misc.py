@@ -26,7 +26,7 @@ from entropy.const import etpConst, etpUi, const_isunicode, const_isstring, \
     const_isfileobj
 from entropy.core.settings.base import SystemSettings
 
-class Lifo:
+class Lifo(object):
 
     """
 
@@ -69,7 +69,20 @@ class Lifo:
 
     def __init__(self):
         """ Lifo class constructor """
+        object.__init__(self)
         self.__buf = {}
+
+    def __nonzero__(self):
+        """
+        Return if stack is empty.
+        """
+        return len(self.__buf) != 0
+
+    def __len__(self):
+        """
+        Return stack size.
+        """
+        return len(self.__buf)
 
     def push(self, item):
         """
@@ -159,6 +172,7 @@ class Lifo:
             return self.__buf.pop(idx)
         except (KeyError, TypeError,):
             raise ValueError("Lifo is empty")
+
 
 class TimeScheduled(threading.Thread):
 
