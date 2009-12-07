@@ -409,5 +409,15 @@ class Graph(object):
         sorter = TopologicalSorter(adj_map)
         return sorter.sort()
 
+    def raw(self):
+        """
+        Return all items stored in the graph in raw form (list) without sorting
+        them.
+
+        @return: list of items added to Graph
+        @rtype: list
+        """
+        return [x.item() for x in self.__graph.values()]
+
 __all__ = ["Graph"]
 
