@@ -19,7 +19,7 @@ class DumbException(Exception):
 class EntropyException(Exception):
     """General superclass for Entropy exceptions"""
     def __init__(self, value):
-        self.value = value[:]
+        self.value = value
         Exception.__init__(self)
 
     def __unicode__(self):
