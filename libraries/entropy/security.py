@@ -19,7 +19,7 @@ from entropy.const import etpConst, etpCache, etpUi, const_setup_perms
 from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred
 
-class SecurityInterface:
+class System:
 
     """
     ~~ GIVES YOU WINGS ~~
@@ -43,7 +43,7 @@ class SecurityInterface:
     def __init__(self, entropy_client_instance):
 
         """
-        SecurityInterface constructor.
+        Instance constructor.
 
         @param entropy_client_instance: a valid entropy.client.interfaces.Client
             instance
@@ -251,7 +251,7 @@ class SecurityInterface:
 
     def clear(self, xcache = False):
         """
-        Clear SecurityInterface cache (RAM and on-disk).
+        Clear instance cache (RAM and on-disk).
 
         @keyword xcache: also remove Entropy on-disk cache if True
         @type xcache: bool

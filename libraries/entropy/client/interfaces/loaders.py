@@ -39,8 +39,8 @@ class LoadersMixin:
         cached = self.__security_cache.get(chroot)
         if cached != None:
             return cached
-        from entropy.security import SecurityInterface
-        cached = SecurityInterface(self)
+        from entropy.security import System as system_sec
+        cached = system_sec(self)
         self.__security_cache[chroot] = cached
         return cached
 
