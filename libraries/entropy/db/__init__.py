@@ -4723,8 +4723,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         # WARNING: never remove this, otherwise equo.db
         # (client database) dependstable will be always broken (trust me)
         # sanity check on the table
-        if not self._isDependsTableSane(): # is empty, need generation
-            self.generateReverseDependenciesMetadata(verbose = False)
+        c_tup = ("retrieveReverseDependencies_check",)
+        if not self.live_cache.get(c_tup):
+            self.live_cache[c_tup] = True
+            if not self._isDependsTableSane(): # is empty, need generation
+                self.generateReverseDependenciesMetadata(verbose = False)
 
         excluded_deptypes_query = ""
         if exclude_deptypes != None:
@@ -4772,8 +4775,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         # WARNING: never remove this, otherwise equo.db (client database)
         # dependstable will be always broken (trust me)
         # sanity check on the table
-        if not self._isDependsTableSane(): # is empty, need generation
-            self.generateReverseDependenciesMetadata(verbose = False)
+        c_tup = ("retrieveUnusedIdpackages_check",)
+        if not self.live_cache.get(c_tup):
+            self.live_cache[c_tup] = True
+            if not self._isDependsTableSane(): # is empty, need generation
+                self.generateReverseDependenciesMetadata(verbose = False)
 
         cur = self.cursor.execute("""
         SELECT idpackage FROM baseinfo 
