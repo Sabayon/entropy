@@ -1520,7 +1520,7 @@ def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
             print_info(red(" @@ ") + \
                 blue("%s: " % (_("Packages involved"),) ) + str(totalatoms))
 
-        if (not plainRemovalQueue):
+        if not plainRemovalQueue:
             print_error(red("%s." % (_("Nothing to do"),) ))
             return 126, -1
 
@@ -1532,7 +1532,7 @@ def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
             question = "     %s" % (_("Would you like to remove them now ?"),)
             lookForOrphanedPackages = False
 
-        if etpUi['ask']:
+        if etpUi['ask'] and not etpUi['pretend']:
             rc = Equo.askQuestion(question)
             if rc == _("No"):
                 lookForOrphanedPackages = False
@@ -1570,6 +1570,9 @@ def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
 
             else:
                 writechar("\n")
+
+        if etpUi['pretend']:
+            return 0, 0
 
         if etpUi['ask'] or human:
             question = "     %s" % (_("Would you like to proceed ?"),)
