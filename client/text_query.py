@@ -715,12 +715,9 @@ def search_removal_dependencies(atoms, deep = False, Equo = None):
         print_info(red(" @@ ") + blue("%s..." % (
             _("Calculating removal dependencies, please wait"),) ), back = True)
     treeview = Equo.generate_depends_tree(found_atoms, deep = deep)
-    treelength = len(treeview[0])
-    if treelength > 1:
-        treeview = treeview[0]
-        for dep_el in range(treelength)[::-1]:
-            for dep_sub_el in treeview[dep_el]:
-                removal_queue.append(dep_sub_el)
+    for dep_lev in sorted(treeview, reverse = True):
+        for dep_sub_el in treeview[dep_lev]:
+            removal_queue.append(dep_sub_el)
 
     if removal_queue:
         if not etpUi['quiet']:

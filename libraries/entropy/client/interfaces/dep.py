@@ -13,7 +13,7 @@ from entropy.const import *
 from entropy.exceptions import *
 from entropy.graph import Graph
 from entropy.misc import Lifo
-from entropy.output import bold, darkgreen, darkred, blue, red
+from entropy.output import bold, darkgreen, darkred, blue, red, purple
 from entropy.i18n import _
 
 class CalculatorsMixin:
@@ -191,7 +191,7 @@ class CalculatorsMixin:
         return cached_obj
 
     def __atom_match_open_db(self, repoid, server_inst):
-        if server_inst != None:
+        if server_inst is not None:
             dbconn = server_inst.open_server_repository(just_reading = True,
                 repo = repoid, do_treeupdates = False)
         else:
@@ -207,7 +207,7 @@ class CalculatorsMixin:
         # support match in repository from shell
         # atom@repo1,repo2,repo3
         atom, repos = self.entropyTools.dep_get_match_in_repos(atom)
-        if (matchRepo == None) and (repos != None):
+        if (matchRepo == None) and (repos is not None):
             matchRepo = repos
 
         u_hash = ""
@@ -243,7 +243,7 @@ class CalculatorsMixin:
                         multiMatch, extendedResults, multiRepo, serverInstance)
                 except (TypeError, ValueError, IndexError, KeyError,):
                     cached = None
-            if cached != None:
+            if cached is not None:
                 return cached
 
         if server_repos:
@@ -421,7 +421,7 @@ class CalculatorsMixin:
         return self.package_set_match(package_set, matchRepo = matchRepo, server_repos = server_repos, serverInstance = serverInstance, search = True)[0]
 
     def __package_set_match_open_db(self, repoid, server_inst):
-        if server_inst != None:
+        if server_inst is not None:
             dbconn = server_inst.open_server_repository(just_reading = True, repo = repoid)
         else:
             dbconn = self.open_repository(repoid)
@@ -435,7 +435,7 @@ class CalculatorsMixin:
         # set@repo1,repo2,repo3
         package_set, repos = self.entropyTools.dep_get_match_in_repos(
             package_set)
-        if (matchRepo == None) and (repos != None):
+        if (matchRepo == None) and (repos is not None):
             matchRepo = repos
 
         if server_repos:
@@ -1357,23 +1357,27 @@ class CalculatorsMixin:
 
         return reverse_tree, 0
 
-    def _filter_depends_multimatched_atoms(self, idpackage, depends, monotree):
+    def _filter_depends_multimatched_atoms(self, idpackage, depends):
+
         remove_depends = set()
         for d_idpackage in depends:
             mydeps = self.clientDbconn.retrieveDependencies(d_idpackage)
             for mydep in mydeps:
-                matches, rslt = self.clientDbconn.atomMatch(mydep, multiMatch = True)
+
+                matches, rslt = self.clientDbconn.atomMatch(mydep,
+                    multiMatch = True)
                 if rslt == 1:
                     continue
+
                 if idpackage in matches and len(matches) > 1:
                     # are all in depends?
                     for mymatch in matches:
-                        if mymatch not in depends and mymatch not in monotree:
+                        if mymatch not in depends:
                             remove_depends.add(d_idpackage)
                             break
+
         depends -= remove_depends
         return depends
-
 
     def generate_depends_tree(self, idpackages, deep = False):
 
@@ -1387,109 +1391,90 @@ class CalculatorsMixin:
         )
         if self.xcache:
             cached = self.Cacher.pop(c_hash)
-            if cached != None: return cached
+            # XXX drop old cache object format
+            if not isinstance(cached, dict):
+                cached = None
+            if cached is not None:
+                return cached
 
-        dependscache = set()
-        treeview = set(idpackages)
-        treelevel = set(idpackages)
-        tree = {}
-        # I start from level 1 because level 0 is idpackages itself
-        treedepth = 0
-        tree[treedepth] = set(idpackages)
-        monotree = set(idpackages) # monodimensional tree
+        count = 0
+        match_cache = set()
+        stack = Lifo()
+        graph = Graph()
 
         # post-dependencies won't be pulled in
         pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
-        # check if dependstable is sane before beginning
-        self.clientDbconn.retrieveReverseDependencies(idpackages[0])
-        count = 0
-
         rem_dep_text = _("Calculating inverse dependencies for")
-        while True:
-            treedepth += 1
-            tree[treedepth] = set()
-            for idpackage in treelevel:
+        for idpackage in idpackages:
+            stack.push(idpackage)
 
-                count += 1
-                p_atom = self.clientDbconn.retrieveAtom(idpackage)
-                self.updateProgress(
-                    blue(rem_dep_text + " %s" % (red(p_atom),)),
-                    importance = 0,
-                    type = "info",
-                    back = True,
-                    header = '|/-\\'[count%4]+" "
-                )
+        while stack.is_filled():
 
-                systempkg = not self.validate_package_removal(idpackage)
-                if (idpackage in dependscache) or systempkg:
-                    if idpackage in treeview:
-                        treeview.remove(idpackage)
-                    continue
+            idpackage = stack.pop()
+            if idpackage in match_cache:
+                # already analyzed
+                continue
+            match_cache.add(idpackage)
 
-                # obtain its inverse deps
-                depends = self.clientDbconn.retrieveReverseDependencies(idpackage,
-                    exclude_deptypes = (pdepend_id,))
-                # filter already satisfied ones
-                depends = set([x for x in depends if x not in monotree])
-                depends = set([x for x in depends if \
-                    self.validate_package_removal(x)])
-                if depends:
-                    depends = self._filter_depends_multimatched_atoms(
-                        idpackage, depends, monotree)
-                if depends: # something depends on idpackage
-                    tree[treedepth] |= depends
-                    monotree |= depends
-                    treeview |= depends
-                elif deep: # if deep, grab its dependencies and check
+            system_pkg = not self.validate_package_removal(idpackage)
+            if system_pkg:
+                # this is a system package, removal forbidden
+                continue
 
-                    mydeps = set()
-                    for x in self.clientDbconn.retrieveDependencies(idpackage):
-                        match = self.clientDbconn.atomMatch(x)
-                        if match[0] != -1:
-                            mydeps.add(match[0])
+            count += 1
+            p_atom = self.clientDbconn.retrieveAtom(idpackage)
+            self.updateProgress(
+                blue(rem_dep_text + " %s" % (purple(p_atom),)),
+                importance = 0,
+                type = "info",
+                back = True,
+                header = '|/-\\'[count%4]+" "
+            )
 
-                    # now filter them
-                    mydeps = [x for x in mydeps if x not in monotree and not \
-                        (self.clientDbconn.isSystemPackage(x) or \
-                            self.is_installed_idpackage_in_system_mask(x) )]
-                    for x in mydeps:
-                        mydepends = self.clientDbconn.retrieveReverseDependencies(x)
-                        mydepends -= set([y for y in mydepends if y \
-                            not in monotree])
-                        if not mydepends:
-                            tree[treedepth].add(x)
-                            monotree.add(x)
-                            treeview.add(x)
+            # obtain its inverse deps
+            reverse_deps = self.clientDbconn.retrieveReverseDependencies(
+                idpackage, exclude_deptypes = (pdepend_id,))
+            if reverse_deps:
+                reverse_deps = self._filter_depends_multimatched_atoms(
+                    idpackage, reverse_deps)
 
-                dependscache.add(idpackage)
-                if idpackage in treeview:
-                    treeview.remove(idpackage)
+            if deep:
 
-            treelevel = treeview.copy()
-            if not treelevel:
-                if not tree[treedepth]:
-                    del tree[treedepth] # probably the last one is empty then
-                break
+                mydeps = set()
+                for x in self.clientDbconn.retrieveDependencies(idpackage):
+                    match = self.clientDbconn.atomMatch(x)
+                    if match[0] != -1:
+                        mydeps.add(match[0])
 
-        # now filter newtree
-        for count in sorted(tree.keys(), reverse = True):
-            x = 0
-            while x < count:
-                tree[x] -= tree[count]
-                x += 1
+                # now filter them
+                mydeps = [x for x in mydeps if not \
+                    (self.clientDbconn.isSystemPackage(x) or \
+                        self.is_installed_idpackage_in_system_mask(x) )]
+
+                for x in mydeps:
+                    mydepends = self.clientDbconn.retrieveReverseDependencies(x)
+                    if not mydepends:
+                        reverse_deps.add(x)
+
+            for rev_dep in reverse_deps:
+                stack.push(rev_dep)
+            graph.add(idpackage, reverse_deps)
+
+
+        del stack
+        deptree = graph.solve()
+        del graph
 
         if self.xcache:
-            self.Cacher.push(c_hash, (tree, 0))
-        # treeview is used to show deps while
-        # tree is used to run the dependency code.
-        return tree, 0
+            self.Cacher.push(c_hash, deptree)
+        return deptree
 
     def calculate_available_packages(self, use_cache = True):
 
         c_hash = self.get_available_packages_chash()
         if use_cache and self.xcache:
             cached = self.get_available_packages_cache(myhash = c_hash)
-            if cached != None:
+            if cached is not None:
                 return cached
 
         available = []
@@ -1557,7 +1542,7 @@ class CalculatorsMixin:
         db_digest = self.all_repositories_checksum()
         if use_cache and self.xcache:
             cached = self.get_critical_updates_cache(db_digest = db_digest)
-            if cached != None:
+            if cached is not None:
                 return cached
 
         client_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
@@ -1607,7 +1592,7 @@ class CalculatorsMixin:
         if use_cache and self.xcache:
             cached = self.get_world_update_cache(empty_deps = empty_deps,
                 db_digest = db_digest)
-            if cached != None:
+            if cached is not None:
                 return cached
 
 
@@ -1760,7 +1745,7 @@ class CalculatorsMixin:
         )
         if self.xcache:
             cached = self.Cacher.pop(c_hash)
-            if cached != None:
+            if cached is not None:
                 return cached
 
         found = False
@@ -1772,7 +1757,7 @@ class CalculatorsMixin:
             myatom = self.entropyTools.remove_tag(myatom)
             myrev = self.clientDbconn.retrieveRevision(match[0])
             pkg_match = "="+myatom+"~"+str(myrev)
-            if mytag != None:
+            if mytag is not None:
                 pkg_match += "#%s" % (mytag,)
             pkg_unsatisfied = self._get_unsatisfied_dependencies([pkg_match],
                 deep_deps = deep)
@@ -1818,9 +1803,9 @@ class CalculatorsMixin:
         queue = []
         if not idpackages:
             return queue
-        treeview, status = self.generate_depends_tree(idpackages, deep = deep)
-        if status == 0:
-            for x in range(len(treeview))[::-1]: queue.extend(treeview[x])
+        treeview = self.generate_depends_tree(idpackages, deep = deep)
+        for x in sorted(treeview, reverse = True):
+            queue.extend(treeview[x])
         return queue
 
     def get_install_queue(self, matched_atoms, empty_deps, deep_deps,
