@@ -351,8 +351,13 @@ class UrlFetcher:
             if self.__datatransfer > 0:
                 tx_round = int(round(x_delta/self.__datatransfer, 0))
             self.__time_remaining_secs = tx_round
-            self.__time_remaining = \
-                convert_seconds_to_fancy_output(self.__time_remaining_secs)
+
+            if tx_round < 0:
+                self.__time_remaining = "(%s)" % (_("infinite"),)
+            else:
+                self.__time_remaining = \
+                    convert_seconds_to_fancy_output(self.__time_remaining_secs)
+
         except (ValueError, TypeError,):
             self.__time_remaining = "(%s)" % (_("infinite"),)
 
@@ -613,7 +618,8 @@ class MultipleUrlFetcher:
             # printed
             # data_transfer += data.get('data_transfer', 0)
             tr = data.get('time_remaining_secs', 0)
-            if tr > 0: time_remaining += tr
+            if tr > 0:
+                time_remaining += tr
             update_step += data.get('update_step', 0)
 
         elapsed_t = time.time() - self.__startup_time
