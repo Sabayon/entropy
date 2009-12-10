@@ -69,7 +69,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
     @todo: refactoring and generalization needed
     """
 
-    SETTING_KEYS = [ "arch" ]
+    SETTING_KEYS = [ "arch", "on_delete_cascade" ]
 
     class Schema:
 
@@ -98,24 +98,28 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     size VARCHAR,
                     idflags INTEGER,
                     digest VARCHAR,
-                    datecreation VARCHAR
+                    datecreation VARCHAR,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE content (
                     idpackage INTEGER,
                     file VARCHAR,
-                    type VARCHAR
+                    type VARCHAR,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE provide (
                     idpackage INTEGER,
-                    atom VARCHAR
+                    atom VARCHAR,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE dependencies (
                     idpackage INTEGER,
                     iddependency INTEGER,
-                    type INTEGER
+                    type INTEGER,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE dependenciesreference (
@@ -130,7 +134,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                 CREATE TABLE conflicts (
                     idpackage INTEGER,
-                    conflict VARCHAR
+                    conflict VARCHAR,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE mirrorlinks (
@@ -140,7 +145,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                 CREATE TABLE sources (
                     idpackage INTEGER,
-                    idsource INTEGER
+                    idsource INTEGER,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE sourcesreference (
@@ -150,7 +156,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                 CREATE TABLE useflags (
                     idpackage INTEGER,
-                    idflag INTEGER
+                    idflag INTEGER,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE useflagsreference (
@@ -160,7 +167,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                 CREATE TABLE keywords (
                     idpackage INTEGER,
-                    idkeyword INTEGER
+                    idkeyword INTEGER,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE keywordsreference (
@@ -187,12 +195,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                 CREATE TABLE configprotect (
                     idpackage INTEGER PRIMARY KEY,
-                    idprotect INTEGER
+                    idprotect INTEGER,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE configprotectmask (
                     idpackage INTEGER PRIMARY KEY,
-                    idprotect INTEGER
+                    idprotect INTEGER,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE configprotectreference (
@@ -201,34 +211,40 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 );
 
                 CREATE TABLE systempackages (
-                    idpackage INTEGER PRIMARY KEY
+                    idpackage INTEGER PRIMARY KEY,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE injected (
-                    idpackage INTEGER PRIMARY KEY
+                    idpackage INTEGER PRIMARY KEY,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE installedtable (
                     idpackage INTEGER PRIMARY KEY,
                     repositoryname VARCHAR,
-                    source INTEGER
+                    source INTEGER,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE sizes (
                     idpackage INTEGER PRIMARY KEY,
-                    size INTEGER
+                    size INTEGER,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE messages (
                     idpackage INTEGER,
-                    message VARCHAR
+                    message VARCHAR,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE counters (
                     counter INTEGER,
                     idpackage INTEGER,
                     branch VARCHAR,
-                    PRIMARY KEY(idpackage,branch)
+                    PRIMARY KEY(idpackage,branch),
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE trashedcounters (
@@ -237,7 +253,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                 CREATE TABLE eclasses (
                     idpackage INTEGER,
-                    idclass INTEGER
+                    idclass INTEGER,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE eclassesreference (
@@ -248,7 +265,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 CREATE TABLE needed (
                     idpackage INTEGER,
                     idneeded INTEGER,
-                    elfclass INTEGER
+                    elfclass INTEGER,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE neededreference (
@@ -260,7 +278,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     idpackage INTEGER,
                     library VARCHAR,
                     path VARCHAR,
-                    elfclass INTEGER
+                    elfclass INTEGER,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE treeupdates (
@@ -288,7 +307,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                 CREATE TABLE triggers (
                     idpackage INTEGER PRIMARY KEY,
-                    data BLOB
+                    data BLOB,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE entropy_misc_counters (
@@ -317,19 +337,22 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 CREATE TABLE automergefiles (
                     idpackage INTEGER,
                     configfile VARCHAR,
-                    md5 VARCHAR
+                    md5 VARCHAR,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagesignatures (
                     idpackage INTEGER PRIMARY KEY,
                     sha1 VARCHAR,
                     sha256 VARCHAR,
-                    sha512 VARCHAR
+                    sha512 VARCHAR,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE packagespmphases (
                     idpackage INTEGER PRIMARY KEY,
-                    phases VARCHAR
+                    phases VARCHAR,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE entropy_branch_migration (
@@ -409,8 +432,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             check_same_thread = False)
         self.cursor = self.connection.cursor()
 
-        structure_update = False
+        # !!! enable foreign keys pragma !!! do not remove this
+        # otherwise removePackage won't work properly
+        self.cursor.execute("pragma foreign_keys = 1")
 
+        structure_update = False
         if not self.skipChecks:
 
             if not self.entropyTools.is_user_in_entropy_group():
@@ -1393,50 +1419,39 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         with self.__write_mutex:
 
-            r_tup = (idpackage,)*20
-            self.cursor.executescript("""
-                DELETE FROM baseinfo WHERE idpackage = %d;
-                DELETE FROM extrainfo WHERE idpackage = %d;
-                DELETE FROM dependencies WHERE idpackage = %d;
-                DELETE FROM provide WHERE idpackage = %d;
-                DELETE FROM conflicts WHERE idpackage = %d;
-                DELETE FROM configprotect WHERE idpackage = %d;
-                DELETE FROM configprotectmask WHERE idpackage = %d;
-                DELETE FROM sources WHERE idpackage = %d;
-                DELETE FROM useflags WHERE idpackage = %d;
-                DELETE FROM keywords WHERE idpackage = %d;
-                DELETE FROM content WHERE idpackage = %d;
-                DELETE FROM messages WHERE idpackage = %d;
-                DELETE FROM counters WHERE idpackage = %d;
-                DELETE FROM sizes WHERE idpackage = %d;
-                DELETE FROM eclasses WHERE idpackage = %d;
-                DELETE FROM needed WHERE idpackage = %d;
-                DELETE FROM triggers WHERE idpackage = %d;
-                DELETE FROM systempackages WHERE idpackage = %d;
-                DELETE FROM injected WHERE idpackage = %d;
-                DELETE FROM installedtable WHERE idpackage = %d;
-            """ % r_tup)
-
-        # FIXME: move these inside the main SQL script above
-        try:
-            self.removeAutomergefiles(idpackage)
-        except self.dbapi2.OperationalError:
-            pass
-        try:
-            self.removeSignatures(idpackage)
-        except self.dbapi2.OperationalError:
-            pass
-        try:
-            self.removeSpmPhases(idpackage)
-        except self.dbapi2.OperationalError:
-            pass
-        try:
-            self.removeProvidedLibraries(idpackage)
-        except self.dbapi2.OperationalError:
-            pass
-
-        # Remove from dependstable if exists
-        self._removePackageFromDependsTable(idpackage)
+            try:
+                new_way = self.getSetting("on_delete_cascade")
+            except KeyError:
+                new_way = ''
+            # TODO: deprecate this someday
+            if new_way:
+                # this will work thanks to ON DELETE CASCADE !
+                self.cursor.execute(
+                    "DELETE FROM baseinfo WHERE idpackage = (?)", (idpackage,))
+            else:
+                r_tup = (idpackage,)*20
+                self.cursor.executescript("""
+                    DELETE FROM baseinfo WHERE idpackage = %d;
+                    DELETE FROM extrainfo WHERE idpackage = %d;
+                    DELETE FROM dependencies WHERE idpackage = %d;
+                    DELETE FROM provide WHERE idpackage = %d;
+                    DELETE FROM conflicts WHERE idpackage = %d;
+                    DELETE FROM configprotect WHERE idpackage = %d;
+                    DELETE FROM configprotectmask WHERE idpackage = %d;
+                    DELETE FROM sources WHERE idpackage = %d;
+                    DELETE FROM useflags WHERE idpackage = %d;
+                    DELETE FROM keywords WHERE idpackage = %d;
+                    DELETE FROM content WHERE idpackage = %d;
+                    DELETE FROM messages WHERE idpackage = %d;
+                    DELETE FROM counters WHERE idpackage = %d;
+                    DELETE FROM sizes WHERE idpackage = %d;
+                    DELETE FROM eclasses WHERE idpackage = %d;
+                    DELETE FROM needed WHERE idpackage = %d;
+                    DELETE FROM triggers WHERE idpackage = %d;
+                    DELETE FROM systempackages WHERE idpackage = %d;
+                    DELETE FROM injected WHERE idpackage = %d;
+                    DELETE FROM installedtable WHERE idpackage = %d;
+                """ % r_tup)
 
         if do_cleanup:
             # Cleanups if at least one package has been removed
@@ -1452,7 +1467,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         @param mirrorname: mirror name
         @type mirrorname: string
-        """
+        """     
         with self.__write_mutex:
             self.cursor.execute("""
             DELETE FROM mirrorlinks WHERE mirrorname = (?)
@@ -6063,7 +6078,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         self.cursor.executescript("""
             INSERT OR REPLACE INTO settings VALUES ("arch", "%s");
-            """ % (etpConst['currentarch'],)
+            INSERT OR REPLACE INTO settings VALUES ("on_delete_cascade", "%s");
+            """ % (etpConst['currentarch'], "1",)
         )
 
     def _databaseStructureUpdates(self):
@@ -6100,6 +6116,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         if not self._doesTableExist('settings'):
             self._createSettingsTable()
+
+        self._foreignKeySupport()
 
         self.readOnly = old_readonly
         self.connection.commit()
@@ -6580,8 +6598,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         with self.__write_mutex:
             self.cursor.executescript("""
             CREATE TABLE IF NOT EXISTS dependstable
-            ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER );
-            INSERT INTO dependstable VALUES (-1,-1);
+            ( iddependency INTEGER PRIMARY KEY, idpackage INTEGER,
+              FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE );
+            INSERT INTO dependstable VALUES (-1,NULL);
             """)
             if self.indexing:
                 self.cursor.execute("""
@@ -7089,19 +7108,87 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.cursor.execute('UPDATE treeupdates SET digest = "-1"')
             self.commitChanges()
 
-    def _migrateCountersTable(self):
+    def _foreignKeySupport(self):
+
+        # TODO: remove this by 2011/12/31
+
+        tables = ("extrainfo", "dependencies" ,"provide",
+            "conflicts", "configprotect", "configprotectmask", "sources",
+            "useflags", "keywords", "content", "messages", "counters", "sizes",
+            "eclasses", "needed", "triggers", "systempackages", "injected",
+            "installedtable", "automergefiles", "packagesignatures",
+            "packagespmphases", "provided_libs", "dependstable"
+        )
+
+        done_something = False
+        for table in tables:
+            if not self._doesTableExist(table): # wtf
+                continue
+
+            cur = self.cursor.execute("PRAGMA foreign_key_list(%s)" % (table,))
+            foreign_keys = cur.fetchone()
+
+            # print table, "foreign keys", foreign_keys
+            if foreign_keys is not None:
+                continue
+
+            done_something = True
+            # need to add foreign key to this table
+            cur = self.cursor.execute("""SELECT sql FROM sqlite_master
+            WHERE type='table' and name = (?)""", (table,))
+            cur_sql = cur.fetchone()[0]
+
+            # change table name
+            tmp_table = table+"_fk_sup"
+            self.cursor.execute("DROP TABLE IF EXISTS %s" % (tmp_table,))
+
+            bracket_idx = cur_sql.find("(")
+            cur_sql = cur_sql[bracket_idx:]
+            cur_sql = "CREATE TABLE %s %s" % (tmp_table, cur_sql)
+
+            # remove final parenthesis and strip
+            cur_sql = cur_sql[:-1].strip()
+            # add foreign key stmt
+            cur_sql += """,
+            FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE );"""
+            self.cursor.executescript(cur_sql)
+            self._moveContent(table, tmp_table)
+            self._atomicRename(tmp_table, table)
+
+        if done_something:
+            self.cursor.execute("""
+                INSERT OR REPLACE INTO settings
+                VALUES ("on_delete_cascade", "1")
+            """)
+
+    def _moveContent(self, from_table, to_table):
+        self.cursor.execute("""
+            INSERT INTO %s SELECT * FROM %s
+        """ % (to_table, from_table,))
+
+    def _atomicRename(self, from_table, to_table):
         self.cursor.executescript("""
-            DROP TABLE IF EXISTS counterstemp;
-            CREATE TABLE counterstemp (
-                counter INTEGER, idpackage INTEGER, branch VARCHAR,
-                PRIMARY KEY(idpackage,branch)
-            );
-            INSERT INTO counterstemp (counter, idpackage, branch)
-                SELECT counter, idpackage, branch FROM counters;
-            DROP TABLE counters;
-            ALTER TABLE counterstemp RENAME TO counters;
-        """)
-        self.commitChanges()
+            BEGIN TRANSACTION;
+            DROP TABLE IF EXISTS %s;
+            ALTER TABLE %s RENAME TO %s;
+            COMMIT;
+        """ % (to_table, from_table, to_table,))
+
+    def _migrateCountersTable(self):
+        with self.__write_mutex:
+            self.cursor.executescript("""
+                DROP TABLE IF EXISTS counterstemp;
+                CREATE TABLE counterstemp (
+                    counter INTEGER, idpackage INTEGER, branch VARCHAR,
+                    PRIMARY KEY(idpackage,branch),
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                );
+                INSERT INTO counterstemp (counter, idpackage, branch)
+                    SELECT counter, idpackage, branch FROM counters;
+                DROP TABLE counters;
+                ALTER TABLE counterstemp RENAME TO counters;
+            """)
+            self.commitChanges()
 
     def _createSettingsTable(self):
         with self.__write_mutex:
@@ -7122,7 +7209,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     idpackage INTEGER,
                     library VARCHAR,
                     path VARCHAR,
-                    elfclass INTEGER
+                    elfclass INTEGER,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
             """)
 
@@ -7197,7 +7285,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 idpackage INTEGER,
                 library VARCHAR,
                 path VARCHAR,
-                elfclass INTEGER
+                elfclass INTEGER,
+                FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
             );
         """)
 
@@ -7237,7 +7326,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         with self.__write_mutex:
             self.cursor.execute("""
             CREATE TABLE automergefiles ( idpackage INTEGER,
-                configfile VARCHAR, md5 VARCHAR );
+                configfile VARCHAR, md5 VARCHAR,
+                FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE );
             """)
 
     def _createPackagesignaturesTable(self):
@@ -7247,7 +7337,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             idpackage INTEGER PRIMARY KEY,
             sha1 VARCHAR,
             sha256 VARCHAR,
-            sha512 VARCHAR );
+            sha512 VARCHAR,
+            FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE );
             """)
 
     def _createPackagespmphases(self):
@@ -7255,7 +7346,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.cursor.execute("""
                 CREATE TABLE packagespmphases (
                     idpackage INTEGER PRIMARY KEY,
-                    phases VARCHAR
+                    phases VARCHAR,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
             """)
 
@@ -7313,7 +7405,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             return
         self.cursor.executescript("""
             DELETE FROM dependstable;
-            INSERT INTO dependstable VALUES (-1,-1);
+            INSERT INTO dependstable VALUES (-1,NULL);
         """)
 
     def generateReverseDependenciesMetadata(self, verbose = True):
