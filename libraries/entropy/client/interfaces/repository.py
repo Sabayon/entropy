@@ -22,7 +22,7 @@ from entropy.i18n import _
 from entropy.db import dbapi2, EntropyRepository
 from entropy.cache import EntropyCacher
 from entropy.misc import TimeScheduled
-from entropy.const import etpConst, etpCache, const_setup_perms, \
+from entropy.const import etpConst, etpUi, etpCache, const_setup_perms, \
     const_debug_write
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     ConnectionError
@@ -845,9 +845,12 @@ class Repository:
                     idpackage = idpackage, do_commit = False,
                     formatted_content = True
                 )
-            except (self.dbapi2.Error,):
-                self.Entropy.updateProgress(
+            except (self.dbapi2.Error,) as err:
+                if etpUi['debug']:
+                    entropy.tools.print_traceback()
+                self.Entropy.updateProgress("%s: %s" % (
                     blue(_("repository error while adding packages")),
+                    err,),
                     importance = 1, type = "warning",
                     header = "\t", count = (count, maxcount,)
                 )
