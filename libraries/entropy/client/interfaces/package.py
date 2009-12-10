@@ -904,8 +904,17 @@ class Package:
             # normal repositories
             data = dbconn.getPackageData(self.pkgmeta['idpackage'],
                 get_content = False)
+
+            # indexing_override = False : no need to index tables
+            # xcache = False : no need to use on-disk cache
+            # skipChecks = False : creating missing tables is unwanted,
+            # and also no foreign keys update
+            # readOnly = True: no need to open in write mode
             pkg_dbconn = self.Entropy.open_generic_database(
-                self.pkgmeta['pkgdbpath'])
+                self.pkgmeta['pkgdbpath'], skipChecks = True,
+                indexing_override = False, readOnly = True,
+                xcache = False)
+
             # it is safe to consider that package dbs coming from repos
             # contain only one entry
             pkg_idpackage = sorted(pkg_dbconn.listAllIdpackages())[0]
