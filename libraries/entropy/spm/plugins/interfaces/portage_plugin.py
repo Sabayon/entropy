@@ -593,6 +593,11 @@ class PortagePlugin(SpmPlugin):
             )
         )
 
+    def _get_default_virtual_pkg(self, virtual_key):
+        defaults = self.portage.settings.getvirtuals()[virtual_key]
+        if defaults:
+            return defaults[0]
+
     def extract_package_metadata(self, package_file):
         """
         Reimplemented from SpmPlugin class.
@@ -838,6 +843,27 @@ class PortagePlugin(SpmPlugin):
         # conflicts must be a set, which is what is returned
         # by entropy.db.getPackageData
         data['conflicts'] = set(data['conflicts'])
+
+        # old-style virtual support, we need to check if this pkg provides
+        # PROVIDE metadatum which points to itself, if so, this is the
+        # default
+        provide_extended = set()
+        myself_provide_key = data['category'] + "/" + data['name']
+        for provide_key in data['provide']:
+            is_provide_default = 0
+            try:
+                profile_default_provide = self._get_default_virtual_pkg(
+                    provide_key)
+            except KeyError:
+                profile_default_provide = 1 # cant be this
+
+            if profile_default_provide == myself_provide_key:
+                is_provide_default = 1
+
+            provide_extended.add((provide_key, is_provide_default,))
+
+        # this actually changes provide format
+        data['provide_extended'] = provide_extended
 
         # Get License text if possible
         licenses_dir = os.path.join(self.get_setting('PORTDIR'), 'licenses')
