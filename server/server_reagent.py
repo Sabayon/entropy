@@ -161,7 +161,8 @@ def repositories(options):
                     red("%s: " % (_("Cannot match"),) )+bold(package) + \
                     red(" %s " % (_("in"),) )+bold(repo)+red(" %s" % (_("repository"),) )
                 )
-        if not idpackages: return 2
+        if not idpackages:
+            return 2
         dbconn = Entropy.open_server_repository(repo = repo, just_reading = True)
 
         def dep_check_cb(s):
@@ -417,7 +418,39 @@ def update(options):
             print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be added/updated to the add list"),) ))
             items = sorted([x[0] for x in toBeAdded])
             for item in items:
-                print_info(brown("    # ")+red(item))
+                item_txt = purple(item)
+
+
+                # this is a spm atom
+                try:
+                    spm_slot = Entropy.Spm().get_installed_package_metadata(
+                        item, "SLOT")
+                    spm_repo = Entropy.Spm().get_installed_package_metadata(
+                        item, "repository")
+                    spm_key = entropy.tools.dep_getkey(item)
+                except KeyError:
+                    spm_slot = None
+                    spm_key = None
+                    spm_repo = None
+
+                #
+                # inform user about SPM repository sources moves !!
+                #
+                etp_repo = None
+                if spm_repo is not None:
+                    pkg_id, repo_id = Entropy.atom_match(spm_key,
+                        matchSlot = spm_slot)
+                    if repo_id != 1:
+                        repo_db = Entropy.open_server_repository(
+                            repo = repo_id, just_reading = True)
+                        etp_repo = repo_db.retrieveSpmRepository(pkg_id)
+
+                        if etp_repo is None:
+                            etp_repo = "?"
+                        item_txt += ' [%s {%s=>%s}]' % (bold(_("warning")),
+                            darkgreen(etp_repo), blue(spm_repo),)
+
+                print_info(brown("  # ")+item_txt)
 
             if reagentRequestAsk:
                 rc = Entropy.askQuestion(">>   %s (%s %s)" % (
