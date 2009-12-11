@@ -3879,10 +3879,16 @@ class PortagePlugin(SpmPlugin):
             # do not trust ftype
             if os.path.isdir(unpack_obj):
                 continue
-            if not entropy.tools.is_elf_file(unpack_obj):
+            try:
+                if not entropy.tools.is_elf_file(unpack_obj):
+                    continue
+                elf_class = entropy.tools.read_elf_class(unpack_obj)
+            except IOError as err:
+                self.updateProgress("%s: %s => %s" % (
+                    _("IOError while reading"), unpack_obj, repr(err),),
+                    type = "warning")
                 continue
 
-            elf_class = entropy.tools.read_elf_class(unpack_obj)
             provided_libs.add((obj_name, obj, elf_class,))
 
         return provided_libs
