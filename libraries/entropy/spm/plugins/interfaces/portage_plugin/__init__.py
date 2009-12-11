@@ -789,8 +789,8 @@ class PortagePlugin(SpmPlugin):
                     raise
             data[item] = value
 
-        if not portage_entries['spm_repository']: # make sure it's set to None
-            portage_entries['spm_repository'] = None
+        if not data['spm_repository']: # make sure it's set to None
+            data['spm_repository'] = None
 
         # workout pf
         pf_atom = os.path.join(data['category'], data['pf'])
