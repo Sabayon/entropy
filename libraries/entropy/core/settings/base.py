@@ -864,8 +864,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         }
 
         etp_conf = self.__setting_files['system']
-        if not os.path.isfile(etp_conf) and \
-            os.access(etp_conf, os.R_OK):
+        if not (os.path.isfile(etp_conf) and \
+            os.access(etp_conf, os.R_OK)):
             return data
 
         const_secure_config_file(etp_conf)
