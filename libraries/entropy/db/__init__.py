@@ -6382,17 +6382,34 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
     def _doesTableExist(self, table):
 
+        # speed up a bit if we already reported a column as existing
+        c_tup = ("_doesTableExist", table,)
+        cached = self.live_cache.get(c_tup)
+        if cached is not None:
+            return cached
+
         cur = self.cursor.execute("""
         select name from SQLITE_MASTER where type = "table" and name = (?)
         LIMIT 1
         """, (table,))
         rslt = cur.fetchone()
-        return rslt is not None
+        exists = rslt is not None
+        if exists:
+            self.live_cache[c_tup] = True
+        return exists
 
     def _doesColumnInTableExist(self, table, column):
+
+        # speed up a bit if we already reported a column as existing
+        c_tup = ("_doesColumnInTableExist", table, column,)
+        cached = self.live_cache.get(c_tup)
+        if cached is not None:
+            return cached
+
         cur = self.cursor.execute('PRAGMA table_info( %s )' % (table,))
         rslt = (x[1] for x in cur.fetchall())
         if column in rslt:
+            self.live_cache[c_tup] = True
             return True
         return False
 
