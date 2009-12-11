@@ -178,6 +178,7 @@ class PortagePlugin(SpmPlugin):
         'contents': "CONTENTS",
         'counter': "COUNTER",
         'defined_phases': "DEFINED_PHASES",
+        'repository': "repository",
         'pf': "PF",
     }
 
@@ -788,6 +789,8 @@ class PortagePlugin(SpmPlugin):
                     raise
             data[item] = value
 
+        if not portage_entries['spm_repository']: # make sure it's set to None
+            portage_entries['spm_repository'] = None
 
         # workout pf
         pf_atom = os.path.join(data['category'], data['pf'])
@@ -3745,6 +3748,10 @@ class PortagePlugin(SpmPlugin):
             },
             'spm_phases': {
                 'path': PortagePlugin.xpak_entries['defined_phases'],
+                'critical': False,
+            },
+            'spm_repository': {
+                'path': PortagePlugin.xpak_entries['repository'],
                 'critical': False,
             },
         }

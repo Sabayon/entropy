@@ -355,6 +355,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
+                CREATE TABLE packagespmrepository (
+                    idpackage INTEGER PRIMARY KEY,
+                    repository VARCHAR,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                );
+
                 CREATE TABLE entropy_branch_migration (
                     repository VARCHAR,
                     from_branch VARCHAR,
@@ -1340,11 +1346,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 self.insertSignatures(idpackage, sha1, sha256, sha512)
 
             if pkg_data.get('provided_libs'):
-                self.insertProvidedLibraries(idpackage, pkg_data['provided_libs'])
+                self._insertProvidedLibraries(idpackage, pkg_data['provided_libs'])
 
             # spm phases
-            if pkg_data.get('spm_phases') != None:
-                self.insertSpmPhases(idpackage, pkg_data['spm_phases'])
+            if pkg_data.get('spm_phases') is not None:
+                self._insertSpmPhases(idpackage, pkg_data['spm_phases'])
+
+            if pkg_data.get('spm_repository') is not None:
+                self._insertSpmRepository(idpackage, pkg_data['spm_repository'])
 
             # not depending on other tables == no select done
             self.insertContent(idpackage, pkg_data['content'],
@@ -1996,7 +2005,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 INSERT INTO content VALUES (?,?,?)
                 """, [(idpackage, x, content[x],) for x in content])
 
-    def insertProvidedLibraries(self, idpackage, libs_metadata):
+    def _insertProvidedLibraries(self, idpackage, libs_metadata):
         """
         Insert library metadata owned by package.
 
@@ -2033,73 +2042,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.cursor.executemany('INSERT INTO automergefiles VALUES (?,?,?)',
                 [(idpackage, x, y,) for x, y in automerge_data])
 
-    def removeAutomergefiles(self, idpackage):
-        """
-        Remove configuration files automerge information for package.
-        "automerge_data" contains configuration files paths and their belonging
-        md5 hash.
-        This features allows entropy.client to "auto-merge" or "auto-remove"
-        configuration files never touched by user.
-
-        @param idpackage: package indentifier
-        @type idpackage: int
-        """
-        with self.__write_mutex:
-            self.cursor.execute("""
-            DELETE FROM automergefiles WHERE idpackage = (?)
-            """, (idpackage,))
-
-    def removeSignatures(self, idpackage):
-        """
-        Remove extra package file hashes (SHA1, SHA256, SHA512) for package.
-        Entropy package files metadata contains up to 4 hashes:
-        md5, sha1, sha256, sha512
-        While md5 is here for historical reasons (being the first supported)
-        sha1, sha256, sha512 have been added recently and located into a
-        separate database table called "packagesignatures". Such hashes
-        can be not available for older packages, so don't be scared, aliens
-        are not to blame.
-
-        @param idpackage: package indentifier
-        @type idpackage: int
-        """
-        with self.__write_mutex:
-            self.cursor.execute("""
-            DELETE FROM packagesignatures WHERE idpackage = (?)
-            """, (idpackage,))
-
-    def removeProvidedLibraries(self, idpackage):
-        """
-        Remove provided libraries metadata from repository for given package
-        identifier.
-
-        @param idpackage: package indentifier
-        @type idpackage: int
-        """
-        # TODO: remove this in future
-        if not self._doesTableExist('provided_libs'):
-            self._createProvidedLibs()
-
-        with self.__write_mutex:
-            self.cursor.execute("""
-            DELETE FROM provided_libs WHERE idpackage = (?)
-            """, (idpackage,))
-
-    def removeSpmPhases(self, idpackage):
-        """
-        Remove Source Package Manager phases for package.
-        Entropy can call several Source Package Manager (the PM which Entropy
-        relies on) package installation/removal phases.
-        Such phase names are listed here.
-
-        @param idpackage: package indentifier
-        @type idpackage: int
-        """
-        with self.__write_mutex:
-            self.cursor.execute("""
-            DELETE FROM packagespmphases WHERE idpackage = (?)
-            """, (idpackage,))
-
     def insertChangelog(self, category, name, changelog_txt):
         """
         Insert package changelog for package (in this case using category +
@@ -2123,20 +2065,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.cursor.execute("""
             INSERT INTO packagechangelogs VALUES (?,?,?)
             """, (category, name, const_get_buffer()(mytxt),))
-
-    def removeChangelog(self, category, name):
-        """
-        Remove ChangeLog for package (in this case using category + name as key)
-
-        @param category: package category
-        @type category: string
-        @param name: package name
-        @type name: string
-        """
-        with self.__write_mutex:
-            self.cursor.execute("""
-            DELETE FROM packagechangelogs WHERE category = (?) AND name = (?)
-            """, (category, name,))
 
     def insertLicenses(self, licenses_data):
         """
@@ -2282,7 +2210,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             INSERT INTO packagesignatures VALUES (?,?,?,?)
             """, (idpackage, sha1, sha256, sha512))
 
-    def insertSpmPhases(self, idpackage, phases):
+    def _insertSpmPhases(self, idpackage, phases):
         """
         Insert Source Package Manager phases for package.
         Entropy can call several Source Package Manager (the PM which Entropy
@@ -2298,6 +2226,22 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             self.cursor.execute("""
             INSERT INTO packagespmphases VALUES (?,?)
             """, (idpackage, phases,))
+
+    def _insertSpmRepository(self, idpackage, repository):
+        """
+        Insert Source Package Manager repository for package.
+        This medatatum describes the source repository where package has
+        been compiled from.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @param repository: Source Package Manager repository
+        @type repository: string
+        """
+        with self.__write_mutex:
+            self.cursor.execute("""
+            INSERT INTO packagespmrepository VALUES (?,?)
+            """, (idpackage, repository,))
 
     def insertSources(self, idpackage, sources):
         """
@@ -3166,6 +3110,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             'mirrorlinks': [[x,self.retrieveMirrorInfo(x)] for x in mirrornames],
             'signatures': signatures,
             'spm_phases': self.retrieveSpmPhases(idpackage),
+            'spm_repository': self.retrieveSpmRepository(idpackage),
         }
 
         @rtype: dict
@@ -3248,6 +3193,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             'mirrorlinks': [[x, self.retrieveMirrorInfo(x)] for x in mirrornames],
             'signatures': signatures,
             'spm_phases': self.retrieveSpmPhases(idpackage),
+            'spm_repository': self.retrieveSpmRepository(idpackage),
         }
 
         return data
@@ -4006,6 +3952,27 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if spm_phases:
             return spm_phases[0]
 
+    def retrieveSpmRepository(self, idpackage):
+        """
+        Return Source Package Manager source repository used at compile time.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @return: Source Package Manager source repository
+        @rtype: string or None
+        """
+        # FIXME backward compatibility
+        if not self._doesTableExist('packagespmrepository'):
+            return None
+        cur = self.cursor.execute("""
+        SELECT repository FROM packagespmrepository
+        WHERE idpackage = (?) LIMIT 1
+        """, (idpackage,))
+        spm_repo = cur.fetchone()
+
+        if spm_repo:
+            return spm_repo[0]
+
     def retrieveNeededRaw(self, idpackage):
         """
         Return (raw format) "NEEDED" ELF metadata for libraries contained
@@ -4181,12 +4148,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         searchdata = [idpackage]
 
         depstring = ''
-        if deptype != None:
+        if deptype is not None:
             depstring = ' and dependencies.type = (?)'
             searchdata.append(deptype)
 
         excluded_deptypes_query = ""
-        if exclude_deptypes != None:
+        if exclude_deptypes is not None:
             for dep_type in exclude_deptypes:
                 if not isinstance(dep_type, int):
                     # filter out crap
@@ -4745,7 +4712,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 self.generateReverseDependenciesMetadata(verbose = False)
 
         excluded_deptypes_query = ""
-        if exclude_deptypes != None:
+        if exclude_deptypes is not None:
             for dep_type in exclude_deptypes:
                 excluded_deptypes_query += " AND dependencies.type != %s" % (
                     dep_type,)
@@ -6108,6 +6075,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if not self._doesTableExist('packagespmphases'):
             self._createPackagespmphases()
 
+        if not self._doesTableExist('packagespmrepository'):
+            self._createPackagespmrepository()
+
         if not self._doesTableExist('entropy_branch_migration'):
             self._createEntropyBranchMigrationTable()
 
@@ -7351,6 +7321,16 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 );
             """)
 
+    def _createPackagespmrepository(self):
+        with self.__write_mutex:
+            self.cursor.execute("""
+                CREATE TABLE packagespmrepository (
+                    idpackage INTEGER PRIMARY KEY,
+                    repository VARCHAR,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
+                );
+            """)
+
     def _createEntropyBranchMigrationTable(self):
         with self.__write_mutex:
             self.cursor.execute("""
@@ -7915,7 +7895,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             validator_cache = cl_data['masking_validation']['cache']
 
             cached = validator_cache.get((idpackage, reponame, live))
-            if cached != None:
+            if cached is not None:
                 return cached
 
             # avoid memleaks
@@ -8122,17 +8102,17 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         # tag match
         scan_atom = self.entropyTools.remove_tag(scan_atom)
-        if (matchTag is None) and (atomTag != None):
+        if (matchTag is None) and (atomTag is not None):
             matchTag = atomTag
 
         # slot match
         scan_atom = self.entropyTools.remove_slot(scan_atom)
-        if (matchSlot is None) and (atomSlot != None):
+        if (matchSlot is None) and (atomSlot is not None):
             matchSlot = atomSlot
 
         # revision match
         scan_atom = self.entropyTools.remove_entropy_revision(scan_atom)
-        if (matchRevision is None) and (atomRev != None):
+        if (matchRevision is None) and (atomRev is not None):
             matchRevision = atomRev
 
         direction = ''
@@ -8422,7 +8402,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                         if pkgversion[-1] == "*":
                             if dbver.startswith(pkgversion[:-1]):
                                 dbpkginfo.add((idpackage, dbver))
-                        elif (matchRevision != None) and (pkgversion == dbver):
+                        elif (matchRevision is not None) and (pkgversion == dbver):
                             dbrev = self.retrieveRevision(idpackage)
                             if dbrev == matchRevision:
                                 dbpkginfo.add((idpackage, dbver))
@@ -8442,11 +8422,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                         revcmp = 0
                         tagcmp = 0
-                        if matchRevision != None:
+                        if matchRevision is not None:
                             dbrev = self.retrieveRevision(idpackage)
                             revcmp = const_cmp(matchRevision, dbrev)
 
-                        if matchTag != None:
+                        if matchTag is not None:
                             dbtag = self.retrieveVersionTag(idpackage)
                             tagcmp = const_cmp(matchTag, dbtag)
 
@@ -8466,27 +8446,27 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                             if pkgcmp < 0:
                                 dbpkginfo.add((idpackage, dbver))
-                            elif (matchRevision != None) and pkgcmp <= 0 \
+                            elif (matchRevision is not None) and pkgcmp <= 0 \
                                 and revcmp < 0:
                                 dbpkginfo.add((idpackage, dbver))
 
-                            elif (matchTag != None) and tagcmp < 0:
+                            elif (matchTag is not None) and tagcmp < 0:
                                 dbpkginfo.add((idpackage, dbver))
 
                         elif direction == "<":
 
                             if pkgcmp > 0:
                                 dbpkginfo.add((idpackage, dbver))
-                            elif (matchRevision != None) and pkgcmp >= 0 \
+                            elif (matchRevision is not None) and pkgcmp >= 0 \
                                 and revcmp > 0:
                                 dbpkginfo.add((idpackage, dbver))
 
-                            elif (matchTag != None) and tagcmp > 0:
+                            elif (matchTag is not None) and tagcmp > 0:
                                 dbpkginfo.add((idpackage, dbver))
 
                         elif direction == ">=":
 
-                            if (matchRevision != None) and pkgcmp <= 0:
+                            if (matchRevision is not None) and pkgcmp <= 0:
                                 if pkgcmp == 0:
                                     if revcmp <= 0:
                                         dbpkginfo.add((idpackage, dbver))
@@ -8494,12 +8474,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                                     dbpkginfo.add((idpackage, dbver))
                             elif pkgcmp <= 0 and matchRevision is None:
                                 dbpkginfo.add((idpackage, dbver))
-                            elif (matchTag != None) and tagcmp <= 0:
+                            elif (matchTag is not None) and tagcmp <= 0:
                                 dbpkginfo.add((idpackage, dbver))
 
                         elif direction == "<=":
 
-                            if (matchRevision != None) and pkgcmp >= 0:
+                            if (matchRevision is not None) and pkgcmp >= 0:
                                 if pkgcmp == 0:
                                     if revcmp >= 0:
                                         dbpkginfo.add((idpackage, dbver))
@@ -8507,7 +8487,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                                     dbpkginfo.add((idpackage, dbver))
                             elif pkgcmp >= 0 and matchRevision is None:
                                 dbpkginfo.add((idpackage, dbver))
-                            elif (matchTag != None) and tagcmp >= 0:
+                            elif (matchTag is not None) and tagcmp >= 0:
                                 dbpkginfo.add((idpackage, dbver))
 
         else: # just the key
