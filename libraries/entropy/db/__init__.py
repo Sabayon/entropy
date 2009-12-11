@@ -2324,7 +2324,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         my_provides = set()
         for prov in provides:
             if not isinstance(prov, tuple):
-                my_provides.add((prov, False,))
+                my_provides.add((prov, 0,))
             else:
                 my_provides.add(prov)
 
