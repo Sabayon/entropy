@@ -1378,7 +1378,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         plugins = self.get_plugins()
         for plugin_id in sorted(plugins):
             plug_inst = plugins[plugin_id]
-            exec_rc = plug_inst.add_package_hook(self, pkg_data)
+            exec_rc = plug_inst.add_package_hook(self, idpackage, pkg_data)
             if exec_rc:
                 raise RepositoryPluginError(
                     "[add_package_hook] %s: status: %s" % (

@@ -98,12 +98,15 @@ class EntropyRepositoryPlugin(object):
         """
         return 0
 
-    def add_package_hook(self, entropy_repository_instance, package_data):
+    def add_package_hook(self, entropy_repository_instance, idpackage,
+        package_data):
         """
         Called after the addition of a package from EntropyRepository.
 
         @param entropy_repository_instance: EntropyRepository instance
         @type entropy_repository_instance: EntropyRepository
+        @param idpackage: Entropy repository package identifier
+        @type idpackage: int
         @param package_data: package metadata used for insertion
             (see addPackage)
         @type package_data: dict

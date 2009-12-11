@@ -268,7 +268,8 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         # save to disk
         self.dump.dumpobj(rss_name, srv_updates)
 
-    def add_package_hook(self, entropy_repository_instance, package_data):
+    def add_package_hook(self, entropy_repository_instance, idpackage,
+        package_data):
 
         const_debug_write(__name__,
             "ServerEntropyRepositoryPlugin: calling add_package_hook => %s" % (
