@@ -468,6 +468,7 @@ class FetchersMixin:
                                 do_resume = False
                                 continue
                         elif rc == -3:
+                            self.MirrorStatus.add_failing_mirror(uri, 3)
                             error_message += " - %s." % (_("not found"),)
                         elif rc == -4: # timeout!
                             timeout_try_count -= 1
