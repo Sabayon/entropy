@@ -161,6 +161,13 @@ class EntropyRepositoryTest(unittest.TestCase):
         system_pkgs = self.test_db.retrieveSystemPackages()
         self.assertEqual(system_pkgs, set([idpackage]))
 
+    def test_db_insert_compare_match_provide(self):
+        test_pkg = _misc.get_test_entropy_package_provide()
+        data = self.Spm.extract_package_metadata(test_pkg)
+        idpackage, rev, new_data = self.test_db.handlePackage(data)
+        db_data = self.test_db.getPackageData(idpackage)
+        self.assertEqual(new_data, db_data)
+
     def test_db_insert_compare_match(self):
 
         # insert/compare
