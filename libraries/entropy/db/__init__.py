@@ -112,6 +112,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 CREATE TABLE provide (
                     idpackage INTEGER,
                     atom VARCHAR,
+                    is_default INTEGER DEFAULT 0,
                     FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
@@ -1369,7 +1370,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             if pkg_data['trigger']:
                 self.insertTrigger(idpackage, pkg_data['trigger'])
             self.insertConflicts(idpackage, pkg_data['conflicts'])
-            self.insertProvide(idpackage, pkg_data['provide'])
+
+            if "provide_extended" not in pkg_data:
+                self.insertProvide(idpackage, pkg_data['provide'])
+            else:
+                self.insertProvide(idpackage, pkg_data['provide_extended'])
+
             self.insertMessages(idpackage, pkg_data['messages'])
             self.insertConfigProtect(idpackage, idprotect)
             self.insertConfigProtect(idpackage, idprotect_mask, mask = True)
@@ -2313,10 +2319,19 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @param provides: list of atom strings
         @type provides: list
         """
+        # FIXME: backward compat, remove someday
+        # this adds default provide information to set data if not available
+        my_provides = set()
+        for prov in provides:
+            if not isinstance(prov, tuple):
+                my_provides.add((prov, False,))
+            else:
+                my_provides.add(prov)
+
         with self.__write_mutex:
             self.cursor.executemany("""
-            INSERT into provide VALUES (?,?)
-            """, [(idpackage, x,) for x in provides])
+            INSERT into provide VALUES (?,?,?)
+            """, [(idpackage, x, y,) for x, y in my_provides])
 
     def insertNeeded(self, idpackage, neededs):
         """
@@ -3101,7 +3116,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             'eclasses': self.retrieveEclasses(idpackage),
             'needed': self.retrieveNeeded(idpackage, extended = True),
             'provided_libs': self.retrieveProvidedLibraries(idpackage),
-            'provide': self.retrieveProvide(idpackage),
+            'provide': provide (the old provide metadata version)
+            'provide_extended': self.retrieveProvide(idpackage),
             'conflicts': self.retrieveConflicts(idpackage),
             'licensedata': self.retrieveLicensedata(idpackage),
             'content': content,
@@ -3147,6 +3163,15 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             'sha512': sha512,
         }
 
+        provide_extended = self.retrieveProvide(idpackage)
+        # FIXME: backward compat, remove someday
+        old_provide = set()
+        for x in provide_extended:
+            if isinstance(x, tuple):
+                old_provide.add(x[0])
+            else:
+                old_provide.add(x)
+
         data = {
             'atom': atom,
             'name': name,
@@ -3184,7 +3209,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             'eclasses': self.retrieveEclasses(idpackage),
             'needed': self.retrieveNeeded(idpackage, extended = True),
             'provided_libs': self.retrieveProvidedLibraries(idpackage),
-            'provide': self.retrieveProvide(idpackage),
+            'provide': old_provide,
+            'provide_extended': provide_extended,
             'conflicts': self.retrieveConflicts(idpackage),
             'licensedata': self.retrieveLicensedata(idpackage),
             'content': content,
@@ -4073,9 +4099,16 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @return: list (set) of atoms provided by package
         @rtype: set
         """
+        # FIXME: added for backward compatibility, remove someday
+        is_default_str = ',0'
+        if self._doesColumnInTableExist("provide", "is_default"):
+            is_default_str = ',is_default '
+
         cur = self.cursor.execute("""
-        SELECT atom FROM provide WHERE idpackage = (?)
-        """, (idpackage,))
+        SELECT atom%s FROM provide WHERE idpackage = (?)
+        """ % (is_default_str,), (idpackage,))
+        if is_default_str:
+            return set(cur.fetchall())
         return self._cur2set(cur)
 
     def retrieveDependenciesList(self, idpackage):
@@ -5556,7 +5589,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             return self._cur2list(cur)
         return cur.fetchall()
 
-    def searchProvide(self, keyword, slot = None, tag = None, justid = False):
+    def searchProvide(self, keyword, slot = None, tag = None, justid = False,
+        get_extended = False):
         """
         Search in old-style Portage PROVIDE metadata.
         WARNING: this method is deprecated and will be removed someday.
@@ -5569,6 +5603,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type tag: string
         @keyword justid: return list of package identifiers (set())
         @type justid: bool
+        @keyword get_extended: return data in extended format
+        @type get_extended: bool
         @return: found PROVIDE metadata
         @rtype: list or set
         """
@@ -5588,15 +5624,23 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if not justid:
             atomstring = 'baseinfo.atom,'
 
+        get_def_string = ''
+        if get_extended:
+            # FIXME: this small snipped is here for backward compat
+            if self._doesColumnInTableExist("provide", "is_default"):
+                get_def_string = ",provide.is_default"
+            else:
+                get_def_string = ",0"
+
         cur = self.cursor.execute("""
-        SELECT %s baseinfo.idpackage FROM baseinfo,provide 
+        SELECT %s baseinfo.idpackage%s FROM baseinfo,provide 
         WHERE provide.atom = (?) AND 
         provide.idpackage = baseinfo.idpackage %s %s""" % (
-            atomstring, slotstring, tagstring,),
+            atomstring, get_def_string, slotstring, tagstring,),
             searchkeywords
         )
 
-        if justid:
+        if justid and not get_extended:
             return self._cur2list(cur)
         return cur.fetchall()
 
@@ -6059,6 +6103,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         if not self._doesColumnInTableExist("installedtable", "source"):
             self._createInstalledTableSource()
+
+        if not self._doesColumnInTableExist("provide", "is_default"):
+            self._createProvideDefault()
 
         if not self._doesTableExist('packagesets'):
             self._createPackagesetsTable()
@@ -7293,6 +7340,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         ALTER TABLE provided_libs_tmp RENAME TO provided_libs;
         """)
 
+    def _createProvideDefault(self):
+        self.cursor.execute("""
+        ALTER TABLE provide ADD COLUMN is_default INTEGER DEFAULT 0
+        """)
+
     def _createInstalledTableSource(self):
         with self.__write_mutex:
             self.cursor.execute("""
@@ -8303,12 +8355,21 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         # if it's a PROVIDE, search with searchProvide
         # there's no package with that name
         if (not results) and (mypkgcat == "virtual"):
-            virtuals = self.searchProvide(pkgkey, justid = True)
+
+            virtuals = self.searchProvide(pkgkey, justid = True,
+                get_extended = True)
             if virtuals:
                 virtual = True
-                mypkgname = self.retrieveName(virtuals[0])
-                mypkgcat = self.retrieveCategory(virtuals[0])
-                results = virtuals
+                flat_virtuals = []
+                default_virtual = virtuals[0][0]
+                # look for default old-style virtual
+                for v_id, v_is_default in virtuals:
+                    if v_is_default == 1:
+                        default_virtual = v_id
+                    flat_virtuals.append(v_id)
+                mypkgname = self.retrieveName(default_virtual)
+                mypkgcat = self.retrieveCategory(default_virtual)
+                results = flat_virtuals
 
 
         if not results: # nothing found
