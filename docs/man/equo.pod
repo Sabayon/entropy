@@ -562,6 +562,30 @@ show packages owning the provided slot
 
 show packages owning the provided tags
 
+=item B<graph>
+
+show direct depdendencies tree for provided installable atoms
+
+=over
+
+=item B<--complete>
+
+include system packages and circularity information
+
+=back
+
+=item B<revgraph>
+
+show reverse depdendencies tree for provided installed atoms
+
+=over
+
+=item B<--complete>
+
+include system packages and circularity information
+
+=back
+
 =item B<--verbose (-v)>
 
 show more details

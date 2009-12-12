@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "EQUO 1"
-.TH EQUO 1 "2009-11-11" "perl v5.8.8" "Entropy"
+.TH EQUO 1 "2009-12-12" "perl v5.8.8" "Entropy"
 .SH "NAME"
 \&\fBequo\fR \- Official Sabayon Linux Package Manager Client
 .SH "SYNOPSIS"
@@ -567,6 +567,26 @@ show packages owning the provided slot
 .IP "\fBtags\fR" 4
 .IX Item "tags"
 show packages owning the provided tags
+.IP "\fBgraph\fR" 4
+.IX Item "graph"
+show direct depdendencies tree for provided installable atoms
+.RS 4
+.IP "\fB\-\-complete\fR" 4
+.IX Item "--complete"
+include system packages and circularity information
+.RE
+.RS 4
+.RE
+.IP "\fBrevgraph\fR" 4
+.IX Item "revgraph"
+show reverse depdendencies tree for provided installed atoms
+.RS 4
+.IP "\fB\-\-complete\fR" 4
+.IX Item "--complete"
+include system packages and circularity information
+.RE
+.RS 4
+.RE
 .IP "\fB\-\-verbose (\-v)\fR" 4
 .IX Item "--verbose (-v)"
 show more details
