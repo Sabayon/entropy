@@ -43,7 +43,7 @@
     <td width="100%">
       <span class="breadcrumbs">
         <a href="entropy-module.html">Package&nbsp;entropy</a> ::
-        Module&nbsp;transceivers
+        Package&nbsp;transceivers
       </span>
     </td>
     <td>
@@ -53,8 +53,8 @@
     </td>
   </tr>
 </table>
-<!-- ==================== MODULE DESCRIPTION ==================== -->
-<h1 class="epydoc">Module transceivers</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.transceivers-pysrc.html">source&nbsp;code</a></span></p>
+<!-- ==================== PACKAGE DESCRIPTION ==================== -->
+<h1 class="epydoc">Package transceivers</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.transceivers-pysrc.html">source&nbsp;code</a></span></p>
 <hr />
 <div class="fields">      <p><strong>Author:</strong>
         Fabio Erculiani &lt;lxnay@sabayonlinux.org&gt;
@@ -69,7 +69,37 @@
         GPL-2
         <p><b>Entropy base transceivers module</b>.</p>
       </p>
-</div><!-- ==================== CLASSES ==================== -->
+</div><!-- ==================== SUBMODULES ==================== -->
+<a name="section-Submodules"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Submodules</span></td>
+</tr>
+  <tr><td class="summary">
+  <ul class="nomargin">
+    <li> <strong class="uidlink"><a href="entropy.transceivers.uri_handlers-module.html">entropy.transceivers.uri_handlers</a></strong>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.transceivers.uri_handlers.plugins-module.html">entropy.transceivers.uri_handlers.plugins</a></strong>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.transceivers.uri_handlers.plugins.factory-module.html">entropy.transceivers.uri_handlers.plugins.factory</a></strong>    </li>
+    <li> <strong class="uidlink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces-module.html">entropy.transceivers.uri_handlers.plugins.interfaces</a></strong>
+    <ul>
+    <li> <strong class="uidlink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ftp_plugin-module.html">entropy.transceivers.uri_handlers.plugins.interfaces.ftp_plugin</a></strong>    </li>
+    <li> <strong class="uidlink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-module.html">entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin</a></strong>    </li>
+    </ul>
+    </li>
+    </ul>
+    </li>
+    <li> <strong class="uidlink"><a href="entropy.transceivers.uri_handlers.skel-module.html">entropy.transceivers.uri_handlers.skel</a></strong>    </li>
+    </ul>
+    </li>
+  </ul></td></tr>
+</table>
+
+<br />
+<!-- ==================== CLASSES ==================== -->
 <a name="section-Classes"></a>
 <table class="summary" border="1" cellpadding="3"
        cellspacing="0" width="100%" bgcolor="white">
@@ -81,21 +111,7 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a href="entropy.transceivers.UrlFetcher-class.html" class="summary-name">UrlFetcher</a>
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="entropy.transceivers.MultipleUrlFetcher-class.html" class="summary-name">MultipleUrlFetcher</a>
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-        <a href="entropy.transceivers.FtpInterface-class.html" class="summary-name">FtpInterface</a>
+        <a href="entropy.transceivers.EntropyTransceiver-class.html" class="summary-name">EntropyTransceiver</a>
     </td>
   </tr>
 </table>
@@ -111,10 +127,58 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'entropy'"><code class="variable-quote">'</code><code class="variable-string">entropy</code><code class="variable-quote">'</code></code>
+        <a href="entropy.transceivers-module.html#available_plugins" class="summary-name">available_plugins</a> = <code title="{'ftp': &lt;class 'entropy.transceivers.uri_handlers.plugins.interfaces.f\
+tp_plugin.EntropyFtpUriHandler'&gt;,
+ 'ssh': &lt;class 'entropy.transceivers.uri_handlers.plugins.interfaces.s\
+sh_plugin.EntropySshUriHandler'&gt;}"><code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ftp</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class 'entropy.transceivers.uri_h<code class="variable-ellipsis">...</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="__package__"></a><span class="summary-name">__package__</span> = <code title="'entropy.transceivers'"><code class="variable-quote">'</code><code class="variable-string">entropy.transceivers</code><code class="variable-quote">'</code></code>
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="plug_id"></a><span class="summary-name">plug_id</span> = <code title="'ssh'"><code class="variable-quote">'</code><code class="variable-string">ssh</code><code class="variable-quote">'</code></code>
     </td>
   </tr>
 </table>
+<!-- ==================== VARIABLES DETAILS ==================== -->
+<a name="section-VariablesDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Variables Details</span></td>
+</tr>
+</table>
+<a name="available_plugins"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <h3 class="epydoc">available_plugins</h3>
+  
+  <dl class="fields">
+  </dl>
+  <dl class="fields">
+    <dt>Value:</dt>
+      <dd><table><tr><td><pre class="variable">
+<code class="variable-group">{</code><code class="variable-quote">'</code><code class="variable-string">ftp</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class 'entropy.transceivers.uri_handlers.plugins.interfaces.f<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+tp_plugin.EntropyFtpUriHandler'&gt;<code class="variable-op">,</code>
+ <code class="variable-quote">'</code><code class="variable-string">ssh</code><code class="variable-quote">'</code><code class="variable-op">: </code>&lt;class 'entropy.transceivers.uri_handlers.plugins.interfaces.s<span class="variable-linewrap"><img src="crarr.png" alt="\" /></span>
+sh_plugin.EntropySshUriHandler'&gt;<code class="variable-group">}</code>
+</pre></td></tr></table>
+</dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
        bgcolor="#a0c0ff" cellspacing="0">
@@ -146,7 +210,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:27 2009
+    Generated by Epydoc 3.0.1 on Sun Dec 13 00:16:16 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

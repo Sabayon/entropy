@@ -59,7 +59,21 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class BasicPamAuthenticator</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.services.interfaces-pysrc.html#SocketHost.BasicPamAuthenticator">source&nbsp;code</a></span></p>
 <center>
-
+<center>  <map id="uml_class_diagram_for_entropy__86" name="uml_class_diagram_for_entropy__86">
+<area shape="rect" id="node327" href="entropy.tools-module.html" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator.entropyTools" alt="" coords="17,145,307,164"/>
+<area shape="rect" id="node327" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#__init__" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator.__init__" alt="" coords="17,167,307,185"/>
+<area shape="rect" id="node327" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#docmd_login" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator.docmd_login" alt="" coords="17,185,307,204"/>
+<area shape="rect" id="node327" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#docmd_userdata" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator.docmd_userdata" alt="" coords="17,204,307,223"/>
+<area shape="rect" id="node327" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#docmd_logout" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator.docmd_logout" alt="" coords="17,223,307,241"/>
+<area shape="rect" id="node327" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#hide_login_data" title="Given Entropy SocketHost RPC login command in list form, hide password data (which is going to be stored in log file)." alt="" coords="17,241,307,260"/>
+<area shape="rect" id="node1" href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html" title="entropy.services.interfaces.SocketHost.BasicPamAuthenticator" alt="" coords="5,121,317,266"/>
+<area shape="rect" id="node328" href="entropy.services.skel.SocketAuthenticator-class.html#set_session" title="Set Entropy SocketHost connection session id." alt="" coords="52,39,273,57"/>
+<area shape="rect" id="node328" href="entropy.services.skel.SocketAuthenticator-class.html#set_exc_permissions" title="Set execution permissions (setuid, setgid) for the running process." alt="" coords="52,57,273,76"/>
+<area shape="rect" id="node328" href="entropy.services.skel.SocketAuthenticator-class.html#terminate_instance" title="This function is called when the Authenticator is going to be destroyed." alt="" coords="52,76,273,95"/>
+<area shape="rect" id="node2" href="entropy.services.skel.SocketAuthenticator-class.html" title="Base class for Entropy SocketHost RPC authentication." alt="" coords="40,6,285,101"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__86.gif" alt='' usemap="#uml_class_diagram_for_entropy__86" ismap="ismap" class="graph-without-title" />
+</center>
 </center>
 <hr />
 <!-- ==================== INSTANCE METHODS ==================== -->
@@ -141,25 +155,6 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#set_exc_permissions" class="summary-sig-name">set_exc_permissions</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">uid</span>,
-        <span class="summary-sig-arg">gid</span>)</span><br />
-      Set execution permissions (setuid, setgid) for the running process.</td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">list</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -177,28 +172,12 @@
       
     </td>
   </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#terminate_instance" class="summary-sig-name">terminate_instance</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      This function is called when the Authenticator is going to be 
-      destroyed.</td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.services.skel.SocketAuthenticator-class.html">skel.SocketAuthenticator</a></code></b>:
-      <code><a href="entropy.services.skel.SocketAuthenticator-class.html#set_session">set_session</a></code>
+      <code><a href="entropy.services.skel.SocketAuthenticator-class.html#set_exc_permissions">set_exc_permissions</a></code>,
+      <code><a href="entropy.services.skel.SocketAuthenticator-class.html#set_session">set_session</a></code>,
+      <code><a href="entropy.services.skel.SocketAuthenticator-class.html#terminate_instance">terminate_instance</a></code>
       </p>
     </td>
   </tr>
@@ -238,37 +217,6 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="set_exc_permissions"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_exc_permissions</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">uid</span>,
-        <span class="sig-arg">gid</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    >&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Set execution permissions (setuid, setgid) for the running 
-  process.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>uid</code></strong> - user id</li>
-        <li><strong class="pname"><code>gid</code></strong> - group id</li>
-    </ul></dd>
-    <dt>Overrides:
-        <a href="entropy.services.skel.SocketAuthenticator-class.html#set_exc_permissions">skel.SocketAuthenticator.set_exc_permissions</a>
-        <dd><em class="note">(inherited documentation)</em></dd>
-    </dt>
-  </dl>
-</td></tr></table>
-</div>
 <a name="hide_login_data"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -296,32 +244,6 @@
         <dd>filtered list</dd>
     <dt>Overrides:
         <a href="entropy.services.skel.SocketAuthenticator-class.html#hide_login_data">skel.SocketAuthenticator.hide_login_data</a>
-        <dd><em class="note">(inherited documentation)</em></dd>
-    </dt>
-  </dl>
-</td></tr></table>
-</div>
-<a name="terminate_instance"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">terminate_instance</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    >&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>This function is called when the Authenticator is going to be 
-  destroyed. You can reimplement this to execute arbitrary code (for eg. 
-  terminate a database connection). NOTE: there is no need to reimplement 
-  this if you are not using any fancy stuff.</p>
-  <dl class="fields">
-    <dt>Overrides:
-        <a href="entropy.services.skel.SocketAuthenticator-class.html#terminate_instance">skel.SocketAuthenticator.terminate_instance</a>
         <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
@@ -359,7 +281,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:31 2009
+    Generated by Epydoc 3.0.1 on Sun Dec 13 00:16:23 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -57,7 +57,27 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class EntropyCacher</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.cache-pysrc.html#EntropyCacher">source&nbsp;code</a></span></p>
 <center>
-
+<center>  <map id="uml_class_diagram_for_entropy_" name="uml_class_diagram_for_entropy_">
+<area shape="rect" id="node0" href="entropy.dump-module.html" title="entropy.cache.EntropyCacher.dumpTools" alt="" coords="17,127,232,145"/>
+<area shape="rect" id="node0" href="entropy.tools-module.html" title="entropy.cache.EntropyCacher.entropyTools" alt="" coords="17,145,232,164"/>
+<area shape="rect" id="node0" href="javascript:void(0);" title="entropy.cache.EntropyCacher.copy" alt="" coords="17,164,232,183"/>
+<area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#__singleton__" title="entropy.cache.EntropyCacher.__singleton__" alt="" coords="17,183,232,201"/>
+<area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#init_singleton" title="Singleton overloaded method." alt="" coords="17,204,232,223"/>
+<area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#__del__" title="entropy.cache.EntropyCacher.__del__" alt="" coords="17,223,232,241"/>
+<area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#start" title="This is the method used to start the asynchronous cache writer but also the whole cacher." alt="" coords="17,241,232,260"/>
+<area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#is_started" title="Return whether start is called or not." alt="" coords="17,260,232,279"/>
+<area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#stop" title="This method stops the execution of the cacher, which won&#39;t accept cache &#160;writes anymore." alt="" coords="17,279,232,297"/>
+<area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#sync" title="This method can be called anytime and forces the instance to flush all the &#160;cache writes queued to disk." alt="" coords="17,297,232,316"/>
+<area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#discard" title="This method makes buffered cache to be discarded synchronously." alt="" coords="17,316,232,335"/>
+<area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#push" title="This is the place where data is either added to the write queue or written &#160;to disk (if async == False) only and only if start() method has been &#160;called." alt="" coords="17,335,232,353"/>
+<area shape="rect" id="node0" href="entropy.cache.EntropyCacher-class.html#pop" title="This is the place where data is retrieved from cache." alt="" coords="17,353,232,372"/>
+<area shape="rect" id="node1" href="entropy.cache.EntropyCacher-class.html" title="Entropy asynchronous and synchronous cache writer and reader." alt="" coords="5,102,243,378"/>
+<area shape="rect" id="node1" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="27,39,224,57"/>
+<area shape="rect" id="node1" href="entropy.core.Singleton-class.html#__init__" title="This is a fake method, necessary for Python 3." alt="" coords="27,57,224,76"/>
+<area shape="rect" id="node2" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton." alt="" coords="15,6,236,82"/>
+</map>
+  <img src="uml_class_diagram_for_entropy_.gif" alt='' usemap="#uml_class_diagram_for_entropy_" ismap="ismap" class="graph-without-title" />
+</center>
 </center>
 <hr />
 <p>Entropy asynchronous and synchronous cache writer and reader. This 
@@ -265,9 +285,7 @@
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
-      <code><a href="entropy.core.Singleton-class.html#__init__">__init__</a></code>,
-      <code><a href="entropy.core.Singleton-class.html#is_destroyed">is_destroyed</a></code>,
-      <code><a href="entropy.core.Singleton-class.html#is_singleton">is_singleton</a></code>
+      <code><a href="entropy.core.Singleton-class.html#__init__">__init__</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -313,7 +331,7 @@
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="__singleton__"></a><span class="summary-name">__singleton__</span> = <code title="&lt;entropy.cache.EntropyCacher object at 0x11b1b10&gt;">&lt;entropy.cache.EntropyCacher object at 0x11b1b10&gt;</code>
+        <a name="__singleton__"></a><span class="summary-name">__singleton__</span> = <code title="&lt;entropy.cache.EntropyCacher object at 0x11015d0&gt;">&lt;entropy.cache.EntropyCacher object at 0x11015d0&gt;</code>
     </td>
   </tr>
 </table>
@@ -572,7 +590,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:28 2009
+    Generated by Epydoc 3.0.1 on Sun Dec 13 00:16:16 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

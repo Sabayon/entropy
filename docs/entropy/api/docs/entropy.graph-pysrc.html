@@ -1,0 +1,988 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.graph</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        Module&nbsp;graph
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<h1 class="epydoc">Source Code for <a href="entropy.graph-module.html">Module entropy.graph</a></h1>
+<pre class="py-src">
+<a name="L1"></a><tt class="py-lineno">  1</tt>  <tt class="py-line"><tt class="py-comment"># -*- coding: utf-8 -*-</tt> </tt>
+<a name="L2"></a><tt class="py-lineno">  2</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L3"></a><tt class="py-lineno">  3</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L4"></a><tt class="py-lineno">  4</tt>  <tt class="py-line"><tt class="py-docstring">    @author: Fabio Erculiani &lt;lxnay@sabayonlinux.org&gt;</tt> </tt>
+<a name="L5"></a><tt class="py-lineno">  5</tt>  <tt class="py-line"><tt class="py-docstring">    @contact: lxnay@sabayonlinux.org</tt> </tt>
+<a name="L6"></a><tt class="py-lineno">  6</tt>  <tt class="py-line"><tt class="py-docstring">    @copyright: Fabio Erculiani</tt> </tt>
+<a name="L7"></a><tt class="py-lineno">  7</tt>  <tt class="py-line"><tt class="py-docstring">    @copyright: Vincenzo Di Massa</tt> </tt>
+<a name="L8"></a><tt class="py-lineno">  8</tt>  <tt class="py-line"><tt class="py-docstring">    @copyright: </tt> </tt>
+<a name="L9"></a><tt class="py-lineno">  9</tt>  <tt class="py-line"><tt class="py-docstring">    @license: GPL-2</tt> </tt>
+<a name="L10"></a><tt class="py-lineno"> 10</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L11"></a><tt class="py-lineno"> 11</tt>  <tt class="py-line"><tt class="py-docstring">    Entropy Graph implementation.</tt> </tt>
+<a name="L12"></a><tt class="py-lineno"> 12</tt>  <tt class="py-line"><tt class="py-docstring">    This module implements a Graph object and a topological sorting algorithm</tt> </tt>
+<a name="L13"></a><tt class="py-lineno"> 13</tt>  <tt class="py-line"><tt class="py-docstring">    based on Tarjan's.</tt> </tt>
+<a name="L14"></a><tt class="py-lineno"> 14</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L15"></a><tt class="py-lineno"> 15</tt>  <tt class="py-line"><tt class="py-docstring">"""</tt> </tt>
+<a name="L16"></a><tt class="py-lineno"> 16</tt>  <tt class="py-line"><tt class="py-keyword">from</tt> <tt id="link-0" class="py-name" targets="Package entropy=entropy-module.html"><a title="entropy" class="py-name" href="#" onclick="return doclink('link-0', 'entropy', 'link-0');">entropy</a></tt><tt class="py-op">.</tt><tt id="link-1" class="py-name" targets="Module entropy.client.misc=entropy.client.misc-module.html,Module entropy.misc=entropy.misc-module.html"><a title="entropy.client.misc
+entropy.misc" class="py-name" href="#" onclick="return doclink('link-1', 'misc', 'link-1');">misc</a></tt> <tt class="py-keyword">import</tt> <tt id="link-2" class="py-name" targets="Class entropy.misc.Lifo=entropy.misc.Lifo-class.html"><a title="entropy.misc.Lifo" class="py-name" href="#" onclick="return doclink('link-2', 'Lifo', 'link-2');">Lifo</a></tt> </tt>
+<a name="L17"></a><tt class="py-lineno"> 17</tt>  <tt class="py-line"> </tt>
+<a name="GraphNode"></a><div id="GraphNode-def"><a name="L18"></a><tt class="py-lineno"> 18</tt> <a class="py-toggle" href="#" id="GraphNode-toggle" onclick="return toggle('GraphNode');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="entropy.graph.GraphNode-class.html">GraphNode</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphNode-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="GraphNode-expanded"><a name="L19"></a><tt class="py-lineno"> 19</tt>  <tt class="py-line"> </tt>
+<a name="L20"></a><tt class="py-lineno"> 20</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L21"></a><tt class="py-lineno"> 21</tt>  <tt class="py-line"><tt class="py-docstring">    This class represents an item in the Graph. Inside this class you can find</tt> </tt>
+<a name="L22"></a><tt class="py-lineno"> 22</tt>  <tt class="py-line"><tt class="py-docstring">    the GraphNode stored content (through the item() method) and links between</tt> </tt>
+<a name="L23"></a><tt class="py-lineno"> 23</tt>  <tt class="py-line"><tt class="py-docstring">    other GraphNode objects.</tt> </tt>
+<a name="L24"></a><tt class="py-lineno"> 24</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L25"></a><tt class="py-lineno"> 25</tt>  <tt class="py-line"> </tt>
+<a name="GraphNode.__init__"></a><div id="GraphNode.__init__-def"><a name="L26"></a><tt class="py-lineno"> 26</tt> <a class="py-toggle" href="#" id="GraphNode.__init__-toggle" onclick="return toggle('GraphNode.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.GraphNode-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">item</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphNode.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GraphNode.__init__-expanded"><a name="L27"></a><tt class="py-lineno"> 27</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L28"></a><tt class="py-lineno"> 28</tt>  <tt class="py-line"><tt class="py-docstring">        GraphNode constructor.</tt> </tt>
+<a name="L29"></a><tt class="py-lineno"> 29</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L30"></a><tt class="py-lineno"> 30</tt>  <tt class="py-line"><tt class="py-docstring">        @param item: the object it is intended to be stored inside this graph</tt> </tt>
+<a name="L31"></a><tt class="py-lineno"> 31</tt>  <tt class="py-line"><tt class="py-docstring">        node.</tt> </tt>
+<a name="L32"></a><tt class="py-lineno"> 32</tt>  <tt class="py-line"><tt class="py-docstring">        @type item: any Python object.</tt> </tt>
+<a name="L33"></a><tt class="py-lineno"> 33</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L34"></a><tt class="py-lineno"> 34</tt>  <tt class="py-line">        <tt class="py-name">object</tt><tt class="py-op">.</tt><tt id="link-3" class="py-name" targets="Method entropy.client.interfaces.client.ClientSystemSettingsPlugin.__init__()=entropy.client.interfaces.client.ClientSystemSettingsPlugin-class.html#__init__,Method entropy.client.interfaces.db.ClientEntropyRepositoryPlugin.__init__()=entropy.client.interfaces.db.ClientEntropyRepositoryPlugin-class.html#__init__,Method entropy.client.interfaces.loaders.LoadersMixin.__init__()=entropy.client.interfaces.loaders.LoadersMixin-class.html#__init__,Method entropy.client.interfaces.package.Package.__init__()=entropy.client.interfaces.package.Package-class.html#__init__,Method entropy.client.interfaces.qa.UGCErrorReportInterface.__init__()=entropy.client.interfaces.qa.UGCErrorReportInterface-class.html#__init__,Method entropy.client.interfaces.repository.Repository.__init__()=entropy.client.interfaces.repository.Repository-class.html#__init__,Method entropy.client.interfaces.trigger.Trigger.EntropyPySandbox.__init__()=entropy.client.interfaces.trigger.Trigger.EntropyPySandbox-class.html#__init__,Method entropy.client.interfaces.trigger.Trigger.EntropyShSandbox.__init__()=entropy.client.interfaces.trigger.Trigger.EntropyShSandbox-class.html#__init__,Method entropy.client.interfaces.trigger.Trigger.__init__()=entropy.client.interfaces.trigger.Trigger-class.html#__init__,Method entropy.client.mirrors.StatusInterface.__init__()=entropy.client.mirrors.StatusInterface-class.html#__init__,Method entropy.client.misc.FileUpdates.__init__()=entropy.client.misc.FileUpdates-class.html#__init__,Method entropy.client.services.system.commands.Client.__init__()=entropy.client.services.system.commands.Client-class.html#__init__,Method entropy.client.services.system.interfaces.Client.__init__()=entropy.client.services.system.interfaces.Client-class.html#__init__,Method entropy.client.services.system.methods.BaseMixin.__init__()=entropy.client.services.system.methods.BaseMixin-class.html#__init__,Method entropy.client.services.system.methods.Repository.__init__()=entropy.client.services.system.methods.Repository-class.html#__init__,Method entropy.client.services.ugc.commands.Base.__init__()=entropy.client.services.ugc.commands.Base-class.html#__init__,Method entropy.client.services.ugc.commands.Client.__init__()=entropy.client.services.ugc.commands.Client-class.html#__init__,Method entropy.client.services.ugc.interfaces.Cache.__init__()=entropy.client.services.ugc.interfaces.Cache-class.html#__init__,Method entropy.client.services.ugc.interfaces.Client.__init__()=entropy.client.services.ugc.interfaces.Client-class.html#__init__,Method entropy.core.EntropyPluginFactory.__init__()=entropy.core.EntropyPluginFactory-class.html#__init__,Method entropy.core.EntropyPluginStore.__init__()=entropy.core.EntropyPluginStore-class.html#__init__,Method entropy.core.Singleton.__init__()=entropy.core.Singleton-class.html#__init__,Method entropy.core.settings.plugins.skel.SystemSettingsPlugin.__init__()=entropy.core.settings.plugins.skel.SystemSettingsPlugin-class.html#__init__,Method entropy.db.EntropyRepository.__init__()=entropy.db.EntropyRepository-class.html#__init__,Method entropy.db.plugin_store.EntropyRepositoryPluginStore.__init__()=entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#__init__,Method entropy.exceptions.EntropyException.__init__()=entropy.exceptions.EntropyException-class.html#__init__,Method entropy.fetchers.MultipleUrlFetcher.__init__()=entropy.fetchers.MultipleUrlFetcher-class.html#__init__,Method entropy.fetchers.UrlFetcher.__init__()=entropy.fetchers.UrlFetcher-class.html#__init__,Method entropy.graph.Graph.__init__()=entropy.graph.Graph-class.html#__init__,Method entropy.misc.Callable.__init__()=entropy.misc.Callable-class.html#__init__,Method entropy.misc.EmailSender.__init__()=entropy.misc.EmailSender-class.html#__init__,Method entropy.misc.EntropyGeoIP.__init__()=entropy.misc.EntropyGeoIP-class.html#__init__,Method entropy.misc.Lifo.__init__()=entropy.misc.Lifo-class.html#__init__,Method entropy.misc.LogFile.__init__()=entropy.misc.LogFile-class.html#__init__,Method entropy.misc.MultipartPostHandler.__init__()=entropy.misc.MultipartPostHandler-class.html#__init__,Method entropy.misc.ParallelTask.__init__()=entropy.misc.ParallelTask-class.html#__init__,Method entropy.misc.RSS.__init__()=entropy.misc.RSS-class.html#__init__,Method entropy.misc.TimeScheduled.__init__()=entropy.misc.TimeScheduled-class.html#__init__,Method entropy.qa.ErrorReportInterface.__init__()=entropy.qa.ErrorReportInterface-class.html#__init__,Method entropy.qa.QAEntropyRepositoryPlugin.__init__()=entropy.qa.QAEntropyRepositoryPlugin-class.html#__init__,Method entropy.qa.QAInterface.__init__()=entropy.qa.QAInterface-class.html#__init__,Method entropy.security.System.__init__()=entropy.security.System-class.html#__init__,Method entropy.server.interfaces.main.ServerEntropyRepositoryPlugin.__init__()=entropy.server.interfaces.main.ServerEntropyRepositoryPlugin-class.html#__init__,Method entropy.server.interfaces.mirrors.Server.__init__()=entropy.server.interfaces.mirrors.Server-class.html#__init__,Method entropy.server.transceivers.TransceiverServerHandler.__init__()=entropy.server.transceivers.TransceiverServerHandler-class.html#__init__,Method entropy.services.auth_interfaces.phpBB3Auth.__init__()=entropy.services.auth_interfaces.phpBB3Auth-class.html#__init__,Method entropy.services.authenticators.phpBB3.__init__()=entropy.services.authenticators.phpBB3-class.html#__init__,Method entropy.services.commands.phpBB3.__init__()=entropy.services.commands.phpBB3-class.html#__init__,Method entropy.services.interfaces.SocketHost.BasicPamAuthenticator.__init__()=entropy.services.interfaces.SocketHost.BasicPamAuthenticator-class.html#__init__,Method entropy.services.interfaces.SocketHost.BuiltInCommands.__init__()=entropy.services.interfaces.SocketHost.BuiltInCommands-class.html#__init__,Method entropy.services.interfaces.SocketHost.CommandProcessor.__init__()=entropy.services.interfaces.SocketHost.CommandProcessor-class.html#__init__,Method entropy.services.interfaces.SocketHost.HostServerMixin.ConnWrapper.__init__()=entropy.services.interfaces.SocketHost.HostServerMixin.ConnWrapper-class.html#__init__,Method entropy.services.interfaces.SocketHost.HostServerMixin.__init__()=entropy.services.interfaces.SocketHost.HostServerMixin-class.html#__init__,Method entropy.services.interfaces.SocketHost.RequestHandler.__init__()=entropy.services.interfaces.SocketHost.RequestHandler-class.html#__init__,Method entropy.services.interfaces.SocketHost.__init__()=entropy.services.interfaces.SocketHost-class.html#__init__,Method entropy.services.repository.commands.Repository.__init__()=entropy.services.repository.commands.Repository-class.html#__init__,Method entropy.services.repository.interfaces.Server.ServiceInterface.__init__()=entropy.services.repository.interfaces.Server.ServiceInterface-class.html#__init__,Method entropy.services.repository.interfaces.Server.__init__()=entropy.services.repository.interfaces.Server-class.html#__init__,Method entropy.services.skel.Authenticator.__init__()=entropy.services.skel.Authenticator-class.html#__init__,Method entropy.services.skel.RemoteDatabase.__init__()=entropy.services.skel.RemoteDatabase-class.html#__init__,Method entropy.services.skel.SocketAuthenticator.__init__()=entropy.services.skel.SocketAuthenticator-class.html#__init__,Method entropy.services.skel.SocketCommands.__init__()=entropy.services.skel.SocketCommands-class.html#__init__,Method entropy.services.system.commands.Base.__init__()=entropy.services.system.commands.Base-class.html#__init__,Method entropy.services.system.commands.Repository.__init__()=entropy.services.system.commands.Repository-class.html#__init__,Method entropy.services.system.executors.Base.__init__()=entropy.services.system.executors.Base-class.html#__init__,Method entropy.services.system.interfaces.Server.BuiltInSystemManagerExecutorCommands.__init__()=entropy.services.system.interfaces.Server.BuiltInSystemManagerExecutorCommands-class.html#__init__,Method entropy.services.system.interfaces.Server.FakeServiceInterface.__init__()=entropy.services.system.interfaces.Server.FakeServiceInterface-class.html#__init__,Method entropy.services.system.interfaces.Server.__init__()=entropy.services.system.interfaces.Server-class.html#__init__,Method entropy.services.system.interfaces.TaskExecutor.__init__()=entropy.services.system.interfaces.TaskExecutor-class.html#__init__,Method entropy.services.test.commands.Test.__init__()=entropy.services.test.commands.Test-class.html#__init__,Method entropy.services.test.interfaces.Server.FakeServiceInterface.__init__()=entropy.services.test.interfaces.Server.FakeServiceInterface-class.html#__init__,Method entropy.services.test.interfaces.Server.__init__()=entropy.services.test.interfaces.Server-class.html#__init__,Method entropy.services.ugc.commands.UGC.__init__()=entropy.services.ugc.commands.UGC-class.html#__init__,Method entropy.services.ugc.interfaces.Client.__init__()=entropy.services.ugc.interfaces.Client-class.html#__init__,Method entropy.services.ugc.interfaces.Server.__init__()=entropy.services.ugc.interfaces.Server-class.html#__init__,Method entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups.__init__()=entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups-class.html#__init__,Method entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize.__init__()=entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize-class.html#__init__,Method entropy.spm.plugins.interfaces.portage_plugin.xpak.tbz2.__init__()=entropy.spm.plugins.interfaces.portage_plugin.xpak.tbz2-class.html#__init__,Method entropy.transceivers.EntropyTransceiver.__init__()=entropy.transceivers.EntropyTransceiver-class.html#__init__,Method entropy.transceivers.uri_handlers.plugins.interfaces.ftp_plugin.EntropyFtpUriHandler.__init__()=entropy.transceivers.uri_handlers.plugins.interfaces.ftp_plugin.EntropyFtpUriHandler-class.html#__init__,Method entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler.__init__()=entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#__init__,Method entropy.transceivers.uri_handlers.skel.EntropyUriHandler.__init__()=entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#__init__"><a title="entropy.client.interfaces.client.ClientSystemSettingsPlugin.__init__
+entropy.client.interfaces.db.ClientEntropyRepositoryPlugin.__init__
+entropy.client.interfaces.loaders.LoadersMixin.__init__
+entropy.client.interfaces.package.Package.__init__
+entropy.client.interfaces.qa.UGCErrorReportInterface.__init__
+entropy.client.interfaces.repository.Repository.__init__
+entropy.client.interfaces.trigger.Trigger.EntropyPySandbox.__init__
+entropy.client.interfaces.trigger.Trigger.EntropyShSandbox.__init__
+entropy.client.interfaces.trigger.Trigger.__init__
+entropy.client.mirrors.StatusInterface.__init__
+entropy.client.misc.FileUpdates.__init__
+entropy.client.services.system.commands.Client.__init__
+entropy.client.services.system.interfaces.Client.__init__
+entropy.client.services.system.methods.BaseMixin.__init__
+entropy.client.services.system.methods.Repository.__init__
+entropy.client.services.ugc.commands.Base.__init__
+entropy.client.services.ugc.commands.Client.__init__
+entropy.client.services.ugc.interfaces.Cache.__init__
+entropy.client.services.ugc.interfaces.Client.__init__
+entropy.core.EntropyPluginFactory.__init__
+entropy.core.EntropyPluginStore.__init__
+entropy.core.Singleton.__init__
+entropy.core.settings.plugins.skel.SystemSettingsPlugin.__init__
+entropy.db.EntropyRepository.__init__
+entropy.db.plugin_store.EntropyRepositoryPluginStore.__init__
+entropy.exceptions.EntropyException.__init__
+entropy.fetchers.MultipleUrlFetcher.__init__
+entropy.fetchers.UrlFetcher.__init__
+entropy.graph.Graph.__init__
+entropy.misc.Callable.__init__
+entropy.misc.EmailSender.__init__
+entropy.misc.EntropyGeoIP.__init__
+entropy.misc.Lifo.__init__
+entropy.misc.LogFile.__init__
+entropy.misc.MultipartPostHandler.__init__
+entropy.misc.ParallelTask.__init__
+entropy.misc.RSS.__init__
+entropy.misc.TimeScheduled.__init__
+entropy.qa.ErrorReportInterface.__init__
+entropy.qa.QAEntropyRepositoryPlugin.__init__
+entropy.qa.QAInterface.__init__
+entropy.security.System.__init__
+entropy.server.interfaces.main.ServerEntropyRepositoryPlugin.__init__
+entropy.server.interfaces.mirrors.Server.__init__
+entropy.server.transceivers.TransceiverServerHandler.__init__
+entropy.services.auth_interfaces.phpBB3Auth.__init__
+entropy.services.authenticators.phpBB3.__init__
+entropy.services.commands.phpBB3.__init__
+entropy.services.interfaces.SocketHost.BasicPamAuthenticator.__init__
+entropy.services.interfaces.SocketHost.BuiltInCommands.__init__
+entropy.services.interfaces.SocketHost.CommandProcessor.__init__
+entropy.services.interfaces.SocketHost.HostServerMixin.ConnWrapper.__init__
+entropy.services.interfaces.SocketHost.HostServerMixin.__init__
+entropy.services.interfaces.SocketHost.RequestHandler.__init__
+entropy.services.interfaces.SocketHost.__init__
+entropy.services.repository.commands.Repository.__init__
+entropy.services.repository.interfaces.Server.ServiceInterface.__init__
+entropy.services.repository.interfaces.Server.__init__
+entropy.services.skel.Authenticator.__init__
+entropy.services.skel.RemoteDatabase.__init__
+entropy.services.skel.SocketAuthenticator.__init__
+entropy.services.skel.SocketCommands.__init__
+entropy.services.system.commands.Base.__init__
+entropy.services.system.commands.Repository.__init__
+entropy.services.system.executors.Base.__init__
+entropy.services.system.interfaces.Server.BuiltInSystemManagerExecutorCommands.__init__
+entropy.services.system.interfaces.Server.FakeServiceInterface.__init__
+entropy.services.system.interfaces.Server.__init__
+entropy.services.system.interfaces.TaskExecutor.__init__
+entropy.services.test.commands.Test.__init__
+entropy.services.test.interfaces.Server.FakeServiceInterface.__init__
+entropy.services.test.interfaces.Server.__init__
+entropy.services.ugc.commands.UGC.__init__
+entropy.services.ugc.interfaces.Client.__init__
+entropy.services.ugc.interfaces.Server.__init__
+entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups.__init__
+entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize.__init__
+entropy.spm.plugins.interfaces.portage_plugin.xpak.tbz2.__init__
+entropy.transceivers.EntropyTransceiver.__init__
+entropy.transceivers.uri_handlers.plugins.interfaces.ftp_plugin.EntropyFtpUriHandler.__init__
+entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler.__init__
+entropy.transceivers.uri_handlers.skel.EntropyUriHandler.__init__" class="py-name" href="#" onclick="return doclink('link-3', '__init__', 'link-3');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L35"></a><tt class="py-lineno"> 35</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__item</tt> <tt class="py-op">=</tt> <tt class="py-name">item</tt> </tt>
+<a name="L36"></a><tt class="py-lineno"> 36</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__arches</tt> <tt class="py-op">=</tt> <tt class="py-name">set</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L37"></a><tt class="py-lineno"> 37</tt>  <tt class="py-line"> </tt>
+<a name="GraphNode.__str__"></a><div id="GraphNode.__str__-def"><a name="L38"></a><tt class="py-lineno"> 38</tt> <a class="py-toggle" href="#" id="GraphNode.__str__-toggle" onclick="return toggle('GraphNode.__str__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.GraphNode-class.html#__str__">__str__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphNode.__str__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GraphNode.__str__-expanded"><a name="L39"></a><tt class="py-lineno"> 39</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L40"></a><tt class="py-lineno"> 40</tt>  <tt class="py-line"><tt class="py-docstring">        Default string representation.</tt> </tt>
+<a name="L41"></a><tt class="py-lineno"> 41</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L42"></a><tt class="py-lineno"> 42</tt>  <tt class="py-line">        <tt class="py-name">repr_str</tt> <tt class="py-op">=</tt> <tt class="py-string">"\n&lt;GraphNode[item:%s][arches:%s]&gt;\n"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">item</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> </tt>
+<a name="L43"></a><tt class="py-lineno"> 43</tt>  <tt class="py-line">            <tt class="py-op">[</tt><tt class="py-name">str</tt><tt class="py-op">(</tt><tt class="py-name">x</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">x</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-4" class="py-name" targets="Variable entropy.client.interfaces.cache.arches=entropy.client.interfaces.cache-module.html#arches,Variable entropy.client.interfaces.dep.arches=entropy.client.interfaces.dep-module.html#arches,Variable entropy.client.interfaces.fetch.arches=entropy.client.interfaces.fetch-module.html#arches,Variable entropy.client.interfaces.loaders.arches=entropy.client.interfaces.loaders-module.html#arches,Variable entropy.client.interfaces.methods.arches=entropy.client.interfaces.methods-module.html#arches,Variable entropy.client.interfaces.trigger.arches=entropy.client.interfaces.trigger-module.html#arches,Variable entropy.const.arches=entropy.const-module.html#arches"><a title="entropy.client.interfaces.cache.arches
+entropy.client.interfaces.dep.arches
+entropy.client.interfaces.fetch.arches
+entropy.client.interfaces.loaders.arches
+entropy.client.interfaces.methods.arches
+entropy.client.interfaces.trigger.arches
+entropy.const.arches" class="py-name" href="#" onclick="return doclink('link-4', 'arches', 'link-4');">arches</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">]</tt><tt class="py-op">,</tt><tt class="py-op">)</tt> </tt>
+<a name="L44"></a><tt class="py-lineno"> 44</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">repr_str</tt> </tt>
+</div><a name="L45"></a><tt class="py-lineno"> 45</tt>  <tt class="py-line"> </tt>
+<a name="GraphNode.item"></a><div id="GraphNode.item-def"><a name="L46"></a><tt class="py-lineno"> 46</tt> <a class="py-toggle" href="#" id="GraphNode.item-toggle" onclick="return toggle('GraphNode.item');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.GraphNode-class.html#item">item</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphNode.item-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GraphNode.item-expanded"><a name="L47"></a><tt class="py-lineno"> 47</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L48"></a><tt class="py-lineno"> 48</tt>  <tt class="py-line"><tt class="py-docstring">        Return item content, object passed to the constructor.</tt> </tt>
+<a name="L49"></a><tt class="py-lineno"> 49</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L50"></a><tt class="py-lineno"> 50</tt>  <tt class="py-line"><tt class="py-docstring">        @return: GraphNode content</tt> </tt>
+<a name="L51"></a><tt class="py-lineno"> 51</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: Python object</tt> </tt>
+<a name="L52"></a><tt class="py-lineno"> 52</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L53"></a><tt class="py-lineno"> 53</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__item</tt> </tt>
+</div><a name="L54"></a><tt class="py-lineno"> 54</tt>  <tt class="py-line"> </tt>
+<a name="GraphNode.add_arch"></a><div id="GraphNode.add_arch-def"><a name="L55"></a><tt class="py-lineno"> 55</tt> <a class="py-toggle" href="#" id="GraphNode.add_arch-toggle" onclick="return toggle('GraphNode.add_arch');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.GraphNode-class.html#add_arch">add_arch</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">arch</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphNode.add_arch-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GraphNode.add_arch-expanded"><a name="L56"></a><tt class="py-lineno"> 56</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L57"></a><tt class="py-lineno"> 57</tt>  <tt class="py-line"><tt class="py-docstring">        Our lil' graph item feels very lonely. Let's add an arch object to it.</tt> </tt>
+<a name="L58"></a><tt class="py-lineno"> 58</tt>  <tt class="py-line"><tt class="py-docstring">        (GraphArchSet).</tt> </tt>
+<a name="L59"></a><tt class="py-lineno"> 59</tt>  <tt class="py-line"><tt class="py-docstring">        An "arch" object is a topological arch representation.</tt> </tt>
+<a name="L60"></a><tt class="py-lineno"> 60</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L61"></a><tt class="py-lineno"> 61</tt>  <tt class="py-line"><tt class="py-docstring">        @param arch: GraphArchSet instance</tt> </tt>
+<a name="L62"></a><tt class="py-lineno"> 62</tt>  <tt class="py-line"><tt class="py-docstring">        @type arch: GraphArchSet</tt> </tt>
+<a name="L63"></a><tt class="py-lineno"> 63</tt>  <tt class="py-line"><tt class="py-docstring">        @raises AttributeError: if arch is not a GraphArchSet instance</tt> </tt>
+<a name="L64"></a><tt class="py-lineno"> 64</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L65"></a><tt class="py-lineno"> 65</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt id="link-5" class="py-name" targets="Variable entropy.client.interfaces.cache.arch=entropy.client.interfaces.cache-module.html#arch,Variable entropy.client.interfaces.dep.arch=entropy.client.interfaces.dep-module.html#arch,Variable entropy.client.interfaces.fetch.arch=entropy.client.interfaces.fetch-module.html#arch,Variable entropy.client.interfaces.loaders.arch=entropy.client.interfaces.loaders-module.html#arch,Variable entropy.client.interfaces.methods.arch=entropy.client.interfaces.methods-module.html#arch,Variable entropy.client.interfaces.trigger.arch=entropy.client.interfaces.trigger-module.html#arch,Variable entropy.const.arch=entropy.const-module.html#arch"><a title="entropy.client.interfaces.cache.arch
+entropy.client.interfaces.dep.arch
+entropy.client.interfaces.fetch.arch
+entropy.client.interfaces.loaders.arch
+entropy.client.interfaces.methods.arch
+entropy.client.interfaces.trigger.arch
+entropy.const.arch" class="py-name" href="#" onclick="return doclink('link-5', 'arch', 'link-5');">arch</a></tt><tt class="py-op">,</tt> <tt class="py-name">GraphArchSet</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L66"></a><tt class="py-lineno"> 66</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">AttributeError</tt><tt class="py-op">(</tt><tt class="py-string">"GraphArchSet item expected"</tt><tt class="py-op">)</tt> </tt>
+<a name="L67"></a><tt class="py-lineno"> 67</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__arches</tt><tt class="py-op">.</tt><tt id="link-6" class="py-name" targets="Method entropy.graph.Graph.add()=entropy.graph.Graph-class.html#add"><a title="entropy.graph.Graph.add" class="py-name" href="#" onclick="return doclink('link-6', 'add', 'link-6');">add</a></tt><tt class="py-op">(</tt><tt id="link-7" class="py-name"><a title="entropy.client.interfaces.cache.arch
+entropy.client.interfaces.dep.arch
+entropy.client.interfaces.fetch.arch
+entropy.client.interfaces.loaders.arch
+entropy.client.interfaces.methods.arch
+entropy.client.interfaces.trigger.arch
+entropy.const.arch" class="py-name" href="#" onclick="return doclink('link-7', 'arch', 'link-5');">arch</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L68"></a><tt class="py-lineno"> 68</tt>  <tt class="py-line"> </tt>
+<a name="GraphNode.remove_arch"></a><div id="GraphNode.remove_arch-def"><a name="L69"></a><tt class="py-lineno"> 69</tt> <a class="py-toggle" href="#" id="GraphNode.remove_arch-toggle" onclick="return toggle('GraphNode.remove_arch');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.GraphNode-class.html#remove_arch">remove_arch</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">arch</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphNode.remove_arch-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GraphNode.remove_arch-expanded"><a name="L70"></a><tt class="py-lineno"> 70</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L71"></a><tt class="py-lineno"> 71</tt>  <tt class="py-line"><tt class="py-docstring">        Remove an arch object from this GraphNode instance.</tt> </tt>
+<a name="L72"></a><tt class="py-lineno"> 72</tt>  <tt class="py-line"><tt class="py-docstring">        An "arch" object is a topological arch representation.</tt> </tt>
+<a name="L73"></a><tt class="py-lineno"> 73</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L74"></a><tt class="py-lineno"> 74</tt>  <tt class="py-line"><tt class="py-docstring">        @param arch: GraphArchSet instance</tt> </tt>
+<a name="L75"></a><tt class="py-lineno"> 75</tt>  <tt class="py-line"><tt class="py-docstring">        @type arch: GraphArchSet</tt> </tt>
+<a name="L76"></a><tt class="py-lineno"> 76</tt>  <tt class="py-line"><tt class="py-docstring">        @raises AttributeError: if arch is not a GraphArchSet instance</tt> </tt>
+<a name="L77"></a><tt class="py-lineno"> 77</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L78"></a><tt class="py-lineno"> 78</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt id="link-8" class="py-name"><a title="entropy.client.interfaces.cache.arch
+entropy.client.interfaces.dep.arch
+entropy.client.interfaces.fetch.arch
+entropy.client.interfaces.loaders.arch
+entropy.client.interfaces.methods.arch
+entropy.client.interfaces.trigger.arch
+entropy.const.arch" class="py-name" href="#" onclick="return doclink('link-8', 'arch', 'link-5');">arch</a></tt><tt class="py-op">,</tt> <tt class="py-name">GraphArchSet</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L79"></a><tt class="py-lineno"> 79</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">AttributeError</tt><tt class="py-op">(</tt><tt class="py-string">"GraphArchSet item expected"</tt><tt class="py-op">)</tt> </tt>
+<a name="L80"></a><tt class="py-lineno"> 80</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__arches</tt><tt class="py-op">.</tt><tt id="link-9" class="py-name" targets="Method entropy.cache.EntropyCacher.discard()=entropy.cache.EntropyCacher-class.html#discard,Method entropy.misc.Lifo.discard()=entropy.misc.Lifo-class.html#discard"><a title="entropy.cache.EntropyCacher.discard
+entropy.misc.Lifo.discard" class="py-name" href="#" onclick="return doclink('link-9', 'discard', 'link-9');">discard</a></tt><tt class="py-op">(</tt><tt id="link-10" class="py-name"><a title="entropy.client.interfaces.cache.arch
+entropy.client.interfaces.dep.arch
+entropy.client.interfaces.fetch.arch
+entropy.client.interfaces.loaders.arch
+entropy.client.interfaces.methods.arch
+entropy.client.interfaces.trigger.arch
+entropy.const.arch" class="py-name" href="#" onclick="return doclink('link-10', 'arch', 'link-5');">arch</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L81"></a><tt class="py-lineno"> 81</tt>  <tt class="py-line"> </tt>
+<a name="GraphNode.arches"></a><div id="GraphNode.arches-def"><a name="L82"></a><tt class="py-lineno"> 82</tt> <a class="py-toggle" href="#" id="GraphNode.arches-toggle" onclick="return toggle('GraphNode.arches');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.GraphNode-class.html#arches">arches</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphNode.arches-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GraphNode.arches-expanded"><a name="L83"></a><tt class="py-lineno"> 83</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L84"></a><tt class="py-lineno"> 84</tt>  <tt class="py-line"><tt class="py-docstring">        Return the currently stored list of arch objects.</tt> </tt>
+<a name="L85"></a><tt class="py-lineno"> 85</tt>  <tt class="py-line"><tt class="py-docstring">        An "arch" object is a topological arch representation.</tt> </tt>
+<a name="L86"></a><tt class="py-lineno"> 86</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L87"></a><tt class="py-lineno"> 87</tt>  <tt class="py-line"><tt class="py-docstring">        @return: list (set) of GraphArchSet objects</tt> </tt>
+<a name="L88"></a><tt class="py-lineno"> 88</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: set</tt> </tt>
+<a name="L89"></a><tt class="py-lineno"> 89</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L90"></a><tt class="py-lineno"> 90</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__arches</tt> </tt>
+</div><a name="L91"></a><tt class="py-lineno"> 91</tt>  <tt class="py-line"> </tt>
+<a name="GraphNode.is_arch_outgoing"></a><div id="GraphNode.is_arch_outgoing-def"><a name="L92"></a><tt class="py-lineno"> 92</tt> <a class="py-toggle" href="#" id="GraphNode.is_arch_outgoing-toggle" onclick="return toggle('GraphNode.is_arch_outgoing');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.GraphNode-class.html#is_arch_outgoing">is_arch_outgoing</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">arch</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphNode.is_arch_outgoing-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GraphNode.is_arch_outgoing-expanded"><a name="L93"></a><tt class="py-lineno"> 93</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L94"></a><tt class="py-lineno"> 94</tt>  <tt class="py-line"><tt class="py-docstring">        Determine whether given GraphArchSet object represents an outgoing arch</tt> </tt>
+<a name="L95"></a><tt class="py-lineno"> 95</tt>  <tt class="py-line"><tt class="py-docstring">        of this GraphNode object.</tt> </tt>
+<a name="L96"></a><tt class="py-lineno"> 96</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L97"></a><tt class="py-lineno"> 97</tt>  <tt class="py-line"><tt class="py-docstring">        @return: True, if GraphArchSet passed is an outgoing arch.</tt> </tt>
+<a name="L98"></a><tt class="py-lineno"> 98</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: bool</tt> </tt>
+<a name="L99"></a><tt class="py-lineno"> 99</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L100"></a><tt class="py-lineno">100</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt id="link-11" class="py-name"><a title="entropy.client.interfaces.cache.arch
+entropy.client.interfaces.dep.arch
+entropy.client.interfaces.fetch.arch
+entropy.client.interfaces.loaders.arch
+entropy.client.interfaces.methods.arch
+entropy.client.interfaces.trigger.arch
+entropy.const.arch" class="py-name" href="#" onclick="return doclink('link-11', 'arch', 'link-5');">arch</a></tt><tt class="py-op">.</tt><tt class="py-name">origin</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-keyword">is</tt> <tt class="py-name">self</tt> </tt>
+</div><a name="L101"></a><tt class="py-lineno">101</tt>  <tt class="py-line"> </tt>
+<a name="GraphNode.is_arch_coming"></a><div id="GraphNode.is_arch_coming-def"><a name="L102"></a><tt class="py-lineno">102</tt> <a class="py-toggle" href="#" id="GraphNode.is_arch_coming-toggle" onclick="return toggle('GraphNode.is_arch_coming');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.GraphNode-class.html#is_arch_coming">is_arch_coming</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">arch</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphNode.is_arch_coming-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GraphNode.is_arch_coming-expanded"><a name="L103"></a><tt class="py-lineno">103</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L104"></a><tt class="py-lineno">104</tt>  <tt class="py-line"><tt class="py-docstring">        Determine whether given GraphArchSet object represents a coming arch</tt> </tt>
+<a name="L105"></a><tt class="py-lineno">105</tt>  <tt class="py-line"><tt class="py-docstring">        of this GraphNode object.</tt> </tt>
+<a name="L106"></a><tt class="py-lineno">106</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L107"></a><tt class="py-lineno">107</tt>  <tt class="py-line"><tt class="py-docstring">        @return: True, if GraphArchSet passed is a coming arch.</tt> </tt>
+<a name="L108"></a><tt class="py-lineno">108</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: bool</tt> </tt>
+<a name="L109"></a><tt class="py-lineno">109</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L110"></a><tt class="py-lineno">110</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt> <tt class="py-keyword">in</tt> <tt id="link-12" class="py-name"><a title="entropy.client.interfaces.cache.arch
+entropy.client.interfaces.dep.arch
+entropy.client.interfaces.fetch.arch
+entropy.client.interfaces.loaders.arch
+entropy.client.interfaces.methods.arch
+entropy.client.interfaces.trigger.arch
+entropy.const.arch" class="py-name" href="#" onclick="return doclink('link-12', 'arch', 'link-5');">arch</a></tt><tt class="py-op">.</tt><tt class="py-name">endpoints</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L111"></a><tt class="py-lineno">111</tt>  <tt class="py-line"> </tt>
+<a name="L112"></a><tt class="py-lineno">112</tt>  <tt class="py-line"> </tt>
+<a name="GraphArchSet"></a><div id="GraphArchSet-def"><a name="L113"></a><tt class="py-lineno">113</tt> <a class="py-toggle" href="#" id="GraphArchSet-toggle" onclick="return toggle('GraphArchSet');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="entropy.graph.GraphArchSet-class.html">GraphArchSet</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphArchSet-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="GraphArchSet-expanded"><a name="L114"></a><tt class="py-lineno">114</tt>  <tt class="py-line"> </tt>
+<a name="L115"></a><tt class="py-lineno">115</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L116"></a><tt class="py-lineno">116</tt>  <tt class="py-line"><tt class="py-docstring">    This class represents a conceptually improved Graph arch</tt> </tt>
+<a name="L117"></a><tt class="py-lineno">117</tt>  <tt class="py-line"><tt class="py-docstring">    (or edge) which connects a starting point "A" to several end-</tt> </tt>
+<a name="L118"></a><tt class="py-lineno">118</tt>  <tt class="py-line"><tt class="py-docstring">    points {B,C,D...}.</tt> </tt>
+<a name="L119"></a><tt class="py-lineno">119</tt>  <tt class="py-line"><tt class="py-docstring">    The starting point is given at GraphArchSet construction time while</tt> </tt>
+<a name="L120"></a><tt class="py-lineno">120</tt>  <tt class="py-line"><tt class="py-docstring">    endpoints can be dynamically removed.</tt> </tt>
+<a name="L121"></a><tt class="py-lineno">121</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L122"></a><tt class="py-lineno">122</tt>  <tt class="py-line"> </tt>
+<a name="GraphArchSet.__init__"></a><div id="GraphArchSet.__init__-def"><a name="L123"></a><tt class="py-lineno">123</tt> <a class="py-toggle" href="#" id="GraphArchSet.__init__-toggle" onclick="return toggle('GraphArchSet.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.GraphArchSet-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">starting_point</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphArchSet.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GraphArchSet.__init__-expanded"><a name="L124"></a><tt class="py-lineno">124</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L125"></a><tt class="py-lineno">125</tt>  <tt class="py-line"><tt class="py-docstring">        GraphArchSet constructor.</tt> </tt>
+<a name="L126"></a><tt class="py-lineno">126</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L127"></a><tt class="py-lineno">127</tt>  <tt class="py-line"><tt class="py-docstring">        @param starting_point: a GraphNode instance which represents the</tt> </tt>
+<a name="L128"></a><tt class="py-lineno">128</tt>  <tt class="py-line"><tt class="py-docstring">            starting point of the "arch".</tt> </tt>
+<a name="L129"></a><tt class="py-lineno">129</tt>  <tt class="py-line"><tt class="py-docstring">        @type starting_point: a GraphNode instance</tt> </tt>
+<a name="L130"></a><tt class="py-lineno">130</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L131"></a><tt class="py-lineno">131</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">starting_point</tt><tt class="py-op">,</tt> <tt class="py-name">GraphNode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L132"></a><tt class="py-lineno">132</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">AttributeError</tt><tt class="py-op">(</tt><tt class="py-string">"GraphNode item expected"</tt><tt class="py-op">)</tt> </tt>
+<a name="L133"></a><tt class="py-lineno">133</tt>  <tt class="py-line"> </tt>
+<a name="L134"></a><tt class="py-lineno">134</tt>  <tt class="py-line">        <tt class="py-name">object</tt><tt class="py-op">.</tt><tt id="link-13" class="py-name"><a title="entropy.client.interfaces.client.ClientSystemSettingsPlugin.__init__
+entropy.client.interfaces.db.ClientEntropyRepositoryPlugin.__init__
+entropy.client.interfaces.loaders.LoadersMixin.__init__
+entropy.client.interfaces.package.Package.__init__
+entropy.client.interfaces.qa.UGCErrorReportInterface.__init__
+entropy.client.interfaces.repository.Repository.__init__
+entropy.client.interfaces.trigger.Trigger.EntropyPySandbox.__init__
+entropy.client.interfaces.trigger.Trigger.EntropyShSandbox.__init__
+entropy.client.interfaces.trigger.Trigger.__init__
+entropy.client.mirrors.StatusInterface.__init__
+entropy.client.misc.FileUpdates.__init__
+entropy.client.services.system.commands.Client.__init__
+entropy.client.services.system.interfaces.Client.__init__
+entropy.client.services.system.methods.BaseMixin.__init__
+entropy.client.services.system.methods.Repository.__init__
+entropy.client.services.ugc.commands.Base.__init__
+entropy.client.services.ugc.commands.Client.__init__
+entropy.client.services.ugc.interfaces.Cache.__init__
+entropy.client.services.ugc.interfaces.Client.__init__
+entropy.core.EntropyPluginFactory.__init__
+entropy.core.EntropyPluginStore.__init__
+entropy.core.Singleton.__init__
+entropy.core.settings.plugins.skel.SystemSettingsPlugin.__init__
+entropy.db.EntropyRepository.__init__
+entropy.db.plugin_store.EntropyRepositoryPluginStore.__init__
+entropy.exceptions.EntropyException.__init__
+entropy.fetchers.MultipleUrlFetcher.__init__
+entropy.fetchers.UrlFetcher.__init__
+entropy.graph.Graph.__init__
+entropy.misc.Callable.__init__
+entropy.misc.EmailSender.__init__
+entropy.misc.EntropyGeoIP.__init__
+entropy.misc.Lifo.__init__
+entropy.misc.LogFile.__init__
+entropy.misc.MultipartPostHandler.__init__
+entropy.misc.ParallelTask.__init__
+entropy.misc.RSS.__init__
+entropy.misc.TimeScheduled.__init__
+entropy.qa.ErrorReportInterface.__init__
+entropy.qa.QAEntropyRepositoryPlugin.__init__
+entropy.qa.QAInterface.__init__
+entropy.security.System.__init__
+entropy.server.interfaces.main.ServerEntropyRepositoryPlugin.__init__
+entropy.server.interfaces.mirrors.Server.__init__
+entropy.server.transceivers.TransceiverServerHandler.__init__
+entropy.services.auth_interfaces.phpBB3Auth.__init__
+entropy.services.authenticators.phpBB3.__init__
+entropy.services.commands.phpBB3.__init__
+entropy.services.interfaces.SocketHost.BasicPamAuthenticator.__init__
+entropy.services.interfaces.SocketHost.BuiltInCommands.__init__
+entropy.services.interfaces.SocketHost.CommandProcessor.__init__
+entropy.services.interfaces.SocketHost.HostServerMixin.ConnWrapper.__init__
+entropy.services.interfaces.SocketHost.HostServerMixin.__init__
+entropy.services.interfaces.SocketHost.RequestHandler.__init__
+entropy.services.interfaces.SocketHost.__init__
+entropy.services.repository.commands.Repository.__init__
+entropy.services.repository.interfaces.Server.ServiceInterface.__init__
+entropy.services.repository.interfaces.Server.__init__
+entropy.services.skel.Authenticator.__init__
+entropy.services.skel.RemoteDatabase.__init__
+entropy.services.skel.SocketAuthenticator.__init__
+entropy.services.skel.SocketCommands.__init__
+entropy.services.system.commands.Base.__init__
+entropy.services.system.commands.Repository.__init__
+entropy.services.system.executors.Base.__init__
+entropy.services.system.interfaces.Server.BuiltInSystemManagerExecutorCommands.__init__
+entropy.services.system.interfaces.Server.FakeServiceInterface.__init__
+entropy.services.system.interfaces.Server.__init__
+entropy.services.system.interfaces.TaskExecutor.__init__
+entropy.services.test.commands.Test.__init__
+entropy.services.test.interfaces.Server.FakeServiceInterface.__init__
+entropy.services.test.interfaces.Server.__init__
+entropy.services.ugc.commands.UGC.__init__
+entropy.services.ugc.interfaces.Client.__init__
+entropy.services.ugc.interfaces.Server.__init__
+entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups.__init__
+entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize.__init__
+entropy.spm.plugins.interfaces.portage_plugin.xpak.tbz2.__init__
+entropy.transceivers.EntropyTransceiver.__init__
+entropy.transceivers.uri_handlers.plugins.interfaces.ftp_plugin.EntropyFtpUriHandler.__init__
+entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler.__init__
+entropy.transceivers.uri_handlers.skel.EntropyUriHandler.__init__" class="py-name" href="#" onclick="return doclink('link-13', '__init__', 'link-3');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L135"></a><tt class="py-lineno">135</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__origin</tt> <tt class="py-op">=</tt> <tt class="py-name">starting_point</tt> </tt>
+<a name="L136"></a><tt class="py-lineno">136</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__endpoints</tt> <tt class="py-op">=</tt> <tt class="py-name">set</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L137"></a><tt class="py-lineno">137</tt>  <tt class="py-line"> </tt>
+<a name="GraphArchSet.__str__"></a><div id="GraphArchSet.__str__-def"><a name="L138"></a><tt class="py-lineno">138</tt> <a class="py-toggle" href="#" id="GraphArchSet.__str__-toggle" onclick="return toggle('GraphArchSet.__str__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.GraphArchSet-class.html#__str__">__str__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphArchSet.__str__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GraphArchSet.__str__-expanded"><a name="L139"></a><tt class="py-lineno">139</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L140"></a><tt class="py-lineno">140</tt>  <tt class="py-line"><tt class="py-docstring">        Default string representation.</tt> </tt>
+<a name="L141"></a><tt class="py-lineno">141</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L142"></a><tt class="py-lineno">142</tt>  <tt class="py-line">        <tt class="py-name">repr_str</tt> <tt class="py-op">=</tt> <tt class="py-string">"&lt;GraphArchSet[origin:%s][endpoints:%s]&gt;"</tt> <tt class="py-op">%</tt> <tt class="py-op">(</tt> </tt>
+<a name="L143"></a><tt class="py-lineno">143</tt>  <tt class="py-line">            <tt class="py-name">repr</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">origin</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt><tt class="py-op">,</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">endpoints</tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">)</tt> </tt>
+<a name="L144"></a><tt class="py-lineno">144</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">repr_str</tt> </tt>
+</div><a name="L145"></a><tt class="py-lineno">145</tt>  <tt class="py-line"> </tt>
+<a name="GraphArchSet.origin"></a><div id="GraphArchSet.origin-def"><a name="L146"></a><tt class="py-lineno">146</tt> <a class="py-toggle" href="#" id="GraphArchSet.origin-toggle" onclick="return toggle('GraphArchSet.origin');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.GraphArchSet-class.html#origin">origin</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphArchSet.origin-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GraphArchSet.origin-expanded"><a name="L147"></a><tt class="py-lineno">147</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L148"></a><tt class="py-lineno">148</tt>  <tt class="py-line"><tt class="py-docstring">        Return the origin of this GraphArchSet instance (in other words, the</tt> </tt>
+<a name="L149"></a><tt class="py-lineno">149</tt>  <tt class="py-line"><tt class="py-docstring">            starting_point object passed to the constructor).</tt> </tt>
+<a name="L150"></a><tt class="py-lineno">150</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L151"></a><tt class="py-lineno">151</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__origin</tt> </tt>
+</div><a name="L152"></a><tt class="py-lineno">152</tt>  <tt class="py-line"> </tt>
+<a name="GraphArchSet.add_endpoint"></a><div id="GraphArchSet.add_endpoint-def"><a name="L153"></a><tt class="py-lineno">153</tt> <a class="py-toggle" href="#" id="GraphArchSet.add_endpoint-toggle" onclick="return toggle('GraphArchSet.add_endpoint');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.GraphArchSet-class.html#add_endpoint">add_endpoint</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">endpoint</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphArchSet.add_endpoint-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GraphArchSet.add_endpoint-expanded"><a name="L154"></a><tt class="py-lineno">154</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L155"></a><tt class="py-lineno">155</tt>  <tt class="py-line"><tt class="py-docstring">        Our supercool GraphArchSet can be split infinite times to point to</tt> </tt>
+<a name="L156"></a><tt class="py-lineno">156</tt>  <tt class="py-line"><tt class="py-docstring">        multiple GraphNode objects. This methods adds another end-point to</tt> </tt>
+<a name="L157"></a><tt class="py-lineno">157</tt>  <tt class="py-line"><tt class="py-docstring">        the arch.</tt> </tt>
+<a name="L158"></a><tt class="py-lineno">158</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L159"></a><tt class="py-lineno">159</tt>  <tt class="py-line"><tt class="py-docstring">        @param endpoint: a GraphNode instance which represents the</tt> </tt>
+<a name="L160"></a><tt class="py-lineno">160</tt>  <tt class="py-line"><tt class="py-docstring">            end-point of the "arch".</tt> </tt>
+<a name="L161"></a><tt class="py-lineno">161</tt>  <tt class="py-line"><tt class="py-docstring">        @type endpoint: a GraphNode instance</tt> </tt>
+<a name="L162"></a><tt class="py-lineno">162</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L163"></a><tt class="py-lineno">163</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">endpoint</tt><tt class="py-op">,</tt> <tt class="py-name">GraphNode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L164"></a><tt class="py-lineno">164</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">AttributeError</tt><tt class="py-op">(</tt><tt class="py-string">"GraphNode item expected"</tt><tt class="py-op">)</tt> </tt>
+<a name="L165"></a><tt class="py-lineno">165</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__endpoints</tt><tt class="py-op">.</tt><tt id="link-14" class="py-name"><a title="entropy.graph.Graph.add" class="py-name" href="#" onclick="return doclink('link-14', 'add', 'link-6');">add</a></tt><tt class="py-op">(</tt><tt class="py-name">endpoint</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L166"></a><tt class="py-lineno">166</tt>  <tt class="py-line"> </tt>
+<a name="GraphArchSet.remove_endpoint"></a><div id="GraphArchSet.remove_endpoint-def"><a name="L167"></a><tt class="py-lineno">167</tt> <a class="py-toggle" href="#" id="GraphArchSet.remove_endpoint-toggle" onclick="return toggle('GraphArchSet.remove_endpoint');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.GraphArchSet-class.html#remove_endpoint">remove_endpoint</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">endpoint</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphArchSet.remove_endpoint-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GraphArchSet.remove_endpoint-expanded"><a name="L168"></a><tt class="py-lineno">168</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L169"></a><tt class="py-lineno">169</tt>  <tt class="py-line"><tt class="py-docstring">        Our supercool GraphArchSet can be split infinite times to point to</tt> </tt>
+<a name="L170"></a><tt class="py-lineno">170</tt>  <tt class="py-line"><tt class="py-docstring">        multiple GraphNode objects. This method removes an existing end-point</tt> </tt>
+<a name="L171"></a><tt class="py-lineno">171</tt>  <tt class="py-line"><tt class="py-docstring">        from the arch.</tt> </tt>
+<a name="L172"></a><tt class="py-lineno">172</tt>  <tt class="py-line"><tt class="py-docstring">        Beware that, for performance reasons, this method does not check</tt> </tt>
+<a name="L173"></a><tt class="py-lineno">173</tt>  <tt class="py-line"><tt class="py-docstring">        if endpoint object (GraphNode previously added with add_endpoint())</tt> </tt>
+<a name="L174"></a><tt class="py-lineno">174</tt>  <tt class="py-line"><tt class="py-docstring">        is effectively stored inside, so if endpoint does not exist, nothing</tt> </tt>
+<a name="L175"></a><tt class="py-lineno">175</tt>  <tt class="py-line"><tt class="py-docstring">        will happen.</tt> </tt>
+<a name="L176"></a><tt class="py-lineno">176</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L177"></a><tt class="py-lineno">177</tt>  <tt class="py-line"><tt class="py-docstring">        @param endpoint: a GraphNode instance which represents the</tt> </tt>
+<a name="L178"></a><tt class="py-lineno">178</tt>  <tt class="py-line"><tt class="py-docstring">            end-point of the "arch".</tt> </tt>
+<a name="L179"></a><tt class="py-lineno">179</tt>  <tt class="py-line"><tt class="py-docstring">        @type endpoint: a GraphNode instance</tt> </tt>
+<a name="L180"></a><tt class="py-lineno">180</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L181"></a><tt class="py-lineno">181</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-keyword">not</tt> <tt class="py-name">isinstance</tt><tt class="py-op">(</tt><tt class="py-name">endpoint</tt><tt class="py-op">,</tt> <tt class="py-name">GraphNode</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L182"></a><tt class="py-lineno">182</tt>  <tt class="py-line">            <tt class="py-keyword">raise</tt> <tt class="py-name">AttributeError</tt><tt class="py-op">(</tt><tt class="py-string">"GraphNode item expected"</tt><tt class="py-op">)</tt> </tt>
+<a name="L183"></a><tt class="py-lineno">183</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__endpoints</tt><tt class="py-op">.</tt><tt id="link-15" class="py-name"><a title="entropy.cache.EntropyCacher.discard
+entropy.misc.Lifo.discard" class="py-name" href="#" onclick="return doclink('link-15', 'discard', 'link-9');">discard</a></tt><tt class="py-op">(</tt><tt class="py-name">endpoint</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L184"></a><tt class="py-lineno">184</tt>  <tt class="py-line"> </tt>
+<a name="GraphArchSet.endpoints"></a><div id="GraphArchSet.endpoints-def"><a name="L185"></a><tt class="py-lineno">185</tt> <a class="py-toggle" href="#" id="GraphArchSet.endpoints-toggle" onclick="return toggle('GraphArchSet.endpoints');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.GraphArchSet-class.html#endpoints">endpoints</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="GraphArchSet.endpoints-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="GraphArchSet.endpoints-expanded"><a name="L186"></a><tt class="py-lineno">186</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L187"></a><tt class="py-lineno">187</tt>  <tt class="py-line"><tt class="py-docstring">        This method returns a frozen copy of the internal end-point list object.</tt> </tt>
+<a name="L188"></a><tt class="py-lineno">188</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L189"></a><tt class="py-lineno">189</tt>  <tt class="py-line"><tt class="py-docstring">        @return: list (set) of available endpoints</tt> </tt>
+<a name="L190"></a><tt class="py-lineno">190</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: frozenset</tt> </tt>
+<a name="L191"></a><tt class="py-lineno">191</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L192"></a><tt class="py-lineno">192</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">frozenset</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__endpoints</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L193"></a><tt class="py-lineno">193</tt>  <tt class="py-line"> </tt>
+<a name="L194"></a><tt class="py-lineno">194</tt>  <tt class="py-line"> </tt>
+<a name="TopologicalSorter"></a><div id="TopologicalSorter-def"><a name="L195"></a><tt class="py-lineno">195</tt> <a class="py-toggle" href="#" id="TopologicalSorter-toggle" onclick="return toggle('TopologicalSorter');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="entropy.graph.TopologicalSorter-class.html">TopologicalSorter</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TopologicalSorter-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="TopologicalSorter-expanded"><a name="L196"></a><tt class="py-lineno">196</tt>  <tt class="py-line"> </tt>
+<a name="L197"></a><tt class="py-lineno">197</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L198"></a><tt class="py-lineno">198</tt>  <tt class="py-line"><tt class="py-docstring">    This class implements the topological sorting algorithm presented by</tt> </tt>
+<a name="L199"></a><tt class="py-lineno">199</tt>  <tt class="py-line"><tt class="py-docstring">    R. E. Tarjan in 1972.</tt> </tt>
+<a name="L200"></a><tt class="py-lineno">200</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L201"></a><tt class="py-lineno">201</tt>  <tt class="py-line"> </tt>
+<a name="TopologicalSorter.__init__"></a><div id="TopologicalSorter.__init__-def"><a name="L202"></a><tt class="py-lineno">202</tt> <a class="py-toggle" href="#" id="TopologicalSorter.__init__-toggle" onclick="return toggle('TopologicalSorter.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.TopologicalSorter-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">adjacency_map</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TopologicalSorter.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TopologicalSorter.__init__-expanded"><a name="L203"></a><tt class="py-lineno">203</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L204"></a><tt class="py-lineno">204</tt>  <tt class="py-line"><tt class="py-docstring">        TopologicalSorter constructor.</tt> </tt>
+<a name="L205"></a><tt class="py-lineno">205</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L206"></a><tt class="py-lineno">206</tt>  <tt class="py-line"><tt class="py-docstring">        @param adjacency_map: dict form adjacency map</tt> </tt>
+<a name="L207"></a><tt class="py-lineno">207</tt>  <tt class="py-line"><tt class="py-docstring">        @type adjacency_map: dict</tt> </tt>
+<a name="L208"></a><tt class="py-lineno">208</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L209"></a><tt class="py-lineno">209</tt>  <tt class="py-line">        <tt class="py-name">object</tt><tt class="py-op">.</tt><tt id="link-16" class="py-name"><a title="entropy.client.interfaces.client.ClientSystemSettingsPlugin.__init__
+entropy.client.interfaces.db.ClientEntropyRepositoryPlugin.__init__
+entropy.client.interfaces.loaders.LoadersMixin.__init__
+entropy.client.interfaces.package.Package.__init__
+entropy.client.interfaces.qa.UGCErrorReportInterface.__init__
+entropy.client.interfaces.repository.Repository.__init__
+entropy.client.interfaces.trigger.Trigger.EntropyPySandbox.__init__
+entropy.client.interfaces.trigger.Trigger.EntropyShSandbox.__init__
+entropy.client.interfaces.trigger.Trigger.__init__
+entropy.client.mirrors.StatusInterface.__init__
+entropy.client.misc.FileUpdates.__init__
+entropy.client.services.system.commands.Client.__init__
+entropy.client.services.system.interfaces.Client.__init__
+entropy.client.services.system.methods.BaseMixin.__init__
+entropy.client.services.system.methods.Repository.__init__
+entropy.client.services.ugc.commands.Base.__init__
+entropy.client.services.ugc.commands.Client.__init__
+entropy.client.services.ugc.interfaces.Cache.__init__
+entropy.client.services.ugc.interfaces.Client.__init__
+entropy.core.EntropyPluginFactory.__init__
+entropy.core.EntropyPluginStore.__init__
+entropy.core.Singleton.__init__
+entropy.core.settings.plugins.skel.SystemSettingsPlugin.__init__
+entropy.db.EntropyRepository.__init__
+entropy.db.plugin_store.EntropyRepositoryPluginStore.__init__
+entropy.exceptions.EntropyException.__init__
+entropy.fetchers.MultipleUrlFetcher.__init__
+entropy.fetchers.UrlFetcher.__init__
+entropy.graph.Graph.__init__
+entropy.misc.Callable.__init__
+entropy.misc.EmailSender.__init__
+entropy.misc.EntropyGeoIP.__init__
+entropy.misc.Lifo.__init__
+entropy.misc.LogFile.__init__
+entropy.misc.MultipartPostHandler.__init__
+entropy.misc.ParallelTask.__init__
+entropy.misc.RSS.__init__
+entropy.misc.TimeScheduled.__init__
+entropy.qa.ErrorReportInterface.__init__
+entropy.qa.QAEntropyRepositoryPlugin.__init__
+entropy.qa.QAInterface.__init__
+entropy.security.System.__init__
+entropy.server.interfaces.main.ServerEntropyRepositoryPlugin.__init__
+entropy.server.interfaces.mirrors.Server.__init__
+entropy.server.transceivers.TransceiverServerHandler.__init__
+entropy.services.auth_interfaces.phpBB3Auth.__init__
+entropy.services.authenticators.phpBB3.__init__
+entropy.services.commands.phpBB3.__init__
+entropy.services.interfaces.SocketHost.BasicPamAuthenticator.__init__
+entropy.services.interfaces.SocketHost.BuiltInCommands.__init__
+entropy.services.interfaces.SocketHost.CommandProcessor.__init__
+entropy.services.interfaces.SocketHost.HostServerMixin.ConnWrapper.__init__
+entropy.services.interfaces.SocketHost.HostServerMixin.__init__
+entropy.services.interfaces.SocketHost.RequestHandler.__init__
+entropy.services.interfaces.SocketHost.__init__
+entropy.services.repository.commands.Repository.__init__
+entropy.services.repository.interfaces.Server.ServiceInterface.__init__
+entropy.services.repository.interfaces.Server.__init__
+entropy.services.skel.Authenticator.__init__
+entropy.services.skel.RemoteDatabase.__init__
+entropy.services.skel.SocketAuthenticator.__init__
+entropy.services.skel.SocketCommands.__init__
+entropy.services.system.commands.Base.__init__
+entropy.services.system.commands.Repository.__init__
+entropy.services.system.executors.Base.__init__
+entropy.services.system.interfaces.Server.BuiltInSystemManagerExecutorCommands.__init__
+entropy.services.system.interfaces.Server.FakeServiceInterface.__init__
+entropy.services.system.interfaces.Server.__init__
+entropy.services.system.interfaces.TaskExecutor.__init__
+entropy.services.test.commands.Test.__init__
+entropy.services.test.interfaces.Server.FakeServiceInterface.__init__
+entropy.services.test.interfaces.Server.__init__
+entropy.services.ugc.commands.UGC.__init__
+entropy.services.ugc.interfaces.Client.__init__
+entropy.services.ugc.interfaces.Server.__init__
+entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups.__init__
+entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize.__init__
+entropy.spm.plugins.interfaces.portage_plugin.xpak.tbz2.__init__
+entropy.transceivers.EntropyTransceiver.__init__
+entropy.transceivers.uri_handlers.plugins.interfaces.ftp_plugin.EntropyFtpUriHandler.__init__
+entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler.__init__
+entropy.transceivers.uri_handlers.skel.EntropyUriHandler.__init__" class="py-name" href="#" onclick="return doclink('link-16', '__init__', 'link-3');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L210"></a><tt class="py-lineno">210</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__adjacency_map</tt> <tt class="py-op">=</tt> <tt class="py-name">adjacency_map</tt> </tt>
+<a name="L211"></a><tt class="py-lineno">211</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__stack</tt> <tt class="py-op">=</tt> <tt id="link-17" class="py-name"><a title="entropy.misc.Lifo" class="py-name" href="#" onclick="return doclink('link-17', 'Lifo', 'link-2');">Lifo</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L212"></a><tt class="py-lineno">212</tt>  <tt class="py-line"> </tt>
+<a name="TopologicalSorter.__topological_sort_visit_node"></a><div id="TopologicalSorter.__topological_sort_visit_node-def"><a name="L213"></a><tt class="py-lineno">213</tt> <a class="py-toggle" href="#" id="TopologicalSorter.__topological_sort_visit_node-toggle" onclick="return toggle('TopologicalSorter.__topological_sort_visit_node');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.TopologicalSorter-class.html#__topological_sort_visit_node">__topological_sort_visit_node</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">node</tt><tt class="py-op">,</tt> <tt class="py-param">low</tt><tt class="py-op">,</tt> <tt class="py-param">result</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TopologicalSorter.__topological_sort_visit_node-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TopologicalSorter.__topological_sort_visit_node-expanded"><a name="L214"></a><tt class="py-lineno">214</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L215"></a><tt class="py-lineno">215</tt>  <tt class="py-line"><tt class="py-docstring">        Internal method, visits a node ad push to stack.</tt> </tt>
+<a name="L216"></a><tt class="py-lineno">216</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L217"></a><tt class="py-lineno">217</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">node</tt> <tt class="py-keyword">in</tt> <tt class="py-name">low</tt><tt class="py-op">:</tt> </tt>
+<a name="L218"></a><tt class="py-lineno">218</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> </tt>
+<a name="L219"></a><tt class="py-lineno">219</tt>  <tt class="py-line"> </tt>
+<a name="L220"></a><tt class="py-lineno">220</tt>  <tt class="py-line">        <tt class="py-name">num</tt> <tt class="py-op">=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">low</tt><tt class="py-op">)</tt> </tt>
+<a name="L221"></a><tt class="py-lineno">221</tt>  <tt class="py-line">        <tt class="py-name">low</tt><tt class="py-op">[</tt><tt class="py-name">node</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">num</tt> </tt>
+<a name="L222"></a><tt class="py-lineno">222</tt>  <tt class="py-line">        <tt class="py-name">stack_pos</tt> <tt class="py-op">=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__stack</tt><tt class="py-op">)</tt> </tt>
+<a name="L223"></a><tt class="py-lineno">223</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__stack</tt><tt class="py-op">.</tt><tt id="link-18" class="py-name" targets="Method entropy.cache.EntropyCacher.push()=entropy.cache.EntropyCacher-class.html#push,Method entropy.misc.Lifo.push()=entropy.misc.Lifo-class.html#push"><a title="entropy.cache.EntropyCacher.push
+entropy.misc.Lifo.push" class="py-name" href="#" onclick="return doclink('link-18', 'push', 'link-18');">push</a></tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">)</tt> </tt>
+<a name="L224"></a><tt class="py-lineno">224</tt>  <tt class="py-line"> </tt>
+<a name="L225"></a><tt class="py-lineno">225</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">successor</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__adjacency_map</tt><tt class="py-op">[</tt><tt class="py-name">node</tt><tt class="py-op">]</tt><tt class="py-op">:</tt> </tt>
+<a name="L226"></a><tt class="py-lineno">226</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__topological_sort_visit_node</tt><tt class="py-op">(</tt><tt class="py-name">successor</tt><tt class="py-op">,</tt> <tt class="py-name">low</tt><tt class="py-op">,</tt> <tt class="py-name">result</tt><tt class="py-op">)</tt> </tt>
+<a name="L227"></a><tt class="py-lineno">227</tt>  <tt class="py-line">            <tt class="py-name">low</tt><tt class="py-op">[</tt><tt class="py-name">node</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">min</tt><tt class="py-op">(</tt><tt class="py-name">low</tt><tt class="py-op">[</tt><tt class="py-name">node</tt><tt class="py-op">]</tt><tt class="py-op">,</tt> <tt class="py-name">low</tt><tt class="py-op">[</tt><tt class="py-name">successor</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L228"></a><tt class="py-lineno">228</tt>  <tt class="py-line"> </tt>
+<a name="L229"></a><tt class="py-lineno">229</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">num</tt> <tt class="py-op">==</tt> <tt class="py-name">low</tt><tt class="py-op">[</tt><tt class="py-name">node</tt><tt class="py-op">]</tt><tt class="py-op">:</tt> </tt>
+<a name="L230"></a><tt class="py-lineno">230</tt>  <tt class="py-line">            <tt class="py-name">component</tt> <tt class="py-op">=</tt> <tt class="py-name">tuple</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L231"></a><tt class="py-lineno">231</tt>  <tt class="py-line">            <tt class="py-keyword">while</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__stack</tt><tt class="py-op">)</tt> <tt class="py-op">&gt;</tt> <tt class="py-name">stack_pos</tt><tt class="py-op">:</tt> </tt>
+<a name="L232"></a><tt class="py-lineno">232</tt>  <tt class="py-line">                <tt class="py-name">component</tt> <tt class="py-op">+=</tt> <tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__stack</tt><tt class="py-op">.</tt><tt id="link-19" class="py-name" targets="Method entropy.cache.EntropyCacher.pop()=entropy.cache.EntropyCacher-class.html#pop,Method entropy.core.settings.base.SystemSettings.pop()=entropy.core.settings.base.SystemSettings-class.html#pop,Method entropy.misc.Lifo.pop()=entropy.misc.Lifo-class.html#pop"><a title="entropy.cache.EntropyCacher.pop
+entropy.core.settings.base.SystemSettings.pop
+entropy.misc.Lifo.pop" class="py-name" href="#" onclick="return doclink('link-19', 'pop', 'link-19');">pop</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">)</tt> </tt>
+<a name="L233"></a><tt class="py-lineno">233</tt>  <tt class="py-line">            <tt class="py-name">result</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">component</tt><tt class="py-op">)</tt> </tt>
+<a name="L234"></a><tt class="py-lineno">234</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">item</tt> <tt class="py-keyword">in</tt> <tt class="py-name">component</tt><tt class="py-op">:</tt> </tt>
+<a name="L235"></a><tt class="py-lineno">235</tt>  <tt class="py-line">                <tt class="py-name">low</tt><tt class="py-op">[</tt><tt class="py-name">item</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">len</tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__adjacency_map</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L236"></a><tt class="py-lineno">236</tt>  <tt class="py-line"> </tt>
+<a name="TopologicalSorter.__strongly_connected_nodes"></a><div id="TopologicalSorter.__strongly_connected_nodes-def"><a name="L237"></a><tt class="py-lineno">237</tt> <a class="py-toggle" href="#" id="TopologicalSorter.__strongly_connected_nodes-toggle" onclick="return toggle('TopologicalSorter.__strongly_connected_nodes');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.TopologicalSorter-class.html#__strongly_connected_nodes">__strongly_connected_nodes</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TopologicalSorter.__strongly_connected_nodes-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TopologicalSorter.__strongly_connected_nodes-expanded"><a name="L238"></a><tt class="py-lineno">238</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L239"></a><tt class="py-lineno">239</tt>  <tt class="py-line"><tt class="py-docstring">        Find the strongly connected nodes in a adjacency_map using</tt> </tt>
+<a name="L240"></a><tt class="py-lineno">240</tt>  <tt class="py-line"><tt class="py-docstring">        Tarjan's algorithm.</tt> </tt>
+<a name="L241"></a><tt class="py-lineno">241</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L242"></a><tt class="py-lineno">242</tt>  <tt class="py-line"><tt class="py-docstring">        adjacency_map should be a dictionary mapping node names to</tt> </tt>
+<a name="L243"></a><tt class="py-lineno">243</tt>  <tt class="py-line"><tt class="py-docstring">        lists of successor nodes.</tt> </tt>
+<a name="L244"></a><tt class="py-lineno">244</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L245"></a><tt class="py-lineno">245</tt>  <tt class="py-line">        <tt class="py-name">result</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt> </tt>
+<a name="L246"></a><tt class="py-lineno">246</tt>  <tt class="py-line">        <tt class="py-name">low</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L247"></a><tt class="py-lineno">247</tt>  <tt class="py-line"> </tt>
+<a name="L248"></a><tt class="py-lineno">248</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">node</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__adjacency_map</tt><tt class="py-op">:</tt> </tt>
+<a name="L249"></a><tt class="py-lineno">249</tt>  <tt class="py-line">            <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__topological_sort_visit_node</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt class="py-name">low</tt><tt class="py-op">,</tt> <tt class="py-name">result</tt><tt class="py-op">)</tt> </tt>
+<a name="L250"></a><tt class="py-lineno">250</tt>  <tt class="py-line"> </tt>
+<a name="L251"></a><tt class="py-lineno">251</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">result</tt> </tt>
+</div><a name="L252"></a><tt class="py-lineno">252</tt>  <tt class="py-line"> </tt>
+<a name="L253"></a><tt class="py-lineno">253</tt>  <tt class="py-line"> </tt>
+<a name="TopologicalSorter.__topological_sort"></a><div id="TopologicalSorter.__topological_sort-def"><a name="L254"></a><tt class="py-lineno">254</tt> <a class="py-toggle" href="#" id="TopologicalSorter.__topological_sort-toggle" onclick="return toggle('TopologicalSorter.__topological_sort');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.TopologicalSorter-class.html#__topological_sort">__topological_sort</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">graph</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TopologicalSorter.__topological_sort-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TopologicalSorter.__topological_sort-expanded"><a name="L255"></a><tt class="py-lineno">255</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L256"></a><tt class="py-lineno">256</tt>  <tt class="py-line"><tt class="py-docstring">        Effectively executes topological sorting on given graph.</tt> </tt>
+<a name="L257"></a><tt class="py-lineno">257</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L258"></a><tt class="py-lineno">258</tt>  <tt class="py-line"> </tt>
+<a name="L259"></a><tt class="py-lineno">259</tt>  <tt class="py-line">        <tt class="py-comment"># initialize count map</tt> </tt>
+<a name="L260"></a><tt class="py-lineno">260</tt>  <tt class="py-line">        <tt class="py-name">count</tt> <tt class="py-op">=</tt> <tt class="py-name">dict</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">,</tt> <tt class="py-number">0</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">node</tt> <tt class="py-keyword">in</tt> <tt id="link-20" class="py-name" targets="Module entropy.graph=entropy.graph-module.html"><a title="entropy.graph" class="py-name" href="#" onclick="return doclink('link-20', 'graph', 'link-20');">graph</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L261"></a><tt class="py-lineno">261</tt>  <tt class="py-line"> </tt>
+<a name="L262"></a><tt class="py-lineno">262</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">node</tt> <tt class="py-keyword">in</tt> <tt id="link-21" class="py-name"><a title="entropy.graph" class="py-name" href="#" onclick="return doclink('link-21', 'graph', 'link-20');">graph</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L263"></a><tt class="py-lineno">263</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">successor</tt> <tt class="py-keyword">in</tt> <tt id="link-22" class="py-name"><a title="entropy.graph" class="py-name" href="#" onclick="return doclink('link-22', 'graph', 'link-20');">graph</a></tt><tt class="py-op">[</tt><tt class="py-name">node</tt><tt class="py-op">]</tt><tt class="py-op">:</tt> </tt>
+<a name="L264"></a><tt class="py-lineno">264</tt>  <tt class="py-line">                <tt class="py-name">count</tt><tt class="py-op">[</tt><tt class="py-name">successor</tt><tt class="py-op">]</tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L265"></a><tt class="py-lineno">265</tt>  <tt class="py-line"> </tt>
+<a name="L266"></a><tt class="py-lineno">266</tt>  <tt class="py-line">        <tt class="py-name">ready_stack</tt> <tt class="py-op">=</tt> <tt id="link-23" class="py-name"><a title="entropy.misc.Lifo" class="py-name" href="#" onclick="return doclink('link-23', 'Lifo', 'link-2');">Lifo</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L267"></a><tt class="py-lineno">267</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">node</tt> <tt class="py-keyword">in</tt> <tt id="link-24" class="py-name"><a title="entropy.graph" class="py-name" href="#" onclick="return doclink('link-24', 'graph', 'link-20');">graph</a></tt><tt class="py-op">:</tt> </tt>
+<a name="L268"></a><tt class="py-lineno">268</tt>  <tt class="py-line">            <tt class="py-keyword">if</tt> <tt class="py-name">count</tt><tt class="py-op">[</tt><tt class="py-name">node</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L269"></a><tt class="py-lineno">269</tt>  <tt class="py-line">                <tt class="py-name">ready_stack</tt><tt class="py-op">.</tt><tt id="link-25" class="py-name"><a title="entropy.cache.EntropyCacher.push
+entropy.misc.Lifo.push" class="py-name" href="#" onclick="return doclink('link-25', 'push', 'link-18');">push</a></tt><tt class="py-op">(</tt><tt class="py-name">node</tt><tt class="py-op">)</tt> </tt>
+<a name="L270"></a><tt class="py-lineno">270</tt>  <tt class="py-line"> </tt>
+<a name="L271"></a><tt class="py-lineno">271</tt>  <tt class="py-line">        <tt class="py-name">dep_level</tt> <tt class="py-op">=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L272"></a><tt class="py-lineno">272</tt>  <tt class="py-line">        <tt class="py-name">result</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L273"></a><tt class="py-lineno">273</tt>  <tt class="py-line">        <tt class="py-keyword">while</tt> <tt class="py-name">ready_stack</tt><tt class="py-op">.</tt><tt id="link-26" class="py-name" targets="Method entropy.misc.Lifo.is_filled()=entropy.misc.Lifo-class.html#is_filled"><a title="entropy.misc.Lifo.is_filled" class="py-name" href="#" onclick="return doclink('link-26', 'is_filled', 'link-26');">is_filled</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L274"></a><tt class="py-lineno">274</tt>  <tt class="py-line"> </tt>
+<a name="L275"></a><tt class="py-lineno">275</tt>  <tt class="py-line">            <tt class="py-name">node</tt> <tt class="py-op">=</tt> <tt class="py-name">ready_stack</tt><tt class="py-op">.</tt><tt id="link-27" class="py-name"><a title="entropy.cache.EntropyCacher.pop
+entropy.core.settings.base.SystemSettings.pop
+entropy.misc.Lifo.pop" class="py-name" href="#" onclick="return doclink('link-27', 'pop', 'link-19');">pop</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L276"></a><tt class="py-lineno">276</tt>  <tt class="py-line">            <tt class="py-name">result</tt><tt class="py-op">[</tt><tt class="py-name">dep_level</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">node</tt> </tt>
+<a name="L277"></a><tt class="py-lineno">277</tt>  <tt class="py-line">            <tt class="py-name">dep_level</tt> <tt class="py-op">+=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L278"></a><tt class="py-lineno">278</tt>  <tt class="py-line"> </tt>
+<a name="L279"></a><tt class="py-lineno">279</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">successor</tt> <tt class="py-keyword">in</tt> <tt id="link-28" class="py-name"><a title="entropy.graph" class="py-name" href="#" onclick="return doclink('link-28', 'graph', 'link-20');">graph</a></tt><tt class="py-op">[</tt><tt class="py-name">node</tt><tt class="py-op">]</tt><tt class="py-op">:</tt> </tt>
+<a name="L280"></a><tt class="py-lineno">280</tt>  <tt class="py-line">                <tt class="py-name">count</tt><tt class="py-op">[</tt><tt class="py-name">successor</tt><tt class="py-op">]</tt> <tt class="py-op">-=</tt> <tt class="py-number">1</tt> </tt>
+<a name="L281"></a><tt class="py-lineno">281</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">count</tt><tt class="py-op">[</tt><tt class="py-name">successor</tt><tt class="py-op">]</tt> <tt class="py-op">==</tt> <tt class="py-number">0</tt><tt class="py-op">:</tt> </tt>
+<a name="L282"></a><tt class="py-lineno">282</tt>  <tt class="py-line">                    <tt class="py-name">ready_stack</tt><tt class="py-op">.</tt><tt id="link-29" class="py-name"><a title="entropy.cache.EntropyCacher.push
+entropy.misc.Lifo.push" class="py-name" href="#" onclick="return doclink('link-29', 'push', 'link-18');">push</a></tt><tt class="py-op">(</tt><tt class="py-name">successor</tt><tt class="py-op">)</tt> </tt>
+<a name="L283"></a><tt class="py-lineno">283</tt>  <tt class="py-line"> </tt>
+<a name="L284"></a><tt class="py-lineno">284</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">result</tt> </tt>
+</div><a name="L285"></a><tt class="py-lineno">285</tt>  <tt class="py-line"> </tt>
+<a name="TopologicalSorter.get_stored_adjacency_map"></a><div id="TopologicalSorter.get_stored_adjacency_map-def"><a name="L286"></a><tt class="py-lineno">286</tt> <a class="py-toggle" href="#" id="TopologicalSorter.get_stored_adjacency_map-toggle" onclick="return toggle('TopologicalSorter.get_stored_adjacency_map');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.TopologicalSorter-class.html#get_stored_adjacency_map">get_stored_adjacency_map</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TopologicalSorter.get_stored_adjacency_map-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TopologicalSorter.get_stored_adjacency_map-expanded"><a name="L287"></a><tt class="py-lineno">287</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L288"></a><tt class="py-lineno">288</tt>  <tt class="py-line"><tt class="py-docstring">        Return stored adjacency map used for sorting.</tt> </tt>
+<a name="L289"></a><tt class="py-lineno">289</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L290"></a><tt class="py-lineno">290</tt>  <tt class="py-line"><tt class="py-docstring">        @return: stored adjacency map</tt> </tt>
+<a name="L291"></a><tt class="py-lineno">291</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: dict</tt> </tt>
+<a name="L292"></a><tt class="py-lineno">292</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L293"></a><tt class="py-lineno">293</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__adjacency_map</tt> </tt>
+</div><a name="L294"></a><tt class="py-lineno">294</tt>  <tt class="py-line"> </tt>
+<a name="TopologicalSorter.sort"></a><div id="TopologicalSorter.sort-def"><a name="L295"></a><tt class="py-lineno">295</tt> <a class="py-toggle" href="#" id="TopologicalSorter.sort-toggle" onclick="return toggle('TopologicalSorter.sort');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.TopologicalSorter-class.html#sort">sort</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="TopologicalSorter.sort-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="TopologicalSorter.sort-expanded"><a name="L296"></a><tt class="py-lineno">296</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L297"></a><tt class="py-lineno">297</tt>  <tt class="py-line"><tt class="py-docstring">        Given an adjacency map, identify strongly connected nodes,</tt> </tt>
+<a name="L298"></a><tt class="py-lineno">298</tt>  <tt class="py-line"><tt class="py-docstring">        then perform a topological sort on them.</tt> </tt>
+<a name="L299"></a><tt class="py-lineno">299</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L300"></a><tt class="py-lineno">300</tt>  <tt class="py-line"><tt class="py-docstring">        @return: sorted graph representation</tt> </tt>
+<a name="L301"></a><tt class="py-lineno">301</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: dict</tt> </tt>
+<a name="L302"></a><tt class="py-lineno">302</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L303"></a><tt class="py-lineno">303</tt>  <tt class="py-line">        <tt class="py-comment"># clear stack</tt> </tt>
+<a name="L304"></a><tt class="py-lineno">304</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__stack</tt><tt class="py-op">.</tt><tt id="link-30" class="py-name" targets="Method entropy.client.mirrors.StatusInterface.clear()=entropy.client.mirrors.StatusInterface-class.html#clear,Method entropy.core.settings.base.SystemSettings.clear()=entropy.core.settings.base.SystemSettings-class.html#clear,Method entropy.misc.Lifo.clear()=entropy.misc.Lifo-class.html#clear,Method entropy.security.System.clear()=entropy.security.System-class.html#clear"><a title="entropy.client.mirrors.StatusInterface.clear
+entropy.core.settings.base.SystemSettings.clear
+entropy.misc.Lifo.clear
+entropy.security.System.clear" class="py-name" href="#" onclick="return doclink('link-30', 'clear', 'link-30');">clear</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L305"></a><tt class="py-lineno">305</tt>  <tt class="py-line"> </tt>
+<a name="L306"></a><tt class="py-lineno">306</tt>  <tt class="py-line">        <tt class="py-name">components</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__strongly_connected_nodes</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L307"></a><tt class="py-lineno">307</tt>  <tt class="py-line"> </tt>
+<a name="L308"></a><tt class="py-lineno">308</tt>  <tt class="py-line">        <tt class="py-name">node_component</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L309"></a><tt class="py-lineno">309</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">component</tt> <tt class="py-keyword">in</tt> <tt class="py-name">components</tt><tt class="py-op">:</tt> </tt>
+<a name="L310"></a><tt class="py-lineno">310</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">node</tt> <tt class="py-keyword">in</tt> <tt class="py-name">component</tt><tt class="py-op">:</tt> </tt>
+<a name="L311"></a><tt class="py-lineno">311</tt>  <tt class="py-line">                <tt class="py-name">node_component</tt><tt class="py-op">[</tt><tt class="py-name">node</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">component</tt> </tt>
+<a name="L312"></a><tt class="py-lineno">312</tt>  <tt class="py-line"> </tt>
+<a name="L313"></a><tt class="py-lineno">313</tt>  <tt class="py-line">        <tt class="py-name">component_graph</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L314"></a><tt class="py-lineno">314</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">node</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__adjacency_map</tt><tt class="py-op">:</tt> </tt>
+<a name="L315"></a><tt class="py-lineno">315</tt>  <tt class="py-line">            <tt class="py-name">node_c</tt> <tt class="py-op">=</tt> <tt class="py-name">node_component</tt><tt class="py-op">[</tt><tt class="py-name">node</tt><tt class="py-op">]</tt> </tt>
+<a name="L316"></a><tt class="py-lineno">316</tt>  <tt class="py-line">            <tt class="py-name">obj</tt> <tt class="py-op">=</tt> <tt class="py-name">component_graph</tt><tt class="py-op">.</tt><tt id="link-31" class="py-name" targets="Method entropy.core.settings.base.SystemSettings.setdefault()=entropy.core.settings.base.SystemSettings-class.html#setdefault"><a title="entropy.core.settings.base.SystemSettings.setdefault" class="py-name" href="#" onclick="return doclink('link-31', 'setdefault', 'link-31');">setdefault</a></tt><tt class="py-op">(</tt><tt class="py-name">node_c</tt><tt class="py-op">,</tt> <tt class="py-op">[</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+<a name="L317"></a><tt class="py-lineno">317</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt class="py-name">successor</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__adjacency_map</tt><tt class="py-op">[</tt><tt class="py-name">node</tt><tt class="py-op">]</tt><tt class="py-op">:</tt> </tt>
+<a name="L318"></a><tt class="py-lineno">318</tt>  <tt class="py-line">                <tt class="py-name">successor_c</tt> <tt class="py-op">=</tt> <tt class="py-name">node_component</tt><tt class="py-op">[</tt><tt class="py-name">successor</tt><tt class="py-op">]</tt> </tt>
+<a name="L319"></a><tt class="py-lineno">319</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">node_c</tt> <tt class="py-op">!=</tt> <tt class="py-name">successor_c</tt><tt class="py-op">:</tt> </tt>
+<a name="L320"></a><tt class="py-lineno">320</tt>  <tt class="py-line">                    <tt class="py-name">obj</tt><tt class="py-op">.</tt><tt class="py-name">append</tt><tt class="py-op">(</tt><tt class="py-name">successor_c</tt><tt class="py-op">)</tt> </tt>
+<a name="L321"></a><tt class="py-lineno">321</tt>  <tt class="py-line"> </tt>
+<a name="L322"></a><tt class="py-lineno">322</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__topological_sort</tt><tt class="py-op">(</tt><tt class="py-name">component_graph</tt><tt class="py-op">)</tt> </tt>
+</div></div><a name="L323"></a><tt class="py-lineno">323</tt>  <tt class="py-line"> </tt>
+<a name="L324"></a><tt class="py-lineno">324</tt>  <tt class="py-line"> </tt>
+<a name="Graph"></a><div id="Graph-def"><a name="L325"></a><tt class="py-lineno">325</tt> <a class="py-toggle" href="#" id="Graph-toggle" onclick="return toggle('Graph');">-</a><tt class="py-line"><tt class="py-keyword">class</tt> <a class="py-def-name" href="entropy.graph.Graph-class.html">Graph</a><tt class="py-op">(</tt><tt class="py-base-class">object</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Graph-collapsed" style="display:none;" pad="+++" indent="++++"></div><div id="Graph-expanded"><a name="L326"></a><tt class="py-lineno">326</tt>  <tt class="py-line"> </tt>
+<a name="L327"></a><tt class="py-lineno">327</tt>  <tt class="py-line">    <tt class="py-docstring">"""</tt> </tt>
+<a name="L328"></a><tt class="py-lineno">328</tt>  <tt class="py-line"><tt class="py-docstring">    This class represents a Graph object. Elements can be added using the</tt> </tt>
+<a name="L329"></a><tt class="py-lineno">329</tt>  <tt class="py-line"><tt class="py-docstring">    add() method and sorted using solve(). This class can also return an</tt> </tt>
+<a name="L330"></a><tt class="py-lineno">330</tt>  <tt class="py-line"><tt class="py-docstring">    adjacency map representing the currently stored elements in graph.</tt> </tt>
+<a name="L331"></a><tt class="py-lineno">331</tt>  <tt class="py-line"><tt class="py-docstring">    A topological sorting algorithm (using Tarjan's) is used to by solve().</tt> </tt>
+<a name="L332"></a><tt class="py-lineno">332</tt>  <tt class="py-line"><tt class="py-docstring">    """</tt> </tt>
+<a name="L333"></a><tt class="py-lineno">333</tt>  <tt class="py-line"> </tt>
+<a name="Graph.__init__"></a><div id="Graph.__init__-def"><a name="L334"></a><tt class="py-lineno">334</tt> <a class="py-toggle" href="#" id="Graph.__init__-toggle" onclick="return toggle('Graph.__init__');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.Graph-class.html#__init__">__init__</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Graph.__init__-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Graph.__init__-expanded"><a name="L335"></a><tt class="py-lineno">335</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L336"></a><tt class="py-lineno">336</tt>  <tt class="py-line"><tt class="py-docstring">        Graph representation constructor.</tt> </tt>
+<a name="L337"></a><tt class="py-lineno">337</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L338"></a><tt class="py-lineno">338</tt>  <tt class="py-line">        <tt class="py-name">object</tt><tt class="py-op">.</tt><tt id="link-32" class="py-name"><a title="entropy.client.interfaces.client.ClientSystemSettingsPlugin.__init__
+entropy.client.interfaces.db.ClientEntropyRepositoryPlugin.__init__
+entropy.client.interfaces.loaders.LoadersMixin.__init__
+entropy.client.interfaces.package.Package.__init__
+entropy.client.interfaces.qa.UGCErrorReportInterface.__init__
+entropy.client.interfaces.repository.Repository.__init__
+entropy.client.interfaces.trigger.Trigger.EntropyPySandbox.__init__
+entropy.client.interfaces.trigger.Trigger.EntropyShSandbox.__init__
+entropy.client.interfaces.trigger.Trigger.__init__
+entropy.client.mirrors.StatusInterface.__init__
+entropy.client.misc.FileUpdates.__init__
+entropy.client.services.system.commands.Client.__init__
+entropy.client.services.system.interfaces.Client.__init__
+entropy.client.services.system.methods.BaseMixin.__init__
+entropy.client.services.system.methods.Repository.__init__
+entropy.client.services.ugc.commands.Base.__init__
+entropy.client.services.ugc.commands.Client.__init__
+entropy.client.services.ugc.interfaces.Cache.__init__
+entropy.client.services.ugc.interfaces.Client.__init__
+entropy.core.EntropyPluginFactory.__init__
+entropy.core.EntropyPluginStore.__init__
+entropy.core.Singleton.__init__
+entropy.core.settings.plugins.skel.SystemSettingsPlugin.__init__
+entropy.db.EntropyRepository.__init__
+entropy.db.plugin_store.EntropyRepositoryPluginStore.__init__
+entropy.exceptions.EntropyException.__init__
+entropy.fetchers.MultipleUrlFetcher.__init__
+entropy.fetchers.UrlFetcher.__init__
+entropy.graph.Graph.__init__
+entropy.misc.Callable.__init__
+entropy.misc.EmailSender.__init__
+entropy.misc.EntropyGeoIP.__init__
+entropy.misc.Lifo.__init__
+entropy.misc.LogFile.__init__
+entropy.misc.MultipartPostHandler.__init__
+entropy.misc.ParallelTask.__init__
+entropy.misc.RSS.__init__
+entropy.misc.TimeScheduled.__init__
+entropy.qa.ErrorReportInterface.__init__
+entropy.qa.QAEntropyRepositoryPlugin.__init__
+entropy.qa.QAInterface.__init__
+entropy.security.System.__init__
+entropy.server.interfaces.main.ServerEntropyRepositoryPlugin.__init__
+entropy.server.interfaces.mirrors.Server.__init__
+entropy.server.transceivers.TransceiverServerHandler.__init__
+entropy.services.auth_interfaces.phpBB3Auth.__init__
+entropy.services.authenticators.phpBB3.__init__
+entropy.services.commands.phpBB3.__init__
+entropy.services.interfaces.SocketHost.BasicPamAuthenticator.__init__
+entropy.services.interfaces.SocketHost.BuiltInCommands.__init__
+entropy.services.interfaces.SocketHost.CommandProcessor.__init__
+entropy.services.interfaces.SocketHost.HostServerMixin.ConnWrapper.__init__
+entropy.services.interfaces.SocketHost.HostServerMixin.__init__
+entropy.services.interfaces.SocketHost.RequestHandler.__init__
+entropy.services.interfaces.SocketHost.__init__
+entropy.services.repository.commands.Repository.__init__
+entropy.services.repository.interfaces.Server.ServiceInterface.__init__
+entropy.services.repository.interfaces.Server.__init__
+entropy.services.skel.Authenticator.__init__
+entropy.services.skel.RemoteDatabase.__init__
+entropy.services.skel.SocketAuthenticator.__init__
+entropy.services.skel.SocketCommands.__init__
+entropy.services.system.commands.Base.__init__
+entropy.services.system.commands.Repository.__init__
+entropy.services.system.executors.Base.__init__
+entropy.services.system.interfaces.Server.BuiltInSystemManagerExecutorCommands.__init__
+entropy.services.system.interfaces.Server.FakeServiceInterface.__init__
+entropy.services.system.interfaces.Server.__init__
+entropy.services.system.interfaces.TaskExecutor.__init__
+entropy.services.test.commands.Test.__init__
+entropy.services.test.interfaces.Server.FakeServiceInterface.__init__
+entropy.services.test.interfaces.Server.__init__
+entropy.services.ugc.commands.UGC.__init__
+entropy.services.ugc.interfaces.Client.__init__
+entropy.services.ugc.interfaces.Server.__init__
+entropy.spm.plugins.interfaces.portage_plugin.PortagePackageGroups.__init__
+entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin.paren_normalize.__init__
+entropy.spm.plugins.interfaces.portage_plugin.xpak.tbz2.__init__
+entropy.transceivers.EntropyTransceiver.__init__
+entropy.transceivers.uri_handlers.plugins.interfaces.ftp_plugin.EntropyFtpUriHandler.__init__
+entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler.__init__
+entropy.transceivers.uri_handlers.skel.EntropyUriHandler.__init__" class="py-name" href="#" onclick="return doclink('link-32', '__init__', 'link-3');">__init__</a></tt><tt class="py-op">(</tt><tt class="py-name">self</tt><tt class="py-op">)</tt> </tt>
+<a name="L339"></a><tt class="py-lineno">339</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__graph</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L340"></a><tt class="py-lineno">340</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__archs_map</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L341"></a><tt class="py-lineno">341</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__graph_map_cache</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L342"></a><tt class="py-lineno">342</tt>  <tt class="py-line"> </tt>
+<a name="Graph.__invalidate_cache"></a><div id="Graph.__invalidate_cache-def"><a name="L343"></a><tt class="py-lineno">343</tt> <a class="py-toggle" href="#" id="Graph.__invalidate_cache-toggle" onclick="return toggle('Graph.__invalidate_cache');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.Graph-class.html#__invalidate_cache">__invalidate_cache</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Graph.__invalidate_cache-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Graph.__invalidate_cache-expanded"><a name="L344"></a><tt class="py-lineno">344</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L345"></a><tt class="py-lineno">345</tt>  <tt class="py-line"><tt class="py-docstring">        Private method, stay away from here.</tt> </tt>
+<a name="L346"></a><tt class="py-lineno">346</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L347"></a><tt class="py-lineno">347</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__graph_map_cache</tt> <tt class="py-op">=</tt> <tt class="py-name">None</tt> </tt>
+</div><a name="L348"></a><tt class="py-lineno">348</tt>  <tt class="py-line"> </tt>
+<a name="Graph.get_node"></a><div id="Graph.get_node-def"><a name="L349"></a><tt class="py-lineno">349</tt> <a class="py-toggle" href="#" id="Graph.get_node-toggle" onclick="return toggle('Graph.get_node');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.Graph-class.html#get_node">get_node</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">item</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Graph.get_node-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Graph.get_node-expanded"><a name="L350"></a><tt class="py-lineno">350</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L351"></a><tt class="py-lineno">351</tt>  <tt class="py-line"><tt class="py-docstring">        Return GraphNode instance for added item (through add())</tt> </tt>
+<a name="L352"></a><tt class="py-lineno">352</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L353"></a><tt class="py-lineno">353</tt>  <tt class="py-line"><tt class="py-docstring">        @param item: Python object to be added to the graph</tt> </tt>
+<a name="L354"></a><tt class="py-lineno">354</tt>  <tt class="py-line"><tt class="py-docstring">        @type item: Python object</tt> </tt>
+<a name="L355"></a><tt class="py-lineno">355</tt>  <tt class="py-line"><tt class="py-docstring">        @return: GraphNode instance bound to item</tt> </tt>
+<a name="L356"></a><tt class="py-lineno">356</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: entropy.graph.GraphNode</tt> </tt>
+<a name="L357"></a><tt class="py-lineno">357</tt>  <tt class="py-line"><tt class="py-docstring">        @raise KeyError: if item is not in Graph</tt> </tt>
+<a name="L358"></a><tt class="py-lineno">358</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L359"></a><tt class="py-lineno">359</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__graph</tt><tt class="py-op">[</tt><tt class="py-name">item</tt><tt class="py-op">]</tt> </tt>
+</div><a name="L360"></a><tt class="py-lineno">360</tt>  <tt class="py-line"> </tt>
+<a name="Graph.add"></a><div id="Graph.add-def"><a name="L361"></a><tt class="py-lineno">361</tt> <a class="py-toggle" href="#" id="Graph.add-toggle" onclick="return toggle('Graph.add');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.Graph-class.html#add">add</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">,</tt> <tt class="py-param">item</tt><tt class="py-op">,</tt> <tt class="py-param">dependency_items</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Graph.add-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Graph.add-expanded"><a name="L362"></a><tt class="py-lineno">362</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L363"></a><tt class="py-lineno">363</tt>  <tt class="py-line"><tt class="py-docstring">        Add arbitrary object to Graph, specifying its dependencies.</tt> </tt>
+<a name="L364"></a><tt class="py-lineno">364</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L365"></a><tt class="py-lineno">365</tt>  <tt class="py-line"><tt class="py-docstring">        @param item: Python object to be added to the graph</tt> </tt>
+<a name="L366"></a><tt class="py-lineno">366</tt>  <tt class="py-line"><tt class="py-docstring">        @type item: Python object</tt> </tt>
+<a name="L367"></a><tt class="py-lineno">367</tt>  <tt class="py-line"><tt class="py-docstring">        @param dependency_items: list of items which are dependencies of</tt> </tt>
+<a name="L368"></a><tt class="py-lineno">368</tt>  <tt class="py-line"><tt class="py-docstring">            the given item object</tt> </tt>
+<a name="L369"></a><tt class="py-lineno">369</tt>  <tt class="py-line"><tt class="py-docstring">        @type dependency_items; set</tt> </tt>
+<a name="L370"></a><tt class="py-lineno">370</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L371"></a><tt class="py-lineno">371</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__invalidate_cache</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L372"></a><tt class="py-lineno">372</tt>  <tt class="py-line"> </tt>
+<a name="L373"></a><tt class="py-lineno">373</tt>  <tt class="py-line">        <tt class="py-name">graph_node</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__graph</tt><tt class="py-op">.</tt><tt id="link-33" class="py-name"><a title="entropy.core.settings.base.SystemSettings.setdefault" class="py-name" href="#" onclick="return doclink('link-33', 'setdefault', 'link-31');">setdefault</a></tt><tt class="py-op">(</tt><tt class="py-name">item</tt><tt class="py-op">,</tt> <tt class="py-name">GraphNode</tt><tt class="py-op">(</tt><tt class="py-name">item</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L374"></a><tt class="py-lineno">374</tt>  <tt class="py-line">        <tt id="link-34" class="py-name"><a title="entropy.client.interfaces.cache.arch
+entropy.client.interfaces.dep.arch
+entropy.client.interfaces.fetch.arch
+entropy.client.interfaces.loaders.arch
+entropy.client.interfaces.methods.arch
+entropy.client.interfaces.trigger.arch
+entropy.const.arch" class="py-name" href="#" onclick="return doclink('link-34', 'arch', 'link-5');">arch</a></tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__archs_map</tt><tt class="py-op">.</tt><tt id="link-35" class="py-name"><a title="entropy.core.settings.base.SystemSettings.setdefault" class="py-name" href="#" onclick="return doclink('link-35', 'setdefault', 'link-31');">setdefault</a></tt><tt class="py-op">(</tt><tt class="py-name">graph_node</tt><tt class="py-op">,</tt> <tt class="py-name">GraphArchSet</tt><tt class="py-op">(</tt><tt class="py-name">graph_node</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L375"></a><tt class="py-lineno">375</tt>  <tt class="py-line">        <tt class="py-name">graph_node</tt><tt class="py-op">.</tt><tt class="py-name">add_arch</tt><tt class="py-op">(</tt><tt id="link-36" class="py-name"><a title="entropy.client.interfaces.cache.arch
+entropy.client.interfaces.dep.arch
+entropy.client.interfaces.fetch.arch
+entropy.client.interfaces.loaders.arch
+entropy.client.interfaces.methods.arch
+entropy.client.interfaces.trigger.arch
+entropy.const.arch" class="py-name" href="#" onclick="return doclink('link-36', 'arch', 'link-5');">arch</a></tt><tt class="py-op">)</tt> </tt>
+<a name="L376"></a><tt class="py-lineno">376</tt>  <tt class="py-line"> </tt>
+<a name="L377"></a><tt class="py-lineno">377</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">dep_item</tt> <tt class="py-keyword">in</tt> <tt class="py-name">dependency_items</tt><tt class="py-op">:</tt> </tt>
+<a name="L378"></a><tt class="py-lineno">378</tt>  <tt class="py-line">            <tt class="py-name">graph_node_dep</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__graph</tt><tt class="py-op">.</tt><tt id="link-37" class="py-name"><a title="entropy.core.settings.base.SystemSettings.setdefault" class="py-name" href="#" onclick="return doclink('link-37', 'setdefault', 'link-31');">setdefault</a></tt><tt class="py-op">(</tt><tt class="py-name">dep_item</tt><tt class="py-op">,</tt> </tt>
+<a name="L379"></a><tt class="py-lineno">379</tt>  <tt class="py-line">                <tt class="py-name">GraphNode</tt><tt class="py-op">(</tt><tt class="py-name">dep_item</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+<a name="L380"></a><tt class="py-lineno">380</tt>  <tt class="py-line">            <tt id="link-38" class="py-name"><a title="entropy.client.interfaces.cache.arch
+entropy.client.interfaces.dep.arch
+entropy.client.interfaces.fetch.arch
+entropy.client.interfaces.loaders.arch
+entropy.client.interfaces.methods.arch
+entropy.client.interfaces.trigger.arch
+entropy.const.arch" class="py-name" href="#" onclick="return doclink('link-38', 'arch', 'link-5');">arch</a></tt><tt class="py-op">.</tt><tt class="py-name">add_endpoint</tt><tt class="py-op">(</tt><tt class="py-name">graph_node_dep</tt><tt class="py-op">)</tt> </tt>
+<a name="L381"></a><tt class="py-lineno">381</tt>  <tt class="py-line">            <tt class="py-name">graph_node_dep</tt><tt class="py-op">.</tt><tt class="py-name">add_arch</tt><tt class="py-op">(</tt><tt id="link-39" class="py-name"><a title="entropy.client.interfaces.cache.arch
+entropy.client.interfaces.dep.arch
+entropy.client.interfaces.fetch.arch
+entropy.client.interfaces.loaders.arch
+entropy.client.interfaces.methods.arch
+entropy.client.interfaces.trigger.arch
+entropy.const.arch" class="py-name" href="#" onclick="return doclink('link-39', 'arch', 'link-5');">arch</a></tt><tt class="py-op">)</tt> </tt>
+</div><a name="L382"></a><tt class="py-lineno">382</tt>  <tt class="py-line"> </tt>
+<a name="Graph.get_adjacency_map"></a><div id="Graph.get_adjacency_map-def"><a name="L383"></a><tt class="py-lineno">383</tt> <a class="py-toggle" href="#" id="Graph.get_adjacency_map-toggle" onclick="return toggle('Graph.get_adjacency_map');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.Graph-class.html#get_adjacency_map">get_adjacency_map</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Graph.get_adjacency_map-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Graph.get_adjacency_map-expanded"><a name="L384"></a><tt class="py-lineno">384</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L385"></a><tt class="py-lineno">385</tt>  <tt class="py-line"><tt class="py-docstring">        Return an adjacency map given the current items in Graph.</tt> </tt>
+<a name="L386"></a><tt class="py-lineno">386</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L387"></a><tt class="py-lineno">387</tt>  <tt class="py-line"><tt class="py-docstring">        @return: adjacency map</tt> </tt>
+<a name="L388"></a><tt class="py-lineno">388</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: dict</tt> </tt>
+<a name="L389"></a><tt class="py-lineno">389</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L390"></a><tt class="py-lineno">390</tt>  <tt class="py-line">        <tt class="py-keyword">if</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__graph_map_cache</tt> <tt class="py-keyword">is</tt> <tt class="py-keyword">not</tt> <tt class="py-name">None</tt><tt class="py-op">:</tt> </tt>
+<a name="L391"></a><tt class="py-lineno">391</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__graph_map_cache</tt> </tt>
+<a name="L392"></a><tt class="py-lineno">392</tt>  <tt class="py-line"> </tt>
+<a name="L393"></a><tt class="py-lineno">393</tt>  <tt class="py-line">        <tt class="py-name">graph_map</tt> <tt class="py-op">=</tt> <tt class="py-op">{</tt><tt class="py-op">}</tt> </tt>
+<a name="L394"></a><tt class="py-lineno">394</tt>  <tt class="py-line">        <tt class="py-keyword">for</tt> <tt class="py-name">node_item</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__graph</tt><tt class="py-op">.</tt><tt id="link-40" class="py-name" targets="Method entropy.core.settings.base.SystemSettings.values()=entropy.core.settings.base.SystemSettings-class.html#values"><a title="entropy.core.settings.base.SystemSettings.values" class="py-name" href="#" onclick="return doclink('link-40', 'values', 'link-40');">values</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L395"></a><tt class="py-lineno">395</tt>  <tt class="py-line"> </tt>
+<a name="L396"></a><tt class="py-lineno">396</tt>  <tt class="py-line">            <tt class="py-name">my_graph_map</tt> <tt class="py-op">=</tt> <tt class="py-name">set</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L397"></a><tt class="py-lineno">397</tt>  <tt class="py-line">            <tt class="py-keyword">for</tt> <tt id="link-41" class="py-name"><a title="entropy.client.interfaces.cache.arch
+entropy.client.interfaces.dep.arch
+entropy.client.interfaces.fetch.arch
+entropy.client.interfaces.loaders.arch
+entropy.client.interfaces.methods.arch
+entropy.client.interfaces.trigger.arch
+entropy.const.arch" class="py-name" href="#" onclick="return doclink('link-41', 'arch', 'link-5');">arch</a></tt> <tt class="py-keyword">in</tt> <tt class="py-name">node_item</tt><tt class="py-op">.</tt><tt id="link-42" class="py-name"><a title="entropy.client.interfaces.cache.arches
+entropy.client.interfaces.dep.arches
+entropy.client.interfaces.fetch.arches
+entropy.client.interfaces.loaders.arches
+entropy.client.interfaces.methods.arches
+entropy.client.interfaces.trigger.arches
+entropy.const.arches" class="py-name" href="#" onclick="return doclink('link-42', 'arches', 'link-4');">arches</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L398"></a><tt class="py-lineno">398</tt>  <tt class="py-line">                <tt class="py-keyword">if</tt> <tt class="py-name">node_item</tt><tt class="py-op">.</tt><tt class="py-name">is_arch_outgoing</tt><tt class="py-op">(</tt><tt id="link-43" class="py-name"><a title="entropy.client.interfaces.cache.arch
+entropy.client.interfaces.dep.arch
+entropy.client.interfaces.fetch.arch
+entropy.client.interfaces.loaders.arch
+entropy.client.interfaces.methods.arch
+entropy.client.interfaces.trigger.arch
+entropy.const.arch" class="py-name" href="#" onclick="return doclink('link-43', 'arch', 'link-5');">arch</a></tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L399"></a><tt class="py-lineno">399</tt>  <tt class="py-line">                    <tt class="py-name">my_graph_map</tt> <tt class="py-op">|=</tt> <tt id="link-44" class="py-name"><a title="entropy.client.interfaces.cache.arch
+entropy.client.interfaces.dep.arch
+entropy.client.interfaces.fetch.arch
+entropy.client.interfaces.loaders.arch
+entropy.client.interfaces.methods.arch
+entropy.client.interfaces.trigger.arch
+entropy.const.arch" class="py-name" href="#" onclick="return doclink('link-44', 'arch', 'link-5');">arch</a></tt><tt class="py-op">.</tt><tt class="py-name">endpoints</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L400"></a><tt class="py-lineno">400</tt>  <tt class="py-line"> </tt>
+<a name="L401"></a><tt class="py-lineno">401</tt>  <tt class="py-line">            <tt class="py-name">graph_map</tt><tt class="py-op">[</tt><tt class="py-name">node_item</tt><tt class="py-op">]</tt> <tt class="py-op">=</tt> <tt class="py-name">my_graph_map</tt> </tt>
+<a name="L402"></a><tt class="py-lineno">402</tt>  <tt class="py-line"> </tt>
+<a name="L403"></a><tt class="py-lineno">403</tt>  <tt class="py-line">        <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__graph_map_cache</tt> <tt class="py-op">=</tt> <tt class="py-name">graph_map</tt> </tt>
+<a name="L404"></a><tt class="py-lineno">404</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">graph_map</tt> </tt>
+</div><a name="L405"></a><tt class="py-lineno">405</tt>  <tt class="py-line"> </tt>
+<a name="Graph.solve_nodes"></a><div id="Graph.solve_nodes-def"><a name="L406"></a><tt class="py-lineno">406</tt> <a class="py-toggle" href="#" id="Graph.solve_nodes-toggle" onclick="return toggle('Graph.solve_nodes');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.Graph-class.html#solve_nodes">solve_nodes</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Graph.solve_nodes-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Graph.solve_nodes-expanded"><a name="L407"></a><tt class="py-lineno">407</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L408"></a><tt class="py-lineno">408</tt>  <tt class="py-line"><tt class="py-docstring">        This method is equal to solve() but doesn't do any item back-translation</tt> </tt>
+<a name="L409"></a><tt class="py-lineno">409</tt>  <tt class="py-line"><tt class="py-docstring">        and just returns the relation between GraphNode objects that can be</tt> </tt>
+<a name="L410"></a><tt class="py-lineno">410</tt>  <tt class="py-line"><tt class="py-docstring">        manipulated directly by the caller.</tt> </tt>
+<a name="L411"></a><tt class="py-lineno">411</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L412"></a><tt class="py-lineno">412</tt>  <tt class="py-line"><tt class="py-docstring">        @return: sorted graph representation (returning GraphNode objects)</tt> </tt>
+<a name="L413"></a><tt class="py-lineno">413</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: dict</tt> </tt>
+<a name="L414"></a><tt class="py-lineno">414</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L415"></a><tt class="py-lineno">415</tt>  <tt class="py-line">        <tt class="py-name">adj_map</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-45" class="py-name" targets="Method entropy.graph.Graph.get_adjacency_map()=entropy.graph.Graph-class.html#get_adjacency_map"><a title="entropy.graph.Graph.get_adjacency_map" class="py-name" href="#" onclick="return doclink('link-45', 'get_adjacency_map', 'link-45');">get_adjacency_map</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L416"></a><tt class="py-lineno">416</tt>  <tt class="py-line">        <tt class="py-name">sorter</tt> <tt class="py-op">=</tt> <tt class="py-name">TopologicalSorter</tt><tt class="py-op">(</tt><tt class="py-name">adj_map</tt><tt class="py-op">)</tt> </tt>
+<a name="L417"></a><tt class="py-lineno">417</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">sorter</tt><tt class="py-op">.</tt><tt class="py-name">sort</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L418"></a><tt class="py-lineno">418</tt>  <tt class="py-line"> </tt>
+<a name="Graph.solve"></a><div id="Graph.solve-def"><a name="L419"></a><tt class="py-lineno">419</tt> <a class="py-toggle" href="#" id="Graph.solve-toggle" onclick="return toggle('Graph.solve');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.Graph-class.html#solve">solve</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Graph.solve-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Graph.solve-expanded"><a name="L420"></a><tt class="py-lineno">420</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L421"></a><tt class="py-lineno">421</tt>  <tt class="py-line"><tt class="py-docstring">        Thanks to "R. E. Tarjan" (1972) for the help ;-)</tt> </tt>
+<a name="L422"></a><tt class="py-lineno">422</tt>  <tt class="py-line"><tt class="py-docstring">        Serialize the graph and spit out a dependency order.</tt> </tt>
+<a name="L423"></a><tt class="py-lineno">423</tt>  <tt class="py-line"><tt class="py-docstring">        Data is returned in map form, where key represents the dependency</tt> </tt>
+<a name="L424"></a><tt class="py-lineno">424</tt>  <tt class="py-line"><tt class="py-docstring">        level and value a list of items at that dependency level.</tt> </tt>
+<a name="L425"></a><tt class="py-lineno">425</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L426"></a><tt class="py-lineno">426</tt>  <tt class="py-line"><tt class="py-docstring">        @return: sorted graph representation</tt> </tt>
+<a name="L427"></a><tt class="py-lineno">427</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: dict</tt> </tt>
+<a name="L428"></a><tt class="py-lineno">428</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L429"></a><tt class="py-lineno">429</tt>  <tt class="py-line">        <tt class="py-keyword">def</tt> <tt class="py-def-name">trans_vals</tt><tt class="py-op">(</tt><tt class="py-param">node_list</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+<a name="L430"></a><tt class="py-lineno">430</tt>  <tt class="py-line">            <tt class="py-keyword">return</tt> <tt class="py-name">tuple</tt><tt class="py-op">(</tt><tt class="py-op">[</tt><tt class="py-name">x</tt><tt class="py-op">.</tt><tt class="py-name">item</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">x</tt> <tt class="py-keyword">in</tt> <tt class="py-name">node_list</tt><tt class="py-op">]</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L431"></a><tt class="py-lineno">431</tt>  <tt class="py-line"> </tt>
+<a name="L432"></a><tt class="py-lineno">432</tt>  <tt class="py-line">        <tt class="py-name">sorted_data</tt> <tt class="py-op">=</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt id="link-46" class="py-name" targets="Method entropy.graph.Graph.solve_nodes()=entropy.graph.Graph-class.html#solve_nodes"><a title="entropy.graph.Graph.solve_nodes" class="py-name" href="#" onclick="return doclink('link-46', 'solve_nodes', 'link-46');">solve_nodes</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt> </tt>
+<a name="L433"></a><tt class="py-lineno">433</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-name">dict</tt><tt class="py-op">(</tt><tt class="py-op">(</tt><tt class="py-name">x</tt><tt class="py-op">,</tt> <tt class="py-name">trans_vals</tt><tt class="py-op">(</tt><tt class="py-name">y</tt><tt class="py-op">)</tt><tt class="py-op">,</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">x</tt><tt class="py-op">,</tt> <tt class="py-name">y</tt> <tt class="py-keyword">in</tt> <tt class="py-name">sorted_data</tt><tt class="py-op">.</tt><tt id="link-47" class="py-name" targets="Method entropy.core.settings.base.SystemSettings.items()=entropy.core.settings.base.SystemSettings-class.html#items"><a title="entropy.core.settings.base.SystemSettings.items" class="py-name" href="#" onclick="return doclink('link-47', 'items', 'link-47');">items</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">)</tt> </tt>
+</div><a name="L434"></a><tt class="py-lineno">434</tt>  <tt class="py-line"> </tt>
+<a name="Graph.raw"></a><div id="Graph.raw-def"><a name="L435"></a><tt class="py-lineno">435</tt> <a class="py-toggle" href="#" id="Graph.raw-toggle" onclick="return toggle('Graph.raw');">-</a><tt class="py-line">    <tt class="py-keyword">def</tt> <a class="py-def-name" href="entropy.graph.Graph-class.html#raw">raw</a><tt class="py-op">(</tt><tt class="py-param">self</tt><tt class="py-op">)</tt><tt class="py-op">:</tt> </tt>
+</div><div id="Graph.raw-collapsed" style="display:none;" pad="+++" indent="++++++++"></div><div id="Graph.raw-expanded"><a name="L436"></a><tt class="py-lineno">436</tt>  <tt class="py-line">        <tt class="py-docstring">"""</tt> </tt>
+<a name="L437"></a><tt class="py-lineno">437</tt>  <tt class="py-line"><tt class="py-docstring">        Return all items stored in the graph in raw form (list) without sorting</tt> </tt>
+<a name="L438"></a><tt class="py-lineno">438</tt>  <tt class="py-line"><tt class="py-docstring">        them.</tt> </tt>
+<a name="L439"></a><tt class="py-lineno">439</tt>  <tt class="py-line"><tt class="py-docstring"></tt> </tt>
+<a name="L440"></a><tt class="py-lineno">440</tt>  <tt class="py-line"><tt class="py-docstring">        @return: list of items added to Graph</tt> </tt>
+<a name="L441"></a><tt class="py-lineno">441</tt>  <tt class="py-line"><tt class="py-docstring">        @rtype: list</tt> </tt>
+<a name="L442"></a><tt class="py-lineno">442</tt>  <tt class="py-line"><tt class="py-docstring">        """</tt> </tt>
+<a name="L443"></a><tt class="py-lineno">443</tt>  <tt class="py-line">        <tt class="py-keyword">return</tt> <tt class="py-op">[</tt><tt class="py-name">x</tt><tt class="py-op">.</tt><tt class="py-name">item</tt><tt class="py-op">(</tt><tt class="py-op">)</tt> <tt class="py-keyword">for</tt> <tt class="py-name">x</tt> <tt class="py-keyword">in</tt> <tt class="py-name">self</tt><tt class="py-op">.</tt><tt class="py-name">__graph</tt><tt class="py-op">.</tt><tt id="link-48" class="py-name"><a title="entropy.core.settings.base.SystemSettings.values" class="py-name" href="#" onclick="return doclink('link-48', 'values', 'link-40');">values</a></tt><tt class="py-op">(</tt><tt class="py-op">)</tt><tt class="py-op">]</tt> </tt>
+</div></div><a name="L444"></a><tt class="py-lineno">444</tt>  <tt class="py-line"> </tt>
+<a name="L445"></a><tt class="py-lineno">445</tt>  <tt class="py-line"> </tt>
+<a name="L446"></a><tt class="py-lineno">446</tt>  <tt class="py-line"><tt class="py-name">__all__</tt> <tt class="py-op">=</tt> <tt class="py-op">[</tt><tt class="py-string">"Graph"</tt><tt class="py-op">]</tt> </tt>
+<a name="L447"></a><tt class="py-lineno">447</tt>  <tt class="py-line"> </tt><script type="text/javascript">
+<!--
+expandto(location.href);
+// -->
+</script>
+</pre>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sun Dec 13 00:16:37 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

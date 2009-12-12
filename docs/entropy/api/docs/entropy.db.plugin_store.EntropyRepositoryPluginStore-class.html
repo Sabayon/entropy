@@ -1,0 +1,621 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.db.plugin_store.EntropyRepositoryPluginStore</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.db-module.html">Package&nbsp;db</a> ::
+        <a href="entropy.db.plugin_store-module.html">Module&nbsp;plugin_store</a> ::
+        Class&nbsp;EntropyRepositoryPluginStore
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class EntropyRepositoryPluginStore</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__27" name="uml_class_diagram_for_entropy__27">
+<area shape="rect" id="node80" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#__init__" title="entropy.db.plugin_store.EntropyRepositoryPluginStore.__init__" alt="" coords="17,116,343,135"/>
+<area shape="rect" id="node80" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#add_plugin" title="Overloaded from EntropyPluginStore, adds support for hooks execution." alt="" coords="17,135,343,153"/>
+<area shape="rect" id="node80" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#remove_plugin" title="Overloaded from EntropyPluginStore, adds support for hooks execution." alt="" coords="17,153,343,172"/>
+<area shape="rect" id="node80" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#add_permanent_plugin" title="Add EntropyRepository permanent plugin." alt="" coords="17,172,343,191"/>
+<area shape="rect" id="node80" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#remove_permanent_plugin" title="Remove EntropyRepository permanent plugin." alt="" coords="17,191,343,209"/>
+<area shape="rect" id="node80" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_permanent_plugins" title="Return EntropyRepositoryStore installed permanent plugins." alt="" coords="17,209,343,228"/>
+<area shape="rect" id="node80" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugins" title="Overloaded from EntropyPluginStore, adds support for permanent plugins." alt="" coords="17,228,343,247"/>
+<area shape="rect" id="node80" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugins_metadata" title="Return EntropyRepositoryPluginStore registered plugins metadata." alt="" coords="17,247,343,265"/>
+<area shape="rect" id="node80" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugin_metadata" title="Return EntropyRepositoryPlugin metadata value referenced by &quot;key&quot;." alt="" coords="17,265,343,284"/>
+<area shape="rect" id="node80" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#set_plugin_metadata" title="Set EntropyRepositoryPlugin stored metadata." alt="" coords="17,284,343,303"/>
+<area shape="rect" id="node1" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="5,83,355,309"/>
+<area shape="rect" id="node3" href="entropy.db.EntropyRepository-class.html" title="EntropyRepository implements SQLite3 based storage." alt="" coords="104,329,256,367"/>
+<area shape="rect" id="node81" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="103,39,256,57"/>
+<area shape="rect" id="node2" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="91,6,267,63"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__27.gif" alt='' usemap="#uml_class_diagram_for_entropy__27" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<p>EntropyRepository plugin interface. This is the EntropyRepository part
+  aimed to handle connected plugins.</p>
+
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#add_plugin" class="summary-sig-name">add_plugin</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">entropy_repository_plugin</span>)</span><br />
+      Overloaded from EntropyPluginStore, adds support for hooks execution.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore.add_plugin">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#remove_plugin" class="summary-sig-name">remove_plugin</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">plugin_id</span>)</span><br />
+      Overloaded from EntropyPluginStore, adds support for hooks execution.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore.remove_plugin">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">dict</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugins" class="summary-sig-name">get_plugins</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Overloaded from EntropyPluginStore, adds support for permanent 
+      plugins.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore.get_plugins">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">dict</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugins_metadata" class="summary-sig-name">get_plugins_metadata</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return EntropyRepositoryPluginStore registered plugins metadata.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore.get_plugins_metadata">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">any Python object</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugin_metadata" class="summary-sig-name">get_plugin_metadata</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">plugin_id</span>,
+        <span class="summary-sig-arg">key</span>)</span><br />
+      Return EntropyRepositoryPlugin metadata value referenced by 
+      &quot;key&quot;.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore.get_plugin_metadata">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#set_plugin_metadata" class="summary-sig-name">set_plugin_metadata</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">plugin_id</span>,
+        <span class="summary-sig-arg">key</span>,
+        <span class="summary-sig-arg">value</span>)</span><br />
+      Set EntropyRepositoryPlugin stored metadata.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore.set_plugin_metadata">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.EntropyPluginStore-class.html">core.EntropyPluginStore</a></code></b>:
+      <code><a href="entropy.core.EntropyPluginStore-class.html#drop_plugins">drop_plugins</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== STATIC METHODS ==================== -->
+<a name="section-StaticMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Static Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#add_permanent_plugin" class="summary-sig-name">add_permanent_plugin</a>(<span class="summary-sig-arg">entropy_repository_plugin</span>)</span><br />
+      Add EntropyRepository permanent plugin.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#remove_permanent_plugin" class="summary-sig-name">remove_permanent_plugin</a>(<span class="summary-sig-arg">plugin_id</span>)</span><br />
+      Remove EntropyRepository permanent plugin.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">dict</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_permanent_plugins" class="summary-sig-name">get_permanent_plugins</a>()</span><br />
+      Return EntropyRepositoryStore installed permanent plugins.</td>
+          <td align="right" valign="top">
+            
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="entropy.core.EntropyPluginStore-class.html#__init__">core.EntropyPluginStore.__init__</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="add_plugin"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">add_plugin</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">entropy_repository_plugin</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore.add_plugin">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Overloaded from EntropyPluginStore, adds support for hooks 
+  execution.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>plugin_id</code></strong> - plugin identifier</li>
+        <li><strong class="pname"><code>plugin_object</code></strong> - valid SystemSettingsPlugin instance</li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="entropy.core.EntropyPluginStore-class.html#add_plugin">core.EntropyPluginStore.add_plugin</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remove_plugin"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remove_plugin</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">plugin_id</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore.remove_plugin">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Overloaded from EntropyPluginStore, adds support for hooks 
+  execution.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>plugin_id</code></strong> - plugin identifier</li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="entropy.core.EntropyPluginStore-class.html#remove_plugin">core.EntropyPluginStore.remove_plugin</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="add_permanent_plugin"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">add_permanent_plugin</span>(<span class="sig-arg">entropy_repository_plugin</span>)</span>
+    <br /><em class="fname">Static Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Add EntropyRepository permanent plugin. This plugin object will be 
+  used across all the instantiated EntropyRepositoryPluginStore classes. 
+  Each time a new instance is created, add_plugin_hook will be executed for
+  all the permanent plugins.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>entropy_repository_plugin</code></strong> (EntropyRepositoryPlugin instance) - EntropyRepositoryPlugin instance</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="remove_permanent_plugin"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">remove_permanent_plugin</span>(<span class="sig-arg">plugin_id</span>)</span>
+    <br /><em class="fname">Static Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove EntropyRepository permanent plugin. This plugin object will be 
+  removed across all the EntropyRepository instances around. Please note: 
+  due to the fact that there are no destructors around, the 
+  &quot;remove_plugin_hook&quot; callback won't be executed when calling 
+  this static method.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>plugin_id</code></strong> (string) - EntropyRepositoryPlugin identifier</li>
+    </ul></dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>KeyError</strong></code> - in case of unavailable plugin identifier</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_permanent_plugins"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_permanent_plugins</span>()</span>
+    <br /><em class="fname">Static Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    >&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return EntropyRepositoryStore installed permanent plugins.</p>
+  <dl class="fields">
+    <dt>Returns: dict</dt>
+        <dd>copy of internal permanent plugins dict</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_plugins"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_plugins</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore.get_plugins">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Overloaded from EntropyPluginStore, adds support for permanent 
+  plugins.</p>
+  <dl class="fields">
+    <dt>Returns: dict</dt>
+        <dd>stored plugins map</dd>
+    <dt>Overrides:
+        <a href="entropy.core.EntropyPluginStore-class.html#get_plugins">core.EntropyPluginStore.get_plugins</a>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_plugins_metadata"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_plugins_metadata</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore.get_plugins_metadata">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return EntropyRepositoryPluginStore registered plugins metadata.</p>
+  <dl class="fields">
+    <dt>Returns: dict</dt>
+        <dd>plugins metadata</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_plugin_metadata"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_plugin_metadata</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">plugin_id</span>,
+        <span class="sig-arg">key</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore.get_plugin_metadata">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return EntropyRepositoryPlugin metadata value referenced by 
+  &quot;key&quot;.</p>
+  <p>@param plugin_id. EntropyRepositoryPlugin identifier</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>key</code></strong> (string) - EntropyRepositoryPlugin metadatum identifier</li>
+        <li><strong class="pname"><code>plugin_id</code></strong> (string)</li>
+    </ul></dd>
+    <dt>Returns: any Python object</dt>
+        <dd>metadatum value</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>KeyError</strong></code> - if provided key or plugin_id is not available</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="set_plugin_metadata"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">set_plugin_metadata</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">plugin_id</span>,
+        <span class="sig-arg">key</span>,
+        <span class="sig-arg">value</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db.plugin_store-pysrc.html#EntropyRepositoryPluginStore.set_plugin_metadata">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Set EntropyRepositoryPlugin stored metadata.</p>
+  <p>@param plugin_id. EntropyRepositoryPlugin identifier</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>key</code></strong> (string) - EntropyRepositoryPlugin metadatum identifier</li>
+        <li><strong class="pname"><code>value</code></strong> (any valid Python object) - value to set</li>
+        <li><strong class="pname"><code>plugin_id</code></strong> (string)</li>
+    </ul></dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>KeyError</strong></code> - if plugin_id is not available</li>
+    </ul></dd>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sun Dec 13 00:16:19 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

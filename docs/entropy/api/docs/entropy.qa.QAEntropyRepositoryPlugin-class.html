@@ -57,7 +57,27 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class QAEntropyRepositoryPlugin</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.qa-pysrc.html#QAEntropyRepositoryPlugin">source&nbsp;code</a></span></p>
 <center>
-
+<center>  <map id="uml_class_diagram_for_entropy__73" name="uml_class_diagram_for_entropy__73">
+<area shape="rect" id="node293" href="entropy.qa.QAEntropyRepositoryPlugin-class.html#__init__" title="Entropy QA&#45;side repository EntropyRepository Plugin class." alt="" coords="139,303,472,321"/>
+<area shape="rect" id="node293" href="entropy.qa.QAEntropyRepositoryPlugin-class.html#get_metadata" title="Developers reimplementing EntropyRepositoryPlugin can provide metadata &#160;along with every instance." alt="" coords="139,321,472,340"/>
+<area shape="rect" id="node293" href="entropy.qa.QAEntropyRepositoryPlugin-class.html#get_id" title="Return string identifier of myself." alt="" coords="139,340,472,359"/>
+<area shape="rect" id="node293" href="entropy.qa.QAEntropyRepositoryPlugin-class.html#add_plugin_hook" title="Called during EntropyRepository plugin addition." alt="" coords="139,359,472,377"/>
+<area shape="rect" id="node1" href="entropy.qa.QAEntropyRepositoryPlugin-class.html" title="entropy.qa.QAEntropyRepositoryPlugin" alt="" coords="127,270,484,383"/>
+<area shape="rect" id="node294" href="entropy.db.skel.EntropyRepositoryPlugin-class.html#remove_plugin_hook" title="Called during EntropyRepository plugin removal." alt="" coords="17,39,592,57"/>
+<area shape="rect" id="node294" href="entropy.db.skel.EntropyRepositoryPlugin-class.html#commit_hook" title="Called during EntropyRepository data commit." alt="" coords="17,57,592,76"/>
+<area shape="rect" id="node294" href="entropy.db.skel.EntropyRepositoryPlugin-class.html#close_repo_hook" title="Called during EntropyRepository instance shutdown (closeDB)." alt="" coords="17,76,592,95"/>
+<area shape="rect" id="node294" href="entropy.db.skel.EntropyRepositoryPlugin-class.html#add_package_hook" title="Called after the addition of a package from EntropyRepository." alt="" coords="17,95,592,113"/>
+<area shape="rect" id="node294" href="entropy.db.skel.EntropyRepositoryPlugin-class.html#remove_package_hook" title="Called after the removal of a package from EntropyRepository." alt="" coords="17,113,592,132"/>
+<area shape="rect" id="node294" href="entropy.db.skel.EntropyRepositoryPlugin-class.html#clear_cache_hook" title="Called during EntropyRepository cache cleanup (clearCache)." alt="" coords="17,132,592,151"/>
+<area shape="rect" id="node294" href="entropy.db.skel.EntropyRepositoryPlugin-class.html#initialize_repo_hook" title="Called during EntropyRepository data initialization (not instance init)." alt="" coords="17,151,592,169"/>
+<area shape="rect" id="node294" href="entropy.db.skel.EntropyRepositoryPlugin-class.html#accept_license_hook" title="Called during EntropyRepository acceptLicense call." alt="" coords="17,169,592,188"/>
+<area shape="rect" id="node294" href="entropy.db.skel.EntropyRepositoryPlugin-class.html#treeupdates_move_action_hook" title="Called after EntropyRepository treeupdates move action execution for given &#160;idpackage in given EntropyRepository instance." alt="" coords="17,188,592,207"/>
+<area shape="rect" id="node294" href="entropy.db.skel.EntropyRepositoryPlugin-class.html#treeupdates_slot_move_action_hook" title="Called after EntropyRepository treeupdates slot move action execution for &#160;given idpackage in given EntropyRepository instance." alt="" coords="17,207,592,225"/>
+<area shape="rect" id="node294" href="entropy.db.skel.EntropyRepositoryPlugin-class.html#reverse_dependencies_tree_generation_hook" title="This hook is called inside &#160;EntropyRepository.generateReverseDependenciesMetadata() method at the very &#160;end of the function code." alt="" coords="17,225,592,244"/>
+<area shape="rect" id="node2" href="entropy.db.skel.EntropyRepositoryPlugin-class.html" title="This is the base class for implementing EntropyRepository plugin hooks." alt="" coords="5,6,603,250"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__73.gif" alt='' usemap="#uml_class_diagram_for_entropy__73" ismap="ismap" class="graph-without-title" />
+</center>
 </center>
 <hr />
 <!-- ==================== INSTANCE METHODS ==================== -->
@@ -142,18 +162,18 @@
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.db.EntropyRepositoryPlugin-class.html">db.EntropyRepositoryPlugin</a></code></b>:
-      <code><a href="entropy.db.EntropyRepositoryPlugin-class.html#accept_license_hook">accept_license_hook</a></code>,
-      <code><a href="entropy.db.EntropyRepositoryPlugin-class.html#add_package_hook">add_package_hook</a></code>,
-      <code><a href="entropy.db.EntropyRepositoryPlugin-class.html#clear_cache_hook">clear_cache_hook</a></code>,
-      <code><a href="entropy.db.EntropyRepositoryPlugin-class.html#close_repo_hook">close_repo_hook</a></code>,
-      <code><a href="entropy.db.EntropyRepositoryPlugin-class.html#commit_hook">commit_hook</a></code>,
-      <code><a href="entropy.db.EntropyRepositoryPlugin-class.html#initialize_repo_hook">initialize_repo_hook</a></code>,
-      <code><a href="entropy.db.EntropyRepositoryPlugin-class.html#remove_package_hook">remove_package_hook</a></code>,
-      <code><a href="entropy.db.EntropyRepositoryPlugin-class.html#remove_plugin_hook">remove_plugin_hook</a></code>,
-      <code><a href="entropy.db.EntropyRepositoryPlugin-class.html#reverse_dependencies_tree_generation_hook">reverse_dependencies_tree_generation_hook</a></code>,
-      <code><a href="entropy.db.EntropyRepositoryPlugin-class.html#treeupdates_move_action_hook">treeupdates_move_action_hook</a></code>,
-      <code><a href="entropy.db.EntropyRepositoryPlugin-class.html#treeupdates_slot_move_action_hook">treeupdates_slot_move_action_hook</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.db.skel.EntropyRepositoryPlugin-class.html">db.skel.EntropyRepositoryPlugin</a></code></b>:
+      <code><a href="entropy.db.skel.EntropyRepositoryPlugin-class.html#accept_license_hook">accept_license_hook</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryPlugin-class.html#add_package_hook">add_package_hook</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryPlugin-class.html#clear_cache_hook">clear_cache_hook</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryPlugin-class.html#close_repo_hook">close_repo_hook</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryPlugin-class.html#commit_hook">commit_hook</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryPlugin-class.html#initialize_repo_hook">initialize_repo_hook</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryPlugin-class.html#remove_package_hook">remove_package_hook</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryPlugin-class.html#remove_plugin_hook">remove_plugin_hook</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryPlugin-class.html#reverse_dependencies_tree_generation_hook">reverse_dependencies_tree_generation_hook</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryPlugin-class.html#treeupdates_move_action_hook">treeupdates_move_action_hook</a></code>,
+      <code><a href="entropy.db.skel.EntropyRepositoryPlugin-class.html#treeupdates_slot_move_action_hook">treeupdates_slot_move_action_hook</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -254,7 +274,7 @@
     <dt>Returns: dict</dt>
         <dd>plugin metadata</dd>
     <dt>Overrides:
-        <a href="entropy.db.EntropyRepositoryPlugin-class.html#get_metadata">db.EntropyRepositoryPlugin.get_metadata</a>
+        <a href="entropy.db.skel.EntropyRepositoryPlugin-class.html#get_metadata">db.skel.EntropyRepositoryPlugin.get_metadata</a>
         <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
@@ -279,7 +299,7 @@
     <dt>Returns: string</dt>
         <dd>EntropyRepositoryPlugin identifier.</dd>
     <dt>Overrides:
-        <a href="entropy.db.EntropyRepositoryPlugin-class.html#get_id">db.EntropyRepositoryPlugin.get_id</a>
+        <a href="entropy.db.skel.EntropyRepositoryPlugin-class.html#get_id">db.skel.EntropyRepositoryPlugin.get_id</a>
         <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
@@ -310,7 +330,7 @@
         <dd>execution status code, return nonzero for errors, this will raise
           a RepositoryPluginError exception.</dd>
     <dt>Overrides:
-        <a href="entropy.db.EntropyRepositoryPlugin-class.html#add_plugin_hook">db.EntropyRepositoryPlugin.add_plugin_hook</a>
+        <a href="entropy.db.skel.EntropyRepositoryPlugin-class.html#add_plugin_hook">db.skel.EntropyRepositoryPlugin.add_plugin_hook</a>
         <dd><em class="note">(inherited documentation)</em></dd>
     </dt>
   </dl>
@@ -348,7 +368,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:30 2009
+    Generated by Epydoc 3.0.1 on Sun Dec 13 00:16:22 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

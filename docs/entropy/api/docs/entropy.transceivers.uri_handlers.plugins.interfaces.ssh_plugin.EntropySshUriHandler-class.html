@@ -1,0 +1,1197 @@
+<?xml version="1.0" encoding="ascii"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+          "DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+  <title>entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler</title>
+  <link rel="stylesheet" href="epydoc.css" type="text/css" />
+  <script type="text/javascript" src="epydoc.js"></script>
+</head>
+
+<body bgcolor="white" text="black" link="blue" vlink="#204080"
+      alink="#204080">
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table width="100%" cellpadding="0" cellspacing="0">
+  <tr valign="top">
+    <td width="100%">
+      <span class="breadcrumbs">
+        <a href="entropy-module.html">Package&nbsp;entropy</a> ::
+        <a href="entropy.transceivers-module.html">Package&nbsp;transceivers</a> ::
+        <a href="entropy.transceivers.uri_handlers-module.html">Package&nbsp;uri_handlers</a> ::
+        <a href="entropy.transceivers.uri_handlers.plugins-module.html">Package&nbsp;plugins</a> ::
+        <a href="entropy.transceivers.uri_handlers.plugins.interfaces-module.html">Package&nbsp;interfaces</a> ::
+        <a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-module.html">Module&nbsp;ssh_plugin</a> ::
+        Class&nbsp;EntropySshUriHandler
+      </span>
+    </td>
+    <td>
+      <table cellpadding="0" cellspacing="0">
+        <!-- hide/show private -->
+      </table>
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS DESCRIPTION ==================== -->
+<h1 class="epydoc">Class EntropySshUriHandler</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler">source&nbsp;code</a></span></p>
+<center>
+<center>  <map id="uml_class_diagram_for_entropy__110" name="uml_class_diagram_for_entropy__110">
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#PLUGIN_API_VERSION" title="EntropyUriHandler based SSH (with pubkey) transceiver plugin." alt="" coords="217,423,539,441"/>
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#approve_uri" title="Approve given URI by returning True or False depending if this class is &#160;able to handle it." alt="" coords="217,444,539,463"/>
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#get_uri_name" title="Given a valid URI (meaning that implementation can handle the provided &#160;URI), it extracts and returns the URI name (hostname)." alt="" coords="217,463,539,481"/>
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#hide_sensible_data" title="Given an URI, hide sensible data from string and return it back." alt="" coords="217,481,539,500"/>
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#__init__" title="EntropyUriHandler constructor." alt="" coords="217,500,539,519"/>
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#__enter__" title="Support for &quot;with&quot; statement, this will trigger UriHandler connection &#160;setup." alt="" coords="217,519,539,537"/>
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#__exit__" title="Support for &quot;with&quot; statement, this will trigger UriHandler connection hang &#160;up." alt="" coords="217,537,539,556"/>
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#download" title="Download URI and save it to save_path." alt="" coords="217,556,539,575"/>
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#upload" title="Upload URI from load_path location to uri." alt="" coords="217,575,539,593"/>
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#rename" title="Rename URI old to URI new." alt="" coords="217,593,539,612"/>
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#delete" title="Remove the remote path (must be a file)." alt="" coords="217,612,539,631"/>
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#get_md5" title="Return MD5 checksum of file at URI." alt="" coords="217,631,539,649"/>
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#list_content" title="List content of directory referenced at URI." alt="" coords="217,649,539,668"/>
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#list_content_metadata" title="List content of directory referenced at URI with metadata in this form: &#160;[(name, size, owner, group, permissions&lt;drwxr&#45;xr&#45;x&gt;,), ...] permissions, &#160;owner, group, size, name." alt="" coords="217,668,539,687"/>
+<area shape="rect" id="node390" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#close" title="Called when requesting to close connection completely." alt="" coords="217,705,539,724"/>
+<area shape="rect" id="node1" href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html" title="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler" alt="" coords="205,398,549,730"/>
+<area shape="rect" id="node391" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#BASE_PLUGIN_API_VERSION" title="Base class for EntropyTransceiver URI handler interfaces." alt="" coords="241,239,516,257"/>
+<area shape="rect" id="node391" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#get_uri" title="Return copy of previously stored URI." alt="" coords="241,260,516,279"/>
+<area shape="rect" id="node391" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_output_interface" title="Provide alternative Entropy output interface (must be based on &#160;entropy.output.TextInterface)" alt="" coords="241,279,516,297"/>
+<area shape="rect" id="node391" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_speed_limit" title="Set download/upload speed limit in kb/sec form." alt="" coords="241,297,516,316"/>
+<area shape="rect" id="node391" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_timeout" title="Set transceiver tx/rx timeout value in seconds." alt="" coords="241,316,516,335"/>
+<area shape="rect" id="node391" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_silent" title="Disable transceiver verbosity." alt="" coords="241,335,516,353"/>
+<area shape="rect" id="node391" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_verbosity" title="Set transceiver verbosity." alt="" coords="241,353,516,372"/>
+<area shape="rect" id="node2" href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html" title="entropy.transceivers.uri_handlers.skel.EntropyUriHandler" alt="" coords="229,214,528,378"/>
+<area shape="rect" id="node392" href="entropy.output.TextInterface-class.html#updateProgress" title="Text output print function." alt="" coords="17,39,739,57"/>
+<area shape="rect" id="node392" href="entropy.output.TextInterface-class.html#askQuestion" title="Questions asking function." alt="" coords="17,57,739,76"/>
+<area shape="rect" id="node392" href="entropy.output.TextInterface-class.html#inputBox" title="Generic input box (form) creator and data collector." alt="" coords="17,76,739,95"/>
+<area shape="rect" id="node392" href="entropy.output.TextInterface-class.html#cycleDone" title="Not actually implemented." alt="" coords="17,95,739,113"/>
+<area shape="rect" id="node392" href="entropy.output.TextInterface-class.html#setTitle" title="Set application title." alt="" coords="17,113,739,132"/>
+<area shape="rect" id="node392" href="entropy.output.TextInterface-class.html#setTotalCycles" title="Not actually implemented." alt="" coords="17,132,739,151"/>
+<area shape="rect" id="node392" href="entropy.output.TextInterface-class.html#nocolor" title="Disable coloured output." alt="" coords="17,151,739,169"/>
+<area shape="rect" id="node392" href="entropy.output.TextInterface-class.html#notitles" title="Disable the ability to effectively set the application title." alt="" coords="17,169,739,188"/>
+<area shape="rect" id="node3" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="5,6,749,194"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__110.gif" alt='' usemap="#uml_class_diagram_for_entropy__110" ismap="ismap" class="graph-without-title" />
+</center>
+</center>
+<hr />
+<!-- ==================== INSTANCE METHODS ==================== -->
+<a name="section-InstanceMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Instance Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#__init__" class="summary-sig-name">__init__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">uri</span>)</span><br />
+      EntropyUriHandler constructor.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.__init__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#__enter__" class="summary-sig-name">__enter__</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Support for &quot;with&quot; statement, this will trigger UriHandler 
+      connection setup.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.__enter__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#__exit__" class="summary-sig-name">__exit__</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">exc_type</span>,
+        <span class="summary-sig-arg">exc_value</span>,
+        <span class="summary-sig-arg">traceback</span>)</span><br />
+      Support for &quot;with&quot; statement, this will trigger UriHandler 
+      connection hang up.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.__exit__">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#download" class="summary-sig-name">download</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remote_path</span>,
+        <span class="summary-sig-arg">save_path</span>)</span><br />
+      Download URI and save it to save_path.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.download">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#upload" class="summary-sig-name">upload</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">load_path</span>,
+        <span class="summary-sig-arg">remote_path</span>)</span><br />
+      Upload URI from load_path location to uri.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.upload">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#rename" class="summary-sig-name">rename</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remote_path_old</span>,
+        <span class="summary-sig-arg">remote_path_new</span>)</span><br />
+      Rename URI old to URI new.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.rename">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#delete" class="summary-sig-name">delete</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remote_path</span>)</span><br />
+      Remove the remote path (must be a file).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.delete">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string or None (if not supported)</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#get_md5" class="summary-sig-name">get_md5</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remote_path</span>)</span><br />
+      Return MD5 checksum of file at URI.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.get_md5">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#list_content" class="summary-sig-name">list_content</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remote_path</span>)</span><br />
+      List content of directory referenced at URI.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.list_content">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">list</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#list_content_metadata" class="summary-sig-name">list_content_metadata</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remote_path</span>)</span><br />
+      List content of directory referenced at URI with metadata in this 
+      form: [(name, size, owner, group, permissions&lt;drwxr-xr-x&gt;,), 
+      ...] permissions, owner, group, size, name.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.list_content_metadata">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#is_dir" class="summary-sig-name">is_dir</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remote_path</span>)</span><br />
+      Given a remote path (which can point to dir or file), determine 
+      whether it's a directory.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.is_dir">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#is_file" class="summary-sig-name">is_file</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remote_path</span>)</span><br />
+      Given a remote path (which can point to dir or file), determine 
+      whether it's a file.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.is_file">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#is_path_available" class="summary-sig-name">is_path_available</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remote_path</span>)</span><br />
+      Given a remote path (which can point to dir or file), determine 
+      whether it's available or not.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.is_path_available">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#makedirs" class="summary-sig-name">makedirs</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">remote_path</span>)</span><br />
+      Given a remote path, recursively create all the missing directories.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.makedirs">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#keep_alive" class="summary-sig-name">keep_alive</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Send a keep-alive ping to handler.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.keep_alive">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#close" class="summary-sig-name">close</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Called when requesting to close connection completely.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.close">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html">skel.EntropyUriHandler</a></code></b>:
+      <code><a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#get_uri">get_uri</a></code>,
+      <code><a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_output_interface">set_output_interface</a></code>,
+      <code><a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_silent">set_silent</a></code>,
+      <code><a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_speed_limit">set_speed_limit</a></code>,
+      <code><a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_timeout">set_timeout</a></code>,
+      <code><a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#set_verbosity">set_verbosity</a></code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__delattr__</code>,
+      <code>__format__</code>,
+      <code>__getattribute__</code>,
+      <code>__hash__</code>,
+      <code>__new__</code>,
+      <code>__reduce__</code>,
+      <code>__reduce_ex__</code>,
+      <code>__repr__</code>,
+      <code>__setattr__</code>,
+      <code>__sizeof__</code>,
+      <code>__str__</code>,
+      <code>__subclasshook__</code>
+      </p>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.output.TextInterface-class.html">output.TextInterface</a></code></b>:
+      <code><a href="entropy.output.TextInterface-class.html#askQuestion">askQuestion</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#cycleDone">cycleDone</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#inputBox">inputBox</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#nocolor">nocolor</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#notitles">notitles</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#setTitle">setTitle</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#setTotalCycles">setTotalCycles</a></code>,
+      <code><a href="entropy.output.TextInterface-class.html#updateProgress">updateProgress</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== STATIC METHODS ==================== -->
+<a name="section-StaticMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Static Methods</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">bool</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#approve_uri" class="summary-sig-name">approve_uri</a>(<span class="summary-sig-arg">uri</span>)</span><br />
+      Approve given URI by returning True or False depending if this class 
+      is able to handle it.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.approve_uri">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#get_uri_name" class="summary-sig-name">get_uri_name</a>(<span class="summary-sig-arg">uri</span>)</span><br />
+      Given a valid URI (meaning that implementation can handle the 
+      provided URI), it extracts and returns the URI name (hostname).</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.get_uri_name">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin.EntropySshUriHandler-class.html#hide_sensible_data" class="summary-sig-name">hide_sensible_data</a>(<span class="summary-sig-arg">uri</span>)</span><br />
+      Given an URI, hide sensible data from string and return it back.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.hide_sensible_data">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+</table>
+<!-- ==================== CLASS VARIABLES ==================== -->
+<a name="section-ClassVariables"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Class Variables</span></td>
+</tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+        <a name="PLUGIN_API_VERSION"></a><span class="summary-name">PLUGIN_API_VERSION</span> = <code title="0">0</code><br />
+      EntropyUriHandler based SSH (with pubkey) transceiver plugin.
+    </td>
+  </tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html">skel.EntropyUriHandler</a></code></b>:
+      <code><a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#BASE_PLUGIN_API_VERSION">BASE_PLUGIN_API_VERSION</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== PROPERTIES ==================== -->
+<a name="section-Properties"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Properties</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
+      <code>__class__</code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== METHOD DETAILS ==================== -->
+<a name="section-MethodDetails"></a>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Method Details</span></td>
+</tr>
+</table>
+<a name="approve_uri"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">approve_uri</span>(<span class="sig-arg">uri</span>)</span>
+    <br /><em class="fname">Static Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.approve_uri">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Approve given URI by returning True or False depending if this class 
+  is able to handle it.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>uri</code></strong> - URI to handle</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True, if URI can be handled by this class</dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#approve_uri">skel.EntropyUriHandler.approve_uri</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_uri_name"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_uri_name</span>(<span class="sig-arg">uri</span>)</span>
+    <br /><em class="fname">Static Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.get_uri_name">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Given a valid URI (meaning that implementation can handle the provided
+  URI), it extracts and returns the URI name (hostname).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>uri</code></strong> - URI to handle</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>URI name</dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#get_uri_name">skel.EntropyUriHandler.get_uri_name</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="hide_sensible_data"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">hide_sensible_data</span>(<span class="sig-arg">uri</span>)</span>
+    <br /><em class="fname">Static Method</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.hide_sensible_data">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Given an URI, hide sensible data from string and return it back.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>uri</code></strong> - URI to handle</li>
+    </ul></dd>
+    <dt>Returns: string</dt>
+        <dd>URI cleaned</dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#hide_sensible_data">skel.EntropyUriHandler.hide_sensible_data</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__init__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__init__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">uri</span>)</span>
+    <br /><em class="fname">(Constructor)</em>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.__init__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>EntropyUriHandler constructor. When constructor is called, instance 
+  should perform a connection and permissions check and raise 
+  entropy.exceptions.ConnectionError in case of issues.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>uri</code></strong> - URI to handle</li>
+    </ul></dd>
+    <dt>Overrides:
+        object.__init__
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__enter__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__enter__</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.__enter__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Support for &quot;with&quot; statement, this will trigger UriHandler 
+  connection setup.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#__enter__">skel.EntropyUriHandler.__enter__</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="__exit__"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">__exit__</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">exc_type</span>,
+        <span class="sig-arg">exc_value</span>,
+        <span class="sig-arg">traceback</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.__exit__">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Support for &quot;with&quot; statement, this will trigger UriHandler 
+  connection hang up.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#__exit__">skel.EntropyUriHandler.__exit__</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="download"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">download</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remote_path</span>,
+        <span class="sig-arg">save_path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.download">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Download URI and save it to save_path.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remote_path</code></strong> - remote path to handle</li>
+        <li><strong class="pname"><code>save_path</code></strong> - complete path where to store file from uri. If directory doesn't 
+          exist, it will be created with default Entropy permissions.</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>execution status, True if done</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'><a href="entropy.exceptions.ConnectionError-class.html">ConnectionError</a></strong></code> - if problems happen</li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#download">skel.EntropyUriHandler.download</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="upload"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">upload</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">load_path</span>,
+        <span class="sig-arg">remote_path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.upload">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Upload URI from load_path location to uri.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>load_path</code></strong> - remote path to handle</li>
+        <li><strong class="pname"><code>remote_path</code></strong> - remote path to handle (&quot;directory&quot;/&quot;file 
+          name&quot; !)</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>execution status, True if done</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'><a href="entropy.exceptions.ConnectionError-class.html">ConnectionError</a></strong></code> - if problems happen</li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#upload">skel.EntropyUriHandler.upload</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="rename"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">rename</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remote_path_old</span>,
+        <span class="sig-arg">remote_path_new</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.rename">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Rename URI old to URI new.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remote_path_old</code></strong> - remote path to handle</li>
+        <li><strong class="pname"><code>remote_path_new</code></strong> - remote path to create</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>execution status, True if done</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'><a href="entropy.exceptions.ConnectionError-class.html">ConnectionError</a></strong></code> - if problems happen</li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#rename">skel.EntropyUriHandler.rename</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="delete"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">delete</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remote_path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.delete">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Remove the remote path (must be a file).</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remote_path_old</code></strong> - remote path to remove (only file allowed)</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True, if operation went successful</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'><a href="entropy.exceptions.ConnectionError-class.html">ConnectionError</a></strong></code> - if problems happen</li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#delete">skel.EntropyUriHandler.delete</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="get_md5"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_md5</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remote_path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.get_md5">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return MD5 checksum of file at URI.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remote_path</code></strong> - remote path to handle</li>
+    </ul></dd>
+    <dt>Returns: string or None (if not supported)</dt>
+        <dd>MD5 checksum in hexdigest form</dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#get_md5">skel.EntropyUriHandler.get_md5</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="list_content"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">list_content</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remote_path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.list_content">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>List content of directory referenced at URI.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remote_path</code></strong> - remote path to handle</li>
+    </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>content</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>ValueError</strong></code> - if remote_path does not exist</li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#list_content">skel.EntropyUriHandler.list_content</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="list_content_metadata"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">list_content_metadata</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remote_path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.list_content_metadata">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>List content of directory referenced at URI with metadata in this 
+  form: [(name, size, owner, group, permissions&lt;drwxr-xr-x&gt;,), ...] 
+  permissions, owner, group, size, name.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remote_path</code></strong> - remote path to handle</li>
+    </ul></dd>
+    <dt>Returns: list</dt>
+        <dd>content</dd>
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'>ValueError</strong></code> - if remote_path does not exist</li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#list_content_metadata">skel.EntropyUriHandler.list_content_metadata</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="is_dir"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_dir</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remote_path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.is_dir">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Given a remote path (which can point to dir or file), determine 
+  whether it's a directory.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remote_path</code></strong> - URI to handle</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True, if remote_path is a directory</dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#is_dir">skel.EntropyUriHandler.is_dir</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="is_file"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_file</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remote_path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.is_file">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Given a remote path (which can point to dir or file), determine 
+  whether it's a file.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remote_path</code></strong> - URI to handle</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>True, if remote_path is a file</dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#is_file">skel.EntropyUriHandler.is_file</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="is_path_available"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_path_available</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remote_path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.is_path_available">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Given a remote path (which can point to dir or file), determine 
+  whether it's available or not.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remote_path</code></strong> - URI to handle</li>
+    </ul></dd>
+    <dt>Returns: bool</dt>
+        <dd>availability</dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#is_path_available">skel.EntropyUriHandler.is_path_available</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="makedirs"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">makedirs</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">remote_path</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.makedirs">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Given a remote path, recursively create all the missing 
+  directories.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>remote_path</code></strong> - URI to handle</li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#makedirs">skel.EntropyUriHandler.makedirs</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="keep_alive"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">keep_alive</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.keep_alive">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Send a keep-alive ping to handler.</p>
+  <dl class="fields">
+    <dt>Raises:</dt>
+    <dd><ul class="nomargin-top">
+        <li><code><strong class='fraise'><a href="entropy.exceptions.ConnectionError-class.html">ConnectionError</a></strong></code> - if problems happen</li>
+    </ul></dd>
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#keep_alive">skel.EntropyUriHandler.keep_alive</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<a name="close"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">close</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.transceivers.uri_handlers.plugins.interfaces.ssh_plugin-pysrc.html#EntropySshUriHandler.close">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Called when requesting to close connection completely.</p>
+  <dl class="fields">
+    <dt>Overrides:
+        <a href="entropy.transceivers.uri_handlers.skel.EntropyUriHandler-class.html#close">skel.EntropyUriHandler.close</a>
+        <dd><em class="note">(inherited documentation)</em></dd>
+    </dt>
+  </dl>
+</td></tr></table>
+</div>
+<br />
+<!-- ==================== NAVIGATION BAR ==================== -->
+<table class="navbar" border="0" width="100%" cellpadding="0"
+       bgcolor="#a0c0ff" cellspacing="0">
+  <tr valign="middle">
+  <!-- Home link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="entropy-module.html">Home</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Tree link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="module-tree.html">Trees</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Index link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="identifier-index.html">Indices</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Help link -->
+      <th>&nbsp;&nbsp;&nbsp;<a
+        href="help.html">Help</a>&nbsp;&nbsp;&nbsp;</th>
+
+  <!-- Project homepage -->
+      <th class="navbar" align="right" width="100%">
+        <table border="0" cellpadding="0" cellspacing="0">
+          <tr><th class="navbar" align="center"
+            ><a class="navbar" target="_top" href="http://www.sabayon.org/">Entropy Framework</a></th>
+          </tr></table></th>
+  </tr>
+</table>
+<table border="0" cellpadding="0" cellspacing="0" width="100%%">
+  <tr>
+    <td align="left" class="footer">
+    Generated by Epydoc 3.0.1 on Sun Dec 13 00:16:25 2009
+    </td>
+    <td align="right" class="footer">
+      <a target="mainFrame" href="http://epydoc.sourceforge.net"
+        >http://epydoc.sourceforge.net</a>
+    </td>
+  </tr>
+</table>
+
+<script type="text/javascript">
+  <!--
+  // Private objects are initially displayed (because if
+  // javascript is turned off then we want them to be
+  // visible); but by default, we want to hide them.  So hide
+  // them unless we have a cookie that says to show them.
+  checkCookie();
+  // -->
+</script>
+</body>
+</html>

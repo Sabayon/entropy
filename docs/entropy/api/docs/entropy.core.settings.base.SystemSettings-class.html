@@ -59,7 +59,33 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class SystemSettings</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.core.settings.base-pysrc.html#SystemSettings">source&nbsp;code</a></span></p>
 <center>
-
+<center>  <map id="uml_class_diagram_for_entropy__24" name="uml_class_diagram_for_entropy__24">
+<area shape="rect" id="node69" href="entropy.tools-module.html" title="entropy.core.settings.base.SystemSettings.entropyTools" alt="" coords="17,127,427,145"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#__singleton__" title="entropy.core.settings.base.SystemSettings.__singleton__" alt="" coords="17,145,427,164"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#init_singleton" title="Replaces __init__ because SystemSettings is a Singleton." alt="" coords="17,167,427,185"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#destroy" title="Overloaded method from Singleton." alt="" coords="17,185,427,204"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#add_plugin" title="This method lets you add custom parsers to SystemSettings." alt="" coords="17,204,427,223"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#remove_plugin" title="This method lets you remove previously added custom parsers from &#160;SystemSettings through its plugin identifier." alt="" coords="17,223,427,241"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#__setitem__" title="dict method." alt="" coords="17,241,427,260"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#__getitem__" title="dict method." alt="" coords="17,260,427,279"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#__delitem__" title="dict method." alt="" coords="17,279,427,297"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#__iter__" title="dict method." alt="" coords="17,297,427,316"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#__contains__" title="dict method." alt="" coords="17,316,427,335"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#__hash__" title="dict method." alt="" coords="17,335,427,353"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#__len__" title="dict method." alt="" coords="17,353,427,372"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#get" title="dict method." alt="" coords="17,372,427,391"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#copy" title="dict method." alt="" coords="17,391,427,409"/>
+<area shape="rect" id="node69" href="entropy.core.settings.base.SystemSettings-class.html#validate_entropy_cache" title="Internal method." alt="" coords="17,428,427,447"/>
+<area shape="rect" id="node1" href="entropy.core.settings.base.SystemSettings-class.html" title="This is the place where all the Entropy settings are stored if they are not considered instance constants (etpConst)." alt="" coords="5,102,437,453"/>
+<area shape="rect" id="node70" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="17,39,215,57"/>
+<area shape="rect" id="node70" href="entropy.core.Singleton-class.html#__init__" title="This is a fake method, necessary for Python 3." alt="" coords="17,57,215,76"/>
+<area shape="rect" id="node2" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton." alt="" coords="5,6,227,82"/>
+<area shape="rect" id="node71" href="entropy.core.EntropyPluginStore-class.html#get_plugins" title="Return a copy of the internal dictionary that contains the currently stored plugins map." alt="" coords="268,39,391,57"/>
+<area shape="rect" id="node71" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="268,57,391,76"/>
+<area shape="rect" id="node3" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="256,6,403,82"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__24.gif" alt='' usemap="#uml_class_diagram_for_entropy__24" ismap="ismap" class="graph-without-title" />
+</center>
 </center>
 <hr />
 <p>This is the place where all the Entropy settings are stored if they 
@@ -584,9 +610,7 @@
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">Singleton</a></code></b>:
-      <code><a href="entropy.core.Singleton-class.html#__init__">__init__</a></code>,
-      <code><a href="entropy.core.Singleton-class.html#is_destroyed">is_destroyed</a></code>,
-      <code><a href="entropy.core.Singleton-class.html#is_singleton">is_singleton</a></code>
+      <code><a href="entropy.core.Singleton-class.html#__init__">__init__</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -1317,7 +1341,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:28 2009
+    Generated by Epydoc 3.0.1 on Sun Dec 13 00:16:18 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -59,7 +59,37 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class Server</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server">source&nbsp;code</a></span></p>
 <center>
-
+<center>  <map id="uml_class_diagram_for_entropy__77" name="uml_class_diagram_for_entropy__77">
+<area shape="rect" id="node301" href="entropy.server.interfaces.main.Server-class.html#init_singleton" title="entropy.server.interfaces.main.Server.init_singleton" alt="" coords="17,247,1284,265"/>
+<area shape="rect" id="node301" href="entropy.server.interfaces.main.Server-class.html#destroy" title="entropy.server.interfaces.main.Server.destroy" alt="" coords="17,265,1284,284"/>
+<area shape="rect" id="node301" href="entropy.server.interfaces.main.Server-class.html#is_destroyed" title="entropy.server.interfaces.main.Server.is_destroyed" alt="" coords="17,284,1284,303"/>
+<area shape="rect" id="node301" href="entropy.server.interfaces.main.Server-class.html#__del__" title="entropy.server.interfaces.main.Server.__del__" alt="" coords="17,303,1284,321"/>
+<area shape="rect" id="node301" href="entropy.server.interfaces.main.Server-class.html#ensure_paths" title="entropy.server.interfaces.main.Server.ensure_paths" alt="" coords="17,321,1284,340"/>
+<area shape="rect" id="node301" href="entropy.server.interfaces.main.Server-class.html#setup_services" title="entropy.server.interfaces.main.Server.setup_services" alt="" coords="17,340,1284,359"/>
+<area shape="rect" id="node301" href="entropy.server.interfaces.main.Server-class.html#QA" title="Get Entropy QA Interface instance." alt="" coords="17,359,1284,377"/>
+<area shape="rect" id="node301" href="entropy.server.interfaces.main.Server-class.html#Spm" title="Get Source Package Manager interface instance." alt="" coords="17,377,1284,396"/>
+<area shape="rect" id="node301" href="entropy.server.interfaces.main.Server-class.html#Spm_class" title="Get Source Package Manager interface class." alt="" coords="17,396,1284,415"/>
+<area shape="rect" id="node301" href="entropy.server.interfaces.main.Server-class.html#Transceiver" title="Get EntropyTransceiver interface instance." alt="" coords="17,415,1284,433"/>
+<area shape="rect" id="node301" href="entropy.server.interfaces.main.Server-class.html#setup_entropy_settings" title="entropy.server.interfaces.main.Server.setup_entropy_settings" alt="" coords="17,433,1284,452"/>
+<area shape="rect" id="node301" href="entropy.server.interfaces.main.Server-class.html#close_server_databases" title="entropy.server.interfaces.main.Server.close_server_databases" alt="" coords="17,452,1284,471"/>
+<area shape="rect" id="node301" href="entropy.server.interfaces.main.Server-class.html#close_server_database" title="entropy.server.interfaces.main.Server.close_server_database" alt="" coords="17,471,1284,489"/>
+<area shape="rect" id="node301" href="entropy.server.interfaces.main.Server-class.html#update_database_package_sets" title="entropy.server.interfaces.main.Server.update_database_package_sets" alt="" coords="17,508,1284,527"/>
+<area shape="rect" id="node1" href="entropy.server.interfaces.main.Server-class.html" title="entropy.server.interfaces.main.Server" alt="" coords="5,214,1296,533"/>
+<area shape="rect" id="node302" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="296,95,493,113"/>
+<area shape="rect" id="node302" href="entropy.core.Singleton-class.html#__init__" title="This is a fake method, necessary for Python 3." alt="" coords="296,113,493,132"/>
+<area shape="rect" id="node2" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton." alt="" coords="284,62,505,138"/>
+<area shape="rect" id="node303" href="entropy.output.TextInterface-class.html#updateProgress" title="Text output print function." alt="" coords="547,39,1268,57"/>
+<area shape="rect" id="node303" href="entropy.output.TextInterface-class.html#askQuestion" title="Questions asking function." alt="" coords="547,57,1268,76"/>
+<area shape="rect" id="node303" href="entropy.output.TextInterface-class.html#inputBox" title="Generic input box (form) creator and data collector." alt="" coords="547,76,1268,95"/>
+<area shape="rect" id="node303" href="entropy.output.TextInterface-class.html#cycleDone" title="Not actually implemented." alt="" coords="547,95,1268,113"/>
+<area shape="rect" id="node303" href="entropy.output.TextInterface-class.html#setTitle" title="Set application title." alt="" coords="547,113,1268,132"/>
+<area shape="rect" id="node303" href="entropy.output.TextInterface-class.html#setTotalCycles" title="Not actually implemented." alt="" coords="547,132,1268,151"/>
+<area shape="rect" id="node303" href="entropy.output.TextInterface-class.html#nocolor" title="Disable coloured output." alt="" coords="547,151,1268,169"/>
+<area shape="rect" id="node303" href="entropy.output.TextInterface-class.html#notitles" title="Disable the ability to effectively set the application title." alt="" coords="547,169,1268,188"/>
+<area shape="rect" id="node3" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="535,6,1279,194"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__77.gif" alt='' usemap="#uml_class_diagram_for_entropy__77" ismap="ismap" class="graph-without-title" />
+</center>
 </center>
 <hr />
 <!-- ==================== INSTANCE METHODS ==================== -->
@@ -110,13 +140,11 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">bool</span>
+      <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.server.interfaces.main.Server-class.html#is_destroyed" class="summary-sig-name">is_destroyed</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      In our world, Singleton instances may be destroyed, this is done by 
-      setting a private bool var __is_destroyed</td>
+          <td><span class="summary-sig"><a name="is_destroyed"></a><span class="summary-sig-name">is_destroyed</span>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.is_destroyed">source&nbsp;code</a></span>
             
@@ -202,6 +230,41 @@
       Get Source Package Manager interface instance.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.Spm">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a name="Spm_class"></a><span class="summary-sig-name">Spm_class</span>(<span class="summary-sig-arg">self</span>)</span><br />
+      Get Source Package Manager interface class.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.Spm_class">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">entropy.transceivers.EntropyTransceiver</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.server.interfaces.main.Server-class.html#Transceiver" class="summary-sig-name">Transceiver</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">uri</span>)</span><br />
+      Get EntropyTransceiver interface instance.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.Transceiver">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -444,6 +507,26 @@
         <span class="summary-sig-arg">set_as_default</span>=<span class="summary-sig-default">False</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.init_generic_memory_server_repository">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">entropy.db.EntropyRepository</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.server.interfaces.main.Server-class.html#open_repository" class="summary-sig-name">open_repository</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repoid</span>)</span><br />
+      This method aims to improve class usability by providing an easier 
+      method to open Entropy Server-side repositories like it happens with 
+      Entropy Client-side ones.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.open_repository">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -732,24 +815,6 @@
           <td><span class="summary-sig"><a name="check_config_file_updates"></a><span class="summary-sig-name">check_config_file_updates</span>(<span class="summary-sig-arg">self</span>)</span></td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.check_config_file_updates">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a name="quickpkg"></a><span class="summary-sig-name">quickpkg</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">atom</span>,
-        <span class="summary-sig-arg">storedir</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.quickpkg">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1295,6 +1360,24 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
+          <td><span class="summary-sig"><a name="get_local_post_repo_update_script"></a><span class="summary-sig-name">get_local_post_repo_update_script</span>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
+        <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_local_post_repo_update_script">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">&nbsp;</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
           <td><span class="summary-sig"><a name="get_local_critical_updates_file"></a><span class="summary-sig-name">get_local_critical_updates_file</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">repo</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">branch</span>=<span class="summary-sig-default">None</span>)</span></td>
@@ -1666,25 +1749,6 @@
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a name="get_remote_package_checksum"></a><span class="summary-sig-name">get_remote_package_checksum</span>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">repo</span>,
-        <span class="summary-sig-arg">filename</span>,
-        <span class="summary-sig-arg">branch</span>)</span></td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.get_remote_package_checksum">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
           <td><span class="summary-sig"><a name="verify_remote_packages"></a><span class="summary-sig-name">verify_remote_packages</span>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">packages</span>,
         <span class="summary-sig-arg">ask</span>=<span class="summary-sig-default">True</span>,
@@ -1794,8 +1858,7 @@
   <tr>
     <td colspan="2" class="summary">
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.Singleton-class.html">core.Singleton</a></code></b>:
-      <code><a href="entropy.core.Singleton-class.html#__init__">__init__</a></code>,
-      <code><a href="entropy.core.Singleton-class.html#is_singleton">is_singleton</a></code>
+      <code><a href="entropy.core.Singleton-class.html#__init__">__init__</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code>object</code></b>:
       <code>__delattr__</code>,
@@ -1864,32 +1927,6 @@
     <span class="table-header">Method Details</span></td>
 </tr>
 </table>
-<a name="is_destroyed"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_destroyed</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.is_destroyed">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>In our world, Singleton instances may be destroyed, this is done by 
-  setting a private bool var __is_destroyed</p>
-  <dl class="fields">
-    <dt>Returns: bool</dt>
-        <dd>instance status, if destroyed or not</dd>
-    <dt>Overrides:
-        <a href="entropy.core.Singleton-class.html#is_destroyed">core.Singleton.is_destroyed</a>
-        <dd><em class="note">(inherited documentation)</em></dd>
-    </dt>
-  </dl>
-</td></tr></table>
-</div>
 <a name="QA"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -1932,6 +1969,61 @@
   </dl>
 </td></tr></table>
 </div>
+<a name="Transceiver"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">Transceiver</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">uri</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.Transceiver">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Get EntropyTransceiver interface instance.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>uri</code></strong> (string) - EntropyTransceiver URI</li>
+    </ul></dd>
+    <dt>Returns: entropy.transceivers.EntropyTransceiver</dt>
+        <dd>EntropyTransceiver instance</dd>
+  </dl>
+</td></tr></table>
+</div>
+<a name="open_repository"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">open_repository</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">repoid</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.server.interfaces.main-pysrc.html#Server.open_repository">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>This method aims to improve class usability by providing an easier 
+  method to open Entropy Server-side repositories like it happens with 
+  Entropy Client-side ones. If you just want open a read-only repository, 
+  feel free to use this wrapping method.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>repoid</code></strong> (string) - repository identifier</li>
+    </ul></dd>
+    <dt>Returns: entropy.db.EntropyRepository</dt>
+        <dd>EntropyRepository instance</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="repository_packages_spm_sync"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -1952,8 +2044,6 @@
   <p>Service method used to sync package names with Source Package Manager.
   Source Package Manager can change package names, categories or slot and 
   Entropy repositories must be kept in sync.</p>
-  <p>In other words, it checks for /usr/portage/profiles/updates 
-  changes.</p>
   <dl class="fields">
   </dl>
 </td></tr></table>
@@ -2019,7 +2109,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:30 2009
+    Generated by Epydoc 3.0.1 on Sun Dec 13 00:16:22 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

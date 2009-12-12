@@ -57,7 +57,21 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class Singleton</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.core-pysrc.html#Singleton">source&nbsp;code</a></span></p>
 <center>
-
+<center>  <map id="uml_class_diagram_for_entropy__23" name="uml_class_diagram_for_entropy__23">
+<area shape="rect" id="node1" href="entropy.cache.EntropyCacher-class.html" title="Entropy asynchronous and synchronous cache writer and reader." alt="" coords="5,102,176,141"/>
+<area shape="rect" id="node2" href="entropy.server.interfaces.main.Server-class.html" title="entropy.server.interfaces.main.Server" alt="" coords="205,102,424,141"/>
+<area shape="rect" id="node3" href="entropy.spm.plugins.skel.SpmPlugin-class.html" title="Base class for Source Package Manager plugins" alt="" coords="453,102,659,141"/>
+<area shape="rect" id="node6" href="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin-class.html" title="entropy.spm.plugins.interfaces.portage_plugin.PortagePlugin" alt="" coords="375,161,737,199"/>
+<area shape="rect" id="node4" href="entropy.core.settings.base.SystemSettings-class.html" title="This is the place where all the Entropy settings are stored if they are not considered instance constants (etpConst)." alt="" coords="688,102,907,141"/>
+<area shape="rect" id="node5" href="entropy.client.interfaces.client.Client-class.html" title="entropy.client.interfaces.client.Client" alt="" coords="936,102,1144,141"/>
+<area shape="rect" id="node60" href="entropy.core.Singleton-class.html#__new__" title="entropy.core.Singleton.__new__" alt="" coords="699,39,896,57"/>
+<area shape="rect" id="node60" href="entropy.core.Singleton-class.html#__init__" title="This is a fake method, necessary for Python 3." alt="" coords="699,57,896,76"/>
+<area shape="rect" id="node7" href="entropy.core.Singleton-class.html" title="If your class wants to become a sexy Singleton, subclass this and replace __init__ with init_singleton." alt="" coords="687,6,908,82"/>
+<area shape="rect" id="node8" href="entropy.client.services.ugc.interfaces.AuthStore-class.html" title="entropy.client.services.ugc.interfaces.AuthStore" alt="" coords="1173,102,1451,141"/>
+<area shape="rect" id="node9" href="entropy.server.interfaces.db.ServerRepositoryStatus-class.html" title="Server&#45;side Repositories status information container." alt="" coords="1480,102,1789,141"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__23.gif" alt='' usemap="#uml_class_diagram_for_entropy__23" ismap="ismap" class="graph-without-title" />
+</center>
 </center>
 <hr />
 <p>If your class wants to become a sexy Singleton, subclass this and 
@@ -85,41 +99,6 @@
       This is a fake method, necessary for Python 3.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.core-pysrc.html#Singleton.__init__">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">bool</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.Singleton-class.html#is_destroyed" class="summary-sig-name">is_destroyed</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      In our world, Singleton instances may be destroyed, this is done by 
-      setting a private bool var __is_destroyed</td>
-          <td align="right" valign="top">
-            
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">bool</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.core.Singleton-class.html#is_singleton" class="summary-sig-name">is_singleton</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return if the instance is a singleton</td>
-          <td align="right" valign="top">
-            
             
           </td>
         </tr>
@@ -249,49 +228,6 @@
   </dl>
 </td></tr></table>
 </div>
-<a name="is_destroyed"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_destroyed</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    >&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>In our world, Singleton instances may be destroyed, this is done by 
-  setting a private bool var __is_destroyed</p>
-  <dl class="fields">
-    <dt>Returns: bool</dt>
-        <dd>instance status, if destroyed or not</dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="is_singleton"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">is_singleton</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    >&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return if the instance is a singleton</p>
-  <dl class="fields">
-    <dt>Returns: bool</dt>
-        <dd>class singleton property, if singleton or not</dd>
-  </dl>
-</td></tr></table>
-</div>
 <br />
 <!-- ==================== NAVIGATION BAR ==================== -->
 <table class="navbar" border="0" width="100%" cellpadding="0"
@@ -324,7 +260,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:28 2009
+    Generated by Epydoc 3.0.1 on Sun Dec 13 00:16:18 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

@@ -43,7 +43,7 @@
     <td width="100%">
       <span class="breadcrumbs">
         <a href="entropy-module.html">Package&nbsp;entropy</a> ::
-        <a href="entropy.db-module.html">Module&nbsp;db</a> ::
+        <a href="entropy.db-module.html">Package&nbsp;db</a> ::
         Class&nbsp;EntropyRepository
       </span>
     </td>
@@ -57,7 +57,51 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class EntropyRepository</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository">source&nbsp;code</a></span></p>
 <center>
-
+<center>  <map id="uml_class_diagram_for_entropy__26" name="uml_class_diagram_for_entropy__26">
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#SETTING_KEYS" title="entropy.db.EntropyRepository.SETTING_KEYS" alt="" coords="17,335,1269,353"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository.Schema-class.html" title="entropy.db.EntropyRepository.Schema" alt="" coords="17,353,1269,372"/>
+<area shape="rect" id="node76" href="entropy.tools-module.html" title="entropy.db.EntropyRepository.entropyTools" alt="" coords="17,372,1269,391"/>
+<area shape="rect" id="node76" href="entropy.dump-module.html" title="entropy.db.EntropyRepository.dumpTools" alt="" coords="17,391,1269,409"/>
+<area shape="rect" id="node76" href="javascript:void(0);" title="entropy.db.EntropyRepository.threading" alt="" coords="17,409,1269,428"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#__init__" title="EntropyRepository constructor." alt="" coords="17,431,1269,449"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#setCacheSize" title="Change low&#45;level, storage engine based cache size." alt="" coords="17,449,1269,468"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#setDefaultCacheSize" title="Change default low&#45;level, storage engine based cache size." alt="" coords="17,468,1269,487"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#__del__" title="entropy.db.EntropyRepository.__del__" alt="" coords="17,487,1269,505"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#closeDB" title="Close repository storage communication." alt="" coords="17,505,1269,524"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#vacuum" title="Repository storage cleanup and optimization function." alt="" coords="17,524,1269,543"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#commitChanges" title="Commit actual changes and make them permanently stored." alt="" coords="17,543,1269,561"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#initializeDatabase" title="WARNING: it will erase your database." alt="" coords="17,561,1269,580"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#filterTreeUpdatesActions" title="This method should be considered internal and not suited for general &#160;audience." alt="" coords="17,580,1269,599"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#runTreeUpdatesActions" title="Method not suited for general purpose usage." alt="" coords="17,599,1269,617"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#runTreeUpdatesMoveAction" title="Method not suited for general purpose usage." alt="" coords="17,617,1269,636"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#runTreeUpdatesSlotmoveAction" title="Method not suited for general purpose usage." alt="" coords="17,636,1269,655"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#doTreeupdatesSpmCleanup" title="Erase dead Source Package Manager db entries." alt="" coords="17,655,1269,673"/>
+<area shape="rect" id="node76" href="entropy.db.EntropyRepository-class.html#atomMatch" title="Match given atom (or dependency) in repository and return its package &#160;identifer and execution status." alt="" coords="17,692,1269,711"/>
+<area shape="rect" id="node1" href="entropy.db.EntropyRepository-class.html" title="EntropyRepository implements SQLite3 based storage." alt="" coords="5,310,1280,717"/>
+<area shape="rect" id="node77" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#add_plugin" title="Overloaded from EntropyPluginStore, adds support for hooks execution." alt="" coords="193,116,519,135"/>
+<area shape="rect" id="node77" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#remove_plugin" title="Overloaded from EntropyPluginStore, adds support for hooks execution." alt="" coords="193,135,519,153"/>
+<area shape="rect" id="node77" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#add_permanent_plugin" title="Add EntropyRepository permanent plugin." alt="" coords="193,153,519,172"/>
+<area shape="rect" id="node77" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#remove_permanent_plugin" title="Remove EntropyRepository permanent plugin." alt="" coords="193,172,519,191"/>
+<area shape="rect" id="node77" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_permanent_plugins" title="Return EntropyRepositoryStore installed permanent plugins." alt="" coords="193,191,519,209"/>
+<area shape="rect" id="node77" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugins" title="Overloaded from EntropyPluginStore, adds support for permanent plugins." alt="" coords="193,209,519,228"/>
+<area shape="rect" id="node77" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugins_metadata" title="Return EntropyRepositoryPluginStore registered plugins metadata." alt="" coords="193,228,519,247"/>
+<area shape="rect" id="node77" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugin_metadata" title="Return EntropyRepositoryPlugin metadata value referenced by &quot;key&quot;." alt="" coords="193,247,519,265"/>
+<area shape="rect" id="node77" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#set_plugin_metadata" title="Set EntropyRepositoryPlugin stored metadata." alt="" coords="193,265,519,284"/>
+<area shape="rect" id="node2" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="181,83,531,290"/>
+<area shape="rect" id="node79" href="entropy.output.TextInterface-class.html#updateProgress" title="Text output print function." alt="" coords="572,125,1293,144"/>
+<area shape="rect" id="node79" href="entropy.output.TextInterface-class.html#askQuestion" title="Questions asking function." alt="" coords="572,144,1293,163"/>
+<area shape="rect" id="node79" href="entropy.output.TextInterface-class.html#inputBox" title="Generic input box (form) creator and data collector." alt="" coords="572,163,1293,181"/>
+<area shape="rect" id="node79" href="entropy.output.TextInterface-class.html#cycleDone" title="Not actually implemented." alt="" coords="572,181,1293,200"/>
+<area shape="rect" id="node79" href="entropy.output.TextInterface-class.html#setTitle" title="Set application title." alt="" coords="572,200,1293,219"/>
+<area shape="rect" id="node79" href="entropy.output.TextInterface-class.html#setTotalCycles" title="Not actually implemented." alt="" coords="572,219,1293,237"/>
+<area shape="rect" id="node79" href="entropy.output.TextInterface-class.html#nocolor" title="Disable coloured output." alt="" coords="572,237,1293,256"/>
+<area shape="rect" id="node79" href="entropy.output.TextInterface-class.html#notitles" title="Disable the ability to effectively set the application title." alt="" coords="572,256,1293,275"/>
+<area shape="rect" id="node3" href="entropy.output.TextInterface-class.html" title="TextInterface is a base class for handling the communication between user and Entropy&#45;based applications." alt="" coords="560,93,1304,281"/>
+<area shape="rect" id="node78" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="279,39,432,57"/>
+<area shape="rect" id="node4" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="267,6,443,63"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__26.gif" alt='' usemap="#uml_class_diagram_for_entropy__26" ismap="ismap" class="graph-without-title" />
+</center>
 </center>
 <hr />
 <p>EntropyRepository implements SQLite3 based storage. In a Model-View 
@@ -1011,104 +1055,12 @@ the given metadata.</td>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#insertProvidedLibraries" class="summary-sig-name">insertProvidedLibraries</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">idpackage</span>,
-        <span class="summary-sig-arg">libs_metadata</span>)</span><br />
-      Insert library metadata owned by package.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.insertProvidedLibraries">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
           <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#insertAutomergefiles" class="summary-sig-name">insertAutomergefiles</a>(<span class="summary-sig-arg">self</span>,
         <span class="summary-sig-arg">idpackage</span>,
         <span class="summary-sig-arg">automerge_data</span>)</span><br />
       Insert configuration files automerge information for package.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.insertAutomergefiles">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#removeAutomergefiles" class="summary-sig-name">removeAutomergefiles</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">idpackage</span>)</span><br />
-      Remove configuration files automerge information for package.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.removeAutomergefiles">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#removeSignatures" class="summary-sig-name">removeSignatures</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">idpackage</span>)</span><br />
-      Remove extra package file hashes (SHA1, SHA256, SHA512) for package.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.removeSignatures">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#removeProvidedLibraries" class="summary-sig-name">removeProvidedLibraries</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">idpackage</span>)</span><br />
-      Remove provided libraries metadata from repository for given package 
-      identifier.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.removeProvidedLibraries">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#removeSpmPhases" class="summary-sig-name">removeSpmPhases</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">idpackage</span>)</span><br />
-      Remove Source Package Manager phases for package.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.removeSpmPhases">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1130,26 +1082,6 @@ the given metadata.</td>
       name as key).</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.insertChangelog">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#removeChangelog" class="summary-sig-name">removeChangelog</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">category</span>,
-        <span class="summary-sig-arg">name</span>)</span><br />
-      Remove ChangeLog for package (in this case using category + name as 
-      key)</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.removeChangelog">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -1268,25 +1200,6 @@ the given metadata.</td>
       Insert package file extra hashes (sha1, sha256, sha512) for package.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.insertSignatures">source&nbsp;code</a></span>
-            
-          </td>
-        </tr>
-      </table>
-      
-    </td>
-  </tr>
-<tr>
-    <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
-    </td><td class="summary">
-      <table width="100%" cellpadding="0" cellspacing="0" border="0">
-        <tr>
-          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#insertSpmPhases" class="summary-sig-name">insertSpmPhases</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">idpackage</span>,
-        <span class="summary-sig-arg">phases</span>)</span><br />
-      Insert Source Package Manager phases for package.</td>
-          <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.insertSpmPhases">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -2722,6 +2635,24 @@ audience.</td>
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
+      <span class="summary-type">string or None</span>
+    </td><td class="summary">
+      <table width="100%" cellpadding="0" cellspacing="0" border="0">
+        <tr>
+          <td><span class="summary-sig"><a href="entropy.db.EntropyRepository-class.html#retrieveSpmRepository" class="summary-sig-name">retrieveSpmRepository</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">idpackage</span>)</span><br />
+      Return Source Package Manager source repository used at compile time.</td>
+          <td align="right" valign="top">
+            <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.retrieveSpmRepository">source&nbsp;code</a></span>
+            
+          </td>
+        </tr>
+      </table>
+      
+    </td>
+  </tr>
+<tr>
+    <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">set</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
@@ -3952,7 +3883,8 @@ audience.</td>
         <span class="summary-sig-arg">keyword</span>,
         <span class="summary-sig-arg">slot</span>=<span class="summary-sig-default">None</span>,
         <span class="summary-sig-arg">tag</span>=<span class="summary-sig-default">None</span>,
-        <span class="summary-sig-arg">justid</span>=<span class="summary-sig-default">False</span>)</span><br />
+        <span class="summary-sig-arg">justid</span>=<span class="summary-sig-default">False</span>,
+        <span class="summary-sig-arg">get_extended</span>=<span class="summary-sig-default">False</span>)</span><br />
       Search in old-style Portage PROVIDE metadata.</td>
           <td align="right" valign="top">
             <span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchProvide">source&nbsp;code</a></span>
@@ -4870,16 +4802,16 @@ audience.</td>
   </tr>
   <tr>
     <td colspan="2" class="summary">
-    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.db.EntropyRepositoryPluginStore-class.html">EntropyRepositoryPluginStore</a></code></b>:
-      <code><a href="entropy.db.EntropyRepositoryPluginStore-class.html#add_plugin">add_plugin</a></code>,
-      <code><a href="entropy.db.EntropyRepositoryPluginStore-class.html#get_plugin_metadata">get_plugin_metadata</a></code>,
-      <code><a href="entropy.db.EntropyRepositoryPluginStore-class.html#get_plugins_metadata">get_plugins_metadata</a></code>,
-      <code><a href="entropy.db.EntropyRepositoryPluginStore-class.html#remove_plugin">remove_plugin</a></code>,
-      <code><a href="entropy.db.EntropyRepositoryPluginStore-class.html#set_plugin_metadata">set_plugin_metadata</a></code>
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html">plugin_store.EntropyRepositoryPluginStore</a></code></b>:
+      <code><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#add_plugin">add_plugin</a></code>,
+      <code><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugin_metadata">get_plugin_metadata</a></code>,
+      <code><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugins">get_plugins</a></code>,
+      <code><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_plugins_metadata">get_plugins_metadata</a></code>,
+      <code><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#remove_plugin">remove_plugin</a></code>,
+      <code><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#set_plugin_metadata">set_plugin_metadata</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.core.EntropyPluginStore-class.html">core.EntropyPluginStore</a></code></b>:
-      <code><a href="entropy.core.EntropyPluginStore-class.html#drop_plugins">drop_plugins</a></code>,
-      <code><a href="entropy.core.EntropyPluginStore-class.html#get_plugins">get_plugins</a></code>
+      <code><a href="entropy.core.EntropyPluginStore-class.html#drop_plugins">drop_plugins</a></code>
       </p>
     <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.output.TextInterface-class.html">output.TextInterface</a></code></b>:
       <code><a href="entropy.output.TextInterface-class.html#askQuestion">askQuestion</a></code>,
@@ -4890,6 +4822,24 @@ audience.</td>
       <code><a href="entropy.output.TextInterface-class.html#setTitle">setTitle</a></code>,
       <code><a href="entropy.output.TextInterface-class.html#setTotalCycles">setTotalCycles</a></code>,
       <code><a href="entropy.output.TextInterface-class.html#updateProgress">updateProgress</a></code>
+      </p>
+    </td>
+  </tr>
+</table>
+<!-- ==================== STATIC METHODS ==================== -->
+<a name="section-StaticMethods"></a>
+<table class="summary" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr bgcolor="#70b0f0" class="table-header">
+  <td align="left" colspan="2" class="table-header">
+    <span class="table-header">Static Methods</span></td>
+</tr>
+  <tr>
+    <td colspan="2" class="summary">
+    <p class="indent-wrapped-lines"><b>Inherited from <code><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html">plugin_store.EntropyRepositoryPluginStore</a></code></b>:
+      <code><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#add_permanent_plugin">add_permanent_plugin</a></code>,
+      <code><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#get_permanent_plugins">get_permanent_plugins</a></code>,
+      <code><a href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html#remove_permanent_plugin">remove_permanent_plugin</a></code>
       </p>
     </td>
   </tr>
@@ -4906,7 +4856,7 @@ audience.</td>
     <td width="15%" align="right" valign="top" class="summary">
       <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
-        <a name="SETTING_KEYS"></a><span class="summary-name">SETTING_KEYS</span> = <code title="['arch']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">arch</code><code class="variable-quote">'</code><code class="variable-group">]</code></code>
+        <a name="SETTING_KEYS"></a><span class="summary-name">SETTING_KEYS</span> = <code title="['arch', 'on_delete_cascade']"><code class="variable-group">[</code><code class="variable-quote">'</code><code class="variable-string">arch</code><code class="variable-quote">'</code><code class="variable-op">, </code><code class="variable-quote">'</code><code class="variable-string">on_delete_cascade</code><code class="variable-quote">'</code><code class="variable-group">]</code></code>
     </td>
   </tr>
 </table>
@@ -6258,33 +6208,6 @@ a package:
   </dl>
 </td></tr></table>
 </div>
-<a name="insertProvidedLibraries"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">insertProvidedLibraries</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">idpackage</span>,
-        <span class="sig-arg">libs_metadata</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.insertProvidedLibraries">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Insert library metadata owned by package.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
-        <li><strong class="pname"><code>libs_metadata</code></strong> (list) - provided library metadata composed by list of tuples of length 3 
-          containing library name, path and ELF class.</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
 <a name="insertAutomergefiles"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -6316,115 +6239,6 @@ a package:
   </dl>
 </td></tr></table>
 </div>
-<a name="removeAutomergefiles"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeAutomergefiles</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">idpackage</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.removeAutomergefiles">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Remove configuration files automerge information for package. 
-  &quot;automerge_data&quot; contains configuration files paths and their 
-  belonging md5 hash. This features allows entropy.client to 
-  &quot;auto-merge&quot; or &quot;auto-remove&quot; configuration files 
-  never touched by user.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="removeSignatures"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeSignatures</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">idpackage</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.removeSignatures">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Remove extra package file hashes (SHA1, SHA256, SHA512) for package. 
-  Entropy package files metadata contains up to 4 hashes: md5, sha1, 
-  sha256, sha512 While md5 is here for historical reasons (being the first 
-  supported) sha1, sha256, sha512 have been added recently and located into
-  a separate database table called &quot;packagesignatures&quot;. Such 
-  hashes can be not available for older packages, so don't be scared, 
-  aliens are not to blame.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="removeProvidedLibraries"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeProvidedLibraries</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">idpackage</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.removeProvidedLibraries">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Remove provided libraries metadata from repository for given package 
-  identifier.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="removeSpmPhases"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeSpmPhases</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">idpackage</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.removeSpmPhases">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Remove Source Package Manager phases for package. Entropy can call 
-  several Source Package Manager (the PM which Entropy relies on) package 
-  installation/removal phases. Such phase names are listed here.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
 <a name="insertChangelog"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -6450,33 +6264,6 @@ a package:
         <li><strong class="pname"><code>category</code></strong> (string) - package category</li>
         <li><strong class="pname"><code>name</code></strong> (string) - package name</li>
         <li><strong class="pname"><code>changelog_txt</code></strong> (string) - changelog text</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="removeChangelog"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">removeChangelog</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">category</span>,
-        <span class="sig-arg">name</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.removeChangelog">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Remove ChangeLog for package (in this case using category + name as 
-  key)</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>category</code></strong> (string) - package category</li>
-        <li><strong class="pname"><code>name</code></strong> (string) - package name</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -6654,34 +6441,6 @@ a package:
         <li><strong class="pname"><code>sha1</code></strong> (string) - SHA1 hash for package file</li>
         <li><strong class="pname"><code>sha256</code></strong> (string) - SHA256 hash for package file</li>
         <li><strong class="pname"><code>sha512</code></strong> (string) - SHA512 hash for package file</li>
-    </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="insertSpmPhases"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">insertSpmPhases</span>(<span class="sig-arg">self</span>,
-        <span class="sig-arg">idpackage</span>,
-        <span class="sig-arg">phases</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.insertSpmPhases">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Insert Source Package Manager phases for package. Entropy can call 
-  several Source Package Manager (the PM which Entropy relies on) package 
-  installation/removal phases. Such phase names are listed here.</p>
-  <dl class="fields">
-    <dt>Parameters:</dt>
-    <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
-        <li><strong class="pname"><code>phases</code></strong> (list) - list of available Source Package Manager phases</li>
     </ul></dd>
   </dl>
 </td></tr></table>
@@ -7626,7 +7385,8 @@ triggers returning only what is strictly needed.
 <span class="py-output">    'eclasses': self.retrieveEclasses(idpackage),</span>
 <span class="py-output">    'needed': self.retrieveNeeded(idpackage, extended = True),</span>
 <span class="py-output">    'provided_libs': self.retrieveProvidedLibraries(idpackage),</span>
-<span class="py-output">    'provide': self.retrieveProvide(idpackage),</span>
+<span class="py-output">    'provide': provide (the old provide metadata version)</span>
+<span class="py-output">    'provide_extended': self.retrieveProvide(idpackage),</span>
 <span class="py-output">    'conflicts': self.retrieveConflicts(idpackage),</span>
 <span class="py-output">    'licensedata': self.retrieveLicensedata(idpackage),</span>
 <span class="py-output">    'content': content,</span>
@@ -7634,6 +7394,7 @@ triggers returning only what is strictly needed.
 <span class="py-output">    'mirrorlinks': [[x,self.retrieveMirrorInfo(x)] for x in mirrornames],</span>
 <span class="py-output">    'signatures': signatures,</span>
 <span class="py-output">    'spm_phases': self.retrieveSpmPhases(idpackage),</span>
+<span class="py-output">    'spm_repository': self.retrieveSpmRepository(idpackage),</span>
 <span class="py-output">}</span></pre></dd>
   </dl>
 </td></tr></table>
@@ -8650,6 +8411,33 @@ Return all the available &quot;treeupdates (package names/slots changes
   </dl>
 </td></tr></table>
 </div>
+<a name="retrieveSpmRepository"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">retrieveSpmRepository</span>(<span class="sig-arg">self</span>,
+        <span class="sig-arg">idpackage</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.retrieveSpmRepository">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return Source Package Manager source repository used at compile 
+  time.</p>
+  <dl class="fields">
+    <dt>Parameters:</dt>
+    <dd><ul class="nomargin-top">
+        <li><strong class="pname"><code>idpackage</code></strong> (int) - package indentifier</li>
+    </ul></dd>
+    <dt>Returns: string or None</dt>
+        <dd>Source Package Manager source repository</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="retrieveNeededRaw"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -8902,7 +8690,8 @@ Return all the available &quot;treeupdates (package names/slots changes
         <li><strong class="pname"><code>extended</code></strong> (bool) - return in extended format (list of tuples of length 2 composed by
           dependency name and dependency type)</li>
         <li><strong class="pname"><code>deptype</code></strong> (bool) - return only given type of dependencies see 
-          etpConst['spm']['*depend_id'] for dependency type identifiers</li>
+          etpConst['dependency_type_ids']['*depend_id'] for dependency type
+          identifiers</li>
         <li><strong class="pname"><code>exclude_deptypes</code></strong> (list) - list of dependency types to exclude</li>
     </ul></dd>
     <dt>Returns: list or set</dt>
@@ -10496,7 +10285,8 @@ Return Compiler flags during building of package.
         <span class="sig-arg">keyword</span>,
         <span class="sig-arg">slot</span>=<span class="sig-default">None</span>,
         <span class="sig-arg">tag</span>=<span class="sig-default">None</span>,
-        <span class="sig-arg">justid</span>=<span class="sig-default">False</span>)</span>
+        <span class="sig-arg">justid</span>=<span class="sig-default">False</span>,
+        <span class="sig-arg">get_extended</span>=<span class="sig-default">False</span>)</span>
   </h3>
   </td><td align="right" valign="top"
     ><span class="codelink"><a href="entropy.db-pysrc.html#EntropyRepository.searchProvide">source&nbsp;code</a></span>&nbsp;
@@ -10512,6 +10302,7 @@ Return Compiler flags during building of package.
         <li><strong class="pname"><code>slot</code></strong> (string) - match given package slot</li>
         <li><strong class="pname"><code>tag</code></strong> (string) - match given package tag</li>
         <li><strong class="pname"><code>justid</code></strong> (bool) - return list of package identifiers (set())</li>
+        <li><strong class="pname"><code>get_extended</code></strong> (bool) - return data in extended format</li>
     </ul></dd>
     <dt>Returns: list or set</dt>
         <dd>found PROVIDE metadata</dd>
@@ -11676,7 +11467,7 @@ Return Compiler flags during building of package.
   <dl class="fields">
     <dt>Parameters:</dt>
     <dd><ul class="nomargin-top">
-        <li><strong class="pname"><code>atom</code></strong> (string) - atom or dependency to match in repository</li>
+        <li><strong class="pname"><code>atom</code></strong> (unicode string) - atom or dependency to match in repository</li>
         <li><strong class="pname"><code>caseSensitive</code></strong> (bool) - match in case sensitive mode</li>
         <li><strong class="pname"><code>matchSlot</code></strong> (string) - match packages with given slot</li>
         <li><strong class="pname"><code>multiMatch</code></strong> (bool) - match all the available packages, not just the best one</li>
@@ -11731,7 +11522,7 @@ Return Compiler flags during building of package.
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:29 2009
+    Generated by Epydoc 3.0.1 on Sun Dec 13 00:16:19 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"

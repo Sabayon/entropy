@@ -57,7 +57,20 @@
 <!-- ==================== CLASS DESCRIPTION ==================== -->
 <h1 class="epydoc">Class EntropyPluginStore</h1><p class="nomargin-top"><span class="codelink"><a href="entropy.core-pysrc.html#EntropyPluginStore">source&nbsp;code</a></span></p>
 <center>
-
+<center>  <map id="uml_class_diagram_for_entropy__22" name="uml_class_diagram_for_entropy__22">
+<area shape="rect" id="node55" href="entropy.core.EntropyPluginStore-class.html#__init__" title="entropy.core.EntropyPluginStore.__init__" alt="" coords="196,39,456,57"/>
+<area shape="rect" id="node55" href="entropy.core.EntropyPluginStore-class.html#get_plugins" title="Return a copy of the internal dictionary that contains the currently stored plugins map." alt="" coords="196,57,456,76"/>
+<area shape="rect" id="node55" href="entropy.core.EntropyPluginStore-class.html#drop_plugins" title="Drop all the currently stored plugins from storage." alt="" coords="196,76,456,95"/>
+<area shape="rect" id="node55" href="entropy.core.EntropyPluginStore-class.html#add_plugin" title="This method lets you add a plugin to the store." alt="" coords="196,95,456,113"/>
+<area shape="rect" id="node55" href="entropy.core.EntropyPluginStore-class.html#remove_plugin" title="This method lets you remove previously added plugin objects via &#160;identifiers." alt="" coords="196,113,456,132"/>
+<area shape="rect" id="node1" href="entropy.core.EntropyPluginStore-class.html" title="This is a base class for handling a map of plugin objects by providing generic add/remove functions." alt="" coords="184,6,467,138"/>
+<area shape="rect" id="node2" href="entropy.qa.QAInterface-class.html" title="Entropy QA interface." alt="" coords="5,158,136,197"/>
+<area shape="rect" id="node3" href="entropy.db.plugin_store.EntropyRepositoryPluginStore-class.html" title="EntropyRepository plugin interface." alt="" coords="165,158,488,197"/>
+<area shape="rect" id="node5" href="entropy.core.settings.base.SystemSettings-class.html" title="This is the place where all the Entropy settings are stored if they are not considered instance constants (etpConst)." alt="" coords="517,158,736,197"/>
+<area shape="rect" id="node4" href="entropy.db.EntropyRepository-class.html" title="EntropyRepository implements SQLite3 based storage." alt="" coords="241,217,412,255"/>
+</map>
+  <img src="uml_class_diagram_for_entropy__22.gif" alt='' usemap="#uml_class_diagram_for_entropy__22" ismap="ismap" class="graph-without-title" />
+</center>
 </center>
 <hr />
 <p>This is a base class for handling a map of plugin objects by providing
@@ -89,16 +102,15 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">&nbsp;</span>
+      <span class="summary-type">dict</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.core.EntropyPluginStore-class.html#add_plugin" class="summary-sig-name">add_plugin</a>(<span class="summary-sig-arg">self</span>,
-        <span class="summary-sig-arg">plugin_id</span>,
-        <span class="summary-sig-arg">plugin_object</span>)</span><br />
-      This method lets you add a plugin to the store.</td>
+          <td><span class="summary-sig"><a href="entropy.core.EntropyPluginStore-class.html#get_plugins" class="summary-sig-name">get_plugins</a>(<span class="summary-sig-arg">self</span>)</span><br />
+      Return a copy of the internal dictionary that contains the currently 
+      stored plugins map.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#EntropyPluginStore.add_plugin">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.core-pysrc.html#EntropyPluginStore.get_plugins">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -125,15 +137,16 @@
   </tr>
 <tr>
     <td width="15%" align="right" valign="top" class="summary">
-      <span class="summary-type">dict</span>
+      <span class="summary-type">&nbsp;</span>
     </td><td class="summary">
       <table width="100%" cellpadding="0" cellspacing="0" border="0">
         <tr>
-          <td><span class="summary-sig"><a href="entropy.core.EntropyPluginStore-class.html#get_plugins" class="summary-sig-name">get_plugins</a>(<span class="summary-sig-arg">self</span>)</span><br />
-      Return a copy of the internal dictionary that contains the currently 
-      stored plugins map.</td>
+          <td><span class="summary-sig"><a href="entropy.core.EntropyPluginStore-class.html#add_plugin" class="summary-sig-name">add_plugin</a>(<span class="summary-sig-arg">self</span>,
+        <span class="summary-sig-arg">plugin_id</span>,
+        <span class="summary-sig-arg">plugin_object</span>)</span><br />
+      This method lets you add a plugin to the store.</td>
           <td align="right" valign="top">
-            <span class="codelink"><a href="entropy.core-pysrc.html#EntropyPluginStore.get_plugins">source&nbsp;code</a></span>
+            <span class="codelink"><a href="entropy.core-pysrc.html#EntropyPluginStore.add_plugin">source&nbsp;code</a></span>
             
           </td>
         </tr>
@@ -170,6 +183,28 @@
     <span class="table-header">Method Details</span></td>
 </tr>
 </table>
+<a name="get_plugins"></a>
+<div>
+<table class="details" border="1" cellpadding="3"
+       cellspacing="0" width="100%" bgcolor="white">
+<tr><td>
+  <table width="100%" cellpadding="0" cellspacing="0" border="0">
+  <tr valign="top"><td>
+  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_plugins</span>(<span class="sig-arg">self</span>)</span>
+  </h3>
+  </td><td align="right" valign="top"
+    ><span class="codelink"><a href="entropy.core-pysrc.html#EntropyPluginStore.get_plugins">source&nbsp;code</a></span>&nbsp;
+    </td>
+  </tr></table>
+  
+  <p>Return a copy of the internal dictionary that contains the currently 
+  stored plugins map.</p>
+  <dl class="fields">
+    <dt>Returns: dict</dt>
+        <dd>stored plugins map</dd>
+  </dl>
+</td></tr></table>
+</div>
 <a name="add_plugin"></a>
 <div>
 <table class="details" border="1" cellpadding="3"
@@ -193,28 +228,6 @@
         <li><strong class="pname"><code>plugin_id</code></strong> (string) - plugin identifier</li>
         <li><strong class="pname"><code>plugin_object</code></strong> (any Python object) - valid SystemSettingsPlugin instance</li>
     </ul></dd>
-  </dl>
-</td></tr></table>
-</div>
-<a name="get_plugins"></a>
-<div>
-<table class="details" border="1" cellpadding="3"
-       cellspacing="0" width="100%" bgcolor="white">
-<tr><td>
-  <table width="100%" cellpadding="0" cellspacing="0" border="0">
-  <tr valign="top"><td>
-  <h3 class="epydoc"><span class="sig"><span class="sig-name">get_plugins</span>(<span class="sig-arg">self</span>)</span>
-  </h3>
-  </td><td align="right" valign="top"
-    ><span class="codelink"><a href="entropy.core-pysrc.html#EntropyPluginStore.get_plugins">source&nbsp;code</a></span>&nbsp;
-    </td>
-  </tr></table>
-  
-  <p>Return a copy of the internal dictionary that contains the currently 
-  stored plugins map.</p>
-  <dl class="fields">
-    <dt>Returns: dict</dt>
-        <dd>stored plugins map</dd>
   </dl>
 </td></tr></table>
 </div>
@@ -275,7 +288,7 @@
 <table border="0" cellpadding="0" cellspacing="0" width="100%%">
   <tr>
     <td align="left" class="footer">
-    Generated by Epydoc 3.0.1 on Wed Nov 11 20:07:28 2009
+    Generated by Epydoc 3.0.1 on Sun Dec 13 00:16:18 2009
     </td>
     <td align="right" class="footer">
       <a target="mainFrame" href="http://epydoc.sourceforge.net"
