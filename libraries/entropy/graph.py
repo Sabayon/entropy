@@ -385,9 +385,9 @@ class Graph(object):
             for arch in node_item.arches():
                 if node_item.is_arch_outgoing(arch):
                     for endpoint in arch.endpoints():
-                        my_graph_map.add(endpoint.item())
+                        my_graph_map.add(endpoint)
 
-            graph_map[node_item.item()] = my_graph_map
+            graph_map[node_item] = my_graph_map
 
         self.__graph_map_cache = graph_map
         return graph_map
@@ -405,9 +405,14 @@ class Graph(object):
         @return: sorted graph representation
         @rtype: dict
         """
+
+        def trans_vals(node_list):
+            return tuple([x.item() for x in node_list])
+
         adj_map = self.get_adjacency_map()
         sorter = TopologicalSorter(adj_map)
-        return sorter.sort()
+        sorted_data = sorter.sort()
+        return dict((x, trans_vals(y),) for x, y in sorted_data.items())
 
     def raw(self):
         """
