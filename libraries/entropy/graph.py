@@ -397,9 +397,6 @@ class Graph(object):
         Protected method, the only difference is that this method returns
         GraphNode objects relations.
         """
-        def trans_vals(node_list):
-            return tuple([x.item() for x in node_list])
-
         adj_map = self.get_adjacency_map()
         sorter = TopologicalSorter(adj_map)
         return sorter.sort()
@@ -417,6 +414,9 @@ class Graph(object):
         @return: sorted graph representation
         @rtype: dict
         """
+        def trans_vals(node_list):
+            return tuple([x.item() for x in node_list])
+
         sorted_data = self._solve()
         return dict((x, trans_vals(y),) for x, y in sorted_data.items())
 
