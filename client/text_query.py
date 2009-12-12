@@ -17,7 +17,7 @@ from entropy.output import darkgreen, darkred, red, blue, \
     brown, purple, bold, print_info, print_error, print_generic
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.i18n import _
-import entropy.tools as entropyTools
+import entropy.tools
 
 
 def query(options):
@@ -129,23 +129,48 @@ def query(options):
                     rc_status = -10
             else:
                 rc_status = -10
+
     elif myopts[0] == "description":
         rc_status = search_description(myopts[1:])
+
     else:
         rc_status = -10
 
     return rc_status
 
+def get_installed_packages(packages, dbconn = None, entropy_intf = None):
 
-def search_installed_packages(packages, idreturn = False, dbconn = None,
-    Equo = None):
+    if entropy_intf is None:
+        entropy_intf = EquoInterface()
 
-    if Equo == None:
-        Equo = EquoInterface()
+    repo_db = dbconn
+    if not dbconn:
+        repo_db = entropy_intf.clientDbconn
 
-    if (not idreturn) and (not etpUi['quiet']):
+    pkg_data = {}
+    flat_results = set()
+    for package in packages:
+        pkg_data[package] = set()
+
+        slot = entropy.tools.dep_getslot(package)
+        tag = entropy.tools.dep_gettag(package)
+        package = entropy.tools.remove_slot(package)
+        package = entropy.tools.remove_tag(package)
+
+        idpackages = repo_db.searchPackages(package, slot = slot, tag = tag,
+            just_id = True)
+        pkg_data[package].update(idpackages)
+        flat_results.update(idpackages)
+
+    return pkg_data, flat_results
+
+def search_installed_packages(packages, dbconn = None, Equo = None):
+
+    if not etpUi['quiet']:
         print_info(brown(" @@ ")+darkgreen("%s..." % (_("Searching"),) ))
 
+    if Equo is None:
+        Equo = EquoInterface()
     clientDbconn = dbconn
     if not dbconn:
         clientDbconn = Equo.clientDbconn
@@ -154,20 +179,10 @@ def search_installed_packages(packages, idreturn = False, dbconn = None,
         packages = [x[0] for x in \
             clientDbconn.listAllPackages(order_by = "atom")]
 
-    pkg_data = set() # when idreturn is True
-    for package in packages:
-        slot = Equo.entropyTools.dep_getslot(package)
-        tag = Equo.entropyTools.dep_gettag(package)
-        package = Equo.entropyTools.remove_slot(package)
-        package = Equo.entropyTools.remove_tag(package)
+    pkg_data, flat_data = get_installed_packages(packages, dbconn = dbconn,
+        entropy_intf = Equo)
 
-        idpackages = clientDbconn.searchPackages(package, slot = slot,
-            tag = tag, just_id = True)
-        if not idpackages:
-            continue
-        if idreturn:
-            pkg_data |= set(idpackages)
-            continue
+    for package, idpackages in pkg_data.items():
 
         for idpackage in idpackages:
             print_package_info(idpackage, clientDbconn, clientSearch = True,
@@ -179,24 +194,21 @@ def search_installed_packages(packages, idreturn = False, dbconn = None,
                 bold("\t" + str(len(idpackages))) + \
                 red(" %s" % (_("entries"),)))
 
-    if idreturn:
-        return pkg_data
     return 0
 
 
-def search_belongs(files, idreturn = False, dbconn = None, Equo = None):
+def search_belongs(files, dbconn = None, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
-    if (not idreturn) and (not etpUi['quiet']):
+    if not etpUi['quiet']:
         print_info(darkred(" @@ ") + darkgreen("%s..." % (_("Belong Search"),)))
 
     clientDbconn = dbconn
     if not dbconn:
         clientDbconn = Equo.clientDbconn
 
-    pkg_data = set() # when idreturn is True
     results = {}
     flatresults = {}
     reverse_symlink_map = Equo.SystemSettings['system_rev_symlinks']
@@ -232,9 +244,6 @@ def search_belongs(files, idreturn = False, dbconn = None, Equo = None):
             # print info
             xfile = result
             result = results[result]
-            if idreturn:
-                pkg_data |= result
-                continue
 
             for idpackage in result:
                 if etpUi['quiet']:
@@ -248,14 +257,11 @@ def search_belongs(files, idreturn = False, dbconn = None, Equo = None):
                 print_info(blue(" %s:   " % (_("Found"),) ) + \
                     bold("\t" + str(len(result))) + red(" entries"))
 
-    if idreturn:
-        return pkg_data
     return 0
-
 
 def search_changelog(atoms, dbconn = None, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
     if not etpUi['quiet']:
@@ -291,7 +297,7 @@ def search_changelog(atoms, dbconn = None, Equo = None):
 
 def search_inverse_dependencies(atoms, dbconn = None, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
     if not etpUi['quiet']:
@@ -366,7 +372,7 @@ def search_inverse_dependencies(atoms, dbconn = None, Equo = None):
 
 def search_needed_libraries(atoms, dbconn = None, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
 
@@ -398,7 +404,7 @@ def search_needed_libraries(atoms, dbconn = None, Equo = None):
 
 def search_required_libraries(libraries, dbconn = None, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
 
@@ -432,7 +438,7 @@ def search_required_libraries(libraries, dbconn = None, Equo = None):
 
 def search_eclass(eclasses, dbconn = None, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
 
@@ -465,26 +471,23 @@ def search_eclass(eclasses, dbconn = None, Equo = None):
 
 def search_files(atoms, dbconn = None, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
     if not etpUi['quiet']:
         print_info(darkred(" @@ ")+darkgreen("Files Search..."))
 
     if not dbconn:
-        results = search_installed_packages(atoms, idreturn = True)
-        clientDbconn = Equo.clientDbconn
-    else:
-        results = search_installed_packages(atoms, idreturn = True,
-        dbconn = dbconn, Equo = Equo)
-        clientDbconn = dbconn
+        dbconn = Equo.clientDbconn
+    dict_results, results = get_installed_packages(atoms, dbconn = dbconn,
+        entropy_intf = Equo)
 
     for result in results:
         if result == -1:
             continue
 
-        files = clientDbconn.retrieveContent(result)
-        atom = clientDbconn.retrieveAtom(result)
+        files = dbconn.retrieveContent(result)
+        atom = dbconn.retrieveAtom(result)
         files = sorted(files)
         if etpUi['quiet']:
             for xfile in files:
@@ -504,7 +507,7 @@ def search_files(atoms, dbconn = None, Equo = None):
 
 def search_orphaned_files(Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
     if (not etpUi['quiet']):
@@ -515,7 +518,7 @@ def search_orphaned_files(Equo = None):
 
     # start to list all files on the system:
     dirs = Equo.SystemSettings['system_dirs']
-    filepath = Equo.entropyTools.get_random_temp_file()
+    filepath = entropy.tools.get_random_temp_file()
     if os.path.isfile(filepath):
         os.remove(filepath)
     tdbconn = Equo.open_generic_database(filepath)
@@ -525,7 +528,7 @@ def search_orphaned_files(Equo = None):
     import re
     reverse_symlink_map = Equo.SystemSettings['system_rev_symlinks']
     system_dirs_mask = [x for x in Equo.SystemSettings['system_dirs_mask'] \
-        if entropyTools.is_valid_path(x)]
+        if entropy.tools.is_valid_path(x)]
     system_dirs_mask_regexp = []
     for mask in Equo.SystemSettings['system_dirs_mask']:
         reg_mask = re.compile(mask)
@@ -676,7 +679,7 @@ def search_orphaned_files(Equo = None):
 
         myfile = tdbconn.cursor.fetchone()
 
-    humansize = Equo.entropyTools.bytes_into_human(sizecount)
+    humansize = entropy.tools.bytes_into_human(sizecount)
     if not etpUi['quiet']:
         print_info(red(" @@ ") + \
             blue("%s: " % (_("Total wasted space"),) ) + bold(humansize))
@@ -694,7 +697,7 @@ def search_orphaned_files(Equo = None):
 
 def search_removal_dependencies(atoms, deep = False, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
     clientDbconn = Equo.clientDbconn
@@ -755,7 +758,7 @@ def search_removal_dependencies(atoms, deep = False, Equo = None):
 
 def list_installed_packages(Equo = None, dbconn = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
     if not etpUi['quiet']:
@@ -774,13 +777,13 @@ def list_installed_packages(Equo = None, dbconn = None):
 
     for atom, idpackage, branch in inst_packages:
         if not etpUi['verbose']:
-            atom = Equo.entropyTools.dep_getkey(atom)
+            atom = entropy.tools.dep_getkey(atom)
         branchinfo = ""
         sizeinfo = ""
         if etpUi['verbose']:
             branchinfo = darkgreen(" [")+red(branch)+darkgreen("] ")
             mysize = clientDbconn.retrieveOnDiskSize(idpackage)
-            mysize = Equo.entropyTools.bytes_into_human(mysize)
+            mysize = entropy.tools.bytes_into_human(mysize)
             sizeinfo = brown(" [")+purple(mysize)+brown("]")
         if not etpUi['quiet']:
             print_info(red("  # ") + blue(str(idpackage)) + sizeinfo + \
@@ -793,7 +796,7 @@ def list_installed_packages(Equo = None, dbconn = None):
 
 def search_package(packages, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
     if not etpUi['quiet']:
@@ -806,10 +809,10 @@ def search_package(packages, Equo = None):
     def do_search(dbconn, from_client = False):
         my_found = False
         for package in packages:
-            slot = Equo.entropyTools.dep_getslot(package)
-            tag = Equo.entropyTools.dep_gettag(package)
-            package = Equo.entropyTools.remove_slot(package)
-            package = Equo.entropyTools.remove_tag(package)
+            slot = entropy.tools.dep_getslot(package)
+            tag = entropy.tools.dep_gettag(package)
+            package = entropy.tools.remove_slot(package)
+            package = entropy.tools.remove_tag(package)
 
             try:
 
@@ -862,7 +865,7 @@ def search_package(packages, Equo = None):
 def match_package(packages, multiMatch = False, multiRepo = False,
     showRepo = False, showDesc = False, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
     if not etpUi['quiet']:
@@ -907,7 +910,7 @@ def match_package(packages, multiMatch = False, multiRepo = False,
 
 def search_slotted_packages(slots, dbconn = None, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
     dbclose = True
@@ -951,7 +954,7 @@ def search_slotted_packages(slots, dbconn = None, Equo = None):
 
 def search_package_sets(items, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
     found = False
@@ -987,7 +990,7 @@ def search_package_sets(items, Equo = None):
 
 def search_tagged_packages(tags, dbconn = None, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
     dbclose = True
@@ -1030,7 +1033,7 @@ def search_tagged_packages(tags, dbconn = None, Equo = None):
 
 def search_licenses(licenses, dbconn = None, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
     dbclose = True
@@ -1078,7 +1081,7 @@ def search_licenses(licenses, dbconn = None, Equo = None):
 
 def search_description(descriptions, Equo = None):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
     found = False
@@ -1133,7 +1136,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
     strictOutput = False, extended = False, Equo = None,
     showRepoOnQuiet = False, showDescOnQuiet = False):
 
-    if Equo == None:
+    if Equo is None:
         Equo = EquoInterface()
 
     # now fetch essential info
@@ -1166,7 +1169,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
         installedRev = _("N/A")
         try:
             pkginstalled = Equo.clientDbconn.atomMatch(
-                Equo.entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
+                entropy.tools.dep_getkey(pkgatom), matchSlot = pkgslot)
             if pkginstalled[1] == 0:
                 idx = pkginstalled[0]
                 # found
@@ -1223,7 +1226,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
 
         if extended:
             pkgsize = dbconn.retrieveSize(idpackage)
-            pkgsize = Equo.entropyTools.bytes_into_human(pkgsize)
+            pkgsize = entropy.tools.bytes_into_human(pkgsize)
 
             print_info(darkgreen("       %s:\t\t\t" % (_("Size"),) ) + \
                 blue(str(pkgsize)))
@@ -1304,7 +1307,7 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
             mydate = dbconn.retrieveCreationDate(idpackage)
             pkgcreatedate = "N/A"
             if mydate:
-                pkgcreatedate = Equo.entropyTools.convert_unix_time_to_human_time(
+                pkgcreatedate = entropy.tools.convert_unix_time_to_human_time(
                     float(mydate))
             print_info(darkgreen("       %s:\t\t" % (_("Created"),) ) + \
                 pkgcreatedate)
