@@ -392,6 +392,18 @@ class Graph(object):
         self.__graph_map_cache = graph_map
         return graph_map
 
+    def _solve(self):
+        """
+        Protected method, the only difference is that this method returns
+        GraphNode objects relations.
+        """
+        def trans_vals(node_list):
+            return tuple([x.item() for x in node_list])
+
+        adj_map = self.get_adjacency_map()
+        sorter = TopologicalSorter(adj_map)
+        return sorter.sort()
+
     def solve(self):
         """
         Thanks to "R. E. Tarjan" (1972) for the help ;-)
@@ -405,13 +417,7 @@ class Graph(object):
         @return: sorted graph representation
         @rtype: dict
         """
-
-        def trans_vals(node_list):
-            return tuple([x.item() for x in node_list])
-
-        adj_map = self.get_adjacency_map()
-        sorter = TopologicalSorter(adj_map)
-        sorted_data = sorter.sort()
+        sorted_data = self._solve()
         return dict((x, trans_vals(y),) for x, y in sorted_data.items())
 
     def raw(self):
