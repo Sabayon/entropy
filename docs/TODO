@@ -1,7 +1,7 @@
 
   0.99.20:
 
-    - provide repository digital key, fetch it when syncing repos and check if
+     - provide repository digital key, fetch it when syncing repos and check if
       it matches and all file match
 
   0.99.30:
@@ -14,17 +14,18 @@
 
   0.99.40:
 
+    - use diffball?
     - move all the portage related stuff in entropy.tools to entropy.spm
         => prototype class defining transformations (collect them from tools)
 
   1.0_beta1:
 
-    - portage storing LC_* in environment?
     - complete API documentation
     - Transform Sulfur into Entropy Store:
         - UGC for more coolness
         - title change
         - more sexy UI
+    - deprecate etpCache (and remove)
 
   1.0_beta2:
 
@@ -45,18 +46,18 @@
   Portage split install project (backward compat):
 
    app-office/openoffice example:
-    - define EPACKAGES="core kde gnome templates java"
+    - define ETARGETS="core kde gnome templates java"
       => this will install:
-         app-office/openoffice-core
-         app-office/openoffice-kde
-         app-office/openoffice-gnome
-         app-office/openoffice-templates
-         app-office/openoffice-java
-     - src_prepare, src_unpack, src_compile are the same
-     - pkg_preinst, pkg_postinst, pkg_prerm, pkg_postrm are the same
-     - for every EPACKAGES entry there must be a defined epackage_${EPACKAGE}_src_install, if not: die
-     - every EPACKAGES entry can have extra epackage_${EPACKAGE}_pkg_{preinst,postinst,prerm,postrm}
-     - every EPACKAGES entry must feature RDEPEND/DEPEND/PDEPEND separate entries, for example:
-         => EPACKAGE_${EPACKAGE}_{R,P}DEPEND
-     - every EPACKAGE entry automatically depends on app-office/openoffice
+         ${CATEGORY}/${PN}-core-${PV}
+         ${CATEGORY}/${PN}-kde-${PV}
+         ${CATEGORY}/${PN}-gnome-${PV}
+         ${CATEGORY}/${PN}-templates-${PV}
+         ${CATEGORY}/${PN}-java-${PV}
+     - for every ETARGETS entry there must be a defined etarget_${ETARGET}_${PHASE},
+            if not: look for ${PHASE}, if not: die
+     - every ETARGETS entry must feature RDEPEND/DEPEND/PDEPEND separate entries, for example:
+         => ETARGET_${ETARGET}_{R,P}DEPEND
+     - ${R,P}DEPEND must be always set and contain common deps, if any.
+     - every ETARGET entry automatically depends on =app-office/openoffice-${PV}
+     - there is an etargets eclass which exports "old" style phases
 
