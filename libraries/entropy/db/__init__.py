@@ -2328,10 +2328,20 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             else:
                 my_provides.add(prov)
 
+        default_provides = [x for x in my_provides if x[1]]
+
         with self.__write_mutex:
+
             self.cursor.executemany("""
             INSERT into provide VALUES (?,?,?)
             """, [(idpackage, x, y,) for x, y in my_provides])
+
+            if default_provides:
+                # reset previously set default provides
+                self.cursor.executemany("""
+                UPDATE provide SET is_default=0 WHERE atom = (?) AND
+                idpackage != (?)
+                """, default_provides)
 
     def insertNeeded(self, idpackage, neededs):
         """
