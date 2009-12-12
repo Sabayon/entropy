@@ -1210,6 +1210,20 @@ class Server(Singleton, TextInterface):
         conn.initializeDatabase()
         return conn
 
+    def open_repository(self, repoid):
+        """
+        This method aims to improve class usability by providing an easier
+        method to open Entropy Server-side repositories like it happens
+        with Entropy Client-side ones. If you just want open a read-only
+        repository, feel free to use this wrapping method.
+
+        @param repoid: repository identifier
+        @type repoid: string
+        @return: EntropyRepository instance
+        @rtype: entropy.db.EntropyRepository
+        """
+        return self.open_server_repository(repo = repoid, just_reading = True,
+            do_treeupdates = False)
 
     def open_server_repository(
             self,
