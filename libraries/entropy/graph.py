@@ -391,10 +391,14 @@ class Graph(object):
         self.__graph_map_cache = graph_map
         return graph_map
 
-    def _solve(self):
+    def solve_nodes(self):
         """
-        Protected method, the only difference is that this method returns
-        GraphNode objects relations.
+        This method is equal to solve() but doesn't do any item back-translation
+        and just returns the relation between GraphNode objects that can be
+        manipulated directly by the caller.
+
+        @return: sorted graph representation (returning GraphNode objects)
+        @rtype: dict
         """
         adj_map = self.get_adjacency_map()
         sorter = TopologicalSorter(adj_map)
@@ -407,16 +411,13 @@ class Graph(object):
         Data is returned in map form, where key represents the dependency
         level and value a list of items at that dependency level.
 
-        @keyword output_callback: callback for outputting progress
-        @type output_callback: callable which accepts a single argument
-            (percent)
         @return: sorted graph representation
         @rtype: dict
         """
         def trans_vals(node_list):
             return tuple([x.item() for x in node_list])
 
-        sorted_data = self._solve()
+        sorted_data = self.solve_nodes()
         return dict((x, trans_vals(y),) for x, y in sorted_data.items())
 
     def raw(self):
@@ -429,5 +430,5 @@ class Graph(object):
         """
         return [x.item() for x in self.__graph.values()]
 
-__all__ = ["Graph"]
 
+__all__ = ["Graph"]
