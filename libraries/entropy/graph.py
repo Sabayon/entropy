@@ -384,8 +384,7 @@ class Graph(object):
             my_graph_map = set()
             for arch in node_item.arches():
                 if node_item.is_arch_outgoing(arch):
-                    for endpoint in arch.endpoints():
-                        my_graph_map.add(endpoint)
+                    my_graph_map |= arch.endpoints()
 
             graph_map[node_item] = my_graph_map
 
