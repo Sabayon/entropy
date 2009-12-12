@@ -346,6 +346,18 @@ class Graph(object):
         """
         self.__graph_map_cache = None
 
+    def get_node(self, item):
+        """
+        Return GraphNode instance for added item (through add())
+
+        @param item: Python object to be added to the graph
+        @type item: Python object
+        @return: GraphNode instance bound to item
+        @rtype: entropy.graph.GraphNode
+        @raise KeyError: if item is not in Graph
+        """
+        return self.__graph[item]
+
     def add(self, item, dependency_items):
         """
         Add arbitrary object to Graph, specifying its dependencies.
