@@ -15,6 +15,7 @@ from entropy.const import etpUi, const_convert_to_unicode, \
     const_convert_to_rawstring, const_convert_to_unicode
 from entropy.output import darkgreen, darkred, red, blue, \
     brown, purple, bold, print_info, print_error, print_generic
+from entropy.misc import Lifo
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.i18n import _
 import entropy.tools
@@ -32,6 +33,7 @@ def query(options):
     multi_repo = False
     show_repo = False
     show_desc = False
+    complete_graph = False
 
     myopts = []
     first_opt = None
@@ -53,7 +55,9 @@ def query(options):
         elif (opt == "--showrepo") and (first_opt == "match"):
             show_repo = True
         elif (opt == "--showdesc") and (first_opt == "match"):
-            showDesc = True
+            show_desc = True
+        elif (opt == "--complete") and (first_opt in ("graph","revgraph")):
+            complete_graph = True
         elif opt.startswith("--"):
             print_error(red(" %s." % (_("Wrong parameters"),) ))
             return -10
@@ -73,6 +77,12 @@ def query(options):
 
     elif myopts[0] == "search":
         rc_status = search_package(myopts[1:])
+
+    elif myopts[0] == "graph":
+        rc_status = graph_packages(myopts[1:], complete = complete_graph)
+
+    elif myopts[0] == "revgraph":
+        rc_status = revgraph_packages(myopts[1:], complete = complete_graph)
 
     elif myopts[0] == "installed":
         rc_status = search_installed_packages(myopts[1:])
@@ -196,6 +206,260 @@ def search_installed_packages(packages, dbconn = None, Equo = None):
 
     return 0
 
+def revgraph_packages(packages, dbconn = None, complete = False):
+
+    if dbconn is None:
+        entropy_intf = EquoInterface()
+        dbconn = entropy_intf.clientDbconn
+
+    for package in packages:
+        pkg_id, pkg_rc = dbconn.atomMatch(package)
+        if pkg_rc == 1:
+            continue
+        if not etpUi['quiet']:
+            print_info(brown(" @@ ")+darkgreen("%s %s..." % (
+                _("Reverse graphing installed package"), purple(package),) ))
+
+        g_pkg = dbconn.retrieveAtom(pkg_id)
+        _revgraph_package(pkg_id, g_pkg, dbconn, show_complete = complete)
+
+    return 0
+
+def _print_graph_item_deps(item, out_data = None, colorize = None):
+
+    if out_data is None:
+        out_data = {}
+
+    if "cache" not in out_data:
+        out_data['cache'] = set()
+    if "lvl" not in out_data:
+        out_data['lvl'] = 0
+    item_translation_callback = out_data.get('txc_cb')
+    show_already_pulled_in = out_data.get('show_already_pulled_in')
+
+    out_val = repr(item.item())
+    if item_translation_callback:
+        out_val = item_translation_callback(item.item())
+
+    endpoints = set()
+    for arch in item.arches():
+        if item.is_arch_outgoing(arch):
+            endpoints |= arch.endpoints()
+
+    valid_endpoints = [x for x in endpoints if x not in \
+        out_data['cache']]
+    cached_endpoints = [x for x in endpoints if x in \
+        out_data['cache']]
+
+    if colorize is None and not valid_endpoints:
+        colorize = darkgreen
+    elif colorize is None:
+        colorize = purple
+
+    indent_txt = ' ' * out_data['lvl']
+    print_generic(indent_txt + colorize(out_val))
+    if cached_endpoints and show_already_pulled_in:
+        indent_txt = ' ' * (out_data['lvl'] + 1)
+        for endpoint in cached_endpoints:
+            endpoint_item = item_translation_callback(endpoint.item())
+            print_generic(indent_txt + brown(endpoint_item))
+
+    if valid_endpoints:
+        out_data['lvl'] += 1
+        out_data['cache'].update(valid_endpoints)
+        for endpoint in valid_endpoints:
+            _print_graph_item_deps(endpoint, out_data)
+
+def _show_graph_legend():
+    print_info("%s:" % (purple(_("Legend")),))
+    print_info("[%s] %s" % (blue("x"),
+        blue(_("packages passed as arguments")),))
+    print_info("[%s] %s" % (darkgreen("x"),
+        darkgreen(_("packages with no further dependencies")),))
+    print_info("[%s] %s" % (purple("x"),
+        purple(_("packages with further dependencies (node)")),))
+    print_info("[%s] %s" % (brown("x"),
+        brown(_("packages already pulled in as dependency on upper levels (circularity)")),))
+    print_generic("="*40)
+
+def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
+
+    include_sys_pkgs = False
+    show_already_pulled_in = False
+    if show_complete:
+        include_sys_pkgs = True
+        show_already_pulled_in = True
+
+    from entropy.graph import Graph
+    from entropy.misc import Lifo
+    graph = Graph()
+    stack = Lifo()
+    inst_item = (installed_pkg_id, package)
+    stack.push(inst_item)
+    stack_cache = set()
+    # ensure package availability in graph, initialize now
+    graph.add(inst_item, set())
+
+    while stack.is_filled():
+
+        item = stack.pop()
+        if item in stack_cache:
+            continue
+        stack_cache.add(item)
+        pkg_id, was_dep = item
+
+        rev_deps = dbconn.retrieveReverseDependencies(pkg_id)
+
+        #graph_deps = set()
+        for rev_pkg_id in rev_deps:
+
+            dep = dbconn.retrieveAtom(rev_pkg_id)
+            do_include = True
+            if not include_sys_pkgs:
+                do_include = not dbconn.isSystemPackage(rev_pkg_id)
+
+            g_item = (rev_pkg_id, dep)
+            if do_include:
+                stack.push(g_item)
+            #graph_deps.add(g_item)
+            graph.add(g_item, set([item]))
+
+        #graph.add(item, graph_deps)
+
+    def item_translation_func(match):
+        return match[1]
+
+    _graph_to_stdout(graph, graph.get_node(inst_item),
+        item_translation_func, show_already_pulled_in)
+
+    del stack
+    del graph
+    return 0
+
+def graph_packages(packages, entropy_intf = None, complete = False):
+
+    if entropy_intf is None:
+        entropy_intf = EquoInterface()
+
+    for package in packages:
+        match = entropy_intf.atom_match(package)
+        if match[0] == -1:
+            continue
+        if not etpUi['quiet']:
+            print_info(brown(" @@ ")+darkgreen("%s %s..." % (
+                _("Graphing"), purple(package),) ))
+
+        pkg_id, repo_id = match
+        repodb = entropy_intf.open_repository(repo_id)
+        g_pkg = repodb.retrieveAtom(pkg_id)
+        _graph_package(match, g_pkg, entropy_intf, show_complete = complete)
+
+    return 0
+
+def _graph_package(match, package, entropy_intf, show_complete = False):
+
+    include_sys_pkgs = False
+    show_already_pulled_in = False
+    if show_complete:
+        include_sys_pkgs = True
+        show_already_pulled_in = True
+
+    from entropy.graph import Graph
+    from entropy.misc import Lifo
+    graph = Graph()
+    stack = Lifo()
+    start_item = (match, package)
+    stack.push(start_item)
+    stack_cache = set()
+    # ensure package availability in graph, initialize now
+    graph.add(start_item, set())
+
+    while stack.is_filled():
+
+        item = stack.pop()
+        if item in stack_cache:
+            continue
+        stack_cache.add(item)
+        ((pkg_id, repo_id,), was_dep) = item
+
+        # deps
+        repodb = entropy_intf.open_repository(repo_id)
+        deps = repodb.retrieveDependenciesList(pkg_id)
+
+        graph_deps = set()
+        for dep in deps:
+
+            if dep.startswith("!"): # conflict
+                continue
+
+            dep_item = entropy_intf.atom_match(dep)
+            if dep_item[0] == -1:
+                continue
+            do_include = True
+            if not include_sys_pkgs:
+                dep_repodb = entropy_intf.open_repository(dep_item[1])
+                do_include = not dep_repodb.isSystemPackage(dep_item[0])
+
+            g_item = (dep_item, dep)
+            if do_include:
+                stack.push(g_item)
+            graph_deps.add(g_item)
+
+        graph.add(item, graph_deps)
+
+    def item_translation_func(match):
+        return match[1]
+
+    _graph_to_stdout(graph, graph.get_node(start_item),
+        item_translation_func, show_already_pulled_in)
+    if not etpUi['quiet']:
+        _show_graph_legend()
+
+    del stack
+    del graph
+    return 0
+
+def _graph_to_stdout(graph, start_item, item_translation_callback,
+    show_already_pulled_in):
+
+    if not etpUi['quiet']:
+        print_generic("="*40)
+
+    sorted_data = graph.solve_nodes()
+    stack = Lifo()
+    for dep_level in sorted(sorted_data.keys(), reverse = True):
+        stack.push(sorted_data[dep_level])
+    # required to make sure that our first pkg is user required one
+    stack.push((start_item,))
+
+    out_data = {
+        'cache': set(),
+        'lvl': 0,
+        'txc_cb': item_translation_callback,
+        'show_already_pulled_in': show_already_pulled_in,
+    }
+
+    first_tree_item = True
+
+    while stack.is_filled():
+
+        stack_items = stack.pop()
+        # cleanup already printed items
+        items = [x for x in stack_items if x not in out_data['cache']]
+        if not items:
+            continue
+        out_data['cache'].update(stack_items)
+
+        # print items and its deps
+        for item in items:
+            old_level = out_data['lvl']
+            _print_graph_item_deps(item, out_data, colorize = blue)
+            out_data['lvl'] = old_level
+            if first_tree_item:
+                out_data['lvl'] += 1
+            first_tree_item = False
+
+    del stack
 
 def search_belongs(files, dbconn = None, Equo = None):
 
