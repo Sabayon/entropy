@@ -1329,6 +1329,7 @@ class CalculatorsMixin:
             except DependenciesNotFound as err:
                 error_generated = -2
                 error_tree |= err.value
+                conflicts = set()
 
             deptree_conflicts |= conflicts
 
