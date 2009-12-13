@@ -849,7 +849,7 @@ def search_orphaned_files(Equo = None):
                     print_generic("!!! error on", filename, "skipping:", repr(e))
 
             if foundFiles:
-                tdbconn.insertContent(1, foundFiles)
+                tdbconn.insertContent(None, foundFiles)
 
     tdbconn.commitChanges()
     tdbconn.cursor.execute('select count(file) from content')
