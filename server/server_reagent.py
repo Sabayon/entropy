@@ -445,7 +445,7 @@ def update(options):
                             repo = repo_id, just_reading = True)
                         etp_repo = repo_db.retrieveSpmRepository(pkg_id)
 
-                        if etp_repo is not None:
+                        if (etp_repo is not None) and (etp_repo != spm_repo):
                             item_txt += ' [%s {%s=>%s}]' % (bold(_("warning")),
                                 darkgreen(etp_repo), blue(spm_repo),)
 
