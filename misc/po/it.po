@@ -5016,7 +5016,7 @@ msgstr "Ricerca nel database dei Pacchetti Installati"
 
 #: ../../client/text_query.py:896
 msgid "Intersecting with content of the package"
-msgstr "Intersecazione con il contenuto del pacchetto"
+msgstr "Intersezione con il contenuto del pacchetto"
 
 #: ../../client/text_query.py:909
 msgid "Intersection completed. Showing statistics"
