@@ -3474,7 +3474,8 @@ class EntropyRepository:
         return data
 
     def getPackageData(self, idpackage, get_content = True,
-            content_insert_formatted = False, trigger_unicode = True):
+            content_insert_formatted = False, trigger_unicode = True,
+            get_changelog = True):
         """
         Reconstruct all the package metadata belonging to provided package
         identifier into a dict object.
@@ -3578,6 +3579,9 @@ class EntropyRepository:
             else:
                 old_provide.add(x)
 
+        changelog = None
+        if get_changelog:
+            changelog = self.retrieveChangelog(idpackage)
         data = {
             'atom': atom,
             'name': name,
@@ -3603,7 +3607,7 @@ class EntropyRepository:
             'messages': self.retrieveMessages(idpackage),
             'trigger': self.retrieveTrigger(idpackage, get_unicode = trigger_unicode),
             'disksize': self.retrieveOnDiskSize(idpackage),
-            'changelog': self.retrieveChangelog(idpackage),
+            'changelog': changelog,
             'injected': self.isInjected(idpackage),
             'systempackage': self.isSystemPackage(idpackage),
             'config_protect': self.retrieveProtect(idpackage),
