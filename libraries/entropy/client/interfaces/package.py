@@ -888,7 +888,7 @@ class Package:
         if smart_pkg or self.pkgmeta['merge_from']:
 
             data = dbconn.getPackageData(self.pkgmeta['idpackage'],
-                content_insert_formatted = True)
+                content_insert_formatted = True, get_changelog = False)
 
             if self.pkgmeta['removeidpackage'] != -1:
                 self.pkgmeta['removecontent'].update(
@@ -903,7 +903,7 @@ class Package:
 
             # normal repositories
             data = dbconn.getPackageData(self.pkgmeta['idpackage'],
-                get_content = False)
+                get_content = False, get_changelog = False)
 
             # indexing_override = False : no need to index tables
             # xcache = False : no need to use on-disk cache
@@ -952,8 +952,11 @@ class Package:
         # when installing packages through their .tbz2s
         data['branch'] = self.Entropy.SystemSettings['repositories']['branch']
         # there is no need to store needed paths into db
-        if data.get('needed_paths'):
+        if "needed_paths" in data:
             del data['needed_paths']
+        # there is no need to store changelog data into db
+        if "changelog" in data:
+            del data['changelog']
 
         idpackage, rev, x = self.Entropy.clientDbconn.handlePackage(
             data, forcedRevision = data['revision'], formattedContent = True)
