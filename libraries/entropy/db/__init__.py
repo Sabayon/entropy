@@ -3075,7 +3075,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         return data
 
     def getPackageData(self, idpackage, get_content = True,
-            content_insert_formatted = False, trigger_unicode = False):
+            content_insert_formatted = False, trigger_unicode = False,
+            get_changelog = True):
         """
         Reconstruct all the package metadata belonging to provided package
         identifier into a dict object.
@@ -3088,6 +3089,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type content_insert_formatted: bool
         @keyword trigger_unicode:
         @type trigger_unicode: bool
+        @keyword get_changelog:  return ChangeLog text metadatum or None
+        @type get_changelog: bool
         @return: package metadata in dict() form
 
         >>> data = {
@@ -3182,6 +3185,10 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             else:
                 old_provide.add(x)
 
+        changelog = None
+        if get_changelog:
+            changelog = self.retrieveChangelog(idpackage)
+
         data = {
             'atom': atom,
             'name': name,
@@ -3208,7 +3215,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             'trigger': self.retrieveTrigger(idpackage,
                 get_unicode = trigger_unicode),
             'disksize': self.retrieveOnDiskSize(idpackage),
-            'changelog': self.retrieveChangelog(idpackage),
+            'changelog': changelog,
             'injected': self.isInjected(idpackage),
             'systempackage': self.isSystemPackage(idpackage),
             'config_protect': self.retrieveProtect(idpackage),
@@ -6751,6 +6758,13 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         with self.__write_mutex:
             self.cursor.execute('DELETE FROM content')
+
+    def dropChangelog(self):
+        """
+        Drop all packages' ChangeLogs metadata from repository, a memory hog.
+        """
+        with self.__write_mutex:
+            self.cursor.execute('DELETE FROM packagechangelogs')
 
     def dropAllIndexes(self):
         """

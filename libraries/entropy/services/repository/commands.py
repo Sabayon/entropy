@@ -269,7 +269,7 @@ class Repository(SocketCommands):
                 mydata = dbconn.getPackageData(
                     idpackage,
                     content_insert_formatted = format_content_for_insert,
-                    get_content = False
+                    get_content = False, get_changelog = False
                 )
             except:
                 tb = self.entropyTools.get_traceback()
