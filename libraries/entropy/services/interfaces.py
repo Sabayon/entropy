@@ -829,6 +829,10 @@ class SocketHost:
             out_valid_cmd = valid_cmd
             out_reason = reason
             out_args = p_args
+
+            # for god sake, do not spam the whole log file or stdout
+            if not etpUi['debug'] and len(out_args) > 30:
+                out_args = out_args[:29] + ["---truncated---"]
             if etpUi['debug']:
                 out_cmd = purple(out_cmd)
                 out_data_len = brown(str(out_data_len))
@@ -953,6 +957,10 @@ class SocketHost:
                 p_args = authenticator.hide_login_data(p_args)
             elif cmd in self.HostInterface.raw_commands:
                 p_args = ['raw data']
+            # for god sake, do not spam the whole log file or stdout
+            if not etpUi['debug'] and len(p_args) > 30:
+                p_args = p_args[:29] + ["---truncated---"]
+
             self.HostInterface.updateProgress(
                 '[from: %s] run_task :: called %s: args: %s, session: %s' % (
                     self.client_address,
@@ -1006,6 +1014,10 @@ class SocketHost:
                 p_args = authenticator.hide_login_data(p_args)
             elif cmd in self.HostInterface.raw_commands:
                 p_args = ['raw data']
+            # for god sake, do not spam the whole log file or stdout
+            if not etpUi['debug'] and len(p_args) > 30:
+                p_args = p_args[:29] + ["---truncated---"]
+
             self.HostInterface.updateProgress(
                 '[from: %s] called %s: args: %s, kwargs: %s' % (
                     self.client_address,
