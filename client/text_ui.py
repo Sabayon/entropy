@@ -737,11 +737,10 @@ def downloadSources(packages = None, deps = True, deepdeps = False, tbz2 = None,
 
     return 0, 0
 
-def _fetchPackages(runQueue, multifetch = 1, dochecksum = True):
+def _fetchPackages(runQueue, downdata, multifetch = 1, dochecksum = True):
     totalqueue = str(len(runQueue))
 
     fetchqueue = 0
-    mykeys = {}
     mymultifetch = multifetch
     if multifetch > 1:
         myqueue = []
@@ -763,10 +762,10 @@ def _fetchPackages(runQueue, multifetch = 1, dochecksum = True):
             Package.prepare(matches, "multi_fetch", metaopts)
             myrepo_data = Package.pkgmeta['repository_atoms']
             for myrepo in myrepo_data:
-                if myrepo not in mykeys:
-                    mykeys[myrepo] = set()
+                if myrepo not in downdata:
+                    downdata[myrepo] = set()
                 for myatom in myrepo_data[myrepo]:
-                    mykeys[myrepo].add(entropy.tools.dep_getkey(myatom))
+                    downdata[myrepo].add(entropy.tools.dep_getkey(myatom))
 
             xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+mytotalqueue+" ::"
             print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
@@ -790,9 +789,9 @@ def _fetchPackages(runQueue, multifetch = 1, dochecksum = True):
         Package = Equo.Package()
         Package.prepare(match, "fetch", metaopts)
         myrepo = Package.pkgmeta['repository']
-        if myrepo not in mykeys:
-            mykeys[myrepo] = set()
-        mykeys[myrepo].add(entropy.tools.dep_getkey(Package.pkgmeta['atom']))
+        if myrepo not in downdata:
+            downdata[myrepo] = set()
+        downdata[myrepo].add(entropy.tools.dep_getkey(Package.pkgmeta['atom']))
 
         xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
         print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
@@ -841,7 +840,22 @@ def downloadPackages(packages = None, deps = True, deepdeps = False,
     if etpUi['pretend']:
         return 0, 0
 
-    return _fetchPackages(runQueue, multifetch, dochecksum)
+    downdata = {}
+    func_rc, fetch_rc = _fetchPackages(runQueue, downdata, multifetch,
+        dochecksum)
+    if func_rc == 0:
+        _spawn_ugc(downdata)
+    return func_rc, fetch_rc
+
+def _spawn_ugc(mykeys):
+    if Equo.UGC is None:
+        return
+    for myrepo in mykeys:
+        mypkgkeys = sorted(mykeys[myrepo])
+        try:
+            Equo.UGC.add_download_stats(myrepo, mypkgkeys)
+        except:
+            pass
 
 def installPackages(packages = None, atomsdata = None, deps = True,
     emptydeps = False, onlyfetch = False, deepdeps = False,
@@ -1247,21 +1261,14 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                     break
 
     if not etpUi['clean'] or onlyfetch:
+        mykeys = {}
         # Before starting the real install, fetch packages and verify checksum.
-        func_rc, fetch_rc = _fetchPackages(runQueue, multifetch, dochecksum)
+        func_rc, fetch_rc = _fetchPackages(runQueue, mykeys, multifetch,
+            dochecksum)
         if func_rc != 0:
             print_info(red(" @@ ")+blue("%s." % (_("Download incomplete"),) ))
             return func_rc, fetch_rc
-
-        def spawn_ugc():
-            try:
-                if Equo.UGC != None:
-                    for myrepo in mykeys:
-                        mypkgkeys = sorted(mykeys[myrepo])
-                        Equo.UGC.add_download_stats(myrepo, mypkgkeys)
-            except:
-                pass
-        spawn_ugc()
+        _spawn_ugc(mykeys)
 
     if onlyfetch:
         print_info(red(" @@ ")+blue("%s." % (_("Download complete"),) ))
