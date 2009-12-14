@@ -366,7 +366,7 @@ class Graph(object):
         @type item: Python object
         @param dependency_items: list of items which are dependencies of
             the given item object
-        @type dependency_items; set
+        @type dependency_items: set
         """
         self.__invalidate_cache()
 
