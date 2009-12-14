@@ -311,8 +311,10 @@ def const_default_settings(rootdir):
         'etpdatabasefile': default_etp_dbfile,
         # Entropy sqlite database file (gzipped)
         'etpdatabasefilegzip': default_etp_dbfile+".gz",
+        'etpdatabasefilegziphash': default_etp_dbfile+".gz.md5",
         # Entropy sqlite database file (bzipped2)
         'etpdatabasefilebzip2': default_etp_dbfile+".bz2",
+        'etpdatabasefilebzip2hash': default_etp_dbfile+".bz2.md5",
 
         # Entropy sqlite database file (gzipped)
         'etpdatabasefilegziplight': default_etp_dbfile+".light.gz",
@@ -351,11 +353,13 @@ def const_default_settings(rootdir):
             "bz2": (bz2.BZ2File, "unpack_bzip2", "etpdatabasefilebzip2",
                 "etpdatabasedumpbzip2", "etpdatabasedumphashfilebz2",
                 "etpdatabasedumplightbzip2", "etpdatabasedumplighthashfilebz2",
-                "etpdatabasefilebzip2light", "etpdatabasefilehashbzip2light",),
+                "etpdatabasefilebzip2light", "etpdatabasefilehashbzip2light",
+                "etpdatabasefilebzip2hash",),
             "gz": (gzip.GzipFile, "unpack_gzip", "etpdatabasefilegzip",
                 "etpdatabasedumpgzip", "etpdatabasedumphashfilegzip",
                 "etpdatabasedumplightgzip", "etpdatabasedumplighthashfilegzip",
-                "etpdatabasefilegziplight", "etpdatabasefilehashgziplight",)
+                "etpdatabasefilegziplight", "etpdatabasefilehashgziplight",
+                "etpdatabasefilegziphash",)
         },
         # enable/disable packages RSS feed feature
         'rss-feed': True,

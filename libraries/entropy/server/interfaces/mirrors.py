@@ -1696,7 +1696,8 @@ class Server:
                 # create compressed dump + checksum
                 self.dump_database_to_file(database_path,
                     upload_data['dump_path_light'], cmethod[0],
-                    exclude_tables = ["content"], repo = repo)
+                    exclude_tables = ["content", "packagechangelogs"],
+                    repo = repo)
                 self.create_file_checksum(upload_data['dump_path_light'],
                     upload_data['dump_path_digest_light'])
 
@@ -1728,6 +1729,7 @@ class Server:
                         temp_eapi1_dbfile, indexing_override = False,
                         xcache = False)
                 eapi1_tmp_dbconn.dropContent()
+                eapi1_tmp_dbconn.dropChangelog()
                 eapi1_tmp_dbconn.commitChanges()
                 eapi1_tmp_dbconn.vacuum()
                 eapi1_tmp_dbconn.closeDB()

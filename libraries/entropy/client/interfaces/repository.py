@@ -42,7 +42,7 @@ class Repository:
             raise AttributeError(mytxt)
 
         self.supported_download_items = (
-            "db", "dblight", "ck", "cklight", "compck",
+            "db", "dbck", "dblight", "ck", "cklight", "compck",
             "lock", "dbdump", "dbdumplight", "dbdumplightck", "dbdumpck",
             "meta_file", "notice_board"
         )
@@ -60,11 +60,18 @@ class Repository:
         self.alreadyUpdated = 0
         self.notAvailable = 0
         self.valid_eapis = [1, 2, 3]
+
+        # Developer Repository mode enabled?
+        sys_set = self.Entropy.SystemSettings
+        self._developer_repo = sys_set['repositories']['developer_repo']
+        if self._developer_repo:
+            const_debug_write(__name__, "__init__: developer repo mode enabled")
+
         self.reset_dbformat_eapi(None)
         self.current_repository_got_locked = False
         self.updated_repos = set()
 
-        avail_data = self.Entropy.SystemSettings['repositories']['available']
+        avail_data = sys_set['repositories']['available']
         # check self.Entropy.SystemSettings['repositories']['available']
         if not avail_data:
             mytxt = "No repositories specified in %s" % (
@@ -121,7 +128,8 @@ class Repository:
         else:
             rc = subprocess.call("/usr/bin/sqlite3 -version &> /dev/null",
                 shell = True)
-            if rc != 0: self.dbformat_eapi = 1
+            if rc != 0:
+                self.dbformat_eapi = 1
 
         eapi_env = os.getenv("FORCE_EAPI")
         if eapi_env != None:
@@ -131,6 +139,14 @@ class Repository:
                 return
             if myeapi in self.valid_eapis:
                 self.dbformat_eapi = myeapi
+            # FORCE_EAPI is triggered, disable
+            # developer_repo mode
+            self._developer_repo = False
+            const_debug_write(__name__,
+                "reset_dbformat_eapi: developer repo mode disabled FORCE_EAPI")
+        elif self.dbformat_eapi > 1 and self._developer_repo:
+            # enforce EAPI=1
+            self.dbformat_eapi = 1
 
 
     def __validate_repository_id(self, repoid):
@@ -172,7 +188,7 @@ class Repository:
             raise AttributeError(mytxt)
 
         items_needing_cmethod = (
-            "db", "dblight", "cklight", "dbdump", "dbdumpck",
+            "db", "dbck", "dblight", "cklight", "dbdump", "dbdumpck",
             "dbdumplight", "dbdumplightck", "compck",
         )
         if (item in items_needing_cmethod) and (cmethod is None):
@@ -196,6 +212,7 @@ class Repository:
         ec_cm6 = None
         ec_cm7 = None
         ec_cm8 = None
+        ec_cm9 = None
         if cmethod != None:
             ec_cm2 = etpConst[cmethod[2]]
             ec_cm3 = etpConst[cmethod[3]]
@@ -204,9 +221,11 @@ class Repository:
             ec_cm6 = etpConst[cmethod[6]]
             ec_cm7 = etpConst[cmethod[7]]
             ec_cm8 = etpConst[cmethod[8]]
+            ec_cm9 = etpConst[cmethod[9]]
 
         mymap = {
             'db': ("%s/%s" % (repo_db, ec_cm2,), "%s/%s" % (repo_dbpath, ec_cm2,),),
+            'dbck': ("%s/%s" % (repo_db, ec_cm9,), "%s/%s" % (repo_dbpath, ec_cm9,),),
             'dblight': ("%s/%s" % (repo_db, ec_cm7,), "%s/%s" % (repo_dbpath, ec_cm7,),),
             'dbdump': ("%s/%s" % (repo_db, ec_cm3,), "%s/%s" % (repo_dbpath, ec_cm3,),),
             'dbdumplight': ("%s/%s" % (repo_db, ec_cm5,), "%s/%s" % (repo_dbpath, ec_cm5,),),
@@ -222,47 +241,10 @@ class Repository:
 
         return mymap.get(item)
 
-    def __remove_repository_files(self, repo, cmethod):
-
-        dbfilenameid = cmethod[2]
-        dblightfilenameid = cmethod[7]
-        self.__validate_repository_id(repo)
-        repo_dbpath = self.Entropy.SystemSettings['repositories']['available'][repo]['dbpath']
-
-        def remove_eapi1():
-
-            if os.path.isfile(repo_dbpath+"/"+etpConst['etpdatabasehashfile']):
-                os.remove(repo_dbpath+"/"+etpConst['etpdatabasehashfile'])
-            if os.path.isfile(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile']):
-                os.remove(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile'])
-
-            if os.path.isfile(repo_dbpath + "/" + etpConst[dblightfilenameid]):
-                os.remove(repo_dbpath + "/" + etpConst[dblightfilenameid])
-            if os.path.isfile(repo_dbpath + "/" + etpConst[dblightfilenameid] + \
-                    etpConst['packagesmd5fileext']):
-                os.remove(repo_dbpath + "/" + etpConst[dblightfilenameid] + \
-                    etpConst['packagesmd5fileext'])
-
-            if os.path.isfile(repo_dbpath+"/"+etpConst[dbfilenameid]):
-                os.remove(repo_dbpath+"/"+etpConst[dbfilenameid])
-            if os.path.isfile(repo_dbpath + "/" + etpConst[dbfilenameid] + \
-                    etpConst['packagesmd5fileext']):
-                os.remove(repo_dbpath + "/" + etpConst[dbfilenameid] + \
-                    etpConst['packagesmd5fileext'])
-
-        if self.dbformat_eapi == 1:
-            remove_eapi1()
-        elif self.dbformat_eapi in (2, 3,):
-            remove_eapi1()
-            if os.path.isfile(repo_dbpath+"/"+cmethod[6]):
-                os.remove(repo_dbpath+"/"+cmethod[6])
-            if os.path.isfile(repo_dbpath+"/"+etpConst[cmethod[5]]):
-                os.remove(repo_dbpath+"/"+etpConst[cmethod[5]])
-            if os.path.isfile(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile']):
-                os.remove(repo_dbpath+"/"+etpConst['etpdatabaserevisionfile'])
-        else:
-            mytxt = "self.dbformat_eapi must be in (1,2,3,)"
-            raise AttributeError(mytxt)
+    def __remove_repository_files(self, repo):
+        sys_set = self.Entropy.SystemSettings
+        repo_dbpath = sys_set['repositories']['available'][repo]['dbpath']
+        shutil.rmtree(repo_dbpath, True)
 
     def __unpack_downloaded_database(self, repo, cmethod):
 
@@ -271,10 +253,13 @@ class Repository:
         path = None
         sys_set_repos = self.Entropy.SystemSettings['repositories']['available']
         repo_data = sys_set_repos[repo]
-        myfile = repo_data['dbpath'] + "/" + etpConst[cmethod[7]]
-        if self.dbformat_eapi == 2:
-            myfile = repo_data['dbpath'] + "/" + etpConst[cmethod[5]]
 
+        myitem = 'dblight'
+        if self.dbformat_eapi == 2:
+            myitem = 'dbdumplight'
+        elif self._developer_repo:
+            myitem = 'db'
+        garbage, myfile = self._construct_paths(myitem, repo, cmethod)
 
         if self.dbformat_eapi in (1, 2,):
             try:
@@ -303,10 +288,9 @@ class Repository:
         return rc
 
     def _verify_file_checksum(self, file_path, md5_checksum_path):
-        ck_f = open(md5_checksum_path, "r")
-        md5hash = ck_f.readline().strip()
-        md5hash = md5hash.split()[0]
-        ck_f.close()
+        with open(md5_checksum_path, "r") as ck_f:
+            md5hash = ck_f.readline().strip()
+            md5hash = md5hash.split()[0]
         return entropy.tools.compare_md5(file_path, md5hash)
 
     def __verify_database_checksum(self, repo, cmethod = None):
@@ -317,12 +301,16 @@ class Repository:
 
         sep = os.path.sep
         if self.dbformat_eapi == 1:
-            dbfile = avail_config['dbpath'] + sep + etpConst[cmethod[7]]
-            md5file = avail_config['dbpath'] + sep + etpConst[cmethod[8]]
+            if self._developer_repo:
+                remote_gb, dbfile = self._construct_paths('db', repo, cmethod)
+                remote_gb, md5file = self._construct_paths('dbck', repo, cmethod)
+            else:
+                remote_gb, dbfile = self._construct_paths('dblight', repo, cmethod)
+                remote_gb, md5file = self._construct_paths('cklight', repo, cmethod)
 
         elif self.dbformat_eapi == 2:
-            dbfile = avail_config['dbpath'] + sep + etpConst[cmethod[5]]
-            md5file = avail_config['dbpath'] + sep + etpConst[cmethod[6]]
+            remote_gb, dbfile = self._construct_paths('dbdumplight', repo, cmethod)
+            remote_gb, md5file = self._construct_paths('dbdumplightck', repo, cmethod)
 
         else:
             mytxt = "self.dbformat_eapi must be in (1,2)"
@@ -432,13 +420,17 @@ class Repository:
 
     def check_downloaded_database(self, repo, cmethod):
 
-        dbfilename = etpConst[cmethod[7]]
+        dbitem = 'dblight'
         if self.dbformat_eapi == 2:
-            dbfilename = etpConst[cmethod[5]]
+            dbitem = 'dbdumplight'
+        elif self._developer_repo:
+            dbitem = 'db'
+        garbage, dbfilename = self._construct_paths(dbitem, repo, cmethod)
+
         # verify checksum
         mytxt = "%s %s %s" % (
             red(_("Checking downloaded database")),
-            darkgreen(dbfilename),
+            darkgreen(os.path.basename(dbfilename)),
             red("..."),
         )
         self.Entropy.updateProgress(
@@ -1042,7 +1034,7 @@ class Repository:
                         )
                     except:
                         # avoid broken entries, deal with every exception
-                        self.__remove_repository_files(repo, cmethod)
+                        self.__remove_repository_files(repo)
                         raise
 
                     if status is None: # remote db not available anymore ?
@@ -1074,7 +1066,7 @@ class Repository:
                 # its database checksum cannot be fetched
                 if not db_checksum_down_status:
                     # delete all
-                    self.__remove_repository_files(repo, cmethod)
+                    self.__remove_repository_files(repo)
                     self.syncErrors = True
                     self.Entropy.cycleDone()
                     continue
@@ -1082,7 +1074,7 @@ class Repository:
                 rc = self.check_downloaded_database(repo, cmethod)
                 if rc != 0:
                     # delete all
-                    self.__remove_repository_files(repo, cmethod)
+                    self.__remove_repository_files(repo)
                     self.syncErrors = True
                     self.Entropy.cycleDone()
                     continue
@@ -1104,7 +1096,7 @@ class Repository:
 
                 if not unpack_status:
                     # delete all
-                    self.__remove_repository_files(repo, cmethod)
+                    self.__remove_repository_files(repo)
                     self.syncErrors = True
                     self.Entropy.cycleDone()
                     continue
@@ -1130,7 +1122,7 @@ class Repository:
 
             if rc != 0:
                 # delete all
-                self.__remove_repository_files(repo, cmethod)
+                self.__remove_repository_files(repo)
                 self.syncErrors = True
                 self.Entropy.cycleDone()
                 if os.path.isfile(dbfile_old):
@@ -1238,6 +1230,7 @@ class Repository:
         file_to_unpack = etpConst['etpdatabasedump']
         if self.dbformat_eapi == 1:
             file_to_unpack = etpConst['etpdatabasefile']
+
         mytxt = "%s %s %s" % (red(_("Unpacking database to")),
             darkgreen(file_to_unpack), red("..."),)
         self.Entropy.updateProgress(
@@ -1263,15 +1256,16 @@ class Repository:
 
     def handle_database_checksum_download(self, repo, cmethod):
 
-        hashfile = etpConst[cmethod[8]]
         downitem = 'cklight'
+        if self._developer_repo:
+            downitem = 'dbck'
         if self.dbformat_eapi == 2: # EAPI = 2
-            hashfile = etpConst[cmethod[6]]
             downitem = 'dbdumplightck'
 
+        garbage_url, hashfile = self._construct_paths(downitem, repo, cmethod)
         mytxt = "%s %s %s" % (
             red(_("Downloading checksum")),
-            darkgreen(hashfile),
+            darkgreen(os.path.basename(hashfile)),
             red("..."),
         )
         # download checksum
@@ -1284,9 +1278,13 @@ class Repository:
 
         db_down_status = self.download_item(downitem, repo, cmethod,
             disallow_redirect = True)
-        if not db_down_status and (downitem != 'cklight'):
-            # fallback to old method, deprecated
-            db_down_status = self.download_item('cklight', repo, cmethod,
+
+        if not db_down_status and (downitem not in ('cklight', 'dbck',)):
+            # fallback to old method
+            retryitem = 'cklight'
+            if self._developer_repo:
+                retryitem = 'dbck'
+            db_down_status = self.download_item(retryitem, repo, cmethod,
                 disallow_redirect = True)
 
         if not db_down_status:
@@ -1362,7 +1360,13 @@ class Repository:
             # start a check in background
             self.load_background_repository_lock_check(repo)
             self.dbformat_eapi = 1
-            down_status = self.download_item("dblight", repo, cmethod,
+            down_item = "dblight"
+            if self._developer_repo:
+                # if developer repo mode is enabled, fetch full-blown db
+                down_item = "db"
+                const_debug_write(__name__,
+                    "handle_database_download: developer repo mode enabled")
+            down_status = self.download_item(down_item, repo, cmethod,
                 lock_status_func = self.repository_lock_scanner_status,
                 disallow_redirect = True)
             if self.current_repository_got_locked:

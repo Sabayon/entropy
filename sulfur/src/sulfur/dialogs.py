@@ -4689,9 +4689,10 @@ class PkgInfoMenu(MenuSkel):
 
         # package changelog
         self.changelog = pkg.changelog
-        if not isinstance(self.changelog, basestring):
+        if not self.changelog:
             self.pkginfo_ui.showChangeLogButtonAlign.hide()
             self.pkginfo_ui.changeLogLabel.hide()
+            self.changelog = None
 
         # sources view
         self.sourcesModel.clear()

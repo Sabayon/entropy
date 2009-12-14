@@ -961,6 +961,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'transfer_limit': etpConst['downloadspeedlimit'],
             'timeout': etpConst['default_download_timeout'],
             'security_advisories_url': etpConst['securityurl'],
+	    'developer_repo': False,
         }
 
         repo_conf = etpConst['repositoriesconf']
@@ -1043,6 +1044,13 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
                 officialreponame = split_line[1]
                 data['default_repository'] = officialreponame
+
+            elif (line.find("developer-repo|") != -1) and \
+                (not line.startswith("#")) and (split_line_len == 2):
+
+                dev_repo = split_line[1]
+                if dev_repo in ("enable", "enabled", "true", "1", "yes",):
+                    data['developer_repo'] = True
 
             elif (line.find("downloadspeedlimit|") != -1) and \
                 (not line.startswith("#")) and (split_line_len == 2):

@@ -24,6 +24,14 @@ repository|sabayonlinux.org||http://cross-lfs.sabayonlinux.org/entropy|
 repository|sabayonlinux.org||http://ftp.surfnet.nl/pub/os/Linux/distr/sabayonlinux/entropy|
 repository|sabayonlinux.org||http://na.mirror.garr.it/mirrors/sabayonlinux/entropy|
 
+# syntax for developer-repo
+#
+#  developer-repo: Enable this setting to fetch an extended repository database containing
+#                  the whole metadata set (including package ChangeLogs and contents).
+#                  Disabled by default.
+# Valid parameters: disable, enable, true, false, disabled, enabled
+#  developer-repo|disable
+
 #
 #  syntax for product:
 #

@@ -12,9 +12,9 @@
 
 import os
 from entropy.const import etpUi, const_convert_to_unicode, \
-    const_convert_to_rawstring, const_convert_to_unicode
+    const_convert_to_rawstring, const_convert_to_unicode, etpConst
 from entropy.output import darkgreen, darkred, red, blue, \
-    brown, purple, bold, print_info, print_error, print_generic
+    brown, purple, bold, print_info, print_error, print_generic, print_warning
 from entropy.misc import Lifo
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.i18n import _
@@ -555,6 +555,16 @@ def search_changelog(atoms, dbconn = None, Equo = None):
         else:
             print_generic(changelog)
         print_generic("="*80)
+
+    if not etpUi['quiet']:
+        # check developer repo mode
+        dev_repo = Equo.SystemSettings['repositories']['developer_repo']
+        if not dev_repo:
+            print_warning(bold(" !!! ") + \
+                brown("%s ! [%s]" % (
+                    _("Attention: developer-repo option not enabled"),
+                    blue(etpConst['repositoriesconf']),
+                )))
 
     return 0
 
