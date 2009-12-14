@@ -16,7 +16,7 @@ import select
 import shutil
 import time
 from entropy.const import etpConst, ETP_LOGLEVEL_NORMAL, ETP_LOGPRI_INFO, \
-    const_setup_perms
+    const_setup_perms, etpUi
 from entropy.exceptions import *
 from entropy.services.skel import SocketAuthenticator, SocketCommands
 from entropy.i18n import _
@@ -817,6 +817,9 @@ class SocketHost:
                 p_args = authenticator.hide_login_data(p_args)
             elif cmd in self.HostInterface.raw_commands:
                 p_args = ['raw data']
+            if not etpUi['debug'] and len(p_args) > 30:
+                p_args = p_args[:29] + ["---truncated---"]
+
             self.HostInterface.updateProgress(
                 '[from: %s] command validation :: called %s: length: %s, args: %s, session: %s, valid: %s, reason: %s' % (
                     self.client_address,
@@ -918,6 +921,9 @@ class SocketHost:
                 p_args = authenticator.hide_login_data(p_args)
             elif cmd in self.HostInterface.raw_commands:
                 p_args = ['raw data']
+            if not etpUi['debug'] and len(p_args) > 30:
+                p_args = p_args[:29] + ["---truncated---"]
+
             self.HostInterface.updateProgress(
                 '[from: %s] run_task :: called %s: args: %s, session: %s' % (
                     self.client_address,
@@ -971,6 +977,9 @@ class SocketHost:
                 p_args = authenticator.hide_login_data(p_args)
             elif cmd in self.HostInterface.raw_commands:
                 p_args = ['raw data']
+            if not etpUi['debug'] and len(p_args) > 30:
+                p_args = p_args[:29] + ["---truncated---"]
+
             self.HostInterface.updateProgress(
                 '[from: %s] called %s: args: %s, kwargs: %s' % (
                     self.client_address,
