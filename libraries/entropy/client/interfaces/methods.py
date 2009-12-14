@@ -971,9 +971,7 @@ class MiscMixin:
 
     def setup_default_file_perms(self, filepath):
         # setup file permissions
-        os.chmod(filepath, 0o664)
-        if etpConst['entropygid'] != None:
-            os.chown(filepath, -1, etpConst['entropygid'])
+        const_setup_file(filepath, etpConst['entropygid'], 0o664)
 
     def resources_create_lock(self):
         acquired = self.create_pid_file_lock(
