@@ -22,6 +22,7 @@ from entropy.output import *
 from entropy.client.interfaces import Client
 from entropy.misc import ParallelTask
 from entropy.i18n import _
+import entropy.tools
 Equo = Client()
 
 def package(options):
@@ -50,7 +51,7 @@ def package(options):
     _myopts = []
     mytbz2paths = []
     for opt in myopts:
-        if not Equo.entropyTools.is_valid_unicode(opt):
+        if not entropy.tools.is_valid_unicode(opt):
             print_error(red(" %s." % (_("Malformed command"),) ))
             return -10
         try:
@@ -102,7 +103,7 @@ def package(options):
         else:
             if opt.startswith("--"):
                 continue
-            etp_file = Equo.entropyTools.is_entropy_package_file(opt)
+            etp_file = entropy.tools.is_entropy_package_file(opt)
             if etp_file:
                 opt = os.path.abspath(opt)
                 mytbz2paths.append(opt)
@@ -199,7 +200,7 @@ def worldUpdate(onlyfetch = False, replay = False, resume = False,
     skipfirst = False, human = False, dochecksum = True, multifetch = 1):
 
     # check if I am root
-    if (not Equo.entropyTools.is_root()):
+    if (not entropy.tools.is_root()):
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
@@ -346,7 +347,7 @@ def worldUpdate(onlyfetch = False, replay = False, resume = False,
 def branchHop(branch):
 
     # check if I am root
-    if (not Equo.entropyTools.is_root()):
+    if (not entropy.tools.is_root()):
         mytxt = "%s." % (darkred(_("Cannot switch branch as user")),)
         print_error(mytxt)
         return 1, -1
@@ -546,7 +547,7 @@ def _showPackageInfo(foundAtoms, deps, action_name = None):
             installedTag = "NoTag"
             installedRev = "NoRev"
             installedRepo = _("Not available")
-            pkginstalled = Equo.clientDbconn.atomMatch(Equo.entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
+            pkginstalled = Equo.clientDbconn.atomMatch(entropy.tools.dep_getkey(pkgatom), matchSlot = pkgslot)
             if (pkginstalled[1] == 0):
                 # found
                 idx = pkginstalled[0]
@@ -765,7 +766,7 @@ def _fetchPackages(runQueue, multifetch = 1, dochecksum = True):
                 if myrepo not in mykeys:
                     mykeys[myrepo] = set()
                 for myatom in myrepo_data[myrepo]:
-                    mykeys[myrepo].add(Equo.entropyTools.dep_getkey(myatom))
+                    mykeys[myrepo].add(entropy.tools.dep_getkey(myatom))
 
             xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+mytotalqueue+" ::"
             print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
@@ -791,7 +792,7 @@ def _fetchPackages(runQueue, multifetch = 1, dochecksum = True):
         myrepo = Package.pkgmeta['repository']
         if myrepo not in mykeys:
             mykeys[myrepo] = set()
-        mykeys[myrepo].add(Equo.entropyTools.dep_getkey(Package.pkgmeta['atom']))
+        mykeys[myrepo].add(entropy.tools.dep_getkey(Package.pkgmeta['atom']))
 
         xterm_header = "Equo ("+_("fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
         print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+ \
@@ -814,7 +815,7 @@ def downloadPackages(packages = None, deps = True, deepdeps = False,
         packages = []
 
     # check if I am root
-    if (not Equo.entropyTools.is_root()):
+    if (not entropy.tools.is_root()):
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
@@ -856,7 +857,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
         tbz2 = []
 
     # check if I am root
-    if (not Equo.entropyTools.is_root()):
+    if (not entropy.tools.is_root()):
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
@@ -963,7 +964,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 installedTag = ''
                 installedRev = 0
                 installedRepo = None
-                pkginstalled = Equo.clientDbconn.atomMatch(Equo.entropyTools.dep_getkey(pkgatom), matchSlot = pkgslot)
+                pkginstalled = Equo.clientDbconn.atomMatch(entropy.tools.dep_getkey(pkgatom), matchSlot = pkgslot)
                 if (pkginstalled[1] == 0):
                     # found an installed package
                     idx = pkginstalled[0]
@@ -1028,7 +1029,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                         oldtag = "|"+darkred(installedTag)+oldtag
                     oldinfo += oldtag
 
-                print_info(darkred(" ##")+flags+repoinfo+blue(pkgatom)+"|"+red(str(pkgrev))+oldinfo)
+                print_info(darkred(" ##")+flags+repoinfo+entropy.tools.enlightenatom(pkgatom)+"|"+red(str(pkgrev))+oldinfo)
 
         deltaSize = onDiskUsedSize - onDiskFreedSize
         neededSize = deltaSize
@@ -1052,7 +1053,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                     if installedfrom is None:
                         installedfrom = _("Not available")
                     repoinfo = red("[")+brown("%s: " % (_("from"),) )+bold(installedfrom)+red("] ")
-                    print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+enlightenatom(pkgatom))
+                    print_info(red("   ## ")+"["+red("W")+"] "+repoinfo+entropy.tools.enlightenatom(pkgatom))
 
         if (runQueue) or (removalQueue) and not etpUi['quiet']:
             # show download info
@@ -1083,7 +1084,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 print_info(red(" @@ ")+mytxt)
 
             if downloadSize > 0:
-                mysize = str(Equo.entropyTools.bytes_into_human(downloadSize))
+                mysize = str(entropy.tools.bytes_into_human(downloadSize))
             else:
                 mysize = "0b"
             mytxt = "%s: %s" % (
@@ -1099,7 +1100,7 @@ def installPackages(packages = None, atomsdata = None, deps = True,
                 deltaSize = deltaSize*-1
             mytxt = "%s: %s" % (
                 blue(mysizetxt),
-                bold(str(Equo.entropyTools.bytes_into_human(deltaSize))),
+                bold(str(entropy.tools.bytes_into_human(deltaSize))),
             )
             print_info(red(" @@ ")+mytxt)
 
@@ -1108,13 +1109,13 @@ def installPackages(packages = None, atomsdata = None, deps = True,
 
             mytxt = "%s: %s %s" % (
                 blue(_("You need at least")),
-                blue(str(Equo.entropyTools.bytes_into_human(neededSize))),
+                blue(str(entropy.tools.bytes_into_human(neededSize))),
                 _("of free space"),
             )
             print_info(red(" @@ ")+mytxt)
             # check for disk space and print a warning
             ## unpackSize
-            size_match = Equo.entropyTools.check_required_space(etpConst['entropyunpackdir'], neededSize)
+            size_match = entropy.tools.check_required_space(etpConst['entropyunpackdir'], neededSize)
             if not size_match:
                 mytxt = "%s: %s" % (
                     _("You don't have enough space for the installation. Free some space into"),
@@ -1322,7 +1323,7 @@ def configurePackages(packages = None):
         packages = []
 
     # check if I am root
-    if (not Equo.entropyTools.is_root()):
+    if (not entropy.tools.is_root()):
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
@@ -1378,7 +1379,7 @@ def configurePackages(packages = None):
         if installedfrom is None:
             installedfrom = _("Not available")
         mytxt = " | %s: " % (_("Installed from"),)
-        print_info("   # "+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+enlightenatom(pkgatom)+mytxt+red(installedfrom))
+        print_info("   # "+red("(")+brown(str(atomscounter))+"/"+blue(str(totalatoms))+red(")")+" "+entropy.tools.enlightenatom(pkgatom)+mytxt+red(installedfrom))
 
     if etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']:
         print_info(red(" @@ ")+blue("%s: " % (_("Packages involved"),) )+str(totalatoms))
@@ -1411,7 +1412,7 @@ def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
         atomsdata = []
 
     # check if I am root
-    if (not Equo.entropyTools.is_root()):
+    if (not entropy.tools.is_root()):
         mytxt = "%s %s %s" % (_("Running with"), bold("--pretend"), red("..."),)
         print_warning(mytxt)
         etpUi['pretend'] = True
@@ -1470,9 +1471,10 @@ def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
             print_error(red("%s." % (_("No packages found"),) ))
             return 125, -1
 
-        plainRemovalQueue = []
+        plain_removal_queue = []
+        package_sizes = {}
 
-        lookForOrphanedPackages = True
+        look_for_orphaned_packages = True
         # now print the selected packages
         print_info(red(" @@ ")+blue("%s:" % (_("These are the chosen packages"),) ))
         totalatoms = len(foundAtoms)
@@ -1493,34 +1495,38 @@ def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
                         brown(str(atomscounter)),
                         blue(str(totalatoms)),
                         # every package matching app-foo is masked
-                        enlightenatom(pkgatom),
+                        entropy.tools.enlightenatom(pkgatom),
                         red(_("vital package")),
                         red(_("Removal forbidden")),
                     )
                     print_warning(mytxt)
                     continue
 
-            plainRemovalQueue.append(idpackage)
+            plain_removal_queue.append(idpackage)
 
             installedfrom = Equo.clientDbconn.getInstalledPackageRepository(
                 idpackage)
             if installedfrom is None:
                 installedfrom = _("Not available")
-            disksize = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
-            disksize = Equo.entropyTools.bytes_into_human(disksize)
+            on_disk_size = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
+            pkg_size = Equo.clientDbconn.retrieveSize(idpackage)
+            disksize = entropy.tools.bytes_into_human(on_disk_size)
             disksizeinfo = " | %s: %s" % (blue(_("Disk size")),
                 bold(str(disksize)),)
             mytxt = " | %s: " % (_("Installed from"),)
             print_info("   # " + red("(") + brown(str(atomscounter)) + "/" + \
                 blue(str(totalatoms)) + red(")") + " " + \
-                enlightenatom(pkgatom) + mytxt + red(installedfrom) + \
+                entropy.tools.enlightenatom(pkgatom) + mytxt + red(installedfrom) + \
                 disksizeinfo)
+
+            if idpackage not in package_sizes:
+                package_sizes[idpackage] = on_disk_size, pkg_size
 
         if (etpUi['verbose'] or etpUi['ask'] or etpUi['pretend']):
             print_info(red(" @@ ") + \
                 blue("%s: " % (_("Packages involved"),) ) + str(totalatoms))
 
-        if not plainRemovalQueue:
+        if not plain_removal_queue:
             print_error(red("%s." % (_("Nothing to do"),) ))
             return 126, -1
 
@@ -1530,46 +1536,80 @@ def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
             )
         else:
             question = "     %s" % (_("Would you like to remove them now ?"),)
-            lookForOrphanedPackages = False
+            look_for_orphaned_packages = False
 
         if etpUi['ask'] and not etpUi['pretend']:
             rc = Equo.askQuestion(question)
             if rc == _("No"):
-                lookForOrphanedPackages = False
+                look_for_orphaned_packages = False
                 if (not deps):
                     return 0, 0
 
         removalQueue = []
+        atomscounter = len(plain_removal_queue)
 
-        if lookForOrphanedPackages:
-            choosenRemovalQueue = []
-            choosenRemovalQueue = Equo.get_removal_queue(plainRemovalQueue, deep = deep)
-            if choosenRemovalQueue:
+        if look_for_orphaned_packages:
+            choosen_removal_queue = Equo.get_removal_queue(plain_removal_queue, deep = deep)
+            if choosen_removal_queue:
                 print_info(red(" @@ ")+blue("%s:" % (_("This is the new removal queue"),) ))
-                totalatoms = str(len(choosenRemovalQueue))
-                atomscounter = 0
+                totalatoms = str(len(choosen_removal_queue))
 
-                for idpackage in choosenRemovalQueue:
+                atomscounter = 0
+                for idpackage in choosen_removal_queue:
+
                     atomscounter += 1
                     rematom = Equo.clientDbconn.retrieveAtom(idpackage)
                     if not rematom:
                         continue
+
                     installedfrom = Equo.clientDbconn.getInstalledPackageRepository(idpackage)
                     if installedfrom is None:
                         installedfrom = _("Not available")
-                    disksize = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
-                    disksize = Equo.entropyTools.bytes_into_human(disksize)
-                    repositoryInfo = bold("[")+darkgreen("%s:" % (_("from"),) )+brown(installedfrom)+bold("]")
+
+                    on_disk_size = Equo.clientDbconn.retrieveOnDiskSize(idpackage)
+                    pkg_size = Equo.clientDbconn.retrieveSize(idpackage)
+                    disksize = entropy.tools.bytes_into_human(on_disk_size)
+                    repositoryInfo = bold("[") + brown(installedfrom) \
+                        + bold("]")
                     stratomscounter = str(atomscounter)
                     while len(stratomscounter) < len(totalatoms):
                         stratomscounter = " "+stratomscounter
-                    disksizeinfo = bold(" [")+red(str(disksize))+bold("]")
-                    print_info("   # "+red("(")+bold(stratomscounter)+"/"+blue(str(totalatoms))+red(")")+repositoryInfo+" "+blue(rematom)+disksizeinfo)
+                    disksizeinfo = bold(" [")+brown(str(disksize))+bold("]")
+                    print_info(darkred(" ## ")+repositoryInfo+" " + \
+                        entropy.tools.enlightenatom(rematom)+disksizeinfo)
 
-                removalQueue = choosenRemovalQueue
+                    if idpackage not in package_sizes:
+                        package_sizes[idpackage] = on_disk_size, pkg_size
+
+                removalQueue = choosen_removal_queue
 
             else:
                 writechar("\n")
+
+        mytxt = "%s: %s" % (blue(_("Packages needing to be removed")), red(str(atomscounter)),)
+        print_info(red(" @@ ")+mytxt)
+
+        total_removal_size = 0
+        total_pkg_size = 0
+        for on_disk_size, pkg_size in package_sizes.values():
+            total_removal_size += on_disk_size
+            total_pkg_size += pkg_size
+        human_removal_size = entropy.tools.bytes_into_human(total_removal_size)
+        human_pkg_size = entropy.tools.bytes_into_human(total_pkg_size)
+
+        mysizetxt = _("Freed disk space")
+        mytxt = "%s: %s" % (
+            blue(mysizetxt),
+            bold(str(human_removal_size)),
+        )
+        print_info(red(" @@ ")+mytxt)
+
+        mysizetxt = _("Total bandwidth wasted")
+        mytxt = "%s: %s" % (
+            blue(mysizetxt),
+            bold(str(human_pkg_size)),
+        )
+        print_info(red(" @@ ")+mytxt)
 
         if etpUi['pretend']:
             return 0, 0
@@ -1588,12 +1628,12 @@ def removePackages(packages = None, atomsdata = None, deps = True, deep = False,
                 if rc == _("Yes"):
                     return 0, 0
         elif deps:
-            Equo.entropyTools.countdown(
+            entropy.tools.countdown(
                 what = red(" @@ ")+blue("%s " % (_("Starting removal in"),)),
                 back = True
             )
 
-        for idpackage in plainRemovalQueue: # append at the end requested packages if not in queue
+        for idpackage in plain_removal_queue: # append at the end requested packages if not in queue
             if idpackage not in removalQueue:
                 removalQueue.append(idpackage)
 
@@ -1708,7 +1748,7 @@ def unusedPackagesTest(do_size_sort = False):
         print_generic('\n'.join([x[2] for x in data]))
     else:
         for disk_size, idpackage, atom in data:
-            disk_size = Equo.entropyTools.bytes_into_human(disk_size)
+            disk_size = entropy.tools.bytes_into_human(disk_size)
             print_info("# %s%s%s %s" % (
                 blue("["), brown(disk_size), blue("]"), darkgreen(atom),))
 
