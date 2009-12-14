@@ -417,18 +417,6 @@ def darkred(text):
     """
     return colorize("darkred", text)
 
-def enlightenatom(atom):
-    """
-    Colorize package atoms with standard colors.
-
-    @param atom: atom string
-    @type atom: string
-    @return: colorized string
-    @rtype: string
-    """
-    out = atom.split("/")
-    return blue(out[0])+"/"+red(out[1])
-
 def print_menu(data, args = None):
     """
     Function used by Entropy text client (will be moved from here) to

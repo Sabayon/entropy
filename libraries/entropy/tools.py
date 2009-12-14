@@ -27,7 +27,7 @@ import pwd
 import hashlib
 import random
 from entropy.output import TextInterface, print_info, print_generic, red, \
-    darkgreen, green
+    darkgreen, green, blue, purple, teal, brown
 from entropy.const import etpConst, const_kill_threads, const_islive, \
     const_isunicode, const_convert_to_unicode, const_convert_to_rawstring, \
     const_cmp, const_israwstring
@@ -1596,6 +1596,40 @@ def isvalidatom(myatom, allow_blockers = True):
         # cat/pkg
         return 1
     return 0
+
+def enlightenatom(atom):
+    """
+    Colorize package atoms with standard colors.
+
+    @param atom: atom string
+    @type atom: string
+    @return: colorized string
+    @rtype: string
+    """
+    entropy_rev = dep_get_entropy_revision(atom)
+    if entropy_rev is None:
+        entropy_rev = ''
+    else:
+        entropy_rev = '~%s' % (str(entropy_rev),)
+    entropy_tag = dep_gettag(atom)
+    if entropy_tag is None:
+        entropy_tag = ''
+    else:
+        entropy_tag = '#%s' % (entropy_tag,)
+    clean_atom = remove_entropy_revision(atom)
+    clean_atom = remove_tag(clean_atom)
+    only_cpv = dep_getcpv(clean_atom)
+    operator = get_operator(clean_atom)
+    if operator is None:
+        operator = ''
+    cat, name, pv, rev = catpkgsplit(only_cpv)
+    if rev == "r0":
+        rev = ''
+    else:
+        rev = '-%s' % (rev,)
+    return "%s%s%s%s%s%s%s" % (purple(operator), teal(cat + "/"),
+        darkgreen(name), purple("-"+pv), purple(rev), brown(entropy_tag),
+        teal(entropy_rev),)
 
 def catsplit(mydep):
     """
