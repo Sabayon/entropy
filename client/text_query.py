@@ -159,17 +159,17 @@ def get_installed_packages(packages, dbconn = None, entropy_intf = None):
 
     pkg_data = {}
     flat_results = set()
-    for package in packages:
-        pkg_data[package] = set()
+    for real_package in packages:
+        pkg_data[real_package] = set()
 
-        slot = entropy.tools.dep_getslot(package)
-        tag = entropy.tools.dep_gettag(package)
-        package = entropy.tools.remove_slot(package)
+        slot = entropy.tools.dep_getslot(real_package)
+        tag = entropy.tools.dep_gettag(real_package)
+        package = entropy.tools.remove_slot(real_package)
         package = entropy.tools.remove_tag(package)
 
         idpackages = repo_db.searchPackages(package, slot = slot, tag = tag,
             just_id = True)
-        pkg_data[package].update(idpackages)
+        pkg_data[real_package].update(idpackages)
         flat_results.update(idpackages)
 
     return pkg_data, flat_results
