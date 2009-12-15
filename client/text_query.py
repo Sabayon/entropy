@@ -192,7 +192,8 @@ def search_installed_packages(packages, dbconn = None, Equo = None):
     pkg_data, flat_data = get_installed_packages(packages, dbconn = dbconn,
         entropy_intf = Equo)
 
-    for package, idpackages in pkg_data.items():
+    for package in sorted(pkg_data):
+        idpackages = pkg_data[package]
 
         for idpackage in idpackages:
             print_package_info(idpackage, clientDbconn, clientSearch = True,
