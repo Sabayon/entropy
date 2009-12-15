@@ -121,6 +121,30 @@ search packages using the provided eclasses
 
 list all the packages in the default repository
 
+=item B<graph>
+
+show direct depdendencies tree for provided installable atoms
+
+=over
+
+=item B<--complete>
+
+include system packages and circularity information
+
+=back
+
+=item B<revgraph>
+
+show reverse depdendencies tree for provided installed atoms
+
+=over
+
+=item B<--complete>
+
+include system packages and circularity information
+
+=back
+
 =item B<--verbose>
 
 show more details

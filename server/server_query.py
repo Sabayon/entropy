@@ -71,6 +71,18 @@ def query(myopts):
         text_query.search_installed_packages(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "changelog":
         text_query.search_changelog(myopts, dbconn = dbconn, Equo = Entropy)
+    elif cmd == "graph":
+        complete_graph = False
+        if "--complete" in myopts:
+            complete_grah = True
+            myopts = [x for x in myopts if x != "--complete"]
+        text_query.graph_packages(myopts, complete = complete_graph)
+    elif cmd == "revgraph":
+        complete_graph = False
+        if "--complete" in myopts:
+            complete_grah = True
+            myopts = [x for x in myopts if x != "--complete"]
+        text_query.revgraph_packages(myopts, complete = complete_graph)
 
     del Entropy
     return rc

@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "REAGENT 1"
-.TH REAGENT 1 "2009-09-18" "perl v5.8.8" "Entropy"
+.TH REAGENT 1 "2009-12-15" "perl v5.8.8" "Entropy"
 .SH "NAME"
 \&\fBreagent\fR \- Official Sabayon Linux Server\-Side Package Management tool
 .SH "SYNOPSIS"
@@ -218,6 +218,26 @@ search packages using the provided eclasses
 .IP "\fBlist\fR" 4
 .IX Item "list"
 list all the packages in the default repository
+.IP "\fBgraph\fR" 4
+.IX Item "graph"
+show direct depdendencies tree for provided installable atoms
+.RS 4
+.IP "\fB\-\-complete\fR" 4
+.IX Item "--complete"
+include system packages and circularity information
+.RE
+.RS 4
+.RE
+.IP "\fBrevgraph\fR" 4
+.IX Item "revgraph"
+show reverse depdendencies tree for provided installed atoms
+.RS 4
+.IP "\fB\-\-complete\fR" 4
+.IX Item "--complete"
+include system packages and circularity information
+.RE
+.RS 4
+.RE
 .IP "\fB\-\-verbose\fR" 4
 .IX Item "--verbose"
 show more details
