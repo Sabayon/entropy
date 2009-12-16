@@ -917,7 +917,7 @@ class PortagePlugin(SpmPlugin):
             if x.startswith("!") or (x in ("(", "||", ")", "")):
                 continue
             data['dependencies'][x] = \
-                etpConst['dependency_type_ids']['(r)depend_id']
+                etpConst['dependency_type_ids']['rdepend_id']
 
         for x in portage_metadata['PDEPEND'].split():
             if x.startswith("!") or (x in ("(", "||", ")", "")):
@@ -932,7 +932,7 @@ class PortagePlugin(SpmPlugin):
 
         if kern_dep_key is not None:
             data['dependencies'][kern_dep_key] = \
-                etpConst['dependency_type_ids']['(r)depend_id']
+                etpConst['dependency_type_ids']['rdepend_id']
 
         # Conflicting tagged packages support
         # Needs Entropy Client System Settings Plugin,

@@ -1380,7 +1380,7 @@ class CalculatorsMixin:
         depends -= remove_depends
         return depends
 
-    def generate_depends_tree(self, idpackages, deep = False):
+    def generate_reverse_dependency_tree(self, idpackages, deep = False):
 
         c_hash = "%s%s" % (
             etpCache['depends_tree'],
@@ -1804,7 +1804,7 @@ class CalculatorsMixin:
         queue = []
         if not idpackages:
             return queue
-        treeview = self.generate_depends_tree(idpackages, deep = deep)
+        treeview = self.generate_reverse_dependency_tree(idpackages, deep = deep)
         for x in sorted(treeview, reverse = True):
             queue.extend(treeview[x])
         return queue

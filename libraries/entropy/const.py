@@ -515,9 +515,16 @@ def const_default_settings(rootdir):
         'default_download_timeout': 20,
         # Entropy package dependencies type identifiers
         'dependency_type_ids': {
-            '(r)depend_id': 0,
-            'pdepend_id': 1,
+            'rdepend_id': 0, # runtime dependencies
+            'pdepend_id': 1, # post dependencies
             'mdepend_id': 2, # actually, this is entropy-only
+            'bdepend_id': 3, # build dependencies
+        },
+        'dependency_type_ids_desc': {
+            'rdepend_id': _("Runtime dependency"),
+            'pdepend_id': _("Post dependency"),
+            'mdepend_id': _('Manually added (by staff) dependency'),
+            'bdepend_id': _('Build dependency'),
         },
 
         # entropy client packages download speed limit (in kb/sec)

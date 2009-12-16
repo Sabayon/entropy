@@ -274,16 +274,28 @@ def _print_graph_item_deps(item, out_data = None, colorize = None):
             _print_graph_item_deps(endpoint, out_data)
         out_data['lvl'] -= 1
 
-def _show_graph_legend():
+def _show_graph_legend(dep_legend = True):
     print_info("%s:" % (purple(_("Legend")),))
+
     print_info("[%s] %s" % (blue("x"),
         blue(_("packages passed as arguments")),))
+
     print_info("[%s] %s" % (darkgreen("x"),
         darkgreen(_("packages with no further dependencies")),))
+
     print_info("[%s] %s" % (purple("x"),
         purple(_("packages with further dependencies (node)")),))
+
     print_info("[%s] %s" % (brown("x"),
         brown(_("packages already pulled in as dependency on upper levels (circularity)")),))
+
+    if dep_legend:
+        for dep_id, dep_val in sorted(etpConst['dependency_type_ids'].items(),
+            key = lambda x: x[0], reverse = True):
+
+            dep_desc = etpConst['dependency_type_ids_desc'].get(dep_id, _("N/A"))
+            txt = '%s%s%s %s' % (teal("{"), dep_val, teal("}"), dep_desc,)
+            print_info(txt)
     print_generic("="*40)
 
 def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
@@ -336,6 +348,8 @@ def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
 
     _graph_to_stdout(graph, graph.get_node(inst_item),
         item_translation_func, show_already_pulled_in)
+    if not etpUi['quiet']:
+        _show_graph_legend(dep_legend = False)
 
     del stack
     del graph
@@ -373,11 +387,12 @@ def _graph_package(match, package, entropy_intf, show_complete = False):
     from entropy.misc import Lifo
     graph = Graph()
     stack = Lifo()
-    start_item = (match, package)
+    start_item = (match, package, None)
     stack.push(start_item)
     stack_cache = set()
     # ensure package availability in graph, initialize now
     graph.add(start_item, [])
+    depsorter = lambda x: entropy.tools.dep_getcpv(x[0])
 
     while stack.is_filled():
 
@@ -385,14 +400,14 @@ def _graph_package(match, package, entropy_intf, show_complete = False):
         if item in stack_cache:
             continue
         stack_cache.add(item)
-        ((pkg_id, repo_id,), was_dep) = item
+        ((pkg_id, repo_id,), was_dep, dep_type) = item
 
         # deps
         repodb = entropy_intf.open_repository(repo_id)
-        deps = repodb.retrieveDependenciesList(pkg_id)
+        deps = repodb.retrieveDependencies(pkg_id, extended = True)
 
         graph_deps = []
-        for dep in deps:
+        for dep, x_dep_type in sorted(deps, key = depsorter):
 
             if dep.startswith("!"): # conflict
                 continue
@@ -405,7 +420,7 @@ def _graph_package(match, package, entropy_intf, show_complete = False):
                 dep_repodb = entropy_intf.open_repository(dep_item[1])
                 do_include = not dep_repodb.isSystemPackage(dep_item[0])
 
-            g_item = (dep_item, dep)
+            g_item = (dep_item, dep, x_dep_type)
             if do_include:
                 stack.push(g_item)
             graph_deps.append(g_item)
@@ -413,7 +428,10 @@ def _graph_package(match, package, entropy_intf, show_complete = False):
         graph.add(item, graph_deps)
 
     def item_translation_func(match):
-        return match[1]
+        value = "%s" % (match[1],)
+        if match[2] is not None:
+            value += " %s%s%s" % (teal("{"), brown(str(match[2])), teal("}"),)
+        return value
 
     _graph_to_stdout(graph, graph.get_node(start_item),
         item_translation_func, show_already_pulled_in)
@@ -996,7 +1014,7 @@ def search_removal_dependencies(atoms, deep = False, Equo = None):
     if not etpUi['quiet']:
         print_info(red(" @@ ") + blue("%s..." % (
             _("Calculating removal dependencies, please wait"),) ), back = True)
-    treeview = Equo.generate_depends_tree(found_atoms, deep = deep)
+    treeview = Equo.generate_reverse_dependency_tree(found_atoms, deep = deep)
     for dep_lev in sorted(treeview, reverse = True):
         for dep_sub_el in treeview[dep_lev]:
             removal_queue.append(dep_sub_el)
