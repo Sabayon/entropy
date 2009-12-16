@@ -14,7 +14,8 @@ import os
 from entropy.const import etpUi, const_convert_to_unicode, \
     const_convert_to_rawstring, const_convert_to_unicode, etpConst
 from entropy.output import darkgreen, darkred, red, blue, \
-    brown, purple, bold, print_info, print_error, print_generic, print_warning
+    brown, purple, bold, print_info, print_error, print_generic, \
+    print_warning, teal
 from entropy.misc import Lifo
 from entropy.client.interfaces import Client as EquoInterface
 from entropy.i18n import _
@@ -257,19 +258,21 @@ def _print_graph_item_deps(item, out_data = None, colorize = None):
     elif colorize is None:
         colorize = purple
 
-    indent_txt = ' ' * out_data['lvl']
+    ind_lvl = out_data['lvl']
+    indent_txt = '[%s]\t' % (teal(str(ind_lvl)),) + '  ' * ind_lvl
     print_generic(indent_txt + colorize(out_val))
     if cached_endpoints and show_already_pulled_in:
-        indent_txt = ' ' * (out_data['lvl'] + 1)
-        for endpoint in cached_endpoints:
+        indent_txt = '[%s]\t' % (teal(str(ind_lvl)),) + '  ' * (ind_lvl + 1)
+        for endpoint in sorted(cached_endpoints, key = lambda x: x.item()):
             endpoint_item = item_translation_callback(endpoint.item())
             print_generic(indent_txt + brown(endpoint_item))
 
     if valid_endpoints:
         out_data['lvl'] += 1
         out_data['cache'].update(valid_endpoints)
-        for endpoint in valid_endpoints:
+        for endpoint in sorted(valid_endpoints, key = lambda x: x.item()):
             _print_graph_item_deps(endpoint, out_data)
+        out_data['lvl'] -= 1
 
 def _show_graph_legend():
     print_info("%s:" % (purple(_("Legend")),))
@@ -301,6 +304,8 @@ def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
     # ensure package availability in graph, initialize now
     graph.add(inst_item, set())
 
+    rev_pkgs_sorter = lambda x: dbconn.retrieveAtom(x)
+
     while stack.is_filled():
 
         item = stack.pop()
@@ -311,8 +316,8 @@ def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
 
         rev_deps = dbconn.retrieveReverseDependencies(pkg_id)
 
-        #graph_deps = set()
-        for rev_pkg_id in rev_deps:
+        graph_deps = []
+        for rev_pkg_id in sorted(rev_deps, key = rev_pkgs_sorter):
 
             dep = dbconn.retrieveAtom(rev_pkg_id)
             do_include = True
@@ -322,10 +327,9 @@ def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
             g_item = (rev_pkg_id, dep)
             if do_include:
                 stack.push(g_item)
-            #graph_deps.add(g_item)
-            graph.add(g_item, set([item]))
+            graph_deps.append(g_item)
 
-        #graph.add(item, graph_deps)
+        graph.add(item, graph_deps)
 
     def item_translation_func(match):
         return match[1]
@@ -373,7 +377,7 @@ def _graph_package(match, package, entropy_intf, show_complete = False):
     stack.push(start_item)
     stack_cache = set()
     # ensure package availability in graph, initialize now
-    graph.add(start_item, set())
+    graph.add(start_item, [])
 
     while stack.is_filled():
 
@@ -387,7 +391,7 @@ def _graph_package(match, package, entropy_intf, show_complete = False):
         repodb = entropy_intf.open_repository(repo_id)
         deps = repodb.retrieveDependenciesList(pkg_id)
 
-        graph_deps = set()
+        graph_deps = []
         for dep in deps:
 
             if dep.startswith("!"): # conflict
@@ -404,7 +408,7 @@ def _graph_package(match, package, entropy_intf, show_complete = False):
             g_item = (dep_item, dep)
             if do_include:
                 stack.push(g_item)
-            graph_deps.add(g_item)
+            graph_deps.append(g_item)
 
         graph.add(item, graph_deps)
 
@@ -1457,7 +1461,8 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
             clientSearch = True
 
     print_info(red("     @@ %s: " % (_("Package"),) ) + bold(pkgatom) + \
-        "\t\t" + blue("branch: ") + bold(pkgbranch))
+        " "+ blue("%s: " % (_("branch"),)) + bold(pkgbranch) + \
+        ", [" + purple(str(dbconn.dbname)) + "] ")
     if not strictOutput and extended:
         pkgname = dbconn.retrieveName(idpackage)
         pkgcat = dbconn.retrieveCategory(idpackage)
@@ -1516,17 +1521,19 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
 
             pkgdeps = dbconn.retrieveDependencies(idpackage, extended = True)
             pkgconflicts = dbconn.retrieveConflicts(idpackage)
+            depsorter = lambda x: entropy.tools.dep_getcpv(x[0])
+
             if pkgdeps:
                 print_info(darkred("       ##") + \
                     darkgreen(" %s:" % (_("Dependencies"),) ))
-                for pdep, p_id in pkgdeps:
+                for pdep, p_id in sorted(pkgdeps, key = depsorter):
                     print_info(darkred("       ## \t\t\t") + blue(" [") + \
                         str(p_id) + blue("] ") + brown(pdep))
 
             if pkgconflicts:
                 print_info(darkred("       ##") + \
                     darkgreen(" %s:" % (_("Conflicts"),) ))
-                for conflict in pkgconflicts:
+                for conflict in sorted(pkgconflicts, key = depsorter):
                     print_info(darkred("       ## \t\t\t") + brown(conflict))
 
     home_txt = darkgreen("       %s:\t\t" % (_("Homepage"),) )
