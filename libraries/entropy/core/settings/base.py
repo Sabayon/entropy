@@ -161,6 +161,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'satisfied': etpConst['confpackagesdir']+"/package.satisfied",
              # masking configuration files
             'license_mask': etpConst['confpackagesdir']+"/license.mask",
+            'license_accept': etpConst['confpackagesdir']+"/license.accept",
             'system_mask': etpConst['confpackagesdir']+"/system.mask",
             'system_dirs': etpConst['confdir']+"/fsdirs.conf",
             'system_dirs_mask': etpConst['confdir']+"/fsdirsmask.conf",
@@ -175,8 +176,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
         })
         self.__setting_files_order.extend([
             'keywords', 'unmask', 'mask', 'satisfied', 'license_mask',
-            'system_mask', 'system_package_sets', 'system_dirs',
-            'system_dirs_mask', 'socket_service', 'system',
+            'license_accept', 'system_mask', 'system_package_sets',
+            'system_dirs', 'system_dirs_mask', 'socket_service', 'system',
             'system_rev_symlinks', 'hw_hash', 'broken_syms', 'broken_libs_mask'
         ])
         self.__setting_files_pre_run.extend(['repositories'])
@@ -188,6 +189,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'mask_mtime': dmp_dir+"/mask.mtime",
             'satisfied_mtime': dmp_dir+"/satisfied.mtime",
             'license_mask_mtime': dmp_dir+"/license_mask.mtime",
+            'license_accept_mtime': dmp_dir+"/license_accept.mtime",
             'system_mask_mtime': dmp_dir+"/system_mask.mtime",
         })
 
@@ -630,6 +632,19 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self.validate_entropy_cache(self.__setting_files['license_mask'],
             self.__mtime_files['license_mask_mtime'])
         return self.__generic_parser(self.__setting_files['license_mask'])
+
+    def _license_accept_parser(self):
+        """
+        Parser returning packages unmasked by license metadata read from
+        license.mask file.
+        Packages shipped with licenses listed there will be unmasked.
+
+        @return: parsed metadata
+        @rtype: dict
+        """
+        self.validate_entropy_cache(self.__setting_files['license_accept'],
+            self.__mtime_files['license_accept_mtime'])
+        return self.__generic_parser(self.__setting_files['license_accept'])
 
     def _system_package_sets_parser(self):
         """

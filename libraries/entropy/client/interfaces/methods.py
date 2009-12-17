@@ -1265,12 +1265,12 @@ class MiscMixin:
         return [x for x in dbconn.retrieveUnusedIdpackages() if self.validate_package_removal(x)]
 
     def get_licenses_to_accept(self, install_queue):
-        if not install_queue:
-            return {}
-        licenses = {}
+
         cl_id = self.sys_settings_client_plugin_id
         repo_sys_data = self.SystemSettings[cl_id]['repositories']
+        lic_accepted = self.SystemSettings['license_accept']
 
+        licenses = {}
         for match in install_queue:
             repoid = match[1]
             dbconn = self.open_repository(repoid)
@@ -1278,14 +1278,16 @@ class MiscMixin:
             if not wl:
                 continue
             keys = dbconn.retrieveLicensedataKeys(match[0])
+            keys = [x for x in keys if x not in lic_accepted]
             for key in keys:
-                if key not in wl:
-                    found = self.clientDbconn.isLicenseAccepted(key)
-                    if found:
-                        continue
-                    if key not in licenses:
-                        licenses[key] = set()
-                    licenses[key].add(match)
+                if key in wl:
+                    continue
+                found = self.clientDbconn.isLicenseAccepted(key)
+                if found:
+                    continue
+                obj = licenses.setdefault(key, set())
+                obj.add(match)
+
         return licenses
 
     def get_text_license(self, license_name, repoid):
