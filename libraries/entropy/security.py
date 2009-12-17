@@ -14,7 +14,9 @@
 """
 import os
 import shutil
+import subprocess
 from entropy.exceptions import IncorrectParameter, InvalidData
+from entropy.misc import LogFile
 from entropy.const import etpConst, etpCache, etpUi, const_setup_perms
 from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred
@@ -930,3 +932,101 @@ class System:
         # remove temp stuff
         self.__cleanup_garbage()
         return 0
+
+
+class Repository:
+
+    """
+    This class provides a very simple Entropy repositories authenticity
+    mechanism based on public-key authentication. Using this class you can
+    sign or verify repository files.
+    This is the core class for public-key based repository security support.
+    Encryption is based on the RSA 2048bit algorithm.
+
+    NOTE: this class requires gnupg installed.
+    """
+
+    GPG_EXEC = "/usr/bin/gpg"
+
+    def __init__(self, repository_identifier):
+        """
+        Instance constructor.
+
+        @param repository_identifier: Entropy unique repository identifier
+        @type repository_identifier: string
+        """
+        self.__repoid = repository_identifier
+        self.__encbits = 2048
+
+        # setup repositories keys dir
+        self.__keystore = os.path.join(etpConst['confrepokeysdir'],
+            repository_identifier)
+        self.__priv_key_name = repository_identifier + ".priv"
+        self.__pub_key_name = repository_identifier + ".pub"
+
+        if not os.path.isdir(self.__keystore) and not \
+            os.path.lexists(self.__keystore):
+            os.makedirs(self.__keystore, 0o755)
+            const_setup_perms(self.__keystore, etpConst['entropygid'])
+
+        self.__logfile = LogFile(filename = etpConst['securitylogfile'])
+
+    def check_functionality(self):
+        """
+        Check interface library availability. True if library works fine.
+
+        @return: interface library availability
+        @rtype: bool
+        """
+        xec = Repository.GPG_EXEC
+
+        args = (xec, "--version",)
+        proc = subprocess.Popen(args, stdout = self.__logfile.fileno(),
+            stderr = self.__logfile.fileno())
+        exit_st = proc.wait()
+
+        return exit_st == 0
+
+    def create_keypair(self):
+        """
+        Create Entropy repository RSA keypair and store it.
+
+        """
+        raise NotImplementedError()
+
+    def delete_keypair(self):
+        """
+
+        """
+        raise NotImplementedError()
+
+    def get_pubkey(self):
+        """
+
+        """
+        raise NotImplementedError()
+
+    def install_pubkey(self, pubkey_path):
+        """
+
+        """
+        raise NotImplementedError()
+
+    def remove_pubkey(self):
+        """
+
+        """
+        raise NotImplementedError()
+
+    def sign_files(self, file_paths, signature_path):
+        """
+
+        """
+        raise NotImplementedError()
+
+    def verify_files(self, file_paths, signature_path):
+        """
+
+        """
+        raise NotImplementedError()
+
