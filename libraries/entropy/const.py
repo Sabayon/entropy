@@ -233,8 +233,6 @@ def const_default_settings(rootdir):
         'distfilesdir': default_etp_portdir+default_etp_distfilesdir,
         # directory where entropy stores its configuration
         'confdir': default_etp_confdir,
-        # directory where Entropy repositories public/private keys are stored
-        'confrepokeysdir': default_etp_confdir + "/rkeys",
         # same as above + /packages
         'confpackagesdir': default_etp_packagesdir,
         # system package sets dir

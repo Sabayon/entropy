@@ -17,7 +17,8 @@ import shutil
 import subprocess
 from entropy.exceptions import IncorrectParameter, InvalidData
 from entropy.misc import LogFile
-from entropy.const import etpConst, etpCache, etpUi, const_setup_perms
+from entropy.const import etpConst, etpCache, etpUi, const_setup_perms, \
+    const_debug_write
 from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred
 
@@ -943,90 +944,595 @@ class Repository:
     This is the core class for public-key based repository security support.
     Encryption is based on the RSA 2048bit algorithm.
 
+    NOTE: default GNUPGHOME is set to "/etc/entropy/gpg-keys".
     NOTE: this class requires gnupg installed.
+    NOTE: thanks to http://code.google.com/p/python-gnupg project for providing
+        a nice testing codebase.
     """
 
-    GPG_EXEC = "/usr/bin/gpg"
+    from entropy.exceptions import EntropyException
 
-    def __init__(self, repository_identifier):
+    class GPGError(EntropyException):
+        """Errors during GPG commands execution"""
+
+    class GPGServiceNotAvailable(EntropyException):
+        """A particular feature or service is not available"""
+
+    class ListKeys(list):
+        ''' Handle status messages for --list-keys.
+
+            Handle pub and uid (relating the latter to the former).
+
+            Don't care about (info from src/DETAILS):
+
+            crt = X.509 certificate
+            crs = X.509 certificate and private key available
+            sub = subkey (secondary key)
+            ssb = secret subkey (secondary key)
+            uat = user attribute (same as user id except for field 10).
+            sig = signature
+            rev = revocation signature
+            pkd = public key data (special field format, see below)
+            grp = reserved for gpgsm
+            rvk = revocation key
+        '''
+        def __init__(self):
+            self.curkey = None
+            self.fingerprints = []
+
+        def key(self, args):
+            myvars = ("""
+                type trust length algo keyid date expires dummy ownertrust uid
+            """).split()
+            self.curkey = {}
+            for i in range(len(myvars)):
+                self.curkey[myvars[i]] = args[i]
+            self.curkey['uids'] = [self.curkey['uid']]
+            del self.curkey['uid']
+            self.append(self.curkey)
+
+        pub = sec = key
+
+        def fpr(self, args):
+            self.curkey['fingerprint'] = args[9]
+            self.fingerprints.append(args[9])
+
+        def uid(self, args):
+            self.curkey['uids'].append(args[9])
+
+        def handle_status(self, key, value):
+            pass
+
+    _GPG_EXEC = "/usr/bin/gpg"
+    GPG_HOME = os.path.join(etpConst['confdir'], "gpg-keys")
+
+    def __init__(self):
         """
         Instance constructor.
 
         @param repository_identifier: Entropy unique repository identifier
         @type repository_identifier: string
         """
-        self.__repoid = repository_identifier
         self.__encbits = 2048
+        self.__keymap_file = os.path.join(Repository.GPG_HOME, "entropy.keymap")
+        self.__key_list_cache = None
 
         # setup repositories keys dir
-        self.__keystore = os.path.join(etpConst['confrepokeysdir'],
-            repository_identifier)
-        self.__priv_key_name = repository_identifier + ".priv"
-        self.__pub_key_name = repository_identifier + ".pub"
-
+        self.__keystore = Repository.GPG_HOME
         if not os.path.isdir(self.__keystore) and not \
             os.path.lexists(self.__keystore):
-            os.makedirs(self.__keystore, 0o755)
-            const_setup_perms(self.__keystore, etpConst['entropygid'])
+            try:
+                os.makedirs(self.__keystore, 0o775)
+                const_setup_perms(self.__keystore, etpConst['entropygid'])
+            except OSError as err:
+                if err.errno != 13:
+                    raise
+                raise GPGServiceNotAvailable(err)
 
-        self.__logfile = LogFile(filename = etpConst['securitylogfile'])
+        if not os.access(Repository._GPG_EXEC, os.X_OK):
+            raise GPGServiceNotAvailable("no gnupg installed")
 
-    def check_functionality(self):
+        import socket
+        self.__socket = socket
+
+    def __get_date_after_days(self, days):
         """
-        Check interface library availability. True if library works fine.
+        Given a time delta expressed in days, return new ISO date string.
+        """
+        from datetime import timedelta, date
+        exp_date = date.today() + timedelta(days)
+        year = str(exp_date.year)
+        month = str(exp_date.month)
+        day = str(exp_date.day)
+        if len(day) < 2:
+            day = '0' + day
+        if len(month) < 2:
+            month = '0' + month
+        return "%s-%s-%s" % (year, month, day,)
 
-        @return: interface library availability
+    def __get_keymap(self):
+        """
+        Read Entropy keys <-> repository map from keymap file.
+        """
+        keymap = {}
+        if not os.path.isfile(self.__keymap_file):
+            return keymap
+
+        with open(self.__keymap_file, "r") as key_f:
+            for line in key_f.readlines():
+                try:
+                    my_repoid, my_fp = line.strip().split()
+                except ValueError:
+                    continue
+                keymap[my_repoid] = my_fp
+        return keymap
+
+    def __write_keymap(self, new_keymap):
+        """
+        Write Entropy keys <-> repository map to keymap file.
+        """
+        # write back, safely
+        self.__key_list_cache = None
+        tmp_path = self.__keymap_file+".entropy.tmp"
+        with open(tmp_path, "w") as key_f:
+            for key, fp in new_keymap.items():
+                key_f.write("%s %s\n" % (key, fp,))
+            key_f.flush()
+        # atomic
+        os.rename(tmp_path, self.__keymap_file)
+
+    def __update_keymap(self, repoid, fingerprint):
+        """
+        Update Entropy keys <-> repository mapping, add mapping between
+        repoid and fingerprint.
+        """
+        keymap = self.__get_keymap()
+        keymap[repoid] = fingerprint
+        self.__write_keymap(keymap)
+
+    def __remove_keymap(self, repoid):
+        """
+        Remove repository identifier <-> GPG key mapping.
+        """
+        keymap = self.__get_keymap()
+        if repoid in keymap:
+            del keymap[repoid]
+        self.__write_keymap(keymap)
+
+    def __list_keys(self, secret = False):
+
+        which = 'keys'
+        if secret:
+            which = 'secret-keys'
+        args = self.__default_gpg_args() + \
+            ["--list-%s" % (which,), "--fixed-list-mode", "--fingerprint",
+                "--with-colons"]
+
+        proc = subprocess.Popen(args, stdout = subprocess.PIPE)
+
+        # wait for process to terminate
+        proc_rc = proc.wait()
+
+        if proc_rc != 0:
+            raise Repository.GPGError("cannot list keys, exit status %s" % (
+                proc_rc,))
+
+        out_data = proc.stdout.readlines()
+        valid_keywords = ['pub', 'uid', 'sec', 'fpr']
+        result = Repository.ListKeys()
+        for line in out_data:
+
+            const_debug_write(__name__, "_list_keys: read => %s" % (
+                line.strip(),))
+            items = line.strip().split(':')
+            if not items:
+                continue
+
+            keyword = items[0]
+            if keyword in valid_keywords:
+                getattr(result, keyword)(items)
+
+        return result
+
+    def get_keys(self, private = False):
+        """
+        Get available keys indexed by name.
+
+        @return: available keys and their metadata
+        @rtype: dict
+        """
+        if self.__key_list_cache is not None:
+            return self.__key_list_cache.copy()
+
+        keymap = self.__get_keymap()
+        pubkeys = dict((x['fingerprint'], x,) for x in \
+            self.__list_keys(secret = private))
+        key_data = dict((x, pubkeys.get(y),) for x, y in keymap.items() if \
+            pubkeys.get(y) is not None)
+        self.__key_list_cache = key_data
+
+        return key_data.copy()
+
+    def __gen_key_input(self, **kwargs):
+        """
+        Generate --gen-key input per gpg doc/DETAILS
+        """
+        parms = {}
+        for key, val in list(kwargs.items()):
+            key = key.replace('_','-').title()
+            parms[key] = val
+        parms.setdefault('Key-Type','RSA')
+        parms.setdefault('Key-Length',1024)
+        parms.setdefault('Name-Real', "Autogenerated Key")
+        parms.setdefault('Name-Comment', "Generated by gnupg.py")
+        try:
+            logname = os.environ['LOGNAME']
+        except KeyError:
+            logname = os.environ['USERNAME']
+        hostname = self.__socket.gethostname()
+        parms.setdefault('Name-Email', "%s@%s" % (logname.replace(' ', '_'),
+                                                  hostname))
+        out = "Key-Type: %s\n" % parms.pop('Key-Type')
+        for key, val in list(parms.items()):
+            out += "%s: %s\n" % (key, val)
+        out += "%commit\n"
+        return out
+
+        # Key-Type: RSA
+        # Key-Length: 1024
+        # Name-Real: ISdlink Server on %s
+        # Name-Comment: Created by %s
+        # Name-Email: isdlink@%s
+        # Expire-Date: 0
+        # %commit
+        #
+        #
+        # Key-Type: DSA
+        # Key-Length: 1024
+        # Subkey-Type: ELG-E
+        # Subkey-Length: 1024
+        # Name-Real: Joe Tester
+        # Name-Comment: with stupid passphrase
+        # Name-Email: joe@foo.bar
+        # Expire-Date: 0
+        # Passphrase: abc
+        # %pubring foo.pub
+        # %secring foo.sec
+        # %commit
+
+    def __gen_key(self, key_input):
+        """Generate a key; you might use gen_key_input() to create the
+        control input.
+
+        >>> gpg = GPG(gnupghome="/tmp/pygpgtest")
+        >>> input = gpg.gen_key_input()
+        >>> result = gpg.gen_key(input)
+        >>> assert result
+        >>> result = gpg.gen_key('foo')
+        >>> assert not result
+
+        """
+        args = self.__default_gpg_args() + ["--status-fd", "2", "--batch",
+            "--gen-key"]
+
+        const_debug_write(__name__, "Repository.__gen_key args => %s" % (
+            args,))
+        proc = subprocess.Popen(args, stdout = subprocess.PIPE,
+            stderr = subprocess.STDOUT, stdin = subprocess.PIPE)
+
+        # feed gpg with data
+        stdout, stderr = proc.communicate(input = key_input)
+
+        # wait for process to terminate
+        proc_rc = proc.wait()
+
+        if proc_rc != 0:
+            raise Repository.GPGError(
+                "cannot generate key, exit status %s" % (proc_rc,))
+
+        # now get fucking fingerprint
+        key_data = [x.strip() for x in stdout.split("\n") if x.strip() and \
+            "KEY_CREATED" in x.split()]
+        if not key_data or len(key_data) > 1:
+            raise Repository.GPGError(
+                "cannot grab fingerprint of newly created key, data: %s" % (
+                    stdout,))
+        # cross fingers
+        fp = key_data[0].split()[-1]
+        del proc
+        return fp
+
+    def create_keypair(self, repository_identifier, passphrase = None,
+        name_email = None, expiration_days = None):
+        """
+        Create Entropy repository GPG keys and store them.
+
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @param passphrase: passphrase to use
+        @type passphrase: string
+        @param name_email: email to use
+        @type name_email: string
+        @param expiration_days: number of days after the key expires
+        @type expiration_days: int
+        @return: Repository key fingerprint string
+        @rtype: string
+        @raise KeyError: if another keypair is already set
+        """
+        kwargs = {
+            'key_length': self.__encbits,
+            'name_real': repository_identifier,
+            'name_comment': '%s repository key' % (repository_identifier,),
+        }
+        if name_email:
+            kwargs['name_email'] = name_email
+        if passphrase:
+            kwargs['passphrase'] = passphrase
+        if expiration_days:
+            kwargs['expire_date'] = self.__get_date_after_days(expiration_days)
+
+        key_input = self.__gen_key_input(**kwargs)
+        key_output = self.__gen_key(key_input)
+
+        # write to keymap
+        self.__update_keymap(repository_identifier, key_output)
+
+        return key_output
+
+    def _get_key_metadata(self, repository_identifier, private = False):
+        """
+        Return key metadata for given repository identifier.
+
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @keyword private: return metadata related to private key
+        @type private: bool
+        @raise KeyError: if no keys are set
+        @return: key metadata
+        @rtype: dict
+        """
+        keyring = self.get_keys(private = private)
+        return keyring[repository_identifier]
+
+    def __delete_key(self, fingerprint, secret = False):
+
+        args = self.__default_gpg_args() + ["--batch", "--yes"]
+        if secret:
+            args.append("--delete-secret-key")
+        else:
+            args.append("--delete-key")
+        args.append(fingerprint)
+
+        const_debug_write(__name__, "Repository.__delete_key args => %s" % (
+            args,))
+        proc = subprocess.Popen(args, stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE)
+
+        # wait for process to terminate
+        proc_rc = proc.wait()
+        del proc
+
+        if proc_rc != 0:
+            raise Repository.GPGError(
+                "cannot delete key fingerprint %s, exit status %s" % (
+                    fingerprint, proc_rc,))
+
+    def delete_keypair(self, repository_identifier):
+        """
+        Delete keys (public and private) for currently set repository.
+
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @raise KeyError: if key for given repository doesn't exist
+        """
+        keymap = self.__get_keymap()
+        fingerprint = keymap[repository_identifier]
+        self.__remove_keymap(repository_identifier)
+        self.__delete_key(fingerprint, secret = True)
+        self.__delete_key(fingerprint)
+
+    def is_pubkey_available(self, repository_identifier):
+        """
+        Return whether public key for given repository identifier is available.
+
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @return: True, if public key is available
         @rtype: bool
         """
-        xec = Repository.GPG_EXEC
+        try:
+            self.get_pubkey(repository_identifier)
+        except KeyError:
+            return False
+        return True
 
-        args = (xec, "--version",)
-        proc = subprocess.Popen(args, stdout = self.__logfile.fileno(),
-            stderr = self.__logfile.fileno())
-        exit_st = proc.wait()
-
-        return exit_st == 0
-
-    def create_keypair(self):
+    def __export_key(self, fingerprint, secret = False):
         """
-        Create Entropy repository RSA keypair and store it.
-
-        """
-        raise NotImplementedError()
-
-    def delete_keypair(self):
+        Export GPG keys to string.
         """
 
-        """
-        raise NotImplementedError()
+        args = self.__default_gpg_args() + ["--armor"]
+        if secret:
+            args += ["--export-secret-key"]
+        else:
+            args += ["--export"]
+        args.append(fingerprint)
 
-    def get_pubkey(self):
-        """
+        proc = subprocess.Popen(args, stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE)
 
-        """
-        raise NotImplementedError()
+        # wait for process to terminate
+        proc_rc = proc.wait()
 
-    def install_pubkey(self, pubkey_path):
-        """
+        if proc_rc != 0:
+            raise Repository.GPGError(
+                "cannot export key which fingerprint is %s, error: %s" % (
+                    fingerprint, proc_rc,))
 
-        """
-        raise NotImplementedError()
+        key_string = proc.stdout.read()
+        del proc
+        return key_string
 
-    def remove_pubkey(self):
+    def get_pubkey(self, repository_identifier):
         """
+        Get public key for currently set repository, if any, otherwise raise
+        KeyError.
 
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @return: public key
+        @rtype: string
+        @raise KeyError: if no keypair is set for repository
         """
-        raise NotImplementedError()
+        keymap = self.__get_keymap()
+        fingerprint = keymap[repository_identifier]
+        pubkey = self.__export_key(fingerprint)
+        return pubkey
 
-    def sign_files(self, file_paths, signature_path):
+    def install_pubkey(self, repository_identifier, pubkey_path):
         """
+        Add public key to keyring.
 
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @param pubkey_path: valid path to GPG pubkey file
+        @type pubkey_path: string
+        @return: fingerprint
+        @rtype: string
         """
-        raise NotImplementedError()
+        args = self.__default_gpg_args() + ["--import", pubkey_path]
+        current_keys = set([x['fingerprint'] for x in self.__list_keys()])
 
-    def verify_files(self, file_paths, signature_path):
+        proc = subprocess.Popen(args, stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE)
+
+        # wait for process to terminate
+        proc_rc = proc.wait()
+        del proc
+
+        if proc_rc != 0:
+            raise Repository.GPGError("cannot install pubkey at %s, for %s" % (
+                pubkey_path, repository_identifier,))
+
+        now_keys = set([x['fingerprint'] for x in self.__list_keys()])
+        new_keys = now_keys - current_keys
+        if len(new_keys) < 1:
+            raise Repository.GPGError("nothing imported from %s, for %s" % (
+                pubkey_path, repository_identifier,))
+
+        if len(new_keys) > 1:
+            raise Repository.GPGError(
+                "wtf? more than one key imported from %s, for %s" % (
+                    pubkey_path, repository_identifier,))
+
+        fp = new_keys.pop()
+        self.__update_keymap(repository_identifier, fp)
+        return str(fp)
+
+    def delete_pubkey(self, repository_identifier):
         """
+        Delete public key bound to given repository identifier.
 
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @raise KeyError: if no key is set for given repository identifier
         """
-        raise NotImplementedError()
+        metadata = self._get_key_metadata(repository_identifier)
+        self.__remove_keymap(repository_identifier)
+        self.__delete_key(metadata['fingerprint'])
 
+    def __default_gpg_args(self):
+        args = [Repository._GPG_EXEC, "--no-tty",
+            "--homedir", Repository.GPG_HOME]
+        return args
+
+    def __sign_file(self, file_path, fingerprint):
+
+        args = self.__default_gpg_args() + ["-sa", "--detach-sign"]
+        if fingerprint:
+            args += ["--default-key", fingerprint]
+
+        args.append(file_path)
+        const_debug_write(__name__, "Repository.__sign_file args => %s" % (
+            args,))
+
+        asc_path = file_path + ".asc"
+        # remove previously stored .asc
+        if os.path.isfile(asc_path):
+            const_debug_write(__name__,
+                "Repository.__sign_file had to rm %s" % (asc_path,))
+            os.remove(asc_path)
+
+        proc = subprocess.Popen(args, stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE)
+
+        # wait for process to terminate
+        proc_rc = proc.wait()
+        del proc
+
+        if proc_rc != 0:
+            raise Repository.GPGError("cannot sign file %s, exit status %s" % (
+                file_path, proc_rc,))
+
+        if not os.path.isfile(asc_path):
+            raise OSError("cannot find %s" % (asc_path,))
+
+        return asc_path
+
+    def sign_file(self, repository_identifier, file_path):
+        """
+        Sign given file path using key of given repository identifier.
+        A custom passphrase can be provided as string.
+
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @param file_path: path to file to sign
+        @type file_path: string
+        @return: path to signature file
+        @rtype: string
+        """
+        metadata = self._get_key_metadata(repository_identifier)
+        return self.__sign_file(file_path, metadata['fingerprint'])
+
+    def __verify_file(self, file_path, signature_path, fingerprint):
+
+        args = self.__default_gpg_args()
+        if fingerprint:
+            args += ["--default-key", fingerprint]
+        args += ["--verify", signature_path, file_path]
+        const_debug_write(__name__, "Repository.__verify_file args => %s" % (
+            args,))
+
+        proc = subprocess.Popen(args, stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE)
+
+        # wait for process to terminate
+        proc_rc = proc.wait()
+
+        del proc
+        if proc_rc != 0:
+            raise Repository.GPGError("cannot verify file %s, exit status %s" % (
+                file_path, proc_rc,))
+
+    def verify_file(self, repository_identifier, file_path, signature_path):
+        """
+        Verify file in file_path usign signature in signature_path and key from
+        repository_identifier.
+
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @param file_path: path to file to verify
+        @type file_path: string
+        @param signature_path: path to signature to verify
+        @type signature_path: string
+        @return: True, if file is sane
+        @rtype: bool
+        """
+        metadata = self._get_key_metadata(repository_identifier)
+        try:
+            self.__verify_file(file_path, signature_path, metadata['fingerprint'])
+        except Repository.GPGError as err:
+            const_debug_write(__name__, "Repository.verify_file error: %s" % (
+                err,))
+            return False
+        return True
