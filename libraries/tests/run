@@ -19,11 +19,12 @@ if "--debug" in sys.argv:
     etpUi['debug'] = True
 
 from tests import db, client, server, misc, fetchers, tools, i18n, spm, \
-    qa, core
+    qa, core, security
 rc = 0
 
 # Add to the list the module to test
-mods = [db, client, server, misc, fetchers, tools, i18n, spm, qa, core]
+mods = [db, client, server, misc, fetchers, tools, i18n, spm, qa, core,
+    security]
 
 tests = []
 for mod in mods:
