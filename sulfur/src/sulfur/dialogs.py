@@ -6540,7 +6540,7 @@ class ExceptionDialog:
         import entropy.tools
 
         errmsg = entropy.tools.get_traceback()
-        conntest = entropy.tools.get_remote_data(etpConst['conntestlink'])
+        conntest = entropy.tools.get_remote_data("http://www.sabayon.org")
         rc, (name, mail, description) = errorMessage(
             None,
             _( "Exception caught" ),

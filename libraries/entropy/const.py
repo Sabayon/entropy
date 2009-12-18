@@ -368,15 +368,15 @@ def const_default_settings(rootdir):
         'rss-light-name': "updates.rss", # light version
         # default URL to the entropy web interface
         # (overridden in reagent.conf)
-        'rss-base-url': "http://packages.sabayonlinux.org/",
+        'rss-base-url': "http://pkg.sabayon.org/",
         # default URL to the Operating System website
         # (overridden in reagent.conf)
-        'rss-website-url': "http://www.sabayonlinux.org/",
+        'rss-website-url': "http://www.sabayon.org/",
         # xml file where will be dumped ServerInterface.rssMessages dictionary
         'rss-dump-name': "rss_database_actions",
         'rss-max-entries': 10000, # maximum rss entries
         'rss-light-max-entries': 300, # max entries for the light version
-        'rss-managing-editor': "lxnay@sabayonlinux.org", # updates submitter
+        'rss-managing-editor': "lxnay@sabayon.org", # updates submitter
         # repository RSS-based notice board content
         'rss-notice-board': "notice.rss",
         # File containing user data related to repository notice board
@@ -469,7 +469,6 @@ def const_default_settings(rootdir):
         # our official repository name
         'defaultserverrepositoryid': None,
         'officialrepositoryid': "sabayonlinux.org",
-        'conntestlink': "http://www.sabayonlinux.org",
         # tag to append to .tbz2 file before entropy database (must be 32bytes)
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|",
         'pidfile': default_etp_dir+"/entropy.lock",
@@ -536,7 +535,7 @@ def const_default_settings(rootdir):
         'dumpstoragedir': default_etp_dir+default_etp_cachesdir,
         # where GLSAs are stored
         'securitydir': default_etp_dir+default_etp_securitydir,
-        'securityurl': "http://community.sabayonlinux.org/security"
+        'securityurl': "http://community.sabayon.org/security"
             "/security-advisories.tar.bz2",
 
         'safemodeerrors': {
