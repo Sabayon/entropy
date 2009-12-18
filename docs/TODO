@@ -6,6 +6,7 @@
 
   0.99.30:
 
+    - drop etpConst['securityurl']
     - entropy.output API names update
     - add splitdebug support?
     - entropy.tools API docs merge
@@ -14,7 +15,6 @@
 
   0.99.40:
 
-    - use diffball?
     - move all the portage related stuff in entropy.tools to entropy.spm
         => prototype class defining transformations (collect them from tools)
 
