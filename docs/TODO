@@ -1,8 +1,8 @@
 
   0.99.20:
 
-     - provide repository digital key, fetch it when syncing repos and check if
-      it matches and all file match
+     - add support to entropy.client, entropy.server for
+        entropy.security.Repository
 
   0.99.30:
 
@@ -15,6 +15,7 @@
 
   0.99.40:
 
+    - entropy.security.System unittest
     - move all the portage related stuff in entropy.tools to entropy.spm
         => prototype class defining transformations (collect them from tools)
 
