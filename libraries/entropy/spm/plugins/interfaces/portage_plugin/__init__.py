@@ -913,17 +913,16 @@ class PortagePlugin(SpmPlugin):
         data['sources'] = set(portage_metadata['SRC_URI'].split())
         data['dependencies'] = {}
 
-        for x in portage_metadata['RDEPEND'].split():
-            if x.startswith("!") or (x in ("(", "||", ")", "")):
-                continue
-            data['dependencies'][x] = \
-                etpConst['dependency_type_ids']['rdepend_id']
-
-        for x in portage_metadata['PDEPEND'].split():
-            if x.startswith("!") or (x in ("(", "||", ")", "")):
-                continue
-            data['dependencies'][x] = \
-                etpConst['dependency_type_ids']['pdepend_id']
+        dep_keys = {
+            "RDEPEND": etpConst['dependency_type_ids']['rdepend_id'],
+            "PDEPEND": etpConst['dependency_type_ids']['pdepend_id'],
+            "DEPEND": etpConst['dependency_type_ids']['bdepend_id'],
+        }
+        for dep_key, dep_val in dep_keys.items():
+            for x in portage_metadata[dep_key].split():
+                if x.startswith("!") or (x in ("(", "||", ")", "")):
+                    continue
+                data['dependencies'][x] = dep_val
 
         data['conflicts'] = [x.replace("!", "") for x in \
             portage_metadata['RDEPEND'].split() + \

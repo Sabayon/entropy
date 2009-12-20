@@ -4,6 +4,7 @@ if __name__ == "__main__":
 
     from entropy.graph import Graph
     from entropy.client.interfaces import Client
+    from entropy.const import etpConst
     cl = Client()
 
     # test with zillions of atoms
@@ -23,7 +24,8 @@ if __name__ == "__main__":
         # open matched repisitory and retrieve list of dependencies
         # for pkg_id
         repo = cl.open_repository(repoid)
-        my_lame_deps = repo.retrieveDependenciesList(pkg_id)
+        my_lame_deps = repo.retrieveDependenciesList(pkg_id,
+            exclude_deptypes = etpConst['dependency_type_ids']['bdepend_id'])
         my_lame_deps = [x for x in my_lame_deps if not x.startswith("!")]
 
         # match every dependency and build a raw list of dependencies

@@ -179,7 +179,7 @@ class QAInterface(EntropyPluginStore):
         if repo is None:
             repo = self.SystemSettings['repositories']['default_repository']
 
-        scan_msg = blue(_("Now searching for broken depends"))
+        scan_msg = blue(_("Now searching for broken reverse dependencies"))
         self.Output.updateProgress(
             "[repo:%s] %s..." % (
                         darkgreen(repo),
@@ -194,11 +194,12 @@ class QAInterface(EntropyPluginStore):
 
         count = 0
         maxcount = len(idpackages)
+        # excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
         for idpackage in idpackages:
             count += 1
             atom = dbconn.retrieveAtom(idpackage)
             scan_msg = "%s, %s:" % (
-                blue(_("scanning for broken depends")),
+                blue(_("scanning for broken reverse dependencies")),
                 darkgreen(atom),
             )
             self.Output.updateProgress(
@@ -213,6 +214,7 @@ class QAInterface(EntropyPluginStore):
                 count = (count, maxcount,)
             )
             mydepends = dbconn.retrieveReverseDependencies(idpackage)
+                #, exclude_deptypes = excluded_dep_types)
             if not mydepends:
                 continue
             for mydepend in mydepends:
@@ -954,7 +956,9 @@ class QAInterface(EntropyPluginStore):
         for key in idpackage_map:
             r_idpackages = idpackage_map.get(key)
             for r_idpackage in r_idpackages:
-                r_deplist |= dbconn.retrieveDependencies(r_idpackage)
+                r_deplist |= dbconn.retrieveDependencies(r_idpackage,
+                    exclude_deptypes = \
+                        [etpConst['dependency_type_ids']['bdepend_id']])
 
         r_keyslots = set()
         for r_dep in r_deplist:
@@ -982,6 +986,9 @@ class QAInterface(EntropyPluginStore):
         for the given idpackage on the given entropy.db.EntropyRepository
         "dbconn" instance.
 
+        NOTE: this method will only return dependencies that are NOT build
+            dependencies.
+
         @param dbconn: entropy.db.EntropyRepository instance which contains
             the given idpackage item.
         @type dbconn: entropy.db.EntropyRepository instance
@@ -995,10 +1002,12 @@ class QAInterface(EntropyPluginStore):
             atom == True -- set([atom_string1, atom_string2, atom_string3])
         @rtype: list or set
         """
-        mybuffer = self.Lifo()
+        excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
+        mybuffer = QAInterface.Lifo()
         matchcache = set()
         depcache = set()
-        mydeps = dbconn.retrieveDependencies(idpackage)
+        mydeps = dbconn.retrieveDependencies(idpackage,
+            exclude_deptypes = excluded_dep_types)
         for mydep in mydeps:
             mybuffer.push(mydep)
         try:
@@ -1022,7 +1031,8 @@ class QAInterface(EntropyPluginStore):
                 matchcache.add(my_idpackage)
 
             if my_idpackage != -1:
-                owndeps = dbconn.retrieveDependencies(my_idpackage)
+                owndeps = dbconn.retrieveDependencies(my_idpackage,
+                    exclude_deptypes = excluded_dep_types)
                 for owndep in owndeps:
                     mybuffer.push(owndep)
 

@@ -169,10 +169,12 @@ def repositories(options):
             return entropy.tools.isvalidatom(s)
 
         for idpackage in idpackages:
+
             atom = dbconn.retrieveAtom(idpackage)
             orig_deps = dbconn.retrieveDependencies(idpackage, extended = True)
             atom_deps = [x for x in orig_deps if x[1] != \
                 etpConst['dependency_type_ids']['mdepend_id']]
+
             atom_manual_deps = [x for x in orig_deps if x not in atom_deps]
             print_info(brown(" @@ ")+"%s: %s:" % (blue(atom), darkgreen(_("package dependencies")),))
             for dep_str, dep_id in atom_deps:

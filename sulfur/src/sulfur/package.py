@@ -329,14 +329,19 @@ class EntropyPackage:
         return self.dbconn.retrieveSlot(self.matched_id)
 
     def get_dependencies(self):
-        if self.pkgset: self.set_matches.copy()
-        return self.dbconn.retrieveDependencies(self.matched_id)
+        if self.pkgset:
+            return self.set_matches.copy()
+        # for now, just return everything but build deps
+        # this function is only used in package info window
+        return self.dbconn.retrieveDependencies(self.matched_id,
+            exclude_deptypes = [etpConst['dependency_type_ids']['bdepend_id']])
 
     def get_inverse_dependencies(self):
         if self.pkgset:
             return []
         return self.dbconn.retrieveReverseDependencies(self.matched_id,
-            atoms = True)
+            atoms = True,
+            exclude_deptypes = [etpConst['dependency_type_ids']['bdepend_id']])
 
     def get_conflicts(self):
         if self.pkgset:

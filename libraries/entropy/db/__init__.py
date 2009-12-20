@@ -1936,10 +1936,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         dcache = set()
         add_dep = self.addDependency
         is_dep_avail = self.isDependencyAvailable
-        def mymf(dep):
 
+        deps = []
+        for dep in depdata:
             if dep in dcache:
-                return 0
+                continue
             iddep = is_dep_avail(dep)
             if iddep == -1:
                 iddep = add_dep(dep)
@@ -1949,9 +1950,10 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 deptype = depdata[dep]
 
             dcache.add(dep)
-            return (idpackage, iddep, deptype,)
+            deps.append((idpackage, iddep, deptype,))
 
-        deps = [x for x in map(mymf, depdata) if not isinstance(x, int)]
+        del dcache
+
         with self.__write_mutex:
             self.cursor.executemany("""
             INSERT into dependencies VALUES (?,?,?)
@@ -4128,7 +4130,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             return set(cur.fetchall())
         return self._cur2set(cur)
 
-    def retrieveDependenciesList(self, idpackage):
+    def retrieveDependenciesList(self, idpackage, exclude_deptypes = None):
         """
         Return list of dependencies, including conflicts for given package
         identifier.
@@ -4138,14 +4140,36 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @return: list (set) of dependencies of package
         @rtype: set
         """
+        excluded_deptypes_query = ""
+        if exclude_deptypes is not None:
+            for dep_type in exclude_deptypes:
+                excluded_deptypes_query += " AND dependencies.type != %s" % (
+                    dep_type,)
+
         cur = self.cursor.execute("""
         SELECT dependenciesreference.dependency
         FROM dependencies, dependenciesreference
         WHERE dependencies.idpackage = (?) AND
-        dependencies.iddependency = dependenciesreference.iddependency
+        dependencies.iddependency = dependenciesreference.iddependency %s
         UNION SELECT "!" || conflict FROM conflicts
-        WHERE idpackage = (?)""", (idpackage, idpackage,))
+        WHERE idpackage = (?)""" % (excluded_deptypes_query,),
+        (idpackage, idpackage,))
         return self._cur2set(cur)
+
+    def retrieveBuildDependencies(self, idpackage, extended = False):
+        """
+        Return list of build time package dependencies for given package
+        identifier.
+        Note: this function is just a wrapper of retrieveDependencies()
+        providing deptype (dependency type) = post-dependencies.
+
+        @param idpackage: package indentifier
+        @type idpackage: int
+        @keyword extended: return in extended format
+        @type extended: bool
+        """
+        return self.retrieveDependencies(idpackage, extended = extended,
+            deptype = etpConst['dependency_type_ids']['bdepend_id'])
 
     def retrievePostDependencies(self, idpackage, extended = False):
         """
@@ -4205,9 +4229,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         excluded_deptypes_query = ""
         if exclude_deptypes is not None:
             for dep_type in exclude_deptypes:
-                if not isinstance(dep_type, int):
-                    # filter out crap
-                    continue
                 excluded_deptypes_query += " AND dependencies.type != %s" % (
                     dep_type,)
 

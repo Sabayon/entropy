@@ -274,7 +274,7 @@ def _print_graph_item_deps(item, out_data = None, colorize = None):
             _print_graph_item_deps(endpoint, out_data)
         out_data['lvl'] -= 1
 
-def _show_graph_legend(dep_legend = True):
+def _show_graph_legend():
     print_info("%s:" % (purple(_("Legend")),))
 
     print_info("[%s] %s" % (blue("x"),
@@ -289,22 +289,29 @@ def _show_graph_legend(dep_legend = True):
     print_info("[%s] %s" % (brown("x"),
         brown(_("packages already pulled in as dependency on upper levels (circularity)")),))
 
-    if dep_legend:
-        for dep_id, dep_val in sorted(etpConst['dependency_type_ids'].items(),
-            key = lambda x: x[0], reverse = True):
-
-            dep_desc = etpConst['dependency_type_ids_desc'].get(dep_id, _("N/A"))
-            txt = '%s%s%s %s' % (teal("{"), dep_val, teal("}"), dep_desc,)
-            print_info(txt)
     print_generic("="*40)
+
+def _show_dependencies_legend(indent = ''):
+    for dep_id, dep_val in sorted(etpConst['dependency_type_ids'].items(),
+        key = lambda x: x[0], reverse = True):
+
+        dep_desc = etpConst['dependency_type_ids_desc'].get(dep_id, _("N/A"))
+        txt = '%s%s%s%s %s' % (indent, teal("{"), dep_val, teal("}"), dep_desc,)
+        print_info(txt)
 
 def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
 
     include_sys_pkgs = False
     show_already_pulled_in = False
+    include_build_deps = False
     if show_complete:
         include_sys_pkgs = True
         show_already_pulled_in = True
+        include_build_deps = True
+
+    excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
+    if not include_build_deps:
+        excluded_dep_types = None
 
     from entropy.graph import Graph
     from entropy.misc import Lifo
@@ -326,7 +333,8 @@ def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
         stack_cache.add(item)
         pkg_id, was_dep = item
 
-        rev_deps = dbconn.retrieveReverseDependencies(pkg_id)
+        rev_deps = dbconn.retrieveReverseDependencies(pkg_id,
+            exclude_deptypes = excluded_dep_types)
 
         graph_deps = []
         for rev_pkg_id in sorted(rev_deps, key = rev_pkgs_sorter):
@@ -349,7 +357,7 @@ def _revgraph_package(installed_pkg_id, package, dbconn, show_complete = False):
     _graph_to_stdout(graph, graph.get_node(inst_item),
         item_translation_func, show_already_pulled_in)
     if not etpUi['quiet']:
-        _show_graph_legend(dep_legend = False)
+        _show_graph_legend()
 
     del stack
     del graph
@@ -437,6 +445,7 @@ def _graph_package(match, package, entropy_intf, show_complete = False):
         item_translation_func, show_already_pulled_in)
     if not etpUi['quiet']:
         _show_graph_legend()
+        _show_dependencies_legend()
 
     del stack
     del graph
@@ -609,6 +618,11 @@ def search_inverse_dependencies(atoms, dbconn = None, Equo = None):
     if not dbconn:
         clientDbconn = Equo.clientDbconn
 
+    include_build_deps = False
+    excluded_dep_types = None
+    if include_build_deps:
+        excluded_dep_types.append(etpConst['dependency_type_ids']['bdepend_id'])
+
     for atom in atoms:
 
         result = clientDbconn.atomMatch(atom)
@@ -635,7 +649,8 @@ def search_inverse_dependencies(atoms, dbconn = None, Equo = None):
                 idpackage_masked, idmasking_reason = dbconn.idpackageValidator(
                     result[0])
 
-            searchResults = dbconn.retrieveReverseDependencies(result[0])
+            searchResults = dbconn.retrieveReverseDependencies(result[0],
+                exclude_deptypes = excluded_dep_types)
             for idpackage in searchResults:
                 print_package_info(idpackage, dbconn, clientSearch = True,
                     strictOutput = etpUi['quiet'], Equo = Equo,
@@ -1545,8 +1560,13 @@ def print_package_info(idpackage, dbconn, clientSearch = False,
                 print_info(darkred("       ##") + \
                     darkgreen(" %s:" % (_("Dependencies"),) ))
                 for pdep, p_id in sorted(pkgdeps, key = depsorter):
-                    print_info(darkred("       ## \t\t\t") + blue(" [") + \
-                        str(p_id) + blue("] ") + brown(pdep))
+                    print_info(darkred("       ## \t\t\t") + "%s%s%s " % (
+                        blue("["), p_id, blue("]"),) + brown(pdep))
+                # show legend
+                print_info(brown("       ## \t\t\t") + \
+                    blue("%s:" % (_("Legend"),) ))
+                _show_dependencies_legend(indent = brown('       ## \t\t\t'))
+
 
             if pkgconflicts:
                 print_info(darkred("       ##") + \

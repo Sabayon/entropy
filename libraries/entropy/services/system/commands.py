@@ -1254,9 +1254,11 @@ class Repository(SocketCommands):
         elif search_type == "depends":
 
             mysearchlist = search_string.split()
+            excluded_deptypes = [etpConst['dependency_type_ids']['bdepend_id']]
             for mystring in mysearchlist:
                 m_idpackage, m_result = dbconn.atomMatch(mystring)
-                if m_idpackage == -1: continue
+                if m_idpackage == -1:
+                    continue
                 idpackages = dbconn.retrieveReverseDependencies(m_idpackage)
                 for idpackage in idpackages:
                     search_results['ordered_idpackages'].add(idpackage)

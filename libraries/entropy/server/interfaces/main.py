@@ -1413,6 +1413,8 @@ class Server(Singleton, TextInterface):
                     header = darkred(" @@  ")
                 )
 
+            # NOTE: this must also test build dependencies to make sure
+            # that every packages comes out with all of them.
             xdeps = dbconn.retrieveDependencies(idpackage)
             for xdep in xdeps:
                 xid, xuseless = self.atom_match(xdep)
@@ -3086,6 +3088,7 @@ class Server(Singleton, TextInterface):
         to_be_injected = set()
         my_settings = self.SystemSettings[self.sys_settings_plugin_id]['server']
         exp_based_scope = my_settings['exp_based_scope']
+        excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
 
         server_repos = list(my_settings['repositories'].keys())
 
@@ -3196,6 +3199,11 @@ class Server(Singleton, TextInterface):
                         if idpackage_expired:
                             # expired !!!
                             # add this and its depends (reverse deps)
+
+                            # TODO, FIXME: maybe we should check if other pkgs
+                            # satisfy these reverse deps before pulling
+                            # everything in for removal?
+                            # NOTE: also pull in build reverse deps?
                             to_be_removed.add((idpackage, xrepo))
                             for my_id in dbconn.retrieveReverseDependencies(
                                 idpackage):

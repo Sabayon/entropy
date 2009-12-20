@@ -967,7 +967,8 @@ class SulfurApplicationEventsMixin:
                 continue
             else:
                 iddep = self.Equo.clientDbconn.searchDependency(dep)
-                if iddep == -1: continue
+                if iddep == -1:
+                    continue
                 c_idpackages = self.Equo.clientDbconn.searchIdpackageFromIddependency(iddep)
                 for c_idpackage in c_idpackages:
                     key, slot = self.Equo.clientDbconn.retrieveKeySlot(c_idpackage)

@@ -570,7 +570,7 @@ show direct depdendencies tree for provided installable atoms
 
 =item B<--complete>
 
-include system packages and circularity information
+include system packages, build deps and circularity information
 
 =back
 
@@ -582,7 +582,7 @@ show reverse depdendencies tree for provided installed atoms
 
 =item B<--complete>
 
-include system packages and circularity information
+include system packages, build deps and circularity information
 
 =back
 

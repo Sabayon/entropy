@@ -26,6 +26,7 @@ class CalculatorsMixin:
         installed_packages = dbconn.listAllIdpackages()
 
         pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
+        bdepend_id = etpConst['dependency_type_ids']['bdepend_id']
         deps_not_matched = set()
         # now look
         length = len(installed_packages)
@@ -45,7 +46,7 @@ class CalculatorsMixin:
                 )
 
             xdeps = dbconn.retrieveDependencies(idpackage,
-                exclude_deptypes = (pdepend_id,))
+                exclude_deptypes = (pdepend_id, bdepend_id,))
             needed_deps = [(x, dbconn.atomMatch(x),) for x in xdeps]
             deps_not_matched |= set([x for x, (y, z,) in needed_deps if y == -1])
 
@@ -742,8 +743,12 @@ class CalculatorsMixin:
             else:
                 maskedtree[treelevel] = mydict
 
-        mydeps = mydbconn.retrieveDependencies(match_id)
-        for mydep in mydeps: mybuffer.push(mydep)
+        excluded_deps = [etpConst['dependency_type_ids']['bdepend_id']]
+        mydeps = mydbconn.retrieveDependencies(match_id,
+            exclude_deptypes = excluded_deps)
+        for mydep in mydeps:
+            mybuffer.push(mydep)
+
         try:
             mydep = mybuffer.pop()
         except ValueError:
@@ -794,7 +799,8 @@ class CalculatorsMixin:
             if idpackage != -1:
                 matchfilter.add((idpackage, repoid))
                 dbconn = open_db(repoid)
-                owndeps = dbconn.retrieveDependencies(idpackage)
+                owndeps = dbconn.retrieveDependencies(idpackage,
+                    exclude_deptypes = excluded_deps)
                 for owndep in owndeps:
                     mybuffer.push(owndep)
 
@@ -852,7 +858,9 @@ class CalculatorsMixin:
         empty_deps):
 
         pkg_id, repo_id = pkg_match
-        myundeps = repo_db.retrieveDependenciesList(pkg_id)
+        # exclude build dependencies
+        myundeps = repo_db.retrieveDependenciesList(pkg_id,
+            exclude_deptypes = [etpConst['dependency_type_ids']['bdepend_id']])
 
         # check conflicts
         my_conflicts = set([x for x in myundeps if x.startswith("!")])
@@ -1057,11 +1065,18 @@ class CalculatorsMixin:
         match_cache = {}
         results = set()
 
+        # TODO: future build deps support
+        include_build_deps = False
+        excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
+        if not include_build_deps:
+            excluded_dep_types = None
+
         cdb_rdeps = self.clientDbconn.retrieveDependencies
         cdb_rks = self.clientDbconn.retrieveKeySlot
         gpa = self.get_package_action
         mydepends = \
-            self.clientDbconn.retrieveReverseDependencies(clientmatch[0])
+            self.clientDbconn.retrieveReverseDependencies(clientmatch[0],
+                exclude_deptypes = excluded_dep_types)
 
         for idpackage in mydepends:
             try:
@@ -1206,7 +1221,9 @@ class CalculatorsMixin:
             repodata[needed] = reponeeded[needed]
         del repo_side, reponeeded
 
-        repo_dependencies = matchdb.retrieveDependencies(match[0])
+        excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
+        repo_dependencies = matchdb.retrieveDependencies(match[0],
+            exclude_deptypes = excluded_dep_types)
         matched_deps = set()
         matched_repos = set()
         for dependency in repo_dependencies:
@@ -1361,8 +1378,10 @@ class CalculatorsMixin:
     def _filter_depends_multimatched_atoms(self, idpackage, depends):
 
         remove_depends = set()
+        excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
         for d_idpackage in depends:
-            mydeps = self.clientDbconn.retrieveDependencies(d_idpackage)
+            mydeps = self.clientDbconn.retrieveDependencies(d_idpackage,
+                exclude_deptypes = excluded_dep_types)
             for mydep in mydeps:
 
                 matches, rslt = self.clientDbconn.atomMatch(mydep,
@@ -1405,6 +1424,7 @@ class CalculatorsMixin:
 
         # post-dependencies won't be pulled in
         pdepend_id = etpConst['dependency_type_ids']['pdepend_id']
+        bdepend_id = etpConst['dependency_type_ids']['bdepend_id']
         rem_dep_text = _("Calculating inverse dependencies for")
         for idpackage in idpackages:
             stack.push(idpackage)
@@ -1434,7 +1454,7 @@ class CalculatorsMixin:
 
             # obtain its inverse deps
             reverse_deps = self.clientDbconn.retrieveReverseDependencies(
-                idpackage, exclude_deptypes = (pdepend_id,))
+                idpackage, exclude_deptypes = (pdepend_id, bdepend_id,))
             if reverse_deps:
                 reverse_deps = self._filter_depends_multimatched_atoms(
                     idpackage, reverse_deps)
@@ -1442,8 +1462,10 @@ class CalculatorsMixin:
             if deep:
 
                 mydeps = set()
-                for x in self.clientDbconn.retrieveDependencies(idpackage):
-                    match = self.clientDbconn.atomMatch(x)
+                for d_dep in self.clientDbconn.retrieveDependencies(idpackage,
+                    exclude_deptypes = (bdepend_id,)):
+
+                    match = self.clientDbconn.atomMatch(d_dep)
                     if match[0] != -1:
                         mydeps.add(match[0])
 
@@ -1452,10 +1474,11 @@ class CalculatorsMixin:
                     (self.clientDbconn.isSystemPackage(x) or \
                         self.is_installed_idpackage_in_system_mask(x) )]
 
-                for x in mydeps:
-                    mydepends = self.clientDbconn.retrieveReverseDependencies(x)
+                for d_rev_dep in mydeps:
+                    mydepends = self.clientDbconn.retrieveReverseDependencies(
+                        d_rev_dep, exclude_deptypes = (pdepend_id, bdepend_id,))
                     if not mydepends:
-                        reverse_deps.add(x)
+                        reverse_deps.add(d_rev_dep)
 
             for rev_dep in reverse_deps:
                 stack.push(rev_dep)

@@ -163,7 +163,7 @@ def database(options):
                     pass
 
             idpk, rev, xx = Equo.clientDbconn.addPackage(mydata, revision = mydata['revision'])
-            Equo.clientDbconn.storeInstalledPackage(idpk, "gentoo-db")
+            Equo.clientDbconn.storeInstalledPackage(idpk, "spm-db")
             os.remove(temptbz2)
 
         print_info(red("  %s." % (_("All the Gentoo packages have been injected into Entropy database"),) ))
@@ -621,7 +621,7 @@ def database(options):
 
                 idpk, rev, xx = Equo.clientDbconn.handlePackage(mydata, forcedRevision = mydata['revision'])
                 Equo.clientDbconn.dropInstalledPackageFromStore(idpk)
-                Equo.clientDbconn.storeInstalledPackage(idpk, "gentoo-db")
+                Equo.clientDbconn.storeInstalledPackage(idpk, "spm-db")
                 os.remove(temptbz2)
 
             print_info(brown(" @@ ")+blue("%s." % (_("Database update completed"),)))
