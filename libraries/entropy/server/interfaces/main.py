@@ -3086,7 +3086,6 @@ class Server(Singleton, TextInterface):
         to_be_injected = set()
         my_settings = self.SystemSettings[self.sys_settings_plugin_id]['server']
         exp_based_scope = my_settings['exp_based_scope']
-        base_repository_id = my_settings['base_repository_id']
 
         server_repos = list(my_settings['repositories'].keys())
 
@@ -3158,9 +3157,9 @@ class Server(Singleton, TextInterface):
                 dorm = True
 
             # checking if we are allowed to remove stuff on this repo
-            # it xrepo is not the base one, we MUST skip this to
+            # it xrepo is not the default one, we MUST skip this to
             # avoid touching what developer doesn't expect
-            if dorm and (xrepo == base_repository_id):
+            if dorm and (xrepo == self.default_repository):
                 trashed = self.is_counter_trashed(counter)
                 if trashed:
                     # search into portage then
