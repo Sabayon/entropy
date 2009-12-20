@@ -160,6 +160,13 @@ def package(options):
             rc = 126
 
     elif (options[0] in ("world", "upgrade",)):
+        if options[0] == "world": # print deprecation warning
+            print_warning("")
+            print_warning("'%s' %s: '%s'" % (
+                purple("equo world"),
+                blue(_("is deprecated, please use")),
+                darkgreen("equo upgrade"),))
+            print_warning("")
         status, rc = worldUpdate(onlyfetch = equoRequestOnlyFetch,
             replay = (equoRequestReplay or equoRequestEmptyDeps),
             resume = equoRequestResume,
