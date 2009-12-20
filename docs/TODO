@@ -8,13 +8,13 @@
 
     - drop etpConst['securityurl']
     - entropy.output API names update
-    - add splitdebug support?
     - entropy.tools API docs merge
     - entropy.server API rework
     - move sensible pkgs to alt dir
 
   0.99.40:
 
+    - add splitdebug support?
     - entropy.security.System unittest
     - move all the portage related stuff in entropy.tools to entropy.spm
         => prototype class defining transformations (collect them from tools)
@@ -31,6 +31,7 @@
   1.0_beta2:
 
     - PackageKit integration
+    - ability to also install build dependencies
 
   1.0 - deprecations:
 
