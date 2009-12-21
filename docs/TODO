@@ -1,8 +1,7 @@
 
   0.99.20:
 
-     - add support to entropy.client, entropy.server for
-        entropy.security.Repository
+     - add entropy.security.Repository support to entropy.client, entropy.server
 
   0.99.30:
 
