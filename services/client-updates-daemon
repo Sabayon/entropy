@@ -1,4 +1,5 @@
 #!/usr/bin/python2 -O
+# -*- coding: utf-8 -*-
 """
 
     @author: Fabio Erculiani <lxnay@sabayonlinux.org>
@@ -138,7 +139,7 @@ class UpdatesDaemon(dbus.service.Object):
         self.__trigger_oncall_updater = False
         self.__fetch_mutex = Lock()
         self.__updates = []
-        self.__updates_atoms = []
+        self.__updates_atoms = None
         self.__system_db_hash = None
         self.__last_system_db_mtime = None
 
@@ -247,27 +248,27 @@ class UpdatesDaemon(dbus.service.Object):
             repo_conn = entropy.Repositories(
                 repos, fetchSecurity = False, noEquoCheck = True)
             if DAEMON_DEBUG:
-                write_output("__run_fetcher: repository interface loaded")
+                write_output("__run_sync: repository interface loaded")
         except MissingParameter, err:
             if DAEMON_DEBUG:
                 write_output(
-                    "__run_fetcher: MissingParameter exception, error: %s" % (
+                    "__run_sync: MissingParameter exception, error: %s" % (
                         err,))
         except Exception, err:
             if DAEMON_DEBUG:
                 write_output(
-                    "__run_fetcher: Unhandled exception, error: %s" % (err,))
+                    "__run_sync: Unhandled exception, error: %s" % (err,))
         else:
 
             # 128: sync error, something bad happened
             # 2: repositories not available (all)
             # 1: not able to update all the repositories
             if DAEMON_DEBUG:
-                write_output("__run_fetcher: preparing to run sync")
+                write_output("__run_sync: preparing to run sync")
             rc_res = repo_conn.sync()
             del repo_conn
             if DAEMON_DEBUG:
-                write_output("__run_fetcher: sync done")
+                write_output("__run_sync: sync done")
 
             if rc_res == 1:
                 err = _("Not all the repositories have been fetched")
@@ -352,16 +353,22 @@ class UpdatesDaemon(dbus.service.Object):
 
                 try:
                     update, remove, fine, spm_fine = \
-                        entropy.calculate_world_updates()
+                        entropy.calculate_world_updates(use_cache = False)
                     del fine, remove
                 except Exception, err:
                     entropyTools.print_traceback(f = DAEMON_LOG)
                     msg = "%s: %s" % (_("Updates: error"), err,)
                     self.do_alert(_("Updates: error"), msg)
+                    del self.__updates[:]
+                    self.__updates_atoms = None
                     return 1
 
-                if update:
+                self.__system_db_hash = entropy.clientDbconn.checksum(
+                    do_order = True, strict = False)
+                self.__updates = update[:]
+                self.__updates_atoms = None
 
+                if update:
                     self.do_alert(
                         _("Updates available"),
                         "%s %d %s" % (
@@ -369,14 +376,8 @@ class UpdatesDaemon(dbus.service.Object):
                             _("updates available."),),
                         urgency = 'critical'
                     )
-                    self.__system_db_hash = entropy.clientDbconn.checksum(
-                        do_order = True, strict = False)
-                    self.__updates = update[:]
-                    del self.__updates_atoms[:]
                     gobject.timeout_add(0, self.signal_updates)
-
                 else:
-
                     self.do_alert(
                         _("No updates"),
                         "%s" % (update,),
@@ -459,7 +460,7 @@ class UpdatesDaemon(dbus.service.Object):
 
             try:
                 update, remove, fine, spm_fine = \
-                    entropy.calculate_world_updates()
+                    entropy.calculate_world_updates(use_cache = False)
             except Exception, err:
                 entropyTools.print_traceback(f = DAEMON_LOG)
                 msg = "get_updates: %s: %s" % (_("Updates: error"), err,)
@@ -512,14 +513,14 @@ class UpdatesDaemon(dbus.service.Object):
         out_signature = 'av')
     def get_updates_atoms(self):
 
-        if self.__updates_atoms:
+        if self.__updates_atoms is not None:
             return self.__updates_atoms
 
         with self.__is_working_mutex:
             atoms = []
             entropy = Entropy()
             try:
-
+                self.__updates_atoms = []
                 for idpackage, repoid in self.__updates:
                     try:
                         dbc = entropy.open_repository(repoid)
