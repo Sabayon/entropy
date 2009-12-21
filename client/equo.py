@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 
-    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
-    @contact: lxnay@sabayonlinux.org
+    @author: Fabio Erculiani <lxnay@sabayon.org>
+    @contact: lxnay@sabayon.org
     @copyright: Fabio Erculiani
     @license: GPL-2
 
@@ -808,7 +808,7 @@ def main():
         try:
             ferror = open(error_file, "wb")
         except (OSError, IOError,):
-            print_error(darkred(_("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayonlinux.org.")))
+            print_error(darkred(_("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayon.org.")))
             raise SystemExit(1)
 
         exception_stack = entropyTools.get_traceback()
@@ -842,18 +842,18 @@ def main():
         from entropy.client.interfaces.qa import UGCErrorReportInterface
         try:
             error = UGCErrorReportInterface()
-        except (IncorrectParameter, OnlineMirrorError,):
-            from entropy.qa import ErrorReportInterface
-            post_url = "http://svn.sabayonlinux.org/entropy/standard" + \
-                "/sabayonlinux.org/handlers/http_error_report.php"
-            error = ErrorReportInterface(post_url)
+        except (IncorrectParameter, OnlineMirrorError, AttributeError,):
+            error = None
 
-        error.prepare(error_text, name, email, '\n'.join([x for x in exception_data]), description)
-        result = error.submit()
+        result = None
+        if error is not None:
+            error.prepare(error_text, name, email, '\n'.join([x for x in exception_data]), description)
+            result = error.submit()
+
         if result:
             print_error(darkgreen(_("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible.")))
         else:
-            print_error(darkred(_("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayonlinux.org.")))
+            print_error(darkred(_("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayon.org.")))
             raise SystemExit(4)
 
     raise SystemExit(1)

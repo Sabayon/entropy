@@ -2,14 +2,14 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Daniel Halens Rodriguez <daniel.halens@sabayonlinux.org>, 2009.
+# Daniel Halens Rodriguez <daniel.halens@sabayon.org>, 2009.
 msgid ""
 msgstr ""
 "Project-Id-Version: es\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2009-12-12 19:02+0100\n"
 "PO-Revision-Date: 2009-12-06 17:03-0000\n"
-"Last-Translator: Daniel Halens Rodriguez <daniel.halens@sabayonlinux.org>\n"
+"Last-Translator: Daniel Halens Rodriguez <daniel.halens@sabayon.org>\n"
 "Language-Team:  <es@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -4690,10 +4690,10 @@ msgstr ""
 #: ../../client/equo.py:811
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
-"lxnay@sabayonlinux.org."
+"lxnay@sabayon.org."
 msgstr ""
 "Ni siquiera puedo escribir en /tmp Por favor, copia el error y envíalo a "
-"lxnay@sabayonlinux.org"
+"lxnay@sabayon.org"
 
 #: ../../client/equo.py:827
 msgid "Of course you are on the Internet..."
@@ -4744,10 +4744,10 @@ msgstr ""
 #: ../../client/equo.py:856
 msgid ""
 "Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When "
-"you want, mail the file to lxnay@sabayonlinux.org."
+"you want, mail the file to lxnay@sabayon.org."
 msgstr ""
 "¡Ouch! No pude enviar el mensaje. He guardado el error en /tmp/equoerror.txt "
-"Cuando quieras, puedes enviar el archivo a lxnay@sabayonlinux.org"
+"Cuando quieras, puedes enviar el archivo a lxnay@sabayon.org"
 
 #: ../../client/text_configuration.py:41 ../../client/text_rescue.py:53
 msgid "You are not root"
@@ -10284,11 +10284,11 @@ msgstr "_Ejecutar el Administrador de Paquetes"
 #~ msgid ""
 #~ "An unhandled exception has occured.  This is most likely a bug.  Please "
 #~ "copy the full text of this exception into an email and send it to "
-#~ "sabayon@sabayonlinux.org.  Thank you."
+#~ "sabayon@sabayon.org.  Thank you."
 #~ msgstr ""
 #~ "Ha ocurrido una excepción inesperada. Parece que se trata de un fallo en "
 #~ "el programa. Por favor, copia todo el texto de la excepción y envíalo a "
-#~ "sabayon@sabayonlinux.org. Gracias."
+#~ "sabayon@sabayon.org. Gracias."
 
 #~ msgid "_About"
 #~ msgstr "_Acerca de"
@@ -10520,10 +10520,10 @@ msgstr "_Ejecutar el Administrador de Paquetes"
 
 #~ msgid ""
 #~ "Gosh, you aren't! Well, I wrote the error to /tmp/equoerror.txt. When you "
-#~ "want, mail the file to lxnay@sabayonlinux.org."
+#~ "want, mail the file to lxnay@sabayon.org."
 #~ msgstr ""
 #~ "¡Ouch, no lo estás! Bueno, he escrito el error en /tmp/equoerror.txt. "
-#~ "Cuando quieras, puedes enviar el archivo a lxnay@sabayonlinux.org"
+#~ "Cuando quieras, puedes enviar el archivo a lxnay@sabayon.org"
 
 #~ msgid "_Abort queue"
 #~ msgstr "_Cancelar cola"

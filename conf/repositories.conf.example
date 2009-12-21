@@ -98,6 +98,6 @@ officialrepositoryid|sabayonlinux.org
 #    securityurl|<HTTP/FTP download URL>
 #
 #    example:
-#    securityurl|http://packages.sabayonlinux.org/security/security-advisories.tar.bz2
+#    securityurl|http://pkg.sabayon.org/security/security-advisories.tar.bz2
 #
 # securityurl|

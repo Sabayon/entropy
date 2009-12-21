@@ -4599,11 +4599,11 @@ msgstr ""
 #: ../../client/equo.py:811
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
-"lxnay@sabayonlinux.org."
+"lxnay@sabayon.org."
 msgstr ""
 "Оу... черт, я не могу больше записывать в /tmp. В общем, пожалуйста, "
-"скопируй эту ошибку и отправь на lxnay@sabayonlinux.org. И не вешай нос, это "
-"всё ерунда."
+"скопируй эту ошибку и отправь на lxnay@sabayon.org. И не вешай нос, это всё "
+"ерунда."
 
 #: ../../client/equo.py:827
 msgid "Of course you are on the Internet..."
@@ -4653,10 +4653,10 @@ msgstr ""
 #: ../../client/equo.py:856
 msgid ""
 "Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When "
-"you want, mail the file to lxnay@sabayonlinux.org."
+"you want, mail the file to lxnay@sabayon.org."
 msgstr ""
 "Эээ... Невозможно отослать репорт. Я сохранил ошибку в /tmp/equoerror.txt. "
-"Когда сочтёшь нужным, отошли этот файл на lxnay@sabayonlinux.org."
+"Когда сочтёшь нужным, отошли этот файл на lxnay@sabayon.org."
 
 #: ../../client/text_configuration.py:41 ../../client/text_rescue.py:53
 msgid "You are not root"

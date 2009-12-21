@@ -6540,7 +6540,7 @@ class ExceptionDialog:
         import entropy.tools
 
         errmsg = entropy.tools.get_traceback()
-        conntest = entropy.tools.get_remote_data("http://www.sabayon.org")
+        conntest = entropy.tools.get_remote_data(etpConst['distro_website_url'])
         rc, (name, mail, description) = errorMessage(
             None,
             _( "Exception caught" ),
@@ -6554,13 +6554,12 @@ class ExceptionDialog:
             try:
                 error = UGCErrorReportInterface()
             except (IncorrectParameter, OnlineMirrorError,):
-                post_url = "http://svn.sabayonlinux.org/entropy/standard" + \
-                    "/sabayonlinux.org/handlers/http_error_report.php"
-                from entropy.qa import ErrorReportInterface
-                error = ErrorReportInterface(post_url)
+                error = None
 
-            error.prepare(errmsg, name, mail, description = description)
-            result = error.submit()
+            result = None
+            if error is not None:
+                error.prepare(errmsg, name, mail, description = description)
+                result = error.submit()
             if result:
                 okDialog(None, _("Your report has been submitted successfully! Thanks a lot."))
             else:

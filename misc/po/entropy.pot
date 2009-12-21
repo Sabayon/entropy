@@ -4502,7 +4502,7 @@ msgstr ""
 #: ../../client/equo.py:811
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
-"lxnay@sabayonlinux.org."
+"lxnay@sabayon.org."
 msgstr ""
 
 #: ../../client/equo.py:827
@@ -4547,7 +4547,7 @@ msgstr ""
 #: ../../client/equo.py:856
 msgid ""
 "Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When "
-"you want, mail the file to lxnay@sabayonlinux.org."
+"you want, mail the file to lxnay@sabayon.org."
 msgstr ""
 
 #: ../../client/text_configuration.py:41 ../../client/text_rescue.py:53

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 
-    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
-    @contact: lxnay@sabayonlinux.org
+    @author: Fabio Erculiani <lxnay@sabayon.org>
+    @contact: lxnay@sabayon.org
     @copyright: Fabio Erculiani
     @license: GPL-2
 
@@ -20,7 +20,8 @@ import dbus.exceptions
 
 # Entropy imports
 from entropy.client.interfaces import Client
-import entropy.tools as entropyTools
+from entropy.const import etpConst
+import entropy.tools
 from entropy.i18n import _
 
 # Magneto imports
@@ -177,7 +178,7 @@ class MagnetoCore(MagnetoCoreUI):
                 time.sleep(2)
                 continue
             return True
-        entropyTools.print_traceback()
+        entropy.tools.print_traceback()
         return False
 
     def show_service_not_available(self):
@@ -335,10 +336,10 @@ class MagnetoCore(MagnetoCoreUI):
         return pix
 
     def load_packages_url(self, *data):
-        self.load_url("http://www.sabayon.org/packages")
+        self.load_url("%s/packages" % (etpConst['distro_website_url'],))
 
     def load_website(self, *data):
-        self.load_url("http://www.sabayon.org/")
+        self.load_url(etpConst['distro_website_url'])
 
     def load_url(self, url):
         subprocess.call(['xdg-open', url])
@@ -385,7 +386,7 @@ class MagnetoCore(MagnetoCoreUI):
             iface = dbus.Interface(
                 self._entropy_dbus_object, dbus_interface="org.entropy.Client")
             iface.close_connection()
-        entropyTools.kill_threads()
+        entropy.tools.kill_threads()
 
 
 class Entropy(Client):

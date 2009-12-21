@@ -1,8 +1,8 @@
 # -*- coding: iso-8859-1 -*-
 """
 
-    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
-    @contact: lxnay@sabayonlinux.org
+    @author: Fabio Erculiani <lxnay@sabayon.org>
+    @contact: lxnay@sabayon.org
     @copyright: Fabio Erculiani
     @license: GPL-2
 

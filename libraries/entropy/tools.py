@@ -2,8 +2,8 @@
 # Entropy miscellaneous tools module
 """
 
-    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
-    @contact: lxnay@sabayonlinux.org
+    @author: Fabio Erculiani <lxnay@sabayon.org>
+    @contact: lxnay@sabayon.org
     @copyright: Fabio Erculiani
     @license: GPL-2
 

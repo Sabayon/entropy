@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 
-    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
-    @contact: lxnay@sabayonlinux.org
+    @author: Fabio Erculiani <lxnay@sabayon.org>
+    @contact: lxnay@sabayon.org
     @copyright: Fabio Erculiani
     @license: GPL-2
 
@@ -782,10 +782,10 @@ class UGC(SocketCommands):
             return None, "error: %s" % (e,)
 
         subject = 'Entropy Error Reporting Handler'
-        destination_email = 'entropy.errors@sabayonlinux.org'
-        sender_email = mydict.get('email', 'www-data@sabayonlinux.org')
+        destination_email = 'entropy.errors@sabayon.org'
+        sender_email = mydict.get('email', 'www-data@sabayon.org')
         if not self.entropyTools.is_valid_email(sender_email):
-            sender_email = 'www-data@sabayonlinux.org'
+            sender_email = 'www-data@sabayon.org'
         keys_to_file = ['errordata', 'processes', 'lspci', 'dmesg', 'locale']
 
         # call it over

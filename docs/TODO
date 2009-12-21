@@ -5,7 +5,6 @@
 
   0.99.30:
 
-    - drop etpConst['securityurl']
     - entropy.output API names update
     - entropy.tools API docs merge
     - entropy.server API rework

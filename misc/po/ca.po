@@ -4600,10 +4600,10 @@ msgstr "Ara us mostro el que ha passat. No us preocupeu, jo us ajudaré."
 #: ../../client/equo.py:811
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
-"lxnay@sabayonlinux.org."
+"lxnay@sabayon.org."
 msgstr ""
 "Oh! No puc ni escriure a /tmp. Si us plau, copieu l'error i envieu-lo per "
-"correu electrònic a lxnay@sabayonlinux.org."
+"correu electrònic a lxnay@sabayon.org."
 
 #: ../../client/equo.py:827
 msgid "Of course you are on the Internet..."
@@ -4654,7 +4654,7 @@ msgstr ""
 #: ../../client/equo.py:856
 msgid ""
 "Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When "
-"you want, mail the file to lxnay@sabayonlinux.org."
+"you want, mail the file to lxnay@sabayon.org."
 msgstr ""
 "Ui, no es pot enviar l'informe d'error. L'he desat a /tmp/equoerror.txt. "
 "Quan vulgueu, envieu el fitxer per correu electrònic a lxnay@sabayonlinux."

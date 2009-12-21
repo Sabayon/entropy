@@ -4650,10 +4650,10 @@ msgstr ""
 #: ../../client/equo.py:811
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
-"lxnay@sabayonlinux.org."
+"lxnay@sabayon.org."
 msgstr ""
 "Bem, eu não consigo nem escrever em /tmp. Então, por favor copie o erro e "
-"envie-o para lxnay@sabayonlinux.org."
+"envie-o para lxnay@sabayon.org."
 
 #: ../../client/equo.py:827
 msgid "Of course you are on the Internet..."
@@ -4704,10 +4704,10 @@ msgstr ""
 #: ../../client/equo.py:856
 msgid ""
 "Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When "
-"you want, mail the file to lxnay@sabayonlinux.org."
+"you want, mail the file to lxnay@sabayon.org."
 msgstr ""
 "Ugh. Não é possível enviar o relatório. Salvei o erro em /tmp/equoerror.txt. "
-"Quando você quiser, envie o arquivo para lxnay@sabayonlinux.org."
+"Quando você quiser, envie o arquivo para lxnay@sabayon.org."
 
 #: ../../client/text_configuration.py:41 ../../client/text_rescue.py:53
 msgid "You are not root"

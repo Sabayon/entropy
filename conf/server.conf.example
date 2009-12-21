@@ -116,9 +116,9 @@ rss-name|packages.rss
 # syntax for rss-base-url:
 #    rss-base-url|<URL>
 #
-rss-base-url|http://packages.sabayonlinux.org/
+rss-base-url|http://pkg.sabayon.org/
 # This is just the website url that will be added to the RSS
-rss-website-url|http://www.sabayonlinux.org/
+rss-website-url|http://www.sabayon.org/
 
 # Maximum RSS entries, oldest will be dropped
 # syntax for max-rss-entries:

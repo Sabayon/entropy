@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 
-    @author: Fabio Erculiani <lxnay@sabayonlinux.org>
-    @contact: lxnay@sabayonlinux.org
+    @author: Fabio Erculiani <lxnay@sabayon.org>
+    @contact: lxnay@sabayon.org
     @copyright: Fabio Erculiani
     @license: GPL-2
 
@@ -359,6 +359,8 @@ def const_default_settings(rootdir):
                 "etpdatabasefilegziplight", "etpdatabasefilehashgziplight",
                 "etpdatabasefilegziphash",)
         },
+        # Distribution website URL
+        'distro_website_url': "http://www.sabayon.org",
         # enable/disable packages RSS feed feature
         'rss-feed': True,
         # default name of the RSS feed
@@ -441,7 +443,7 @@ def const_default_settings(rootdir):
             default_etp_dbdir,
         # path to equo.db - client side database file
         'etpdatabaseclientfilepath': default_etp_dir + \
-            default_etp_client_repodir + default_etp_dbdir + "/" + \
+            default_etp_client_repodir + default_etp_dbdir + os.path.sep + \
             default_etp_dbclientfile,
         # prefix of the name of self.dbname in
         # entropy.db.LocalRepository class for the repositories
@@ -469,6 +471,7 @@ def const_default_settings(rootdir):
         'officialrepositoryid': "sabayonlinux.org",
         # tag to append to .tbz2 file before entropy database (must be 32bytes)
         'databasestarttag': "|ENTROPY:PROJECT:DB:MAGIC:START|",
+        # Entropy resources lock file path
         'pidfile': default_etp_dir+"/entropy.lock",
         'applicationlock': False,
         # option to keep a backup of config files after

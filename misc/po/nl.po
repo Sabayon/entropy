@@ -2,7 +2,7 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 #
-# Parhan <dyingmuppet@sabayonlinux.org>, 2008.
+# Parhan <dyingmuppet@sabayon.org>, 2008.
 msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
@@ -4638,10 +4638,10 @@ msgstr ""
 #: ../../client/equo.py:811
 msgid ""
 "Oh well, I cannot even write to /tmp. So, please copy the error and mail "
-"lxnay@sabayonlinux.org."
+"lxnay@sabayon.org."
 msgstr ""
 "Ach ja, Ik kan niet eens schrijven naar /tmp. Dus, kopieer de fout en mail "
-"hem naar lxnay@sabayonlinux.org."
+"hem naar lxnay@sabayon.org."
 
 #: ../../client/equo.py:827
 msgid "Of course you are on the Internet..."
@@ -4692,10 +4692,10 @@ msgstr ""
 #: ../../client/equo.py:856
 msgid ""
 "Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When "
-"you want, mail the file to lxnay@sabayonlinux.org."
+"you want, mail the file to lxnay@sabayon.org."
 msgstr ""
 "Ouch. Kan rapport niet verzenden. Ik heb het opgeslagen in /tmp/equoerror."
-"txt. Als je wil mail je dat bestand naar lxnay@sabayonlinux.org."
+"txt. Als je wil mail je dat bestand naar lxnay@sabayon.org."
 
 #: ../../client/text_configuration.py:41 ../../client/text_rescue.py:53
 msgid "You are not root"
@@ -10154,11 +10154,11 @@ msgstr "_Start Pakketten Beheerder"
 #~ msgid ""
 #~ "An unhandled exception has occured.  This is most likely a bug.  Please "
 #~ "copy the full text of this exception into an email and send it to "
-#~ "sabayon@sabayonlinux.org.  Thank you."
+#~ "sabayon@sabayon.org.  Thank you."
 #~ msgstr ""
 #~ "Een onafgehandelde exceptie is opgetreden. Dit is hoogst waarschijnlijk "
 #~ "een bug. Kopieer a.u.b. de volledige text van de exceptie en mail deze "
-#~ "naar sabayon@sabayonlinux.org. Hartelijk dank."
+#~ "naar sabayon@sabayon.org. Hartelijk dank."
 
 #~ msgid "_About"
 #~ msgstr "_Over"
@@ -10394,10 +10394,10 @@ msgstr "_Start Pakketten Beheerder"
 
 #~ msgid ""
 #~ "Gosh, you aren't! Well, I wrote the error to /tmp/equoerror.txt. When you "
-#~ "want, mail the file to lxnay@sabayonlinux.org."
+#~ "want, mail the file to lxnay@sabayon.org."
 #~ msgstr ""
 #~ "Goh, toch niet! Nou ja, Ik heb de fout naar /tmp/equoerror.txt "
-#~ "geschreven. Als je wilt, mail hem dan naar lxnay@sabayonlinux.org."
+#~ "geschreven. Als je wilt, mail hem dan naar lxnay@sabayon.org."
 
 #~ msgid "_Abort queue"
 #~ msgstr "_Breek wachtrij af"
