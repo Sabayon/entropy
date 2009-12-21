@@ -5,7 +5,7 @@
 CLIENT_LOCK="/var/lib/entropy/entropy.lock"
 
 depend() {
-    need localmount netmount
+    need localmount
     # not yet
     # use net
 }
