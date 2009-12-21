@@ -287,7 +287,7 @@ def _show_graph_legend():
         purple(_("packages with further dependencies (node)")),))
 
     print_info("[%s] %s" % (brown("x"),
-        brown(_("packages already pulled in as dependency on upper levels (circularity)")),))
+        brown(_("packages already pulled in as dependency in upper levels (circularity)")),))
 
     print_generic("="*40)
 
