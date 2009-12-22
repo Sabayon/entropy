@@ -9,16 +9,16 @@
     B{Entropy Package Manager Client}.
 
 """
-from entropy.const import *
-from entropy.output import *
-from entropy.client.interfaces import Client
-Equo = Client()
+from entropy.const import etpConst
+from entropy.output import red, darkred, blue, brown, darkgreen, darkblue, \
+    bold, purple, green, print_error, print_warning, print_info
 from entropy.i18n import _
+import entropy.tools
 
 def security(options):
 
     rc = 0
-    if len(options) < 1:
+    if not options:
         return -10
 
     only_affected = False
@@ -32,35 +32,49 @@ def security(options):
         elif opt == "--fetch":
             fetch = True
 
-    if options[0] == "update":
-        if not Equo.entropyTools.is_user_in_entropy_group():
-            mytxt = darkred(_("You must be either root or in the %s group.")) % (etpConst['sysgroup'],)
-            print_error(mytxt)
-            return 1
-        securityConn = Equo.Security()
-        rc = securityConn.fetch_advisories()
-    elif options[0] == "list":
-        rc = list_advisories(only_affected = only_affected, only_unaffected = only_unaffected)
-    elif options[0] == "install":
-        rc = install_packages(fetch = fetch)
-    elif options[0] == "info":
-        rc = show_advisories_info(options[1:])
-    else:
-        rc = -10
+    from entropy.client.interfaces import Client
+    entropy_client = Client()
+    try:
+
+        if options[0] == "update":
+            security_intf = entropy_client.Security()
+            er_txt = darkred(_("You must be either root or in this group:")) + \
+                " " +  etpConst['sysgroup']
+            if not entropy.tools.is_user_in_entropy_group():
+                print_error(er_txt)
+                return 1
+            rc = security_intf.fetch_advisories()
+
+        elif options[0] == "list":
+            security_intf = entropy_client.Security()
+            rc = list_advisories(security_intf, only_affected = only_affected,
+                only_unaffected = only_unaffected)
+
+        elif options[0] == "install":
+            security_intf = entropy_client.Security()
+            rc = install_packages(entropy_client, security_intf, fetch = fetch)
+
+        elif options[0] == "info":
+            security_intf = entropy_client.Security()
+            rc = show_advisories_info(security_intf, options[1:])
+        else:
+            rc = -10
+    finally:
+        entropy_client.destroy()
 
     return rc
 
-def show_advisories_info(advisories):
+def show_advisories_info(security_intf, advisories):
     if not advisories:
-        print_error(brown(" :: ")+darkgreen("%s." % (_("No advisories provided"),)))
+        print_error(brown(" :: ")+darkgreen("%s." % (
+            _("No advisories provided"),)))
         return 1
 
-    securityConn = Equo.Security()
-    adv_metadata = securityConn.get_advisories_metadata()
+    adv_metadata = security_intf.get_advisories_metadata()
     for advisory in advisories:
         if advisory not in adv_metadata:
-            print_warning(brown(" :: ") + darkred("%s " % (_("Advisory"),)) + blue(advisory) + \
-                darkred(" %s." % (_("does not exist"),)))
+            print_warning(brown(" :: ") + darkred("%s " % (_("Advisory"),)) + \
+                blue(advisory) + darkred(" %s." % (_("does not exist"),)))
             continue
         print_advisory_information(adv_metadata[advisory], key = advisory)
 
@@ -69,10 +83,12 @@ def show_advisories_info(advisories):
 def print_advisory_information(advisory_data, key):
 
     # print advisory code
-    print_info(blue(" @@ ")+red("%s " % (_("GLSA Identifier"),))+bold(key)+red(" | ")+blue(advisory_data['url']))
+    print_info(blue(" @@ ")+red("%s " % (_("GLSA Identifier"),))+bold(key) + \
+        red(" | ")+blue(advisory_data['url']))
 
     # title
-    print_info("\t"+darkgreen("%s:\t\t" % (_("Title"),))+darkred(advisory_data['title']))
+    print_info("\t"+darkgreen("%s:\t\t" % (_("Title"),)) + \
+        darkred(advisory_data['title']))
 
     # description
     description = advisory_data['description'].split("\n")
@@ -106,7 +122,8 @@ def print_advisory_information(advisory_data, key):
 
     # access
     if advisory_data['access']:
-        print_info("\t"+darkgreen("%s:\t" % (_("Exploitable"),))+bold(advisory_data['access']))
+        print_info("\t"+darkgreen("%s:\t" % (_("Exploitable"),)) + \
+            bold(advisory_data['access']))
 
     # impact
     if advisory_data['impact']:
@@ -118,15 +135,18 @@ def print_advisory_information(advisory_data, key):
 
     # impact type
     if advisory_data['impacttype']:
-        print_info("\t"+darkgreen("%s:\t" % (_("Impact type"),))+bold(advisory_data['impacttype']))
+        print_info("\t"+darkgreen("%s:\t" % (_("Impact type"),)) + \
+            bold(advisory_data['impacttype']))
 
     # revised
     if advisory_data['revised']:
-        print_info("\t"+darkgreen("%s:\t" % (_("Revised"),))+brown(advisory_data['revised']))
+        print_info("\t"+darkgreen("%s:\t" % (_("Revised"),)) + \
+            brown(advisory_data['revised']))
 
     # announced
     if advisory_data['announced']:
-        print_info("\t"+darkgreen("%s:\t" % (_("Announced"),))+brown(advisory_data['announced']))
+        print_info("\t"+darkgreen("%s:\t" % (_("Announced"),)) + \
+            brown(advisory_data['announced']))
 
     # synopsis
     synopsis = advisory_data['synopsis'].split("\n")
@@ -156,14 +176,16 @@ def print_advisory_information(advisory_data, key):
             vul_vers = affected_data['vul_vers']
             unaff_vers = affected_data['unaff_vers']
             if vul_vers:
-                print_info("\t\t\t  "+brown("%s: " % (_("vulnerable versions"),))+", ".join(vul_vers))
+                print_info("\t\t\t  "+brown("%s: " % (
+                    _("vulnerable versions"),))+", ".join(vul_vers))
             if unaff_vers:
-                print_info("\t\t\t  "+brown("%s: " % (_("unaffected versions"),))+", ".join(unaff_vers))
-            #print affected_data
+                print_info("\t\t\t  "+brown("%s: " % (
+                    _("unaffected versions"),))+", ".join(unaff_vers))
 
     # workaround
     if advisory_data['workaround']:
-        print_info("\t"+darkgreen("%s:\t" % (_("Workaround"),))+darkred(advisory_data['workaround']))
+        print_info("\t"+darkgreen("%s:\t" % (_("Workaround"),)) + \
+            darkred(advisory_data['workaround']))
 
     # resolution
     if advisory_data['resolution']:
@@ -174,20 +196,27 @@ def print_advisory_information(advisory_data, key):
                 print_info(res_text+x.strip())
                 res_text = "\t\t\t"
 
-def list_advisories(only_affected = False, only_unaffected = False):
-    securityConn = Equo.Security()
-    if (not only_affected and not only_unaffected) or (only_affected and only_unaffected):
-        adv_metadata = securityConn.get_advisories_metadata()
+def list_advisories(security_intf, only_affected = False,
+    only_unaffected = False):
+
+    if (not only_affected and not only_unaffected) or \
+        (only_affected and only_unaffected):
+        adv_metadata = security_intf.get_advisories_metadata()
+
     elif only_affected:
-        adv_metadata = securityConn.get_vulnerabilities()
+        adv_metadata = security_intf.get_vulnerabilities()
+
     else:
-        adv_metadata = securityConn.get_fixed_vulnerabilities()
+        adv_metadata = security_intf.get_fixed_vulnerabilities()
+
     if not adv_metadata:
-        print_info(brown(" :: ")+darkgreen("%s." % (_("No advisories available or applicable"),)))
+        print_info(brown(" :: ")+darkgreen("%s." % (
+            _("No advisories available or applicable"),)))
         return 0
+
     adv_keys = sorted(adv_metadata.keys())
     for key in adv_keys:
-        affected = securityConn.is_affected(key)
+        affected = security_intf.is_affected(key)
         if only_affected and not affected:
             continue
         if only_unaffected and affected:
@@ -200,39 +229,40 @@ def list_advisories(only_affected = False, only_unaffected = False):
             affected_data = list(adv_metadata[key]['affected'].keys())
             if affected_data:
                 for a_key in affected_data:
-                    vulnerables = ', '.join(adv_metadata[key]['affected'][a_key][0]['vul_vers'])
+                    k_data = adv_metadata[key]['affected'][a_key]
+                    vulnerables = ', '.join(k_data[0]['vul_vers'])
                     description = "[GLSA:%s:%s][%s] %s: %s" % (
-                                        darkgreen(key),
-                                        affection_string,
-                                        brown(vulnerables),
-                                        darkred(a_key),
-                                        blue(adv_metadata[key]['title'])
-                    )
+                        darkgreen(key),
+                        affection_string,
+                        brown(vulnerables),
+                        darkred(a_key),
+                        blue(adv_metadata[key]['title']))
                     print_info(description)
     return 0
 
-def install_packages(fetch = False):
+def install_packages(entropy_client, security_intf, fetch = False):
 
     import text_ui
-    securityConn = Equo.Security()
     print_info(red(" @@ ")+blue("%s..." % (_("Calculating security updates"),)))
-    affected_atoms = securityConn.get_affected_atoms()
+    affected_atoms = security_intf.get_affected_atoms()
     # match in client database
     valid_matches = set()
     for atom in affected_atoms:
-        match = Equo.clientDbconn.atomMatch(atom)
+        match = entropy_client.clientDbconn.atomMatch(atom)
         if match[0] == -1:
             continue
         # get key + slot
-        key, slot = Equo.clientDbconn.retrieveKeySlot(match[0])
+        key, slot = entropy_client.clientDbconn.retrieveKeySlot(match[0])
         # match in repos
-        match = Equo.atom_match(key, matchSlot = slot)
+        match = entropy_client.atom_match(key, matchSlot = slot)
         if match[0] != -1:
             valid_matches.add(match)
 
     if not valid_matches:
-        print_info(red(" @@ ")+blue("%s." % (_("All the available updates have been already installed"),)))
+        print_info(red(" @@ ")+blue("%s." % (
+            _("All the available updates have been already installed"),)))
         return 0
 
-    rc, stat = text_ui.installPackages(atomsdata = valid_matches, onlyfetch = fetch)
+    rc, stat = text_ui.install_packages(atomsdata = valid_matches,
+        onlyfetch = fetch)
     return rc

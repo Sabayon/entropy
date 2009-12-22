@@ -9,22 +9,22 @@
     B{Entropy Package Manager Client}.
 
 """
-
-from entropy.const import *
-from entropy.output import *
-from entropy.client.interfaces import Client
+import os
+from entropy.const import etpConst, const_isstring, const_convert_to_unicode
+from entropy.output import bold, darkgreen, red, darkred, blue, purple, brown, \
+    print_info, print_warning, print_error
 from entropy.i18n import _
-Equo = Client()
-Equo.UGC.show_progress = True
-
+import entropy.tools
 
 def ugc(options):
 
-    if len(options) < 1:
+    if not options:
         return 0
-    cmd = options[0]
+
+    cmd = options.pop(0)
     do_force = False
     myopts = []
+
     for opt in options[1:]:
         if opt == "--force":
             do_force = True
@@ -33,29 +33,38 @@ def ugc(options):
             return -10
         else:
             myopts.append(opt)
+
     options = myopts
     rc = -10
 
-    if cmd == "login":
-        if options: rc = ugcLogin(options[0], force = do_force)
-    elif cmd == "logout":
-        if options: rc = ugcLogout(options[0])
-    elif cmd == "documents":
-        if options: rc = ugcDocuments(options)
-    elif cmd == "vote":
-        if options: rc = ugcVotes(options)
+    from entropy.client.interfaces import Client
+    entropy_client = Client()
+    entropy_client.UGC.show_progress = True
+    try:
+        if cmd == "login":
+            if options:
+                rc = _ugc_login(entropy_client, options[0],
+                    force = do_force)
+        elif cmd == "logout":
+            if options: rc = _ugc_logout(entropy_client, options[0])
+        elif cmd == "documents":
+            if options: rc = _ugc_documents(entropy_client, options)
+        elif cmd == "vote":
+            if options: rc = _ugc_votes(entropy_client, options)
+    finally:
+        entropy_client.destroy()
 
     return rc
 
 
-def ugcLogin(repository, force = False):
+def _ugc_login(entropy_client, repository, force = False):
 
-    if repository not in Equo.validRepositories:
+    if repository not in entropy_client.validRepositories:
         print_error(red("%s: %s." % (_("Invalid repository"), repository,)))
-        Equo.UGC.remove_login(repository)
+        entropy_client.UGC.remove_login(repository)
         return 1
 
-    login_data = Equo.UGC.read_login(repository)
+    login_data = entropy_client.UGC.read_login(repository)
     if (login_data != None) and not force:
         print_info(
             "[%s] %s %s. %s." % (
@@ -67,11 +76,11 @@ def ugcLogin(repository, force = False):
         )
         return 0
     elif (login_data != None) and force:
-        Equo.UGC.remove_login(repository)
+        entropy_client.UGC.remove_login(repository)
 
-    status, msg = Equo.UGC.login(repository)
+    status, msg = entropy_client.UGC.login(repository)
     if status:
-        login_data = Equo.UGC.read_login(repository)
+        login_data = entropy_client.UGC.read_login(repository)
         print_info(
             "[%s:uid:%s] %s: %s. %s." % (
                 darkgreen(repository),
@@ -92,13 +101,13 @@ def ugcLogin(repository, force = False):
         return 1
 
 
-def ugcLogout(repository):
+def _ugc_logout(entropy_client, repository):
 
-    if repository not in Equo.validRepositories:
+    if repository not in entropy_client.validRepositories:
         print_error(red("%s: %s." % (_("Invalid repository"), repository,)))
         return 1
 
-    login_data = Equo.UGC.read_login(repository)
+    login_data = entropy_client.UGC.read_login(repository)
     if login_data == None:
         print_info(
             "[%s] %s." % (
@@ -107,7 +116,7 @@ def ugcLogout(repository):
             )
         )
     else:
-        Equo.UGC.remove_login(repository)
+        entropy_client.UGC.remove_login(repository)
         print_info(
             "[%s] %s %s %s." % (
                 darkgreen(repository),
@@ -118,22 +127,24 @@ def ugcLogout(repository):
         )
     return 0
 
-def ugcVotes(options):
+def _ugc_votes(entropy_client, options):
 
     rc = -10
     repository = options[0]
     options = options[1:]
-    if not options: return rc
+    if not options:
+        return rc
     cmd = options[0]
     options = options[1:]
-    if not options: return rc
+    if not options:
+        return rc
     pkgkey = options[0]
     options = options[1:]
 
     rc = 0
     if cmd == "get":
 
-        data, err_string = Equo.UGC.get_vote(repository, pkgkey)
+        data, err_string = entropy_client.UGC.get_vote(repository, pkgkey)
         if not isinstance(data, float):
             print_error(
                 "[%s:%s] %s: %s, %s" % (
@@ -145,7 +156,7 @@ def ugcVotes(options):
                 )
             )
             return 1
-        showVote(data, repository, pkgkey)
+        _show_vote(data, repository, pkgkey)
 
     elif cmd == "add":
 
@@ -158,9 +169,12 @@ def ugcVotes(options):
         )
         def mycb(s):
             return s
-        input_data = [('vote', darkred(_("Insert your vote (from 1 to 5)")), mycb, False)]
+        input_data = [('vote', darkred(_("Insert your vote (from 1 to 5)")),
+            mycb, False)]
 
-        data = Equo.inputBox(blue("%s") % (_("Entropy UGC vote submission"),), input_data, cancel_button = True)
+        data = entropy_client.inputBox(
+            blue("%s") % (_("Entropy UGC vote submission"),),
+                input_data, cancel_button = True)
 
         if not data:
             return 1
@@ -210,12 +224,13 @@ def ugcVotes(options):
                 blue(str(vote)),
             )
         )
-        rc = Equo.askQuestion("Do you want to submit?")
+        rc = entropy_client.askQuestion(_("Do you want to submit?"))
         if rc != _("Yes"):
             return 1
 
         # submit vote
-        voted, err_string = Equo.UGC.add_vote(repository, pkgkey, vote)
+        voted, err_string = entropy_client.UGC.add_vote(
+            repository, pkgkey, vote)
         if not voted:
             print_error(
                 "[%s:%s] %s: %s, %s" % (
@@ -235,9 +250,9 @@ def ugcVotes(options):
                     blue(_("Vote added, thank you!")),
                 )
             )
-            ugcVotes([repository, "get", pkgkey])
+            _ugc_votes([repository, "get", pkgkey])
 
-def ugcDocuments(options):
+def _ugc_documents(entropy_client, options):
 
     rc = -10
     repository = options[0]
@@ -253,7 +268,7 @@ def ugcDocuments(options):
     rc = 0
 
     if cmd == "get":
-        data, err_string = Equo.UGC.get_docs(repository, pkgkey)
+        data, err_string = entropy_client.UGC.get_docs(repository, pkgkey)
         if not isinstance(data, (list, tuple)):
             print_error(
                 "[%s:%s] %s: %s, %s" % (
@@ -265,11 +280,12 @@ def ugcDocuments(options):
                 )
             )
             return 1
-        downloads, err_string = Equo.UGC.get_downloads(repository, pkgkey)
+        downloads, err_string = entropy_client.UGC.get_downloads(
+            repository, pkgkey)
         shown = False
         for comment_dict in data:
             shown = True
-            showDocument(comment_dict, repository, comment_dict['pkgkey'])
+            _show_document(comment_dict, repository, comment_dict['pkgkey'])
 
         if shown:
             print_info(" %s %s: %s" % (
@@ -309,17 +325,24 @@ def ugcDocuments(options):
         def mycb(s):
             return s
         def path_cb(s):
-            return os.access(s, os.R_OK)
+            return os.access(s, os.R_OK) and os.path.isfile(s)
         def types_cb(s):
             return s in my_quick_types
 
         input_data = [
             ('title', darkred(_("Insert document title")), mycb, False),
-            ('description', darkred(_("Insert document description/comment")), mycb, False),
-            ('keywords', darkred(_("Insert document's keywords (space separated)")), mycb, False),
-            ('type', "%s [%s]" % (darkred(_("Choose document type")), ', '.join(["(%s) %s" % (brown(x[0]), darkgreen(x[1]),) for x in valid_types])), types_cb, False),
+            ('description', darkred(_("Insert document description/comment")),
+                mycb, False),
+            ('keywords',
+                darkred(_("Insert document's keywords (space separated)")),
+                mycb, False),
+            ('type', "%s [%s]" % (darkred(_("Choose document type")),
+                ', '.join(["(%s) %s" % (brown(x[0]), darkgreen(x[1]),) for x \
+                    in valid_types])), types_cb, False),
         ]
-        data = Equo.inputBox(blue("%s") % (_("Entropy UGC document submission"),), input_data, cancel_button = True)
+        data = entropy_client.inputBox(
+            blue("%s") % (_("Entropy UGC document submission"),),
+            input_data, cancel_button = True)
 
         if not data:
             return 1
@@ -335,8 +358,11 @@ def ugcDocuments(options):
 
         data['path'] = None
         if data['type'] in upload_needed_types:
-            input_data = [('path', darkred(_("Insert document path")), path_cb, False)]
-            u_data = Equo.inputBox(blue("%s") % (_("Entropy UGC document submission"),), input_data, cancel_button = True)
+            input_data = [('path', darkred(_("Insert document path")),
+                path_cb, False)]
+            u_data = entropy_client.inputBox(
+                blue("%s") % (_("Entropy UGC document submission"),),
+                input_data, cancel_button = True)
             if not u_data:
                 return 1
             elif not isinstance(data, dict):
@@ -379,12 +405,12 @@ def ugcDocuments(options):
                 blue(doc_type[1]),
             )
         )
-        rc = Equo.askQuestion("Do you want to submit?")
+        rc = entropy_client.askQuestion(_("Do you want to submit?"))
         if rc != _("Yes"):
             return 1
 
         # submit comment
-        rslt, data = Equo.UGC.send_document_autosense(
+        rslt, data = entropy_client.UGC.send_document_autosense(
             repository,
             pkgkey,
             data['type'],
@@ -455,9 +481,10 @@ def ugcDocuments(options):
                 )
             )
             return 1
-        rc = Equo.askQuestion("Would you like to review them?")
+        rc = entropy_client.askQuestion(_("Would you like to review them?"))
         if rc == _("Yes"):
-            data, err_msg = Equo.UGC.get_documents_by_identifiers(repository, identifiers)
+            data, err_msg = entropy_client.UGC.get_documents_by_identifiers(
+                repository, identifiers)
             if not isinstance(data, tuple):
                 print_error(
                     "[%s:%s] %s: %s, %s" % (
@@ -470,14 +497,16 @@ def ugcDocuments(options):
                 )
                 return 1
             for comment_dict in data:
-                showDocument(comment_dict, repository, comment_dict['pkgkey'])
+                _show_document(comment_dict, repository, comment_dict['pkgkey'])
 
-        rc = Equo.askQuestion("Would you like to continue with the removal?")
+        rc = entropy_client.askQuestion(
+            _("Would you like to continue with the removal?"))
         if rc != _("Yes"):
             return 1
 
         for identifier in identifiers:
-            doc_data, err_msg = Equo.UGC.get_documents_by_identifiers(repository, [identifier])
+            doc_data, err_msg = entropy_client.UGC.get_documents_by_identifiers(
+                repository, [identifier])
             if not isinstance(doc_data, tuple):
                 print_error(
                     "[%s:%s] %s: %s, %s" % (
@@ -490,7 +519,8 @@ def ugcDocuments(options):
                 )
                 continue
             doc_data = doc_data[0]
-            data, err_msg = Equo.UGC.remove_document_autosense(repository, identifier, doc_data['iddoctype'])
+            data, err_msg = entropy_client.UGC.remove_document_autosense(
+                repository, identifier, doc_data['iddoctype'])
             if data is False:
                 print_error(
                     "[%s:%s] %s: %s, %s" % (
@@ -515,7 +545,7 @@ def ugcDocuments(options):
 
     return rc
 
-def showDocument(mydict, repository, pkgkey):
+def _show_document(mydict, repository, pkgkey):
 
     title = const_convert_to_unicode(mydict['title'])
     if not title:
@@ -528,6 +558,7 @@ def showDocument(mydict, repository, pkgkey):
             break
     if doctype is None:
         doctype = _("Unknown type")
+
     print_info(" %s [%s|%s|%s|%s|%s|%s]" % (
             bold("@@"),
             bold(str(mydict['iddoc'])),
@@ -557,7 +588,7 @@ def showDocument(mydict, repository, pkgkey):
     )
     print_info("\t%s: %s" % (
             blue(_("Size")),
-            Equo.entropyTools.bytes_into_human(mydict['size']),
+            entropy.tools.bytes_into_human(mydict['size']),
         )
     )
     if 'store_url' in mydict:
@@ -568,7 +599,7 @@ def showDocument(mydict, repository, pkgkey):
                 )
             )
 
-def showVote(vote, repository, pkgkey):
+def _show_vote(vote, repository, pkgkey):
     print_info(" %s [%s|%s] %s: %s" % (
             bold("@@"),
             darkgreen(str(repository)),
@@ -579,7 +610,9 @@ def showVote(vote, repository, pkgkey):
     )
 
 
-def _my_formatted_print(data,header,reset_columns, min_chars = 25, color = None):
+def _my_formatted_print(data,header,reset_columns, min_chars = 25,
+    color = None):
+
     if isinstance(data, set):
         mydata = list(data)
     elif not isinstance(data, list):

@@ -50,7 +50,7 @@ def test_clientdb():
 
 def database(options):
 
-    if len(options) < 1:
+    if not options:
         return -10
 
     # check if I am root

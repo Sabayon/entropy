@@ -19,11 +19,11 @@ if sys.hexversion >= 0x3000000:
 else:
     from commands import getoutput
 
-from entropy.const import *
-from entropy.output import *
-from entropy.client.interfaces import Client
-Equo = Client()
+from entropy.const import etpConst
+from entropy.output import red, darkred, brown, green, darkgreen, blue, \
+    purple, darkblue, print_info, print_error, print_warning, readtext
 from entropy.i18n import _
+import entropy.tools
 
 ########################################################
 ####
@@ -33,21 +33,27 @@ from entropy.i18n import _
 def configurator(options):
 
     rc = 0
-    if len(options) < 1:
+    if not options:
         return -10
 
     # check if I am root
-    if (not Equo.entropyTools.is_root()):
+    if not entropy.tools.is_root():
         mytxt = _("You are not root")
         print_error(red(mytxt+"."))
         return 1
 
-    if options[0] == "info":
-        rc = confinfo()
-    elif options[0] == "update":
-        rc = update()
-    else:
-        rc = -10
+    from entropy.client.interfaces import Client
+    etp_client = Client()
+    try:
+        cmd = options.pop(0)
+        if cmd == "info":
+            rc = confinfo(etp_client)
+        elif cmd == "update":
+            rc = update(etp_client)
+        else:
+            rc = -10
+    finally:
+        etp_client.destroy()
 
     return rc
 
@@ -56,15 +62,17 @@ def configurator(options):
    @description: scan for files that need to be merged
    @output: dictionary using filename as key
 '''
-def update(cmd = None):
+def update(entropy_client, cmd = None):
+
     cache_status = False
     docmd = False
     if cmd != None:
         docmd = True
+
     while True:
         print_info(brown(" @@ ") + \
             darkgreen("%s ..." % (_("Scanning filesystem"),)))
-        scandata = Equo.FileUpdates.scanfs(dcache = cache_status)
+        scandata = entropy_client.FileUpdates.scanfs(dcache = cache_status)
         if cache_status:
             for x in scandata:
                 print_info("("+blue(str(x))+") "+red(" %s: " % (_("file"),) ) + \
@@ -94,13 +102,14 @@ def update(cmd = None):
             # automerge files asking one by one
             for key in keys:
                 if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
-                    Equo.FileUpdates.remove_from_cache(key)
-                    scandata = Equo.FileUpdates.scandata
+                    entropy_client.FileUpdates.remove_from_cache(key)
+                    scandata = entropy_client.FileUpdates.scandata
                     continue
                 print_info(darkred("%s: " % (_("Configuration file"),) ) + \
                     darkgreen(etpConst['systemroot']+scandata[key]['destination']))
                 if cmd == -3:
-                    rc = Equo.askQuestion(">>   %s" % (_("Overwrite ?"),) )
+                    rc = entropy_client.askQuestion(
+                        ">>   %s" % (_("Overwrite ?"),) )
                     if rc == _("No"):
                         continue
                 print_info(darkred("%s " % (_("Moving"),) ) + \
@@ -110,8 +119,8 @@ def update(cmd = None):
                     brown(etpConst['systemroot'] + \
                     scandata[key]['destination']))
 
-                Equo.FileUpdates.merge_file(key)
-                scandata = Equo.FileUpdates.scandata
+                entropy_client.FileUpdates.merge_file(key)
+                scandata = entropy_client.FileUpdates.scandata
 
             break
 
@@ -120,21 +129,22 @@ def update(cmd = None):
 
                 if not os.path.isfile(etpConst['systemroot']+scandata[key]['source']):
 
-                    Equo.FileUpdates.remove_from_cache(key)
-                    scandata = Equo.FileUpdates.scandata
+                    entropy_client.FileUpdates.remove_from_cache(key)
+                    scandata = entropy_client.FileUpdates.scandata
 
                     continue
                 print_info(darkred("%s: " % (_("Configuration file"),) ) + \
                     darkgreen(etpConst['systemroot']+scandata[key]['destination']))
                 if cmd == -7:
-                    rc = Equo.askQuestion(">>   %s" % (_("Discard ?"),) )
+                    rc = entropy_client.askQuestion(
+                        ">>   %s" % (_("Discard ?"),) )
                     if rc == _("No"):
                         continue
                 print_info(darkred("%s " % (_("Discarding"),) ) + \
                     darkgreen(etpConst['systemroot']+scandata[key]['source']))
 
-                Equo.FileUpdates.remove_file(key)
-                scandata = Equo.FileUpdates.scandata
+                entropy_client.FileUpdates.remove_file(key)
+                scandata = entropy_client.FileUpdates.scandata
 
             break
 
@@ -144,16 +154,16 @@ def update(cmd = None):
                 # do files exist?
                 if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['source']):
 
-                    Equo.FileUpdates.remove_from_cache(cmd)
-                    scandata = Equo.FileUpdates.scandata
+                    entropy_client.FileUpdates.remove_from_cache(cmd)
+                    scandata = entropy_client.FileUpdates.scandata
 
                     continue
                 if not os.path.isfile(etpConst['systemroot']+scandata[cmd]['destination']):
                     print_info(darkred("%s: " % (_("Automerging file"),) ) + \
                         darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 
-                    Equo.FileUpdates.merge_file(cmd)
-                    scandata = Equo.FileUpdates.scandata
+                    entropy_client.FileUpdates.merge_file(cmd)
+                    scandata = entropy_client.FileUpdates.scandata
 
                     continue
                 # end check
@@ -164,8 +174,8 @@ def update(cmd = None):
                     print_info(darkred("%s " % (_("Automerging file"),) ) + \
                         darkgreen(etpConst['systemroot']+scandata[cmd]['source']))
 
-                    Equo.FileUpdates.merge_file(cmd)
-                    scandata = Equo.FileUpdates.scandata
+                    entropy_client.FileUpdates.merge_file(cmd)
+                    scandata = entropy_client.FileUpdates.scandata
 
                     continue
 
@@ -193,8 +203,8 @@ def update(cmd = None):
                             scandata[cmd]['destination']) + darkred(" %s " % (_("with"),) ) + \
                             darkgreen(etpConst['systemroot'] + scandata[cmd]['source']))
 
-                        Equo.FileUpdates.merge_file(cmd)
-                        scandata = Equo.FileUpdates.scandata
+                        entropy_client.FileUpdates.merge_file(cmd)
+                        scandata = entropy_client.FileUpdates.scandata
 
                         comeback = True
                         break
@@ -205,8 +215,8 @@ def update(cmd = None):
                             scandata[cmd]['source'])
                         )
 
-                        Equo.FileUpdates.remove_file(cmd)
-                        scandata = Equo.FileUpdates.scandata
+                        entropy_client.FileUpdates.remove_file(cmd)
+                        scandata = entropy_client.FileUpdates.scandata
 
                         comeback = True
                         break
@@ -216,7 +226,7 @@ def update(cmd = None):
                             darkgreen(etpConst['systemroot']+scandata[cmd]['source'])
                         )
 
-                        editor = Equo.get_file_editor()
+                        editor = entropy_client.get_file_editor()
                         if editor == None:
                             print_error(" %s" % (_("Cannot find a suitable editor. Can't edit file directly."),) )
                             comeback = True
@@ -233,8 +243,8 @@ def update(cmd = None):
                             print_info(darkred("%s " % (_("Automerging file"),) ) + \
                                 darkgreen(scandata[cmd]['source']))
 
-                            Equo.FileUpdates.merge_file(cmd)
-                            scandata = Equo.FileUpdates.scandata
+                            entropy_client.FileUpdates.merge_file(cmd)
+                            scandata = entropy_client.FileUpdates.scandata
 
                             comeback = True
                             break
@@ -322,9 +332,9 @@ def showdiff(fromfile, tofile):
 '''
    @description: prints information about config files that should be updated
 '''
-def confinfo():
+def confinfo(entropy_client):
     print_info(brown(" @@ ")+darkgreen(_("These are the files that would be updated:")))
-    data = Equo.FileUpdates.scanfs(dcache = False)
+    data = entropy_client.FileUpdates.scanfs(dcache = False)
     counter = 0
     for item in data:
         counter += 1

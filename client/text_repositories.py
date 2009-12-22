@@ -14,62 +14,77 @@
 ####
 ##   Repositories Tools
 #
-
-from entropy.const import *
-from entropy.output import *
-from entropy.exceptions import *
-from entropy.client.interfaces import Client
-Equo = Client(noclientdb = True)
+import os
+import sys
+from entropy.const import etpConst, etpUi
+from entropy.output import red, darkred, blue, brown, bold, darkgreen, green, \
+    print_info, print_warning, print_error
+from entropy.core.settings.base import SystemSettings as SysSet
 from entropy.i18n import _
+import entropy.tools
+SystemSettings = SysSet()
 
 def repositories(options):
 
     # Options available for all the packages submodules
     myopts = options[1:]
-    equoRequestForceUpdate = False
+    e_req_force_update = False
     rc = 0
     repo_names = []
+
     for opt in myopts:
-        if (opt == "--force"):
-            equoRequestForceUpdate = True
+        if opt == "--force":
+            e_req_force_update = True
         elif opt.startswith("--"):
             print_error(red(" %s." % (_("Wrong parameters"),) ))
             return -10
-        elif opt in Equo.SystemSettings['repositories']['order']:
+        elif opt in SystemSettings['repositories']['order']:
             repo_names.append(opt)
 
-    if (options[0] == "update"):
-        # check if I am root
-        if not Equo.entropyTools.is_user_in_entropy_group():
-            mytxt = darkred(_("You must be either root or in the %s group.")) % (etpConst['sysgroup'],)
-            print_error(mytxt)
-            return 1
-        rc = do_sync(reponames = repo_names, forceUpdate = equoRequestForceUpdate)
-    elif (options[0] == "status"):
-        for repo in Equo.SystemSettings['repositories']['order']:
-            showRepositoryInfo(repo)
-    elif (options[0] == "repoinfo"):
-        myopts = options[1:]
-        if not myopts:
-            rc = -10
-        else:
-            rc = showRepositoryFile(myopts[0], myopts[1:])
+    from entropy.client.interfaces import Client
+    entropy_client = Client(noclientdb = True)
+    try:
+        if options[0] == "update":
+            # check if I am root
+            er_txt = darkred(_("You must be either root or in this group:")) + \
+                " " +  etpConst['sysgroup']
+            if not entropy.tools.is_user_in_entropy_group():
+                print_error(er_txt)
+                return 1
 
-    elif (options[0] == "notice"):
-        myopts = options[1:]
-        myopts = [x for x in myopts if x in Equo.SystemSettings['repositories']['available']]
-        if not myopts:
-            rc = -10
+            rc = _do_sync(entropy_client, reponames = repo_names,
+                forceUpdate = e_req_force_update)
+
+        elif options[0] == "status":
+            for repo in SystemSettings['repositories']['order']:
+                _show_repository_info(entropy_client, repo)
+
+        elif options[0] == "repoinfo":
+            myopts = options[1:]
+            if not myopts:
+                rc = -10
+            else:
+                rc = _show_repository_file(myopts[0], myopts[1:])
+
+        elif options[0] == "notice":
+            myopts = options[1:]
+            myopts = [x for x in myopts if x in \
+                SystemSettings['repositories']['available']]
+            if not myopts:
+                rc = -10
+            else:
+                rc = 0
+                for repoid in myopts:
+                    _notice_board_reader(entropy_client, repoid)
         else:
-            rc = 0
-            for repoid in myopts:
-                noticeBoardReader(repoid)
-    else:
-        rc = -10
+            rc = -10
+    finally:
+        entropy_client.destroy()
+
     return rc
 
 
-def showRepositoryFile(myfile, repos):
+def _show_repository_file(myfile, repos):
 
     if myfile not in ["make.conf", "profile.link", "package.use", \
         "package.mask", "package.unmask", "package.keywords"]:
@@ -80,7 +95,7 @@ def showRepositoryFile(myfile, repos):
 
     myrepos = []
     for repo in repos:
-        if repo in Equo.SystemSettings['repositories']['available']:
+        if repo in SystemSettings['repositories']['available']:
             myrepos.append(repo)
     if not myrepos:
         if not etpUi['quiet']:
@@ -88,7 +103,7 @@ def showRepositoryFile(myfile, repos):
         return 1
 
     for repo in myrepos:
-        mypath = os.path.join(Equo.SystemSettings['repositories']['available'][repo]['dbpath'], myfile)
+        mypath = os.path.join(SystemSettings['repositories']['available'][repo]['dbpath'], myfile)
         if (not os.path.isfile(mypath)) or (not os.access(mypath, os.R_OK)):
             if not etpUi['quiet']:
                 mytxt = "%s: %s." % (blue(os.path.basename(mypath)), darkred(_("not available")),)
@@ -110,80 +125,78 @@ def showRepositoryFile(myfile, repos):
         f.close()
         sys.stdout.write("\n")
 
-def showRepositories():
-    print_info(darkred(" * ")+darkgreen("%s:" % (_("Active Repositories"),) ))
-    repoNumber = 0
-    for repo in Equo.SystemSettings['repositories']['order']:
-        repoNumber += 1
-        print_info(blue("\t#"+str(repoNumber))+bold(" "+Equo.SystemSettings['repositories']['available'][repo]['description']))
-        sourcecount = 0
-        for pkgrepo in Equo.SystemSettings['repositories']['available'][repo]['packages']:
-            sourcecount += 1
-            print_info( red("\t\t%s #%s : %s") % (_("Packages Mirror"), sourcecount, darkgreen(pkgrepo),) )
-        print_info( red("\t\t%s: %s") % (_("Database URL"), darkgreen(Equo.SystemSettings['repositories']['available'][repo]['database']),))
-        print_info( red("\t\t%s: %s") % (_("Repository identifier"), bold(repo),) )
-        print_info( red("\t\t%s: %s") % (_("Repository database path"), blue(Equo.SystemSettings['repositories']['available'][repo]['dbpath']),) )
-    return 0
+def _show_repository_info(entropy_client, reponame):
 
-def showRepositoryInfo(reponame):
-
-    repoNumber = 0
-    for repo in Equo.SystemSettings['repositories']['order']:
-        repoNumber += 1
+    repo_number = 0
+    for repo in SystemSettings['repositories']['order']:
+        repo_number += 1
         if repo == reponame:
             break
-    print_info(blue("#"+str(repoNumber))+bold(" "+Equo.SystemSettings['repositories']['available'][reponame]['description']))
-    if os.path.isfile(Equo.SystemSettings['repositories']['available'][reponame]['dbpath']+"/"+etpConst['etpdatabasefile']):
+
+    avail_data = SystemSettings['repositories']['available']
+    repo_data = avail_data[reponame]
+
+    print_info(blue("#"+str(repo_number))+bold(" "+repo_data['description']))
+    if os.path.isfile(repo_data['dbpath']+"/"+etpConst['etpdatabasefile']):
         status = _("active")
     else:
         status = _("never synced")
     print_info( darkgreen("\t%s: %s") % (_("Status"), darkred(status),) )
     urlcount = 0
-    for repourl in Equo.SystemSettings['repositories']['available'][reponame]['packages'][::-1]:
+
+    for repourl in repo_data['packages'][::-1]:
         urlcount += 1
-        print_info( red("\t%s #%s: %s") % (_("Packages URL"), urlcount, darkgreen(repourl),) )
-    print_info( red("\t%s: %s") % (_("Database URL"), darkgreen(Equo.SystemSettings['repositories']['available'][reponame]['database']),) )
+        print_info( red("\t%s #%s: %s") % (
+            _("Packages URL"), urlcount, darkgreen(repourl),) )
+
+    print_info( red("\t%s: %s") % (_("Database URL"),
+        darkgreen(repo_data['database']),) )
     print_info( red("\t%s: %s") % (_("Repository name"), bold(reponame),) )
-    print_info( red("\t%s: %s") % (_("Repository database path"), blue(Equo.SystemSettings['repositories']['available'][reponame]['dbpath']),) )
-    revision = Equo.get_repository_revision(reponame)
-    print_info( red("\t%s: %s") % (_("Repository revision"), darkgreen(str(revision)),) )
+    print_info( red("\t%s: %s") % (_("Repository database path"),
+        blue(repo_data['dbpath']),) )
+    revision = entropy_client.get_repository_revision(reponame)
+    print_info( red("\t%s: %s") % (_("Repository revision"),
+        darkgreen(str(revision)),) )
 
     return 0
 
-def do_sync(reponames = [], forceUpdate = False):
+def _do_sync(entropy_client, reponames = None, forceUpdate = False):
+
+    if reponames is None:
+        reponames = []
 
     # load repository class
     try:
-        repoConn = Equo.Repositories(reponames, forceUpdate)
-    except PermissionDenied:
-        mytxt = darkred(_("You must be either root or in the %s group.")) % (etpConst['sysgroup'],)
-        print_error("\t"+mytxt)
-        return 1
-    except MissingParameter:
-        print_error(darkred(" * ")+red("%s %s" % (_("No repositories specified in"), etpConst['repositoriesconf'],)))
+        repo_intf = entropy_client.Repositories(reponames, forceUpdate)
+    except AttributeError:
+        print_error(darkred(" * ")+red("%s %s" % (
+            _("No repositories specified in"), etpConst['repositoriesconf'],)))
         return 127
-    except Exception as e:
-        print_error(darkred(" @@ ")+red("%s: %s" % (_("Unhandled exception"), e,)))
+    except Exception as err:
+        print_error(darkred(" @@ ")+red("%s: %s" % (
+            _("Unhandled exception"), err,)))
         return 2
 
-    rc = repoConn.sync()
+    rc = repo_intf.sync()
     if not rc:
         for reponame in reponames:
-            showNoticeBoardSummary(reponame)
+            _show_notice_board_summary(entropy_client, reponame)
     return rc
 
-def check_notice_board_availability(reponame):
-    def show_err():
-        print_error(darkred(" @@ ")+blue("%s" % (_("Notice board not available"),) ))
+def _check_notice_board_availability(entropy_client, reponame):
 
-    data = Equo.get_noticeboard(reponame)
+    def show_err():
+        print_error(darkred(" @@ ")+blue("%s" % (
+            _("Notice board not available"),) ))
+
+    data = entropy_client.get_noticeboard(reponame)
     if not data:
         show_err()
         return
 
     return data
 
-def show_notice(key, mydict):
+def _show_notice(entropy_client, key, mydict):
 
     mytxt = "[%s] [%s] %s: %s" % (
         blue(str(key)),
@@ -208,11 +221,11 @@ def show_notice(key, mydict):
         return True
 
     input_params = [('idx', _('Press Enter to continue'), fake_callback, False)]
-    Equo.inputBox('', input_params, cancel_button = True)
+    entropy_client.inputBox('', input_params, cancel_button = True)
     return
 
 
-def show_notice_selector(title, mydict):
+def _show_notice_selector(entropy_client, title, mydict):
     mykeys = sorted(mydict.keys())
 
     for key in mykeys:
@@ -233,8 +246,9 @@ def show_notice_selector(title, mydict):
 
     def fake_callback(s):
         return s
-    input_params = [('id', blue(_('Choose one by typing its identifier')), fake_callback, False)]
-    data = Equo.inputBox(title, input_params, cancel_button = True)
+    input_params = [('id',
+        blue(_('Choose one by typing its identifier')), fake_callback, False)]
+    data = entropy_client.inputBox(title, input_params, cancel_button = True)
     if not isinstance(data, dict):
         return -1
     try:
@@ -242,29 +256,30 @@ def show_notice_selector(title, mydict):
     except ValueError:
         return -2
 
-def noticeBoardReader(reponame):
+def _notice_board_reader(entropy_client, reponame):
 
-    data = check_notice_board_availability(reponame)
+    data = _check_notice_board_availability(entropy_client, reponame)
     if not data:
         return
     counter = len(data)
     while True:
         try:
-            sel = show_notice_selector('', data)
+            sel = _show_notice_selector(entropy_client, '', data)
         except KeyboardInterrupt:
             return 0
         if (sel >= 0) and (sel < counter):
-            show_notice(sel, data.get(sel))
+            _show_notice(entropy_client, sel, data.get(sel))
         elif sel == -1:
             return 0
 
 
-def showNoticeBoardSummary(reponame):
+def _show_notice_board_summary(entropy_client, reponame):
 
-    mytxt = "%s %s: %s" % (darkgreen(" @@ "), brown(_("Notice board")), bold(reponame),)
+    mytxt = "%s %s: %s" % (darkgreen(" @@ "),
+        brown(_("Notice board")), bold(reponame),)
     print_info(mytxt)
 
-    mydict = check_notice_board_availability(reponame)
+    mydict = _check_notice_board_availability(entropy_client, reponame)
     if not mydict:
         return
 

@@ -16,16 +16,19 @@ if sys.hexversion >= 0x3000000:
 else:
     from commands import getoutput
 import shutil
+
 from entropy.const import *
 from entropy.output import *
 from entropy.i18n import _
 from entropy.client.interfaces import Client
+import entropy.tools
+
 Equo = Client()
 
 def smart(options):
 
     # check if I am root
-    if (not Equo.entropyTools.is_root()):
+    if (not entropy.tools.is_root()):
         mytxt = _("You are not") # you are not root
         print_error(red(mytxt)+" "+bold("root")+red("."))
         return 1
@@ -89,7 +92,7 @@ def QuickpkgHandler(mypackages, savedir = None):
             packages.append(match)
         else:
             if not etpUi['quiet']: print_warning(darkred(" * ")+red("%s: " % (_("Cannot find"),))+bold(opt))
-    packages = Equo.entropyTools.filter_duplicated_entries(packages)
+    packages = entropy.tools.filter_duplicated_entries(packages)
     if (not packages):
         print_error(darkred(" * ")+red("%s." % (_("No valid packages specified"),)))
         return 2
@@ -134,7 +137,7 @@ def CommonFlate(mytbz2s, action, savedir = None):
         Spm = Equo.Spm()
         del Spm
     except Exception as e:
-        Equo.entropyTools.print_traceback()
+        entropy.tools.print_traceback()
         mytxt = _("Source Package Manager backend not available")
         print_error(darkred(" * ")+red("%s: %s" % (mytxt, e,)))
         return 1
@@ -150,7 +153,7 @@ def CommonFlate(mytbz2s, action, savedir = None):
 
         valid_etp = True
         if action == "deflate":
-            valid_etp = Equo.entropyTools.is_entropy_package_file(tbz2)
+            valid_etp = entropy.tools.is_entropy_package_file(tbz2)
         if not (os.path.isfile(tbz2) and tbz2.endswith(etpConst['packagesext']) and \
             valid_etp):
                 print_error(darkred(" * ")+bold(tbz2)+red(" %s" % (_("is not a valid Entropy package"),)))
@@ -205,9 +208,9 @@ def InflateHandler(mytbz2s, savedir):
         shutil.move(etptbz2path, final_tbz2path)
         etptbz2path = final_tbz2path
         # create temp database
-        dbpath = etpConst['packagestmpdir']+os.path.sep+str(Equo.entropyTools.get_random_number())
+        dbpath = etpConst['packagestmpdir']+os.path.sep+str(entropy.tools.get_random_number())
         while os.path.isfile(dbpath):
-            dbpath = etpConst['packagestmpdir']+os.path.sep+str(Equo.entropyTools.get_random_number())
+            dbpath = etpConst['packagestmpdir']+os.path.sep+str(entropy.tools.get_random_number())
         # create
         mydbconn = Equo.open_generic_database(dbpath)
         mydbconn.initializeDatabase()
@@ -215,7 +218,7 @@ def InflateHandler(mytbz2s, savedir):
         del yyy, xxx
         Qa.test_missing_dependencies([idpackage], mydbconn)
         mydbconn.closeDB()
-        Equo.entropyTools.aggregate_edb(tbz2file = etptbz2path, dbfile = dbpath)
+        entropy.tools.aggregate_edb(tbz2file = etptbz2path, dbfile = dbpath)
         os.remove(dbpath)
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Inflated package"),))+etptbz2path)
 
@@ -226,9 +229,9 @@ def DeflateHandler(mytbz2s, savedir):
     # analyze files
     for tbz2 in mytbz2s:
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Deflating"),))+tbz2, back = True)
-        mytbz2 = Equo.entropyTools.remove_edb(tbz2, savedir)
+        mytbz2 = entropy.tools.remove_edb(tbz2, savedir)
         tbz2name = os.path.basename(mytbz2)[:-5] # remove .tbz2
-        tbz2name = Equo.entropyTools.remove_tag(tbz2name)+etpConst['packagesext']
+        tbz2name = entropy.tools.remove_tag(tbz2name)+etpConst['packagesext']
         newtbz2 = os.path.dirname(mytbz2)+os.path.sep+tbz2name
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Deflated package"),))+newtbz2)
 
@@ -243,7 +246,7 @@ def ExtractHandler(mytbz2s, savedir):
         if os.path.isfile(dbpath):
             os.remove(dbpath)
         # extract
-        out = Equo.entropyTools.extract_edb(tbz2, dbpath = dbpath)
+        out = entropy.tools.extract_edb(tbz2, dbpath = dbpath)
         print_info(darkgreen(" * ")+darkred("%s: " % (_("Extracted Entropy metadata from"),))+out)
 
     return 0
@@ -261,7 +264,7 @@ def smartPackagesHandler(mypackages):
             packages.append(match)
         else:
             print_warning(darkred(" * ")+red("%s: " % (_("Cannot find"),))+bold(opt))
-    packages = Equo.entropyTools.filter_duplicated_entries(packages)
+    packages = entropy.tools.filter_duplicated_entries(packages)
     if (not packages):
         print_error(darkred(" * ")+red("%s." % (_("No valid packages specified"),)))
         return 2
@@ -305,15 +308,16 @@ def smartpackagegenerator(matchedPackages):
 
     from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
     import text_ui
-    # run installPackages with onlyfetch
-    rc = text_ui.installPackages(atomsdata = fetchdata, deps = False, onlyfetch = True)
+    # run install_packages with onlyfetch
+    rc = text_ui.install_packages(atomsdata = fetchdata, deps = False,
+        onlyfetch = True)
     if rc[1] != 0:
         return rc[0]
 
     # create unpack dir and unpack all packages
-    unpackdir = etpConst['entropyunpackdir']+"/smartpackage-"+str(Equo.entropyTools.get_random_number())
+    unpackdir = etpConst['entropyunpackdir']+"/smartpackage-"+str(entropy.tools.get_random_number())
     while os.path.isdir(unpackdir):
-        unpackdir = etpConst['entropyunpackdir']+"/smartpackage-"+str(Equo.entropyTools.get_random_number())
+        unpackdir = etpConst['entropyunpackdir']+"/smartpackage-"+str(entropy.tools.get_random_number())
     if os.path.isdir(unpackdir):
         shutil.rmtree(unpackdir)
     os.makedirs(unpackdir)
@@ -326,7 +330,7 @@ def smartpackagegenerator(matchedPackages):
     tmpdbfile = dbfile+"--readingdata"
     for package in matchedPackages:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red(_("collecting Entropy metadata")))
-        Equo.entropyTools.extract_edb(etpConst['entropyworkdir']+os.path.sep+matchedAtoms[package]['download'], tmpdbfile)
+        entropy.tools.extract_edb(etpConst['entropyworkdir']+os.path.sep+matchedAtoms[package]['download'], tmpdbfile)
         # read db and add data to mergeDbconn
         mydbconn = Equo.open_generic_database(tmpdbfile)
         idpackages = mydbconn.listAllIdpackages()
@@ -352,7 +356,7 @@ def smartpackagegenerator(matchedPackages):
     # merge packages
     for package in matchedPackages:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red("unpacking content"))
-        rc = Equo.entropyTools.uncompress_tar_bz2(etpConst['entropyworkdir']+os.path.sep+matchedAtoms[x]['download'], extractPath = unpackdir+"/content")
+        rc = entropy.tools.uncompress_tar_bz2(etpConst['entropyworkdir']+os.path.sep+matchedAtoms[x]['download'], extractPath = unpackdir+"/content")
         if rc != 0:
             print_error(darkred(" * ")+red("%s." % (_("Unpack failed due to unknown reasons"),)))
             return rc
@@ -366,7 +370,7 @@ def smartpackagegenerator(matchedPackages):
     atoms = '+'.join(atoms)
     smart_package_path = etpConst['smartpackagesdir'] + os.path.sep + atoms + \
         etpConst['smartappsext']
-    rc = Equo.entropyTools.compress_tar_bz2(smart_package_path, unpackdir+"/content")
+    rc = entropy.tools.compress_tar_bz2(smart_package_path, unpackdir+"/content")
     if rc != 0:
         print_error(darkred(" * ")+red("%s." % (_("Compression failed due to unknown reasons"),)))
         return rc
@@ -375,7 +379,7 @@ def smartpackagegenerator(matchedPackages):
         print_error(darkred(" * ")+red("%s." % (_("Compressed file does not exist"),)))
         return 1
 
-    Equo.entropyTools.aggregate_edb(smart_package_path, dbfile)
+    entropy.tools.aggregate_edb(smart_package_path, dbfile)
     print_info("\t"+smart_package_path)
     shutil.rmtree(unpackdir, True)
     return 0
@@ -445,9 +449,10 @@ def smartgenerator(matched_atoms):
     pkgname = pkgfilename.split(etpConst['packagesext'])[0].replace(":", "_").replace("~", "_")
 
     fetchdata = matched_atoms
-    # run installPackages with onlyfetch
+    # run install_packages with onlyfetch
     import text_ui
-    rc = text_ui.installPackages(atomsdata = fetchdata, deps = False, onlyfetch = True)
+    rc = text_ui.install_packages(atomsdata = fetchdata, deps = False,
+        onlyfetch = True)
     if rc[1] != 0:
         return rc[0]
 
@@ -523,7 +528,7 @@ int main() {
     smartpath = "%s/%s-%s%s" % (etpConst['smartappsdir'],pkgname,etpConst['currentarch'],etpConst['smartappsext'],)
     print_info(darkgreen(" * ")+red("%s: " % (_("Compressing smart application"),))+bold(atom))
     print_info("\t%s" % (smartpath,))
-    Equo.entropyTools.compress_tar_bz2(smartpath, pkgtmpdir)
+    entropy.tools.compress_tar_bz2(smartpath, pkgtmpdir)
     shutil.rmtree(pkgtmpdir,True)
 
     return 0

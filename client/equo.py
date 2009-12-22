@@ -227,7 +227,7 @@ help_opts_extended = [
     (3, '--savedir', 1, _('save new packages into the specified directory')),
     (2, 'deflate', 2, _('convert provided Entropy packages into Source Package Manager ones')),
     (3, '--savedir', 1, _('save new packages into the specified directory')),
-    (2, 'extract', 2, _('extract Entropy metadata from provided .tbz2 packages')),
+    (2, 'extract', 2, _('extract Entropy metadata from provided Entropy package files')),
     (3, '--savedir', 1, _('save new metadata into the specified directory')),
     None,
     (1, 'database', 1, _('handles installed packages database')),
@@ -525,7 +525,6 @@ def main():
         if options[0] in ("update", "repoinfo", "status", "notice",):
             import text_repositories
             rc = text_repositories.repositories(options)
-            text_repositories.Equo.destroy()
 
         elif options[0] == "moo":
             do_moo()
@@ -541,12 +540,12 @@ def main():
             if (options[0] not in ("hop",)) and (rc not in (125, 126, -10)):
                 load_conf_cache()
             else:
+                # FIXME: refactor text_ui
                 text_ui.Equo.destroy()
 
         elif options[0] == "security":
             import text_security
             rc = text_security.security(options[1:])
-            text_security.Equo.destroy()
 
         elif (options[0] == "query"):
             import text_query
@@ -562,7 +561,6 @@ def main():
         elif (options[0] == "conf"):
             import text_configuration
             rc = text_configuration.configurator(options[1:])
-            text_configuration.Equo.destroy()
 
         elif (options[0] == "cache"):
             import text_cache
@@ -575,12 +573,12 @@ def main():
         elif (options[0] == "database"):
             import text_rescue
             rc = text_rescue.database(options[1:])
+            # FIXME: refactor text_rescue
             text_rescue.Equo.destroy()
 
         elif (options[0] == "ugc"):
             import text_ugc
             rc = text_ugc.ugc(options[1:])
-            text_ugc.Equo.destroy()
 
         elif (options[0] == "community"):
 
@@ -634,6 +632,7 @@ def main():
                             do = False
                             import text_rescue
                             rc = text_rescue.database(myopts[1:])
+                            # FIXME: refactor text_rescue
                             text_rescue.Equo.destroy()
 
                     if do:
