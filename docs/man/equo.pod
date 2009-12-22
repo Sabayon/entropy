@@ -663,7 +663,7 @@ save new packages into the specified directory
 
 =item B<extract>
 
-extract Entropy metadata from provided .tbz2 packages
+extract Entropy metadata from provided Entropy package files
 
 =over
 
