@@ -232,6 +232,8 @@ class System:
             shutil.rmtree(etpConst['securitydir'], True)
             if not os.path.isdir(etpConst['securitydir']):
                 os.makedirs(etpConst['securitydir'], 0o775)
+                const_setup_perms(etpConst['securitydir'],
+                    etpConst['entropygid'])
             const_setup_perms(self.unpackdir, etpConst['entropygid'])
 
     def __put_advisories_in_place(self):
