@@ -1975,7 +1975,7 @@ class Package:
             if self.pkgmeta['diffremoval'] and \
                 (self.pkgmeta.get("atom") is not None) and do:
                 # diffremoval is true only when the remove
-                # action is triggered by installPackages()
+                # action is triggered by pkgs install
                 pkgdata = self.pkgmeta['triggers'].get('install')
                 if pkgdata:
                     i_trigger = self.Entropy.Triggers('postinstall', pkgdata,
