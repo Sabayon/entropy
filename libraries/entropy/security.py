@@ -1027,10 +1027,10 @@ class Repository:
             except OSError as err:
                 if err.errno != 13:
                     raise
-                raise GPGServiceNotAvailable(err)
+                raise Repository.GPGServiceNotAvailable(err)
 
         if not os.access(Repository._GPG_EXEC, os.X_OK):
-            raise GPGServiceNotAvailable("no gnupg installed")
+            raise Repository.GPGServiceNotAvailable("no gnupg installed")
 
         import socket
         self.__socket = socket
@@ -1221,7 +1221,7 @@ class Repository:
             stderr = subprocess.STDOUT, stdin = subprocess.PIPE)
 
         # feed gpg with data
-        stdout, stderr = proc.communicate(input = key_input)
+        proc_stdout, proc_stderr = proc.communicate(input = key_input)
 
         # wait for process to terminate
         proc_rc = proc.wait()
@@ -1231,12 +1231,12 @@ class Repository:
                 "cannot generate key, exit status %s" % (proc_rc,))
 
         # now get fucking fingerprint
-        key_data = [x.strip() for x in stdout.split("\n") if x.strip() and \
-            "KEY_CREATED" in x.split()]
+        key_data = [x.strip() for x in proc_stdout.split("\n") if x.strip() \
+            and "KEY_CREATED" in x.split()]
         if not key_data or len(key_data) > 1:
             raise Repository.GPGError(
                 "cannot grab fingerprint of newly created key, data: %s" % (
-                    stdout,))
+                    proc_stdout,))
         # cross fingers
         fp = key_data[0].split()[-1]
         del proc

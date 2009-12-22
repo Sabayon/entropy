@@ -187,7 +187,7 @@ class Base:
             spm = sys_intf.Entropy.Spm()
             status = spm.compile_packages(atoms,
                 stdin = self._get_stdin(queue_id),
-                stdout = stdour_err, stderr = stdout_err, environ = env,
+                stdout = stdout_err, stderr = stdout_err, environ = env,
                 pid_write_func = set_proc_pid, pretend = pretend,
                 verbose = verbose, fetch_only = fetchonly,
                 build_only = buildonly, no_dependencies = nodeps,
@@ -221,11 +221,9 @@ class Base:
             spm = sys_intf.Entropy.Spm()
             status = spm.remove_packages(atoms,
                 stdin = self._get_stdin(queue_id),
-                stdout = stdour_err, stderr = stdout_err,
+                stdout = stdout_err, stderr = stdout_err,
                 pid_write_func = set_proc_pid, pretend = pretend,
-                verbose = verbose, fetch_only = fetchonly,
-                build_only = buildonly, no_dependencies = nodeps,
-                coloured_output = not nocolor, oneshot = oneshot)
+                verbose = verbose, coloured_output = not nocolor)
 
         finally:
 
@@ -365,7 +363,7 @@ class Base:
             spm = sys_intf.Entropy.Spm()
             status = spm.print_build_environment_info(
                 stdin = self._get_stdin(queue_id),
-                stdout = stdour_err, stderr = stdout_err,
+                stdout = stdout_err, stderr = stdout_err,
                 pid_write_func = set_proc_pid, coloured_output = False)
 
         finally:

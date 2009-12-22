@@ -20,6 +20,7 @@ else:
     import urllib2 as urlmod
     import urllib2 as urlmod_error
 
+from entropy.exceptions import InterruptError
 from entropy.tools import print_traceback, get_file_size, \
     convert_seconds_to_fancy_output, bytes_into_human, spliturl
 from entropy.const import etpConst, const_isfileobj
