@@ -14,15 +14,20 @@
 ####
 ##   Repositories Tools
 #
-
-from entropy.const import *
-from entropy.output import *
+import os
+import sys
+from entropy.const import etpConst, ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL, \
+    etpSys, etpUi
+from entropy.output import red, bold, brown, blue, darkred, darkgreen, purple, \
+    print_info, print_warning, print_error
+from entropy.exceptions import SystemDatabaseError
+import entropy.tools
 from entropy.client.interfaces import Client
-from entropy.exceptions import *
-Equo = Client(noclientdb = True)
 from entropy.i18n import _
 # strictly depending on Portage atm
 from entropy.spm.plugins.interfaces.portage_plugin import xpaktools
+
+Equo = Client(noclientdb = True)
 
 def test_spm():
     # test if portage is available
@@ -30,7 +35,7 @@ def test_spm():
         Spm = Equo.Spm()
         return Spm
     except Exception as e:
-        Equo.entropyTools.print_traceback()
+        entropy.tools.print_traceback()
         mytxt = _("Source Package Manager backend not available")
         print_error(darkred(" * ")+red("%s: %s" % (mytxt, e,)))
         return None
@@ -49,7 +54,7 @@ def database(options):
         return -10
 
     # check if I am root
-    if (not Equo.entropyTools.is_root()):
+    if (not entropy.tools.is_root()):
         mytxt = _("You are not root")
         print_error(red(mytxt+"."))
         return 1
@@ -62,7 +67,7 @@ def database(options):
 
         mytxt = "%s: %s."  % (
             bold(_("ATTENTION")),
-            red(_("The installed package database will be generated again using Gentoo one")),
+            red(_("The installed package database will be generated again using Source Package Manager one")),
         )
         print_warning(mytxt)
         print_warning(red(_("If you dont know what you're doing just, don't do this. Really. I'm not joking.")))
@@ -81,20 +86,20 @@ def database(options):
         import shutil
 
         # try to collect current installed revisions if possible
-        revisionsMatch = {}
+        revisions_match = {}
         try:
             myids = Equo.clientDbconn.listAllIdpackages()
             for myid in myids:
                 myatom = Equo.clientDbconn.retrieveAtom(myid)
                 myrevision = Equo.clientDbconn.retrieveRevision(myid)
-                revisionsMatch[myatom] = myrevision
+                revisions_match[myatom] = myrevision
         except:
             pass
 
         # ok, he/she knows it... hopefully
         # if exist, copy old database
         print_info(red(" @@ ")+blue(_("Creating backup of the previous database, if exists."))+red(" @@"))
-        newfile = Equo.entropyTools.backup_client_repository()
+        newfile = entropy.tools.backup_client_repository()
         if (newfile):
             print_info(red(" @@ ")+blue(_("Previous database copied to file"))+" "+newfile+red(" @@"))
 
@@ -114,12 +119,12 @@ def database(options):
         # now collect packages in the system
         print_info(red("  %s..." % (_("Transductingactioningintactering databases"),) ))
 
-        portagePackages = Spm.get_installed_packages()
+        spm_packages = Spm.get_installed_packages()
 
         # do for each database
-        maxcount = str(len(portagePackages))
+        maxcount = str(len(spm_packages))
         count = 0
-        for portagePackage in portagePackages:
+        for portagePackage in spm_packages:
             count += 1
             print_info(blue("(")+darkgreen(str(count))+"/"+darkred(maxcount)+blue(")")+red(" atom: ")+brown(portagePackage), back = True)
             temptbz2 = etpConst['entropyunpackdir']+"/"+portagePackage.split("/")[1]+".tbz2"
@@ -137,7 +142,7 @@ def database(options):
             try:
                 mydata = Spm.extract_package_metadata(temptbz2)
             except Exception as e:
-                Equo.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 Equo.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
@@ -154,7 +159,7 @@ def database(options):
             if mydata['versiontag']:
                 myatom += "#"+mydata['versiontag']
             # now see if a revision is available
-            savedRevision = revisionsMatch.get(myatom)
+            savedRevision = revisions_match.get(myatom)
             if savedRevision != None:
                 try:
                     savedRevision = int(savedRevision) # cast to int for security
@@ -166,7 +171,7 @@ def database(options):
             Equo.clientDbconn.storeInstalledPackage(idpk, "spm-db")
             os.remove(temptbz2)
 
-        print_info(red("  %s." % (_("All the Gentoo packages have been injected into Entropy database"),) ))
+        print_info(red("  %s." % (_("All the Source Package Manager packages have been injected into Entropy database"),) ))
         print_info(red("  %s..." % (_("Now checking dependency atoms validity"),) ))
         mydeps = Equo.clientDbconn.listAllDependencies()
         maxcount = str(len(mydeps))
@@ -179,7 +184,7 @@ def database(options):
             try:
                 Equo.clientDbconn.atomMatch(atom)
             except Exception as e:
-                Equo.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 Equo.clientLog.log(
                     ETP_LOGPRI_INFO,
                     ETP_LOGLEVEL_NORMAL,
@@ -200,7 +205,7 @@ def database(options):
                     for myidpackage in found_idpackages:
                         Equo.clientDbconn.removePackage(myidpackage)
 
-        print_info(red("  %s..." % (_("Now generating depends caching table"),) ))
+        print_info(red("  %s..." % (_("Now generating reverse dependencies metadata"),) ))
         Equo.clientDbconn.generateReverseDependenciesMetadata()
         print_info(red("  %s...") % (_("Now indexing tables"),) )
         Equo.clientDbconn.indexing = True
@@ -250,7 +255,7 @@ def database(options):
         # ok, he/she knows it... hopefully
         # if exist, copy old database
         print_info(red(" @@ ")+blue(_("Creating backup of the previous database, if exists.")))
-        newfile = Equo.entropyTools.backup_client_repository()
+        newfile = entropy.tools.backup_client_repository()
         if (newfile):
             print_info(red(" @@ ")+blue(_("Previous database copied to file"))+" "+newfile)
 
@@ -290,7 +295,7 @@ def database(options):
             print_error(mytxt)
             return
         # spawn process
-        rnd_num = Equo.entropyTools.get_random_number()
+        rnd_num = entropy.tools.get_random_number()
         tmpfile = os.path.join(etpConst['packagestmpdir'], "%s" % (rnd_num,))
         if os.path.isfile(tmpfile):
             os.remove(tmpfile)
@@ -358,14 +363,14 @@ def database(options):
             print_info("  ("+str(cnt)+"/"+count+") "+red("%s: " % (_("Adding"),))+atoms[pkgfound], back = True)
             Package = Equo.Package()
             Package.prepare(tuple(pkgfound), "install", {})
-            Package._install_package_into_database()
+            Package.add_installed_package()
             Package.kill()
             del Package
 
 
         print_info(red("  %s." % (_("Database resurrected successfully"),)))
 
-        print_info(red("  %s..." % (_("Now generating depends caching table"),)))
+        print_info(red("  %s..." % (_("Now generating reverse dependencies metadata"),)))
         Equo.clientDbconn.generateReverseDependenciesMetadata()
         print_info(red("  %s..." % (_("Now indexing tables"),)))
         Equo.clientDbconn.indexing = True
@@ -375,15 +380,15 @@ def database(options):
 	print_warning(red("  %s" % (_("Keep in mind that virtual/meta packages couldn't be matched. They don't own any files."),) ))
         return 0
 
-    elif (options[0] == "depends"):
+    elif (options[0] == "revdeps"):
 
         rc = test_clientdb()
         if rc != None:
             return rc
 
-        print_info(red("  %s..." % (_("Regenerating depends caching table"),) ))
+        print_info(red("  %s..." % (_("Regenerating reverse dependencies metadata"),) ))
         Equo.clientDbconn.generateReverseDependenciesMetadata()
-        print_info(red("  %s." % (_("Depends caching table regenerated successfully"),) ))
+        print_info(red("  %s." % (_("Reverse dependencies metadata regenerated successfully"),) ))
         return 0
 
     elif (options[0] == "counters"):
@@ -401,7 +406,15 @@ def database(options):
         print_info(red("  %s" % (_("Counters table regenerated. Look above for errors."),) ))
         return 0
 
-    elif (options[0] == "gentoosync"):
+    elif (options[0] in ("gentoosync", "spmsync",)):
+
+        if options[0] == "gentoosync":
+            print_warning("")
+            print_warning("'%s' %s: '%s'" % (
+                purple("equo database gentoosync"),
+                blue(_("is deprecated, please use")),
+                darkgreen("equo database spmsync"),))
+            print_warning("")
 
         Spm = test_spm()
         if Spm == None:
@@ -411,7 +424,7 @@ def database(options):
         if rc != None:
             return rc
 
-        print_info(red(" %s..." % (_("Scanning Portage and Entropy databases for differences"),)))
+        print_info(red(" %s..." % (_("Scanning Source Package Manager and Entropy databases for differences"),)))
 
         # make it crash
         Equo.noclientdb = False
@@ -424,7 +437,7 @@ def database(options):
         except:
             mytxt = "%s %s: %s %s." % (
                 bold(_("Entropy database")),
-                red(_("has never been in sync with Portage. So, you can't run this unless you run first")),
+                red(_("has never been in sync with Source Package Manager. So, you can't run this unless you run first")),
                 bold("equo database generate"),
                 red(_("Sorry")),
             )
@@ -432,7 +445,7 @@ def database(options):
             return 1
 
         import shutil
-        print_info(red(" %s..." % (_("Collecting Portage counters"),) ), back = True)
+        print_info(red(" %s..." % (_("Collecting Source Package Manager metadata"),) ), back = True)
         spm_packages = Spm.get_installed_packages()
         installed_packages = []
         for spm_package in spm_packages:
@@ -468,7 +481,7 @@ def database(options):
                     atom = Equo.clientDbconn.retrieveAtom(x[1])
                     add = True
                     if atom:
-                        atomkey = Equo.entropyTools.dep_getkey(atom)
+                        atomkey = entropy.tools.dep_getkey(atom)
                         atomslot = Equo.clientDbconn.retrieveSlot(x[1])
                         add = True
                         for pkgdata in toBeAdded:
@@ -476,7 +489,7 @@ def database(options):
                                 addslot = Spm.get_installed_package_metadata(pkgdata[0], "SLOT")
                             except KeyError:
                                 continue
-                            addkey = Equo.entropyTools.dep_getkey(pkgdata[0])
+                            addkey = entropy.tools.dep_getkey(pkgdata[0])
                             # workaround for ebuilds not having slot
                             if addslot == None:
                                 addslot = '0'
@@ -595,7 +608,7 @@ def database(options):
                     Equo.clientLog.log(
                         ETP_LOGPRI_INFO,
                         ETP_LOGLEVEL_NORMAL,
-                        "Database gentoosync: Exception caught: %s: %s" % (
+                        "Database spmsync: Exception caught: %s: %s" % (
                             str(Exception),
                             str(e),
                         )
@@ -646,8 +659,8 @@ def database(options):
         mydblist = []
         db_data = []
         for mydb in dblist:
-            ts = Equo.entropyTools.get_file_unix_mtime(mydb)
-            mytime = Equo.entropyTools.convert_unix_time_to_human_time(ts)
+            ts = entropy.tools.get_file_unix_mtime(mydb)
+            mytime = entropy.tools.convert_unix_time_to_human_time(ts)
             mydblist.append("[%s] %s" % (mytime, mydb,))
             db_data.append(mydb)
 
@@ -723,18 +736,13 @@ def getinfo():
     info['UI Config'] = etpUi
 
     # client database info
-    conn = False
-    try:
-        Equo.clientDbconn.listAllIdPackages()
-        conn = True
-    except:
-        pass
-    info['Installed database'] = conn
-    if (conn):
+    cdbconn = Equo.clientDbconn
+    info['Installed database'] = cdbconn
+    if cdbconn is not None:
         # print db info
-        info['Removal internal protected directories'] = Equo.clientDbconn.listConfigProtectEntries()
-        info['Removal internal protected directory masks'] = Equo.clientDbconn.listConfigProtectEntries(mask = True)
-        info['Total installed packages'] = len(Equo.clientDbconn.listAllIdpackages())
+        info['Removal internal protected directories'] = cdbconn.listConfigProtectEntries()
+        info['Removal internal protected directory masks'] = cdbconn.listConfigProtectEntries(mask = True)
+        info['Total installed packages'] = len(cdbconn.listAllIdpackages())
 
     # repository databases info (if found on the system)
     info['Repository databases'] = {}

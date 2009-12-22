@@ -20,7 +20,7 @@ sys.path.insert(0, '../client')
 from entropy.exceptions import *
 from entropy.const import *
 from entropy.output import *
-import entropy.tools as entropyTools
+import entropy.tools
 from entropy.core.settings.base import SystemSettings
 SysSettings = SystemSettings()
 try:
@@ -58,9 +58,9 @@ etpExitMessages = {
 if not is_stdout_a_tty():
     nocolor()
 
-myopts = [
+help_opts = [
     None,
-    (0, " ~ %s ~ " % (SysSettings['system']['name'],), 1, 'Entropy Package Manager - (C) %s' % (entropyTools.get_year(),) ),
+    (0, " ~ %s ~ " % (SysSettings['system']['name'],), 1, 'Entropy Package Manager - (C) %s' % (entropy.tools.get_year(),) ),
     None,
     (0, _('Basic Options'), 0, None),
     None,
@@ -154,7 +154,7 @@ myopts = [
     (2, '--ask', 2, _('ask before making any changes')),
     (2, '--pretend', 1, _('just show what would be done')),
     (2, '--nodeps', 1, _('do not pull in any dependency')),
-    (2, '--deep', 2, _('also pull unused dependencies where depends list is empty')),
+    (2, '--deep', 2, _('also pull unused dependencies where reverse deps list is empty')),
     (2, '--configfiles', 1, _('makes configuration files to be removed')),
     (2, '--resume', 1, _('resume previously interrupted operations')),
     None,
@@ -185,7 +185,7 @@ myopts = [
     (1, 'query', 2, _('do misc queries on repository and local databases')),
         (2, 'belongs', 1, _('search from what package a file belongs')),
         (2, 'changelog', 1, _('show packages changelog')),
-        (2, 'depends', 1, _('search what packages depend on the provided atoms')),
+        (2, 'revdeps', 1, _('search what packages depend on the provided atoms')),
         (2, 'description', 1, _('search packages by description')),
         (2, 'files', 2, _('show files owned by the provided atoms')),
         (2, 'installed', 1, _('search a package into the local database')),
@@ -210,12 +210,12 @@ myopts = [
 
 ]
 
-myopts_ext_info = [
+help_opts_ext_info = [
     (0, _('!!! Use --verbose to get full help output'), 0, None),
     None,
 ]
 
-myopts_extended = [
+help_opts_extended = [
     (0, _('Extended Options'), 0, None),
     None,
     (1, 'smart', 2, _('handles extended functionalities')),
@@ -223,9 +223,9 @@ myopts_extended = [
     (2, 'package', 1, _('make a smart package for the provided atoms (multiple packages into one file)')),
     (2, 'quickpkg', 1, _('recreate an Entropy package from your System')),
     (3, '--savedir', 1, _('save new packages into the specified directory')),
-    (2, 'inflate', 2, _('convert provided Gentoo .tbz2s into Entropy packages (Portage needed)')),
+    (2, 'inflate', 2, _('convert provided Source Package Manager package files into Entropy packages')),
     (3, '--savedir', 1, _('save new packages into the specified directory')),
-    (2, 'deflate', 2, _('convert provided Entropy packages into Gentoo ones (Portage needed)')),
+    (2, 'deflate', 2, _('convert provided Entropy packages into Source Package Manager ones')),
     (3, '--savedir', 1, _('save new packages into the specified directory')),
     (2, 'extract', 2, _('extract Entropy metadata from provided .tbz2 packages')),
     (3, '--savedir', 1, _('save new metadata into the specified directory')),
@@ -235,9 +235,9 @@ myopts_extended = [
         (2, 'vacuum', 2, _('remove System Database internal indexes to save space')),
         (2, 'generate', 1, 'generate installed packages database using Portage database (Portage needed)'),
         (2, 'resurrect', 1, _('generate installed packages database using files on the system [last hope]')),
-        (2, 'depends', 1, _('regenerate depends caching table')),
+        (2, 'revdeps', 1, _('regenerate reverse dependencies metadata')),
         (2, 'counters', 1, _('update/generate counters table (Portage <-> Entropy packages table)')),
-        (2, 'gentoosync', 1, _('makes Entropy aware of your Portage-updated packages')),
+        (2, 'spmsync', 1, _('makes Entropy aware of your Source Package Manager updated packages')),
         (2, 'backup', 2, _('backup the current Entropy installed packages database')),
         (2, 'restore', 1, _('restore a previously backed up Entropy installed packages database')),
     None,
@@ -306,7 +306,7 @@ myopts_extended = [
         (2, 'query', 2, _('do some searches into community repository databases')),
             (3, 'belongs', 2, _('show from what package the provided files belong')),
             (3, 'changelog', 2, _('show packages changelog')),
-            (3, 'depends', 2, _('show what packages depend on the provided atoms')),
+            (3, 'revdeps', 2, _('show what packages depend on the provided atoms')),
             (3, 'description', 2, _('search packages by description')),
             (3, 'eclass', 3, _('search packages using the provided eclasses')),
             (3, 'files', 3, _('show files owned by the provided atoms')),
@@ -343,7 +343,7 @@ myopts_extended = [
 
         (2, 'deptest', 2, _('look for unsatisfied dependencies across community repositories')),
         (2, 'pkgtest', 2, _('verify the integrity of local package files')),
-        (2, 'depends', 2, _('regenerate the depends table')),
+        (2, 'revdeps', 2, _('regenerate the reverse dependencies metadata')),
 
     None,
     (1, 'ugc', 2, _('handles User Generated Content features')),
@@ -411,16 +411,14 @@ if options:
 
 # print help
 if (not options) or ("--help" in options):
-    print_menu(myopts)
+    print_menu(help_opts)
     if etpUi['verbose']:
-        print_menu(myopts_extended)
+        print_menu(help_opts_extended)
     else:
-        print_menu(myopts_ext_info)
+        print_menu(help_opts_ext_info)
     if not options:
         print_error(_("not enough parameters"))
     raise SystemExit(1)
-# sure we don't need this after
-del myopts
 
 # print version
 if (options[0] == "--version"):
@@ -435,6 +433,19 @@ def do_moo():
     t = """ _____________
 < Entromoooo! >
  -------------
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\\
+                ||----w |
+                ||     ||
+"""
+    sys.stdout.write(t)
+    sys.stdout.flush()
+
+def do_lxnay():
+    t = """ _____________
+< I love lxnay! >
+ ---------------
         \   ^__^
          \  (oo)\_______
             (__)\       )\/\\
@@ -485,7 +496,7 @@ def load_conf_cache():
             except KeyboardInterrupt:
                 continue
     except:
-        entropyTools.print_traceback()
+        entropy.tools.print_traceback()
         if not etpUi['quiet']:
             print_info(red(" @@ ")+blue(_("Caching not run.")))
         Equo.destroy()
@@ -518,6 +529,9 @@ def main():
 
         elif options[0] == "moo":
             do_moo()
+
+        elif options[0] == "lxnay":
+            do_lxnay()
 
         elif options[0] in ("install", "remove", "config", "world", "upgrade",
             "deptest", "unusedpackages", "libtest", "source", "fetch", "hop"):
@@ -569,14 +583,17 @@ def main():
             text_ugc.Equo.destroy()
 
         elif (options[0] == "community"):
+
+            comm_err_msg = _("You need to install sys-apps/entropy-server. :-) Do it !")
             etpConst['community']['mode'] = True
             myopts = options[1:]
+
             if myopts:
                 if myopts[0] == "repos":
                     try:
                         import server_reagent
                     except ImportError:
-                        print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                        print_error(darkgreen(comm_err_msg))
                         rc = 1
                     else:
                         repos_opts = myopts[1:]
@@ -591,7 +608,7 @@ def main():
                     try:
                         import server_activator
                     except ImportError:
-                        print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                        print_error(darkgreen(comm_err_msg))
                         rc = 1
                     else:
                         mirrors_opts = myopts[1:]
@@ -623,7 +640,7 @@ def main():
                         try:
                             import server_reagent
                         except ImportError:
-                            print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                            print_error(darkgreen(comm_err_msg))
                             rc = 1
                         else:
                             rc = server_reagent.database(myopts[1:])
@@ -633,7 +650,7 @@ def main():
                     try:
                         import server_reagent
                     except ImportError:
-                        print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                        print_error(darkgreen(comm_err_msg))
                         rc = 1
                     else:
                         rc = server_reagent.repositories(myopts[1:])
@@ -653,7 +670,7 @@ def main():
                     try:
                         import server_query
                     except ImportError:
-                        print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                        print_error(darkgreen(comm_err_msg))
                         rc = 1
                     else:
                         rc = server_query.query(myopts[1:])
@@ -662,7 +679,7 @@ def main():
                         try:
                             import server_reagent
                         except ImportError:
-                            print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                            print_error(darkgreen(comm_err_msg))
                             rc = 1
                         else:
                             rc = server_reagent.spm(myopts[1:])
@@ -672,7 +689,7 @@ def main():
                     try:
                         import server_reagent
                     except ImportError:
-                        print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                        print_error(darkgreen(comm_err_msg))
                         rc = 1
                     else:
                         server_reagent.Entropy.dependencies_test()
@@ -682,24 +699,26 @@ def main():
                     try:
                         import server_reagent
                     except ImportError:
-                        print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                        print_error(darkgreen(comm_err_msg))
                         rc = 1
                     else:
                         server_reagent.Entropy.verify_local_packages(["world"], ask = etpUi['ask'])
                         server_reagent.Entropy.close_server_databases()
 
-                elif myopts[0] == "depends":
+                elif myopts[0] == "revdeps":
                     try:
                         import server_reagent
                     except ImportError:
-                        print_error(darkgreen(_("You need to install sys-apps/entropy-server. :-) Do it !")))
+                        print_error(darkgreen(comm_err_msg))
                         rc = 1
                     else:
-                        rc = server_reagent.Entropy.depends_table_initialize()
+                        rc = server_reagent.Entropy.generate_reverse_dependencies_metadata()
                         server_reagent.Entropy.close_server_databases()
 
         elif (options[0] == "cleanup"):
-            entropyTools.cleanup([ etpConst['packagestmpdir'], etpConst['logdir'], etpConst['entropyunpackdir'], etpConst['packagesbindir'] ])
+            entropy.tools.cleanup([ etpConst['packagestmpdir'],
+                etpConst['logdir'], etpConst['entropyunpackdir'],
+                etpConst['packagesbindir'] ])
             rc = 0
         else:
             rc = -10
@@ -714,7 +733,7 @@ def main():
         else:
             writeerrorstatus(0)
 
-        entropyTools.kill_threads()
+        entropy.tools.kill_threads()
         raise SystemExit(rc)
 
     except SystemDatabaseError:
@@ -779,7 +798,7 @@ def main():
     except OSError as e:
 
         if e.errno == 28:
-            entropyTools.print_exception()
+            entropy.tools.print_exception()
             print_error("%s %s. %s." % (darkred(" * "), e,
                 _("Your hard drive is full! Next time remember to have a look at it before starting. I'm sorry, there's nothing I can do for you. It's your fault :-("),))
             raise SystemExit(5)
@@ -792,7 +811,7 @@ def main():
     except:
 
         reset_cache()
-        entropyTools.kill_threads()
+        entropy.tools.kill_threads()
 
         Text = TextInterface()
         print_error(darkred(_("Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. Well, you know, shit happens.")))
@@ -800,7 +819,7 @@ def main():
         print_error(darkred(_("-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --")))
         print_error(darkgreen(_("Now I am showing you what happened. Don't panic, I'm here to help you.")))
 
-        entropyTools.print_exception()
+        entropy.tools.print_exception()
 
         import traceback
         exception_data = ""
@@ -811,8 +830,8 @@ def main():
             print_error(darkred(_("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayon.org.")))
             raise SystemExit(1)
 
-        exception_stack = entropyTools.get_traceback()
-        exception_data = entropyTools.print_exception(True)
+        exception_stack = entropy.tools.get_traceback()
+        exception_data = entropy.tools.print_exception(True)
         ferror.write(const_convert_to_rawstring("\nRevision: " + \
             etpConst['entropyversion'] + "\n\n"))
         ferror.write(const_convert_to_rawstring(exception_stack))
@@ -839,10 +858,10 @@ def main():
         error_text = ''.join(ferror.readlines())
         ferror.close()
 
-        from entropy.client.interfaces.qa import UGCErrorReportInterface
         try:
+            from entropy.client.interfaces.qa import UGCErrorReportInterface
             error = UGCErrorReportInterface()
-        except (IncorrectParameter, OnlineMirrorError, AttributeError,):
+        except (IncorrectParameter, OnlineMirrorError, AttributeError, ImportError,):
             error = None
 
         result = None

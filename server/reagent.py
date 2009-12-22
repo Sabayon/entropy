@@ -10,7 +10,6 @@
     B{Entropy Package Manager Server}.
 
 """
-
 import os, sys
 sys.path.insert(0, '../libraries')
 sys.path.insert(1, '../client')
@@ -19,9 +18,10 @@ sys.path.insert(3, '/usr/lib/entropy/client')
 sys.path.insert(4, '/usr/lib/entropy/libraries')
 sys.path.insert(5, '/usr/lib/entropy/server')
 from entropy.i18n import _
-import entropy.tools as entropyTools
-from entropy.output import *
-from entropy.const import *
+import entropy.tools
+from entropy.output import red, print_menu, print_error, print_generic, \
+    is_stdout_a_tty, nocolor, etpUi
+from entropy.const import etpConst, const_kill_threads
 from entropy.core.settings.base import SystemSettings
 SysSettings = SystemSettings()
 
@@ -29,9 +29,10 @@ SysSettings = SystemSettings()
 if not is_stdout_a_tty():
     nocolor()
 
-myopts = [
+help_opts = [
     None,
-    (0, " ~ "+SysSettings['system']['name']+" ~ "+sys.argv[0]+" ~ ", 1, 'Entropy Package Manager - (C) %s' % (entropyTools.get_year(),) ),
+    (0, " ~ "+SysSettings['system']['name']+" ~ "+sys.argv[0]+" ~ ", 1,
+        'Entropy Package Manager - (C) %s' % (entropy.tools.get_year(),) ),
     None,
     (0, _('Basic Options'), 0, None),
     None,
@@ -53,7 +54,7 @@ myopts = [
     (1, 'query', 3, _('do some searches into repository databases')),
         (2, 'search', 3, _('search packages inside the default repository database')),
         (2, 'needed', 3, _('show runtime libraries needed by the provided atoms')),
-        (2, 'depends', 2, _('show what packages depend on the provided atoms')),
+        (2, 'revdeps', 2, _('show what packages depend on the provided atoms')),
         (2, 'tags', 3, _('show packages owning the specified tags')),
         (2, 'sets', 3, _('search available package sets')),
         (2, 'files', 3, _('show files owned by the provided atoms')),
@@ -111,8 +112,7 @@ myopts = [
     (1, 'libtest', 2, _('look for missing libraries')),
         (2, '--dump', 2, _('dump results to files')),
     (1, 'pkgtest', 2, _('verify the integrity of local package files')),
-    (1, 'depends', 2, _('regenerate the depends table')),
-    (1, 'libpaths', 2, _('regenerate the library paths table')),
+    (1, 'revdeps', 2, _('regenerate the reverse dependencies metadata')),
     None,
     (1, 'cleanup', 2, _('remove downloaded packages and clean temp. directories)')),
     None,
@@ -121,7 +121,7 @@ myopts = [
 options = sys.argv[1:]
 
 # print version
-if (' '.join(options).find("--version") != -1) or (' '.join(options).find(" -V") != -1):
+if ("--version" in options) or ("-V" in options):
     print_generic("reagent: "+etpConst['entropyversion'])
     raise SystemExit(0)
 
@@ -151,14 +151,14 @@ for opt in options:
 options = _options
 
 # print help
-if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(options).find(" -h") != -1:
-    print_menu(myopts)
+if not options or ("--help" in options) or ("-h" in options):
+    print_menu(help_opts)
     if len(options) < 1:
         print_error("not enough parameters")
     raise SystemExit(1)
 
-rc = 1
-if not entropyTools.is_root():
+rc = -10
+if not entropy.tools.is_root():
     print_error("you must be root in order to run "+sys.argv[0])
 
 elif (options[0] == "update"):
@@ -208,25 +208,24 @@ elif (options[0] == "libtest"):
         dump_results_to_file = dump)
     x = server_reagent.Entropy.close_server_databases()
 
-elif (options[0] == "depends"):
+elif (options[0] == "revdeps"):
     import server_reagent
-    rc = server_reagent.Entropy.depends_table_initialize()
-    server_reagent.Entropy.close_server_databases()
-
-elif (options[0] == "libpaths"):
-    import server_reagent
-    rc = server_reagent.Entropy.library_paths_table_initialize()
+    rc = server_reagent.Entropy.generate_reverse_dependencies_metadata()
     server_reagent.Entropy.close_server_databases()
 
 # cleanup
 elif (options[0] == "cleanup"):
-    rc = entropyTools.cleanup()
+    rc = entropy.tools.cleanup()
 
 # deptest tool
 elif (options[0] == "spm"):
     import server_reagent
     rc = server_reagent.spm(options[1:])
     server_reagent.Entropy.close_server_databases()
+
+if rc == -10:
+    print_menu(help_opts)
+    print_error(red(" %s." % (_("Wrong parameters"),) ))
 
 const_kill_threads()
 raise SystemExit(rc)

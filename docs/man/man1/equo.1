@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "EQUO 1"
-.TH EQUO 1 "2009-12-20" "perl v5.8.8" "Entropy"
+.TH EQUO 1 "2009-12-22" "perl v5.8.8" "Entropy"
 .SH "NAME"
 \&\fBequo\fR \- Official Sabayon Linux Package Manager Client
 .SH "SYNOPSIS"
@@ -428,7 +428,7 @@ just show what would be done
 do not pull in any dependency
 .IP "\fB\-\-deep\fR" 4
 .IX Item "--deep"
-also pull unused dependencies where depends list is empty
+also pull unused dependencies where reverse deps list is empty
 .IP "\fB\-\-configfiles\fR" 4
 .IX Item "--configfiles"
 makes configuration files to be removed
@@ -521,8 +521,8 @@ search from what package a file belongs
 .IP "\fBchangelog\fR" 4
 .IX Item "changelog"
 show packages changelog
-.IP "\fBdepends\fR" 4
-.IX Item "depends"
+.IP "\fBrevdeps\fR" 4
+.IX Item "revdeps"
 search what packages depend on the provided atoms
 .IP "\fBdescription\fR" 4
 .IX Item "description"
@@ -620,7 +620,7 @@ save new packages into the specified directory
 .RE
 .IP "\fBinflate\fR" 4
 .IX Item "inflate"
-convert provided Gentoo .tbz2s into Entropy packages (Portage needed)
+convert provided Source Package Manager package files into Entropy packages
 .RS 4
 .IP "\fB\-\-savedir\fR" 4
 .IX Item "--savedir"
@@ -630,7 +630,7 @@ save new packages into the specified directory
 .RE
 .IP "\fBdeflate\fR" 4
 .IX Item "deflate"
-convert provided Entropy packages into Gentoo ones (Portage needed)
+convert provided Entropy packages into Source Package Manager ones
 .RS 4
 .IP "\fB\-\-savedir\fR" 4
 .IX Item "--savedir"
@@ -667,15 +667,15 @@ generate installed packages database using Portage database (Portage needed)
 .IP "\fBresurrect\fR" 4
 .IX Item "resurrect"
 generate installed packages database using files on the system [last hope]
-.IP "\fBdepends\fR" 4
-.IX Item "depends"
-regenerate depends caching table
+.IP "\fBrevdeps\fR" 4
+.IX Item "revdeps"
+regenerate reverse dependencies metadata
 .IP "\fBcounters\fR" 4
 .IX Item "counters"
 update/generate counters table (Portage <\-> Entropy packages table)
-.IP "\fBgentoosync\fR" 4
-.IX Item "gentoosync"
-makes Entropy aware of your Portage-updated packages
+.IP "\fBspmsync\fR" 4
+.IX Item "spmsync"
+makes Entropy aware of your Source Package Manager updated packages
 .IP "\fBbackup\fR" 4
 .IX Item "backup"
 backup the current Entropy installed packages database
@@ -887,8 +887,8 @@ show from what package the provided files belong
 .IP "\fBchangelog\fR" 4
 .IX Item "changelog"
 show packages changelog
-.IP "\fBdepends\fR" 4
-.IX Item "depends"
+.IP "\fBrevdeps\fR" 4
+.IX Item "revdeps"
 show what packages depend on the provided atoms
 .IP "\fBdescription\fR" 4
 .IX Item "description"
@@ -991,9 +991,9 @@ look for unsatisfied dependencies across community repositories
 .IP "\fBpkgtest\fR" 4
 .IX Item "pkgtest"
 verify the integrity of local package files
-.IP "\fBdepends\fR" 4
-.IX Item "depends"
-regenerate the depends table
+.IP "\fBrevdeps\fR" 4
+.IX Item "revdeps"
+regenerate reverse dependencies metadata
 .RE
 .RS 4
 .RE

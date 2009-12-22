@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "REAGENT 1"
-.TH REAGENT 1 "2009-12-20" "perl v5.8.8" "Entropy"
+.TH REAGENT 1 "2009-12-22" "perl v5.8.8" "Entropy"
 .SH "NAME"
 \&\fBreagent\fR \- Official Sabayon Linux Server\-Side Package Management tool
 .SH "SYNOPSIS"
@@ -194,8 +194,8 @@ search packages inside the default repository database
 .IP "\fBneeded\fR" 4
 .IX Item "needed"
 show runtime libraries needed by the provided atoms
-.IP "\fBdepends\fR" 4
-.IX Item "depends"
+.IP "\fBrevdeps\fR" 4
+.IX Item "revdeps"
 show what packages depend on the provided atoms
 .IP "\fBtags\fR" 4
 .IX Item "tags"
@@ -394,9 +394,9 @@ dump results to files
 .IP "\fBpkgtest\fR" 4
 .IX Item "pkgtest"
 verify the integrity of local package files
-.IP "\fBdepends\fR" 4
-.IX Item "depends"
-regenerate the depends table
+.IP "\fBrevdeps\fR" 4
+.IX Item "revdeps"
+regenerate reverse dependencies metadata
 .IP "\fBlibpaths\fR" 4
 .IX Item "libpaths"
 regenerate the library paths table

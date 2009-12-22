@@ -1219,7 +1219,7 @@ class Repository(SocketCommands):
         repoid = myargs[0]
         search_type = myargs[1]
         search_string = ' '.join(myargs[2:])
-        avail_search_types = ['atom', 'needed', 'depends', 'tag', 'file', 'description']
+        avail_search_types = ['atom', 'needed', 'revdeps', 'tag', 'file', 'description']
 
         if search_type not in avail_search_types:
             return False, 'available search types: %s' % (avail_search_types,)
@@ -1251,7 +1251,7 @@ class Repository(SocketCommands):
                     search_results['ordered_idpackages'].add(idpackage)
                     search_results['data'][idpackage] = self._get_entropy_pkginfo(dbconn, idpackage, repoid)
 
-        elif search_type == "depends":
+        elif search_type == "revdeps":
 
             mysearchlist = search_string.split()
             excluded_deptypes = [etpConst['dependency_type_ids']['bdepend_id']]

@@ -94,8 +94,8 @@ def query(options):
     elif myopts[0] == "changelog":
         rc_status = search_changelog(myopts[1:])
 
-    elif myopts[0] == "depends":
-        rc_status = search_inverse_dependencies(myopts[1:])
+    elif myopts[0] == "revdeps":
+        rc_status = search_reverse_dependencies(myopts[1:])
 
     elif myopts[0] == "files":
         rc_status = search_files(myopts[1:])
@@ -601,7 +601,7 @@ def search_changelog(atoms, dbconn = None, Equo = None):
     return 0
 
 
-def search_inverse_dependencies(atoms, dbconn = None, Equo = None):
+def search_reverse_dependencies(atoms, dbconn = None, Equo = None):
 
     if Equo is None:
         Equo = EquoInterface()

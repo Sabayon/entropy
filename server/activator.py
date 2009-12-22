@@ -19,9 +19,10 @@ sys.path.insert(3, '/usr/lib/entropy/client')
 sys.path.insert(4, '/usr/lib/entropy/libraries')
 sys.path.insert(5, '/usr/lib/entropy/server')
 from entropy.i18n import _
-import entropy.tools as entropyTools
-from entropy.output import *
-from entropy.const import *
+import entropy.tools
+from entropy.output import red, is_stdout_a_tty, nocolor, print_generic, \
+    etpUi, print_menu, print_error
+from entropy.const import etpConst, const_kill_threads
 from entropy.core.settings.base import SystemSettings
 SysSettings = SystemSettings()
 
@@ -29,9 +30,10 @@ SysSettings = SystemSettings()
 if not is_stdout_a_tty():
     nocolor()
 
-myopts = [
+help_opts = [
     None,
-    (0, " ~ "+SysSettings['system']['name']+" ~ "+sys.argv[0]+" ~ ", 1, 'Entropy Package Manager - (C) %s' % (entropyTools.get_year(),) ),
+    (0, " ~ "+SysSettings['system']['name']+" ~ "+sys.argv[0]+" ~ ", 1,
+        'Entropy Package Manager - (C) %s' % (entropy.tools.get_year(),) ),
     None,
     (0, _('Basic Options'), 0, None),
     None,
@@ -74,7 +76,7 @@ myopts = [
 options = sys.argv[1:]
 
 # print version
-if (' '.join(options).find("--version") != -1) or (' '.join(options).find(" -V") != -1):
+if ("--version" in options) or ("-V" in options):
     print_generic("activator: "+etpConst['entropyversion'])
     raise SystemExit(0)
 
@@ -104,35 +106,41 @@ for opt in options:
 options = _options
 
 # print help
-if len(options) < 1 or ' '.join(options).find("--help") != -1 or ' '.join(options).find(" -h") != -1:
-    print_menu(myopts)
+if not options or ("--help" in options) or ("-h" in options):
+    print_menu(help_opts)
     if len(options) < 1:
         print_error("not enough parameters")
     raise SystemExit(1)
 
-rc = 1
-if not entropyTools.is_root():
+rc = -10
+if not entropy.tools.is_root():
     print_error("you must be root in order to run activator")
     rc = 2
+
 elif (options[0] == "sync"):
     import server_activator
     rc = server_activator.sync(options[1:])
+
 elif (options[0] == "tidy"):
     import server_activator
-    rc = server_activator.sync(options[1:], justTidy = True)
+    rc = server_activator.sync(options[1:], just_tidy = True)
+
 elif (options[0] == "database"):
     import server_activator
-    server_activator.database(options[1:])
-    rc = 0
+    rc = server_activator.database(options[1:])
+
 elif (options[0] == "packages"):
     import server_activator
-    server_activator.packages(options[1:])
-    rc = 0
+    rc = server_activator.packages(options[1:])
+
 # database tool
 elif (options[0] == "notice"):
     import server_activator
-    server_activator.notice(options[1:])
-    rc = 0
+    rc = server_activator.notice(options[1:])
+
+if rc == -10:
+    print_menu(help_opts)
+    print_error(red(" %s." % (_("Wrong parameters"),) ))
 
 const_kill_threads()
 raise SystemExit(rc)

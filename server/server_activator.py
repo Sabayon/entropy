@@ -9,16 +9,24 @@
     B{Entropy Package Manager Server}.
 
 """
-
-from entropy.const import *
-from entropy.output import *
+import os
+import tempfile
+import subprocess
+from entropy.const import etpConst, etpUi
+from entropy.output import red, green, print_info, bold, darkgreen, blue, \
+    darkred, brown, print_error, readtext
 from entropy.server.interfaces import Server
 from entropy.transceivers import EntropyTransceiver
 from entropy.i18n import _
 Entropy = Server(community_repo = etpConst['community']['mode'])
 
+DEFAULT_REPO_COMMIT_MSG = """
+# This is Entropy Server repository commit message handler.
+# Please friggin' enter the commit message for your changes. Lines starting
+# with '#' will be ignored. To avoid encoding issue, write stuff in plain ASCII.
+"""
 
-def sync(options, justTidy = False):
+def sync(options, just_tidy = False):
 
     do_noask = False
     sync_all = False
@@ -29,21 +37,23 @@ def sync(options, justTidy = False):
         elif opt == "--syncall":
             sync_all = True
         elif opt.startswith("--"):
-            print_error(red(" %s." % (_("Wrong parameters"),) ))
-            return 1
+            return -10
         else:
             myopts.append(opt)
     options = myopts
 
-    print_info(green(" * ")+red("%s ..." % (_("Starting to sync data across mirrors (packages/database)"),) ))
+    print_info(green(" * ")+red("%s ..." % (
+        _("Starting to sync data across mirrors (packages/database)"),) ))
 
     old_default = Entropy.default_repository
     repos = [Entropy.default_repository]
     if sync_all:
         sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
-        repos = sorted(Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys())
+        srv_data = Entropy.SystemSettings[sys_settings_plugin_id]['server']
+        repos = sorted(srv_data['repositories'].keys())
 
+    rc = 0
     for repo in repos:
 
         # avoid __default__
@@ -54,7 +64,7 @@ def sync(options, justTidy = False):
             Entropy.switch_default_repository(repo)
 
         errors = False
-        if not justTidy:
+        if not just_tidy:
 
             mirrors_tainted, mirrors_errors, successfull_mirrors, \
                 broken_mirrors, check_data = Entropy.MirrorsService.sync_packages(
@@ -69,10 +79,37 @@ def sync(options, justTidy = False):
                 continue
 
             if mirrors_tainted:
+
                 if (not do_noask) and etpConst['rss-feed']:
-                    Entropy.rssMessages['commitmessage'] = readtext(">> %s: " % (_("Please insert a commit message"),) )
+                    tmp_fd, tmp_commit_path = tempfile.mkstemp()
+                    os.close(tmp_fd)
+                    with open(tmp_commit_path, "w") as tmp_f:
+                        tmp_f.write(DEFAULT_REPO_COMMIT_MSG)
+                        if successfull_mirrors:
+                            tmp_f.write("# Changes to be committed:\n")
+                        for sf_mirror in sorted(successfull_mirrors):
+                            tmp_f.write("#\t updated:   %s\n" % (sf_mirror,))
+
+                    # spawn editor
+                    editor = os.getenv('EDITOR', '/bin/nano')
+                    cm_msg_rc = subprocess.call([editor, tmp_commit_path])
+                    if cm_msg_rc:
+                        # wtf?, fallback to old way
+                        Entropy.rssMessages['commitmessage'] = \
+                            readtext(">> %s: " % (
+                                _("Please insert a commit message"),) )
+                    else:
+                        commit_msg = ''
+                        with open(tmp_commit_path, "r") as tmp_f:
+                            for line in tmp_f.readlines():
+                                if line.strip().startswith("#"):
+                                    continue
+                                commit_msg += line
+                        Entropy.rssMessages['commitmessage'] = commit_msg
+
                 elif etpConst['rss-feed']:
                     Entropy.rssMessages['commitmessage'] = "Autodriven Update"
+
             errors, fine, broken = sync_remote_databases()
             if not errors:
                 Entropy.MirrorsService.lock_mirrors(lock = False)
@@ -85,12 +122,15 @@ def sync(options, justTidy = False):
                 continue
 
         if not errors:
-            Entropy.MirrorsService.tidy_mirrors(ask = not do_noask, pretend = etpUi['pretend'])
+            Entropy.MirrorsService.tidy_mirrors(ask = not do_noask,
+                pretend = etpUi['pretend'])
+        else:
+            rc = 1
 
     if old_default != Entropy.default_repository:
         Entropy.switch_default_repository(old_default)
 
-    return 0
+    return rc
 
 
 def packages(options):
@@ -103,11 +143,10 @@ def packages(options):
         elif opt == "--syncall":
             sync_all = True
         elif opt.startswith("--"):
-            print_error(red(" %s." % (_("Wrong parameters"),) ))
-            return
+            return -10
 
     if not options:
-        return
+        return -10
 
     if options[0] == "sync":
 
@@ -115,9 +154,11 @@ def packages(options):
         if sync_all:
             sys_settings_plugin_id = \
                 etpConst['system_settings_plugins_ids']['server_plugin']
-            repos = sorted(Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys())
+            srv_data = Entropy.SystemSettings[sys_settings_plugin_id]['server']
+            repos = sorted(srv_data['repositories'].keys())
             old_default = Entropy.default_repository
 
+        rc = 0
         for repo in repos:
 
             # avoid __default__
@@ -127,19 +168,26 @@ def packages(options):
             if repo != Entropy.default_repository:
                 Entropy.switch_default_repository(repo)
 
-            Entropy.MirrorsService.sync_packages(    ask = etpUi['ask'],
-                                                            pretend = etpUi['pretend'],
-                                                            packages_check = do_pkg_check
-                                                    )
+            mirrors_tainted, mirrors_errors, successfull_mirrors, \
+            broken_mirrors, check_data = Entropy.MirrorsService.sync_packages(
+                ask = etpUi['ask'],
+                pretend = etpUi['pretend'],
+                packages_check = do_pkg_check)
+
+            if mirrors_errors:
+                rc = 1
+
         if old_default != Entropy.default_repository:
             Entropy.switch_default_repository(old_default)
 
-    return 0
+        return rc
+
+    return -10
 
 def notice(options):
 
     if not options:
-        return
+        return -10
 
     def show_notice(key, mydict):
 
@@ -167,7 +215,6 @@ def notice(options):
 
         input_params = [('idx', _('Press Enter to continue'), fake_callback, False)]
         data = Entropy.inputBox('', input_params, cancel_button = True)
-        return
 
 
     def show_notice_selector(title, mydict):
@@ -217,16 +264,17 @@ def notice(options):
         ]
 
         data = Entropy.inputBox(blue("%s") % (_("Repository notice board, new item insertion"),), input_params, cancel_button = True)
-        if data == None: return 0
+        if data is None:
+            return 0
         status = Entropy.MirrorsService.update_notice_board(title = data['title'], notice_text = data['text'], link = data['url'])
         if status:
             return 0
         return 1
 
-    if options[0] == "read":
+    elif options[0] == "read":
 
         data = Entropy.MirrorsService.read_notice_board()
-        if data == None:
+        if data is None:
             print_error(darkred(" * ")+blue("%s" % (_("Notice board not available"),) ))
             return 1
         items, counter = data
@@ -240,10 +288,12 @@ def notice(options):
             elif sel == -1:
                 return 0
 
-    if options[0] == "remove":
+        return 0
+
+    elif options[0] == "remove":
 
         data = Entropy.MirrorsService.read_notice_board()
-        if data == None:
+        if data is None:
             print_error(darkred(" * ")+blue("%s" % (_("Notice board not available"),) ))
             return 1
         items, counter = data
@@ -270,7 +320,7 @@ def notice(options):
                 return 1
         return 0
 
-    return 0
+    return -10
 
 def database(options):
 
@@ -280,45 +330,53 @@ def database(options):
         if opt == "--syncall":
             sync_all = True
         elif opt.startswith("--"):
-            print_error(red(" %s." % (_("Wrong parameters"),) ))
-            return
+            return -10
 
     if cmd == "lock":
 
-        print_info(green(" * ")+green("%s ..." % (_("Starting to lock mirrors databases"),) ))
+        print_info(green(" * ")+green("%s ..." % (
+            _("Starting to lock mirrors databases"),) ))
         rc = Entropy.MirrorsService.lock_mirrors(lock = True)
         if rc:
-            print_info(green(" * ")+red("%s !" % (_("A problem occured on at least one mirror"),) ))
+            print_info(green(" * ")+red("%s !" % (
+                _("A problem occured on at least one mirror"),) ))
         else:
             print_info(green(" * ")+green(_("Databases lock complete")))
         return rc
 
     elif cmd == "unlock":
 
-        print_info(green(" * ")+green("%s ..." % (_("Starting to unlock mirrors databases"),)))
+        print_info(green(" * ")+green("%s ..." % (
+            _("Starting to unlock mirrors databases"),)))
         rc = Entropy.MirrorsService.lock_mirrors(lock = False)
         if rc:
-            print_info(green(" * ")+green("%s !" % (_("A problem occured on at least one mirror"),) ))
+            print_info(green(" * ")+green("%s !" % (
+                _("A problem occured on at least one mirror"),) ))
         else:
-            print_info(green(" * ")+green(_("Databases unlock complete")))
+            print_info(green(" * ")+green(
+                _("Databases unlock complete")))
         return rc
 
     elif cmd == "download-lock":
 
-        print_info(green(" * ")+green("%s ..." % (_("Starting to lock download mirrors databases"),) ))
+        print_info(green(" * ")+green("%s ..." % (
+            _("Starting to lock download mirrors databases"),) ))
         rc = Entropy.MirrorsService.lock_mirrors_for_download(lock = True)
         if rc:
-            print_info(green(" * ")+green("%s !" % (_("A problem occured on at least one mirror"),) ))
+            print_info(green(" * ")+green("%s !" % (
+                _("A problem occured on at least one mirror"),) ))
         else:
             print_info(green(" * ")+green(_("Download mirrors lock complete")))
         return rc
 
     elif cmd == "download-unlock":
 
-        print_info(green(" * ")+green("%s ..." % (_("Starting to unlock download mirrors databases"),) ))
+        print_info(green(" * ")+green("%s ..." % (
+            _("Starting to unlock download mirrors databases"),) ))
         rc = Entropy.MirrorsService.lock_mirrors_for_download(lock = False)
         if rc:
-            print_info(green(" * ")+green("%s ..." % (_("A problem occured on at least one mirror"),) ))
+            print_info(green(" * ")+green("%s ..." % (
+                _("A problem occured on at least one mirror"),) ))
         else:
             print_info(green(" * ")+green(_("Download mirrors unlock complete")))
         return rc
@@ -337,7 +395,9 @@ def database(options):
             else:
                 db[2] = green(_("Unlocked"))
             host = EntropyTransceiver.get_uri_name(db[0])
-            print_info(bold("\t"+host+": ")+red("[")+brown("%s: " % (_("DATABASE"),) )+db[1]+red("] [")+brown("%s: " % (_("DOWNLOAD"),) )+db[2]+red("]"))
+            print_info(bold("\t"+host+": ") + red("[") + \
+                brown("%s: " % (_("DATABASE"),) ) + db[1] + red("] [") + \
+                brown("%s: " % (_("DOWNLOAD"),) ) + db[2] + red("]"))
         return 0
 
     elif cmd == "sync":
@@ -346,7 +406,8 @@ def database(options):
         if sync_all:
             sys_settings_plugin_id = \
                 etpConst['system_settings_plugins_ids']['server_plugin']
-            repos = sorted(Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories'].keys())
+            srv_data = Entropy.SystemSettings[sys_settings_plugin_id]['server']
+            repos = sorted(srv_data['repositories'].keys())
             old_default = Entropy.default_repository
 
         problems = 0
@@ -362,7 +423,8 @@ def database(options):
             print_info(green(" * ")+red("%s ..." % (_("Syncing databases"),) ))
             errors, fine, broken = sync_remote_databases()
             if errors:
-                print_error(darkred(" !!! ")+green(_("Database sync errors, cannot continue.")))
+                print_error(darkred(" !!! ") + \
+                    green(_("Database sync errors, cannot continue.")))
                 problems = 1
 
         if old_default != Entropy.default_repository:
@@ -370,29 +432,35 @@ def database(options):
 
         return problems
 
+    return -10
 
-def sync_remote_databases(noUpload = False, justStats = False):
 
-    remoteDbsStatus = Entropy.MirrorsService.get_remote_databases_status()
-    print_info(green(" * ")+red("%s:" % (_("Remote Entropy Database Repository Status"),) ))
-    for dbstat in remoteDbsStatus:
+def sync_remote_databases():
+
+    remote_db_status = Entropy.MirrorsService.get_remote_databases_status()
+    print_info(green(" * ")+red("%s:" % (
+        _("Remote Entropy Database Repository Status"),) ))
+
+    for dbstat in remote_db_status:
         host = EntropyTransceiver.get_uri_name(dbstat[0])
         print_info(green("\t %s:\t" % (_("Host"),) )+bold(host))
-        print_info(red("\t  * %s: " % (_("Database revision"),) )+blue(str(dbstat[1])))
+        print_info(red("\t  * %s: " % (_("Database revision"),) ) + \
+            blue(str(dbstat[1])))
 
     local_revision = Entropy.get_local_database_revision()
-    print_info(red("\t  * %s: " % (_("Database local revision currently at"),) )+blue(str(local_revision)))
-
-    if justStats:
-        return 0, set(), set()
+    print_info(red("\t  * %s: " % (
+        _("Database local revision currently at"),) ) + \
+            blue(str(local_revision)))
 
     # do the rest
-    errors, fine_uris, broken_uris = Entropy.MirrorsService.sync_databases(no_upload = noUpload)
+    errors, fine_uris, broken_uris = Entropy.MirrorsService.sync_databases()
     remote_status = Entropy.MirrorsService.get_remote_databases_status()
-    print_info(darkgreen(" * ")+red("%s:" % (_("Remote Entropy Database Repository Status"),) ))
+    print_info(darkgreen(" * ")+red("%s:" % (
+        _("Remote Entropy Database Repository Status"),) ))
     for dbstat in remote_status:
         host = EntropyTransceiver.get_uri_name(dbstat[0])
         print_info(darkgreen("\t %s:\t" % (_("Host"),) )+bold(host))
-        print_info(red("\t  * %s: " % (_("Database revision"),) )+blue(str(dbstat[1])))
+        print_info(red("\t  * %s: " % (_("Database revision"),) ) + \
+            blue(str(dbstat[1])))
 
     return errors, fine_uris, broken_uris

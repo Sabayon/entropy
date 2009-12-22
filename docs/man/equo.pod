@@ -384,7 +384,7 @@ do not pull in any dependency
 
 =item B<--deep>
 
-also pull unused dependencies where depends list is empty
+also pull unused dependencies where reverse deps list is empty
 
 =item B<--configfiles>
 
@@ -502,7 +502,7 @@ search from what package a file belongs
 
 show packages changelog
 
-=item B<depends>
+=item B<revdeps>
 
 search what packages depend on the provided atoms
 
@@ -635,7 +635,7 @@ save new packages into the specified directory
 
 =item B<inflate>
 
-convert provided Gentoo .tbz2s into Entropy packages (Portage needed)
+convert provided Source Package Manager package files into Entropy packages
 
 =over
 
@@ -649,7 +649,7 @@ save new packages into the specified directory
 
 =item B<deflate>
 
-convert provided Entropy packages into Gentoo ones (Portage needed)
+convert provided Entropy packages into Source Package Manager ones
 
 =over
 
@@ -700,17 +700,17 @@ generate installed packages database using Portage database (Portage needed)
 
 generate installed packages database using files on the system [last hope]
 
-=item B<depends>
+=item B<revdeps>
 
-regenerate depends caching table
+regenerate reverse dependencies metadata
 
 =item B<counters>
 
 update/generate counters table (Portage <-> Entropy packages table)
 
-=item B<gentoosync>
+=item B<spmsync>
 
-makes Entropy aware of your Portage-updated packages
+makes Entropy aware of your Source Package Manager updated packages
 
 =item B<backup>
 
@@ -1004,7 +1004,7 @@ show from what package the provided files belong
 
 show packages changelog
 
-=item B<depends>
+=item B<revdeps>
 
 show what packages depend on the provided atoms
 
@@ -1144,9 +1144,9 @@ look for unsatisfied dependencies across community repositories
 
 verify the integrity of local package files
 
-=item B<depends>
+=item B<revdeps>
 
-regenerate the depends table
+regenerate reverse dependencies metadata
 
 =back
 

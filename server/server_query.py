@@ -10,8 +10,9 @@
 
 """
 
-from entropy.output import *
-from entropy.const import *
+from entropy.output import red, bold, darkred, blue, darkgreen, print_info, \
+    print_generic, print_warning
+from entropy.const import etpConst, etpUi
 import text_query
 from entropy.server.interfaces import Server
 from entropy.i18n import _
@@ -23,9 +24,9 @@ def query(myopts):
     cmd = myopts[0]
     myopts = myopts[1:]
     if not myopts and cmd not in ["list", "sets"]:
-        return 10
+        return -10
 
-    rc = 0
+    rc = -10
     Entropy = Server()
     dbconn = Entropy.open_server_repository(just_reading = True)
 
@@ -62,13 +63,14 @@ def query(myopts):
     elif cmd == "needed":
         text_query.search_needed_libraries(myopts, dbconn = dbconn,
             Equo = Entropy)
-    elif cmd == "depends":
-        text_query.search_inverse_dependencies(myopts, dbconn = dbconn,
+    elif cmd == "revdeps":
+        text_query.search_reverse_dependencies(myopts, dbconn = dbconn,
             Equo = Entropy)
     elif cmd == "eclass":
         text_query.search_eclass(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "list":
-        text_query.search_installed_packages(myopts, dbconn = dbconn, Equo = Entropy)
+        text_query.search_installed_packages(myopts, dbconn = dbconn,
+            Equo = Entropy)
     elif cmd == "changelog":
         text_query.search_changelog(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "graph":
@@ -103,6 +105,7 @@ def search_tagged_packages(tags, dbconn, entropy):
                 text_query.print_package_info(result[1], dbconn, Equo = entropy)
         if not etpUi['quiet']:
             print_info(blue(" %s: " % (_("Keyword"),) )+bold("\t"+tag))
-            print_info(blue(" %s:   " % (_("Found"),) )+bold("\t"+str(len(results)))+red(" %s" % (_("entries"),) ))
+            print_info(blue(" %s:   " % (_("Found"),) ) + \
+                bold("\t"+str(len(results)))+red(" %s" % (_("entries"),) ))
 
     return 0

@@ -9,10 +9,11 @@
     B{Entropy Package Manager Server}.
 
 """
-
+import os
 import subprocess
-from entropy.const import *
-from entropy.output import *
+from entropy.const import etpConst, etpUi
+from entropy.output import red, bold, brown, purple, darkgreen, darkred, blue, \
+    green, print_info, print_warning, print_error, print_generic
 from entropy.exceptions import InvalidAtom
 from entropy.server.interfaces import Server
 from entropy.i18n import _
@@ -21,20 +22,20 @@ Entropy = Server(community_repo = etpConst['community']['mode'])
 
 def inject(options):
 
-    mytbz2s = []
+    etp_pkg_files = []
     for opt in options:
         opt = os.path.realpath(opt)
         if not os.path.isfile(opt) or not opt.endswith(etpConst['packagesext']):
             print_error(darkred(" * ")+bold(opt)+red(" is invalid."))
             return 1
-        mytbz2s.append(opt)
+        etp_pkg_files.append(opt)
 
-    if not mytbz2s:
+    if not etp_pkg_files:
         print_error(red(_("no package specified.")))
         return 2
 
-    mytbz2s = [(x, True,) for x in mytbz2s]
-    idpackages = Entropy.add_packages_to_repository(mytbz2s)
+    etp_pkg_files = [(x, True,) for x in etp_pkg_files]
+    idpackages = Entropy.add_packages_to_repository(etp_pkg_files)
     if idpackages:
         # checking dependencies and print issues
         Entropy.dependencies_test()
@@ -47,8 +48,10 @@ def repositories(options):
     repoid_dest = None
     pull_deps = False
     invalid_repos = False
-    if not options: cmd = ""
-    else: cmd = options[0]
+    if not options:
+        cmd = ""
+    else:
+        cmd = options[0]
     myopts = []
     for opt in options[1:]:
         if cmd in ["enable", "disable"]:
@@ -56,9 +59,9 @@ def repositories(options):
                 invalid_repos = True
             repoid = opt
         elif cmd in ["move", "copy"]:
-            if repoid == None:
+            if repoid is None:
                 repoid = opt
-            elif repoid_dest == None:
+            elif repoid_dest is None:
                 if opt not in valid_repos:
                     invalid_repos = True
                 repoid_dest = opt
@@ -67,7 +70,7 @@ def repositories(options):
             else:
                 myopts.append(opt)
         elif cmd == "default":
-            if repoid == None:
+            if repoid is None:
                 repoid = opt
             else:
                 myopts.append(opt)
@@ -83,33 +86,46 @@ def repositories(options):
         return 2
 
     if cmd == "enable":
-        print_info(brown(" @@ ")+red(_("Enabling"))+" "+bold(str(repoid))+red(" %s..." % (_("repository"),) ), back = True)
+        print_info(brown(" @@ ")+red(_("Enabling"))+" "+bold(str(repoid)) + \
+            red(" %s..." % (_("repository"),) ), back = True)
         rc = Entropy.toggle_repository(repoid, enable = True)
         if rc:
-            print_info(brown(" @@ ")+red(_("Enabled"))+" "+bold(str(repoid))+red(" %s." % (_("repository"),) ))
+            print_info(brown(" @@ ")+red(_("Enabled"))+" "+bold(str(repoid)) + \
+                red(" %s." % (_("repository"),) ))
             return 0
         elif rc == False:
-            print_info(brown(" @@ ")+red(_("Repository"))+" "+bold(str(repoid))+red(" %s." % (_("already enabled"),) ))
+            print_info(brown(" @@ ")+red(_("Repository"))+" " + \
+                bold(str(repoid)) + red(" %s." % (_("already enabled"),) ))
             return 1
         else:
-            print_info(brown(" @@ ")+red(_("Configuration file"))+" "+bold(etpConst['serverconf'])+red(" %s." % (_("not found"),) ))
+            print_info(brown(" @@ ")+red(_("Configuration file"))+" " + \
+                bold(etpConst['serverconf'])+red(" %s." % (_("not found"),) ))
             return 127
+
     elif cmd == "disable":
-        print_info(brown(" @@ ")+red(_("Disabling"))+" "+bold(str(repoid))+red(" %s..." % (_("repository"),) ), back = True)
+        print_info(brown(" @@ ")+red(_("Disabling"))+" "+bold(str(repoid)) + \
+            red(" %s..." % (_("repository"),) ), back = True)
         rc = Entropy.toggle_repository(repoid, enable = False)
         if rc:
-            print_info(brown(" @@ ")+red(_("Disabled"))+" "+bold(str(repoid))+red(" %s." % (_("repository"),) ))
+            print_info(brown(" @@ ")+red(_("Disabled"))+" " + \
+                bold(str(repoid)) + red(" %s." % (_("repository"),) ))
             return 0
         elif rc == False:
-            print_info(brown(" @@ ")+red(_("Repository"))+" "+bold(str(repoid))+red(" %s." % (_("already disabled"),) ))
+            print_info(brown(" @@ ")+red(_("Repository"))+" " + \
+                bold(str(repoid))+red(" %s." % (_("already disabled"),) ))
             return 1
         else:
-            print_info(brown(" @@ ")+red(_("Configuration file"))+" "+bold(etpConst['serverconf'])+red(" %s." % (_("not found"),) ))
+            print_info(brown(" @@ ")+red(_("Configuration file"))+" " + \
+                bold(etpConst['serverconf'])+red(" %s." % (_("not found"),) ))
             return 127
+
     elif cmd == "default":
         Entropy.switch_default_repository(repoid, save = True)
+        return 0
+
     elif cmd == "status":
         return 0
+
     elif cmd == "package-tag":
 
         if len(myopts) < 3:
@@ -118,7 +134,8 @@ def repositories(options):
 
         sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
-        if repo not in Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories']:
+        srv_set = Entropy.SystemSettings[sys_settings_plugin_id]['server']
+        if repo not in srv_set['repositories']:
             return 3
 
         tag_string = myopts[1]
@@ -126,15 +143,18 @@ def repositories(options):
         # match
         idpackages = []
         for package in atoms:
-            match = Entropy.atom_match(package, matchRepo = [repo], matchTag = '')
+            match = Entropy.atom_match(package, matchRepo = [repo],
+                matchTag = '')
             if (match[1] == repo):
                 idpackages.append(match[0])
             else:
                 print_warning(  brown(" * ") + \
                     red("%s: " % (_("Cannot match"),) )+bold(package) + \
-                    red(" %s " % (_("in"),) )+bold(repo)+red(" %s" % (_("repository"),) )
+                    red(" %s " % (_("in"),) )+bold(repo) + \
+                        red(" %s" % (_("repository"),) )
                 )
-        if not idpackages: return 2
+        if not idpackages:
+            return 2
         status, data = Entropy.tag_packages(tag_string, idpackages, repo = repo)
         return status
 
@@ -146,7 +166,8 @@ def repositories(options):
 
         sys_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin']
-        if repo not in Entropy.SystemSettings[sys_settings_plugin_id]['server']['repositories']:
+        srv_set = Entropy.SystemSettings[sys_settings_plugin_id]['server']
+        if repo not in srv_set['repositories']:
             return 3
 
         atoms = myopts[1:]
@@ -159,7 +180,8 @@ def repositories(options):
             else:
                 print_warning(  brown(" * ") + \
                     red("%s: " % (_("Cannot match"),) )+bold(package) + \
-                    red(" %s " % (_("in"),) )+bold(repo)+red(" %s" % (_("repository"),) )
+                    red(" %s " % (_("in"),) )+bold(repo) + \
+                        red(" %s" % (_("repository"),) )
                 )
         if not idpackages:
             return 2
@@ -176,23 +198,31 @@ def repositories(options):
                 etpConst['dependency_type_ids']['mdepend_id']]
 
             atom_manual_deps = [x for x in orig_deps if x not in atom_deps]
-            print_info(brown(" @@ ")+"%s: %s:" % (blue(atom), darkgreen(_("package dependencies")),))
+            print_info(brown(" @@ ")+"%s: %s:" % (blue(atom),
+                darkgreen(_("package dependencies")),))
             for dep_str, dep_id in atom_deps:
-                print_info("%s [type:%s] %s" % (brown("    # "), darkgreen(str(dep_id)), darkred(dep_str),))
+                print_info("%s [type:%s] %s" % (brown("    # "),
+                    darkgreen(str(dep_id)), darkred(dep_str),))
             if not atom_deps:
                 print_info("%s %s" % (brown("    # "), _("No dependencies"),))
-            print_info(brown(" @@ ")+"%s: %s:" % (blue(atom), darkgreen(_("package manual dependencies")),))
+
+            print_info(brown(" @@ ")+"%s: %s:" % (blue(atom),
+                darkgreen(_("package manual dependencies")),))
             for dep_str, dep_id in atom_manual_deps:
-                print_info("%s [type:%s] %s" % (brown("    # "), darkgreen(str(dep_id)), purple(dep_str),))
+                print_info("%s [type:%s] %s" % (brown("    # "),
+                    darkgreen(str(dep_id)), purple(dep_str),))
             if not atom_manual_deps:
                 print_info("%s %s" % (brown("    # "), _("No dependencies"),))
+
             print()
             current_mdeps = sorted([x[0] for x in atom_manual_deps])
             input_params = [
-                ('new_mdeps', ('list', ('Manual dependencies', current_mdeps),), dep_check_cb, True)
+                ('new_mdeps', ('list', ('Manual dependencies', current_mdeps),),
+                    dep_check_cb, True)
             ]
             data = Entropy.inputBox(_("Manual dependencies editor"), input_params)
-            if data == None: return 4
+            if data is None:
+                return 4
             new_mdeps = sorted(data.get('new_mdeps', []))
 
             if current_mdeps == new_mdeps:
@@ -214,7 +244,8 @@ def repositories(options):
                 except (KeyboardInterrupt, SystemExit,):
                     continue
                 break
-            print_info(brown(" @@ ")+"%s: %s" % (blue(atom), darkgreen(_("manual dependencies added successfully")),))
+            print_info(brown(" @@ ")+"%s: %s" % (blue(atom),
+                darkgreen(_("manual dependencies added successfully")),))
 
         Entropy.close_server_databases()
         return 0
@@ -238,7 +269,8 @@ def repositories(options):
                 else:
                     print_warning(  brown(" * ") + \
                         red("%s: " % (_("Cannot match"),) )+bold(package) + \
-                        red(" %s " % (_("in"),) )+bold(repoid)+red(" %s" % (_("repository"),) )
+                        red(" %s " % (_("in"),) )+bold(repoid) + \
+                            red(" %s" % (_("repository"),) )
                     )
             if not matches:
                 return 1
@@ -252,86 +284,94 @@ def repositories(options):
             return 0
         return 1
 
-    return 1
+    return -10
 
 def update(options):
 
     # differential checking
-    # collect differences between the packages in the database and the ones on the system
+    # collect differences between the packages in the database
+    # and the ones on the system
 
-    reagentRequestSeekStore = False
-    reagentRequestRepackage = False
-    reagentRequestAsk = True
-    reagentRequestOnlyAtoms = False
-    reagentRequestInteractive = False
-    repackageItems = []
-    onlyAtoms = []
+    r_request_seek_store = False
+    r_request_repackage = False
+    r_request_ask = True
+    r_request_only_atoms = False
+    r_request_interactive = False
+
+    repackage_items = []
+    only_atoms = []
     _options = []
     for opt in options:
         if opt == "--seekstore":
-            reagentRequestSeekStore = True
+            r_request_seek_store = True
         elif opt == "--repackage":
-            reagentRequestRepackage = True
+            r_request_repackage = True
         elif opt == "--atoms":
-            reagentRequestOnlyAtoms = True
+            r_request_only_atoms = True
         elif opt == "--noask":
-            reagentRequestAsk = False
+            r_request_ask = False
         elif opt == "--interactive":
-            reagentRequestInteractive = True
+            r_request_interactive = True
         else:
-            if reagentRequestRepackage and (not opt.startswith("--")):
-                if not opt in repackageItems:
-                    repackageItems.append(opt)
+            if r_request_repackage and (not opt.startswith("--")):
+                if not opt in repackage_items:
+                    repackage_items.append(opt)
                 continue
-            elif reagentRequestOnlyAtoms and (not opt.startswith("--")):
-                if not opt in onlyAtoms:
-                    onlyAtoms.append(opt)
+            elif r_request_only_atoms and (not opt.startswith("--")):
+                if not opt in only_atoms:
+                    only_atoms.append(opt)
                 continue
             _options.append(opt)
     options = _options
 
-    toBeAdded = set()
-    toBeRemoved = set()
-    toBeInjected = set()
+    to_be_added = set()
+    to_be_removed = set()
+    to_be_injected = set()
 
-    if not reagentRequestSeekStore:
+    if not r_request_seek_store:
 
-        if repackageItems:
+        if repackage_items:
 
             packages = []
-            dbconn = Entropy.open_server_repository(read_only = True, no_upload = True)
+            dbconn = Entropy.open_server_repository(read_only = True,
+                no_upload = True)
 
-            for item in repackageItems:
+            spm = Entropy.Spm()
+            for item in repackage_items:
                 match = dbconn.atomMatch(item)
                 if match[0] == -1:
-                    print_warning(darkred("  !!! ")+red(_("Cannot match"))+" "+bold(item))
+                    print_warning(darkred("  !!! ") + \
+                        red(_("Cannot match"))+" "+bold(item))
                 else:
                     cat = dbconn.retrieveCategory(match[0])
                     name = dbconn.retrieveName(match[0])
                     version = dbconn.retrieveVersion(match[0])
                     spm_pkg = os.path.join(cat, name + "-" + version)
-                    spm_build = Entropy.Spm().get_installed_package_build_script_path(spm_pkg)
+                    spm_build = spm.get_installed_package_build_script_path(
+                        spm_pkg)
                     spm_pkg_dir = os.path.dirname(spm_build)
                     if os.path.isdir(spm_pkg_dir):
                         packages.append((spm_pkg, 0))
 
             if packages:
-                toBeAdded |= set(packages)
+                to_be_added |= set(packages)
             else:
-                print_info(brown(" * ")+red(_("No valid packages to repackage.")))
+                print_info(brown(" * ") + \
+                    red(_("No valid packages to repackage.")))
 
 
         # normal scanning
-        print_info(brown(" * ")+red("%s..." % (_("Scanning database for differences"),) ))
-        myadded, toBeRemoved, toBeInjected = Entropy.scan_package_changes()
-        toBeAdded |= myadded
+        print_info(brown(" * ") + \
+            red("%s..." % (_("Scanning database for differences"),) ))
+        myadded, to_be_removed, to_be_injected = Entropy.scan_package_changes()
+        to_be_added |= myadded
 
-        if onlyAtoms:
-            toBeRemoved.clear()
-            toBeInjected.clear()
-            tba = dict(((x[0], x,) for x in toBeAdded))
+        if only_atoms:
+            to_be_removed.clear()
+            to_be_injected.clear()
+            tba = dict(((x[0], x,) for x in to_be_added))
             tb_added_new = set()
-            for myatom in onlyAtoms:
+            for myatom in only_atoms:
                 if myatom in tba:
                     tb_added_new.add(tba.get(myatom))
                     continue
@@ -342,24 +382,24 @@ def update(options):
                     continue
                 if inst_myatom in tba:
                     tb_added_new.add(tba.get(inst_myatom))
-            toBeAdded = tb_added_new
+            to_be_added = tb_added_new
 
-        if not (len(toBeRemoved)+len(toBeAdded)+len(toBeInjected)):
+        if not (len(to_be_removed)+len(to_be_added)+len(to_be_injected)):
             print_info(brown(" * ")+red("%s." % (_("Zarro thinggz totoo"),) ))
             return 0
 
-        if toBeInjected:
+        if to_be_injected:
             print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be changed to injected status"),) ))
-            for idpackage, repoid in toBeInjected:
+            for idpackage, repoid in to_be_injected:
                 dbconn = Entropy.open_server_repository(read_only = True, no_upload = True, repo = repoid)
                 atom = dbconn.retrieveAtom(idpackage)
                 print_info(brown("    # ")+"["+blue(repoid)+"] "+red(atom))
-            if reagentRequestAsk:
+            if r_request_ask:
                 rc = Entropy.askQuestion(">>   %s" % (_("Would you like to transform them now ?"),) )
             else:
                 rc = _("Yes")
             if rc == _("Yes"):
-                for idpackage, repoid in toBeInjected:
+                for idpackage, repoid in to_be_injected:
                     dbconn = Entropy.open_server_repository(read_only = True, no_upload = True, repo = repoid)
                     atom = dbconn.retrieveAtom(idpackage)
                     print_info(brown("   <> ")+blue("%s: " % (_("Transforming from database"),) )+red(atom))
@@ -376,49 +416,49 @@ def update(options):
                 exp_string = "|%s" % (purple(_("expired")),)
             print_info(brown("    # ")+"["+blue(repoid)+exp_string+"] "+red(atom))
 
-        if reagentRequestInteractive and toBeRemoved:
+        if r_request_interactive and to_be_removed:
             print_info(brown(" @@ ")+blue(_("So sweetheart, what packages do you want to remove ?")))
-            new_toBeRemoved = set()
-            for idpackage, repoid in toBeRemoved:
+            new_to_be_removed = set()
+            for idpackage, repoid in to_be_removed:
                 show_rm(idpackage, repoid)
                 rc = Entropy.askQuestion(">>   %s" % (_("Remove this package?"),))
                 if rc == _("Yes"):
-                    new_toBeRemoved.add((idpackage, repoid,))
-            toBeRemoved = new_toBeRemoved
+                    new_to_be_removed.add((idpackage, repoid,))
+            to_be_removed = new_to_be_removed
 
-        if toBeRemoved:
+        if to_be_removed:
 
             print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be removed from the database"),) ))
-            for idpackage, repoid in toBeRemoved:
+            for idpackage, repoid in to_be_removed:
                 show_rm(idpackage, repoid)
 
-            if reagentRequestAsk:
+            if r_request_ask:
                 rc = Entropy.askQuestion(">>   %s" % (_("Would you like to remove them now ?"),) )
             else:
                 rc = _("Yes")
             if rc == _("Yes"):
                 remdata = {}
-                for idpackage, repoid in toBeRemoved:
+                for idpackage, repoid in to_be_removed:
                     if repoid not in remdata:
                         remdata[repoid] = set()
                     remdata[repoid].add(idpackage)
                 for repoid in remdata:
                     Entropy.remove_packages(remdata[repoid], repo = repoid)
 
-        if reagentRequestInteractive and toBeAdded:
+        if r_request_interactive and to_be_added:
             print_info(brown(" @@ ")+blue(_("So sweetheart, what packages do you want to add ?")))
-            new_toBeAdded = set()
-            for tb_atom, tb_counter in toBeAdded:
+            new_to_be_added = set()
+            for tb_atom, tb_counter in to_be_added:
                 print_info(brown("    # ")+red(tb_atom))
                 rc = Entropy.askQuestion(">>   %s" % (_("Add this package?"),))
                 if rc == _("Yes"):
-                    new_toBeAdded.add((tb_atom, tb_counter,))
-            toBeAdded = new_toBeAdded
+                    new_to_be_added.add((tb_atom, tb_counter,))
+            to_be_added = new_to_be_added
 
-        if toBeAdded:
+        if to_be_added:
 
             print_info(brown(" @@ ")+blue("%s:" % (_("These are the packages that would be added/updated to the add list"),) ))
-            items = sorted([x[0] for x in toBeAdded])
+            items = sorted([x[0] for x in to_be_added])
             for item in items:
                 item_txt = purple(item)
 
@@ -453,7 +493,7 @@ def update(options):
 
                 print_info(brown("  # ")+item_txt)
 
-            if reagentRequestAsk:
+            if r_request_ask:
                 rc = Entropy.askQuestion(">>   %s (%s %s)" % (
                         _("Would you like to package them now ?"),
                         _("inside"),
@@ -469,23 +509,24 @@ def update(options):
 
         # package them
         print_info(brown(" @@ ")+blue("%s..." % (_("Compressing packages"),) ))
-        for x in toBeAdded:
+        for x in to_be_added:
             print_info(brown("    # ")+red(x[0]+"..."))
             try:
                 Entropy.Spm().generate_package(x[0],
                     Entropy.get_local_store_directory())
             except OSError:
                 entropy.tools.print_traceback()
-                print_info(brown("    !!! ")+bold("%s..." % (_("Ignoring broken Spm entry, please recompile it"),) ))
+                print_info(brown("    !!! ")+bold("%s..." % (
+                    _("Ignoring broken Spm entry, please recompile it"),) ))
 
-    tbz2files = os.listdir(Entropy.get_local_store_directory())
-    if not tbz2files:
+    etp_pkg_files = os.listdir(Entropy.get_local_store_directory())
+    if not etp_pkg_files:
         print_info(brown(" * ")+red(_("Nothing to do, check later.")))
         # then exit gracefully
         return 0
 
-    tbz2files = [(os.path.join(Entropy.get_local_store_directory(), x), False,) for x in tbz2files]
-    idpackages = Entropy.add_packages_to_repository(tbz2files)
+    etp_pkg_files = [(os.path.join(Entropy.get_local_store_directory(), x), False,) for x in etp_pkg_files]
+    idpackages = Entropy.add_packages_to_repository(etp_pkg_files)
 
     if idpackages:
         # checking dependencies and print issues
@@ -497,21 +538,21 @@ def update(options):
 
 def database(options):
 
-    databaseRequestNoAsk = False
-    databaseRequestSync = False
-    databaseRequestEmpty = False
+    d_request_noask = False
+    d_request_sync = False
+    d_request_empty = False
     repo = None
     _options = []
     for opt in options:
         if opt.startswith("--noask"):
-            databaseRequestNoAsk = True
+            d_request_noask = True
         elif opt.startswith("--sync"):
-            databaseRequestSync = True
+            d_request_sync = True
         elif opt.startswith("--empty"):
-            databaseRequestEmpty = True
+            d_request_empty = True
         elif opt.startswith("--repo=") and len(opt.split("=")) == 2:
             repo = opt.split("=")[1]
-            databaseRequestEmpty = True
+            d_request_empty = True
         else:
             _options.append(opt)
     options = _options
@@ -522,7 +563,7 @@ def database(options):
 
     if (options[0] == "--initialize"):
 
-        rc = Entropy.initialize_server_database(empty = databaseRequestEmpty, repo = repo)
+        rc = Entropy.initialize_server_database(empty = d_request_empty, repo = repo)
         if rc == 0:
             print_info(darkgreen(" * ")+red(_("Entropy database has been reinitialized using binary packages available")))
 
@@ -572,7 +613,7 @@ def database(options):
 
             status = Entropy.switch_packages_branch(from_branch, to_branch,
                 repo = repoid)
-            if status == None:
+            if status is None:
                 return 1
 
         switched, already_switched, ignored, not_found, no_checksum = status
@@ -680,14 +721,14 @@ def database(options):
     elif (options[0] == "md5remote"):
 
         mypackages = options[1:]
-        return Entropy.verify_remote_packages(mypackages, ask = not databaseRequestNoAsk)
+        return Entropy.verify_remote_packages(mypackages, ask = not d_request_noask)
 
     # bump tool
     elif (options[0] == "bump"):
 
         print_info(green(" * ")+red("%s..." % (_("Bumping Repository database"),) ))
         Entropy.bump_database()
-        if databaseRequestSync:
+        if d_request_sync:
             errors, fine, broken = Entropy.MirrorsService.sync_databases()
 
     elif (options[0] == "backup"):
@@ -726,7 +767,7 @@ def database(options):
 
         while True:
             data = Entropy.inputBox(red(_("Entropy installed packages database restore tool")), input_params, cancel_button = True)
-            if data == None:
+            if data is None:
                 return 1
             myid, dbx = data['db']
             print(dbx)
@@ -786,6 +827,7 @@ def spm(options):
         not_found = Entropy.orphaned_spm_packages_test()
         return 0
 
+    return -10
 
 def spm_compile_categories(options, do_list = False):
 

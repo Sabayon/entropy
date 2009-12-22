@@ -27,26 +27,26 @@ Equo = Client()
 
 def package(options):
 
-    if len(options) < 1:
+    if not options:
         return 0
 
     # Options available for all the packages submodules
     myopts = options[1:]
-    equoRequestDeps = True
-    equoRequestEmptyDeps = False
-    equoRequestOnlyFetch = False
-    equoRequestDeep = False
-    equoRequestRelaxed = False
-    equoRequestConfigFiles = False
-    equoRequestReplay = False
-    equoRequestResume = False
-    equoRequestSkipfirst = False
-    equoRequestListfiles = False
-    equoRequestChecksum = True
-    equoRequestSortSize = False
-    equoRequestSaveHere = False
-    equoRequestDump = False
-    equoRequestMultifetch = 1
+    e_req_deps = True
+    e_req_empty_deps = False
+    e_req_only_fetch = False
+    e_req_deep = False
+    e_req_relaxed = False
+    e_req_config_files = False
+    e_req_replay = False
+    e_req_resume = False
+    e_req_skipfirst = False
+    e_req_listfiles = False
+    e_req_checksum = True
+    e_req_sort_size = False
+    e_req_save_here = False
+    e_req_dump = False
+    e_req_multifetch = 1
     rc = 0
     _myopts = []
     mytbz2paths = []
@@ -60,31 +60,31 @@ def package(options):
             print_error(red(" %s." % (_("Malformed command"),) ))
             return -10
         if (opt == "--nodeps"):
-            equoRequestDeps = False
+            e_req_deps = False
         elif (opt == "--empty"):
-            equoRequestEmptyDeps = True
+            e_req_empty_deps = True
         elif (opt == "--relaxed"):
-            equoRequestRelaxed = True
+            e_req_relaxed = True
         elif (opt == "--fetch"):
-            equoRequestOnlyFetch = True
+            e_req_only_fetch = True
         elif (opt == "--deep"):
-            equoRequestDeep = True
+            e_req_deep = True
         elif (opt == "--dump"):
-            equoRequestDump = True
+            e_req_dump = True
         elif (opt == "--listfiles"):
-            equoRequestListfiles = True
+            e_req_listfiles = True
         elif (opt == "--configfiles"):
-            equoRequestConfigFiles = True
+            e_req_config_files = True
         elif (opt == "--replay"):
-            equoRequestReplay = True
+            e_req_replay = True
         elif (opt == "--resume"):
-            equoRequestResume = True
+            e_req_resume = True
         elif (opt == "--sortbysize"):
-            equoRequestSortSize = True
+            e_req_sort_size = True
         elif (opt == "--savehere"):
-            equoRequestSaveHere = True
+            e_req_save_here = True
         elif (opt == "--multifetch"):
-            equoRequestMultifetch = 3
+            e_req_multifetch = 3
         elif (opt.startswith("--multifetch=")):
             try:
                 myn = int(opt[len("--multifetch="):])
@@ -92,11 +92,11 @@ def package(options):
                 continue
             if myn not in list(range(2, 11)):
                 myn = 10
-            equoRequestMultifetch = myn
+            e_req_multifetch = myn
         elif (opt == "--nochecksum"):
-            equoRequestChecksum = False
+            e_req_checksum = False
         elif (opt == "--skipfirst"):
-            equoRequestSkipfirst = True
+            e_req_skipfirst = True
         elif (opt.startswith("--")):
             print_error(red(" %s." % (_("Wrong parameters"),) ))
             return -10
@@ -115,19 +115,19 @@ def package(options):
         rc, garbage = dependenciesTest()
 
     elif (options[0] == "unusedpackages"):
-        rc, garbage = unusedPackagesTest(do_size_sort = equoRequestSortSize)
+        rc, garbage = unusedPackagesTest(do_size_sort = e_req_sort_size)
 
     elif (options[0] == "libtest"):
-        rc, garbage = librariesTest(listfiles = equoRequestListfiles,
-            dump = equoRequestDump)
+        rc, garbage = librariesTest(listfiles = e_req_listfiles,
+            dump = e_req_dump)
 
     elif (options[0] == "source"):
 
         if myopts or mytbz2paths:
-            status, rc = downloadSources(myopts, deps = equoRequestDeps,
-                deepdeps = equoRequestDeep, tbz2 = mytbz2paths,
-                savecwd = equoRequestSaveHere,
-                relaxed_deps = equoRequestRelaxed)
+            status, rc = downloadSources(myopts, deps = e_req_deps,
+                deepdeps = e_req_deep, tbz2 = mytbz2paths,
+                savecwd = e_req_save_here,
+                relaxed_deps = e_req_relaxed)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 126
@@ -135,26 +135,26 @@ def package(options):
     elif (options[0] == "fetch"):
 
         if myopts or mytbz2paths:
-            status, rc = downloadPackages(myopts, deps = equoRequestDeps,
-                deepdeps = equoRequestDeep,
-                multifetch = equoRequestMultifetch,
-                dochecksum = equoRequestChecksum,
-                relaxed_deps = equoRequestRelaxed)
+            status, rc = downloadPackages(myopts, deps = e_req_deps,
+                deepdeps = e_req_deep,
+                multifetch = e_req_multifetch,
+                dochecksum = e_req_checksum,
+                relaxed_deps = e_req_relaxed)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 126
 
     elif (options[0] == "install"):
-        if (myopts) or (mytbz2paths) or (equoRequestResume):
-            rc, garbage = installPackages(myopts, deps = equoRequestDeps,
-                emptydeps = equoRequestEmptyDeps,
-                onlyfetch = equoRequestOnlyFetch, deepdeps = equoRequestDeep,
-                config_files = equoRequestConfigFiles, tbz2 = mytbz2paths,
-                resume = equoRequestResume, skipfirst = equoRequestSkipfirst,
-                dochecksum = equoRequestChecksum,
-                multifetch = equoRequestMultifetch,
+        if (myopts) or (mytbz2paths) or (e_req_resume):
+            rc, garbage = installPackages(myopts, deps = e_req_deps,
+                emptydeps = e_req_empty_deps,
+                onlyfetch = e_req_only_fetch, deepdeps = e_req_deep,
+                config_files = e_req_config_files, tbz2 = mytbz2paths,
+                resume = e_req_resume, skipfirst = e_req_skipfirst,
+                dochecksum = e_req_checksum,
+                multifetch = e_req_multifetch,
                 check_critical_updates = True,
-                relaxed_deps = equoRequestRelaxed)
+                relaxed_deps = e_req_relaxed)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 126
@@ -167,12 +167,12 @@ def package(options):
                 blue(_("is deprecated, please use")),
                 darkgreen("equo upgrade"),))
             print_warning("")
-        status, rc = worldUpdate(onlyfetch = equoRequestOnlyFetch,
-            replay = (equoRequestReplay or equoRequestEmptyDeps),
-            resume = equoRequestResume,
-            skipfirst = equoRequestSkipfirst, human = True,
-            dochecksum = equoRequestChecksum,
-            multifetch = equoRequestMultifetch)
+        status, rc = worldUpdate(onlyfetch = e_req_only_fetch,
+            replay = (e_req_replay or e_req_empty_deps),
+            resume = e_req_resume,
+            skipfirst = e_req_skipfirst, human = True,
+            dochecksum = e_req_checksum,
+            multifetch = e_req_multifetch)
 
     elif (options[0] == "hop"):
         if myopts:
@@ -182,10 +182,10 @@ def package(options):
             rc = 126
 
     elif (options[0] == "remove"):
-        if myopts or equoRequestResume:
-            status, rc = removePackages(myopts, deps = equoRequestDeps,
-            deep = equoRequestDeep, configFiles = equoRequestConfigFiles,
-            resume = equoRequestResume)
+        if myopts or e_req_resume:
+            status, rc = removePackages(myopts, deps = e_req_deps,
+            deep = e_req_deep, configFiles = e_req_config_files,
+            resume = e_req_resume)
         else:
             print_error(red(" %s." % (_("Nothing to do"),) ))
             rc = 126
@@ -307,7 +307,8 @@ def worldUpdate(onlyfetch = False, replay = False, resume = False,
 
     equo_client_settings['collisionprotect'] = oldcollprotect
 
-    # verify that client database idpackage still exist, validate here before passing removePackage() wrong info
+    # verify that client database idpackage still exist,
+    # validate here before passing removePackage() wrong info
     remove = [x for x in remove if Equo.clientDbconn.isIdpackageAvailable(x)]
 
     if remove and Equo.validRepositories and (not onlyfetch):
@@ -554,7 +555,8 @@ def _showPackageInfo(foundAtoms, deps, action_name = None):
             installedTag = "NoTag"
             installedRev = "NoRev"
             installedRepo = _("Not available")
-            pkginstalled = Equo.clientDbconn.atomMatch(entropy.tools.dep_getkey(pkgatom), matchSlot = pkgslot)
+            pkginstalled = Equo.clientDbconn.atomMatch(
+                entropy.tools.dep_getkey(pkgatom), matchSlot = pkgslot)
             if (pkginstalled[1] == 0):
                 # found
                 idx = pkginstalled[0]
@@ -656,7 +658,8 @@ def _generateRunQueue(foundAtoms, deps, emptydeps, deepdeps, relaxeddeps):
                     m_reasons = {}
                     for match in masked_matches[0]:
                         masked, idreason, reason = Equo.get_masked_package_reason(match)
-                        if not masked: continue
+                        if not masked:
+                            continue
                         if (idreason, reason,) not in m_reasons:
                             m_reasons[(idreason, reason,)] = []
                         m_reasons[(idreason, reason,)].append(match)
@@ -732,8 +735,11 @@ def downloadSources(packages = None, deps = True, deepdeps = False, tbz2 = None,
 
         Package.prepare(match, "source", metaopts)
 
-        xterm_header = "Equo ("+_("sources fetch")+") :: "+str(fetchqueue)+" of "+totalqueue+" ::"
-        print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/"+red(totalqueue)+bold(") ")+">>> "+darkgreen(Package.pkgmeta['atom']))
+        xterm_header = "Equo ("+_("sources fetch")+") :: " + \
+            str(fetchqueue)+" of "+totalqueue+" ::"
+        print_info(red(" :: ")+bold("(")+blue(str(fetchqueue))+"/" + \
+            red(totalqueue)+bold(") ")+">>> " + \
+                darkgreen(Package.pkgmeta['atom']))
 
         rc = Package.run(xterm_header = xterm_header)
         if rc != 0:

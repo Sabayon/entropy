@@ -89,7 +89,7 @@ search packages inside the default repository database
 
 show runtime libraries needed by the provided atoms
 
-=item B<depends>
+=item B<revdeps>
 
 show what packages depend on the provided atoms
 
@@ -355,9 +355,9 @@ dump results to files
 
 verify the integrity of local package files
 
-=item B<depends>
+=item B<revdeps>
 
-regenerate the depends table
+regenerate reverse dependencies metadata
 
 =item B<libpaths>
 

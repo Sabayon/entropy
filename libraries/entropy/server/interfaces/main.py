@@ -1673,7 +1673,7 @@ class Server(Singleton, TextInterface):
 
         return not_found
 
-    def depends_table_initialize(self, repo = None):
+    def generate_reverse_dependencies_metadata(self, repo = None):
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
         dbconn.generateReverseDependenciesMetadata()
@@ -2531,7 +2531,7 @@ class Server(Singleton, TextInterface):
                     count = (mycount, maxcount,)
                 )
                 # reinit depends table
-                self.depends_table_initialize(repo)
+                self.generate_reverse_dependencies_metadata(repo)
                 # reinit librarypathsidpackage table
                 if idpackages_added:
                     dbconn = self.open_server_repository(read_only = False,
@@ -2555,12 +2555,12 @@ class Server(Singleton, TextInterface):
                         repo = repo)
                 # reinit depends table
                 if missing_deps_taint:
-                    self.depends_table_initialize(repo)
+                    self.generate_reverse_dependencies_metadata(repo)
                 self.close_server_databases()
                 raise
 
         # reinit depends table
-        self.depends_table_initialize(repo)
+        self.generate_reverse_dependencies_metadata(repo)
 
         if idpackages_added:
             dbconn = self.open_server_repository(read_only = False,
@@ -2580,7 +2580,7 @@ class Server(Singleton, TextInterface):
 
         # reinit depends table
         if missing_deps_taint:
-            self.depends_table_initialize(repo)
+            self.generate_reverse_dependencies_metadata(repo)
 
         # inject database into packages
         self.inject_database_into_packages(to_be_injected, repo = repo)
@@ -3457,7 +3457,7 @@ class Server(Singleton, TextInterface):
                     back = True
                 )
 
-            self.depends_table_initialize(repo)
+            self.generate_reverse_dependencies_metadata(repo)
 
             my_qa = self.QA()
 
