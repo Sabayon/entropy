@@ -8,6 +8,8 @@
     - entropy.output API names update
     - entropy.tools API docs merge
     - entropy.server API rework
+    - entropy.server => rssMessages ?
+    - move ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL to etpConst
     - move sensible pkgs to alt dir
 
   0.99.40:
