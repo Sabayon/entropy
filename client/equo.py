@@ -422,7 +422,7 @@ if (not options) or ("--help" in options):
 
 # print version
 if (options[0] == "--version"):
-    print_generic("Equo: v"+etpConst['entropyversion'])
+    print_generic("equo: "+etpConst['entropyversion'])
     raise SystemExit(0)
 elif (options[0] == "--info"):
     import text_rescue
@@ -461,7 +461,7 @@ def readerrorstatus():
         status = int(f.readline().strip())
         f.close()
         return status
-    except:
+    except (IOError, OSError,):
         writeerrorstatus(0)
         return 0
 
@@ -471,52 +471,8 @@ def writeerrorstatus(status):
         f.write(str(status))
         f.flush()
         f.close()
-    except:
+    except (IOError, OSError,):
         pass
-
-def reset_cache():
-    try:
-        from entropy.client.interfaces import Client
-        Equo = Client(noclientdb = 2)
-        Equo.purge_cache()
-        Equo.destroy()
-    except:
-        pass
-
-def load_conf_cache():
-    from entropy.client.interfaces import Client
-    Equo = Client(noclientdb = 2)
-    if not etpUi['quiet']:
-        print_info(red(" @@ ")+blue(_("Caching equo conf")), back = True)
-    try:
-        while True:
-            try:
-                scandata = Equo.FileUpdates.scanfs(dcache = True, quiet = True)
-                break
-            except KeyboardInterrupt:
-                continue
-    except:
-        entropy.tools.print_traceback()
-        if not etpUi['quiet']:
-            print_info(red(" @@ ")+blue(_("Caching not run.")))
-        Equo.destroy()
-        return
-
-    if not etpUi['quiet']:
-        print_info(red(" @@ ")+blue(_("Caching complete.")))
-
-    if scandata: # can be None
-        if len(scandata) > 0: # strict check
-            if not etpUi['quiet']:
-                mytxt = "%s %s %s." % (
-                    _("There are"),
-                    len(scandata),
-                    _("configuration file(s) needing update"),
-                )
-                print_warning(darkgreen(mytxt))
-                mytxt = "%s: %s" % (red(_("Please run")), bold("equo conf update"))
-                print_warning(mytxt)
-    Equo.destroy()
 
 def main():
     try:
@@ -534,14 +490,9 @@ def main():
 
         elif options[0] in ("install", "remove", "config", "world", "upgrade",
             "deptest", "unusedpackages", "libtest", "source", "fetch", "hop"):
-
             import text_ui
             rc = text_ui.package(options)
-            if (options[0] not in ("hop",)) and (rc not in (125, 126, -10)):
-                load_conf_cache()
-            else:
-                # FIXME: refactor text_ui
-                text_ui.Equo.destroy()
+            text_ui.Equo.destroy()
 
         elif options[0] == "security":
             import text_security
@@ -737,7 +688,6 @@ def main():
 
     except SystemDatabaseError:
 
-        reset_cache()
         print_error(darkred(" * ")+red(_("Installed Packages Database not found or corrupted. Please generate it using 'equo database' tools")))
         raise SystemExit(101)
 
@@ -748,7 +698,6 @@ def main():
 
     except RepositoryError as e:
 
-        reset_cache()
         print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
         raise SystemExit(101)
 
@@ -790,7 +739,6 @@ def main():
 
     except IOError as e:
 
-        reset_cache()
         if e.errno != 32:
             raise
 
@@ -809,7 +757,6 @@ def main():
 
     except:
 
-        reset_cache()
         entropy.tools.kill_threads()
 
         Text = TextInterface()

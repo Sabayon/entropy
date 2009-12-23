@@ -205,8 +205,50 @@ def package(options):
     else:
         rc = -10
 
+    conf_cache_excl = ("hop", "fetch", "source", "deptest", "libtest",
+        "unusedpackages",)
+    if (options[0] not in conf_cache_excl) and (rc not in (125, 126, -10)) and \
+        (not etpUi['pretend']) and (not etpUi['quiet']):
+        show_config_files_to_update()
+
     return rc
 
+def show_config_files_to_update():
+
+    if not etpUi['quiet']:
+        print_info(red(" @@ ") + \
+            blue(_("Scanning configuration files to update")), back = True)
+
+    try:
+        while True:
+            try:
+                scandata = Equo.FileUpdates.scanfs(dcache = True, quiet = True)
+                break
+            except KeyboardInterrupt:
+                continue
+    except:
+        entropy.tools.print_traceback()
+        if not etpUi['quiet']:
+            print_warning(red(" @@ ") + \
+                blue(_("Unable to scan configuration files to update.")))
+        return
+
+    if not etpUi['quiet']:
+        print_info(red(" @@ ")+blue(_("Configuration files scan complete.")))
+
+    if scandata is None:
+        return
+
+    if len(scandata) > 0: # strict check
+        if not etpUi['quiet']:
+            mytxt = "%s %s %s." % (
+                _("There are"),
+                len(scandata),
+                _("configuration file(s) needing update"),
+            )
+            print_warning(darkgreen(mytxt))
+            mytxt = "%s: %s" % (red(_("Please run")), bold("equo conf update"))
+            print_warning(mytxt)
 
 def upgrade_packages(onlyfetch = False, replay = False, resume = False,
     skipfirst = False, human = False, dochecksum = True, multifetch = 1):
