@@ -485,7 +485,7 @@ def main():
         elif options[0] == "moo":
             do_moo()
 
-        elif options[0] == "lxnay":
+        elif options[0] in ("lxnay", "god", "love_lxnay", "w00t", "fuck",):
             do_lxnay()
 
         elif options[0] in ("install", "remove", "config", "world", "upgrade",
