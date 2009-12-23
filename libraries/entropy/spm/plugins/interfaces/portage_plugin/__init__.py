@@ -699,21 +699,21 @@ class PortagePlugin(SpmPlugin):
         kmod_pfx = "/lib/modules"
         content = [x for x in pkg_data['content'] if x.startswith(kmod_pfx)]
         content = [x for x in content if x != kmod_pfx]
+
+        # filter out hidden files
+        content = [x for x in content if not \
+            os.path.basename(x).startswith(".")]
         if not content:
             return
         content.sort()
 
         for item in content:
 
-            k_base = os.path.basename(item)
-            if k_base.startswith("."):
-                continue # hidden file
-            # hope that is fine!
-
             owners = self.search_paths_owners([item])
             if not owners:
                 continue
 
+            k_base = os.path.basename(item)
             # MUST match SLOT (for triggers here, to be able to handle
             # multiple packages correctly and set back slot).
             pkg_data['versiontag'] = k_base
@@ -1471,10 +1471,39 @@ class PortagePlugin(SpmPlugin):
         """
         if not isinstance(paths, (list, set, frozenset, dict, tuple)):
             raise AttributeError("iterable needed")
+
+        matches = {}
         root = etpConst['systemroot'] + os.path.sep
+
+        # if qfile is avail, it's much faster than using Portage API
+        qfile_exec = "/usr/bin/qfile"
+        if os.access(qfile_exec, os.X_OK):
+
+            qfile_args = (qfile_exec, "-q", "-C", "-R", root,)
+            if exact_match:
+                qfile_args += ("-e",)
+
+            rc = 0
+            for filename in paths:
+                proc = subprocess.Popen(qfile_args + (filename,),
+                    stdout = subprocess.PIPE)
+                rc = proc.wait()
+                if rc != 0:
+                    # wtf?, fallback to old way
+                    matches.clear()
+                    break
+
+                pkgs = set([x.strip() for x in proc.stdout.readlines()])
+                for pkg in pkgs:
+                    slot = self.get_installed_package_metadata(pkg, "SLOT")
+                    obj = matches.setdefault((pkg, slot,), set())
+                    obj.add(filename)
+
+            if rc == 0:
+                return matches
+
         mytree = self._get_portage_vartree(root)
         packages = mytree.dbapi.cpv_all()
-        matches = {}
 
         for package in packages:
             cat, pkgv = package.split("/")
