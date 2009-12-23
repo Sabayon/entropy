@@ -484,7 +484,6 @@ class RepositoryMixin:
                 )
                 self._add_plugin_to_client_repository(conn)
                 # TODO: remove this in future, drop useless data from clientdb
-                conn.dropChangelog()
             except (self.dbapi2.DatabaseError,):
                 self.entropyTools.print_traceback(f = self.clientLog)
                 conn = load_db_from_ram()

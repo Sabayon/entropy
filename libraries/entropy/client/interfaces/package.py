@@ -965,6 +965,9 @@ class Package:
         ctime = entropy.tools.get_current_unix_time()
         self.Entropy.clientDbconn.setCreationDate(idpackage, str(ctime))
 
+        # TODO: remove this in future, drop changelog table
+        self.Entropy.clientDbconn.dropChangelog()
+
         # add idpk to the installedtable
         self.Entropy.clientDbconn.dropInstalledPackageFromStore(idpackage)
         self.Entropy.clientDbconn.storeInstalledPackage(idpackage,
