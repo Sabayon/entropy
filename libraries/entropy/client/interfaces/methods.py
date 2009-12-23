@@ -458,7 +458,9 @@ class RepositoryMixin:
                 type = "warning",
                 header = bold("!!!"),
             )
-            return self.open_memory_database(dbname = etpConst['clientdbid'])
+            m_conn = self.open_memory_database(dbname = etpConst['clientdbid'])
+            self._add_plugin_to_client_repository(m_conn)
+            return m_conn
 
         # if we are in unit testing mode (triggered by unit testing
         # code), always use db from ram
@@ -481,6 +483,8 @@ class RepositoryMixin:
                     xcache = self.xcache, indexing = self.indexing
                 )
                 self._add_plugin_to_client_repository(conn)
+                # TODO: remove this in future, drop useless data from clientdb
+                conn.dropChangelog()
             except (self.dbapi2.DatabaseError,):
                 self.entropyTools.print_traceback(f = self.clientLog)
                 conn = load_db_from_ram()
@@ -498,7 +502,7 @@ class RepositoryMixin:
                         conn = load_db_from_ram()
 
         self.clientDbconn = conn
-        return self.clientDbconn
+        return conn
 
     def client_repository_sanity_check(self):
         self.updateProgress(
