@@ -492,7 +492,6 @@ def main():
             "deptest", "unusedpackages", "libtest", "source", "fetch", "hop"):
             import text_ui
             rc = text_ui.package(options)
-            text_ui.Equo.destroy()
 
         elif options[0] == "security":
             import text_security
