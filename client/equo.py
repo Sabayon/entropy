@@ -233,10 +233,10 @@ help_opts_extended = [
     (1, 'database', 1, _('handles installed packages database')),
         (2, 'check', 2, _('check System Database for errors')),
         (2, 'vacuum', 2, _('remove System Database internal indexes to save space')),
-        (2, 'generate', 1, 'generate installed packages database using Portage database (Portage needed)'),
+        (2, 'generate', 1, _('generate installed packages database using Source Package Manager repositories')),
         (2, 'resurrect', 1, _('generate installed packages database using files on the system [last hope]')),
         (2, 'revdeps', 1, _('regenerate reverse dependencies metadata')),
-        (2, 'counters', 1, _('update/generate counters table (Portage <-> Entropy packages table)')),
+        (2, 'spmuids', 1, _('regenerate SPM UIDs map (SPM <-> Entropy packages)')),
         (2, 'spmsync', 1, _('makes Entropy aware of your Source Package Manager updated packages')),
         (2, 'backup', 2, _('backup the current Entropy installed packages database')),
         (2, 'restore', 1, _('restore a previously backed up Entropy installed packages database')),
@@ -285,7 +285,7 @@ help_opts_extended = [
             (3, 'md5remote', 2, _('verify remote integrity of the provided atoms (or world)')),
             (3, 'backup', 3, _('backup current repository database')),
             (3, 'restore', 3, _('restore a previously backed-up repository database')),
-            (3, 'counters', 2, _('resync counters table (Portage <-> Entropy matching scheme)'),),
+            (3, 'spmuids', 2, _('regenerate SPM UIDs map (SPM <-> Entropy packages)'),),
 
         None,
 
@@ -426,7 +426,7 @@ if (options[0] == "--version"):
     raise SystemExit(0)
 elif (options[0] == "--info"):
     import text_rescue
-    text_rescue.getinfo()
+    text_rescue.database(["info"])
     raise SystemExit(0)
 
 def do_moo():
@@ -524,8 +524,6 @@ def main():
         elif (options[0] == "database"):
             import text_rescue
             rc = text_rescue.database(options[1:])
-            # FIXME: refactor text_rescue
-            text_rescue.Equo.destroy()
 
         elif (options[0] == "ugc"):
             import text_ugc
@@ -575,16 +573,14 @@ def main():
                 elif myopts[0] == "database":
 
                     do = True
-                    # hook to support counters command, which is just
+                    # hook to support spmuids command, which is just
                     # a duplicate of 'equo database counters'
                     # put here for completeness
                     if len(myopts) > 1:
-                        if myopts[1] == "counters":
+                        if myopts[1] == "spmuids":
                             do = False
                             import text_rescue
                             rc = text_rescue.database(myopts[1:])
-                            # FIXME: refactor text_rescue
-                            text_rescue.Equo.destroy()
 
                     if do:
                         try:

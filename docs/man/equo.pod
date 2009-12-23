@@ -694,7 +694,7 @@ remove System Database internal indexes to save space
 
 =item B<generate>
 
-generate installed packages database using Portage database (Portage needed)
+generate installed packages database using Source Package Manager repositories
 
 =item B<resurrect>
 
@@ -704,9 +704,9 @@ generate installed packages database using files on the system [last hope]
 
 regenerate reverse dependencies metadata
 
-=item B<counters>
+=item B<spmuids>
 
-update/generate counters table (Portage <-> Entropy packages table)
+regenerate SPM UIDs map (SPM <-> Entropy packages)
 
 =item B<spmsync>
 
@@ -943,6 +943,12 @@ backup current repository database
 =item B<restore>
 
 restore a previously backed-up repository database
+
+=back
+
+=item B<spmuids>
+
+regenerate SPM UIDs map (SPM <-> Entropy packages)
 
 =back
 

@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "EQUO 1"
-.TH EQUO 1 "2009-12-22" "perl v5.8.8" "Entropy"
+.TH EQUO 1 "2009-12-23" "perl v5.8.8" "Entropy"
 .SH "NAME"
 \&\fBequo\fR \- Official Sabayon Linux Package Manager Client
 .SH "SYNOPSIS"
@@ -663,16 +663,16 @@ check System Database for errors
 remove System Database internal indexes to save space
 .IP "\fBgenerate\fR" 4
 .IX Item "generate"
-generate installed packages database using Portage database (Portage needed)
+generate installed packages database using Source Package Manager repositories
 .IP "\fBresurrect\fR" 4
 .IX Item "resurrect"
 generate installed packages database using files on the system [last hope]
 .IP "\fBrevdeps\fR" 4
 .IX Item "revdeps"
 regenerate reverse dependencies metadata
-.IP "\fBcounters\fR" 4
-.IX Item "counters"
-update/generate counters table (Portage <\-> Entropy packages table)
+.IP "\fBspmuids\fR" 4
+.IX Item "spmuids"
+regenerate \s-1SPM\s0 UIDs map (\s-1SPM\s0 <\-> Entropy packages)
 .IP "\fBspmsync\fR" 4
 .IX Item "spmsync"
 makes Entropy aware of your Source Package Manager updated packages
@@ -846,6 +846,12 @@ restore a previously backed-up repository database
 .RE
 .RS 4
 .RE
+.IP "\fBspmuids\fR" 4
+.IX Item "spmuids"
+regenerate \s-1SPM\s0 UIDs map (\s-1SPM\s0 <\-> Entropy packages)
+.RE
+.RS 4
+.RE
 .IP "\fBrepo\fR" 4
 .IX Item "repo"
 manage a repository
@@ -995,12 +1001,9 @@ verify the integrity of local package files
 .IX Item "revdeps"
 regenerate reverse dependencies metadata
 .RE
-.RS 4
-.RE
-.IP "\fBugc\fR" 4
+.IP "\fBugc\fR"
 .IX Item "ugc"
 handles User Generated Content features
-.RS 4
 .IP "\fBlogin <repository\fR>" 4
 .IX Item "login <repository>"
 login against a specified repository
@@ -1044,12 +1047,9 @@ add vote for the specified package key (example: x11\-libs/qt)
 .RS 4
 .RE
 .RE
-.RS 4
-.RE
-.IP "\fBcache\fR" 4
+.IP "\fBcache\fR"
 .IX Item "cache"
 handles Entropy cache
-.RS 4
 .IP "\fBclean\fR" 4
 .IX Item "clean"
 clean Entropy cache
@@ -1063,12 +1063,11 @@ show more details
 .IX Item "--quiet"
 print results in a scriptable way
 .RE
-.RS 4
-.RE
-.IP "\fBcleanup\fR" 4
+.IP "\fBcleanup\fR"
 .IX Item "cleanup"
 remove downloaded packages and clean temp. directories
-.IP "\fB\-\-info\fR" 4
+.RE
+.IP "\fB\-\-info\fR"
 .IX Item "--info"
 show system information
 .SH "ENVIRONMENT"
