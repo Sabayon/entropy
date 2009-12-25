@@ -152,12 +152,14 @@ def print_traceback(f = None):
     import traceback
     traceback.print_exc(file = f)
 
-def get_traceback():
+def get_traceback(tb_obj = None):
     """
     Return last available Python traceback.
 
     @return: traceback data
     @rtype: string
+    @keyword tb_obj: Python traceback object
+    @type tb_obj: Python traceback instance
     """
     import traceback
     if sys.hexversion >= 0x3000000:
@@ -165,24 +167,32 @@ def get_traceback():
     else:
         from cStringIO import StringIO
     buf = StringIO()
-    traceback.print_exc(file = buf)
+    if tb_obj is not None:
+        traceback.print_last(tb_obj, file = buf)
+    else:
+        traceback.print_last(file = buf)
     return buf.getvalue()
 
-def print_exception(returndata = False):
+def print_exception(returndata = False, tb_data = None):
     """
     Print last Python exception and frame variables values (if available)
     to stdout.
 
     @keyword returndata: do not print data but return
     @type returndata: bool
+    @keyword tb_data: Python traceback object
+    @type tb_data: Python traceback instance
     @return: exception data
     @rtype: string
     """
     import traceback
     if not returndata:
-        traceback.print_exc()
+        traceback.print_last()
     data = []
-    tb = sys.exc_info()[2]
+    if tb_data is not None:
+        tb = tb_data
+    else:
+        tb = sys.last_traceback
     while True:
         if not tb.tb_next:
             break
@@ -213,7 +223,8 @@ def print_exception(returndata = False):
             except:
                 if not returndata:
                     sys.stdout.write("<ERROR WHILE PRINTING VALUE>\n")
-    return data
+    if returndata:
+        return data
 
 # Get the content of an online page
 # @returns content: if the file exists
