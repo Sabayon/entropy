@@ -106,8 +106,7 @@ class Entropy(Client):
 
     def init_singleton(self):
         Client.init_singleton(self, load_ugc = False,
-            url_fetcher = DaemonUrlFetcher, repo_validation = False,
-            xcache = False)
+            url_fetcher = DaemonUrlFetcher, repo_validation = False)
         # validate currently available repos
         # manually, to not taint logs
         self.validate_repositories(quiet = True)
