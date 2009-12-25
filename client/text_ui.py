@@ -357,7 +357,8 @@ def upgrade_packages(onlyfetch = False, replay = False, resume = False,
         if rc[1] != 0:
             return 1, rc[0]
     else:
-        print_info(red(" @@ ")+blue("%s." % (_("Nothing to update"),) ))
+        print_info(red(" @@ ") + \
+            blue("%s." % (_("Nothing to update"),) ))
 
     equo_client_settings['collisionprotect'] = oldcollprotect
 
@@ -376,6 +377,7 @@ def upgrade_packages(onlyfetch = False, replay = False, resume = False,
         print_info(red(" @@ ")+blue(
             _("Even if they are usually harmless, it is suggested to remove them.")))
 
+        do_run = True
         if not etpUi['pretend']:
             do_run = False
             if human:
@@ -385,17 +387,15 @@ def upgrade_packages(onlyfetch = False, replay = False, resume = False,
                 if rc == _("No"):
                     do_run = False
 
-            if do_run:
-                remove_packages(
-                    atomsdata = remove,
-                    deps = False,
-                    system_packages_check = False,
-                    remove_config_files = True,
-                    resume = resume,
-                    human = human
-                )
-        else:
-            print_info(red(" @@ ")+blue("%s." % (_("Calculation complete"),) ))
+        if do_run:
+            remove_packages(
+                atomsdata = remove,
+                deps = False,
+                system_packages_check = False,
+                remove_config_files = True,
+                resume = resume,
+                human = human
+            )
 
     else:
         print_info(red(" @@ ")+blue("%s." % (_("Nothing to remove"),) ))
@@ -1601,13 +1601,12 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
             on_disk_size = E_CLIENT.clientDbconn.retrieveOnDiskSize(idpackage)
             pkg_size = E_CLIENT.clientDbconn.retrieveSize(idpackage)
             disksize = entropy.tools.bytes_into_human(on_disk_size)
-            disksizeinfo = " | %s: %s" % (blue(_("Disk size")),
-                bold(str(disksize)),)
-            mytxt = " | %s: " % (_("Installed from"),)
+            disksizeinfo = " [%s]" % (bold(str(disksize)),)
+
             print_info("   # " + red("(") + brown(str(atomscounter)) + "/" + \
-                blue(str(totalatoms)) + red(")") + " " + \
-                entropy.tools.enlightenatom(pkgatom) + mytxt + red(installedfrom) + \
-                disksizeinfo)
+                blue(str(totalatoms)) + red(")") + \
+                " [%s] " % (brown(installedfrom),) + \
+                entropy.tools.enlightenatom(pkgatom) + disksizeinfo)
 
             if idpackage not in package_sizes:
                 package_sizes[idpackage] = on_disk_size, pkg_size
