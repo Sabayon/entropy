@@ -1746,11 +1746,12 @@ class CalculatorsMixin:
                         update.append(matchresults)
 
         if self.xcache:
-            c_hash = self.get_updates_cache_hash(db_digest, empty_deps,
+            c_hash = self._get_updates_cache_hash(db_digest, empty_deps,
                 ignore_spm_downgrades)
             data = (update, remove, fine, spm_fine,)
             self.Cacher.push("%s%s" % (etpCache['world_update'], c_hash,),
                 data, async = False)
+            self.Cacher.sync()
 
         if not update:
             # delete branch upgrade file if exists, since there are
