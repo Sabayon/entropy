@@ -17,16 +17,20 @@ sys.path.insert(0, '/usr/lib/entropy/client')
 sys.path.insert(0, '../libraries')
 sys.path.insert(0, '../server')
 sys.path.insert(0, '../client')
-from entropy.exceptions import *
-from entropy.const import *
-from entropy.output import *
+from entropy.exceptions import SystemDatabaseError, OnlineMirrorError, \
+    RepositoryError, TransceiverError, PermissionDenied, FileNotFound, \
+    SPMError, IncorrectParameter
+from entropy.output import red, darkred, darkgreen, print_menu, TextInterface, \
+    print_generic, print_error, print_warning, readtext, nocolor, \
+    is_stdout_a_tty
+from entropy.const import etpConst, etpUi, const_convert_to_rawstring
 import entropy.tools
-from entropy.core.settings.base import SystemSettings
-SysSettings = SystemSettings()
 try:
     from entropy.i18n import _
 except ImportError:
-    def _(x): return x
+    def _(x):
+        return x
+
 
 dbapi2Exceptions = {}
 dbapi2Exceptions['OperationalError'] = None
@@ -43,7 +47,7 @@ except: # fallback to embedded pysqlite
 if dbapi2_done:
     dbapi2Exceptions['OperationalError'] = dbapi2.OperationalError
 
-etpExitMessages = {
+etp_exit_messages = {
     0: _("You should run equo --help"),
     1: _("You didn't run equo --help, did you?"),
     2: _("Did you even read equo --help??"),
@@ -60,7 +64,7 @@ if not is_stdout_a_tty():
 
 help_opts = [
     None,
-    (0, " ~ %s ~ " % (SysSettings['system']['name'],), 1, 'Entropy Package Manager - (C) %s' % (entropy.tools.get_year(),) ),
+    (0, " ~ %s ~ " % ("equo",), 2, 'Entropy Framework Client - (C) %s' % (entropy.tools.get_year(),) ),
     None,
     (0, _('Basic Options'), 0, None),
     None,
@@ -474,349 +478,351 @@ def writeerrorstatus(status):
     except (IOError, OSError,):
         pass
 
-def main():
-    try:
-        rc = 0
-        # sync mirrors tool
-        if options[0] in ("update", "repoinfo", "status", "notice",):
-            import text_repositories
-            rc = text_repositories.repositories(options)
+def handle_exception(exc_class, exc_instance, exc_tb):
 
-        elif options[0] == "moo":
-            do_moo()
+    # restore original exception handler, to avoid loops
+    sys.excepthook = sys.__excepthook__
 
-        elif options[0] in ("lxnay", "god", "love_lxnay", "w00t", "fuck",):
-            do_lxnay()
+    entropy.tools.kill_threads()
 
-        elif options[0] in ("install", "remove", "config", "world", "upgrade",
-            "deptest", "unusedpackages", "libtest", "source", "fetch", "hop"):
-            import text_ui
-            rc = text_ui.package(options)
-
-        elif options[0] == "security":
-            import text_security
-            rc = text_security.security(options[1:])
-
-        elif (options[0] == "query"):
-            import text_query
-            rc = text_query.query(options[1:])
-
-        # smartapps tool
-        elif (options[0] == "smart"):
-            rc = -10
-            if len(options) > 1:
-                import text_smart
-                rc = text_smart.smart(options[1:])
-
-        elif (options[0] == "conf"):
-            import text_configuration
-            rc = text_configuration.configurator(options[1:])
-
-        elif (options[0] == "cache"):
-            import text_cache
-            rc = text_cache.cache(options[1:])
-
-        elif (options[0] in ("match", "search")):
-            import text_query
-            rc = text_query.query(options)
-
-        elif (options[0] == "database"):
-            import text_rescue
-            rc = text_rescue.database(options[1:])
-
-        elif (options[0] == "ugc"):
-            import text_ugc
-            rc = text_ugc.ugc(options[1:])
-
-        elif (options[0] == "community"):
-
-            comm_err_msg = _("You need to install sys-apps/entropy-server. :-) Do it !")
-            etpConst['community']['mode'] = True
-            myopts = options[1:]
-
-            if myopts:
-                if myopts[0] == "repos":
-                    try:
-                        import server_reagent
-                    except ImportError:
-                        print_error(darkgreen(comm_err_msg))
-                        rc = 1
-                    else:
-                        repos_opts = myopts[1:]
-                        if repos_opts:
-                            if repos_opts[0] == "update":
-                                rc = server_reagent.update(repos_opts[1:])
-                                server_reagent.Entropy.close_server_databases()
-                            elif repos_opts[0] == "inject":
-                                rc = server_reagent.inject(repos_opts[1:])
-                                server_reagent.Entropy.close_server_databases()
-                elif myopts[0] == "mirrors":
-                    try:
-                        import server_activator
-                    except ImportError:
-                        print_error(darkgreen(comm_err_msg))
-                        rc = 1
-                    else:
-                        mirrors_opts = myopts[1:]
-                        if mirrors_opts:
-                            if mirrors_opts[0] == "sync":
-                                server_activator.sync(mirrors_opts[1:])
-                            elif mirrors_opts[0] == "packages-sync":
-                                server_activator.sync(mirrors_opts[1:])
-                            elif mirrors_opts[0] == "tidy":
-                                server_activator.sync(mirrors_opts[1:], justTidy = True)
-                            elif mirrors_opts[0].startswith("db-"):
-                                mirrors_opts[0] = mirrors_opts[0][3:]
-                                server_activator.database(mirrors_opts)
-
-                elif myopts[0] == "database":
-
-                    do = True
-                    # hook to support spmuids command, which is just
-                    # a duplicate of 'equo database counters'
-                    # put here for completeness
-                    if len(myopts) > 1:
-                        if myopts[1] == "spmuids":
-                            do = False
-                            import text_rescue
-                            rc = text_rescue.database(myopts[1:])
-
-                    if do:
-                        try:
-                            import server_reagent
-                        except ImportError:
-                            print_error(darkgreen(comm_err_msg))
-                            rc = 1
-                        else:
-                            rc = server_reagent.database(myopts[1:])
-                            server_reagent.Entropy.close_server_databases()
-
-                elif myopts[0] == "repo":
-                    try:
-                        import server_reagent
-                    except ImportError:
-                        print_error(darkgreen(comm_err_msg))
-                        rc = 1
-                    else:
-                        rc = server_reagent.repositories(myopts[1:])
-
-                elif myopts[0] == "notice":
-                    try:
-                        import server_activator
-                        if not hasattr(server_activator, 'notice'):
-                            raise ImportError
-                    except ImportError:
-                        print_error(darkgreen(_("You need to install/update sys-apps/entropy-server. :-) Do it !")))
-                        rc = 1
-                    else:
-                        rc = server_activator.notice(myopts[1:])
-
-                elif myopts[0] == "query":
-                    try:
-                        import server_query
-                    except ImportError:
-                        print_error(darkgreen(comm_err_msg))
-                        rc = 1
-                    else:
-                        rc = server_query.query(myopts[1:])
-
-                elif myopts[0] == "spm":
-                        try:
-                            import server_reagent
-                        except ImportError:
-                            print_error(darkgreen(comm_err_msg))
-                            rc = 1
-                        else:
-                            rc = server_reagent.spm(myopts[1:])
-                            server_reagent.Entropy.close_server_databases()
-
-                elif myopts[0] == "deptest":
-                    try:
-                        import server_reagent
-                    except ImportError:
-                        print_error(darkgreen(comm_err_msg))
-                        rc = 1
-                    else:
-                        server_reagent.Entropy.dependencies_test()
-                        server_reagent.Entropy.close_server_databases()
-
-                elif myopts[0] == "pkgtest":
-                    try:
-                        import server_reagent
-                    except ImportError:
-                        print_error(darkgreen(comm_err_msg))
-                        rc = 1
-                    else:
-                        server_reagent.Entropy.verify_local_packages(["world"], ask = etpUi['ask'])
-                        server_reagent.Entropy.close_server_databases()
-
-                elif myopts[0] == "revdeps":
-                    try:
-                        import server_reagent
-                    except ImportError:
-                        print_error(darkgreen(comm_err_msg))
-                        rc = 1
-                    else:
-                        rc = server_reagent.Entropy.generate_reverse_dependencies_metadata()
-                        server_reagent.Entropy.close_server_databases()
-
-        elif (options[0] == "cleanup"):
-            entropy.tools.cleanup([ etpConst['packagestmpdir'],
-                etpConst['logdir'], etpConst['entropyunpackdir'],
-                etpConst['packagesbindir'] ])
-            rc = 0
-        else:
-            rc = -10
-
-        if rc == -10:
-            status = readerrorstatus()
-            print_error(darkred(etpExitMessages[status]))
-            # increment
-            if status < len(etpExitMessages)-1:
-                writeerrorstatus(status+1)
-            rc = 10
-        else:
-            writeerrorstatus(0)
-
-        entropy.tools.kill_threads()
-        raise SystemExit(rc)
-
-    except SystemDatabaseError:
-
-        print_error(darkred(" * ")+red(_("Installed Packages Database not found or corrupted. Please generate it using 'equo database' tools")))
+    if exc_class is SystemDatabaseError:
+        print_error(darkred(" * ") + \
+            red(_("Installed packages repository corrupted. Please re-generate it")))
         raise SystemExit(101)
 
-    except OnlineMirrorError as e:
-
-        print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
+    if exc_class is OnlineMirrorError:
+        print_error("%s %s. %s." % (
+            darkred(" * "), exc_instance, _("Cannot continue"),))
         raise SystemExit(101)
 
-    except RepositoryError as e:
-
-        print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
+    if exc_class is RepositoryError:
+        print_error("%s %s. %s." % (
+            darkred(" * "), exc_instance, _("Cannot continue"),))
         raise SystemExit(101)
 
-    except TransceiverError as e:
-
-        print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
+    if exc_class is TransceiverError:
+        print_error("%s %s. %s." % (
+            darkred(" * "), exc_instance, _("Cannot continue"),))
         raise SystemExit(101)
 
-    except PermissionDenied as e:
-
-        print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
+    if exc_class is PermissionDenied:
+        print_error("%s %s. %s." % (
+            darkred(" * "), exc_instance, _("Cannot continue"),))
         raise SystemExit(1)
 
-    except FileNotFound as e:
-
-        print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
+    if exc_class is FileNotFound:
+        print_error("%s %s. %s." % (
+            darkred(" * "), exc_instance, _("Cannot continue"),))
         raise SystemExit(1)
 
-    except SPMError as e:
-
-        print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
+    if exc_class is SPMError:
+        print_error("%s %s. %s." % (
+            darkred(" * "), exc_instance, _("Cannot continue"),))
         raise SystemExit(1)
 
-    except dbapi2Exceptions['OperationalError'] as e:
-
-        if str(e).find("disk I/O error") == -1:
-            raise
-        print_error("%s %s. %s." % (darkred(" * "), e,
+    if exc_class is dbapi2Exceptions['OperationalError']:
+        entropy.tools.print_exception(tb_data = exc_tb)
+        print_error("%s %s. %s." % (darkred(" * "), exc_instance,
             _("Cannot continue. Your hard disk is probably faulty."),))
         raise SystemExit(101)
 
-    except SystemError as e: # becoming from entropy.db
-
-        print_error("%s %s. %s." % (darkred(" * "), e, _("Cannot continue"),))
+    if exc_class is SystemError:
+        print_error("%s %s. %s." % (
+            darkred(" * "), exc_instance, _("Cannot continue"),))
         raise SystemExit(1)
 
-    except SystemExit:
+    if exc_class is SystemExit:
         raise
 
-    except IOError as e:
-
-        if e.errno != 32:
+    if exc_class is IOError:
+        if exc_instance.errno != 32:
             raise
 
-    except OSError as e:
-
-        if e.errno == 28:
-            entropy.tools.print_exception()
-            print_error("%s %s. %s." % (darkred(" * "), e,
-                _("Your hard drive is full! Next time remember to have a look at it before starting. I'm sorry, there's nothing I can do for you. It's your fault :-("),))
-            raise SystemExit(5)
-        else:
-            raise
-
-    except KeyboardInterrupt:
+    if exc_class is KeyboardInterrupt:
         raise SystemExit(1)
 
-    except:
+    import traceback
+    t_back = entropy.tools.get_traceback()
 
-        entropy.tools.kill_threads()
+    if exc_class is OSError:
+        if exc_instance.errno == 28:
+            print_generic(t_back)
+            print_error("%s %s. %s." % (darkred(" * "), exc_instance,
+                _("Your hard drive is full! Your fault!"),))
+            raise SystemExit(5)
 
-        Text = TextInterface()
-        print_error(darkred(_("Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. Well, you know, shit happens.")))
-        print_error(darkred(_("But there's something you could do to help Equo to be a better application.")))
-        print_error(darkred(_("-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --")))
-        print_error(darkgreen(_("Now I am showing you what happened. Don't panic, I'm here to help you.")))
+    Text = TextInterface()
+    print_error(darkred(_("Hi. My name is Bug Reporter. I am sorry to inform you that Equo crashed. Well, you know, shit happens.")))
+    print_error(darkred(_("But there's something you could do to help Equo to be a better application.")))
+    print_error(darkred(_("-- EVEN IF I DON'T WANT YOU TO SUBMIT THE SAME REPORT MULTIPLE TIMES --")))
+    print_error(darkgreen(_("Now I am showing you what happened. Don't panic, I'm here to help you.")))
 
-        entropy.tools.print_exception()
+    entropy.tools.print_exception(tb_data = exc_tb)
 
-        import traceback
-        exception_data = ""
-        error_file = "/tmp/equoerror.txt"
-        try:
-            ferror = open(error_file, "wb")
-        except (OSError, IOError,):
-            print_error(darkred(_("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayon.org.")))
-            raise SystemExit(1)
+    error_file = "/tmp/equoerror.txt"
+    try:
+        ferror = open(error_file, "wb")
+    except (OSError, IOError,):
+        print_error(darkred(_("Oh well, I cannot even write to /tmp. So, please copy the error and mail lxnay@sabayon.org.")))
+        raise SystemExit(1)
 
-        exception_stack = entropy.tools.get_traceback()
-        exception_data = entropy.tools.print_exception(True)
-        ferror.write(const_convert_to_rawstring("\nRevision: " + \
-            etpConst['entropyversion'] + "\n\n"))
-        ferror.write(const_convert_to_rawstring(exception_stack))
-        ferror.write(const_convert_to_rawstring("\n\n"))
-        ferror.write(const_convert_to_rawstring(''.join(exception_data)))
-        ferror.write(const_convert_to_rawstring("\n"))
-        ferror.flush()
-        ferror.close()
+    exception_data = entropy.tools.print_exception(True)
+    exception_stack = t_back
+    ferror.write(const_convert_to_rawstring("\nRevision: " + \
+        etpConst['entropyversion'] + "\n\n"))
+    ferror.write(const_convert_to_rawstring(exception_stack))
+    ferror.write(const_convert_to_rawstring("\n\n"))
+    ferror.write(const_convert_to_rawstring(''.join(exception_data)))
+    ferror.write(const_convert_to_rawstring("\n"))
+    ferror.flush()
+    ferror.close()
 
-        print_generic("")
+    print_generic("")
 
-        print_error(darkgreen(_("Of course you are on the Internet...")))
-        rc = Text.askQuestion(_("Erm... Can I send the error, along with some information\n   about your hardware to my creators so they can fix me? (Your IP will be logged)"))
-        if rc == _("No"):
-            print_error(darkgreen(_("Ok, ok ok ok... Sorry!")))
-            raise SystemExit(2)
+    print_error(darkgreen(_("Of course you are on the Internet...")))
+    rc = Text.askQuestion(_("Erm... Can I send the error, along with some information\n   about your hardware to my creators so they can fix me? (Your IP will be logged)"))
+    if rc == _("No"):
+        print_error(darkgreen(_("Ok, ok ok ok... Sorry!")))
+        raise SystemExit(2)
 
-        print_error(darkgreen(_("If you want to be contacted back (and actively supported), also answer the questions below:")))
-        name = readtext(_("Your Full name:"))
-        email = readtext(_("Your E-Mail address:"))
-        description = readtext(_("What you were doing:"))
+    print_error(darkgreen(_("If you want to be contacted back (and actively supported), also answer the questions below:")))
+    name = readtext(_("Your Full name:"))
+    email = readtext(_("Your E-Mail address:"))
+    description = readtext(_("What you were doing:"))
 
-        ferror = open(error_file, "r")
-        error_text = ''.join(ferror.readlines())
-        ferror.close()
+    ferror = open(error_file, "r")
+    error_text = ''.join(ferror.readlines())
+    ferror.close()
 
-        try:
-            from entropy.client.interfaces.qa import UGCErrorReportInterface
-            error = UGCErrorReportInterface()
-        except (IncorrectParameter, OnlineMirrorError, AttributeError, ImportError,):
-            error = None
+    try:
+        from entropy.client.interfaces.qa import UGCErrorReportInterface
+        error = UGCErrorReportInterface()
+    except (IncorrectParameter, OnlineMirrorError,
+        AttributeError, ImportError,):
+        error = None
 
-        result = None
-        if error is not None:
-            error.prepare(error_text, name, email, '\n'.join([x for x in exception_data]), description)
-            result = error.submit()
+    result = None
+    if error is not None:
+        error.prepare(error_text, name, email,
+            '\n'.join([x for x in exception_data]), description)
+        result = error.submit()
 
-        if result:
-            print_error(darkgreen(_("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible.")))
-        else:
-            print_error(darkred(_("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayon.org.")))
-            raise SystemExit(4)
+    if result:
+        print_error(darkgreen(_("Thank you very much. The error has been reported and hopefully, the problem will be solved as soon as possible.")))
+    else:
+        print_error(darkred(_("Ugh. Cannot send the report. I saved the error to /tmp/equoerror.txt. When you want, mail the file to lxnay@sabayon.org.")))
+        raise SystemExit(4)
 
-    raise SystemExit(1)
+def install_exception_handler():
+    sys.excepthook = handle_exception
+
+def main():
+
+    install_exception_handler()
+
+    rc = 0
+    main_cmd = options.pop(0)
+    # sync mirrors tool
+    if main_cmd in ("update", "repoinfo", "status", "notice",):
+        import text_repositories
+        rc = text_repositories.repositories([main_cmd] + options)
+
+    elif main_cmd == "moo":
+        do_moo()
+
+    elif main_cmd in ("lxnay", "god", "love_lxnay", "w00t", "fuck",):
+        do_lxnay()
+
+    elif main_cmd in ("install", "remove", "config", "world", "upgrade",
+        "deptest", "unusedpackages", "libtest", "source", "fetch", "hop"):
+        import text_ui
+        rc = text_ui.package([main_cmd] + options)
+
+    elif main_cmd == "security":
+        import text_security
+        rc = text_security.security(options)
+
+    elif main_cmd == "query":
+        import text_query
+        rc = text_query.query(options)
+
+    elif main_cmd == "smart":
+        import text_smart
+        rc = text_smart.smart(options)
+
+    elif main_cmd == "conf":
+        import text_configuration
+        rc = text_configuration.configurator(options)
+
+    elif main_cmd == "cache":
+        import text_cache
+        rc = text_cache.cache(options)
+
+    elif main_cmd in ("match", "search"):
+        import text_query
+        rc = text_query.query([main_cmd] + options)
+
+    elif main_cmd == "database":
+        import text_rescue
+        rc = text_rescue.database(options)
+
+    elif main_cmd == "ugc":
+        import text_ugc
+        rc = text_ugc.ugc(options)
+
+    elif main_cmd == "community":
+
+        comm_err_msg = _("You need to install sys-apps/entropy-server. :-) Do it !")
+        etpConst['community']['mode'] = True
+        myopts = options
+
+        if myopts:
+            if myopts[0] == "repos":
+                try:
+                    import server_reagent
+                except ImportError:
+                    print_error(darkgreen(comm_err_msg))
+                    rc = 1
+                else:
+                    repos_opts = myopts[1:]
+                    if repos_opts:
+                        if repos_opts[0] == "update":
+                            rc = server_reagent.update(repos_opts[1:])
+                            server_reagent.Entropy.close_server_databases()
+                        elif repos_opts[0] == "inject":
+                            rc = server_reagent.inject(repos_opts[1:])
+                            server_reagent.Entropy.close_server_databases()
+            elif myopts[0] == "mirrors":
+                try:
+                    import server_activator
+                except ImportError:
+                    print_error(darkgreen(comm_err_msg))
+                    rc = 1
+                else:
+                    mirrors_opts = myopts[1:]
+                    if mirrors_opts:
+                        if mirrors_opts[0] == "sync":
+                            server_activator.sync(mirrors_opts[1:])
+                        elif mirrors_opts[0] == "packages-sync":
+                            server_activator.sync(mirrors_opts[1:])
+                        elif mirrors_opts[0] == "tidy":
+                            server_activator.sync(mirrors_opts[1:],
+                                just_tidy = True)
+                        elif mirrors_opts[0].startswith("db-"):
+                            mirrors_opts[0] = mirrors_opts[0][3:]
+                            server_activator.database(mirrors_opts)
+
+            elif myopts[0] == "database":
+
+                do = True
+                # hook to support spmuids command, which is just
+                # a duplicate of 'equo database counters'
+                # put here for completeness
+                if len(myopts) > 1:
+                    if myopts[1] == "spmuids":
+                        do = False
+                        import text_rescue
+                        rc = text_rescue.database(myopts[1:])
+
+                if do:
+                    try:
+                        import server_reagent
+                    except ImportError:
+                        print_error(darkgreen(comm_err_msg))
+                        rc = 1
+                    else:
+                        rc = server_reagent.database(myopts[1:])
+                        server_reagent.Entropy.close_server_databases()
+
+            elif myopts[0] == "repo":
+                try:
+                    import server_reagent
+                except ImportError:
+                    print_error(darkgreen(comm_err_msg))
+                    rc = 1
+                else:
+                    rc = server_reagent.repositories(myopts[1:])
+
+            elif myopts[0] == "notice":
+                try:
+                    import server_activator
+                    if not hasattr(server_activator, 'notice'):
+                        raise ImportError
+                except ImportError:
+                    print_error(darkgreen(_("You need to install/update sys-apps/entropy-server. :-) Do it !")))
+                    rc = 1
+                else:
+                    rc = server_activator.notice(myopts[1:])
+
+            elif myopts[0] == "query":
+                try:
+                    import server_query
+                except ImportError:
+                    print_error(darkgreen(comm_err_msg))
+                    rc = 1
+                else:
+                    rc = server_query.query(myopts[1:])
+
+            elif myopts[0] == "spm":
+                    try:
+                        import server_reagent
+                    except ImportError:
+                        print_error(darkgreen(comm_err_msg))
+                        rc = 1
+                    else:
+                        rc = server_reagent.spm(myopts[1:])
+                        server_reagent.Entropy.close_server_databases()
+
+            elif myopts[0] == "deptest":
+                try:
+                    import server_reagent
+                except ImportError:
+                    print_error(darkgreen(comm_err_msg))
+                    rc = 1
+                else:
+                    server_reagent.Entropy.dependencies_test()
+                    server_reagent.Entropy.close_server_databases()
+
+            elif myopts[0] == "pkgtest":
+                try:
+                    import server_reagent
+                except ImportError:
+                    print_error(darkgreen(comm_err_msg))
+                    rc = 1
+                else:
+                    server_reagent.Entropy.verify_local_packages(["world"], ask = etpUi['ask'])
+                    server_reagent.Entropy.close_server_databases()
+
+            elif myopts[0] == "revdeps":
+                try:
+                    import server_reagent
+                except ImportError:
+                    print_error(darkgreen(comm_err_msg))
+                    rc = 1
+                else:
+                    rc = server_reagent.Entropy.generate_reverse_dependencies_metadata()
+                    server_reagent.Entropy.close_server_databases()
+
+    elif main_cmd == "cleanup":
+        entropy.tools.cleanup([etpConst['packagestmpdir'],
+            etpConst['logdir'], etpConst['entropyunpackdir'],
+            etpConst['packagesbindir']])
+        rc = 0
+    else:
+        rc = -10
+
+    if rc == -10:
+        status = readerrorstatus()
+        print_error(darkred(etp_exit_messages[status]))
+        # increment
+        if status < len(etp_exit_messages)-1:
+            writeerrorstatus(status+1)
+        rc = 10
+    else:
+        writeerrorstatus(0)
+
+    entropy.tools.kill_threads()
+    raise SystemExit(rc)
 
 if __name__ == "__main__":
     main()
