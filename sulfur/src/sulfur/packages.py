@@ -748,7 +748,7 @@ class EntropyPackages:
 
         try:
             updates, remove, fine, spm_fine = \
-                self.Entropy.calculate_world_updates(
+                self.Entropy.calculate_updates(
                     critical_updates = critical_updates)
         except SystemDatabaseError:
             # broken client db

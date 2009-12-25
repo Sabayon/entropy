@@ -270,7 +270,7 @@ def upgrade_packages(onlyfetch = False, replay = False, resume = False,
 
         print_info(red(" @@ ")+blue("%s..." % (_("Calculating System Updates"),) ))
         try:
-            update, remove, fine, spm_fine = E_CLIENT.calculate_world_updates(
+            update, remove, fine, spm_fine = E_CLIENT.calculate_updates(
                 empty_deps = replay)
         except SystemDatabaseError:
             # handled in equo.py

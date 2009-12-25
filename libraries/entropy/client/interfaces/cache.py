@@ -71,7 +71,7 @@ class CacheMixin:
         # we can barely ignore any exception from here
         # especially cases where client db does not exist
         try:
-            update, remove, fine, spm_fine = self.calculate_world_updates()
+            update, remove, fine, spm_fine = self.calculate_updates()
             del fine, spm_fine, remove
             if do_install_queue:
                 self.get_install_queue(update, False, False)

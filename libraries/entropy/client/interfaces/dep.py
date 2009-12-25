@@ -1594,7 +1594,7 @@ class CalculatorsMixin:
         return data
 
 
-    def calculate_world_updates(self, empty_deps = False, use_cache = True,
+    def calculate_updates(self, empty_deps = False, use_cache = True,
         critical_updates = True):
 
         cl_settings = self.SystemSettings[self.sys_settings_client_plugin_id]
@@ -1631,7 +1631,7 @@ class CalculatorsMixin:
 
         maxlen = len(idpackages)
         count = 0
-        mytxt = _("Calculating world packages")
+        mytxt = _("Calculating updates")
         for idpackage in idpackages:
 
             count += 1

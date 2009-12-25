@@ -208,7 +208,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
         # issues with metadata not being available
         try:
             update, remove, fine, spm_fine = \
-                self._helper.calculate_world_updates(
+                self._helper.calculate_updates(
                     critical_updates = False)
         except (ValueError, SystemDatabaseError, RepositoryError,):
             # RepositoryError is triggered when branch is hopped
