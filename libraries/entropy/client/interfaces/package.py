@@ -74,25 +74,43 @@ class Package:
                 self.valid_actions,)
             )
 
-    def match_checksum(self, repository = None, checksum = None,
-        download = None, signatures = None):
+    def _match_checksum(self, repository, checksum, download, signatures):
 
         self.error_on_not_prepared()
-
-        if repository is None:
-            repository = self.pkgmeta['repository']
-        if checksum is None:
-            checksum = self.pkgmeta['checksum']
-        if download is None:
-            download = self.pkgmeta['download']
-        if signatures is None:
-            signatures = self.pkgmeta['signatures']
 
         sys_settings = self.Entropy.SystemSettings
 
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         enabled_hashes = sys_settings[sys_set_plg_id]['misc']['packagehashes']
+        pkg_disk_path = os.path.join(etpConst['entropyworkdir'], download)
+        pkg_disk_path_mtime = pkg_disk_path + ".mtime"
+
+        def do_mtime_validation():
+            if not (os.path.isfile(pkg_disk_path_mtime) and \
+                os.access(pkg_disk_path_mtime, os.R_OK)):
+                return 1
+            if not (os.path.isfile(pkg_disk_path) and \
+                os.access(pkg_disk_path, os.R_OK)):
+                return 2
+
+            with open(pkg_disk_path_mtime, "r") as mt_f:
+                stored_mtime = mt_f.read().strip()
+
+            # get pkg mtime
+            cur_mtime = str(os.path.getmtime(pkg_disk_path))
+            if cur_mtime == stored_mtime:
+                return 0
+            return 1
+
+        def do_store_mtime():
+            if not (os.path.isfile(pkg_disk_path) and \
+                os.access(pkg_disk_path, os.R_OK)):
+                return
+            with open(pkg_disk_path_mtime, "w") as mt_f:
+                cur_mtime = str(os.path.getmtime(pkg_disk_path))
+                mt_f.write(cur_mtime)
+                mt_f.flush()
 
         def do_signatures_validation(signatures):
             # check signatures, if available
@@ -129,9 +147,7 @@ class Package:
                     )
                     cmp_func = getattr(entropy.tools,
                         'compare_%s' % (hash_type,))
-                    mydownload = os.path.join(etpConst['entropyworkdir'],
-                        download)
-                    valid = cmp_func(mydownload, hash_val)
+                    valid = cmp_func(pkg_disk_path, hash_val)
                     if not valid:
                         self.Entropy.updateProgress(
                             "%s: %s %s" % (
@@ -157,6 +173,7 @@ class Package:
 
         dlcount = 0
         match = False
+
         while dlcount <= 5:
 
             self.Entropy.updateProgress(
@@ -181,8 +198,13 @@ class Package:
                     header = red("   ## ")
                 )
 
-                dlcheck = do_signatures_validation(signatures)
+                # check if package has been already checked
+                dlcheck = do_mtime_validation()
+                if dlcheck != 0:
+                    dlcheck = do_signatures_validation(signatures)
+
                 if dlcheck == 0:
+                    do_store_mtime()
                     self.pkgmeta['verified'] = True
                     match = True
                     break # file downloaded successfully
@@ -239,7 +261,7 @@ class Package:
         for repository, branch, download, digest, signatures in \
             self.pkgmeta['multi_checksum_list']:
 
-            rc = self.match_checksum(repository, digest, download, signatures)
+            rc = self._match_checksum(repository, digest, download, signatures)
             if rc != 0:
                 break
 
@@ -1776,7 +1798,9 @@ class Package:
 
     def checksum_step(self):
         self.error_on_not_prepared()
-        return self.match_checksum()
+        return self._match_checksum(self.pkgmeta['repository'],
+            self.pkgmeta['checksum'], self.pkgmeta['download'],
+            self.pkgmeta['signatures'])
 
     def multi_checksum_step(self):
         self.error_on_not_prepared()
