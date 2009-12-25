@@ -176,9 +176,8 @@ class CacheMixin:
             if db_digest == None:
                 db_digest = self.all_repositories_checksum()
 
-            c_hash = "%s%s" % (etpCache['world_update'],
-                self._get_updates_cache_hash(db_digest, empty_deps,
-                    ignore_spm_downgrades),)
+            c_hash = self._get_updates_cache_hash(db_digest, empty_deps,
+                ignore_spm_downgrades)
 
             disk_cache = self.Cacher.pop(c_hash)
             if isinstance(disk_cache, tuple):
@@ -187,7 +186,7 @@ class CacheMixin:
     def _get_updates_cache_hash(self, db_digest, empty_deps,
         ignore_spm_downgrades):
 
-        return str(hash("%s|%s|%s|%s|%s|%s" % (
+        c_hash = str(hash("%s|%s|%s|%s|%s|%s" % (
             db_digest, empty_deps, self.validRepositories,
             self.SystemSettings['repositories']['order'],
             ignore_spm_downgrades,
@@ -195,6 +194,7 @@ class CacheMixin:
             # manually (branch setting)
             self.SystemSettings['repositories']['branch'],
         )))
+        return "%s%s" % (etpCache['world_update'], c_hash,)
 
     def get_critical_updates_cache(self, db_digest = None):
 

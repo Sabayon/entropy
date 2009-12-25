@@ -1675,7 +1675,8 @@ class CalculatorsMixin:
                     use_match_cache = False
                     continue
                 break
-            if do_continue: continue
+            if do_continue:
+                continue
             # now compare
             # version: cl_version
             # tag: cl_tag
@@ -1749,8 +1750,7 @@ class CalculatorsMixin:
             c_hash = self._get_updates_cache_hash(db_digest, empty_deps,
                 ignore_spm_downgrades)
             data = (update, remove, fine, spm_fine,)
-            self.Cacher.push("%s%s" % (etpCache['world_update'], c_hash,),
-                data, async = False)
+            self.Cacher.push(c_hash, data, async = False)
             self.Cacher.sync()
 
         if not update:
