@@ -1324,7 +1324,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.disable_ugc = True
         self.set_busy()
         bootstrap = False
-        if (self.Equo.get_world_update_cache(empty_deps = False) == None):
+        if (self.Equo.get_updates_cache(empty_deps = False) == None):
             if self.do_debug:
                 print_generic("show_packages: bootstrap True due to empty world cache")
             bootstrap = True

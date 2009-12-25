@@ -166,7 +166,7 @@ class CacheMixin:
             myhash = self.get_available_packages_chash()
         return self.Cacher.pop("%s%s" % (etpCache['world_available'], myhash))
 
-    def get_world_update_cache(self, empty_deps, db_digest = None):
+    def get_updates_cache(self, empty_deps, db_digest = None):
 
         misc_settings = self.SystemSettings[self.sys_settings_client_plugin_id]['misc']
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
@@ -177,14 +177,14 @@ class CacheMixin:
                 db_digest = self.all_repositories_checksum()
 
             c_hash = "%s%s" % (etpCache['world_update'],
-                self.get_world_update_cache_hash(db_digest, empty_deps,
+                self._get_updates_cache_hash(db_digest, empty_deps,
                     ignore_spm_downgrades),)
 
             disk_cache = self.Cacher.pop(c_hash)
             if isinstance(disk_cache, tuple):
                 return disk_cache
 
-    def get_world_update_cache_hash(self, db_digest, empty_deps,
+    def _get_updates_cache_hash(self, db_digest, empty_deps,
         ignore_spm_downgrades):
 
         return str(hash("%s|%s|%s|%s|%s|%s" % (

@@ -1614,7 +1614,7 @@ class CalculatorsMixin:
 
         db_digest = self.all_repositories_checksum()
         if use_cache and self.xcache:
-            cached = self.get_world_update_cache(empty_deps = empty_deps,
+            cached = self.get_updates_cache(empty_deps = empty_deps,
                 db_digest = db_digest)
             if cached is not None:
                 return cached
@@ -1746,7 +1746,7 @@ class CalculatorsMixin:
                         update.append(matchresults)
 
         if self.xcache:
-            c_hash = self.get_world_update_cache_hash(db_digest, empty_deps,
+            c_hash = self.get_updates_cache_hash(db_digest, empty_deps,
                 ignore_spm_downgrades)
             data = (update, remove, fine, spm_fine,)
             self.Cacher.push("%s%s" % (etpCache['world_update'], c_hash,),
