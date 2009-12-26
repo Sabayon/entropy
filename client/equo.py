@@ -855,8 +855,9 @@ def main():
 
     entropy.tools.kill_threads()
     uninstall_exception_handler()
-    raise SystemExit(rc)
+    return rc
 
 if __name__ == "__main__":
-    main()
+    main_rc = main()
+    raise SystemExit(main_rc)
 
