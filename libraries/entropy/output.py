@@ -961,7 +961,7 @@ class TextInterface:
                             use_cb = False
                             myresult = list_editor(data, cancel_button, callback)
                     else:
-                        myresult = readtext(input_text+":", password = password).decode('utf-8')
+                        myresult = readtext(input_text+": ", password = password).decode('utf-8')
                 except (KeyboardInterrupt, EOFError,):
                     if not cancel_button: # use with care
                         continue
