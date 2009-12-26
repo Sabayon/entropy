@@ -90,7 +90,7 @@ def color(fg, bg="default", attr=["normal"]):
 
 
 
-codes={}
+codes = {}
 codes["reset"]     = esc_seq + "39;49;00m"
 
 codes["bold"]      = esc_seq + "01m"
@@ -111,8 +111,6 @@ rgb_ansi_colors = ['0x000000', '0x555555', '0xAA0000', '0xFF5555', '0x00AA00',
 
 for x in range(len(rgb_ansi_colors)):
         codes[rgb_ansi_colors[x]] = esc_seq + ansi_color_codes[x]
-
-del x
 
 codes["black"]     = codes["0x000000"]
 codes["darkgray"]  = codes["0x555555"]
@@ -165,7 +163,7 @@ def is_stdout_a_tty():
     fn = sys.stdout.fileno()
     return os.isatty(fn)
 
-def xtermTitle(mystr, raw = False):
+def xterm_title(mystr, raw = False):
     """
     Set new xterm title.
 
@@ -176,7 +174,8 @@ def xtermTitle(mystr, raw = False):
     """
     if dotitles and "TERM" in os.environ and sys.stderr.isatty():
         myt = os.environ["TERM"]
-        legal_terms = ["xterm", "Eterm", "aterm", "rxvt", "screen", "kterm", "rxvt-unicode", "gnome"]
+        legal_terms = ("xterm", "Eterm", "aterm", "rxvt", "screen",
+            "kterm", "rxvt-unicode", "gnome")
         if myt in legal_terms:
             if not raw:
                 mystr = "\x1b]0;%s\x07" % mystr
@@ -188,7 +187,7 @@ def xtermTitle(mystr, raw = False):
 
 default_xterm_title = None
 
-def xtermTitleReset():
+def xterm_title_reset():
     """
     Reset xterm title to default.
     """
@@ -209,7 +208,7 @@ def xtermTitleReset():
                 os.getenv('LOGNAME', ''),
                 os.getenv('HOSTNAME', '').split('.', 1)[0],
                 pwd)
-    xtermTitle(default_xterm_title)
+    xterm_title(default_xterm_title)
 
 def notitles():
     """
@@ -230,7 +229,7 @@ nc = os.getenv("ETP_NO_COLOR")
 if nc:
     nocolor()
 
-def resetColor():
+def _reset_color():
     """
     Reset terminal color currently set.
     """
@@ -644,7 +643,7 @@ def readtext(request, password = False):
     @return: text read back from stdin
     @rtype: string
     """
-    xtermTitle(_("Entropy needs your attention"))
+    xterm_title(_("Entropy needs your attention"))
     if password:
         from getpass import getpass
         try:
@@ -780,7 +779,7 @@ class TextInterface:
         try:
             while True:
 
-                xtermTitle(_("Entropy got a question for you"))
+                xterm_title(_("Entropy got a question for you"))
                 _flush_stdouterr()
                 answer_items = [colours[x % colours_len](responses[x]) \
                     for x in range(len(responses))]
@@ -789,7 +788,7 @@ class TextInterface:
 
                 for key in responses:
                     if response.upper() == key[:len(response)].upper():
-                        xtermTitleReset()
+                        xterm_title_reset()
                         return key
                     _flush_stdouterr()
 
@@ -799,10 +798,10 @@ class TextInterface:
                 sys.stdout.write(msg)
             except UnicodeEncodeError:
                 sys.stdout.write(msg.encode("utf-8"))
-            xtermTitleReset()
+            xterm_title_reset()
             raise SystemExit(100)
 
-        xtermTitleReset()
+        xterm_title_reset()
         _flush_stdouterr()
 
     def inputBox(self, title, input_parameters, cancel_button = True):
@@ -990,7 +989,7 @@ class TextInterface:
         @param title: new application title
         @type title: string
         """
-        xtermTitle(title)
+        xterm_title(title)
 
     def setTotalCycles(self, total):
         """
