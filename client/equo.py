@@ -11,6 +11,7 @@
 
 """
 import sys
+import re
 sys.path.insert(0, '/usr/lib/entropy/libraries')
 sys.path.insert(0, '/usr/lib/entropy/server')
 sys.path.insert(0, '/usr/lib/entropy/client')
@@ -32,20 +33,12 @@ except ImportError:
         return x
 
 
-dbapi2Exceptions = {}
-dbapi2Exceptions['OperationalError'] = None
-dbapi2_done = False
-try: # try with sqlite3 from python 2.5 - default one
+dbapi2_exceptions = {}
+try:
     from sqlite3 import dbapi2
-    dbapi2_done = True
-except: # fallback to embedded pysqlite
-    try:
-        from pysqlite2 import dbapi2
-        dbapi2_done = True
-    except:
-        pass
-if dbapi2_done:
-    dbapi2Exceptions['OperationalError'] = dbapi2.OperationalError
+    dbapi2_exceptions['OperationalError'] = dbapi2.OperationalError
+except ImportError:
+    dbapi2_exceptions['OperationalError'] = None
 
 etp_exit_messages = {
     0: _("You should run equo --help"),
@@ -64,7 +57,8 @@ if not is_stdout_a_tty():
 
 help_opts = [
     None,
-    (0, " ~ %s ~ " % ("equo",), 2, 'Entropy Framework Client - (C) %s' % (entropy.tools.get_year(),) ),
+    (0, " ~ %s ~ " % ("equo",), 2,
+        'Entropy Framework Client - (C) 2007-%s' % (entropy.tools.get_year(),) ),
     None,
     (0, _('Basic Options'), 0, None),
     None,
@@ -95,7 +89,7 @@ help_opts = [
     None,
     (1, 'hop <branch>', 1, _('upgrade your distribution to a new release (branch)')),
     None,
-    (1, 'world', 1, _('update system with the latest available packages')),
+    (1, 'upgrade', 1, _('update system with the latest available packages')),
     (2, '--ask', 2, _('ask before making any changes')),
     (2, '--fetch', 1, _('just download packages')),
     (2, '--pretend', 1, _('only show what would be done')),
@@ -107,8 +101,6 @@ help_opts = [
     (2, '--nochecksum', 1, _('disable package integrity check')),
     (2, '--multifetch', 1, _('download multiple packages in parallel (default 3)')),
     (2, '--multifetch=N', 1, _('download N packages in parallel (max 10)')),
-    None,
-    (1, 'upgrade', 1, _('same as world')),
     None,
     (1, 'security', 1, _('security infrastructure functions')),
     (2, 'update', 2, _('download the latest Security Advisories')),
@@ -375,11 +367,259 @@ help_opts_extended = [
     None,
 ]
 
+def _do_text_ui(main_cmd, options):
+    import text_ui
+    return text_ui.package([main_cmd] + options)
+
+def _do_text_repos(main_cmd, options):
+    import text_repositories
+    return text_repositories.repositories([main_cmd] + options)
+
+def _do_text_security(main_cmd, options):
+    import text_security
+    return text_security.security(options)
+
+def _do_text_query(main_cmd, options):
+    import text_query
+    return text_query.query(options)
+
+def _do_text_smart(main_cmd, options):
+    import text_smart
+    return text_smart.smart(options)
+
+def _do_text_conf(main_cmd, options):
+    import text_configuration
+    return text_configuration.configurator(options)
+
+def _do_text_cache(main_cmd, options):
+    import text_cache
+    return text_cache.cache(options)
+
+def _do_search(main_cmd, options):
+    import text_query
+    return text_query.query([main_cmd] + options)
+
+def _do_text_database(main_cmd, options):
+    import text_rescue
+    return text_rescue.database(options)
+
+def _do_text_ugc(main_cmd, options):
+    import text_ugc
+    return text_ugc.ugc(options)
+
+def _do_text_community(main_cmd, options):
+    comm_err_msg = _("You need to install sys-apps/entropy-server. :-) Do it !")
+    etpConst['community']['mode'] = True
+
+    if not options:
+        return -10
+
+    rc = -10
+    sub_cmd = options.pop(0)
+
+    if sub_cmd == "repos":
+        try:
+            import server_reagent
+        except ImportError:
+            print_error(darkgreen(comm_err_msg))
+            rc = 1
+        else:
+            if options:
+                if options[0] == "update":
+                    rc = server_reagent.update(options[1:])
+                    server_reagent.Entropy.close_server_databases()
+                elif options[0] == "inject":
+                    rc = server_reagent.inject(options[1:])
+                    server_reagent.Entropy.close_server_databases()
+    elif sub_cmd == "mirrors":
+        try:
+            import server_activator
+        except ImportError:
+            print_error(darkgreen(comm_err_msg))
+            rc = 1
+        else:
+            if options:
+                if options[0] == "sync":
+                    server_activator.sync(options[1:])
+                elif options[0] == "packages-sync":
+                    server_activator.sync(options[1:])
+                elif options[0] == "tidy":
+                    server_activator.sync(options[1:],
+                        just_tidy = True)
+                elif options[0].startswith("db-"):
+                    options[0] = options[0][3:]
+                    server_activator.database(options)
+
+    elif sub_cmd == "database":
+
+        do = True
+        # hook to support spmuids command, which is just
+        # a duplicate of 'equo database counters'
+        # put here for completeness
+        if options:
+            if options[0] == "spmuids":
+                do = False
+                import text_rescue
+                rc = text_rescue.database(options)
+
+        if do:
+            try:
+                import server_reagent
+            except ImportError:
+                print_error(darkgreen(comm_err_msg))
+                rc = 1
+            else:
+                rc = server_reagent.database(options)
+                server_reagent.Entropy.close_server_databases()
+
+    elif sub_cmd == "repo":
+        try:
+            import server_reagent
+        except ImportError:
+            print_error(darkgreen(comm_err_msg))
+            rc = 1
+        else:
+            rc = server_reagent.repositories(options)
+
+    elif sub_cmd == "notice":
+        try:
+            import server_activator
+            if not hasattr(server_activator, 'notice'):
+                raise ImportError
+        except ImportError:
+            print_error(darkgreen(_("You need to install/update sys-apps/entropy-server. :-) Do it !")))
+            rc = 1
+        else:
+            rc = server_activator.notice(options)
+
+    elif sub_cmd == "query":
+        try:
+            import server_query
+        except ImportError:
+            print_error(darkgreen(comm_err_msg))
+            rc = 1
+        else:
+            rc = server_query.query(options)
+
+    elif sub_cmd == "spm":
+            try:
+                import server_reagent
+            except ImportError:
+                print_error(darkgreen(comm_err_msg))
+                rc = 1
+            else:
+                rc = server_reagent.spm(options)
+                server_reagent.Entropy.close_server_databases()
+
+    elif sub_cmd == "deptest":
+        try:
+            import server_reagent
+        except ImportError:
+            print_error(darkgreen(comm_err_msg))
+            rc = 1
+        else:
+            server_reagent.Entropy.dependencies_test()
+            server_reagent.Entropy.close_server_databases()
+            rc = 0
+
+    elif sub_cmd == "pkgtest":
+        try:
+            import server_reagent
+        except ImportError:
+            print_error(darkgreen(comm_err_msg))
+            rc = 1
+        else:
+            server_reagent.Entropy.verify_local_packages(["world"], ask = etpUi['ask'])
+            server_reagent.Entropy.close_server_databases()
+            rc = 0
+
+    elif sub_cmd == "revdeps":
+        try:
+            import server_reagent
+        except ImportError:
+            print_error(darkgreen(comm_err_msg))
+            rc = 1
+        else:
+            rc = server_reagent.Entropy.generate_reverse_dependencies_metadata()
+            server_reagent.Entropy.close_server_databases()
+
+    return rc
+
+def _do_text_cleanup(main_cmd, options):
+    entropy.tools.cleanup([etpConst['packagestmpdir'],
+        etpConst['logdir'], etpConst['entropyunpackdir'],
+        etpConst['packagesbindir']])
+    return 0
+
+def do_moo(*args):
+    t = """ _____________
+< Entromoooo! >
+ -------------
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\\
+                ||----w |
+                ||     ||
+"""
+    sys.stdout.write(t)
+    sys.stdout.flush()
+
+def do_lxnay(*args):
+    t = """ _____________
+< I love lxnay! >
+ ---------------
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\\
+                ||----w |
+                ||     ||
+"""
+    sys.stdout.write(t)
+    sys.stdout.flush()
+
+CMDS_MAP = {
+    "install": _do_text_ui,
+    "remove": _do_text_ui,
+    "config": _do_text_ui,
+    "world": _do_text_ui,
+    "upgrade": _do_text_ui,
+    "deptest": _do_text_ui,
+    "unusedpackages": _do_text_ui,
+    "libtest": _do_text_ui,
+    "source": _do_text_ui,
+    "fetch": _do_text_ui,
+    "hop": _do_text_ui,
+
+    "moo": do_moo,
+    "lxnay": do_lxnay,
+    "god": do_lxnay,
+    "love_lxnay": do_lxnay,
+    "w00t": do_lxnay,
+
+    "update": _do_text_repos,
+    "repoinfo": _do_text_repos,
+    "status": _do_text_repos,
+    "notice": _do_text_repos,
+
+    "security": _do_text_security,
+    "query": _do_text_query,
+    "smart": _do_text_smart,
+    "conf": _do_text_conf,
+    "cache": _do_text_cache,
+
+    "match": _do_search,
+    "search": _do_search,
+    "database": _do_text_database,
+    "ugc": _do_text_ugc,
+    "community": _do_text_community,
+
+    "cleanup": _do_text_cleanup,
+
+}
 
 options = sys.argv[1:]
 _options = []
 
-import re
 opt_r = re.compile("^(\\-)([a-z]+)$")
 for n in range(len(options)):
     if opt_r.match(options[n]):
@@ -408,56 +648,28 @@ for opt in options:
         _options.append(opt)
 options = _options
 
-# 'equo help' support
-if options:
-    if options[0] == "help":
-        options.insert(0, "--help")
+if "help" in options:
+    options.insert(0, "--help")
 
 # print help
 if (not options) or ("--help" in options):
-    print_menu(help_opts)
+    print_menu(help_opts, args = options[:])
     if etpUi['verbose']:
-        print_menu(help_opts_extended)
+        print_menu(help_opts_extended, args = options[:])
     else:
-        print_menu(help_opts_ext_info)
+        print_menu(help_opts_ext_info, args = options[:])
     if not options:
         print_error(_("not enough parameters"))
     raise SystemExit(1)
 
 # print version
-if (options[0] == "--version"):
+if options[0] == "--version":
     print_generic("equo: "+etpConst['entropyversion'])
     raise SystemExit(0)
-elif (options[0] == "--info"):
+elif options[0] == "--info":
     import text_rescue
     text_rescue.database(["info"])
     raise SystemExit(0)
-
-def do_moo():
-    t = """ _____________
-< Entromoooo! >
- -------------
-        \   ^__^
-         \  (oo)\_______
-            (__)\       )\/\\
-                ||----w |
-                ||     ||
-"""
-    sys.stdout.write(t)
-    sys.stdout.flush()
-
-def do_lxnay():
-    t = """ _____________
-< I love lxnay! >
- ---------------
-        \   ^__^
-         \  (oo)\_______
-            (__)\       )\/\\
-                ||----w |
-                ||     ||
-"""
-    sys.stdout.write(t)
-    sys.stdout.flush()
 
 def readerrorstatus():
     try:
@@ -481,7 +693,7 @@ def writeerrorstatus(status):
 def handle_exception(exc_class, exc_instance, exc_tb):
 
     # restore original exception handler, to avoid loops
-    sys.excepthook = sys.__excepthook__
+    uninstall_exception_handler()
 
     entropy.tools.kill_threads()
 
@@ -520,7 +732,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
             darkred(" * "), exc_instance, _("Cannot continue"),))
         raise SystemExit(1)
 
-    if exc_class is dbapi2Exceptions['OperationalError']:
+    if exc_class is dbapi2_exceptions['OperationalError']:
         entropy.tools.print_exception(tb_data = exc_tb)
         print_error("%s %s. %s." % (darkred(" * "), exc_instance,
             _("Cannot continue. Your hard disk is probably faulty."),))
@@ -541,7 +753,6 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     if exc_class is KeyboardInterrupt:
         raise SystemExit(1)
 
-    import traceback
     t_back = entropy.tools.get_traceback()
 
     if exc_class is OSError:
@@ -616,200 +827,21 @@ def handle_exception(exc_class, exc_instance, exc_tb):
 def install_exception_handler():
     sys.excepthook = handle_exception
 
+def uninstall_exception_handler():
+    sys.excepthook = sys.__excepthook__
+
+
+
 def main():
 
     install_exception_handler()
 
-    rc = 0
+    rc = -10
     main_cmd = options.pop(0)
-    # sync mirrors tool
-    if main_cmd in ("update", "repoinfo", "status", "notice",):
-        import text_repositories
-        rc = text_repositories.repositories([main_cmd] + options)
 
-    elif main_cmd == "moo":
-        do_moo()
-
-    elif main_cmd in ("lxnay", "god", "love_lxnay", "w00t", "fuck",):
-        do_lxnay()
-
-    elif main_cmd in ("install", "remove", "config", "world", "upgrade",
-        "deptest", "unusedpackages", "libtest", "source", "fetch", "hop"):
-        import text_ui
-        rc = text_ui.package([main_cmd] + options)
-
-    elif main_cmd == "security":
-        import text_security
-        rc = text_security.security(options)
-
-    elif main_cmd == "query":
-        import text_query
-        rc = text_query.query(options)
-
-    elif main_cmd == "smart":
-        import text_smart
-        rc = text_smart.smart(options)
-
-    elif main_cmd == "conf":
-        import text_configuration
-        rc = text_configuration.configurator(options)
-
-    elif main_cmd == "cache":
-        import text_cache
-        rc = text_cache.cache(options)
-
-    elif main_cmd in ("match", "search"):
-        import text_query
-        rc = text_query.query([main_cmd] + options)
-
-    elif main_cmd == "database":
-        import text_rescue
-        rc = text_rescue.database(options)
-
-    elif main_cmd == "ugc":
-        import text_ugc
-        rc = text_ugc.ugc(options)
-
-    elif main_cmd == "community":
-
-        comm_err_msg = _("You need to install sys-apps/entropy-server. :-) Do it !")
-        etpConst['community']['mode'] = True
-        myopts = options
-
-        if myopts:
-            if myopts[0] == "repos":
-                try:
-                    import server_reagent
-                except ImportError:
-                    print_error(darkgreen(comm_err_msg))
-                    rc = 1
-                else:
-                    repos_opts = myopts[1:]
-                    if repos_opts:
-                        if repos_opts[0] == "update":
-                            rc = server_reagent.update(repos_opts[1:])
-                            server_reagent.Entropy.close_server_databases()
-                        elif repos_opts[0] == "inject":
-                            rc = server_reagent.inject(repos_opts[1:])
-                            server_reagent.Entropy.close_server_databases()
-            elif myopts[0] == "mirrors":
-                try:
-                    import server_activator
-                except ImportError:
-                    print_error(darkgreen(comm_err_msg))
-                    rc = 1
-                else:
-                    mirrors_opts = myopts[1:]
-                    if mirrors_opts:
-                        if mirrors_opts[0] == "sync":
-                            server_activator.sync(mirrors_opts[1:])
-                        elif mirrors_opts[0] == "packages-sync":
-                            server_activator.sync(mirrors_opts[1:])
-                        elif mirrors_opts[0] == "tidy":
-                            server_activator.sync(mirrors_opts[1:],
-                                just_tidy = True)
-                        elif mirrors_opts[0].startswith("db-"):
-                            mirrors_opts[0] = mirrors_opts[0][3:]
-                            server_activator.database(mirrors_opts)
-
-            elif myopts[0] == "database":
-
-                do = True
-                # hook to support spmuids command, which is just
-                # a duplicate of 'equo database counters'
-                # put here for completeness
-                if len(myopts) > 1:
-                    if myopts[1] == "spmuids":
-                        do = False
-                        import text_rescue
-                        rc = text_rescue.database(myopts[1:])
-
-                if do:
-                    try:
-                        import server_reagent
-                    except ImportError:
-                        print_error(darkgreen(comm_err_msg))
-                        rc = 1
-                    else:
-                        rc = server_reagent.database(myopts[1:])
-                        server_reagent.Entropy.close_server_databases()
-
-            elif myopts[0] == "repo":
-                try:
-                    import server_reagent
-                except ImportError:
-                    print_error(darkgreen(comm_err_msg))
-                    rc = 1
-                else:
-                    rc = server_reagent.repositories(myopts[1:])
-
-            elif myopts[0] == "notice":
-                try:
-                    import server_activator
-                    if not hasattr(server_activator, 'notice'):
-                        raise ImportError
-                except ImportError:
-                    print_error(darkgreen(_("You need to install/update sys-apps/entropy-server. :-) Do it !")))
-                    rc = 1
-                else:
-                    rc = server_activator.notice(myopts[1:])
-
-            elif myopts[0] == "query":
-                try:
-                    import server_query
-                except ImportError:
-                    print_error(darkgreen(comm_err_msg))
-                    rc = 1
-                else:
-                    rc = server_query.query(myopts[1:])
-
-            elif myopts[0] == "spm":
-                    try:
-                        import server_reagent
-                    except ImportError:
-                        print_error(darkgreen(comm_err_msg))
-                        rc = 1
-                    else:
-                        rc = server_reagent.spm(myopts[1:])
-                        server_reagent.Entropy.close_server_databases()
-
-            elif myopts[0] == "deptest":
-                try:
-                    import server_reagent
-                except ImportError:
-                    print_error(darkgreen(comm_err_msg))
-                    rc = 1
-                else:
-                    server_reagent.Entropy.dependencies_test()
-                    server_reagent.Entropy.close_server_databases()
-
-            elif myopts[0] == "pkgtest":
-                try:
-                    import server_reagent
-                except ImportError:
-                    print_error(darkgreen(comm_err_msg))
-                    rc = 1
-                else:
-                    server_reagent.Entropy.verify_local_packages(["world"], ask = etpUi['ask'])
-                    server_reagent.Entropy.close_server_databases()
-
-            elif myopts[0] == "revdeps":
-                try:
-                    import server_reagent
-                except ImportError:
-                    print_error(darkgreen(comm_err_msg))
-                    rc = 1
-                else:
-                    rc = server_reagent.Entropy.generate_reverse_dependencies_metadata()
-                    server_reagent.Entropy.close_server_databases()
-
-    elif main_cmd == "cleanup":
-        entropy.tools.cleanup([etpConst['packagestmpdir'],
-            etpConst['logdir'], etpConst['entropyunpackdir'],
-            etpConst['packagesbindir']])
-        rc = 0
-    else:
-        rc = -10
+    cmd_cb = CMDS_MAP.get(main_cmd)
+    if cmd_cb is not None:
+        rc = cmd_cb(main_cmd, options)
 
     if rc == -10:
         status = readerrorstatus()
@@ -822,6 +854,7 @@ def main():
         writeerrorstatus(0)
 
     entropy.tools.kill_threads()
+    uninstall_exception_handler()
     raise SystemExit(rc)
 
 if __name__ == "__main__":
