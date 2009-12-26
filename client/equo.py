@@ -660,7 +660,8 @@ if (not options) or ("--help" in options):
         print_menu(help_opts_ext_info, args = options[:])
     if not options:
         print_error(_("not enough parameters"))
-    raise SystemExit(1)
+        raise SystemExit(1)
+    raise SystemExit(0)
 
 # print version
 if options[0] == "--version":
