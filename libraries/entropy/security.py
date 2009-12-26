@@ -1110,7 +1110,8 @@ class Repository:
             ["--list-%s" % (which,), "--fixed-list-mode", "--fingerprint",
                 "--with-colons"]
 
-        proc = subprocess.Popen(args, stdout = subprocess.PIPE)
+        proc = subprocess.Popen(args, stdout = subprocess.PIPE,
+            stderr = subprocess.PIPE)
 
         # wait for process to terminate
         proc_rc = proc.wait()
@@ -1281,7 +1282,7 @@ class Repository:
 
         return key_output
 
-    def _get_key_metadata(self, repository_identifier, private = False):
+    def get_key_metadata(self, repository_identifier, private = False):
         """
         Return key metadata for given repository identifier.
 
@@ -1332,6 +1333,26 @@ class Repository:
         self.__remove_keymap(repository_identifier)
         self.__delete_key(fingerprint, secret = True)
         self.__delete_key(fingerprint)
+
+    def is_keypair_available(self, repository_identifier):
+        """
+        Return whether public and private key for given repository identifier
+        is available.
+
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @return: True, if public and private key is available
+        @rtype: bool
+        """
+        try:
+            self.get_key_metadata(repository_identifier)
+        except KeyError:
+            return False
+        try:
+            self.get_key_metadata(repository_identifier, private = True)
+        except KeyError:
+            return False
+        return True
 
     def is_pubkey_available(self, repository_identifier):
         """
@@ -1439,7 +1460,7 @@ class Repository:
         @type repository_identifier: string
         @raise KeyError: if no key is set for given repository identifier
         """
-        metadata = self._get_key_metadata(repository_identifier)
+        metadata = self.get_key_metadata(repository_identifier)
         self.__remove_keymap(repository_identifier)
         self.__delete_key(metadata['fingerprint'])
 
@@ -1493,7 +1514,7 @@ class Repository:
         @return: path to signature file
         @rtype: string
         """
-        metadata = self._get_key_metadata(repository_identifier)
+        metadata = self.get_key_metadata(repository_identifier)
         return self.__sign_file(file_path, metadata['fingerprint'])
 
     def __verify_file(self, file_path, signature_path, fingerprint):
@@ -1530,7 +1551,7 @@ class Repository:
         @return: True, if file is sane
         @rtype: bool
         """
-        metadata = self._get_key_metadata(repository_identifier)
+        metadata = self.get_key_metadata(repository_identifier)
         try:
             self.__verify_file(file_path, signature_path, metadata['fingerprint'])
         except Repository.GPGError as err:
