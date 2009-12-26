@@ -449,16 +449,16 @@ def print_menu(data, args = None):
         myfunc_desc = orig_myfunc_desc
 
         if not item:
-            if command == None or section_found:
+            if command is None:
                 writechar("\n")
         else:
             n_ident = item[0]
             name = item[1]
             n_d_ident = item[2]
             desc = item[3]
-            if command != None: 
-                #print "searching ",name, command, n_ident, search_depth
-                if name == command and n_ident == search_depth:
+            if command is not None:
+                name_strip = name.split()[0].strip()
+                if name_strip == command and n_ident == search_depth:
                     try:
                         command = args.pop(0)
                         search_depth = n_ident + 1
