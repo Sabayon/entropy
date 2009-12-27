@@ -6124,7 +6124,7 @@ msgstr ""
 
 #: ../../client/text_ui.py:313
 msgid "Even if they are usually harmless, it is suggested to remove them."
-msgstr "Sebbene siano solitamente innocui, si siggerisce di rimuoverli."
+msgstr "Sebbene siano solitamente innocui, si suggerisce di rimuoverli."
 
 #: ../../client/text_ui.py:319
 msgid "Would you like to scan them ?"
