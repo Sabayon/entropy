@@ -31,6 +31,9 @@ from entropy.server.interfaces.db import ServerRepositoryStatus
 from entropy.spm.plugins.factory import get_default_instance as get_spm, \
     get_default_class as get_spm_class
 from entropy.qa import QAInterfacePlugin
+from entropy.security import Repository as RepositorySecurity
+
+import entropy.tools
 
 SERVER_QA_PLUGIN = "ServerQAInterfacePlugin"
 
@@ -642,7 +645,7 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
                 just_reading = True, repo = repoid)
 
             if os.access(exp_fp, os.R_OK) and os.path.isfile(exp_fp):
-                pkgs = self.entropyTools.generic_file_content_parser(exp_fp)
+                pkgs = entropy.tools.generic_file_content_parser(exp_fp)
                 if '*' in pkgs: # wildcard support
                     idpackages.add(-1)
                 else:
@@ -809,7 +812,7 @@ class Server(Singleton, TextInterface):
         self.Cacher = EntropyCacher()
         self.ClientService.updateProgress = self.updateProgress
         self.validRepositories = self.ClientService.validRepositories
-        self.entropyTools = self.ClientService.entropyTools
+        entropy.tools = self.ClientService.entropyTools
         self.dumpTools = self.ClientService.dumpTools
         self.backup_entropy_settings()
 
@@ -1516,7 +1519,7 @@ class Server(Singleton, TextInterface):
 
         pkg_list_path = None
         if dump_results_to_file:
-            tmp_dir = os.path.dirname(self.entropyTools.get_random_temp_file())
+            tmp_dir = os.path.dirname(entropy.tools.get_random_temp_file())
             pkg_list_path = os.path.join(tmp_dir, "libtest_broken.txt")
             dmp_data = [
                 (_("Broken and matched packages list"), pkg_list_path,),
@@ -1601,7 +1604,7 @@ class Server(Singleton, TextInterface):
                     )
 
             pkgstring_list = sorted(["%s:%s" % (
-                self.entropyTools.dep_getkey(x[0]), x[1],) for x \
+                entropy.tools.dep_getkey(x[0]), x[1],) for x \
                     in sorted(packages)])
             if pkg_list_path is not None:
                 with open(pkg_list_path, "w") as pkg_f:
@@ -1652,7 +1655,7 @@ class Server(Singleton, TextInterface):
                 count = (count, length),
                 header = darkred(" @@ ")
             )
-            key, slot = (self.entropyTools.dep_getkey(installed_package),
+            key, slot = (entropy.tools.dep_getkey(installed_package),
                 self.Spm().get_installed_package_metadata(installed_package,
                     "SLOT"),)
             pkg_atom = "%s:%s" % (key, slot,)
@@ -1839,7 +1842,7 @@ class Server(Singleton, TextInterface):
 
 
         all_fine = True
-        tmp_down_dir = self.entropyTools.get_random_temp_file()
+        tmp_down_dir = entropy.tools.get_random_temp_file()
         os.makedirs(tmp_down_dir)
 
         download_queue = {}
@@ -1934,7 +1937,7 @@ class Server(Singleton, TextInterface):
                             back = True
                         )
 
-                        md5hash = self.entropyTools.md5sum(downloaded_path)
+                        md5hash = entropy.tools.md5sum(downloaded_path)
                         db_md5hash = dbconn.retrieveDigest(idpackage)
                         if md5hash != db_md5hash:
                             errors = True
@@ -2049,7 +2052,7 @@ class Server(Singleton, TextInterface):
                     shutil.move(package_path, new_package_path)
 
                 # create md5 checksum
-                self.entropyTools.create_md5_file(new_package_path)
+                entropy.tools.create_md5_file(new_package_path)
 
                 # update database
                 download_url = dbconn.retrieveDownloadURL(idpackage)
@@ -2234,7 +2237,7 @@ class Server(Singleton, TextInterface):
                 match_name = dbconn.retrieveName(idpackage)
                 match_version = dbconn.retrieveVersion(idpackage)
                 tagged_package_filename = \
-                    self.entropyTools.create_package_filename(
+                    entropy.tools.create_package_filename(
                         match_category, match_name, match_version, new_tag)
                 to_file = os.path.join(self.get_local_upload_directory(to_repo),
                     match_branch, tagged_package_filename)
@@ -2371,7 +2374,8 @@ class Server(Singleton, TextInterface):
             back = True
         )
         mydata = self.Spm().extract_package_metadata(package_file)
-        mydata['injected'] = inject
+        self._pump_extracted_package_metadata(mydata, repo,
+            {'injected': inject,})
         idpackage, revision, mydata = dbconn.handlePackage(mydata)
 
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
@@ -2530,7 +2534,7 @@ class Server(Singleton, TextInterface):
                 idpackages_added.add(idpackage)
                 to_be_injected.add((idpackage, destination_path))
             except Exception as err:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 self.updateProgress(
                     "[repo:%s] %s: %s" % (
                         darkgreen(repo),
@@ -2599,6 +2603,27 @@ class Server(Singleton, TextInterface):
 
         return idpackages_added
 
+    def __get_gpg_signature(self, repo_sec, repo, pkg_path):
+        try:
+            if not repo_sec.is_keypair_available(repo):
+                return None # GPG is not enabled
+        except RepositorySecurity.GPGError as err:
+            self.updateProgress(
+                "[repo:%s] %s: %s, %s." % (
+                    darkgreen(repo),
+                    darkred(_("GPG got unexpected error")),
+                    err,
+                    darkred(_("skipping")),
+                ),
+                importance = 1,
+                type = "warning",
+                header = red(" @@ ")
+            )
+            return None
+        gpg_sign_path = repo_sec.sign_file(repo, pkg_path)
+        # read file content and add to 'gpg' signature
+        with open(gpg_sign_path, "rb") as gpg_f:
+            return gpg_f.read()
 
     def inject_database_into_packages(self, injection_data, repo = None):
 
@@ -2618,6 +2643,22 @@ class Server(Singleton, TextInterface):
 
         dbconn = self.open_server_repository(read_only = False,
             no_upload = True, repo = repo)
+
+        try:
+            repo_sec = RepositorySecurity()
+        except RepositorySecurity.GPGError as err:
+            self.updateProgress(
+                "[repo:%s] %s: %s" % (
+                    darkgreen(repo),
+                    blue(_("JFYI, GPG infrastructure failed to load")),
+                    err,
+                ),
+                importance = 1,
+                type = "warning",
+                header = red(" @@ ")
+            )
+            repo_sec = None # gnupg not found, perhaps report it
+
         for idpackage, package_path in injection_data:
             self.updateProgress(
                 "[repo:%s|%s] %s: %s" % (
@@ -2635,17 +2676,27 @@ class Server(Singleton, TextInterface):
             treeupdates_actions = dbconn.listAllTreeUpdatesActions()
             dbpath = self.ClientService.inject_entropy_database_into_package(
                 package_path, data, treeupdates_actions)
-            digest = self.entropyTools.md5sum(package_path)
+
+            # GPG-sign package if GPG signature is set
+            gpg_sign = None
+            if repo_sec is not None:
+                gpg_sign = self.__get_gpg_signature(repo_sec, repo,
+                    package_path)
+
+            digest = entropy.tools.md5sum(package_path)
             # update digest
             dbconn.setDigest(idpackage, digest)
             # update signatures
             signatures = data['signatures'].copy()
             for hash_key in sorted(signatures):
-                hash_func = getattr(self.entropyTools, hash_key)
+                if hash_key == "gpg": # gpg already created
+                    continue
+                hash_func = getattr(entropy.tools, hash_key)
                 signatures[hash_key] = hash_func(package_path)
             dbconn.setSignatures(idpackage, signatures['sha1'],
-                signatures['sha256'], signatures['sha512'])
-            self.entropyTools.create_md5_file(package_path)
+                signatures['sha256'], signatures['sha512'],
+                gpg_sign)
+            entropy.tools.create_md5_file(package_path)
             const_setup_file(package_path, etpConst['entropygid'], 0o664)
             # remove garbage
             os.remove(dbpath)
@@ -2886,6 +2937,12 @@ class Server(Singleton, TextInterface):
         return os.path.join(self.get_local_database_dir(repo, branch),
             etpConst['etpdatabasemetafilesnotfound'])
 
+    def get_local_database_gpg_signature_file(self, repo = None, branch = None):
+        if repo is None:
+            repo = self.default_repository
+        return os.path.join(self.get_local_database_dir(repo, branch),
+            etpConst['etpdatabasegpgfile'])
+
     def get_local_exp_based_pkgs_rm_whitelist_file(self, repo = None,
         branch = None):
         if repo is None:
@@ -3031,6 +3088,35 @@ class Server(Singleton, TextInterface):
     def get_branch_from_download_relative_uri(self, mypath):
         return self.ClientService.get_branch_from_download_relative_uri(mypath)
 
+    def _get_common_pkg_relative_path(self, pkg_path, branch = None):
+        my_path = '/'.join(pkg_path.split("/")[2:])
+        if branch is None:
+            return my_path
+        head, tail = os.path.split(my_path)
+        return os.path.join(branch, tail)
+
+    def _get_package_path(self, repo, dbconn, idpackage, branch = None):
+        """
+        Given EntropyRepository instance and package identifier, return local
+        path of package. This method does not check for path validity though.
+        """
+        pkg_path = dbconn.retrieveDownloadURL(idpackage)
+        pkg_rel_path = self._get_common_pkg_relative_path(pkg_path,
+            branch = branch)
+        return os.path.join(self.get_local_packages_directory(repo),
+            pkg_rel_path)
+
+    def _get_upload_package_path(self, repo, dbconn, idpackage, branch = None):
+        """
+        Given EntropyRepository instance and package identifier, return local
+        path of package. This method does not check for path validity though.
+        """
+        pkg_path = dbconn.retrieveDownloadURL(idpackage)
+        pkg_rel_path = self._get_common_pkg_relative_path(pkg_path,
+            branch = branch)
+        return os.path.join(self.get_local_upload_directory(repo),
+            pkg_rel_path)
+
     def get_current_timestamp(self):
         from datetime import datetime
         import time
@@ -3148,15 +3234,15 @@ class Server(Singleton, TextInterface):
 
                 dorm = False
                 atom = dbconn.retrieveAtom(idpackage)
-                atomkey = self.entropyTools.dep_getkey(atom)
-                atomtag = self.entropyTools.dep_gettag(atom)
+                atomkey = entropy.tools.dep_getkey(atom)
+                atomtag = entropy.tools.dep_gettag(atom)
                 atomslot = dbconn.retrieveSlot(idpackage)
 
                 add = True
                 for spm_atom, spm_counter in to_be_added:
                     addslot = self.Spm().get_installed_package_metadata(
                         spm_atom, "SLOT")
-                    addkey = self.entropyTools.dep_getkey(spm_atom)
+                    addkey = entropy.tools.dep_getkey(spm_atom)
                     # workaround for ebuilds not having slot
                     if addslot is None:
                         addslot = '0'
@@ -3233,7 +3319,7 @@ class Server(Singleton, TextInterface):
         # 3600 * 24 = 86400
         my_settings = self.SystemSettings[self.sys_settings_plugin_id]['server']
         pkg_exp_secs = my_settings['packages_expiration_days'] * 86400
-        cur_unix_time = self.entropyTools.get_current_unix_time()
+        cur_unix_time = entropy.tools.get_current_unix_time()
         # if packages removal is triggered by expiration
         # we will have to check if our package is really
         # expired and remove its reverse deps too
@@ -3260,6 +3346,18 @@ class Server(Singleton, TextInterface):
         counter = dbconn.getNewNegativeSpmUid()
         dbconn.setSpmUid(idpackage, counter)
         dbconn.setInjected(idpackage)
+
+    def _pump_extracted_package_metadata(self, pkg_meta, repo, extra_metadata):
+        """
+        Add to pkg_meta dict, server-side package metadata information before
+        injecting it into repository database.
+        """
+        # add extra metadata
+        pkg_meta.update(extra_metadata)
+        # do not set GPG signature here for performance, just provide an
+        # empty default. Real GPG signature will be written inside
+        # inject_database_into_packages()
+        pkg_meta['signatures']['gpg'] = None
 
     def initialize_server_database(self, empty = True, repo = None,
         warnings = True):
@@ -3439,7 +3537,8 @@ class Server(Singleton, TextInterface):
                 pkg_path = os.path.join(self.get_local_packages_directory(repo),
                     branch, pkg)
                 mydata = self.Spm().extract_package_metadata(pkg_path)
-                mydata['injected'] = doinject
+                self._pump_extracted_package_metadata(mydata, repo,
+                    {'injected': doinject,})
 
                 # get previous revision
                 revision_avail = revisions_match.get(pkg)
@@ -3615,11 +3714,7 @@ class Server(Singleton, TextInterface):
                         count = (currentcounter, totalcounter,)
                     )
 
-                    pkg_rel_path = '/'.join(pkgfile.split("/")[2:])
-
-                    pkgfile = os.path.join(
-                        self.get_remote_packages_relative_path(repo),
-                        pkg_rel_path)
+                    pkgfile = self._get_package_path(repo, dbconn, idpackage)
 
                     ck_remote = handler.get_md5(pkgfile)
                     if ck_remote is None:
@@ -3726,6 +3821,142 @@ class Server(Singleton, TextInterface):
 
         return match, not_match, broken_packages
 
+    def download_locally_missing_files(self, idpackages, repo = None,
+        ask = True):
+
+        if repo is None:
+            repo = self.default_repository
+
+        dbconn = self.open_server_repository(read_only = True,
+            repo = repo)
+
+        to_download = set()
+        available = set()
+        for idpackage in idpackages:
+
+            bindir_path = self._get_package_path(repo, dbconn, idpackage)
+            uploaddir_path = self._get_upload_package_path(repo, dbconn,
+                idpackage)
+            pkg_path = dbconn.retrieveDownloadURL(idpackage)
+            pkg_rel_path = self._get_common_pkg_relative_path(pkg_path)
+
+            pkgatom = dbconn.retrieveAtom(idpackage)
+            if os.path.isfile(bindir_path):
+                self.updateProgress(
+                    "[%s] %s :: %s" % (
+                        darkgreen(_("available")),
+                        blue(pkgatom),
+                        darkgreen(pkg_rel_path),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = darkgreen("   # ")
+                )
+                available.add(idpackage)
+            elif os.path.isfile(uploaddir_path):
+                self.updateProgress(
+                    "[%s] %s :: %s" % (
+                        darkred(_("upload/ignored")),
+                        blue(pkgatom),
+                        darkgreen(pkg_rel_path),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = darkgreen("   # ")
+                )
+            else:
+                self.updateProgress(
+                    "[%s] %s :: %s" % (
+                        brown(_("download")),
+                        blue(pkgatom),
+                        darkgreen(pkg_rel_path),
+                    ),
+                    importance = 0,
+                    type = "info",
+                    header = darkgreen("   # ")
+                )
+                to_download.add((idpackage, pkg_path,))
+
+        if to_download and ask:
+            rc_question = self.askQuestion(_("Would you like to continue ?"))
+            if rc_question == _("No"):
+                # = downloaded fine, downloaded error
+                return False, available, set(), set()
+
+        if not to_download:
+            # = downloaded fine, downloaded error
+            return True, available, set(), set()
+
+        downloaded_fine = set()
+        downloaded_errors = set()
+
+        not_downloaded = set()
+        mytxt = blue("%s ...") % (_("Starting to download missing files"),)
+        self.updateProgress(
+            mytxt,
+            importance = 1,
+            type = "info",
+            header = "   "
+        )
+        for uri in self.get_remote_mirrors(repo):
+
+            if not_downloaded:
+                mytxt = blue("%s ...") % (
+                    _("Searching missing/broken files on another mirror"),)
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "info",
+                    header = "   "
+                )
+                to_download = not_downloaded.copy()
+                not_downloaded = set()
+
+            for idpackage, pkg_path in to_download:
+                rc_down = self.MirrorsService.download_package(uri,
+                    pkg_path, repo = repo)
+                if rc_down:
+                    downloaded_fine.add(idpackage)
+                    available.add(idpackage)
+                else:
+                    not_downloaded.add(pkg_path)
+
+            if not not_downloaded:
+                self.updateProgress(
+                    red(_("Binary packages downloaded successfully.")),
+                    importance = 1,
+                    type = "info",
+                    header = "   "
+                )
+                break
+
+        if not_downloaded:
+            mytxt = blue("%s:") % (
+                _("These are the packages that cannot be found online"),)
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "info",
+                header = "   "
+            )
+            for pkg_path in not_downloaded:
+                downloaded_errors.add(pkg_path)
+                self.updateProgress(
+                        brown(pkg_path),
+                        importance = 1,
+                        type = "warning",
+                        header = red("    * ")
+                )
+            downloaded_errors |= not_downloaded
+            mytxt = "%s." % (_("They won't be checked"),)
+            self.updateProgress(
+                mytxt,
+                importance = 1,
+                type = "warning",
+                header = "   "
+            )
+
+        return True, available, downloaded_fine, downloaded_errors
 
     def verify_local_packages(self, packages, ask = True, repo = None):
 
@@ -3744,7 +3975,7 @@ class Server(Singleton, TextInterface):
 
         idpackages, world = self.match_packages(packages)
         dbconn = self.open_server_repository(read_only = True,
-            no_upload = True, repo = repo)
+            repo = repo)
 
         if world:
             self.updateProgress(
@@ -3754,135 +3985,14 @@ class Server(Singleton, TextInterface):
                 header = "    "
             )
 
-        to_download = set()
-        available = set()
-        for idpackage in idpackages:
-
-            pkgatom = dbconn.retrieveAtom(idpackage)
-            pkg_path = dbconn.retrieveDownloadURL(idpackage)
-            pkg_rel_path = '/'.join(pkg_path.split("/")[2:])
-
-            bindir_path = os.path.join(self.get_local_packages_directory(repo),
-                pkg_rel_path)
-            uploaddir_path = os.path.join(self.get_local_upload_directory(repo),
-                pkg_rel_path)
-
-            if os.path.isfile(bindir_path):
-                if not world:
-                    self.updateProgress(
-                        "[%s] %s :: %s" % (
-                            darkgreen(_("available")),
-                            blue(pkgatom),
-                            darkgreen(pkg_rel_path),
-                        ),
-                        importance = 0,
-                        type = "info",
-                        header = darkgreen("   # ")
-                    )
-                available.add(idpackage)
-            elif os.path.isfile(uploaddir_path):
-                if not world:
-                    self.updateProgress(
-                        "[%s] %s :: %s" % (
-                            darkred(_("upload/ignored")),
-                            blue(pkgatom),
-                            darkgreen(pkg_rel_path),
-                        ),
-                        importance = 0,
-                        type = "info",
-                        header = darkgreen("   # ")
-                    )
-            else:
-                self.updateProgress(
-                    "[%s] %s :: %s" % (
-                        brown(_("download")),
-                        blue(pkgatom),
-                        darkgreen(pkg_rel_path),
-                    ),
-                    importance = 0,
-                    type = "info",
-                    header = darkgreen("   # ")
-                )
-                to_download.add((idpackage, pkg_path,))
-
-        if ask:
-            rc_question = self.askQuestion(_("Would you like to continue ?"))
-            if rc_question == _("No"):
-                return set(), set(), set(), set()
-
-
         fine = set()
         failed = set()
-        downloaded_fine = set()
-        downloaded_errors = set()
 
-        if to_download:
-
-            not_downloaded = set()
-            mytxt = blue("%s ...") % (_("Starting to download missing files"),)
-            self.updateProgress(
-                mytxt,
-                importance = 1,
-                type = "info",
-                header = "   "
-            )
-            for uri in self.get_remote_mirrors(repo):
-
-                if not_downloaded:
-                    mytxt = blue("%s ...") % (
-                        _("Searching missing/broken files on another mirror"),)
-                    self.updateProgress(
-                        mytxt,
-                        importance = 1,
-                        type = "info",
-                        header = "   "
-                    )
-                    to_download = not_downloaded.copy()
-                    not_downloaded = set()
-
-                for idpackage, pkg_path in to_download:
-                    rc_down = self.MirrorsService.download_package(uri,
-                        pkg_path, repo = repo)
-                    if rc_down:
-                        downloaded_fine.add(idpackage)
-                        available.add(idpackage)
-                    else:
-                        not_downloaded.add(pkg_path)
-
-                if not not_downloaded:
-                    self.updateProgress(
-                        red(_("Binary packages downloaded successfully.")),
-                        importance = 1,
-                        type = "info",
-                        header = "   "
-                    )
-                    break
-
-            if not_downloaded:
-                mytxt = blue("%s:") % (
-                    _("These are the packages that cannot be found online"),)
-                self.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "info",
-                    header = "   "
-                )
-                for pkg_path in not_downloaded:
-                    downloaded_errors.add(pkg_path)
-                    self.updateProgress(
-                            brown(pkg_path),
-                            importance = 1,
-                            type = "warning",
-                            header = red("    * ")
-                    )
-                downloaded_errors |= not_downloaded
-                mytxt = "%s." % (_("They won't be checked"),)
-                self.updateProgress(
-                    mytxt,
-                    importance = 1,
-                    type = "warning",
-                    header = "   "
-                )
+        rc_status, available, downloaded_fine, downloaded_errors = \
+            self.download_locally_missing_files(idpackages, repo = repo,
+                ask = ask)
+        if not rc_status:
+            return fine, failed, downloaded_fine, downloaded_errors
 
         my_qa = self.QA()
 
@@ -3891,14 +4001,11 @@ class Server(Singleton, TextInterface):
         for idpackage in available:
             currentcounter += 1
             pkg_path = dbconn.retrieveDownloadURL(idpackage)
-            orig_branch = self.get_branch_from_download_relative_uri(pkg_path)
-            pkgfile = os.path.basename(pkg_path)
 
             self.updateProgress(
-                "[branch:%s] %s %s" % (
-                        brown(orig_branch),
-                        blue(_("checking status of")),
-                        darkgreen(pkgfile),
+                "%s: %s" % (
+                    blue(_("checking status of")),
+                    darkgreen(pkg_path),
                 ),
                 importance = 1,
                 type = "info",
@@ -3908,17 +4015,15 @@ class Server(Singleton, TextInterface):
             )
 
             storedmd5 = dbconn.retrieveDigest(idpackage)
-            pkgpath = os.path.join(self.get_local_packages_directory(repo),
-                orig_branch, pkgfile)
-            result = self.entropyTools.compare_md5(pkgpath, storedmd5)
+            pkgpath = self._get_package_path(repo, dbconn, idpackage)
+            result = entropy.tools.compare_md5(pkgpath, storedmd5)
             qa_fine = my_qa.entropy_package_checks(pkgpath)
             if result and qa_fine:
                 fine.add(idpackage)
             else:
                 failed.add(idpackage)
                 self.updateProgress(
-                    "[branch:%s] %s %s %s: %s" % (
-                            brown(orig_branch),
+                    "%s: %s -- %s: %s" % (
                             blue(_("package")),
                             darkgreen(pkg_path),
                             blue(_("is corrupted, stored checksum")),
@@ -4009,6 +4114,171 @@ class Server(Singleton, TextInterface):
         self.close_server_database(dbconn)
         return fine, failed, downloaded_fine, downloaded_errors
 
+    def sign_local_packages(self, repo = None, ask = True):
+        """
+        Sign local packages in given repository using GPG key hopefully set
+        for it.
+
+        @raise OnlineMirrorError: if package path is not available after
+            having tried to download it, this should never happen btw.
+        """
+
+        if repo is None:
+            repo = self.default_repository
+
+        self.updateProgress(
+            "[%s] %s: %s" % (
+                red(_("local")),
+                blue(_("GPG signing packages for repository")),
+                repo,
+            ),
+            importance = 1,
+            type = "info",
+            header = darkgreen(" @@ ")
+        )
+
+        dbconn = self.open_server_repository(repo = repo, read_only = False)
+        idpackages = dbconn.listAllIdpackages()
+
+        self.updateProgress(
+            blue(_("All the missing packages in repository will be downloaded.")),
+            importance = 1,
+            type = "info",
+            header = "    "
+        )
+
+        rc_status, available, downloaded_fine, downloaded_errors = \
+            self.download_locally_missing_files(idpackages, repo = repo,
+                ask = ask)
+        if not rc_status:
+            return False, 0, 0
+
+        try:
+            repo_sec = RepositorySecurity()
+        except RepositorySecurity.GPGError as err:
+            self.updateProgress("%s: %s" % (
+                    darkgreen(_("GnuPG not available")),
+                    err,
+                ),
+                type = "error"
+            )
+            return False, 0, 0
+
+        if not repo_sec.is_keypair_available(repo):
+            self.updateProgress("%s: %s" % (
+                    darkgreen(_("Keys not available for")),
+                    bold(repo),
+                ),
+                type = "error"
+            )
+            return False, 0, 0
+
+        fine = 0
+        failed = 0
+        totalcounter = len(available)
+        currentcounter = 0
+
+        # clear all GPG signatures?
+
+        # we can eventually sign!
+        for idpackage in available:
+
+            currentcounter += 1
+
+            pkg_path = self._get_package_path(repo, dbconn, idpackage)
+            if not os.path.isfile(pkg_path):
+                pkg_path = self._get_upload_package_path(repo, dbconn,
+                    idpackage)
+            if not os.path.isfile(pkg_path):
+                # wtf!?
+                pkg_atom = dbconn.retrieveAtom(idpackage)
+                raise OnlineMirrorError("WTF!?!?! => %s, %s" % (
+                    pkg_path, pkg_atom,))
+
+            self.updateProgress(
+                "%s: %s" % (
+                    blue(_("signing package")),
+                    darkgreen(os.path.basename(pkg_path)),
+                ),
+                importance = 1,
+                type = "info",
+                header = "   ",
+                back = True,
+                count = (currentcounter, totalcounter,)
+            )
+
+            gpg_sign = self.__get_gpg_signature(repo_sec, repo, pkg_path)
+            if gpg_sign is None:
+                self.updateProgress(
+                    "%s: %s" % (
+                        darkred(_("Unknown error signing package")),
+                        darkgreen(os.path.basename(pkg_path)),
+                    ),
+                    importance = 1,
+                    type = "error",
+                    header = "   ",
+                    count = (currentcounter, totalcounter,)
+                )
+                failed += 1
+                continue
+
+            # now inject gpg signature into repo
+            sha1, sha256, sha512, old_gpg = dbconn.retrieveSignatures(idpackage)
+            dbconn.setSignatures(idpackage, sha1, sha256, sha512,
+                gpg = gpg_sign)
+
+            fine += 1
+
+        # print stats
+        self.updateProgress(
+            red("Statistics:"),
+            importance = 1,
+            type = "info",
+            header = blue(" * ")
+        )
+        self.updateProgress(
+            brown("%s => %s" % (
+                    fine,
+                    _("signed packages"),
+                )
+            ),
+            importance = 0,
+            type = "info",
+            header = brown("   # ")
+        )
+        self.updateProgress(
+            darkred("%s => %s" % (
+                    failed,
+                    _("broken packages"),
+                )
+            ),
+            importance = 0,
+            type = "info",
+            header = brown("   # ")
+        )
+        self.updateProgress(
+            blue("%s => %s" % (
+                    len(downloaded_fine),
+                    _("downloaded packages"),
+                )
+            ),
+            importance = 0,
+            type = "info",
+            header = brown("   # ")
+        )
+        self.updateProgress(
+            bold("%s => %s" % (
+                    len(downloaded_errors),
+                    _("failed downloads"),
+                )
+            ),
+            importance = 0,
+            type = "info",
+            header = brown("   # ")
+        )
+
+        self.close_server_database(dbconn)
+        return True, fine, failed
 
     def switch_packages_branch(self, from_branch, to_branch, repo = None):
 
@@ -4046,13 +4316,13 @@ class Server(Singleton, TextInterface):
         # we can just rm -rf it
         branch_dbfile = self.get_local_database_file(repo)
         if os.path.isfile(branch_dbfile):
-            if self.entropyTools.get_file_size(branch_dbfile) == 0:
+            if entropy.tools.get_file_size(branch_dbfile) == 0:
                 shutil.rmtree(branch_dbdir, True)
 
         if os.path.isdir(branch_dbdir):
 
             while True:
-                rnd_num = self.entropyTools.get_random_number()
+                rnd_num = entropy.tools.get_random_number()
                 backup_dbdir = branch_dbdir + str(rnd_num)
                 if not os.path.isdir(backup_dbdir):
                     break
@@ -4169,7 +4439,7 @@ class Server(Singleton, TextInterface):
             if not (os.path.isfile(item_path) and \
                 os.access(item_path, os.R_OK)):
                 continue
-            item_elements = self.entropyTools.extract_packages_from_set_file(
+            item_elements = entropy.tools.extract_packages_from_set_file(
                 item_path)
             if item_elements:
                 mydata[item_clean] = item_elements.copy()

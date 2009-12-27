@@ -289,8 +289,8 @@ def const_default_settings(rootdir):
         # file that contains a list of the "meta"
         # files not available in the repository
         'etpdatabasemetafilesnotfound': default_etp_dbfile+".meta_notfound",
-        'etpdatabasehashfile': default_etp_dbfile+".md5", # its checksum
-
+        # database file checksum
+        'etpdatabasehashfile': default_etp_dbfile+".md5",
 
         # the remote database lock file
         'etpdatabaselockfile': default_etp_dbfile+".lock",
@@ -300,6 +300,8 @@ def const_default_settings(rootdir):
         'etpdatabasedownloadlockfile': default_etp_dbfile+".download.lock",
         'etpdatabasecacertfile': "ca.cert",
         'etpdatabaseservercertfile': "server.cert",
+        # repository GPG public key file
+        'etpdatabasegpgfile': "signature.asc", # its checksum
         # when this file exists, the database is not synced
         # anymore with the online one
         'etpdatabasetaintfile': default_etp_dbfile+".tainted",

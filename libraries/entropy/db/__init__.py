@@ -347,6 +347,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     sha1 VARCHAR,
                     sha256 VARCHAR,
                     sha512 VARCHAR,
+                    gpg BLOB,
                     FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
@@ -1342,9 +1343,11 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             # package signatures
             if pkg_data.get('signatures'):
                 signatures = pkg_data['signatures']
-                sha1, sha256, sha512 = signatures['sha1'], \
-                    signatures['sha256'], signatures['sha512']
-                self.insertSignatures(idpackage, sha1, sha256, sha512)
+                sha1, sha256, sha512, gpg = signatures['sha1'], \
+                    signatures['sha256'], signatures['sha512'], \
+                    signatures.get('gpg')
+                self.insertSignatures(idpackage, sha1, sha256, sha512,
+                    gpg = gpg)
 
             if pkg_data.get('provided_libs'):
                 self._insertProvidedLibraries(idpackage, pkg_data['provided_libs'])
@@ -1739,7 +1742,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             """, (digest, idpackage,))
             self.commitChanges()
 
-    def setSignatures(self, idpackage, sha1, sha256, sha512):
+    def setSignatures(self, idpackage, sha1, sha256, sha512, gpg = None):
         """
         Set package file extra hashes (sha1, sha256, sha512) for package.
 
@@ -1754,9 +1757,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         with self.__write_mutex:
             self.cursor.execute("""
-            UPDATE packagesignatures SET sha1 = (?), sha256 = (?), sha512 = (?)
-            WHERE idpackage = (?)
-            """, (sha1, sha256, sha512, idpackage))
+            UPDATE packagesignatures SET sha1 = (?), sha256 = (?), sha512 = (?),
+            gpg = (?) WHERE idpackage = (?)
+            """, (sha1, sha256, sha512, gpg, idpackage))
 
     def setDownloadURL(self, idpackage, url):
         """
@@ -2200,7 +2203,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             INSERT into useflags VALUES (?,?)
             """, list(map(mymf, useflags)))
 
-    def insertSignatures(self, idpackage, sha1, sha256, sha512):
+    def insertSignatures(self, idpackage, sha1, sha256, sha512, gpg = None):
         """
         Insert package file extra hashes (sha1, sha256, sha512) for package.
 
@@ -2215,8 +2218,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         with self.__write_mutex:
             self.cursor.execute("""
-            INSERT INTO packagesignatures VALUES (?,?,?,?)
-            """, (idpackage, sha1, sha256, sha512))
+            INSERT INTO packagesignatures VALUES (?,?,?,?,?)
+            """, (idpackage, sha1, sha256, sha512, gpg))
 
     def _insertSpmPhases(self, idpackage, phases):
         """
@@ -3171,11 +3174,12 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             if x.startswith("mirror://"):
                 mirrornames.add(x.split("/")[2])
 
-        sha1, sha256, sha512 = self.retrieveSignatures(idpackage)
+        sha1, sha256, sha512, gpg = self.retrieveSignatures(idpackage)
         signatures = {
             'sha1': sha1,
             'sha256': sha256,
             'sha512': sha512,
+            'gpg': gpg,
         }
 
         provide_extended = self.retrieveProvide(idpackage)
@@ -3790,17 +3794,25 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         # FIXME backward compatibility
         if not self._doesTableExist('packagesignatures'):
-            return None, None, None
+            return None, None, None, None
 
-        cur = self.cursor.execute("""
-        SELECT sha1, sha256, sha512 FROM packagesignatures
-        WHERE idpackage = (?) LIMIT 1
-        """, (idpackage,))
-        data = cur.fetchone()
+        try:
+            cur = self.cursor.execute("""
+            SELECT sha1, sha256, sha512, gpg FROM packagesignatures
+            WHERE idpackage = (?) LIMIT 1
+            """, (idpackage,))
+            data = cur.fetchone()
+        except self.dbapi2.OperationalError:
+            # FIXME: backward compat
+            cur = self.cursor.execute("""
+            SELECT sha1, sha256, sha512 FROM packagesignatures
+            WHERE idpackage = (?) LIMIT 1
+            """, (idpackage,))
+            data = cur.fetchone() + (None,)
 
         if data:
             return data
-        return None, None, None
+        return None, None, None, None
 
     def retrieveName(self, idpackage):
         """
@@ -6145,31 +6157,33 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if not self._doesColumnInTableExist("provide", "is_default"):
             self._createProvideDefault()
 
-        if not self._doesTableExist('packagesets'):
+        if not self._doesTableExist("packagesets"):
             self._createPackagesetsTable()
 
-        if not self._doesTableExist('packagechangelogs'):
+        if not self._doesTableExist("packagechangelogs"):
             self._createPackagechangelogsTable()
 
-        if not self._doesTableExist('automergefiles'):
+        if not self._doesTableExist("automergefiles"):
             self._createAutomergefilesTable()
 
-        if not self._doesTableExist('packagesignatures'):
+        if not self._doesTableExist("packagesignatures"):
             self._createPackagesignaturesTable()
+        elif not self._doesColumnInTableExist("packagesignatures", "gpg"):
+            self._createPackagesignaturesGpgColumn()
 
-        if not self._doesTableExist('packagespmphases'):
+        if not self._doesTableExist("packagespmphases"):
             self._createPackagespmphases()
 
-        if not self._doesTableExist('packagespmrepository'):
+        if not self._doesTableExist("packagespmrepository"):
             self._createPackagespmrepository()
 
-        if not self._doesTableExist('entropy_branch_migration'):
+        if not self._doesTableExist("entropy_branch_migration"):
             self._createEntropyBranchMigrationTable()
 
-        if not self._doesTableExist('dependstable'):
+        if not self._doesTableExist("dependstable"):
             self._createDependsTable()
 
-        if not self._doesTableExist('settings'):
+        if not self._doesTableExist("settings"):
             self._createSettingsTable()
 
         self._foreignKeySupport()
@@ -6787,6 +6801,13 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         with self.__write_mutex:
             self.cursor.execute('DELETE FROM packagechangelogs')
 
+    def dropGpgSignatures(self):
+        """
+        Drop all packages' GPG signatures.
+        """
+        with self.__write_mutex:
+            self.cursor.execute('UPDATE packagesignatures set gpg = NULL')
+
     def dropAllIndexes(self):
         """
         Drop all repository metadata indexes.
@@ -7191,6 +7212,10 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         # TODO: remove this by 2011/12/31
 
+        # entropy.qa uses this dbname, must skip migration
+        if self.dbname in ("qa_testing", "mem_repo"):
+            return
+
         tables = ("extrainfo", "dependencies" ,"provide",
             "conflicts", "configprotect", "configprotectmask", "sources",
             "useflags", "keywords", "content", "messages", "counters", "sizes",
@@ -7436,7 +7461,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             sha1 VARCHAR,
             sha256 VARCHAR,
             sha512 VARCHAR,
+            gpg BLOB,
             FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE );
+            """)
+
+    def _createPackagesignaturesGpgColumn(self):
+        with self.__write_mutex:
+            self.cursor.execute("""
+            ALTER TABLE packagesignatures ADD gpg BLOB;
             """)
 
     def _createPackagespmphases(self):

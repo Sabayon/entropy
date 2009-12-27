@@ -22,6 +22,7 @@ from entropy.i18n import _
 from entropy.misc import RSS
 from entropy.transceivers import EntropyTransceiver
 from entropy.db import dbapi2
+from entropy.security import Repository as RepositorySecurity
 import entropy.tools
 
 class Server:
@@ -1073,6 +1074,9 @@ class Server:
     def get_files_to_sync(self, cmethod, download = False, repo = None,
         disabled_eapis = None):
 
+        if repo is None:
+            repo = self.Entropy.default_repository
+
         if disabled_eapis is None:
             disabled_eapis = []
 
@@ -1084,6 +1088,28 @@ class Server:
         extra_text_files.append(data['database_revision_file'])
         critical.append(data['database_revision_file'])
 
+        # GPG Public key for repository
+        try:
+            repo_sec = RepositorySecurity()
+        except RepositorySecurity.GPGError: # gpg not available
+            repo_sec = None
+
+        if repo_sec is not None:
+            # get pubkey
+            try:
+                pubkey = repo_sec.get_pubkey(repo)
+            except KeyError:
+                # key not available, bye
+                pubkey = None
+            if pubkey is not None:
+                # write pubkey to file and add to data upload
+                gpg_path = self.Entropy.get_local_database_gpg_signature_file(
+                    repo)
+                with open(gpg_path, "w") as gpg_f:
+                    gpg_f.write(pubkey)
+                    gpg_f.flush()
+                data['database_gpg_pubkey'] = gpg_path
+                extra_text_files.append(data['database_gpg_pubkey'])
 
         # branch migration support scripts
         post_branch_mig_file = self.Entropy.get_local_post_branch_mig_script(

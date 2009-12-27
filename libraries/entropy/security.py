@@ -957,7 +957,7 @@ class Repository:
     class GPGError(EntropyException):
         """Errors during GPG commands execution"""
 
-    class GPGServiceNotAvailable(EntropyException):
+    class GPGServiceNotAvailable(GPGError):
         """A particular feature or service is not available"""
 
     class ListKeys(list):
@@ -1082,6 +1082,7 @@ class Repository:
             key_f.flush()
         # atomic
         os.rename(tmp_path, self.__keymap_file)
+        const_setup_perms(self.__keymap_file, etpConst['entropygid'])
 
     def __update_keymap(self, repoid, fingerprint):
         """

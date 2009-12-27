@@ -299,6 +299,15 @@ help_opts_extended = [
 
         None,
 
+        (2, 'key', 2, _('manage repository digital signatures (OpenGPG)')),
+            (3, 'create [repos]', 1, _('create keypair for repositories and sign packages')),
+            (3, 'delete [repos]', 1, _('delete keypair (and digital signatures) of repository')),
+            (3, 'status [repos]', 1, _('show currently configured keys information for given repositories')),
+            (3, 'sign [repos]', 1, _('sign (or re-sign) packages in repository using currently set keypair')),
+
+
+        None,
+
         (2, 'query', 2, _('do some searches into community repository databases')),
             (3, 'belongs', 2, _('show from what package the provided files belong')),
             (3, 'changelog', 2, _('show packages changelog')),
@@ -480,6 +489,15 @@ def _do_text_community(main_cmd, options):
             rc = 1
         else:
             rc = server_reagent.repositories(options)
+
+    elif sub_cmd == "key":
+        try:
+            import server_key
+        except ImportError:
+            print_error(darkgreen(comm_err_msg))
+            rc = 1
+        else:
+            rc = server_key.key(options)
 
     elif sub_cmd == "notice":
         try:

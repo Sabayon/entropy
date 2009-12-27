@@ -96,6 +96,12 @@ help_opts = [
             (3, '--deps', 3, _('pulls dependencies in')),
         (2, 'default <repo_id>', 2, _('set the default repository')),
     None,
+    (1, 'key', 3, _('manage repository digital signatures (OpenGPG)')),
+        (2, 'create [repos]', 1, _('create keypair for repositories and sign packages')),
+        (2, 'delete [repos]', 1, _('delete keypair (and digital signatures) of repository')),
+        (2, 'status [repos]', 1, _('show currently configured keys information for given repositories')),
+        (2, 'sign [repos]', 1, _('sign (or re-sign) packages in repository using currently set keypair')),
+    None,
     (1, 'spm', 3, _('source package manager functions')),
         (2, 'compile', 3, _('compilation function')),
             (3, 'categories', 2, _('compile packages belonging to the provided categories')),
@@ -161,64 +167,70 @@ rc = -10
 if not entropy.tools.is_root():
     print_error("you must be root in order to run "+sys.argv[0])
 
-elif (options[0] == "update"):
+main_cmd = options.pop(0)
+
+if main_cmd == "update":
     import server_reagent
-    rc = server_reagent.update(options[1:])
+    rc = server_reagent.update(options)
     server_reagent.Entropy.close_server_databases()
 
-elif (options[0] == "inject"):
+elif main_cmd == "inject":
     import server_reagent
-    rc = server_reagent.inject(options[1:])
+    rc = server_reagent.inject(options)
     server_reagent.Entropy.close_server_databases()
 
 # database tool
-elif (options[0] == "database"):
+elif main_cmd == "database":
     if "switchbranch" in options:
         etpUi['warn'] = False
     import server_reagent
-    server_reagent.database(options[1:])
+    server_reagent.database(options)
     server_reagent.Entropy.close_server_databases()
     rc = 0
 
-elif (options[0] == "query"):
+elif main_cmd == "query":
     import server_query
-    rc = server_query.query(options[1:])
+    rc = server_query.query(options)
 
-elif (options[0] == "repo"):
+elif main_cmd == "repo":
     import server_reagent
-    rc = server_reagent.repositories(options[1:])
+    rc = server_reagent.repositories(options)
 
-elif (options[0] == "deptest"):
+elif main_cmd == "key":
+    import server_key
+    rc = server_key.key(options)
+
+elif main_cmd == "deptest":
     import server_reagent
     server_reagent.Entropy.dependencies_test()
     server_reagent.Entropy.close_server_databases()
     rc = 0
 
-elif (options[0] == "pkgtest"):
+elif main_cmd == "pkgtest":
 
     import server_reagent
     server_reagent.Entropy.verify_local_packages(["world"], ask = etpUi['ask'])
     server_reagent.Entropy.close_server_databases()
     rc = 0
 
-elif (options[0] == "libtest"):
+elif main_cmd == "libtest":
     import server_reagent
     dump = "--dump" in options
     rc, pkgs = server_reagent.Entropy.test_shared_objects(
         dump_results_to_file = dump)
     x = server_reagent.Entropy.close_server_databases()
 
-elif (options[0] == "revdeps"):
+elif main_cmd == "revdeps":
     import server_reagent
     rc = server_reagent.Entropy.generate_reverse_dependencies_metadata()
     server_reagent.Entropy.close_server_databases()
 
 # cleanup
-elif (options[0] == "cleanup"):
+elif main_cmd == "cleanup":
     rc = entropy.tools.cleanup()
 
 # deptest tool
-elif (options[0] == "spm"):
+elif main_cmd == "spm":
     import server_reagent
     rc = server_reagent.spm(options[1:])
     server_reagent.Entropy.close_server_databases()

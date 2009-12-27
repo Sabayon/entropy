@@ -757,6 +757,7 @@ class PortagePlugin(SpmPlugin):
             'sha1': entropy.tools.sha1(package_file),
             'sha256': entropy.tools.sha256(package_file),
             'sha512': entropy.tools.sha512(package_file),
+            'gpg': None, # GPG signature will be filled later on, if enabled
         }
         data['datecreation'] = str(entropy.tools.get_file_unix_mtime(
             package_file))

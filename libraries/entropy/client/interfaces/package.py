@@ -2426,11 +2426,12 @@ class Package:
         self.pkgmeta['name'] = dbconn.retrieveName(idpackage)
         self.pkgmeta['messages'] = dbconn.retrieveMessages(idpackage)
         self.pkgmeta['checksum'] = dbconn.retrieveDigest(idpackage)
-        sha1, sha256, sha512 = dbconn.retrieveSignatures(idpackage)
+        sha1, sha256, sha512, gpg = dbconn.retrieveSignatures(idpackage)
         signatures = {
             'sha1': sha1,
             'sha256': sha256,
             'sha512': sha512,
+            'gpg': gpg,
         }
         self.pkgmeta['signatures'] = signatures
         self.pkgmeta['accept_license'] = \
@@ -2596,11 +2597,12 @@ class Package:
                 extended = True)
         else:
             self.pkgmeta['checksum'] = dbconn.retrieveDigest(idpackage)
-            sha1, sha256, sha512 = dbconn.retrieveSignatures(idpackage)
+            sha1, sha256, sha512, gpg = dbconn.retrieveSignatures(idpackage)
             signatures = {
                 'sha1': sha1,
                 'sha256': sha256,
                 'sha512': sha512,
+                'gpg': gpg,
             }
             self.pkgmeta['signatures'] = signatures
             self.pkgmeta['download'] = dbconn.retrieveDownloadURL(idpackage)
@@ -2703,11 +2705,12 @@ class Package:
             download = dbconn.retrieveDownloadURL(idpackage)
             digest = dbconn.retrieveDigest(idpackage)
 
-            sha1, sha256, sha512 = dbconn.retrieveSignatures(idpackage)
+            sha1, sha256, sha512, gpg = dbconn.retrieveSignatures(idpackage)
             signatures = {
                 'sha1': sha1,
                 'sha256': sha256,
                 'sha512': sha512,
+                'gpg': gpg,
             }
 
             repo_size = dbconn.retrieveSize(idpackage)
