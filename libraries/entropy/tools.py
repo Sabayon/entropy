@@ -170,7 +170,11 @@ def get_traceback(tb_obj = None):
     if tb_obj is not None:
         traceback.print_last(tb_obj, file = buf)
     else:
-        traceback.print_last(file = buf)
+        last_type, last_value, last_traceback = sys.exc_info()
+        traceback.print_exception(last_type, last_value, last_traceback,
+                        file = buf)
+        # cannot use this due to Python 2.6.x bug
+        #traceback.print_last(file = buf)
     return buf.getvalue()
 
 def print_exception(returndata = False, tb_data = None):
