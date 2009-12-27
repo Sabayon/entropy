@@ -18,7 +18,7 @@
 #    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 
 # Base Python Imports
-import sys, os, pty, random
+import sys, os, pty, random, signal
 import time
 
 # Entropy Imports
@@ -109,7 +109,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.warn_repositories()
         self.packages_install()
 
-    def quit(self, widget = None, event = None, sysexit = True ):
+    def quit(self, widget = None, event = None, sysexit = True):
+        if hasattr(self, "_ugc_pid"):
+            if isinstance(self._ugc_pid, int):
+                try:
+                    os.kill(self._ugc_pid, signal.SIGKILL)
+                except OSError:
+                    pass
         if hasattr(self, 'ugcTask'):
             if self.__ugc_task != None:
                 self.__ugc_task.kill()
@@ -254,6 +260,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         # init flags
         self.disable_ugc = False
+        self._ugc_pid = None
 
         self.__ugc_task = None
         self._spawning_ugc = False
@@ -623,8 +630,15 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.__ugc_task.set_delay(300)
         if self.do_debug:
             print_generic("entering UGC")
+
+        def write_pid_func(pid):
+            self._ugc_pid = pid
+            if self.do_debug:
+                print_generic("written UGC pid %s" % (pid,))
+
         try:
-            self.ugc_update()
+            entropy.tools.spawn_function(self.ugc_update,
+                write_pid_func = write_pid_func)
             self.Cacher.sync(wait = True)
         except (SystemExit,):
             raise
