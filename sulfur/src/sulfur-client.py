@@ -25,37 +25,29 @@ from sulfur import SulfurApplication
 from sulfur.dialogs import ExceptionDialog
 from sulfur.setup import const
 
-exit_status = 0
-try:
-    try:
-        gtk.window_set_default_icon_from_file(
-            const.PIXMAPS_PATH+"/sulfur-icon.png")
-    except gobject.GError:
-        pass
-    mainApp = SulfurApplication()
-    mainApp.init()
-    gobject.threads_init()
-    gtk.gdk.threads_enter()
-    gtk.main()
-    gtk.gdk.threads_leave()
-    entropy.tools.kill_threads()
-    mainApp.quit()
-except SystemExit as e:
-    entropy.tools.kill_threads()
-    print("Quit by User (SystemExit)")
-    try:
-        mainApp.quit()
-    except NameError:
-        pass
-    exit_status = e.code
-except KeyboardInterrupt:
-    entropy.tools.kill_threads()
-    print("Quit by User (KeyboardInterrupt)")
-    try:
-        mainApp.quit()
-    except NameError:
-        pass
-except: # catch other exception and write it to the logger.
+MAIN_APP = None
+
+def handle_exception(exc_class, exc_instance, exc_tb):
+
+    # restore original exception handler, to avoid loops
+    uninstall_exception_handler()
+
+    if exc_class is KeyboardInterrupt:
+        entropy.tools.kill_threads()
+        print("Quit by User (KeyboardInterrupt)")
+        if MAIN_APP is not None:
+            MAIN_APP.quit()
+        raise SystemExit(0)
+
+    if exc_class is SystemExit:
+        entropy.tools.kill_threads()
+        print("Quit by User (SystemExit)")
+        if MAIN_APP is not None:
+            MAIN_APP.quit()
+        exit_status = exc_instance.code
+        raise SystemExit(exit_status)
+
+    t_back = entropy.tools.get_traceback()
 
     if "--debug" in sys.argv:
         entropy.tools.print_exception()
@@ -65,9 +57,28 @@ except: # catch other exception and write it to the logger.
     my = ExceptionDialog()
     my.show()
     entropy.tools.kill_threads()
-    try:
-        mainApp.quit(sysexit = False)
-    except NameError:
-        pass
+    if MAIN_APP is not None:
+        MAIN_APP.quit(sysexit = False)
 
-raise SystemExit(exit_status)
+def install_exception_handler():
+    sys.excepthook = handle_exception
+
+def uninstall_exception_handler():
+    sys.excepthook = sys.__excepthook__
+
+install_exception_handler()
+try:
+    gtk.window_set_default_icon_from_file(
+        const.PIXMAPS_PATH+"/sulfur-icon.png")
+except gobject.GError:
+    pass
+
+MAIN_APP = SulfurApplication()
+MAIN_APP.init()
+gobject.threads_init()
+gtk.gdk.threads_enter()
+gtk.main()
+gtk.gdk.threads_leave()
+entropy.tools.kill_threads()
+MAIN_APP.quit()
+raise SystemExit(0)
