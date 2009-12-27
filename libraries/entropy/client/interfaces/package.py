@@ -417,6 +417,9 @@ class Package:
                 self.pkgmeta['removeidpackage'], get_dict = True
             )
         self.remove_installed_package(self.pkgmeta['removeidpackage'])
+        # commit changes, to avoid users pressing CTRL+C and still having
+        # all the db entries in, so we need to commit at every iteration
+        self.Entropy.clientDbconn.commitChanges()
 
         # if another package with the same atom is installed in
         # Entropy db, do not call SPM at all because it would cause
