@@ -713,13 +713,13 @@ def countdown(secs = 5, what = "Counting...", back = False):
     if secs:
         if back:
             try:
-                print_generic(red(">>") + " " + what)
+                print_generic(red(">>") + " " + what, end = "")
             except UnicodeEncodeError:
-                print_generic(red(">>") + " " + what.encode('utf-8'))
+                print_generic(red(">>") + " " + what.encode('utf-8'), end = "")
         else:
             print_generic(what)
         for i in range(secs)[::-1]:
-            sys.stdout.write(red(str(i+1)+" "))
+            sys.stdout.write(purple(str(i+1)+" "))
             sys.stdout.flush()
             time.sleep(1)
 
