@@ -646,7 +646,7 @@ class FtpInterface:
             count -= 1
             try:
                 self.__ftpconn = self.ftplib.FTP()
-                self.__ftpconn.connect(self.__ftphost, self.__ftpport, 60)
+                self.__ftpconn.connect(self.__ftphost, self.__ftpport)
                 break
             except (self.socket.gaierror,), e:
                 raise ConnectionError('ConnectionError: %s' % (e,))
@@ -703,7 +703,7 @@ class FtpInterface:
             counter -= 1
             try:
                 self.__ftpconn = self.ftplib.FTP()
-                self.__ftpconn.connect(self.__ftphost, self.__ftpport, 60)
+                self.__ftpconn.connect(self.__ftphost, self.__ftpport)
                 break
             except:
                 if not counter:
