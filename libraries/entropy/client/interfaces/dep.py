@@ -1143,7 +1143,6 @@ class CalculatorsMixin:
 
         return broken_matches
 
-
     def __get_lib_breaks_client_and_repo_side(self, match_db, match_idpackage,
         client_idpackage):
 
