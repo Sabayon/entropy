@@ -82,6 +82,27 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
                 self,)
             )
 
+        repo = self._metadata['repo_name']
+        local_dbfile = self._metadata['local_dbfile']
+        taint_file = self._server.get_local_database_taint_file(repo)
+        if os.path.isfile(taint_file):
+            dbs = ServerRepositoryStatus()
+            dbs.set_tainted(local_dbfile)
+            dbs.set_bumped(local_dbfile)
+
+
+        if "in_memory" in self._metadata: # in-memory db?
+            local_dbfile_exists = True
+        else:
+            local_dbfile_exists = os.path.lexists(local_dbfile)
+
+        if not local_dbfile_exists:
+            # better than having a completely broken db
+            self._metadata['read_only'] = False
+            conn.readOnly = False
+            conn.initializeDatabase()
+            conn.commitChanges()
+
         use_branch = self._metadata.get('use_branch')
         if use_branch is not None:
             entropy_repository_instance.db_branch = use_branch
@@ -105,19 +126,23 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         if self._server.MirrorsService is None:
             return 0
 
-        repo = entropy_repository_instance.dbname
-        dbfile = entropy_repository_instance.dbFile
-        sts = ServerRepositoryStatus()
-        if sts.is_tainted(dbfile) and not sts.is_unlock_msg(dbfile):
-            u_msg = _("Mirrors have not been unlocked. Remember to sync them.")
-            self._server.updateProgress(
-                darkgreen(u_msg),
-                importance = 1,
-                type = "info",
-                header = brown(" * ")
-            )
-            # avoid spamming
-            sts.set_unlock_msg(dbfile)
+        repo = self._metadata['repo_name']
+        dbfile = self._metadata['local_dbfile']
+        read_only = self._metadata['read_only']
+        use_branch = self._metadata.get('use_branch')
+        if not read_only:
+            sts = ServerRepositoryStatus()
+            if sts.is_tainted(dbfile) and not sts.is_unlock_msg(dbfile):
+                u_msg = "[%s] %s" % (brown(repo),
+                    darkgreen(_("mirrors have not been unlocked. Sync them.")),)
+                self._server.updateProgress(
+                    u_msg,
+                    importance = 1,
+                    type = "warning",
+                    header = brown(" * ")
+                )
+                # avoid spamming
+                sts.set_unlock_msg(dbfile)
 
         return 0
 
@@ -129,9 +154,9 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
             )
 
         dbs = ServerRepositoryStatus()
-        dbfile = entropy_repository_instance.dbFile
-        repo = entropy_repository_instance.dbname
-        read_only = entropy_repository_instance.readOnly
+        dbfile = self._metadata['local_dbfile']
+        repo = self._metadata['repo_name']
+        read_only = self._metadata['read_only']
         if read_only:
             # do not taint database
             return 0
@@ -186,7 +211,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
     def _write_rss_for_removed_package(self, repo_db, idpackage):
 
         # setup variables we're going to use
-        srv_repo = repo_db.dbname
+        srv_repo = self._metadata['repo_name']
         rss_revision = repo_db.retrieveRevision(idpackage)
         rss_atom = "%s~%s" % (repo_db.retrieveAtom(idpackage), rss_revision,)
         status = ServerRepositoryStatus()
@@ -231,7 +256,7 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
     def _write_rss_for_added_package(self, repo_db, package_data):
 
         # setup variables we're going to use
-        srv_repo = repo_db.dbname
+        srv_repo = self._metadata['repo_name']
         rss_atom = "%s~%s" % (package_data['atom'], package_data['revision'],)
         status = ServerRepositoryStatus()
         srv_updates = status.get_updates_log(srv_repo)
@@ -1069,12 +1094,10 @@ class Server(Singleton, TextInterface):
 
         dbc = self.open_server_repository(just_reading = True, repo = repo)
         valid = do_validate(dbc)
-        self.close_server_database(dbc)
-        if not valid: # check online?
+        if not valid:
             dbc = self.open_server_repository(read_only = False,
                 no_upload = True, repo = repo, is_new = True)
             valid = do_validate(dbc)
-            self.close_server_database(dbc)
 
         return valid
 
@@ -1185,6 +1208,10 @@ class Server(Singleton, TextInterface):
             'no_upload': True,
             'use_branch': None,
             'output_interface': self,
+            'read_only': False,
+            'repo_name': repoid,
+            'local_dbfile': '##this_path_does_not_exist_for_sure#' + repoid,
+            'in_memory': True,
         }
         srv_plug = ServerEntropyRepositoryPlugin(self, metadata = etp_repo_meta)
         dbc.add_plugin(srv_plug)
@@ -1272,7 +1299,6 @@ class Server(Singleton, TextInterface):
             self.do_server_repository_sync_lock(repo, no_upload)
             self.__sync_lock_cache.add(repo)
 
-        local_dbfile_exists = os.path.lexists(local_dbfile)
         conn = EntropyRepository(
             readOnly = read_only,
             dbFile = local_dbfile,
@@ -1286,26 +1312,12 @@ class Server(Singleton, TextInterface):
             'no_upload': no_upload,
             'use_branch': use_branch,
             'output_interface': self,
+            'read_only': read_only,
+            'repo_name': repo,
+            'local_dbfile': local_dbfile,
         }
         srv_plug = ServerEntropyRepositoryPlugin(self, metadata = etp_repo_meta)
         conn.add_plugin(srv_plug)
-        """
-        FIXME: remove this once we have a pluggable EntropyRepository class
-        Setup server repository status information for newly created repos.
-        NOTE: This is a temp. workaround waiting for real pluggable
-        EntropyRepository interface calls.
-        """
-        taint_file = self.get_local_database_taint_file(repo)
-        if os.path.isfile(taint_file):
-            dbs = ServerRepositoryStatus()
-            dbs.set_tainted(local_dbfile)
-            dbs.set_bumped(local_dbfile)
-
-        if not local_dbfile_exists:
-            # better than having a completely broken db
-            conn.readOnly = False
-            conn.initializeDatabase()
-            conn.commitChanges()
 
         valid = True
         try:
