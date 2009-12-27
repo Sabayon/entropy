@@ -7211,6 +7211,18 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             if foreign_keys is not None:
                 continue
 
+            if not done_something:
+                mytxt = "%s: [%s] %s" % (
+                    bold(_("ATTENTION")),
+                    purple(self.dbname),
+                    red(_("updating repository metadata layout, please wait!")),
+                )
+                self.updateProgress(
+                    mytxt,
+                    importance = 1,
+                    type = "warning"
+                )
+
             done_something = True
             # need to add foreign key to this table
             cur = self.cursor.execute("""SELECT sql FROM sqlite_master
@@ -7239,6 +7251,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                 INSERT OR REPLACE INTO settings
                 VALUES ("on_delete_cascade", "1")
             """)
+            # recreate indexes
+            self.createAllIndexes()
 
     def _moveContent(self, from_table, to_table):
         self.cursor.execute("""
