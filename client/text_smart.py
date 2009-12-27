@@ -17,28 +17,26 @@ else:
     from commands import getoutput
 import shutil
 
-from entropy.const import *
-from entropy.output import *
+from entropy.const import etpConst, etpUi
+from entropy.output import red, darkred, darkgreen, brown, bold, \
+    print_info, print_error, print_warning
 from entropy.i18n import _
-from entropy.client.interfaces import Client
 import entropy.tools
-
-Equo = Client()
 
 def smart(options):
 
     # check if I am root
-    if (not entropy.tools.is_root()):
+    if not entropy.tools.is_root():
         mytxt = _("You are not") # you are not root
         print_error(red(mytxt)+" "+bold("root")+red("."))
         return 1
 
     # Options available for all the packages submodules
-    smartRequestSavedir = None
+    smart_req_savedir = None
     savedir = False
     newopts = []
     for opt in options:
-        if (opt == "--savedir"):
+        if opt == "--savedir":
             savedir = True
         elif opt.startswith("--"):
             print_error(red(" %s." % (_("Wrong parameters"),) ))
@@ -46,34 +44,47 @@ def smart(options):
         else:
             if savedir:
                 try:
-                    smartRequestSavedir = os.path.realpath(opt)
+                    smart_req_savedir = os.path.realpath(opt)
                 except OSError:
-                    smartRequestSavedir = None
+                    smart_req_savedir = None
                 savedir = False
             else:
                 newopts.append(opt)
     options = newopts
 
     rc = 0
-    if (options[0] == "application"):
-        rc = smartappsHandler(options[1:])
-    elif (options[0] == "package"):
-        rc = smartPackagesHandler(options[1:])
-    elif (options[0] == "quickpkg"):
-        rc = QuickpkgHandler(options[1:], savedir = smartRequestSavedir)
-    elif (options[0] == "inflate") or (options[0] == "deflate") or (options[0] == "extract"):
-        rc = CommonFlate(options[1:], action = options[0], savedir = smartRequestSavedir)
-    else:
-        rc = -10
+
+    from entropy.client.interfaces import Client
+    entropy_client = Client()
+    try:
+        if options[0] == "application":
+            rc = smart_apps_handler(entropy_client, options[1:])
+
+        elif options[0] == "package":
+            rc = smart_pkg_handler(entropy_client, options[1:])
+
+        elif options[0] == "quickpkg":
+            rc = quickpkg_handler(entropy_client,
+                options[1:], savedir = smart_req_savedir)
+
+        elif (options[0] == "inflate") or (options[0] == "deflate") or \
+            (options[0] == "extract"):
+            rc = common_flate(entropy_client,
+                options[1:], action = options[0], savedir = smart_req_savedir)
+        else:
+            rc = -10
+    finally:
+        entropy_client.destroy()
 
     return rc
 
 
-def QuickpkgHandler(mypackages, savedir = None):
+def quickpkg_handler(entropy_client, mypackages, savedir = None):
 
     if (not mypackages):
         mytxt = _("No packages specified")
-        if not etpUi['quiet']: print_error(darkred(" * ")+red(mytxt+"."))
+        if not etpUi['quiet']:
+            print_error(darkred(" * ")+red(mytxt+"."))
         return 1
 
     if savedir == None:
@@ -82,16 +93,18 @@ def QuickpkgHandler(mypackages, savedir = None):
             os.makedirs(etpConst['packagestmpdir'])
     else:
         if not os.path.isdir(savedir):
-            print_error(darkred(" * ")+red("--savedir ")+savedir+red(" %s." % (_("does not exist"),) ))
+            print_error(darkred(" * ")+red("--savedir ") + \
+                savedir+red(" %s." % (_("does not exist"),) ))
             return 4
 
     packages = []
     for opt in mypackages:
-        match = Equo.clientDbconn.atomMatch(opt)
+        match = entropy_client.clientDbconn.atomMatch(opt)
         if match[0] != -1:
             packages.append(match)
         else:
-            if not etpUi['quiet']: print_warning(darkred(" * ")+red("%s: " % (_("Cannot find"),))+bold(opt))
+            if not etpUi['quiet']: print_warning(darkred(" * ") + \
+                red("%s: " % (_("Cannot find"),))+bold(opt))
     packages = entropy.tools.filter_duplicated_entries(packages)
     if (not packages):
         print_error(darkred(" * ")+red("%s." % (_("No valid packages specified"),)))
@@ -102,21 +115,22 @@ def QuickpkgHandler(mypackages, savedir = None):
     if (not etpUi['quiet']) or (etpUi['ask']): print_info(darkgreen(" * ")+red(mytxt+":"))
     pkgInfo = {}
     for pkg in packages:
-        atom = Equo.clientDbconn.retrieveAtom(pkg[0])
+        atom = entropy_client.clientDbconn.retrieveAtom(pkg[0])
         pkgInfo[pkg] = {}
         pkgInfo[pkg]['atom'] = atom
         pkgInfo[pkg]['idpackage'] = pkg[0]
         print_info(brown("\t[")+red("%s:" % (_("from"),))+bold(_("installed"))+brown("]")+" - "+atom)
 
     if (not etpUi['quiet']) or (etpUi['ask']):
-        rc = Equo.askQuestion(">>   %s" % (_("Would you like to recompose the selected packages ?"),))
+        rc = entropy_client.askQuestion(">>   %s" % (_("Would you like to recompose the selected packages ?"),))
         if rc == _("No"):
             return 0
 
     for pkg in packages:
-        if not etpUi['quiet']: print_info(brown(" * ")+red("%s: " % (_("Compressing"),))+darkgreen(pkgInfo[pkg]['atom']))
-        pkgdata = Equo.clientDbconn.getPackageData(pkgInfo[pkg]['idpackage'])
-        resultfile = Equo.quickpkg_handler(pkgdata = pkgdata, dirpath = savedir)
+        if not etpUi['quiet']:
+            print_info(brown(" * ")+red("%s: " % (_("Compressing"),))+darkgreen(pkgInfo[pkg]['atom']))
+        pkgdata = entropy_client.clientDbconn.getPackageData(pkgInfo[pkg]['idpackage'])
+        resultfile = entropy_client.quickpkg_handler(pkgdata = pkgdata, dirpath = savedir)
         if resultfile == None:
             if not etpUi['quiet']:
                 print_error(darkred(" * ") + red("%s: " % (_("Error while creating package for"),)) + \
@@ -124,9 +138,10 @@ def QuickpkgHandler(mypackages, savedir = None):
             return 3
         if not etpUi['quiet']:
             print_info(darkgreen("  * ")+red("%s: " % (_("Saved in"),))+resultfile)
+
     return 0
 
-def CommonFlate(mytbz2s, action, savedir = None):
+def common_flate(entropy_client, mytbz2s, action, savedir = None):
 
     if (not mytbz2s):
         print_error(darkred(" * ")+red("%s." % (_("No packages specified"),)))
@@ -134,7 +149,7 @@ def CommonFlate(mytbz2s, action, savedir = None):
 
     # test if portage is available
     try:
-        Spm = Equo.Spm()
+        Spm = entropy_client.Spm()
         del Spm
     except Exception as e:
         entropy.tools.print_traceback()
@@ -160,23 +175,23 @@ def CommonFlate(mytbz2s, action, savedir = None):
                 return 1
 
     if action == "inflate":
-        rc = InflateHandler(mytbz2s, savedir)
+        rc = inflate_handler(mytbz2s, savedir)
     elif action == "deflate":
-        rc = DeflateHandler(mytbz2s, savedir)
+        rc = deflate_handler(mytbz2s, savedir)
     elif action == "extract":
-        rc = ExtractHandler(mytbz2s, savedir)
+        rc = extract_handler(mytbz2s, savedir)
     else:
         rc = -10
     return rc
 
 
-def InflateHandler(mytbz2s, savedir):
+def inflate_handler(entropy_client, mytbz2s, savedir):
 
-    branch = Equo.SystemSettings['repositories']['branch']
+    branch = entropy_client.SystemSettings['repositories']['branch']
     print_info(brown(" %s: " % (_("Using branch"),))+bold(branch))
 
-    Spm = Equo.Spm()
-    Qa = Equo.QA()
+    Spm = entropy_client.Spm()
+    Qa = entropy_client.QA()
 
     # analyze files
     for tbz2 in mytbz2s:
@@ -185,7 +200,7 @@ def InflateHandler(mytbz2s, savedir):
         if os.path.realpath(tbz2) != os.path.realpath(etptbz2path): # can convert a file without copying
             shutil.copy2(tbz2, etptbz2path)
         info_package = bold(os.path.basename(etptbz2path)) + ": "
-        Equo.updateProgress(
+        entropy_client.updateProgress(
             red(info_package + _("Extracting package metadata") + " ..."),
             importance = 0,
             type = "info",
@@ -193,7 +208,7 @@ def InflateHandler(mytbz2s, savedir):
             back = True
         )
         mydata = Spm.extract_package_metadata(etptbz2path)
-        Equo.updateProgress(
+        entropy_client.updateProgress(
             red(info_package + _("Package extraction complete")),
             importance = 0,
             type = "info",
@@ -212,7 +227,7 @@ def InflateHandler(mytbz2s, savedir):
         while os.path.isfile(dbpath):
             dbpath = etpConst['packagestmpdir']+os.path.sep+str(entropy.tools.get_random_number())
         # create
-        mydbconn = Equo.open_generic_database(dbpath)
+        mydbconn = entropy_client.open_generic_database(dbpath)
         mydbconn.initializeDatabase()
         idpackage, yyy, xxx = mydbconn.addPackage(mydata, revision = mydata['revision'])
         del yyy, xxx
@@ -224,7 +239,7 @@ def InflateHandler(mytbz2s, savedir):
 
     return 0
 
-def DeflateHandler(mytbz2s, savedir):
+def deflate_handler(mytbz2s, savedir):
 
     # analyze files
     for tbz2 in mytbz2s:
@@ -237,7 +252,7 @@ def DeflateHandler(mytbz2s, savedir):
 
     return 0
 
-def ExtractHandler(mytbz2s, savedir):
+def extract_handler(mytbz2s, savedir):
 
     # analyze files
     for tbz2 in mytbz2s:
@@ -251,7 +266,7 @@ def ExtractHandler(mytbz2s, savedir):
 
     return 0
 
-def smartPackagesHandler(mypackages):
+def smart_pkg_handler(entropy_client, mypackages):
 
     if (not mypackages):
         print_error(darkred(" * ")+red("%s." % (_("No packages specified"),)))
@@ -259,13 +274,13 @@ def smartPackagesHandler(mypackages):
 
     packages = []
     for opt in mypackages:
-        match = Equo.atom_match(opt)
+        match = entropy_client.atom_match(opt)
         if match[0] != -1:
             packages.append(match)
         else:
             print_warning(darkred(" * ")+red("%s: " % (_("Cannot find"),))+bold(opt))
     packages = entropy.tools.filter_duplicated_entries(packages)
-    if (not packages):
+    if not packages:
         print_error(darkred(" * ")+red("%s." % (_("No valid packages specified"),)))
         return 2
 
@@ -273,17 +288,17 @@ def smartPackagesHandler(mypackages):
     print_info(darkgreen(" * ")+red("%s:" % (_("This is the list of the packages that would be merged into a single one"),)))
     pkgInfo = {}
     for pkg in packages:
-        dbconn = Equo.open_repository(pkg[1])
+        dbconn = entropy_client.open_repository(pkg[1])
         atom = dbconn.retrieveAtom(pkg[0])
         pkgInfo[pkg] = atom
         print_info(brown("\t[")+red("%s:" % (_("from"),))+pkg[1]+brown("]")+" - "+atom)
 
-    rc = Equo.askQuestion(">>   %s" % (_("Would you like to create the packages above ?"),))
+    rc = entropy_client.askQuestion(">>   %s" % (_("Would you like to create the packages above ?"),))
     if rc == _("No"):
         return 0
 
     print_info(darkgreen(" * ")+red("%s..." % (_("Creating merged Smart Package"),)))
-    rc = smartpackagegenerator(packages)
+    rc = smartpackagegenerator(entropy_client, packages)
     if rc != 0:
         print_error(darkred(" * ")+red("%s." % (_("Cannot continue"),)))
         return rc
@@ -291,12 +306,12 @@ def smartPackagesHandler(mypackages):
     return 0
 
 
-def smartpackagegenerator(matchedPackages):
+def smartpackagegenerator(entropy_client, matched_pkgs):
 
     fetchdata = []
     matchedAtoms = {}
-    for x in matchedPackages:
-        xdbconn = Equo.open_repository(x[1])
+    for x in matched_pkgs:
+        xdbconn = entropy_client.open_repository(x[1])
         matchedAtoms[x] = {}
         xatom = xdbconn.retrieveAtom(x[0])
         xdownload = xdbconn.retrieveDownloadURL(x[0])
@@ -325,14 +340,14 @@ def smartpackagegenerator(matchedPackages):
     os.mkdir(unpackdir+"/db")
     # create master database
     dbfile = unpackdir+"/db/merged.db"
-    mergeDbconn = Equo.open_generic_database(dbfile, dbname = "client")
+    mergeDbconn = entropy_client.open_generic_database(dbfile, dbname = "client")
     mergeDbconn.initializeDatabase()
     tmpdbfile = dbfile+"--readingdata"
-    for package in matchedPackages:
+    for package in matched_pkgs:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red(_("collecting Entropy metadata")))
         entropy.tools.extract_edb(etpConst['entropyworkdir']+os.path.sep+matchedAtoms[package]['download'], tmpdbfile)
         # read db and add data to mergeDbconn
-        mydbconn = Equo.open_generic_database(tmpdbfile)
+        mydbconn = entropy_client.open_generic_database(tmpdbfile)
         idpackages = mydbconn.listAllIdpackages()
 
         for myidpackage in idpackages:
@@ -354,7 +369,7 @@ def smartpackagegenerator(matchedPackages):
     mergeDbconn.closeDB()
 
     # merge packages
-    for package in matchedPackages:
+    for package in matched_pkgs:
         print_info(darkgreen("  * ")+brown(matchedAtoms[package]['atom'])+": "+red("unpacking content"))
         rc = entropy.tools.uncompress_tar_bz2(etpConst['entropyworkdir']+os.path.sep+matchedAtoms[x]['download'], extractPath = unpackdir+"/content")
         if rc != 0:
@@ -385,9 +400,9 @@ def smartpackagegenerator(matchedPackages):
     return 0
 
 
-def smartappsHandler(mypackages):
+def smart_apps_handler(entropy_client, mypackages):
 
-    if (not mypackages):
+    if not mypackages:
         print_error(darkred(" * ")+red("%s." % (_("No packages specified"),)))
         return 1
 
@@ -400,7 +415,7 @@ def smartappsHandler(mypackages):
     for opt in mypackages:
         if opt in packages:
             continue
-        match = Equo.atom_match(opt)
+        match = entropy_client.atom_match(opt)
         if match[0] != -1:
             packages.append(match)
         else:
@@ -418,28 +433,26 @@ def smartappsHandler(mypackages):
             _("This is the list of the packages that would be worked out"),)))
 
     for pkg in packages:
-        dbconn = Equo.open_repository(pkg[1])
+        dbconn = entropy_client.open_repository(pkg[1])
         atom = dbconn.retrieveAtom(pkg[0])
         print_info(brown("\t[") + red("%s:" % (_("from"),)) + pkg[1] + \
             red("|SMART") + brown("]") + " - " + atom)
 
-    rc = Equo.askQuestion(">>   %s" % (
+    rc = entropy_client.askQuestion(">>   %s" % (
         _("Would you like to create the packages above ?"),))
     if rc == _("No"):
         return 0
 
-    rc = smartgenerator(packages)
+    rc = smartgenerator(entropy_client, packages)
     if rc != 0:
         print_error(darkred(" * ")+red("%s." % (_("Cannot continue"),)))
     return rc
 
 # tool that generates .tar.bz2 packages with all the binary dependencies included
-def smartgenerator(matched_atoms):
-
-    import entropy.tools as entropyTools
+def smartgenerator(entropy_client, matched_atoms):
 
     master_atom = matched_atoms[0]
-    dbconn = Equo.open_repository(master_atom[1])
+    dbconn = entropy_client.open_repository(master_atom[1])
     idpackage = master_atom[0]
     atom = dbconn.retrieveAtom(idpackage)
     pkgfilepath = dbconn.retrieveDownloadURL(idpackage)
@@ -468,7 +481,7 @@ def smartgenerator(matched_atoms):
     print_info(darkgreen(" * ") + \
         red("%s " % (_("Unpacking the main package"),)) + \
         bold(str(pkgfilename)))
-    entropyTools.uncompress_tar_bz2(main_bin_path, pkg_data_dir) # first unpack
+    entropy.tools.uncompress_tar_bz2(main_bin_path, pkg_data_dir) # first unpack
 
     binary_execs = []
     for item in pkgcontent:
@@ -479,14 +492,14 @@ def smartgenerator(matched_atoms):
 
     # now uncompress all the rest
     for dep_idpackage, dep_repo in matched_atoms[1:]:
-        mydbconn = Equo.open_repository(dep_repo)
+        mydbconn = entropy_client.open_repository(dep_repo)
         download = os.path.basename(mydbconn.retrieveDownloadURL(dep_idpackage))
         depbranch = mydbconn.retrieveBranch(dep_idpackage)
         depatom = mydbconn.retrieveAtom(dep_idpackage)
         print_info(darkgreen(" * ") + \
             red("%s " % (_("Unpacking dependency package"),)) + bold(depatom))
         deppath = os.path.join(etpConst['packagesbindir'], depbranch, download)
-        entropyTools.uncompress_tar_bz2(deppath, pkg_data_dir) # first unpack
+        entropy.tools.uncompress_tar_bz2(deppath, pkg_data_dir) # first unpack
 
     # now create the bash script for each binary_execs
     os.makedirs(pkg_data_dir+"/wrp")
