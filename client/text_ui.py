@@ -466,7 +466,7 @@ def branch_hop(branch):
         print_info(mytxt)
         mytxt = "%s %s" % (brown(" ?? "),
             darkgreen(
-                _("Now run 'equo world' to upgrade your distribution to")),
+                _("Now run 'equo upgrade' to upgrade your distribution to")),
             )
         print_info(mytxt)
         return 0, 0
