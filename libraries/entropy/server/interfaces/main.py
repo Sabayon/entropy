@@ -99,9 +99,9 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
         if not local_dbfile_exists:
             # better than having a completely broken db
             self._metadata['read_only'] = False
-            conn.readOnly = False
-            conn.initializeDatabase()
-            conn.commitChanges()
+            entropy_repository_instance.readOnly = False
+            entropy_repository_instance.initializeDatabase()
+            entropy_repository_instance.commitChanges()
 
         use_branch = self._metadata.get('use_branch')
         if use_branch is not None:
