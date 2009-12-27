@@ -953,7 +953,8 @@ class TextInterface:
                         input_type, data = input_text
                         if input_type == "checkbox":
                             answer = self.askQuestion(data)
-                            if answer == "Yes": myresult = True
+                            if answer == _("Yes"):
+                                myresult = True
                         elif input_type == "combo":
                             myresult = option_chooser(data)
                         elif input_type == "list":
