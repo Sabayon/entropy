@@ -2564,8 +2564,8 @@ class Server(Singleton, TextInterface):
                         black_list_adder = \
                             self.add_missing_dependencies_blacklist_items
                     )
-                    my_qa.test_depends_linking(idpackages_added, dbconn,
-                        repo = repo)
+                    my_qa.test_reverse_dependencies_linking(idpackages_added,
+                        dbconn, repo = repo)
                 if to_be_injected:
                     self.inject_database_into_packages(to_be_injected,
                         repo = repo)
@@ -2592,7 +2592,8 @@ class Server(Singleton, TextInterface):
                 black_list_adder = \
                     self.add_missing_dependencies_blacklist_items
             )
-            my_qa.test_depends_linking(idpackages_added, dbconn, repo = repo)
+            my_qa.test_reverse_dependencies_linking(idpackages_added, dbconn,
+                repo = repo)
 
         # reinit depends table
         if missing_deps_taint:

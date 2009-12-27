@@ -154,7 +154,8 @@ class QAInterface(EntropyPluginStore):
             raise AttributeError("Specify a QAInterfacePlugin based class")
         return EntropyPluginStore.add_plugin(self, plugin.get_id(), plugin)
 
-    def test_depends_linking(self, idpackages, dbconn, repo = None):
+    def test_reverse_dependencies_linking(self, idpackages, dbconn,
+        repo = None):
         """
         Scan for broken shared objects linking for the given idpackages on
         the given entropy.db.EntropyRepository based instance.
