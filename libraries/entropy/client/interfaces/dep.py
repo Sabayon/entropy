@@ -842,8 +842,7 @@ class CalculatorsMixin:
 
         pkg_id, repo_id = pkg_match
         # exclude build dependencies
-        myundeps = repo_db.retrieveDependenciesList(pkg_id,
-            exclude_deptypes = [etpConst['dependency_type_ids']['bdepend_id']])
+        myundeps = repo_db.retrieveDependenciesList(pkg_id)
 
         # check conflicts
         my_conflicts = set([x for x in myundeps if x.startswith("!")])
@@ -1043,18 +1042,11 @@ class CalculatorsMixin:
         match_cache = {}
         results = set()
 
-        # TODO: future build deps support
-        include_build_deps = False
-        excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
-        if not include_build_deps:
-            excluded_dep_types = None
-
         cdb_rdeps = self.clientDbconn.retrieveDependencies
         cdb_rks = self.clientDbconn.retrieveKeySlot
         gpa = self.get_package_action
         mydepends = \
-            self.clientDbconn.retrieveReverseDependencies(clientmatch[0],
-                exclude_deptypes = excluded_dep_types)
+            self.clientDbconn.retrieveReverseDependencies(clientmatch[0])
 
         for idpackage in mydepends:
             try:
@@ -1198,9 +1190,7 @@ class CalculatorsMixin:
             repodata[needed] = reponeeded[needed]
         del repo_side, reponeeded
 
-        excluded_dep_types = [etpConst['dependency_type_ids']['bdepend_id']]
-        repo_dependencies = matchdb.retrieveDependencies(match[0],
-            exclude_deptypes = excluded_dep_types)
+        repo_dependencies = matchdb.retrieveDependencies(match[0])
         matched_deps = set()
         matched_repos = set()
         for dependency in repo_dependencies:
