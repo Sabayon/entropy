@@ -139,7 +139,7 @@ class EntropyRepositoryTest(unittest.TestCase):
         pkg_dir = tempfile.mkdtemp()
         inst_dir = tempfile.mkdtemp()
 
-        rc = text_smart.InflateHandler([pkg_path], pkg_dir)
+        rc = text_smart.inflate_handler(self.Client, [pkg_path], pkg_dir)
         self.assert_(rc == 0)
         self.assert_(os.listdir(pkg_dir))
 
