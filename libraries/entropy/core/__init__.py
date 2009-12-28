@@ -40,7 +40,11 @@ class Singleton(object):
             else:
                 return singleton
 
-        singleton = object.__new__(cls)
+        # dict support
+        if issubclass(cls, dict):
+            singleton = dict.__new__(cls)
+        else:
+            singleton = object.__new__(cls)
         singleton.init_singleton(*args, **kwds)
         cls.__singleton__ = singleton
         return singleton
