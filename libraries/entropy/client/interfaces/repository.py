@@ -1618,7 +1618,13 @@ class Repository:
                         os.rename(from_mypath, to_mypath)
                         my_show_file_unpack(myfile)
                     except OSError:
-                        continue
+                        # try non atomic way
+                        try:
+                            shutil.copy2(from_mypath, to_mypath)
+                            my_show_file_unpack(myfile)
+                            os.remove(from_mypath)
+                        except (shutil.Error, IOError,):
+                            continue
 
             finally:
                 shutil.rmtree(tmpdir, True)
