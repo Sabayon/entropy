@@ -17,6 +17,7 @@ from entropy.output import blue, red
 from entropy.exceptions import InvalidAtom
 from entropy.i18n import _
 from entropy.transceivers import EntropyTransceiver
+from entropy.server.interfaces.rss import ServerRssMetadata
 
 class Base:
 
@@ -935,7 +936,7 @@ class Base:
                         if mirrors_tainted and Entropy.SystemSettings[sys_settings_srv_plugin_id]['server']['rss']['enabled']:
                             commit_msg = repository_data[repoid]['commit_msg']
                             if not commit_msg: commit_msg = "Autodriven update"
-                            Entropy.rssMessages['commitmessage'] = commit_msg
+                            ServerRssMetadata()['commitmessage'] = commit_msg
 
                         errors, fine, broken = sync_remote_databases(repoid, repository_data[repoid]['pretend'])
                         repo_data[repoid]['db_errors'] = errors

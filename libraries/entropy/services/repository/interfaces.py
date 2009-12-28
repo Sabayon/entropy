@@ -14,18 +14,21 @@ import os
 import shutil
 from entropy.services.interfaces import SocketHost
 from entropy.output import TextInterface, blue, brown, darkred, darkgreen
-from entropy.const import etpConst, etpCache
+from entropy.const import etpConst
 from entropy.misc import TimeScheduled
 from entropy.i18n import _
 
+import entropy.dump
+import entropy.tools
+
 class Server(SocketHost):
+
+    CACHE_ID = 'reposerver/item'
 
     class ServiceInterface(TextInterface):
         def __init__(self, *args, **kwargs):
             pass
 
-    import entropy.tools as entropyTools
-    import entropy.dump as dumpTools
     def __init__(self, repositories, do_ssl = False, stdout_logging = True, **kwargs):
 
         # instantiate critical constants
@@ -180,7 +183,7 @@ class Server(SocketHost):
                 )
 
                 # now unpack compressed db in place
-                unpack_func = getattr(self.entropyTools, unpack_method)
+                unpack_func = getattr(entropy.tools, unpack_method)
                 generated_outpath = unpack_func(compressed_dbpath)
                 if mydbpath != generated_outpath:
                     try:
@@ -209,12 +212,12 @@ class Server(SocketHost):
                     type = "info"
                 )
                 mydb.closeDB()
-                self.Entropy.clear_dump_cache(etpCache['repository_server']+"/"+repository+"/")
+                self.Entropy.clear_dump_cache(Server.CACHE_ID+"/"+repository+"/")
                 self.repositories[x]['locked'] = False
                 self.eapi3_unlock_repo(*x)
 
         for repo in do_clear:
-            self.Entropy.clear_dump_cache(etpCache['repository_server']+"/"+repo+"/")
+            self.Entropy.clear_dump_cache(Server.CACHE_ID+"/"+repo+"/")
 
     def eapi3_lock_repo(self, repository, arch, product, branch):
         lock_file = os.path.join(self.repositories[(repository, arch, product, branch,)]['dbpath'], etpConst['etpdatabaseeapi3lockfile'])
@@ -230,10 +233,10 @@ class Server(SocketHost):
             os.remove(lock_file)
 
     def get_dcache(self, item, repo = '_norepo_'):
-        return self.dumpTools.loadobj(etpCache['repository_server']+"/"+repo+"/"+str(hash(item)))
+        return entropy.dump.loadobj(Server.CACHE_ID+"/"+repo+"/"+str(hash(item)))
 
     def set_dcache(self, item, data, repo = '_norepo_'):
-        self.dumpTools.dumpobj(etpCache['repository_server']+"/"+repo+"/"+str(hash(item)), data)
+        entropy.dump.dumpobj(Server.CACHE_ID+"/"+repo+"/"+str(hash(item)), data)
 
     def close_db(self, dbpath):
         try:

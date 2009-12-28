@@ -15,7 +15,6 @@ import errno
 import stat
 import shutil
 from entropy.const import etpConst, etpSys, etpCache, const_setup_perms, \
-    ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL, ETP_LOGLEVEL_VERBOSE, \
     const_isunicode, const_convert_to_unicode
 from entropy.exceptions import PermissionDenied, InvalidData, \
     IncorrectParameter, SPMError
@@ -26,6 +25,7 @@ from entropy.misc import TimeScheduled
 from entropy.db import dbapi2, EntropyRepository
 from entropy.client.interfaces.client import Client
 from entropy.cache import EntropyCacher
+from entropy.security import System as SystemSecurity
 import entropy.tools
 
 class Package:
@@ -271,14 +271,14 @@ class Package:
 
         if not self.pkgmeta['merge_from']:
             self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
                 "Unpacking package: %s" % (self.pkgmeta['atom'],)
             )
         else:
             self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
                 "Merging package: %s" % (self.pkgmeta['atom'],)
             )
 
@@ -329,7 +329,7 @@ class Package:
                     )
                 except EOFError:
                     self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL, 
+                        "[Package]", etpConst['logging']['normal_loglevel_id'], 
                         "EOFError on " + self.pkgmeta['pkgpath']
                     )
                     rc = 1
@@ -337,8 +337,8 @@ class Package:
                     # this will make devs to actually catch the
                     # right exception and prepare a fix
                     self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO,
-                        ETP_LOGLEVEL_NORMAL,
+                        "[Package]",
+                        etpConst['logging']['normal_loglevel_id'],
                         "Raising Unicode/Pickling Error for " + \
                             self.pkgmeta['pkgpath']
                     )
@@ -379,8 +379,8 @@ class Package:
             Spm = self.Entropy.Spm()
         except Exception as err:
             self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
                 "Source Package Manager not available: %s | %s" % (
                     type(Exception), err,
                 )
@@ -399,7 +399,7 @@ class Package:
 
         self.__clear_cache()
 
-        self.Entropy.clientLog.log(ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL,
+        self.Entropy.clientLog.log("[Package]", etpConst['logging']['normal_loglevel_id'],
             "Removing package: %s" % (self.pkgmeta['removeatom'],))
 
         mytxt = "%s: %s" % (
@@ -560,8 +560,8 @@ class Package:
             # Is file or directory a protected item?
             if protected:
                 self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_VERBOSE,
+                    "[Package]",
+                    etpConst['logging']['verbose_loglevel_id'],
                     "[remove] Protecting config file: %s" % (sys_root_item,)
                 )
                 mytxt = "[%s] %s: %s" % (
@@ -619,8 +619,8 @@ class Package:
                 os.remove(sys_root_item)
             except OSError as err:
                 self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
+                    "[Package]",
+                    etpConst['logging']['normal_loglevel_id'],
                     "[remove] Unable to remove %s, error: %s" % (
                         sys_root_item, err,)
                 )
@@ -652,7 +652,7 @@ class Package:
                 type = "warning",
                 header = red("   ## ")
             )
-            self.Entropy.clientLog.log(ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL,
+            self.Entropy.clientLog.log("[Package]", etpConst['logging']['normal_loglevel_id'],
                 "Collision found during removal of %s - cannot overwrite" % (
                     path,)
             )
@@ -710,14 +710,13 @@ class Package:
         return 0
 
     def __clear_cache(self):
-        self.Entropy.clear_dump_cache(etpCache['advisories'])
+        self.Entropy.clear_dump_cache(SystemSecurity.CACHE_ID)
         self.Entropy.clear_dump_cache(etpCache['filter_satisfied_deps'])
         self.Entropy.clear_dump_cache(etpCache['depends_tree'])
         self.Entropy.clear_dump_cache(etpCache['check_package_update'])
         self.Entropy.clear_dump_cache(etpCache['dep_tree'])
+        self.Entropy.clear_dump_cache(etpCache['library_breakage'])
         self.Entropy.clear_dump_cache(etpCache['dbMatch'] + \
-            etpConst['clientdbid']+"/")
-        self.Entropy.clear_dump_cache(etpCache['dbSearch'] + \
             etpConst['clientdbid']+"/")
 
         # clear caches, the bad way
@@ -731,8 +730,8 @@ class Package:
         self.__clear_cache()
 
         self.Entropy.clientLog.log(
-            ETP_LOGPRI_INFO,
-            ETP_LOGLEVEL_NORMAL,
+            "[Package]",
+            etpConst['logging']['normal_loglevel_id'],
             "Installing package: %s" % (self.pkgmeta['atom'],)
         )
 
@@ -768,8 +767,8 @@ class Package:
 
             # doing a diff removal
             self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
                 "Remove old package: %s" % (self.pkgmeta['removeatom'],)
             )
 
@@ -803,8 +802,8 @@ class Package:
             Spm = self.Entropy.Spm()
         except Exception as err:
             self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
                 "Source Package Manager not available: %s | %s" % (
                     type(Exception), err,
                 )
@@ -812,8 +811,8 @@ class Package:
             return -1
 
         self.Entropy.clientLog.log(
-            ETP_LOGPRI_INFO,
-            ETP_LOGLEVEL_NORMAL,
+            "[Package]",
+            etpConst['logging']['normal_loglevel_id'],
             "Installing new SPM entry: %s" % (self.pkgmeta['atom'],)
         )
 
@@ -843,8 +842,8 @@ class Package:
             Spm = self.Entropy.Spm()
         except Exception as err:
             self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
                 "Source Package Manager not available: %s | %s" % (
                     type(Exception), err,
                 )
@@ -857,8 +856,8 @@ class Package:
         except (SPMError, KeyError,):
             # installed package not available, we must ignore it
             self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
                 "Spm uid not available for Spm package: %s (pkg not avail?)" % (
                     spm_package,
                 )
@@ -883,8 +882,8 @@ class Package:
             Spm = self.Entropy.Spm()
         except Exception as err:
             self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
                 "Source Package Manager not available: %s | %s" % (
                     type(Exception), err,
                 )
@@ -892,8 +891,8 @@ class Package:
             return -1
 
         self.Entropy.clientLog.log(
-            ETP_LOGPRI_INFO,
-            ETP_LOGLEVEL_NORMAL,
+            "[Package]",
+            etpConst['logging']['normal_loglevel_id'],
             "Removing from SPM: %s" % (self.pkgmeta['removeatom'],)
         )
 
@@ -1100,8 +1099,8 @@ class Package:
             elif os.path.isfile(rootdir): # really weird...!
 
                 self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
+                    "[Package]",
+                    etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! %s is a file when it should be " \
                     "a directory !! Removing in 20 seconds..." % (rootdir,)
                 )
@@ -1124,8 +1123,8 @@ class Package:
                 # a symlink, we should consider removing the directory
                 if not os.path.islink(rootdir) and os.path.isdir(rootdir):
                     self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO,
-                        ETP_LOGLEVEL_NORMAL,
+                        "[Package]",
+                        etpConst['logging']['normal_loglevel_id'],
                         "WARNING!!! %s is a directory when it should be " \
                         "a symlink !! Removing in 20 seconds..." % (
                             rootdir,)
@@ -1151,8 +1150,8 @@ class Package:
                         shutil.rmtree(rootdir, True)
                     except (shutil.Error, OSError,) as err:
                         self.Entropy.clientLog.log(
-                            ETP_LOGPRI_INFO,
-                            ETP_LOGLEVEL_NORMAL,
+                            "[Package]",
+                            etpConst['logging']['normal_loglevel_id'],
                             "WARNING!!! Failed to rm %s " \
                             "directory ! [workout_subdir/1]: %s" % (
                                 rootdir, err,
@@ -1224,8 +1223,8 @@ class Package:
                         (prot_old_tofile, prot_md5,))
                 except (IOError,) as err:
                     self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO,
-                        ETP_LOGLEVEL_NORMAL,
+                        "[Package]",
+                        etpConst['logging']['normal_loglevel_id'],
                         "WARNING!!! Failed to get md5 of %s " \
                         "file ! [workout_file/1]: %s" % (
                             fromfile, err,
@@ -1280,8 +1279,8 @@ class Package:
                     os.remove(tofile)
                 except (OSError, IOError,) as err:
                     self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO,
-                        ETP_LOGLEVEL_NORMAL,
+                        "[Package]",
+                        etpConst['logging']['normal_loglevel_id'],
                         "WARNING!!! Failed to cope to oddity of %s " \
                         "file ! [workout_file/2]: %s" % (
                             tofile, err,
@@ -1293,8 +1292,8 @@ class Package:
 
                 # really weird...!
                 self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
+                    "[Package]",
+                    etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! %s is a directory when it should " \
                     "be a file !! Removing in 20 seconds..." % (tofile,)
                 )
@@ -1317,8 +1316,8 @@ class Package:
                     shutil.rmtree(tofile, True)
                 except (shutil.Error, IOError,) as err:
                     self.Entropy.clientLog.log(
-                        ETP_LOGPRI_INFO,
-                        ETP_LOGLEVEL_NORMAL,
+                        "[Package]",
+                        etpConst['logging']['normal_loglevel_id'],
                         "WARNING!!! Failed to cope to oddity of %s " \
                         "file ! [workout_file/3]: %s" % (
                             tofile, err,
@@ -1336,8 +1335,8 @@ class Package:
                     raise
 
                 self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
+                    "[Package]",
+                    etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! Error during file move" \
                     " to system: %s => %s | IGNORED: %s" % (
                         const_convert_to_unicode(fromfile),
@@ -1349,8 +1348,8 @@ class Package:
 
             if not done:
                 self.Entropy.clientLog.log(
-                    ETP_LOGPRI_INFO,
-                    ETP_LOGLEVEL_NORMAL,
+                    "[Package]",
+                    etpConst['logging']['normal_loglevel_id'],
                     "WARNING!!! Error during file move" \
                     " to system: %s => %s" % (fromfile, tofile,)
                 )
@@ -1494,8 +1493,8 @@ class Package:
         # check if protection is disabled for this element
         if tofile in misc_settings['configprotectskip']:
             self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
                 "Skipping config file installation/removal, " \
                 "as stated in client.conf: %s" % (tofile,)
             )
@@ -1540,8 +1539,8 @@ class Package:
 
         if not do_quiet:
             self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
                 "Protecting config file: %s" % (oldtofile,)
             )
             mytxt = red("%s: %s") % (_("Protecting config file"), oldtofile,)
@@ -1573,8 +1572,8 @@ class Package:
                 header = darkred("   ## ")
             )
             self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
+                "[Package]",
+                etpConst['logging']['normal_loglevel_id'],
                 "WARNING!!! Collision found during install " \
                 "for %s - cannot overwrite" % (tofile,)
             )

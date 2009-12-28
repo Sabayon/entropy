@@ -16,12 +16,14 @@ import shutil
 import subprocess
 from entropy.client.interfaces import Client
 from entropy.exceptions import *
-from entropy.const import etpConst, etpCache, const_convert_to_rawstring
+from entropy.const import etpConst, const_convert_to_rawstring
 from entropy.output import darkred, darkgreen, red, brown, blue
 from entropy.tools import getstatusoutput
 from entropy.i18n import _
 
 class FileUpdates:
+
+    CACHE_ID = "conf/scanfs"
 
     def __init__(self, EquoInstance):
         if not isinstance(EquoInstance, Client):
@@ -179,12 +181,12 @@ class FileUpdates:
                             except:
                                 pass # possible encoding issues
         # store data
-        self.Cacher.push(etpCache['configfiles'], scandata)
+        self.Cacher.push(FileUpdates.CACHE_ID, scandata)
         self.scandata = scandata.copy()
         return scandata
 
     def load_cache(self):
-        sd = self.Cacher.pop(etpCache['configfiles'])
+        sd = self.Cacher.pop(FileUpdates.CACHE_ID)
         if not isinstance(sd, dict):
             raise CacheCorruptionError("CacheCorruptionError")
         # quick test if data is reliable
@@ -223,7 +225,7 @@ class FileUpdates:
         index += 1
         mydata = self.generate_dict(filepath)
         self.scandata[index] = mydata.copy()
-        self.Cacher.push(etpCache['configfiles'], self.scandata)
+        self.Cacher.push(FileUpdates.CACHE_ID, self.scandata)
 
     def remove_from_cache(self, key):
         self.scanfs(dcache = True)
@@ -231,7 +233,7 @@ class FileUpdates:
             del self.scandata[key]
         except:
             pass
-        self.Cacher.push(etpCache['configfiles'], self.scandata)
+        self.Cacher.push(FileUpdates.CACHE_ID, self.scandata)
         return self.scandata
 
     def generate_dict(self, filepath):

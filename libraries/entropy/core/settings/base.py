@@ -726,7 +726,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             pipe = os.popen('{ ' + hw_hash_exec + '; } 2>&1', 'r')
             hash_data = pipe.read().strip()
             sts = pipe.close()
-            if sts != None:
+            if sts is not None:
                 return None
             hash_f = open(hw_hash_file, "w")
             hash_f.write(hash_data)
@@ -1117,11 +1117,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
         self._clear_dump_cache(etpCache['filter_satisfied_deps'])
         self._clear_dump_cache(etpCache['atomMatch'])
         self._clear_dump_cache(etpCache['dep_tree'])
-        if repoid != None:
+        self._clear_dump_cache(etpCache['library_breakage'])
+        if repoid is not None:
             self._clear_dump_cache("%s/%s%s/" % (
                 etpCache['dbMatch'], etpConst['dbnamerepoprefix'], repoid,))
-            self._clear_dump_cache("%s/%s%s/" % (
-                etpCache['dbSearch'], etpConst['dbnamerepoprefix'], repoid,))
 
     def _clear_dump_cache(self, dump_name, skip = []):
         """
@@ -1229,7 +1228,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             mtime_f.flush()
             mtime_f.close()
             os.chmod(tosaveinto, 0o664)
-            if etpConst['entropygid'] != None:
+            if etpConst['entropygid'] is not None:
                 os.chown(tosaveinto, 0, etpConst['entropygid'])
 
 

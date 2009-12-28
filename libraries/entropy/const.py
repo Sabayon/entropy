@@ -81,41 +81,19 @@ if ("--debug" in sys.argv) or os.getenv("ETP_DEBUG"):
 if os.getenv('ETP_MUTE'):
     etpUi['mute'] = True
 
-# static logging stuff
-ETP_LOGLEVEL_NORMAL = 1
-ETP_LOGLEVEL_VERBOSE = 2
-ETP_LOGPRI_INFO = "[ INFO ]"
-ETP_LOGPRI_WARNING = "[ WARNING ]"
-ETP_LOGPRI_ERROR = "[ ERROR ]"
-
-# disk caching dictionary
+# on-disk cache identifiers
 etpCache = {
-    # used to store information about files that
-    # should be merged using "equo conf merge"
-    'configfiles': 'conf/scanfs',
     'dbMatch': 'match/db', # db atom match cache
-    'dbSearch': 'search/db', # db search cache
+    'dep_tree': 'deptree/dep_tree_',
     # used to store info about repository dependencies solving
     'atomMatch': 'atom_match/atom_match_',
-    'install': 'resume/resume_install', # resume cache (install)
-    'remove': 'resume/resume_remove', # resume cache (remove)
-    'world': 'resume/resume_world', # resume cache (world)
     'world_update': 'world_update/world_cache_',
     'critical_update': 'critical_update/critical_cache_',
     'world_available': 'world_available/available_cache_',
     'check_package_update': 'check_update/package_update_',
-    'advisories': 'security/advisories_cache_',
-    'dep_tree': 'deptree/dep_tree_',
     'depends_tree': 'depends/depends_tree_',
     'filter_satisfied_deps': 'depfilter/filter_satisfied_deps_',
     'library_breakage': 'libs_break/library_breakage_',
-    'repolist': 'repos/repolist',
-    'repository_server': 'reposerver/item',
-    'eapi3_fetch': 'eapi3/segment_',
-    'ugc_votes': 'ugc/ugc_votes',
-    'ugc_downloads': 'ugc/ugc_downloads',
-    'ugc_docs': 'ugc/ugc_docs',
-    'ugc_srv_cache': 'ugc/ugc_srv_cache'
 }
 
 etpConst = {}
@@ -204,6 +182,10 @@ def const_default_settings(rootdir):
 
     etpConst.clear()
     my_const = {
+        'logging': {
+            'normal_loglevel_id': 1,
+            'verbose_loglevel_id': 2,
+        },
         'server_repositories': {},
         'community': {
             'mode': False,

@@ -172,6 +172,8 @@ class Server(RemoteDatabase):
         'installer': "installer",
     }
 
+    CACHE_ID = 'ugc/ugc_srv_cache'
+
     '''
         dependencies:
             dev-python/gdata
@@ -230,7 +232,7 @@ class Server(RemoteDatabase):
             self.dumpTools.dumpobj(key, r)
 
     def get_cache_item_key(self, cache_item):
-        return os.path.join(etpCache['ugc_srv_cache'], cache_item)
+        return os.path.join(Server.CACHE_ID, cache_item)
 
     def cache_result(self, cache_item, r):
         if not self.cached_results.get(cache_item): return None

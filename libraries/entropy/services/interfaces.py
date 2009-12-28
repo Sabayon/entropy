@@ -14,9 +14,8 @@ import os
 import select
 import shutil
 import time
-from entropy.const import etpConst, ETP_LOGLEVEL_NORMAL, ETP_LOGPRI_INFO, \
-    const_setup_perms, const_isstring, const_get_stringtype, \
-    const_convert_to_rawstring, etpUi, const_debug_write
+from entropy.const import etpConst, const_setup_perms, const_isstring, \
+    const_get_stringtype, const_convert_to_rawstring, etpUi, const_debug_write
 from entropy.exceptions import *
 from entropy.services.skel import SocketAuthenticator, SocketCommands
 from entropy.i18n import _
@@ -2007,7 +2006,8 @@ class SocketHost:
     def updateProgress(self, *args, **kwargs):
         message = args[0]
         if message != self.last_print:
-            self.socketLog.log(ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL, str(args[0]))
+            self.socketLog.log("[SocketHost]", etpConst['logging']['normal_loglevel_id'],
+                str(args[0]))
             if self.__output != None and self.stdout_logging:
                 self.__output.updateProgress(*args,**kwargs)
             self.last_print = message

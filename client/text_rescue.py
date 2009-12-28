@@ -14,8 +14,7 @@ import sys
 import shutil
 import tempfile
 
-from entropy.const import etpConst, ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL, \
-    etpSys, etpUi
+from entropy.const import etpConst, ETP_LOGLEVEL_NORMAL, etpSys, etpUi
 from entropy.output import red, bold, brown, blue, darkred, darkgreen, purple, \
     print_info, print_warning, print_error
 from entropy.exceptions import SystemDatabaseError
@@ -536,7 +535,7 @@ def _database_spmsync(entropy_client):
             except Exception as err:
                 entropy.tools.print_traceback()
                 entropy_client.clientLog.log(
-                    ETP_LOGPRI_INFO,
+                    "[spm sync]",
                     ETP_LOGLEVEL_NORMAL,
                     "Database spmsync: Exception caught: %s" % (
                         str(err),
@@ -666,7 +665,7 @@ def _database_generate(entropy_client):
         except Exception as err:
             entropy.tools.print_traceback()
             entropy_client.clientLog.log(
-                ETP_LOGPRI_INFO,
+                "[spm sync]",
                 ETP_LOGLEVEL_NORMAL,
                 "Database generation: Exception caught: %s" % (str(err),)
             )

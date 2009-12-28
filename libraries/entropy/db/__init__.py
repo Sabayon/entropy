@@ -3312,6 +3312,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         if depends:
             do_clear(etpCache['depends_tree'])
             do_clear(etpCache['dep_tree'])
+            do_clear(etpCache['library_breakage'])
             do_clear(etpCache['filter_satisfied_deps'])
 
     def retrieveRepositoryUpdatesDigest(self, repository):

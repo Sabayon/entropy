@@ -9,13 +9,13 @@
     B{Entropy Package Manager Client Package installation triggers Interface}.
 
 """
-
+import sys
+import os
 import subprocess
 import shutil
 from entropy.client.interfaces.client import Client
-from entropy.const import *
-from entropy.exceptions import *
-from entropy.output import *
+from entropy.const import etpConst, const_isunicode, etpSys, etpUi
+from entropy.output import brown, bold, darkred, red
 from entropy.i18n import _
 import entropy.tools
 
@@ -194,8 +194,8 @@ class Trigger:
             self.Entropy.updateProgress(tb, importance = 0, type = "error")
             self.Entropy.clientLog.write(tb)
             self.Entropy.clientLog.log(
-                ETP_LOGPRI_INFO,
-                ETP_LOGLEVEL_NORMAL,
+                "[Trigger]",
+                etpConst['logging']['normal_loglevel_id'],
                 "[POST] ATTENTION Cannot run External trigger for " + \
                     mykey + "!! " + str(Exception) + ": " + str(e)
             )
@@ -415,8 +415,8 @@ class Trigger:
 
     def trigger_env_update(self):
         self.Entropy.clientLog.log(
-            ETP_LOGPRI_INFO,
-            ETP_LOGLEVEL_NORMAL,
+            "[Trigger]",
+            etpConst['logging']['normal_loglevel_id'],
             "[POST] Running env_update"
         )
         self.Spm.environment_update(stderr = self.Entropy.clientLog,

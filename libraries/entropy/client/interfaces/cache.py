@@ -17,9 +17,11 @@ from entropy.i18n import _
 
 class CacheMixin:
 
+    REPO_LIST_CACHE_ID = 'repos/repolist'
+
     def validate_repositories_cache(self):
         # is the list of repos changed?
-        cached = self.Cacher.pop(etpCache['repolist'])
+        cached = self.Cacher.pop(CacheMixin.REPO_LIST_CACHE_ID)
         if cached != self.SystemSettings['repositories']['order']:
             # invalidate matching cache
             try:
@@ -29,7 +31,7 @@ class CacheMixin:
             self.store_repository_list_cache()
 
     def store_repository_list_cache(self):
-        self.Cacher.push(etpCache['repolist'],
+        self.Cacher.push(CacheMixin.REPO_LIST_CACHE_ID,
             self.SystemSettings['repositories']['order'],
             async = False)
 
@@ -92,7 +94,6 @@ class CacheMixin:
                 skip = set()
                 if not client_purge:
                     skip.add("/"+etpCache['dbMatch']+"/"+etpConst['clientdbid']) # it's ok this way
-                    skip.add("/"+etpCache['dbSearch']+"/"+etpConst['clientdbid']) # it's ok this way
                 for key in etpCache:
                     if showProgress:
                         self.updateProgress(

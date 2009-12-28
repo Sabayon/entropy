@@ -458,6 +458,12 @@ class AuthStore(Singleton):
 
 class Cache:
 
+    CACHE_KEYS = {
+        'ugc_votes': 'ugc/ugc_votes',
+        'ugc_downloads': 'ugc/ugc_downloads',
+        'ugc_docs': 'ugc/ugc_docs',
+    }
+
     def __init__(self, UGCClientInstance):
 
         if not isinstance(UGCClientInstance, Client):
@@ -495,7 +501,7 @@ class Cache:
         del self.xcache[repository][item]
 
     def _get_store_cache_file(self, iddoc, repository, doc_url):
-        return "%s/%s/iddoc_%s/%s" % (etpCache['ugc_docs'], repository, iddoc, doc_url,)
+        return "%s/%s/iddoc_%s/%s" % (Cache.CACHE_KEYS['ugc_docs'], repository, iddoc, doc_url,)
 
     def _get_vote_cache_file(self, repository):
         return self._get_vote_cache_dir(repository)
@@ -507,13 +513,13 @@ class Cache:
         return self._get_alldocs_cache_dir(repository)+"/"+pkgkey
 
     def _get_alldocs_cache_dir(self, repository):
-        return etpCache['ugc_docs']+"/"+repository
+        return Cache.CACHE_KEYS['ugc_docs']+"/"+repository
 
     def _get_downloads_cache_dir(self, repository):
-        return etpCache['ugc_downloads']+"/"+repository
+        return Cache.CACHE_KEYS['ugc_downloads']+"/"+repository
 
     def _get_vote_cache_dir(self, repository):
-        return etpCache['ugc_votes']+"/"+repository
+        return Cache.CACHE_KEYS['ugc_votes']+"/"+repository
 
     def _get_vote_cache_key(self, repository):
         return 'get_vote_cache_'+repository

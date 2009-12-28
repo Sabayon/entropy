@@ -32,6 +32,8 @@ from entropy.dump import dumpobj
 
 class Repository:
 
+    EAPI3_CACHE_ID = 'eapi3/segment_'
+
     def __init__(self, EquoInstance, reponames = [], forceUpdate = False,
         noEquoCheck = False, fetchSecurity = True):
 
@@ -383,8 +385,6 @@ class Repository:
         self.__validate_repository_id(repo)
         self.Entropy.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'],
             etpConst['dbnamerepoprefix'], repo,))
-        self.Entropy.clear_dump_cache("%s/%s%s/" % (etpCache['dbSearch'],
-            etpConst['dbnamerepoprefix'], repo,))
 
     def download_item(self, item, repo, cmethod = None, lock_status_func = None,
         disallow_redirect = True):
@@ -718,7 +718,7 @@ class Repository:
                 try:
                     for idpackage in pkgdata:
                         dumpobj(
-                            "%s%s" % (etpCache['eapi3_fetch'], idpackage,),
+                            "%s%s" % (Repository.EAPI3_CACHE_ID, idpackage,),
                             pkgdata[idpackage],
                             ignore_exceptions = False
                         )
@@ -810,7 +810,7 @@ class Repository:
         for idpackage in added_ids:
             count += 1
             mydata = self.Cacher.pop("%s%s" % (
-                etpCache['eapi3_fetch'], idpackage,))
+                Repository.EAPI3_CACHE_ID, idpackage,))
             if mydata is None:
                 mytxt = "%s: %s" % (
                     blue(_("Fetch error on segment while adding")),

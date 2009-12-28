@@ -202,9 +202,6 @@ class RepositoryMixin:
                 if updated:
                     self.clear_dump_cache(etpCache['world_update'])
                     self.clear_dump_cache(etpCache['critical_update'])
-                    self.clear_dump_cache(etpCache['world'])
-                    self.clear_dump_cache(etpCache['install'])
-                    self.clear_dump_cache(etpCache['remove'])
         return conn
 
     def get_repository_revision(self, reponame):
@@ -1729,8 +1726,9 @@ class MatchMixin:
         self.clear_dump_cache(etpCache['filter_satisfied_deps'])
         self.clear_dump_cache(self.atomMatchCacheKey)
         self.clear_dump_cache(etpCache['dep_tree'])
-        self.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'], etpConst['dbnamerepoprefix'], match[1],))
-        self.clear_dump_cache("%s/%s%s/" % (etpCache['dbSearch'], etpConst['dbnamerepoprefix'], match[1],))
+        self.clear_dump_cache(etpCache['library_breakage'])
+        self.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'],
+            etpConst['dbnamerepoprefix'], match[1],))
 
         cl_id = self.sys_settings_client_plugin_id
         self.SystemSettings[cl_id]['masking_validation']['cache'].clear()

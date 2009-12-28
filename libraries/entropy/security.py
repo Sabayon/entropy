@@ -21,6 +21,7 @@ from entropy.const import etpConst, etpCache, etpUi, const_setup_perms, \
     const_debug_write
 from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred
+import entropy.tools
 
 class System:
 
@@ -41,8 +42,8 @@ class System:
     about unapplied advisories, etc.
 
     """
+    CACHE_ID = 'security/advisories_cache_'
 
-    import entropy.tools as entropyTools
     def __init__(self, entropy_client_instance):
 
         """
@@ -91,7 +92,7 @@ class System:
         md5_ext = etpConst['packagesmd5fileext']
 
         self.unpackdir = os.path.join(etpConst['entropyunpackdir'],
-            "security-%s" % (self.entropyTools.get_random_number(),))
+            "security-%s" % (entropy.tools.get_random_number(),))
         self.security_url = security_url
         self.unpacked_package = os.path.join(self.unpackdir, "glsa_package")
         self.security_url_checksum = security_url + md5_ext
@@ -207,7 +208,7 @@ class System:
         if checksum == self.previous_checksum:
             self.advisories_changed = False
 
-        md5res = self.entropyTools.compare_md5(self.download_package, checksum)
+        md5res = entropy.tools.compare_md5(self.download_package, checksum)
         if not md5res:
             return 3
         return 0
@@ -216,7 +217,7 @@ class System:
         """
         Unpack downloaded GLSA package containing GLSA advisories.
         """
-        rc_unpack = self.entropyTools.uncompress_tar_bz2(
+        rc_unpack = entropy.tools.uncompress_tar_bz2(
             self.download_package,
             self.unpacked_package,
             catchEmpty = True
@@ -263,7 +264,7 @@ class System:
         """
         self.adv_metadata = None
         if xcache:
-            self.Entropy.clear_dump_cache(etpCache['advisories'])
+            self.Entropy.clear_dump_cache(System.CACHE_ID)
 
     def get_advisories_cache(self):
         """
@@ -275,10 +276,10 @@ class System:
             return self.adv_metadata
 
         if self.Entropy.xcache:
-            dir_checksum = self.entropyTools.md5sum_directory(
+            dir_checksum = entropy.tools.md5sum_directory(
                 etpConst['securitydir'])
             c_hash = "%s%s" % (
-                etpCache['advisories'], hash("%s|%s|%s" % (
+                System.CACHE_ID, hash("%s|%s|%s" % (
                     hash(self.SystemSettings['repositories']['branch']),
                     hash(dir_checksum),
                     hash(etpConst['systemroot']),
@@ -297,10 +298,10 @@ class System:
         @type adv_metadata: dict
         """
         if self.Entropy.xcache:
-            dir_checksum = self.entropyTools.md5sum_directory(
+            dir_checksum = entropy.tools.md5sum_directory(
                 etpConst['securitydir'])
             c_hash = "%s%s" % (
-                etpCache['advisories'], hash("%s|%s|%s" % (
+                System.CACHE_ID, hash("%s|%s|%s" % (
                     hash(self.SystemSettings['repositories']['branch']),
                     hash(dir_checksum),
                     hash(etpConst['systemroot']),
