@@ -1233,8 +1233,8 @@ class Repository:
         >>> assert not result
 
         """
-        args = self.__default_gpg_args() + ["--status-fd", "2", "--batch",
-            "--gen-key"]
+        args = self.__default_gpg_args(preserve_perms = False) + \
+            ["--status-fd", "2", "--batch", "--gen-key"]
 
         const_debug_write(__name__, "Repository.__gen_key args => %s" % (
             args,))
@@ -1297,6 +1297,10 @@ class Repository:
 
         # write to keymap
         self.__update_keymap(repository_identifier, key_output)
+
+        # ensure permissions
+        const_setup_perms(self.__keystore, etpConst['entropygid'],
+            f_perms = 0o660)
 
         return key_output
 
@@ -1493,10 +1497,11 @@ class Repository:
         const_setup_perms(self.__keystore, etpConst['entropygid'],
             f_perms = 0o660)
 
-    def __default_gpg_args(self):
+    def __default_gpg_args(self, preserve_perms = True):
         args = [Repository._GPG_EXEC, "--no-tty", "--no-permission-warning",
-            "--no-greeting", "--preserve-permissions", "--homedir",
-            self.__keystore]
+            "--no-greeting", "--homedir", self.__keystore]
+        if preserve_perms:
+            args.append("--preserve-permissions")
         return args
 
     def __sign_file(self, file_path, fingerprint):
