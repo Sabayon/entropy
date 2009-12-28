@@ -24,9 +24,11 @@ class LoadersMixin:
         from entropy.client.interfaces.trigger import Trigger
         from entropy.client.interfaces.repository import Repository
         from entropy.client.interfaces.package import Package
+        from entropy.security import Repository as RepositorySecurity
         self.__PackageLoader = Package
         self.__RepositoryLoader = Repository
         self.__TriggerLoader = Trigger
+        self.__RepositorySecurityLoader = RepositorySecurity
 
     def closeAllQA(self):
         self.__QA_cache.clear()
@@ -43,6 +45,14 @@ class LoadersMixin:
         cached = system_sec(self)
         self.__security_cache[chroot] = cached
         return cached
+
+    def RepositorySecurity(self):
+        """
+        @raise RepositorySecurity.GPGError: GPGError based instances in case
+            of problems.
+        """
+        return self.__RepositorySecurityLoader(
+            keystore_dir = etpConst['etpclientgpgdir'])
 
     def QA(self):
         chroot = etpConst['systemroot']
