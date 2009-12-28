@@ -18,7 +18,7 @@ import os
 import shutil
 
 from entropy.exceptions import SystemDatabaseError
-from entropy.const import etpConst, etpCache, etpUi, const_convert_to_unicode
+from entropy.const import etpConst, etpUi, const_convert_to_unicode
 from entropy.output import red, blue, brown, darkred, bold, darkgreen, bold, \
     darkblue, purple, print_error, print_info, print_warning, writechar, \
     readtext, print_generic
@@ -29,6 +29,11 @@ import entropy.tools
 import entropy.dump
 
 E_CLIENT = None
+EQUO_CACHE_IDS = {
+    'install': 'resume/resume_install', # resume cache (install)
+    'remove': 'resume/resume_remove', # resume cache (remove)
+    'world': 'resume/resume_world', # resume cache (world)
+}
 
 def package(options):
 
@@ -298,9 +303,9 @@ def upgrade_packages(onlyfetch = False, replay = False, resume = False,
         # clear old resume information
         if etpConst['uid'] == 0:
             try:
-                entropy.dump.dumpobj(etpCache['world'], {})
-                entropy.dump.dumpobj(etpCache['install'], {})
-                entropy.dump.dumpobj(etpCache['remove'], [])
+                entropy.dump.dumpobj(EQUO_CACHE_IDS['world'], {})
+                entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], {})
+                entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], [])
                 if (not etpUi['pretend']):
                     # store resume information
                     resume_cache = {}
@@ -308,14 +313,14 @@ def upgrade_packages(onlyfetch = False, replay = False, resume = False,
                     resume_cache['verbose'] = etpUi['verbose']
                     resume_cache['onlyfetch'] = onlyfetch
                     resume_cache['remove'] = remove
-                    entropy.dump.dumpobj(etpCache['world'], resume_cache)
+                    entropy.dump.dumpobj(EQUO_CACHE_IDS['world'], resume_cache)
             except (OSError, IOError):
                 pass
 
     else: # if resume, load cache if possible
 
         # check if there's something to resume
-        resume_cache = entropy.dump.loadobj(etpCache['world'])
+        resume_cache = entropy.dump.loadobj(EQUO_CACHE_IDS['world'])
         if (not resume_cache) or (etpConst['uid'] != 0): # None or {}
             print_error(red("%s." % (_("Nothing to resume"),) ))
             return 128, -1
@@ -326,13 +331,13 @@ def upgrade_packages(onlyfetch = False, replay = False, resume = False,
                 etpUi['ask'] = resume_cache['ask']
                 etpUi['verbose'] = resume_cache['verbose']
                 onlyfetch = resume_cache['onlyfetch']
-                entropy.dump.dumpobj(etpCache['remove'], list(remove))
+                entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], list(remove))
             except (OSError, IOError, KeyError):
                 print_error(red("%s." % (_("Resume cache corrupted"),) ))
                 try:
-                    entropy.dump.dumpobj(etpCache['world'], {})
-                    entropy.dump.dumpobj(etpCache['install'], {})
-                    entropy.dump.dumpobj(etpCache['remove'], [])
+                    entropy.dump.dumpobj(EQUO_CACHE_IDS['world'], {})
+                    entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], {})
+                    entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], [])
                 except (OSError, IOError):
                     pass
                 return 128, -1
@@ -1225,7 +1230,7 @@ def install_packages(packages = None, atomsdata = None, deps = True,
 
         try:
             # clear old resume information
-            entropy.dump.dumpobj(etpCache['install'], {})
+            entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], {})
             # store resume information
             if not pkgs: # entropy packages install resume not supported
                 resume_cache = {}
@@ -1235,14 +1240,14 @@ def install_packages(packages = None, atomsdata = None, deps = True,
                 resume_cache['emptydeps'] = emptydeps
                 resume_cache['deepdeps'] = deepdeps
                 resume_cache['relaxed_deps'] = relaxed_deps
-                entropy.dump.dumpobj(etpCache['install'], resume_cache)
+                entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], resume_cache)
         except (IOError, OSError):
             pass
 
     else: # if resume, load cache if possible
 
         # check if there's something to resume
-        resume_cache = entropy.dump.loadobj(etpCache['install'])
+        resume_cache = entropy.dump.loadobj(EQUO_CACHE_IDS['install'])
         if not resume_cache: # None or {}
 
             print_error(red("%s." % (_("Nothing to resume"),) ))
@@ -1261,7 +1266,7 @@ def install_packages(packages = None, atomsdata = None, deps = True,
             except (KeyError, TypeError, AttributeError,):
                 print_error(red("%s." % (_("Resume cache corrupted"),) ))
                 try:
-                    entropy.dump.dumpobj(etpCache['install'], {})
+                    entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], {})
                 except (IOError, OSError):
                     pass
                 return 128, -1
@@ -1273,7 +1278,7 @@ def install_packages(packages = None, atomsdata = None, deps = True,
                 # save new queues
                 resume_cache['run_queue'] = run_queue
                 try:
-                    entropy.dump.dumpobj(etpCache['install'], resume_cache)
+                    entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], resume_cache)
                 except (IOError, OSError):
                     pass
 
@@ -1380,7 +1385,7 @@ def install_packages(packages = None, atomsdata = None, deps = True,
         if not pkgs: # pkgs caching not supported
             resume_cache['run_queue'].remove(match)
             try:
-                entropy.dump.dumpobj(etpCache['install'], resume_cache)
+                entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], resume_cache)
             except (IOError, OSError):
                 pass
 
@@ -1393,7 +1398,7 @@ def install_packages(packages = None, atomsdata = None, deps = True,
     print_info(red(" @@ ")+blue("%s." % (_("Installation complete"),) ))
     try:
         # clear resume information
-        entropy.dump.dumpobj(etpCache['install'], {})
+        entropy.dump.dumpobj(EQUO_CACHE_IDS['install'], {})
     except (IOError, OSError):
         pass
     return 0, 0
@@ -1728,19 +1733,19 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
 
         # clear old resume information
         try:
-            entropy.dump.dumpobj(etpCache['remove'], {})
+            entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], {})
             # store resume information
             resume_cache = {}
             resume_cache['doSelectiveRemoval'] = doSelectiveRemoval
             resume_cache['removal_queue'] = removal_queue
-            entropy.dump.dumpobj(etpCache['remove'], resume_cache)
+            entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], resume_cache)
         except (OSError, IOError, EOFError):
             pass
 
     else: # if resume, load cache if possible
 
         # check if there's something to resume
-        resume_cache = entropy.dump.loadobj(etpCache['remove'])
+        resume_cache = entropy.dump.loadobj(EQUO_CACHE_IDS['remove'])
         if not resume_cache: # None or {}
             print_error(red("%s." % (_("Nothing to resume"),) ))
             return 128, -1
@@ -1752,7 +1757,7 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
             except:
                 print_error(red("%s." % (_("Resume cache corrupted"),) ))
                 try:
-                    entropy.dump.dumpobj(etpCache['remove'], {})
+                    entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], {})
                 except (OSError, IOError):
                     pass
                 return 128, -1
@@ -1814,7 +1819,7 @@ def remove_packages(packages = None, atomsdata = None, deps = True,
         if idpackage in resume_cache['removal_queue']:
             resume_cache['removal_queue'].remove(idpackage)
         try:
-            entropy.dump.dumpobj(etpCache['remove'], resume_cache)
+            entropy.dump.dumpobj(EQUO_CACHE_IDS['remove'], resume_cache)
         except (OSError, IOError, EOFError):
             pass
 
