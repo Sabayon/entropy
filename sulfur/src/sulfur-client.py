@@ -47,15 +47,17 @@ def handle_exception(exc_class, exc_instance, exc_tb):
         exit_status = exc_instance.code
         raise SystemExit(exit_status)
 
-    t_back = entropy.tools.get_traceback()
+    t_back = entropy.tools.get_traceback(tb_obj = exc_tb)
+    t_back += "\n"
+    t_back += ''.join(entropy.tools.print_exception(True, tb_data = exc_tb))
 
     if "--debug" in sys.argv:
-        entropy.tools.print_exception()
+        print(t_back)
         import pdb
         pdb.set_trace()
 
     my = ExceptionDialog()
-    my.show()
+    my.show(errmsg = t_back) 
     entropy.tools.kill_threads()
     if MAIN_APP is not None:
         MAIN_APP.quit(sysexit = False)

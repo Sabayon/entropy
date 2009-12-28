@@ -6536,11 +6536,11 @@ class ExceptionDialog:
     def __init__(self):
         pass
 
-    def show(self):
-        import entropy.tools
+    def show(self, errmsg = None):
 
-        errmsg = entropy.tools.get_traceback()
-        conntest = entropy.tools.get_remote_data(etpConst['distro_website_url'])
+        if errmsg is None:
+            errmsg = entropyTools.get_traceback()
+        conntest = entropyTools.get_remote_data(etpConst['distro_website_url'])
         rc, (name, mail, description) = errorMessage(
             None,
             _( "Exception caught" ),
