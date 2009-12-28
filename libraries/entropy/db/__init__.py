@@ -130,7 +130,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
                 CREATE TABLE dependstable (
                     iddependency INTEGER PRIMARY KEY,
-                    idpackage INTEGER
+                    idpackage INTEGER,
+                    FOREIGN KEY(idpackage) REFERENCES baseinfo(idpackage) ON DELETE CASCADE
                 );
 
                 CREATE TABLE conflicts (
