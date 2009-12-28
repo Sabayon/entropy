@@ -1084,52 +1084,33 @@ class Server:
         critical = []
         extra_text_files = []
         data = {}
-        data['database_revision_file'] = \
-            self.Entropy.get_local_database_revision_file(repo)
-        extra_text_files.append(data['database_revision_file'])
-        critical.append(data['database_revision_file'])
-
-        # GPG Public key for repository
-        try:
-            repo_sec = RepositorySecurity()
-        except RepositorySecurity.GPGError: # gpg not available
-            repo_sec = None
-
-        if repo_sec is not None:
-            # get pubkey
-            try:
-                pubkey = repo_sec.get_pubkey(repo)
-            except KeyError:
-                # key not available, bye
-                pubkey = None
-            if pubkey is not None:
-                # write pubkey to file and add to data upload
-                gpg_path = self.Entropy.get_local_database_gpg_signature_file(
-                    repo)
-                with open(gpg_path, "w") as gpg_f:
-                    gpg_f.write(pubkey)
-                    gpg_f.flush()
-                data['database_gpg_pubkey'] = gpg_path
-                extra_text_files.append(data['database_gpg_pubkey'])
+        db_rev_file = self.Entropy.get_local_database_revision_file(repo)
+        data['database_revision_file'] = db_rev_file
+        extra_text_files.append(db_rev_file)
+        critical.append(db_rev_file)
 
         # branch migration support scripts
         post_branch_mig_file = self.Entropy.get_local_post_branch_mig_script(
             repo)
         if os.path.isfile(post_branch_mig_file) or download:
-            data['database_post_branch_hop_script'] = post_branch_mig_file
-            extra_text_files.append(data['database_post_branch_hop_script'])
+            if download:
+                data['database_post_branch_hop_script'] = post_branch_mig_file
+            extra_text_files.append(post_branch_mig_file)
 
         post_branch_upg_file = self.Entropy.get_local_post_branch_upg_script(
             repo)
         if os.path.isfile(post_branch_upg_file) or download:
-            data['database_post_branch_upgrade_script'] = post_branch_upg_file
-            extra_text_files.append(data['database_post_branch_upgrade_script'])
+            if download:
+                data['database_post_branch_upgrade_script'] = \
+                    post_branch_upg_file
+            extra_text_files.append(post_branch_upg_file)
 
         post_repo_update_file = self.Entropy.get_local_post_repo_update_script(
             repo)
         if os.path.isfile(post_repo_update_file) or download:
-            data['database_post_repo_update_script'] = post_repo_update_file
-            extra_text_files.append(data['database_post_repo_update_script'])
+            if download:
+                data['database_post_repo_update_script'] = post_repo_update_file
+            extra_text_files.append(post_repo_update_file)
 
         database_ts_file = self.Entropy.get_local_database_timestamp_file(repo)
         if os.path.isfile(database_ts_file) or download:
@@ -1139,46 +1120,42 @@ class Server:
 
         database_package_mask_file = \
             self.Entropy.get_local_database_mask_file(repo)
-        extra_text_files.append(database_package_mask_file)
         if os.path.isfile(database_package_mask_file) or download:
-            data['database_package_mask_file'] = database_package_mask_file
-            if not download:
-                critical.append(data['database_package_mask_file'])
+            if download:
+                data['database_package_mask_file'] = database_package_mask_file
+            extra_text_files.append(database_package_mask_file)
 
         database_package_system_mask_file = \
             self.Entropy.get_local_database_system_mask_file(repo)
-        extra_text_files.append(database_package_system_mask_file)
         if os.path.isfile(database_package_system_mask_file) or download:
-            data['database_package_system_mask_file'] = \
-                database_package_system_mask_file
-            if not download:
-                critical.append(data['database_package_system_mask_file'])
+            if download:
+                data['database_package_system_mask_file'] = \
+                    database_package_system_mask_file
+            extra_text_files.append(database_package_system_mask_file)
 
         database_package_confl_tagged_file = \
             self.Entropy.get_local_database_confl_tagged_file(repo)
-        extra_text_files.append(database_package_confl_tagged_file)
         if os.path.isfile(database_package_confl_tagged_file) or download:
-            data['database_package_confl_tagged_file'] = \
-                database_package_confl_tagged_file
-            if not download:
-                critical.append(data['database_package_confl_tagged_file'])
+            if download:
+                data['database_package_confl_tagged_file'] = \
+                    database_package_confl_tagged_file
+            extra_text_files.append(database_package_confl_tagged_file)
 
         database_license_whitelist_file = \
             self.Entropy.get_local_database_licensewhitelist_file(repo)
-        extra_text_files.append(database_license_whitelist_file)
         if os.path.isfile(database_license_whitelist_file) or download:
-            data['database_license_whitelist_file'] = \
-                database_license_whitelist_file
-            if not download:
-                critical.append(data['database_license_whitelist_file'])
+            if download:
+                data['database_license_whitelist_file'] = \
+                    database_license_whitelist_file
+            extra_text_files.append(database_license_whitelist_file)
 
         exp_based_pkgs_removal_file = \
             self.Entropy.get_local_exp_based_pkgs_rm_whitelist_file(repo)
-        extra_text_files.append(exp_based_pkgs_removal_file)
         if os.path.isfile(exp_based_pkgs_removal_file) or download:
-            data['exp_based_pkgs_removal_file'] = exp_based_pkgs_removal_file
-            if not download:
-                critical.append(data['exp_based_pkgs_removal_file'])
+            if download:
+                data['exp_based_pkgs_removal_file'] = \
+                    exp_based_pkgs_removal_file
+            extra_text_files.append(exp_based_pkgs_removal_file)
 
         database_rss_file = self.Entropy.get_local_database_rss_file(repo)
         if os.path.isfile(database_rss_file) or download:
@@ -1188,7 +1165,6 @@ class Server:
         database_rss_light_file = \
             self.Entropy.get_local_database_rsslight_file(repo)
 
-        extra_text_files.append(database_rss_light_file)
         if os.path.isfile(database_rss_light_file) or download:
             data['database_rss_light_file'] = database_rss_light_file
             if not download:
@@ -1202,28 +1178,24 @@ class Server:
         critical_updates_file = self.Entropy.get_local_critical_updates_file(
             repo)
         if os.path.isfile(critical_updates_file) or download:
-            data['critical_updates_file'] = critical_updates_file
-            extra_text_files.append(data['critical_updates_file'])
-            if not download:
-                critical.append(data['critical_updates_file'])
+            if download:
+                data['critical_updates_file'] = critical_updates_file
+            extra_text_files.append(critical_updates_file)
 
         keywords_file = self.Entropy.get_local_database_keywords_file(
             repo)
         if os.path.isfile(keywords_file) or download:
-            data['keywords_file'] = keywords_file
-            extra_text_files.append(data['keywords_file'])
-            if not download:
-                critical.append(data['keywords_file'])
+            if download:
+                data['keywords_file'] = keywords_file
+            extra_text_files.append(keywords_file)
 
         # EAPI 2,3
         if not download: # we don't need to get the dump
 
-            if 3 not in disabled_eapis:
-
-                data['metafiles_path'] = \
-                    self.Entropy.get_local_database_compressed_metafiles_file(
-                        repo)
-                critical.append(data['metafiles_path'])
+            # always push metafiles file, it's cheap
+            data['metafiles_path'] = \
+                self.Entropy.get_local_database_compressed_metafiles_file(repo)
+            critical.append(data['metafiles_path'])
 
             if 2 not in disabled_eapis:
 
@@ -1267,17 +1239,16 @@ class Server:
 
         # SSL cert file, just for reference
         ssl_ca_cert = self.Entropy.get_local_database_ca_cert_file()
-        extra_text_files.append(ssl_ca_cert)
         if os.path.isfile(ssl_ca_cert):
-            data['ssl_ca_cert_file'] = ssl_ca_cert
-            if not download:
-                critical.append(ssl_ca_cert)
+            if download:
+                data['ssl_ca_cert_file'] = ssl_ca_cert
+            extra_text_files.append(ssl_ca_cert)
+
         ssl_server_cert = self.Entropy.get_local_database_server_cert_file()
-        extra_text_files.append(ssl_server_cert)
         if os.path.isfile(ssl_server_cert):
-            data['ssl_server_cert_file'] = ssl_server_cert
-            if not download:
-                critical.append(ssl_server_cert)
+            if download:
+                data['ssl_server_cert_file'] = ssl_server_cert
+            extra_text_files.append(ssl_server_cert)
 
         # Some information regarding how packages are built
         spm_files_map = self.Entropy.Spm_class().config_files_map()
@@ -1287,8 +1258,9 @@ class Server:
                 spm_syms[myname] = myfile
                 continue # we don't want symlinks
             if os.path.isfile(myfile) and os.access(myfile, os.R_OK):
-                data[myname] = myfile
-            extra_text_files.append(myfile)
+                if download:
+                    data[myname] = myfile
+                extra_text_files.append(myfile)
 
         # XXX/FIXME: for symlinks, we read their link and send a file with that
         # content. This is the default behaviour for now and allows to send
@@ -1298,14 +1270,15 @@ class Server:
             tmp_file = entropy.tools.get_random_temp_file()
             mytmpdir = os.path.dirname(tmp_file)
             mytmpfile = os.path.join(mytmpdir, os.path.basename(symfile))
-            extra_text_files.append(mytmpfile)
-
             mylink = os.readlink(symfile)
             f_mkp = open(mytmpfile, "w")
             f_mkp.write(mylink)
             f_mkp.flush()
             f_mkp.close()
-            data[symname] = mytmpfile
+
+            if download:
+                data[symname] = mytmpfile
+            extra_text_files.append(mytmpfile)
 
         return data, critical, extra_text_files
 
@@ -1464,12 +1437,86 @@ class Server:
             header = brown("    # ")
         )
 
+    def __gpg_sign_list_of_files(self, repo_sec, repo, file_list):
+
+        new_files = []
+        not_found_files = []
+        for found_path in file_list:
+
+            if not (os.path.isfile(found_path) and \
+                os.access(found_path, os.R_OK)):
+                not_found_files.append(found_path + \
+                    etpConst['etpgpgextension'])
+                continue
+
+            try:
+                found_path_asc = repo_sec.sign_file(repo, found_path)
+            except RepositorySecurity.GPGError:
+                # wtf?!?
+                entropy.tools.print_traceback()
+                continue
+
+            new_files.append(found_path_asc)
+
+        return new_files, not_found_files
+
+    def __write_gpg_pubkey(self, repo_sec, repo):
+        try:
+            pubkey = repo_sec.get_pubkey(repo)
+        except KeyError:
+            # key not available, bye
+            return
+
+        # write pubkey to file and add to data upload
+        gpg_path = self.Entropy.get_local_database_gpg_signature_file(repo)
+        with open(gpg_path, "w") as gpg_f:
+            gpg_f.write(pubkey)
+            gpg_f.flush()
+
+        return gpg_path
+
+    def __setup_metafiles_for_gpg(self, repo, file_list):
+
+        found_file_list = []
+        not_found_file_list = []
+
+        try:
+            repo_sec = RepositorySecurity()
+            if not repo_sec.is_keypair_available(repo):
+                raise KeyError("no key avail")
+        except RepositorySecurity.GPGError:
+            return found_file_list, not_found_file_list
+        except KeyError:
+            return found_file_list, not_found_file_list
+
+        found_file_list, not_found_file_list = \
+            self.__gpg_sign_list_of_files(repo_sec, repo, file_list)
+
+        gpg_path = self.__write_gpg_pubkey(repo_sec, repo)
+        if gpg_path is not None:
+            found_file_list.append(gpg_path)
+        else:
+            gpg_path = \
+                self.Entropy.get_local_database_gpg_signature_file(repo)
+            not_found_file_list.extend(gpg_path) # not found
+
+        return found_file_list, not_found_file_list
+
+
     def _create_metafiles_file(self, compressed_dest_path, file_list, repo):
+
+        # GPG sign every file in found_file_list, and add our pubkey, if avail
+        gpg_found_files, gpg_not_found_files = self.__setup_metafiles_for_gpg(
+            repo, file_list)
 
         found_file_list = [x for x in file_list if os.path.isfile(x) and \
             os.path.isfile(x) and os.access(x, os.R_OK)]
+        found_file_list.extend(gpg_found_files)
+
         not_found_file_list = ["%s\n" % (os.path.basename(x),) for x in \
             file_list if x not in found_file_list]
+        not_found_file_list.extend(gpg_not_found_files)
+
         metafile_not_found_file = \
             self.Entropy.get_local_database_metafiles_not_found_file(repo)
 
@@ -1709,10 +1756,12 @@ class Server:
 
             self.shrink_database_and_close(repo)
 
+            # always upload metafile, it's cheap and also used by EAPI1,2
+            self._create_metafiles_file(upload_data['metafiles_path'],
+                text_files, repo)
+
             # EAPI 3
             if 3 not in disabled_eapis:
-                self._create_metafiles_file(upload_data['metafiles_path'],
-                    text_files, repo)
                 self._show_eapi3_upload_messages(crippled_uri, database_path,
                     repo)
 
