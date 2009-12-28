@@ -1189,6 +1189,12 @@ class Server:
                 data['keywords_file'] = keywords_file
             extra_text_files.append(keywords_file)
 
+        gpg_file = self.Entropy.get_local_database_gpg_signature_file(repo)
+        if os.path.isfile(gpg_file) or download:
+            data['gpg_file'] = gpg_file
+            # no need to add to extra_text_files, it will be added
+            # afterwards
+
         # EAPI 2,3
         if not download: # we don't need to get the dump
 
