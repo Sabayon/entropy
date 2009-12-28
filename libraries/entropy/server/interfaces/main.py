@@ -2622,6 +2622,7 @@ class Server(Singleton, TextInterface):
         # read file content and add to 'gpg' signature
         with open(gpg_sign_path, "rb") as gpg_f:
             return gpg_f.read()
+        os.remove(gpg_sign_path)
 
     def inject_database_into_packages(self, injection_data, repo = None):
 
