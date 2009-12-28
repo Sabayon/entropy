@@ -1,7 +1,7 @@
 
   0.99.20:
 
-     - add entropy.security.Repository support to entropy.client, entropy.server
+     - add entropy.security.Repository support to entropy.client
 
   0.99.30:
 
@@ -11,13 +11,15 @@
     - entropy.server => rssMessages ?
     - move ETP_LOGPRI_INFO, ETP_LOGLEVEL_NORMAL to etpConst
     - move sensible pkgs to alt dir
+    - PackageKit integration
 
   0.99.40:
 
+    - ability to also install build dependencies
+    - Spm.extract_package_metadata, define metadata format (to make easier
+        for 3rd party implementations to define it)
     - add splitdebug support?
     - entropy.security.System unittest
-    - move all the portage related stuff in entropy.tools to entropy.spm
-        => prototype class defining transformations (collect them from tools)
 
   1.0_beta1:
 
@@ -27,11 +29,8 @@
         - title change
         - more sexy UI
     - deprecate etpCache (and remove)
-
-  1.0_beta2:
-
-    - PackageKit integration
-    - ability to also install build dependencies
+    - move all the portage related stuff in entropy.tools to entropy.spm
+        => prototype class defining transformations (collect them from tools)
 
   1.0 - deprecations:
 
