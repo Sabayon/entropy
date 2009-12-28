@@ -283,7 +283,8 @@ def const_default_settings(rootdir):
         'etpdatabasecacertfile': "ca.cert",
         'etpdatabaseservercertfile': "server.cert",
         # repository GPG public key file
-        'etpdatabasegpgfile': "signature.asc", # its checksum
+        'etpdatabasegpgfile': "signature.asc",
+        'etpgpgextension': ".asc",
         # when this file exists, the database is not synced
         # anymore with the online one
         'etpdatabasetaintfile': default_etp_dbfile+".tainted",
