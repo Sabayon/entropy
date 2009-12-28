@@ -961,6 +961,12 @@ class Repository:
     class GPGServiceNotAvailable(GPGError):
         """A particular feature or service is not available"""
 
+    class NothingImported(GPGError):
+        """Public/private key not imported"""
+
+    class KeyAlreadyInstalled(GPGError):
+        """Public/private key already installed"""
+
     class ListKeys(list):
         ''' Handle status messages for --list-keys.
 
@@ -1009,7 +1015,7 @@ class Repository:
     _GPG_EXEC = "/usr/bin/gpg"
     GPG_HOME = os.path.join(etpConst['confdir'], "gpg-keys")
 
-    def __init__(self):
+    def __init__(self, keystore_dir = None):
         """
         Instance constructor.
 
@@ -1017,20 +1023,30 @@ class Repository:
         @type repository_identifier: string
         """
         self.__encbits = 2048
-        self.__keymap_file = os.path.join(Repository.GPG_HOME, "entropy.keymap")
+        if keystore_dir is None:
+            self.__keystore = Repository.GPG_HOME
+        else:
+            self.__keystore = keystore_dir
+        self.__keymap_file = os.path.join(self.__keystore, "entropy.keymap")
         self.__key_list_cache = None
 
         # setup repositories keys dir
-        self.__keystore = Repository.GPG_HOME
         if not os.path.isdir(self.__keystore) and not \
             os.path.lexists(self.__keystore):
             try:
                 os.makedirs(self.__keystore, 0o775)
-                const_setup_perms(self.__keystore, etpConst['entropygid'])
             except OSError as err:
                 if err.errno != 13:
                     raise
                 raise Repository.GPGServiceNotAvailable(err)
+
+        # try to setup proper permissions, gpg is a pita
+        try:
+            const_setup_perms(self.__keystore, etpConst['entropygid'],
+                f_perms = 0o660)
+        except (IOError, OSError,):
+            raise Repository.GPGServiceNotAvailable(
+                "cannot setup permissions for %s" % (self.__keystore,))
 
         if not os.access(Repository._GPG_EXEC, os.X_OK):
             raise Repository.GPGServiceNotAvailable("no gnupg installed")
@@ -1424,6 +1440,8 @@ class Repository:
         @type pubkey_path: string
         @return: fingerprint
         @rtype: string
+        @raise KeyAlreadyInstalled: if key is already installed
+        @raise NothingImported: if pubkey_path contains garbage
         """
         args = self.__default_gpg_args() + ["--import", pubkey_path]
         current_keys = set([x['fingerprint'] for x in self.__list_keys()])
@@ -1442,16 +1460,22 @@ class Repository:
         now_keys = set([x['fingerprint'] for x in self.__list_keys()])
         new_keys = now_keys - current_keys
         if len(new_keys) < 1:
-            raise Repository.GPGError("nothing imported from %s, for %s" % (
-                pubkey_path, repository_identifier,))
+            raise Repository.NothingImported(
+                "nothing imported from %s, for %s" % (
+                    pubkey_path, repository_identifier,))
 
         if len(new_keys) > 1:
-            raise Repository.GPGError(
+            raise Repository.KeyAlreadyInstalled(
                 "wtf? more than one key imported from %s, for %s" % (
                     pubkey_path, repository_identifier,))
 
         fp = new_keys.pop()
         self.__update_keymap(repository_identifier, fp)
+
+        # setup perms again
+        const_setup_perms(self.__keystore, etpConst['entropygid'],
+            f_perms = 0o660)
+
         return str(fp)
 
     def delete_pubkey(self, repository_identifier):
@@ -1465,10 +1489,14 @@ class Repository:
         metadata = self.get_key_metadata(repository_identifier)
         self.__remove_keymap(repository_identifier)
         self.__delete_key(metadata['fingerprint'])
+        # setup perms again
+        const_setup_perms(self.__keystore, etpConst['entropygid'],
+            f_perms = 0o660)
 
     def __default_gpg_args(self):
-        args = [Repository._GPG_EXEC, "--no-tty",
-            "--homedir", Repository.GPG_HOME]
+        args = [Repository._GPG_EXEC, "--no-tty", "--no-permission-warning",
+            "--no-greeting", "--preserve-permissions", "--homedir",
+            self.__keystore]
         return args
 
     def __sign_file(self, file_path, fingerprint):
