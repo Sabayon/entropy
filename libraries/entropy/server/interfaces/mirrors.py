@@ -20,6 +20,7 @@ from entropy.output import red, darkgreen, bold, brown, blue, darkred, \
 from entropy.const import etpConst, etpSys
 from entropy.i18n import _
 from entropy.misc import RSS
+from entropy.server.interfaces.rss import ServerRssMetadata
 from entropy.transceivers import EntropyTransceiver
 from entropy.db import dbapi2
 from entropy.security import Repository as RepositorySecurity
@@ -991,9 +992,9 @@ class Server:
             except (IOError, OSError):
                 revision = "N/A"
             commitmessage = ''
-            if self.Entropy.rssMessages['commitmessage']:
+            if ServerRssMetadata()['commitmessage']:
                 commitmessage = ' :: ' + \
-                    self.Entropy.rssMessages['commitmessage']
+                    ServerRssMetadata()['commitmessage']
 
             title = ": " + self.SystemSettings['system']['name'] + " " + \
                 product[0].upper() + product[1:] + " " + \
@@ -1034,7 +1035,7 @@ class Server:
                 rss_light.write_changes()
 
         rss_main.write_changes()
-        self.Entropy.rssMessages.clear()
+        ServerRssMetadata().clear()
         self.dumpTools.removeobj(rss_dump_name)
 
 

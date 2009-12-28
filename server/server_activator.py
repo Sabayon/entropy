@@ -16,6 +16,7 @@ from entropy.const import etpConst, etpUi
 from entropy.output import red, green, print_info, bold, darkgreen, blue, \
     darkred, brown, print_error, readtext
 from entropy.server.interfaces import Server
+from entropy.server.interfaces.rss import ServerRssMetadata
 from entropy.transceivers import EntropyTransceiver
 from entropy.i18n import _
 Entropy = Server(community_repo = etpConst['community']['mode'])
@@ -95,7 +96,7 @@ def sync(options, just_tidy = False):
                     cm_msg_rc = subprocess.call([editor, tmp_commit_path])
                     if cm_msg_rc:
                         # wtf?, fallback to old way
-                        Entropy.rssMessages['commitmessage'] = \
+                        ServerRssMetadata()['commitmessage'] = \
                             readtext(">> %s: " % (
                                 _("Please insert a commit message"),) )
                     else:
@@ -105,10 +106,10 @@ def sync(options, just_tidy = False):
                                 if line.strip().startswith("#"):
                                     continue
                                 commit_msg += line
-                        Entropy.rssMessages['commitmessage'] = commit_msg
+                        ServerRssMetadata()['commitmessage'] = commit_msg
 
                 elif etpConst['rss-feed']:
-                    Entropy.rssMessages['commitmessage'] = "Autodriven Update"
+                    ServerRssMetadata()['commitmessage'] = "Autodriven Update"
 
             errors, fine, broken = sync_remote_databases()
             if not errors:

@@ -21,6 +21,7 @@ from entropy.const import etpConst, etpSys, const_setup_perms, \
 from entropy.output import TextInterface, purple, red, darkgreen, \
     bold, brown, blue, darkred
 from entropy.server.interfaces.mirrors import Server as MirrorsServer
+from entropy.server.interfaces.rss import ServerRssMetadata
 from entropy.i18n import _
 from entropy.core.settings.base import SystemSettings
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
@@ -617,6 +618,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
         return data
 
+
 class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
 
     import entropy.tools as entropyTools
@@ -658,6 +660,7 @@ class ServerFatscopeSystemSettingsPlugin(SystemSettingsPlugin):
             data[repoid] = idpackages
 
         return data
+
 
 class ServerQAInterfacePlugin(QAInterfacePlugin):
 
@@ -710,12 +713,6 @@ class Server(Singleton, TextInterface):
         self.__settings_to_backup = []
         self.__do_save_repository = save_repository
         self.__sync_lock_cache = set()
-        self.rssMessages = {
-            'added': {},
-            'removed': {},
-            'commitmessage': "",
-            'light': {},
-        }
 
         self.sys_settings_fatscope_plugin_id = \
             etpConst['system_settings_plugins_ids']['server_plugin_fatscope']
