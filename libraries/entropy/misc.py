@@ -21,7 +21,7 @@ import threading
 from entropy.const import etpConst, etpUi
 from entropy.core.settings.base import SystemSettings
 
-class Lifo:
+class Lifo(object):
 
     """
 
@@ -64,7 +64,20 @@ class Lifo:
 
     def __init__(self):
         """ Lifo class constructor """
+        object.__init__(self)
         self.__buf = {}
+
+    def __nonzero__(self):
+        """
+        Return if stack is empty.
+        """
+        return len(self.__buf) != 0
+
+    def __len__(self):
+        """
+        Return stack size.
+        """
+        return len(self.__buf)
 
     def push(self, item):
         """
@@ -79,6 +92,21 @@ class Lifo:
             idx = max(self.__buf)+1
         except ValueError:
             idx = 0
+        self.__buf[idx] = item
+
+    def insert(self, item):
+        """
+        Insert item at the bottom of the stack.
+
+        @param item: any Python object
+        @type item: Python object
+        @return: None
+        @rtype: None
+        """
+        try:
+            idx = min(self.__buf)-1
+        except ValueError:
+            idx = -1
         self.__buf[idx] = item
 
     def clear(self):
