@@ -671,7 +671,7 @@ if "help" in options:
 # print help
 if (not options) or ("--help" in options):
     print_menu(help_opts, args = options[:])
-    if etpUi['verbose']:
+    if etpUi['verbose'] or options:
         print_menu(help_opts_extended, args = options[:])
     else:
         print_menu(help_opts_ext_info, args = options[:])
