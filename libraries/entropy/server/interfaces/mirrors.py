@@ -24,13 +24,13 @@ from entropy.server.interfaces.rss import ServerRssMetadata
 from entropy.transceivers import EntropyTransceiver
 from entropy.db import dbapi2
 from entropy.security import Repository as RepositorySecurity
+
 import entropy.tools
+import entropy.dump
 
 class Server:
 
     import socket
-    import entropy.dump as dumpTools
-    import entropy.tools as entropyTools
     def __init__(self,  ServerInstance, repo = None):
 
         from entropy.cache import EntropyCacher
@@ -627,7 +627,7 @@ class Server:
                     back = True
                 )
 
-                md5check = self.entropyTools.compare_md5(download_path, storedmd5)
+                md5check = entropy.tools.compare_md5(download_path, storedmd5)
                 if md5check:
                     self.Entropy.updateProgress(
                         "[repo:%s|%s|#%s] %s: %s %s" % (
@@ -824,7 +824,7 @@ class Server:
             repo = self.Entropy.default_repository
         mirrors = self.Entropy.get_remote_mirrors(repo)
         rss_path = self.Entropy.get_local_database_notice_board_file(repo)
-        mytmpdir = self.entropyTools.get_random_temp_file()
+        mytmpdir = entropy.tools.get_random_temp_file()
         os.makedirs(mytmpdir)
 
         self.Entropy.updateProgress(
@@ -1036,7 +1036,7 @@ class Server:
 
         rss_main.write_changes()
         ServerRssMetadata().clear()
-        self.dumpTools.removeobj(rss_dump_name)
+        entropy.dump.removeobj(rss_dump_name)
 
 
     def dump_database_to_file(self, db_path, destination_path, opener,
@@ -1053,7 +1053,7 @@ class Server:
         f_out.close()
 
     def create_file_checksum(self, file_path, checksum_path):
-        mydigest = self.entropyTools.md5sum(file_path)
+        mydigest = entropy.tools.md5sum(file_path)
         f_ck = open(checksum_path, "w")
         mystring = "%s  %s\n" % (mydigest, os.path.basename(file_path),)
         f_ck.write(mystring)
@@ -1480,7 +1480,8 @@ class Server:
         found_file_list.append(metafile_not_found_file)
         if os.path.isfile(compressed_dest_path):
             os.remove(compressed_dest_path)
-        self.entropyTools.compress_files(compressed_dest_path, found_file_list)
+
+        entropy.tools.compress_files(compressed_dest_path, found_file_list)
 
     def mirror_lock_check(self, uri, repo = None):
         """
@@ -1595,7 +1596,7 @@ class Server:
             dbconn.removeTreeUpdatesActions(repo)
             dbconn.insertTreeUpdatesActions(all_actions, repo)
         except dbapi2.Error as err:
-            self.entropyTools.print_traceback()
+            entropy.tools.print_traceback()
             mytxt = "%s, %s: %s. %s" % (
                 _("Troubles with treeupdates"),
                 _("error"),
@@ -1855,7 +1856,7 @@ class Server:
             download_data, critical, text_files = self.get_files_to_sync(
                 cmethod, download = True,
                 repo = repo, disabled_eapis = disabled_eapis)
-            mytmpdir = self.entropyTools.get_random_temp_file()
+            mytmpdir = entropy.tools.get_random_temp_file()
             os.makedirs(mytmpdir)
 
             self.Entropy.updateProgress(
@@ -1940,7 +1941,7 @@ class Server:
                         compressed_db_filename)
                     uncompressed_file = os.path.join(mytmpdir,
                         uncompressed_db_filename)
-                    self.entropyTools.uncompress_file(compressed_file,
+                    entropy.tools.uncompress_file(compressed_file,
                         uncompressed_file, cmethod[0])
 
                 # now move
@@ -2220,7 +2221,7 @@ class Server:
         # show stats
         for package, size in upload:
             package = darkgreen(os.path.basename(package))
-            size = blue(self.entropyTools.bytes_into_human(size))
+            size = blue(entropy.tools.bytes_into_human(size))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
@@ -2234,7 +2235,7 @@ class Server:
             )
         for package, size in download:
             package = darkred(os.path.basename(package))
-            size = blue(self.entropyTools.bytes_into_human(size))
+            size = blue(entropy.tools.bytes_into_human(size))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
@@ -2248,7 +2249,7 @@ class Server:
             )
         for package, size in copy:
             package = darkblue(os.path.basename(package))
-            size = blue(self.entropyTools.bytes_into_human(size))
+            size = blue(entropy.tools.bytes_into_human(size))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
@@ -2262,7 +2263,7 @@ class Server:
             )
         for package, size in removal:
             package = brown(os.path.basename(package))
-            size = blue(self.entropyTools.bytes_into_human(size))
+            size = blue(entropy.tools.bytes_into_human(size))
             self.Entropy.updateProgress(
                 "[branch:%s|%s] %s [%s]" % (
                     brown(branch),
@@ -2307,7 +2308,7 @@ class Server:
             "%s:\t\t\t%s" % (
                 darkred(_("Total removal size")),
                 darkred(
-                    self.entropyTools.bytes_into_human(metainfo['removal'])
+                    entropy.tools.bytes_into_human(metainfo['removal'])
                 ),
             ),
             importance = 0,
@@ -2318,7 +2319,7 @@ class Server:
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
                 blue(_("Total upload size")),
-                blue(self.entropyTools.bytes_into_human(metainfo['upload'])),
+                blue(entropy.tools.bytes_into_human(metainfo['upload'])),
             ),
             importance = 0,
             type = "info",
@@ -2327,7 +2328,7 @@ class Server:
         self.Entropy.updateProgress(
             "%s:\t\t\t%s" % (
                 brown(_("Total download size")),
-                brown(self.entropyTools.bytes_into_human(metainfo['download'])),
+                brown(entropy.tools.bytes_into_human(metainfo['download'])),
             ),
             importance = 0,
             type = "info",
@@ -2432,7 +2433,7 @@ class Server:
                     self.Entropy.get_local_upload_directory(repo), branch,
                     local_package)
 
-                local_size = self.entropyTools.get_file_size(local_filepath)
+                local_size = entropy.tools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(local_package)
                 if remote_size is None:
                     remote_size = 0
@@ -2453,7 +2454,7 @@ class Server:
                 local_filepath = os.path.join(
                     self.Entropy.get_local_packages_directory(repo), branch,
                     local_package)
-                local_size = self.entropyTools.get_file_size(local_filepath)
+                local_size = entropy.tools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(local_package)
                 if remote_size is None:
                     remote_size = 0
@@ -2472,7 +2473,7 @@ class Server:
                 local_filepath = os.path.join(
                     self.Entropy.get_local_packages_directory(repo), branch,
                     remote_package)
-                local_size = self.entropyTools.get_file_size(local_filepath)
+                local_size = entropy.tools.get_file_size(local_filepath)
                 remote_size = remote_packages_data.get(remote_package)
                 if remote_size is None:
                     remote_size = 0
@@ -2544,7 +2545,7 @@ class Server:
                 continue
             local_filepath = os.path.join(
                 self.Entropy.get_local_packages_directory(repo), branch, item)
-            size = self.entropyTools.get_file_size(local_filepath)
+            size = entropy.tools.get_file_size(local_filepath)
             metainfo['removal'] += size
             removal.append((local_filepath, size))
 
@@ -2561,7 +2562,7 @@ class Server:
                 metainfo['removal'] += size
                 download.append((local_filepath, size))
             else:
-                size = self.entropyTools.get_file_size(local_filepath)
+                size = entropy.tools.get_file_size(local_filepath)
                 do_copy.append((local_filepath, size))
 
         for item in upload_queue:
@@ -2572,10 +2573,10 @@ class Server:
             local_filepath_pkgs = os.path.join(
                 self.Entropy.get_local_packages_directory(repo), branch, item)
             if os.path.isfile(local_filepath):
-                size = self.entropyTools.get_file_size(local_filepath)
+                size = entropy.tools.get_file_size(local_filepath)
                 upload.append((local_filepath, size))
             else:
-                size = self.entropyTools.get_file_size(local_filepath_pkgs)
+                size = entropy.tools.get_file_size(local_filepath_pkgs)
                 upload.append((local_filepath_pkgs, size))
             metainfo['upload'] += size
 
@@ -2602,7 +2603,7 @@ class Server:
                     brown(branch),
                     blue(_("removing package+hash")),
                     darkgreen(remove_filename),
-                    blue(self.entropyTools.bytes_into_human(itemdata[1])),
+                    blue(entropy.tools.bytes_into_human(itemdata[1])),
                 ),
                 importance = 0,
                 type = "info",
@@ -2678,7 +2679,7 @@ class Server:
             upload_item = itemdata[0]
             hash_file = upload_item + etpConst['packagesmd5fileext']
             if not os.path.isfile(hash_file):
-                self.entropyTools.create_md5_file(upload_item)
+                entropy.tools.create_md5_file(upload_item)
             myqueue.append(hash_file)
             myqueue.append(upload_item)
 
@@ -3044,7 +3045,7 @@ class Server:
 
             except Exception as err:
 
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 mirrors_errors = True
                 broken_mirrors.add(uri)
                 self.Entropy.updateProgress(
@@ -3137,7 +3138,7 @@ class Server:
             return False
 
         srv_set = self.SystemSettings[self.sys_settings_plugin_id]['server']
-        mtime = self.entropyTools.get_file_unix_mtime(pkg_path)
+        mtime = entropy.tools.get_file_unix_mtime(pkg_path)
         days = srv_set['packages_expiration_days']
         delta = int(days)*24*3600
         currmtime = time.time()
