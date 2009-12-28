@@ -135,6 +135,12 @@ def initconfig_entropy_constants(rootdir):
     etpConst.update(backed_up_settings)
     etpConst['backed_up'] = backed_up_settings.copy()
 
+    # try to set proper permissions for /etc/entropy (at least group)
+    # /etc/entropy should be always writeable by "entropy" group !
+    # DO NOT FRIGGIN REMOVE
+    const_setup_perms(etpConst['confdir'], etpConst['entropygid'],
+        recursion = False)
+
     if sys.excepthook is sys.__excepthook__:
         sys.excepthook = __const_handle_exception
 
@@ -285,6 +291,8 @@ def const_default_settings(rootdir):
         # repository GPG public key file
         'etpdatabasegpgfile': "signature.asc",
         'etpgpgextension': ".asc",
+        # Entropy Client GPG repositories keyring path
+        'etpclientgpgdir': default_etp_confdir+"/client-gpg-keys",
         # when this file exists, the database is not synced
         # anymore with the online one
         'etpdatabasetaintfile': default_etp_dbfile+".tainted",
@@ -787,6 +795,9 @@ def const_extract_cli_repo_params(repostring, branch = None, product = None):
         with open(dbrevision_file, "r") as dbrev_f:
             mydata['dbrevision'] = dbrev_f.readline().strip()
 
+    # setup GPG key path
+    mydata['gpg_pubkey'] = mydata['dbpath'] + os.path.sep + \
+        etpConst['etpdatabasegpgfile']
 
     # setup script paths
     mydata['post_branch_hop_script'] = mydata['dbpath'] + os.path.sep + \
@@ -1170,7 +1181,7 @@ def const_extract_srv_repo_params(repostring, product = None):
 
     return repoid, mydata
 
-def const_setup_perms(mydir, gid):
+def const_setup_perms(mydir, gid, f_perms = None, recursion = True):
     """
     Setup permissions and group id (GID) to a directory, recursively.
 
@@ -1178,12 +1189,20 @@ def const_setup_perms(mydir, gid):
     @type mydir: string
     @param gid: valid group id (GID)
     @type gid: int
+    @keyword f_perms: file permissions in octal type
+    @type f_perms: octal
+    @keyword recursion: set permissions recursively?
+    @type recursion: bool
     @rtype: None
     @return: None
     """
+
     if gid == None:
         return
-    for currentdir, subdirs, files in os.walk(mydir):
+    if f_perms is None:
+        f_perms = 0o664
+
+    def do_setup_dir(currentdir):
         try:
             cur_gid = os.stat(currentdir)[stat.ST_GID]
             if cur_gid != gid:
@@ -1193,12 +1212,17 @@ def const_setup_perms(mydir, gid):
                 os.chmod(currentdir, 0o775)
         except OSError:
             pass
-        for item in files:
-            item = os.path.join(currentdir, item)
-            try:
-                const_setup_file(item, gid, 0o664)
-            except OSError:
-                pass
+
+    do_setup_dir(mydir)
+    if recursion:
+        for currentdir, subdirs, files in os.walk(mydir):
+            do_setup_dir(currentdir)
+            for item in files:
+                item = os.path.join(currentdir, item)
+                try:
+                    const_setup_file(item, gid, f_perms)
+                except OSError:
+                    pass
 
 def const_setup_file(myfile, gid, chmod):
     """
