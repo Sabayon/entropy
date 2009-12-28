@@ -27,8 +27,10 @@ from entropy.const import etpConst, etpUi, etpCache, const_setup_perms, \
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     ConnectionError
 from entropy.output import blue, darkred, red, darkgreen, purple, brown, bold
-import entropy.tools
 from entropy.dump import dumpobj
+from entropy.security import Repository as RepositorySecurity
+
+import entropy.tools
 
 class Repository:
 
@@ -943,6 +945,91 @@ class Repository:
 
         return br_rc
 
+    def _install_gpg_key_if_available(self, repoid):
+
+        my_repos = self.Entropy.SystemSettings['repositories']
+        avail_data = my_repos['available']
+        repo_data = avail_data[repoid]
+        gpg_path = repo_data['gpg_pubkey']
+
+        if not (os.path.isfile(gpg_path) and os.access(gpg_path, os.R_OK)):
+            return # gpg key not available
+
+        try:
+            repo_sec = self.Entropy.RepositorySecurity()
+        except RepositorySecurity.GPGError:
+            mytxt = "%s," % (
+                purple(_("This repository suports GPG-signed packages")),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                type = "warning",
+                header = "\t"
+            )
+            mytxt = purple(_("you may want to install GnuPG to take advantage of this feature"))
+            self.Entropy.updateProgress(
+                mytxt,
+                type = "warning",
+                header = "\t"
+            )
+            return # GPG not available
+
+        if repo_sec.is_pubkey_available(repoid):
+            mytxt = "%s: %s" % (
+                purple(_("GPG key already installed for")),
+                bold(repoid),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                type = "info",
+                header = "\t"
+            )
+            return # already installed
+
+        # actually install
+        mytxt = "%s: %s" % (
+            purple(_("Installing GPG key for repository")),
+            brown(repoid),
+        )
+        self.Entropy.updateProgress(
+            mytxt,
+            type = "info",
+            header = "\t",
+            back = True
+        )
+        try:
+            fingerprint = repo_sec.install_pubkey(repoid, gpg_path)
+        except RepositorySecurity.GPGError as err:
+            mytxt = "%s: %s" % (
+                darkred(_("Error during GPG key installation")),
+                err,
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                type = "error",
+                header = "\t"
+            )
+            return
+
+        mytxt = "%s: %s" % (
+            purple(_("Successfully installed GPG key for repository")),
+            brown(repoid),
+        )
+        self.Entropy.updateProgress(
+            mytxt,
+            type = "info",
+            header = "\t"
+        )
+        mytxt = "%s: %s" % (
+            darkgreen(_("Fingerprint")),
+            bold(fingerprint),
+        )
+        self.Entropy.updateProgress(
+            mytxt,
+            type = "info",
+            header = "\t"
+        )
+
     def run_sync(self):
 
         self.dbupdated = False
@@ -1157,6 +1244,9 @@ class Repository:
 
             # execute post update repo hook
             self._run_post_update_repository_hook(repo)
+
+            # GPG pubkey install hook
+            self._install_gpg_key_if_available(repo)
 
             self.updated_repos.add(repo)
             self.Entropy.cycleDone()
@@ -1650,8 +1740,7 @@ class Repository:
             mytxt,
             importance = 1,
             type = "info",
-            header = "\t",
-            back = True
+            header = "\t"
         )
         dbconn = self.Entropy.open_repository(repo)
         dbconn.createAllIndexes()
