@@ -17,9 +17,8 @@ class SecurityTest(unittest.TestCase):
         """
         NOTE: this requires gnupg as test-dependency.
         """
-        self._gpg_home = tempfile.mkdtemp()
-        Repository.GPG_HOME = self._gpg_home
-        self._repository = Repository()
+        self._tmp_dir = tempfile.mkdtemp()
+        self._repository = Repository(keystore_dir = self._tmp_dir)
         sys.stdout.write("%s called\n" % (self,))
         sys.stdout.flush()
 
@@ -28,7 +27,7 @@ class SecurityTest(unittest.TestCase):
         tearDown is run after each test
         """
         del self._repository
-        shutil.rmtree(self._gpg_home, True)
+        shutil.rmtree(self._tmp_dir, True)
         sys.stdout.write("%s ran\n" % (self,))
         sys.stdout.flush()
 
