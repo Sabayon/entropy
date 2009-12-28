@@ -1001,16 +1001,19 @@ class CalculatorsMixin:
 
     def _lookup_conflict_replacement(self, conflict_atom, client_idpackage, deep_deps):
         if self.entropyTools.isjustname(conflict_atom):
-            return None
+            return
+
         conflict_match = self.atom_match(conflict_atom)
         mykey, myslot = self.clientDbconn.retrieveKeySlot(client_idpackage)
         new_match = self.atom_match(mykey, matchSlot = myslot)
         if (conflict_match == new_match) or (new_match[1] == 1):
-            return None
+            return
+
         action = self.get_package_action(new_match)
         if (action == 0) and (not deep_deps):
-            return None
-        return "%s:%s" % (mykey,myslot,)
+            return
+
+        return new_match
 
     def _lookup_post_dependencies(self, repo_db, repo_idpackage,
         unsatisfied_deps):
