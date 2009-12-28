@@ -1481,7 +1481,7 @@ class Repository:
         const_debug_write(__name__, "Repository.__sign_file args => %s" % (
             args,))
 
-        asc_path = file_path + ".asc"
+        asc_path = file_path + etpConst['etpgpgextension']
         # remove previously stored .asc
         if os.path.isfile(asc_path):
             const_debug_write(__name__,
