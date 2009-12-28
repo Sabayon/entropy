@@ -115,8 +115,9 @@ def sync(options, just_tidy = False):
             if not errors:
                 Entropy.MirrorsService.lock_mirrors(lock = False)
             if not errors and not do_noask:
-                rc = Entropy.askQuestion(_("Should I continue with the tidy procedure ?"))
-                if rc == _("No"):
+                q_rc = Entropy.askQuestion(
+                    _("Should I continue with the tidy procedure ?"))
+                if q_rc == _("No"):
                     continue
             elif errors:
                 print_error(darkred(" !!! ")+red(_("Aborting !")))
@@ -306,8 +307,9 @@ def notice(options):
                 break
             if (sel >= 0) and (sel <= counter):
                 show_notice(sel, items.get(sel))
-                rc = Entropy.askQuestion(_("Are you sure you want to remove this?"))
-                if rc == _("Yes"):
+                q_rc = Entropy.askQuestion(
+                    _("Are you sure you want to remove this?"))
+                if q_rc == _("Yes"):
                     changed = True
                     Entropy.MirrorsService.remove_from_notice_board(sel)
                     data = Entropy.MirrorsService.read_notice_board(do_download = False)
