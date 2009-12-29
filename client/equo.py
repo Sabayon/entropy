@@ -304,7 +304,9 @@ help_opts_extended = [
             (3, 'delete [repos]', 1, _('delete keypair (and digital signatures) of repository')),
             (3, 'status [repos]', 1, _('show currently configured keys information for given repositories')),
             (3, 'sign [repos]', 1, _('sign (or re-sign) packages in repository using currently set keypair')),
-
+            (3, 'import <repo_id> <privkey_path> <pubkey_path>', 1, _('import keypair, bind to given repository')),
+            (3, 'export-public <repo_id> <key_path>', 1, _('export public key of given repository')),
+            (3, 'export-private <repo_id> <key_path>', 1, _('export private key of given repository')),
 
         None,
 

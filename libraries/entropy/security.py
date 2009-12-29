@@ -1395,6 +1395,21 @@ class Repository:
             return False
         return True
 
+    def is_privkey_available(self, repository_identifier):
+        """
+        Return whether private key for given repository identifier is available.
+
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @return: True, if private key is available
+        @rtype: bool
+        """
+        try:
+            self.get_privkey(repository_identifier)
+        except KeyError:
+            return False
+        return True
+
     def __export_key(self, fingerprint, secret = False):
         """
         Export GPG keys to string.
@@ -1454,7 +1469,8 @@ class Repository:
         pubkey = self.__export_key(fingerprint, secret = True)
         return pubkey
 
-    def install_key(self, repository_identifier, key_path):
+    def install_key(self, repository_identifier, key_path,
+        ignore_nothing_imported = False):
         """
         Add key to keyring.
 
@@ -1462,12 +1478,16 @@ class Repository:
         @type repository_identifier: string
         @param key_path: valid path to GPG key file
         @type key_path: string
+        @param ignore_nothing_imported: if True, ignore NothingImported
+            exception
+        @type ignore_nothing_imported: bool
         @return: fingerprint
         @rtype: string
         @raise KeyAlreadyInstalled: if key is already installed
         @raise NothingImported: if key_path contains garbage
         """
-        args = self.__default_gpg_args() + ["--import", key_path]
+        args = self.__default_gpg_args(preserve_perms = False) + \
+            ["--import", key_path]
         current_keys = set([x['fingerprint'] for x in self.__list_keys()])
 
         proc = subprocess.Popen(args, stdout = subprocess.PIPE,
@@ -1475,32 +1495,39 @@ class Repository:
 
         # wait for process to terminate
         proc_rc = proc.wait()
-        del proc
 
         if proc_rc != 0:
-            raise Repository.GPGError("cannot install pubkey at %s, for %s" % (
-                key_path, repository_identifier,))
+            raise Repository.GPGError(
+                "cannot install key at %s, for %s" % (
+                    key_path, repository_identifier))
 
         now_keys = set([x['fingerprint'] for x in self.__list_keys()])
         new_keys = now_keys - current_keys
-        if len(new_keys) < 1:
+        if (len(new_keys) < 1) and not ignore_nothing_imported:
             raise Repository.NothingImported(
                 "nothing imported from %s, for %s" % (
                     key_path, repository_identifier,))
+
+        nothing_imported = False
+        if len(new_keys) < 1 and ignore_nothing_imported:
+            nothing_imported = True
 
         if len(new_keys) > 1:
             raise Repository.KeyAlreadyInstalled(
                 "wtf? more than one key imported from %s, for %s" % (
                     key_path, repository_identifier,))
 
-        fp = new_keys.pop()
-        self.__update_keymap(repository_identifier, fp)
+        fp = None
+        if not nothing_imported:
+            fp = new_keys.pop()
+            self.__update_keymap(repository_identifier, fp)
+            fp = str(fp)
 
         # setup perms again
         const_setup_perms(self.__keystore, etpConst['entropygid'],
             f_perms = 0o660)
 
-        return str(fp)
+        return fp
 
     def delete_pubkey(self, repository_identifier):
         """

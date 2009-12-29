@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "REAGENT 1"
-.TH REAGENT 1 "2009-12-22" "perl v5.8.8" "Entropy"
+.TH REAGENT 1 "2009-12-29" "perl v5.8.8" "Entropy"
 .SH "NAME"
 \&\fBreagent\fR \- Official Sabayon Linux Server\-Side Package Management tool
 .SH "SYNOPSIS"
@@ -329,6 +329,31 @@ copy packages from a repository to another
 .IP "\fBdefault <repo_id\fR>" 4
 .IX Item "default <repo_id>"
 set the default repository
+.RE
+.RS 4
+.RE
+.IP "\fBkey\fR" 4
+.IX Item "key"
+manage repository digital signatures (OpenGPG)
+.RS 4
+.IP "\fBcreate [repos]\fR" 4
+.IX Item "create [repos]"
+create keypair for repositories and sign packages
+.IP "\fBdelete [repos]\fR" 4
+.IX Item "delete [repos]"
+delete keypair (and digital signatures) of repository
+.IP "\fBstatus [repos]\fR" 4
+.IX Item "status [repos]"
+show currently configured keys information for given repositories
+.IP "\fBsign [repos]\fR" 4
+.IX Item "sign [repos]"
+sign (or re\-sign) packages in repository using currently set keypair
+.IP "\fBimport <repo_id\fR <pubkey_path>>" 4
+.IX Item "import <repo_id <pubkey_path>>"
+import public key, bind to given repository
+.IP "\fBexport <repo_id\fR <pubkey_path>>" 4
+.IX Item "export <repo_id <pubkey_path>>"
+export public key of given repository
 .RE
 .RS 4
 .RE

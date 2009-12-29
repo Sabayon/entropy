@@ -272,6 +272,46 @@ set the default repository
 =back
 
 
+=item B<key>
+
+manage repository digital signatures (OpenGPG)
+
+=over
+
+
+=item B<create [repos]>
+
+create keypair for repositories and sign packages
+
+=item B<delete [repos]>
+
+delete keypair (and digital signatures) of repository
+
+=item B<status [repos]>
+
+show currently configured keys information for given repositories
+
+=item B<sign [repos]>
+
+sign (or re-sign) packages in repository using currently set keypair
+
+=item B<import <repo_id> <privkey_path> <pubkey_path>>
+
+import keypair, bind to given repository
+
+=item B<export-public <repo_id> <key_path>>
+
+export public key of given repository
+
+=back
+
+=item B<export-private <repo_id> <key_path>>
+
+export private key of given repository
+
+=back
+
+
 =item B<spm>
 
 source package manager functions

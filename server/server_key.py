@@ -21,33 +21,40 @@ def key(myopts):
     if not myopts:
         return -10
     cmd = myopts.pop(0)
-    repos = myopts
 
     rc = -10
     Entropy = Server()
     sys_set = Entropy.SystemSettings[Entropy.sys_settings_plugin_id]['server']
     avail_repos = sys_set['repositories']
-    for repo in repos:
-        if repo not in avail_repos:
-            Entropy.updateProgress("'%s' %s" % (
-                blue(repo), _("repository not available"),),
-                type = "error")
-            Entropy.destroy()
+
+    def validate_repos(repos, entropy_srv):
+        for repo in repos:
+            if repo not in avail_repos:
+                entropy_srv.updateProgress("'%s' %s" % (
+                    blue(repo), _("repository not available"),),
+                    type = "error")
+                return 1
+        return 0
+
+    try:
+
+        repos = myopts
+        if cmd in ("create", "delete", "sign", "import", "export") and not \
+            repos:
+            return rc
+        elif cmd in ("create", "delete", "sign",):
+            v_rc = validate_repos(repos, Entropy)
+            if v_rc != 0:
+                return v_rc
+
+        try:
+            repo_sec = Repository()
+        except Repository.GPGError as err:
+            Entropy.updateProgress("%s: %s" % (
+                _("GnuPG not available"), err,),
+                    type = "error")
             return 1
 
-    if cmd in ("create", "delete", "sign",) and not repos:
-        return rc
-
-    try:
-        repo_sec = Repository()
-    except Repository.GPGError as err:
-        Entropy.updateProgress("%s: %s" % (
-            _("GnuPG not available"), err,),
-                type = "error")
-        Entropy.destroy()
-        return 1
-
-    try:
         if cmd == "create" and repos:
             for repo in repos:
                 rc = _create_keys(Entropy, repo)
@@ -75,10 +82,105 @@ def key(myopts):
                 if rc != 0:
                     break
 
+        elif cmd == "import" and len(repos) == 3:
+            rc = _import_key(Entropy, repos[0], repos[1], repos[2])
+
+        elif cmd == "export-public" and len(repos) == 2:
+            rc = _export_key(Entropy, True, repos[0], repos[1])
+
+        elif cmd == "export-private" and len(repos) == 2:
+            rc = _export_key(Entropy, False, repos[0], repos[1])
+
     finally:
         Entropy.destroy()
+
     del Entropy
     return rc
+
+
+def _import_key(entropy_srv, repo, privkey_path, pubkey_path):
+
+    entropy_srv.updateProgress("%s: %s" % (
+        blue(_("Importing keypair for repository")), purple(repo),))
+
+    repo_sec = Repository()
+    if repo_sec.is_keypair_available(repo):
+        entropy_srv.updateProgress("%s: %s" % (
+                blue(_("Another keypair already exists for repository")),
+                purple(repo),
+            ),
+            type = "error"
+        )
+        return 1
+
+    # install private key
+    finger_print = repo_sec.install_key(repo, privkey_path)
+    repo_sec.install_key(repo, pubkey_path, ignore_nothing_imported = True)
+
+    entropy_srv.updateProgress("%s: %s" % (
+            darkgreen(_("Imported GPG key with fingerprint")),
+            bold(finger_print),
+        ),
+        type = "info"
+    )
+    entropy_srv.updateProgress("%s: %s" % (
+            darkgreen(_("Now you should sign all the packages in it")),
+            blue(repo),
+        ),
+        type = "warning"
+    )
+ 
+    return 0
+
+def _export_key(entropy_srv, is_pubkey, repo, store_path):
+
+    repo_sec = Repository()
+
+    key_msg = _("Exporting private key for repository")
+    func_check = repo_sec.is_privkey_available
+    if is_pubkey:
+        func_check = repo_sec.is_pubkey_available
+        key_msg = _("Exporting public key for repository")
+
+    if not func_check(repo):
+        entropy_srv.updateProgress("%s: %s" % (
+                blue(_("No keypair available for repository")),
+                purple(repo),
+            ),
+            type = "error"
+        )
+        return 1
+
+    entropy_srv.updateProgress("%s: %s" % (blue(key_msg), purple(repo),))
+    if is_pubkey:
+        key_stream = repo_sec.get_pubkey(repo)
+    else:
+        key_stream = repo_sec.get_privkey(repo)
+
+    # write to file
+    try:
+        with open(store_path, "w") as dest_w:
+            dest_w.write(key_stream)
+            dest_w.flush()
+    except IOError as err:
+        entropy_srv.updateProgress("%s: %s [%s]" % (
+                darkgreen(_("Unable to export GPG key for repository")),
+                bold(repo),
+                err,
+            ),
+            type = "error"
+        )
+        return 1
+
+    entropy_srv.updateProgress("%s: %s [%s]" % (
+            darkgreen(_("Exported GPG key for repository")),
+            bold(repo),
+            brown(store_path),
+        ),
+        type = "info"
+    )
+
+    return 0
 
 def _create_keys(entropy_srv, repo):
 
