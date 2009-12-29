@@ -101,6 +101,8 @@ class MagnetoCore(MagnetoCoreUI):
             import signal
             signal.signal(signal.SIGINT, signal.SIG_DFL)
 
+        # Set this to True when DBus service is up
+        self._dbus_service_available = False
         # Notice Window Widget status
         self.notice_window_shown = None
         # List of package updates available
@@ -304,7 +306,7 @@ class MagnetoCore(MagnetoCoreUI):
     def set_state(self, new_state, use_busy_icon = 0):
 
         if not new_state in config.APPLET_STATES:
-            raise IncorrectParameter("Error: invalid state %s" % new_state)
+            raise AttributeError("Error: invalid state %s" % new_state)
 
         if new_state == "OKAY":
             self.change_icon("okay")
