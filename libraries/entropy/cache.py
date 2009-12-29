@@ -20,6 +20,9 @@ from entropy.core import Singleton
 from entropy.misc import TimeScheduled, Lifo
 import time
 
+import entropy.dump
+import entropy.tools
+
 class EntropyCacher(Singleton):
     """
         Entropy asynchronous and synchronous cache writer
@@ -58,10 +61,6 @@ class EntropyCacher(Singleton):
 
     """
 
-    import entropy.dump as dumpTools
-    import entropy.tools as entropyTools
-    import copy
-
     def init_singleton(self):
         """
         Singleton overloaded method. Equals to __init__.
@@ -69,6 +68,8 @@ class EntropyCacher(Singleton):
         takes place.
         """
         import threading
+        import copy
+        self.__copy = copy
         self.__alive = False
         self.__cache_writer = None
         self.__cache_buffer = Lifo()
@@ -84,7 +85,7 @@ class EntropyCacher(Singleton):
         @rtype: copied object
         @return: copied object
         """
-        return self.copy.deepcopy(obj)
+        return self.__copy.deepcopy(obj)
 
     def __cacher(self):
         """
@@ -104,7 +105,7 @@ class EntropyCacher(Singleton):
                     # TypeError is when objects are being destroyed
                     break # stack empty
             key, data = data
-            d_o = self.dumpTools.dumpobj
+            d_o = entropy.dump.dumpobj
             if not d_o:
                 break
             d_o(key, data)
@@ -228,7 +229,7 @@ class EntropyCacher(Singleton):
                         key,))
                     sys.stdout.flush()
         else:
-            self.dumpTools.dumpobj(key, data)
+            entropy.dump.dumpobj(key, data)
 
     def pop(self, key):
         """
@@ -242,7 +243,7 @@ class EntropyCacher(Singleton):
         @return: object stored into the stack or None (if stack is empty)
         """
         with self.__cache_lock:
-            l_o = self.dumpTools.loadobj
+            l_o = entropy.dump.loadobj
             if not l_o:
                 return
             return l_o(key)
