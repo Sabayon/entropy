@@ -998,7 +998,7 @@ class Repository:
             back = True
         )
         try:
-            fingerprint = repo_sec.install_pubkey(repoid, gpg_path)
+            fingerprint = repo_sec.install_key(repoid, gpg_path)
         except RepositorySecurity.GPGError as err:
             mytxt = "%s: %s" % (
                 darkred(_("Error during GPG key installation")),

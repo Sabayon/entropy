@@ -1321,7 +1321,8 @@ class Repository:
 
     def __delete_key(self, fingerprint, secret = False):
 
-        args = self.__default_gpg_args() + ["--batch", "--yes"]
+        args = self.__default_gpg_args(preserve_perms=False) + \
+            ["--batch", "--yes"]
         if secret:
             args.append("--delete-secret-key")
         else:
@@ -1352,9 +1353,12 @@ class Repository:
         """
         keymap = self.__get_keymap()
         fingerprint = keymap[repository_identifier]
-        self.__remove_keymap(repository_identifier)
         self.__delete_key(fingerprint, secret = True)
         self.__delete_key(fingerprint)
+        self.__remove_keymap(repository_identifier)
+        # ensure permissions
+        const_setup_perms(self.__keystore, etpConst['entropygid'],
+            f_perms = 0o660)
 
     def is_keypair_available(self, repository_identifier):
         """
@@ -1434,20 +1438,36 @@ class Repository:
         pubkey = self.__export_key(fingerprint)
         return pubkey
 
-    def install_pubkey(self, repository_identifier, pubkey_path):
+    def get_privkey(self, repository_identifier):
         """
-        Add public key to keyring.
+        Get private key for currently set repository, if any, otherwise raise
+        KeyError.
 
         @param repository_identifier: repository identifier
         @type repository_identifier: string
-        @param pubkey_path: valid path to GPG pubkey file
-        @type pubkey_path: string
+        @return: private key
+        @rtype: string
+        @raise KeyError: if no keypair is set for repository
+        """
+        keymap = self.__get_keymap()
+        fingerprint = keymap[repository_identifier]
+        pubkey = self.__export_key(fingerprint, secret = True)
+        return pubkey
+
+    def install_key(self, repository_identifier, key_path):
+        """
+        Add key to keyring.
+
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @param key_path: valid path to GPG key file
+        @type key_path: string
         @return: fingerprint
         @rtype: string
         @raise KeyAlreadyInstalled: if key is already installed
-        @raise NothingImported: if pubkey_path contains garbage
+        @raise NothingImported: if key_path contains garbage
         """
-        args = self.__default_gpg_args() + ["--import", pubkey_path]
+        args = self.__default_gpg_args() + ["--import", key_path]
         current_keys = set([x['fingerprint'] for x in self.__list_keys()])
 
         proc = subprocess.Popen(args, stdout = subprocess.PIPE,
@@ -1459,19 +1479,19 @@ class Repository:
 
         if proc_rc != 0:
             raise Repository.GPGError("cannot install pubkey at %s, for %s" % (
-                pubkey_path, repository_identifier,))
+                key_path, repository_identifier,))
 
         now_keys = set([x['fingerprint'] for x in self.__list_keys()])
         new_keys = now_keys - current_keys
         if len(new_keys) < 1:
             raise Repository.NothingImported(
                 "nothing imported from %s, for %s" % (
-                    pubkey_path, repository_identifier,))
+                    key_path, repository_identifier,))
 
         if len(new_keys) > 1:
             raise Repository.KeyAlreadyInstalled(
                 "wtf? more than one key imported from %s, for %s" % (
-                    pubkey_path, repository_identifier,))
+                    key_path, repository_identifier,))
 
         fp = new_keys.pop()
         self.__update_keymap(repository_identifier, fp)
