@@ -366,7 +366,6 @@ help_opts_extended = [
     None,
     (1, 'cache', 2, _('handles Entropy cache')),
         (2, 'clean', 2, _('clean Entropy cache')),
-        (2, 'generate', 1, _('regenerate Entropy cache')),
         (2, '--verbose', 1, _('show more details')),
         (2, '--quiet', 1, _('print results in a scriptable way')),
     None,

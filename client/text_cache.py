@@ -9,6 +9,8 @@
     B{Entropy Package Manager Client}.
 
 """
+from entropy.output import blue, brown, darkgreen
+from entropy.i18n import _
 
 def cache(options):
 
@@ -22,9 +24,18 @@ def cache(options):
     entropy_client = Client(noclientdb = True)
     try:
         if cmd == "clean":
-            entropy_client.purge_cache()
-        elif cmd == "generate":
-            entropy_client.generate_cache()
+            entropy_client.updateProgress(
+                blue(_("Cleaning Entropy cache, please wait ...")),
+                type = "info",
+                header = brown(" @@ "),
+                back = True
+            )
+            entropy_client._purge_cache()
+            entropy_client.updateProgress(
+                darkgreen(_("Entropy cache cleaned.")),
+                type = "info",
+                header = brown(" @@ ")
+            )
         else:
             rc = -10
     finally:

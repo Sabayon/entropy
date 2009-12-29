@@ -1235,10 +1235,6 @@ handles Entropy cache
 
 clean Entropy cache
 
-=item B<generate>
-
-regenerate Entropy cache
-
 =item B<--verbose>
 
 show more details
@@ -1258,8 +1254,6 @@ remove downloaded packages and clean temp. directories
 
 show system information
 
-
-=back
 
 =head1 ENVIRONMENT
 
