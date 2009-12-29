@@ -175,7 +175,7 @@ def common_flate(entropy_client, mytbz2s, action, savedir = None):
                 return 1
 
     if action == "inflate":
-        rc = inflate_handler(mytbz2s, savedir)
+        rc = inflate_handler(entropy_client, mytbz2s, savedir)
     elif action == "deflate":
         rc = deflate_handler(mytbz2s, savedir)
     elif action == "extract":

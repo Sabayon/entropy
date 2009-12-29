@@ -46,11 +46,14 @@ def ugc(options):
                 rc = _ugc_login(entropy_client, options[0],
                     force = do_force)
         elif cmd == "logout":
-            if options: rc = _ugc_logout(entropy_client, options[0])
+            if options:
+                rc = _ugc_logout(entropy_client, options[0])
         elif cmd == "documents":
-            if options: rc = _ugc_documents(entropy_client, options)
+            if options:
+                rc = _ugc_documents(entropy_client, options)
         elif cmd == "vote":
-            if options: rc = _ugc_votes(entropy_client, options)
+            if options:
+                rc = _ugc_votes(entropy_client, options)
     finally:
         entropy_client.destroy()
 
@@ -250,7 +253,7 @@ def _ugc_votes(entropy_client, options):
                     blue(_("Vote added, thank you!")),
                 )
             )
-            _ugc_votes([repository, "get", pkgkey])
+            _ugc_votes(entropy_client, [repository, "get", pkgkey])
 
 def _ugc_documents(entropy_client, options):
 
