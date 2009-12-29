@@ -1,7 +1,9 @@
 
   0.99.20:
 
-     - add entropy.security.Repository support to entropy.client
+    - reagent key import/export
+    - add entropy.security.Repository support to entropy.client
+    - add packagesignatures gpg column to python-2.5 entropy
 
   0.99.30:
 
@@ -26,7 +28,6 @@
         - UGC for more coolness
         - title change
         - more sexy UI
-    - deprecate etpCache (and remove)
     - move all the portage related stuff in entropy.tools to entropy.spm
         => prototype class defining transformations (collect them from tools)
 

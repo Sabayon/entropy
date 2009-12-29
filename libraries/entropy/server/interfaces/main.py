@@ -2673,7 +2673,7 @@ class Server(Singleton, TextInterface):
             )
             data = dbconn.getPackageData(idpackage)
             treeupdates_actions = dbconn.listAllTreeUpdatesActions()
-            dbpath = self.ClientService.inject_entropy_database_into_package(
+            self.ClientService.inject_entropy_database_into_package(
                 package_path, data, treeupdates_actions)
 
             # GPG-sign package if GPG signature is set
@@ -2697,8 +2697,6 @@ class Server(Singleton, TextInterface):
                 gpg_sign)
             entropy.tools.create_md5_file(package_path)
             const_setup_file(package_path, etpConst['entropygid'], 0o664)
-            # remove garbage
-            os.remove(dbpath)
             self.updateProgress(
                 "[repo:%s|%s] %s: %s" % (
                     darkgreen(repo),

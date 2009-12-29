@@ -223,7 +223,7 @@ class CalculatorsMixin:
             k_mt = matchTag
         if const_isstring(matchRevision):
             k_mr = matchRevision
-        repos_ck = self.all_repositories_checksum()
+        repos_ck = self._all_repositories_checksum()
 
         c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
             repos_ck,
@@ -510,7 +510,7 @@ class CalculatorsMixin:
             client_checksum = self.clientDbconn.checksum()
             c_hash = hash("%s|%s|%s|%s" % (c_data, deep_deps,
                 client_checksum, relaxed_deps,))
-            c_hash = "%s%s" % (etpCache['filter_satisfied_deps'], c_hash,)
+            c_hash = "%s%s" % (etpConst['cache_ids']['filter_satisfied_deps'], c_hash,)
             cached = self.Cacher.pop(c_hash)
             if cached is not None:
                 return cached
@@ -1187,7 +1187,7 @@ class CalculatorsMixin:
             match,
             clientmatch,
         )
-        c_hash = "%s%s" % (etpCache['library_breakage'], hash(c_hash),)
+        c_hash = "%s%s" % (etpConst['cache_ids']['library_breakage'], hash(c_hash),)
         if self.xcache:
             cached = self.Cacher.pop(c_hash)
             if cached is not None:
@@ -1281,7 +1281,7 @@ class CalculatorsMixin:
         deep_deps = False, relaxed_deps = False, quiet = False):
 
         c_hash = "%s%s" % (
-            etpCache['dep_tree'],
+            etpConst['cache_ids']['dep_tree'],
             hash("%s|%s|%s|%s|%s|%s" % (
                 hash(frozenset(sorted(matched_atoms))),
                 empty_deps,
@@ -1401,7 +1401,7 @@ class CalculatorsMixin:
     def generate_reverse_dependency_tree(self, idpackages, deep = False):
 
         c_hash = "%s%s" % (
-            etpCache['depends_tree'],
+            etpConst['cache_ids']['depends_tree'],
             hash("%s|%s" % (
                     tuple(sorted(idpackages)),
                     deep,
@@ -1494,9 +1494,9 @@ class CalculatorsMixin:
 
     def calculate_available_packages(self, use_cache = True):
 
-        c_hash = self.get_available_packages_chash()
+        c_hash = self._get_available_packages_chash()
         if use_cache and self.xcache:
-            cached = self.get_available_packages_cache(myhash = c_hash)
+            cached = self._get_available_packages_cache(myhash = c_hash)
             if cached is not None:
                 return cached
 
@@ -1550,7 +1550,7 @@ class CalculatorsMixin:
 
         if self.xcache:
             self.Cacher.push("%s%s" % (
-                etpCache['world_available'], c_hash), available)
+                etpConst['cache_ids']['world_available'], c_hash), available)
         return available
 
     def calculate_critical_updates(self, use_cache = True):
@@ -1562,9 +1562,9 @@ class CalculatorsMixin:
             os.path.isfile(in_branch_upgrade):
             return set(), []
 
-        db_digest = self.all_repositories_checksum()
+        db_digest = self._all_repositories_checksum()
         if use_cache and self.xcache:
-            cached = self.get_critical_updates_cache(db_digest = db_digest)
+            cached = self._get_critical_updates_cache(db_digest = db_digest)
             if cached is not None:
                 return cached
 
@@ -1586,8 +1586,8 @@ class CalculatorsMixin:
         data = (atoms, matches)
 
         if self.xcache:
-            c_hash = self.get_critical_update_cache_hash(db_digest)
-            self.Cacher.push("%s%s" % (etpCache['critical_update'], c_hash,),
+            c_hash = self._get_critical_update_cache_hash(db_digest)
+            self.Cacher.push("%s%s" % (etpConst['cache_ids']['critical_update'], c_hash,),
                 data, async = False)
 
         return data
@@ -1611,9 +1611,9 @@ class CalculatorsMixin:
             if upd_atoms:
                 return upd_matches, remove, fine, spm_fine
 
-        db_digest = self.all_repositories_checksum()
+        db_digest = self._all_repositories_checksum()
         if use_cache and self.xcache:
-            cached = self.get_updates_cache(empty_deps = empty_deps,
+            cached = self._get_updates_cache(empty_deps = empty_deps,
                 db_digest = db_digest)
             if cached is not None:
                 return cached
@@ -1763,7 +1763,7 @@ class CalculatorsMixin:
 
     def check_package_update(self, atom, deep = False):
 
-        c_hash = "%s%s" % (etpCache['check_package_update'],
+        c_hash = "%s%s" % (etpConst['cache_ids']['check_package_update'],
                 hash("%s%s" % (atom, deep,)
             ),
         )

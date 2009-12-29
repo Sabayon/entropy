@@ -233,9 +233,6 @@ class AddRepositoryWindow(MenuSkel):
             self.Sulfur.reset_cache_status()
             self.Sulfur.setup_repoView()
             self.addrepo_ui.addRepoWin.hide()
-            msg = "%s '%s' %s" % (_("You should press the button"),
-                _("Update Repositories"), _("now"))
-            okDialog( self.window, msg )
         else:
             msg = "%s: %s" % (_("Wrong entries, errors"), ', '.join(errors),)
             okDialog( self.addrepo_ui.addRepoWin, msg )
@@ -259,9 +256,6 @@ class AddRepositoryWindow(MenuSkel):
 
             self.Sulfur.setup_repoView()
             self.addrepo_ui.addRepoWin.hide()
-            msg = "%s '%s' %s" % (_("You should press the button"),
-                _("Regenerate Cache"), _("now"))
-            okDialog( self.window, msg )
 
 
 class NoticeBoardWindow(MenuSkel):

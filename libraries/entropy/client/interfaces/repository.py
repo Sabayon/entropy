@@ -22,7 +22,7 @@ from entropy.i18n import _
 from entropy.db import dbapi2, EntropyRepository
 from entropy.cache import EntropyCacher
 from entropy.misc import TimeScheduled
-from entropy.const import etpConst, etpUi, etpCache, const_setup_perms, \
+from entropy.const import etpConst, etpUi, const_setup_perms, \
     const_debug_write
 from entropy.exceptions import RepositoryError, SystemDatabaseError, \
     ConnectionError
@@ -385,7 +385,7 @@ class Repository:
 
     def clear_repository_cache(self, repo):
         self.__validate_repository_id(repo)
-        self.Entropy.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'],
+        self.Entropy.clear_dump_cache("%s/%s%s/" % (etpConst['cache_ids']['dbMatch'],
             etpConst['dbnamerepoprefix'], repo,))
 
     def download_item(self, item, repo, cmethod = None, lock_status_func = None,
@@ -1262,7 +1262,7 @@ class Repository:
 
         # clean caches, fetch security
         if self.dbupdated:
-            self.Entropy.purge_cache(client_purge = False)
+            self.Entropy._purge_cache()
             if self.fetchSecurity:
                 self.do_update_security_advisories()
             # do treeupdates

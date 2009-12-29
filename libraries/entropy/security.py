@@ -17,7 +17,7 @@ import shutil
 import subprocess
 from entropy.exceptions import IncorrectParameter, InvalidData
 from entropy.misc import LogFile
-from entropy.const import etpConst, etpCache, etpUi, const_setup_perms, \
+from entropy.const import etpConst, etpUi, const_setup_perms, \
     const_debug_write
 from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred

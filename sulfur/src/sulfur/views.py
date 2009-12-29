@@ -2278,29 +2278,37 @@ class EntropyRepoView:
         self.Sulfur = application
 
     def on_active_toggled( self, widget, path):
-
-        myiter = self.store.get_iter( path )
-        state = self.store.get_value(myiter, 0)
-        repoid = self.store.get_value(myiter, 3)
-        if repoid != self.Equo.SystemSettings['repositories']['default_repository']:
-            if state:
-                self.store.set_value(myiter, 1, not state)
-                self.Equo.disable_repository(repoid)
-                initconfig_entropy_constants(etpSys['rootdir'])
-            else:
-                self.Equo.enable_repository(repoid)
-                initconfig_entropy_constants(etpSys['rootdir'])
-            self.Sulfur.reset_cache_status()
-            self.Sulfur.show_packages(back_to_page = "repos")
-            self.store.set_value(myiter, 0, not state)
+        self.view.set_sensitive(False)
+        try:
+            myiter = self.store.get_iter( path )
+            state = self.store.get_value(myiter, 0)
+            repoid = self.store.get_value(myiter, 3)
+            if repoid != self.Equo.SystemSettings['repositories']['default_repository']:
+                self.store.set_value(myiter, 0, not state)
+                self.Sulfur.gtk_loop()
+                if state:
+                    self.store.set_value(myiter, 1, not state)
+                    self.Equo.disable_repository(repoid)
+                    initconfig_entropy_constants(etpSys['rootdir'])
+                else:
+                    self.Equo.enable_repository(repoid)
+                    initconfig_entropy_constants(etpSys['rootdir'])
+                self.Sulfur.reset_cache_status()
+                self.Sulfur.show_packages(back_to_page = "repos")
+        finally:
+            self.view.set_sensitive(True)
 
     def on_update_toggled( self, widget, path):
         """ Repo select/unselect handler """
-        myiter = self.store.get_iter( path )
-        state = self.store.get_value(myiter, 1)
-        active = self.store.get_value(myiter, 0)
-        if active:
-            self.store.set_value(myiter, 1, not state)
+        self.view.set_sensitive(False)
+        try:
+            myiter = self.store.get_iter( path )
+            state = self.store.get_value(myiter, 1)
+            active = self.store.get_value(myiter, 0)
+            if active:
+                self.store.set_value(myiter, 1, not state)
+        finally:
+            self.view.set_sensitive(True)
 
     def setup_view( self ):
 

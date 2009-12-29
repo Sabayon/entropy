@@ -10,8 +10,9 @@
 
 """
 import os
-from entropy.const import *
-from entropy.exceptions import *
+import shutil
+from entropy.const import etpConst, const_setup_perms
+from entropy.exceptions import RepositoryError
 from entropy.output import red, darkred, darkgreen
 from entropy.i18n import _
 
@@ -19,101 +20,37 @@ class CacheMixin:
 
     REPO_LIST_CACHE_ID = 'repos/repolist'
 
-    def validate_repositories_cache(self):
+    def _validate_repositories_cache(self):
         # is the list of repos changed?
         cached = self.Cacher.pop(CacheMixin.REPO_LIST_CACHE_ID)
         if cached != self.SystemSettings['repositories']['order']:
             # invalidate matching cache
             try:
-                self.repository_move_clear_cache()
+                self.SystemSettings._clear_repository_cache(repoid = None)
             except IOError:
                 pass
-            self.store_repository_list_cache()
+            self._store_repository_list_cache()
 
-    def store_repository_list_cache(self):
+    def _store_repository_list_cache(self):
         self.Cacher.push(CacheMixin.REPO_LIST_CACHE_ID,
             self.SystemSettings['repositories']['order'],
             async = False)
 
-    def generate_cache(self, depcache = True, configcache = True,
-        client_purge = True, install_queue = True):
-
-        # clean first of all
-        self.purge_cache(client_purge = client_purge)
-        if depcache:
-            self.do_depcache(do_install_queue = install_queue)
-        if configcache:
-            self.do_configcache()
-
-    def do_configcache(self):
-        self.updateProgress(
-            darkred(_("Configuration files")),
-            importance = 2,
-            type = "warning"
-        )
-        self.updateProgress(
-            red(_("Scanning hard disk")),
-            importance = 1,
-            type = "warning"
-        )
-        self.FileUpdates.scanfs(dcache = False, quiet = True)
-        self.updateProgress(
-            darkred(_("Cache generation complete.")),
-            importance = 2,
-            type = "info"
-        )
-
-    def do_depcache(self, do_install_queue = True):
-
-        self.updateProgress(
-            darkgreen(_("Resolving metadata")),
-            importance = 1,
-            type = "warning"
-        )
-        # we can barely ignore any exception from here
-        # especially cases where client db does not exist
+    def _purge_cache(self):
+        self.Cacher.stop()
         try:
-            update, remove, fine, spm_fine = self.calculate_updates()
-            del fine, spm_fine, remove
-            if do_install_queue:
-                self.get_install_queue(update, False, False)
-            self.calculate_available_packages()
-        except: # except SystemDatabaseError @ calculate_world_updates
-            pass
+            shutil.rmtree(etpConst['dumpstoragedir'], True)
+            os.makedirs(etpConst['dumpstoragedir'], 0o775)
+            const_setup_perms(etpConst['dumpstoragedir'],
+                etpConst['entropygid']) 
+        except (shutil.Error, IOError):
+            pass # ignore cache purge errors?
+        finally:
+            self.Cacher.start()
 
-        self.updateProgress(
-            darkred(_("Dependencies cache filled.")),
-            importance = 2,
-            type = "warning"
-        )
-
-    def purge_cache(self, showProgress = True, client_purge = True):
-        if self.entropyTools.is_user_in_entropy_group():
-            self.Cacher.stop()
-            try:
-                skip = set()
-                if not client_purge:
-                    skip.add("/"+etpCache['dbMatch']+"/"+etpConst['clientdbid']) # it's ok this way
-                for key in etpCache:
-                    if showProgress:
-                        self.updateProgress(
-                            darkred(_("Cleaning %s => dumps...")) % (etpCache[key],),
-                            importance = 1,
-                            type = "warning",
-                            back = True
-                        )
-                    self.clear_dump_cache(etpCache[key], skip = skip)
-
-                if showProgress:
-                    self.updateProgress(
-                        darkgreen(_("Cache is now empty.")),
-                        importance = 2,
-                        type = "info"
-                    )
-            finally:
-                self.Cacher.start()
-
-    def clear_dump_cache(self, dump_name, skip = []):
+    def clear_dump_cache(self, dump_name, skip = None):
+        if skip is None:
+            skip = []
         self.Cacher.discard()
         self.SystemSettings._clear_dump_cache(dump_name, skip = skip)
 
@@ -135,13 +72,10 @@ class CacheMixin:
             status = False
         return status
 
-    def repository_move_clear_cache(self, repoid = None):
-        return self.SystemSettings._clear_repository_cache(repoid = repoid)
-
-    def get_available_packages_chash(self):
+    def _get_available_packages_chash(self):
         # client digest not needed, cache is kept updated
         return str(hash("%s|%s|%s" % (
-            self.all_repositories_checksum(),
+            self._all_repositories_checksum(),
             self.validRepositories,
             # needed when users do bogus things like editing config files
             # manually (branch setting)
@@ -149,7 +83,7 @@ class CacheMixin:
             )
         ))
 
-    def all_repositories_checksum(self):
+    def _all_repositories_checksum(self):
         sum_hashes = ''
         for repo in self.validRepositories:
             try:
@@ -162,20 +96,21 @@ class CacheMixin:
                 pass
         return sum_hashes
 
-    def get_available_packages_cache(self, myhash = None):
-        if myhash == None:
-            myhash = self.get_available_packages_chash()
-        return self.Cacher.pop("%s%s" % (etpCache['world_available'], myhash))
+    def _get_available_packages_cache(self, myhash = None):
+        if myhash is None:
+            myhash = self._get_available_packages_chash()
+        return self.Cacher.pop("%s%s" % (
+            etpConst['cache_ids']['world_available'], myhash))
 
-    def get_updates_cache(self, empty_deps, db_digest = None):
+    def _get_updates_cache(self, empty_deps, db_digest = None):
 
         misc_settings = self.SystemSettings[self.sys_settings_client_plugin_id]['misc']
         ignore_spm_downgrades = misc_settings['ignore_spm_downgrades']
 
         if self.xcache:
 
-            if db_digest == None:
-                db_digest = self.all_repositories_checksum()
+            if db_digest is None:
+                db_digest = self._all_repositories_checksum()
 
             c_hash = self._get_updates_cache_hash(db_digest, empty_deps,
                 ignore_spm_downgrades)
@@ -195,21 +130,19 @@ class CacheMixin:
             # manually (branch setting)
             self.SystemSettings['repositories']['branch'],
         )))
-        return "%s%s" % (etpCache['world_update'], c_hash,)
+        return "%s%s" % (etpConst['cache_ids']['world_update'], c_hash,)
 
-    def get_critical_updates_cache(self, db_digest = None):
+    def _get_critical_updates_cache(self, db_digest = None):
 
         if self.xcache:
-
-            if db_digest == None:
-                db_digest = self.all_repositories_checksum()
-
-            c_hash = "%s%s" % (etpCache['critical_update'],
-                self.get_critical_update_cache_hash(db_digest),)
+            if db_digest is None:
+                db_digest = self._all_repositories_checksum()
+            c_hash = "%s%s" % (etpConst['cache_ids']['critical_update'],
+                self._get_critical_update_cache_hash(db_digest),)
 
             return self.Cacher.pop(c_hash)
 
-    def get_critical_update_cache_hash(self, db_digest):
+    def _get_critical_update_cache_hash(self, db_digest):
 
         return str(hash("%s|%s|%s|%s" % (
             db_digest, self.validRepositories,
@@ -218,5 +151,3 @@ class CacheMixin:
             # manually (branch setting)
             self.SystemSettings['repositories']['branch'],
         )))
-
-

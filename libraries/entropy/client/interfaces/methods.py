@@ -10,6 +10,7 @@
 
 """
 import os
+import bz2
 import stat
 import fcntl
 import errno
@@ -18,12 +19,20 @@ import shutil
 import time
 import subprocess
 import tempfile
+from datetime import datetime
+
 from entropy.i18n import _
-from entropy.const import *
-from entropy.exceptions import *
+from entropy.const import etpConst, const_debug_write, etpSys, \
+    const_setup_file, initconfig_entropy_constants, const_pid_exists, \
+    const_set_nice_level, const_setup_perms, const_setup_entropy_pid, \
+    const_isstring
+from entropy.exceptions import RepositoryError, InvalidData, InvalidPackageSet,\
+    IncorrectParameter, SystemDatabaseError
 from entropy.db import dbapi2, EntropyRepository
 from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown
+
+import entropy.tools
 
 class RepositoryMixin:
 
@@ -192,7 +201,7 @@ class RepositoryMixin:
             self._add_plugin_to_client_repository(conn)
 
         if (repoid not in self._treeupdates_repos) and \
-            (self.entropyTools.is_root()) and \
+            (entropy.tools.is_root()) and \
             (not repoid.endswith(etpConst['packagesext'])):
                 # only as root due to Portage
                 try:
@@ -200,12 +209,13 @@ class RepositoryMixin:
                 except (self.dbapi2.OperationalError, self.dbapi2.DatabaseError):
                     updated = False
                 if updated:
-                    self.clear_dump_cache(etpCache['world_update'])
-                    self.clear_dump_cache(etpCache['critical_update'])
+                    self.clear_dump_cache(etpConst['cache_ids']['world_update'])
+                    self.clear_dump_cache(etpConst['cache_ids']['critical_update'])
         return conn
 
     def get_repository_revision(self, reponame):
-        fname = self.SystemSettings['repositories']['available'][reponame]['dbpath']+"/"+etpConst['etpdatabaserevisionfile']
+        db_data = self.SystemSettings['repositories']['available'][reponame]
+        fname = db_data['dbpath']+"/"+etpConst['etpdatabaserevisionfile']
         revision = -1
         if os.path.isfile(fname) and os.access(fname, os.R_OK):
             with open(fname, "r") as f:
@@ -217,69 +227,46 @@ class RepositoryMixin:
 
     def update_repository_revision(self, reponame):
         r = self.get_repository_revision(reponame)
-        self.SystemSettings['repositories']['available'][reponame]['dbrevision'] = "0"
+        db_data = self.SystemSettings['repositories']['available'][reponame]
+        db_data['dbrevision'] = "0"
         if r != -1:
-            self.SystemSettings['repositories']['available'][reponame]['dbrevision'] = str(r)
+            db_data['dbrevision'] = str(r)
 
     def add_repository(self, repodata):
+
         product = self.SystemSettings['repositories']['product']
         branch = self.SystemSettings['repositories']['branch']
-        # update self.SystemSettings['repositories']['available']
-        try:
-            self.SystemSettings['repositories']['available'][repodata['repoid']] = {}
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['description'] = repodata['description']
-        except KeyError:
-            t = _("repodata dictionary is corrupted")
-            raise InvalidData("InvalidData: %s" % (t,))
+        avail_data = self.SystemSettings['repositories']['available']
+        repoid = repodata['repoid']
 
-        if repodata['repoid'].endswith(etpConst['packagesext']) or repodata.get('in_memory'): # dynamic repository
-            try:
-                # no need # self.SystemSettings['repositories']['available'][repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
-                self.SystemSettings['repositories']['available'][repodata['repoid']]['packages'] = repodata['packages'][:]
-                smart_package = repodata.get('smartpackage')
-                if smart_package != None:
-                    self.SystemSettings['repositories']['available'][repodata['repoid']]['smartpackage'] = smart_package
-            except KeyError:
-                raise InvalidData("InvalidData: repodata dictionary is corrupted")
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['dbpath'] = repodata.get('dbpath')
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['pkgpath'] = repodata.get('pkgpath')
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['in_memory'] = repodata.get('in_memory')
+        avail_data[repoid] = {}
+        avail_data[repoid]['description'] = repodata['description']
+
+        if repoid.endswith(etpConst['packagesext']) or \
+            repodata.get('in_memory'):
+            # dynamic repository
+
+            # no need # avail_data[repoid]['plain_packages'] = \
+            # repodata['plain_packages'][:]
+            avail_data[repoid]['packages'] = repodata['packages'][:]
+            smart_package = repodata.get('smartpackage')
+            if smart_package != None:
+                avail_data[repoid]['smartpackage'] = smart_package
+
+            avail_data[repoid]['dbpath'] = repodata.get('dbpath')
+            avail_data[repoid]['pkgpath'] = repodata.get('pkgpath')
+            avail_data[repoid]['in_memory'] = repodata.get('in_memory')
             # put at top priority, shift others
-            self.SystemSettings['repositories']['order'].insert(0, repodata['repoid'])
+            self.SystemSettings['repositories']['order'].insert(0, repoid)
+
         else:
-            # XXX it's boring to keep this in sync with entropyConstants stuff, solutions?
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['plain_packages'] = repodata['plain_packages'][:]
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['packages'] = [x+"/"+product for x in repodata['plain_packages']]
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['plain_database'] = repodata['plain_database']
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['database'] = repodata['plain_database'] + \
-                "/" + product + "/database/" + etpConst['currentarch'] + "/" + branch
-            if not repodata['dbcformat'] in etpConst['etpdatabasesupportedcformats']:
-                repodata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['dbcformat'] = repodata['dbcformat']
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['dbpath'] = etpConst['etpdatabaseclientdir'] + \
-                "/" + repodata['repoid'] + "/" + product + "/" + etpConst['currentarch']  + "/" + branch
-            # set dbrevision
-            myrev = self.get_repository_revision(repodata['repoid'])
-            if myrev == -1:
-                myrev = 0
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['dbrevision'] = str(myrev)
-            if "position" in repodata:
-                self.SystemSettings['repositories']['order'].insert(
-                    repodata['position'], repodata['repoid'])
-            else:
-                self.SystemSettings['repositories']['order'].append(
-                    repodata['repoid'])
-            if "service_port" not in repodata:
-                repodata['service_port'] = int(etpConst['socket_service']['port'])
-            if "ssl_service_port" not in repodata:
-                repodata['ssl_service_port'] = int(etpConst['socket_service']['ssl_port'])
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['service_port'] = repodata['service_port']
-            self.SystemSettings['repositories']['available'][repodata['repoid']]['ssl_service_port'] = repodata['ssl_service_port']
-            self.repository_move_clear_cache(repodata['repoid'])
-            # save new self.SystemSettings['repositories']['available'] to file
-            self.entropyTools.save_repository_settings(repodata)
-            self.SystemSettings.clear()
+
+            entropy.tools.save_repository_settings(repodata)
+            self.SystemSettings._clear_repository_cache(repoid = repoid)
             self.close_all_repositories()
+            self._purge_cache()
+            self.SystemSettings.clear()
+
         self.validate_repositories()
 
     def remove_repository(self, repoid, disable = False):
@@ -296,7 +283,7 @@ class RepositoryMixin:
         # also early remove from validRepositories to avoid
         # issues when reloading SystemSettings which is bound to Entropy Client
         # SystemSettings plugin, which triggers calculate_world_updates, which
-        # triggers all_repositories_checksum, which triggers open_repository,
+        # triggers _all_repositories_checksum, which triggers open_repository,
         # which triggers load_repository_database, which triggers an unwanted
         # output message => "bad repository id specified"
         if repoid in self.validRepositories:
@@ -310,14 +297,14 @@ class RepositoryMixin:
             if repoid in self.SystemSettings['repositories']['order']:
                 self.SystemSettings['repositories']['order'].remove(repoid)
 
-            self.repository_move_clear_cache(repoid)
+            self.SystemSettings._clear_repository_cache(repoid = repoid)
             # save new self.SystemSettings['repositories']['available'] to file
             repodata = {}
             repodata['repoid'] = repoid
             if disable:
-                self.entropyTools.save_repository_settings(repodata, disable = True)
+                entropy.tools.save_repository_settings(repodata, disable = True)
             else:
-                self.entropyTools.save_repository_settings(repodata, remove = True)
+                entropy.tools.save_repository_settings(repodata, remove = True)
             self.SystemSettings.clear()
 
         repo_mem_key = self.__get_repository_cache_key(repoid)
@@ -333,19 +320,19 @@ class RepositoryMixin:
         # update self.SystemSettings['repositories']['order']
         self.SystemSettings['repositories']['order'].remove(repoid)
         self.SystemSettings['repositories']['order'].insert(toidx, repoid)
-        self.entropyTools.write_ordered_repositories_entries(
+        entropy.tools.write_ordered_repositories_entries(
             self.SystemSettings['repositories']['order'])
         self.SystemSettings.clear()
         self.close_all_repositories()
-        self.repository_move_clear_cache(repoid)
+        self.SystemSettings._clear_repository_cache(repoid = repoid)
         self.validate_repositories()
 
     def enable_repository(self, repoid):
-        self.repository_move_clear_cache(repoid)
+        self.SystemSettings._clear_repository_cache(repoid = repoid)
         # save new self.SystemSettings['repositories']['available'] to file
         repodata = {}
         repodata['repoid'] = repoid
-        self.entropyTools.save_repository_settings(repodata, enable = True)
+        entropy.tools.save_repository_settings(repodata, enable = True)
         self.SystemSettings.clear()
         self.close_all_repositories()
         self.validate_repositories()
@@ -367,11 +354,11 @@ class RepositoryMixin:
             # it's not vital to reset
             # self.SystemSettings['repositories']['order'] counters
 
-            self.repository_move_clear_cache(repoid)
+            self.SystemSettings._clear_repository_cache(repoid = repoid)
             # save new self.SystemSettings['repositories']['available'] to file
             repodata = {}
             repodata['repoid'] = repoid
-            self.entropyTools.save_repository_settings(repodata, disable = True)
+            entropy.tools.save_repository_settings(repodata, disable = True)
             self.SystemSettings.clear()
 
         self.close_all_repositories()
@@ -391,7 +378,7 @@ class RepositoryMixin:
         atoms_contained = []
         basefile = os.path.basename(pkg_file)
         db_dir = tempfile.mkdtemp()
-        dbfile = self.entropyTools.extract_edb(pkg_file,
+        dbfile = entropy.tools.extract_edb(pkg_file,
             dbpath = db_dir+"/packages.db")
         if dbfile == None:
             return -1, atoms_contained
@@ -472,7 +459,7 @@ class RepositoryMixin:
         db_path = etpConst['etpdatabaseclientfilepath']
         if (not self.noclientdb) and (not os.path.isfile(db_path)):
             conn = load_db_from_ram()
-            self.entropyTools.print_traceback(f = self.clientLog)
+            entropy.tools.print_traceback(f = self.clientLog)
         else:
             try:
                 conn = EntropyRepository(readOnly = False, dbFile = db_path,
@@ -482,7 +469,7 @@ class RepositoryMixin:
                 self._add_plugin_to_client_repository(conn)
                 # TODO: remove this in future, drop useless data from clientdb
             except (self.dbapi2.DatabaseError,):
-                self.entropyTools.print_traceback(f = self.clientLog)
+                entropy.tools.print_traceback(f = self.clientLog)
                 conn = load_db_from_ram()
             else:
                 # validate database
@@ -494,7 +481,7 @@ class RepositoryMixin:
                             conn.closeDB()
                         except:
                             pass
-                        self.entropyTools.print_traceback(f = self.clientLog)
+                        entropy.tools.print_traceback(f = self.clientLog)
                         conn = load_db_from_ram()
 
         self.clientDbconn = conn
@@ -524,10 +511,10 @@ class RepositoryMixin:
             try:
                 self.clientDbconn.getPackageData(x)
             except Exception as e:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
                 errors = True
                 self.updateProgress(
-                    darkred(_("Errors on idpackage %s, error: %s")) % (x, str(e)),
+                    darkred(_("Errors on idpackage %s, error: %s")) % (x, e),
                     importance = 0,
                     type = "warning"
                 )
@@ -585,7 +572,8 @@ class RepositoryMixin:
         dbc.initializeDatabase()
         return dbc
 
-    def backup_database(self, dbpath, backup_dir = None, silent = False, compress_level = 9):
+    def backup_database(self, dbpath, backup_dir = None, silent = False,
+        compress_level = 9):
 
         if compress_level not in list(range(1, 10)):
             compress_level = 9
@@ -596,9 +584,14 @@ class RepositoryMixin:
         bytes_required = 1024000*300
         if not (os.access(backup_dir, os.W_OK) and \
                 os.path.isdir(backup_dir) and os.path.isfile(dbpath) and \
-                os.access(dbpath, os.R_OK) and self.entropyTools.check_required_space(backup_dir, bytes_required)):
+                os.access(dbpath, os.R_OK) and \
+                entropy.tools.check_required_space(backup_dir, bytes_required)):
             if not silent:
-                mytxt = "%s: %s, %s" % (darkred(_("Cannot backup selected database")), blue(dbpath), darkred(_("permission denied")),)
+                mytxt = "%s: %s, %s" % (
+                    darkred(_("Cannot backup selected database")),
+                    blue(dbpath),
+                    darkred(_("permission denied")),
+                )
                 self.updateProgress(
                     mytxt,
                     importance = 1,
@@ -608,9 +601,9 @@ class RepositoryMixin:
             return False, mytxt
 
         def get_ts():
-            from datetime import datetime
             ts = datetime.fromtimestamp(time.time())
-            return "%s%s%s_%sh%sm%ss" % (ts.year, ts.month, ts.day, ts.hour, ts.minute, ts.second)
+            return "%s%s%s_%sh%sm%ss" % (ts.year, ts.month, ts.day, ts.hour,
+                ts.minute, ts.second)
 
         comp_dbname = "%s%s.%s.bz2" % (etpConst['dbbackupprefix'], dbname, get_ts(),)
         comp_dbpath = os.path.join(backup_dir, comp_dbname)
@@ -623,12 +616,11 @@ class RepositoryMixin:
                 header = blue(" @@ "),
                 back = True
             )
-        import bz2
         try:
-            self.entropyTools.compress_file(dbpath, comp_dbpath, bz2.BZ2File, compress_level)
+            entropy.tools.compress_file(dbpath, comp_dbpath, bz2.BZ2File, compress_level)
         except:
             if not silent:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
             return False, _("Unable to compress")
 
         if not silent:
@@ -644,11 +636,11 @@ class RepositoryMixin:
 
     def restore_database(self, backup_path, db_destination, silent = False):
 
-        bytes_required = 1024000*300
+        bytes_required = 1024000*200
         db_dir = os.path.dirname(db_destination)
         if not (os.access(db_dir, os.W_OK) and os.path.isdir(db_dir) and \
             os.path.isfile(backup_path) and os.access(backup_path, os.R_OK) and \
-            self.entropyTools.check_required_space(db_dir, bytes_required)):
+            entropy.tools.check_required_space(db_dir, bytes_required)):
 
                 if not silent:
                     mytxt = "%s: %s, %s" % (darkred(_("Cannot restore selected backup")),
@@ -674,10 +666,10 @@ class RepositoryMixin:
 
         import bz2
         try:
-            self.entropyTools.uncompress_file(backup_path, db_destination, bz2.BZ2File)
+            entropy.tools.uncompress_file(backup_path, db_destination, bz2.BZ2File)
         except:
             if not silent:
-                self.entropyTools.print_traceback()
+                entropy.tools.print_traceback()
             return False, _("Unable to unpack")
 
         if not silent:
@@ -690,7 +682,7 @@ class RepositoryMixin:
                 header = blue(" @@ "),
                 back = True
             )
-        self.purge_cache()
+        self._purge_cache()
         return True, _("All fine")
 
     def list_backedup_client_databases(self, client_dbdir = None):
@@ -755,7 +747,7 @@ class RepositoryMixin:
             branch_mig_md5sum = '0'
             if os.access(branch_mig_script, os.R_OK) and \
                 os.path.isfile(branch_mig_script):
-                branch_mig_md5sum = self.entropyTools.md5sum(branch_mig_script)
+                branch_mig_md5sum = entropy.tools.md5sum(branch_mig_script)
 
             const_debug_write(__name__,
                 "run_repositories_post_branch_switch_hooks: script md5: %s" % (
@@ -866,7 +858,7 @@ class RepositoryMixin:
             branch_upg_md5sum = '0'
             if os.access(branch_upg_script, os.R_OK) and \
                 os.path.isfile(branch_upg_script):
-                branch_upg_md5sum = self.entropyTools.md5sum(branch_upg_script)
+                branch_upg_md5sum = entropy.tools.md5sum(branch_upg_script)
 
             if branch_upg_md5sum == '0':
                 # script not found, skip completely
@@ -1055,7 +1047,7 @@ class MiscMixin:
         # check if another instance is running
         etpConst['applicationlock'] = False
         const_setup_entropy_pid(just_read = True)
-        locked = self.entropyTools.application_lock_check(gentle = True)
+        locked = entropy.tools.application_lock_check(gentle = True)
         if locked:
             if not silent:
                 self.updateProgress(
@@ -1137,7 +1129,7 @@ class MiscMixin:
 
     def switch_chroot(self, chroot = ""):
         # clean caches
-        self.purge_cache()
+        self._purge_cache()
         self.close_all_repositories()
         if chroot.endswith("/"):
             chroot = chroot[:-1]
@@ -1158,32 +1150,6 @@ class MiscMixin:
         self.closeAllSecurity()
         self.closeAllQA()
 
-    def get_file_viewer(self):
-        viewer = None
-        if os.access("/usr/bin/less", os.X_OK):
-            viewer = "/usr/bin/less"
-        elif os.access("/bin/more", os.X_OK):
-            viewer = "/bin/more"
-        if not viewer:
-            viewer = self.get_file_editor()
-        return viewer
-
-    def get_file_editor(self):
-        editor = None
-        if os.getenv("EDITOR"):
-            editor = "$EDITOR"
-        elif os.access("/bin/nano", os.X_OK):
-            editor = "/bin/nano"
-        elif os.access("/bin/vi", os.X_OK):
-            editor = "/bin/vi"
-        elif os.access("/usr/bin/vi", os.X_OK):
-            editor = "/usr/bin/vi"
-        elif os.access("/usr/bin/emacs", os.X_OK):
-            editor = "/usr/bin/emacs"
-        elif os.access("/bin/emacs", os.X_OK):
-            editor = "/bin/emacs"
-        return editor
-
     def add_user_package_set(self, set_name, set_atoms):
 
         def _ensure_package_sets_dir():
@@ -1197,10 +1163,12 @@ class MiscMixin:
         try:
             set_name = str(set_name)
         except (UnicodeEncodeError, UnicodeDecodeError,):
-            raise InvalidPackageSet("InvalidPackageSet: %s %s" % (set_name, _("must be an ASCII string"),))
+            raise InvalidPackageSet("InvalidPackageSet: %s %s" % (
+                set_name, _("must be an ASCII string"),))
 
         if set_name.startswith(etpConst['packagesetprefix']):
-            raise InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (set_name, _("cannot start with"), etpConst['packagesetprefix'],))
+            raise InvalidPackageSet("InvalidPackageSet: %s %s '%s'" % (
+                set_name, _("cannot start with"), etpConst['packagesetprefix'],))
         set_match, rc = self.package_set_match(set_name)
         if rc: return -1, _("Name already taken")
 
@@ -1293,7 +1261,7 @@ class MiscMixin:
     def get_text_license(self, license_name, repoid):
         dbconn = self.open_repository(repoid)
         text = dbconn.retrieveLicenseText(license_name)
-        tempfile = self.entropyTools.get_random_temp_file()
+        tempfile = entropy.tools.get_random_temp_file()
         f = open(tempfile, "w")
         f.write(text)
         f.flush()
@@ -1316,12 +1284,12 @@ class MiscMixin:
         """
         self.Cacher.discard()
         self.Cacher.stop()
-        self.purge_cache(showProgress = False)
+        self._purge_cache()
         self.close_all_repositories()
         # etpConst should be readonly but we override the rule here
         # this is also useful when no config file or parameter into it exists
         etpConst['branch'] = branch
-        self.entropyTools.write_new_branch(branch)
+        entropy.tools.write_new_branch(branch)
         # there are no valid repos atm
         del self.validRepositories[:]
         self.SystemSettings.clear()
@@ -1418,7 +1386,8 @@ class MiscMixin:
                 data = dbconn.retrieveCategoryDescription(category)
             except (self.dbapi2.OperationalError, self.dbapi2.IntegrityError,):
                 continue
-            if data: break
+            if data:
+                break
 
         return data
 
@@ -1481,23 +1450,20 @@ class MiscMixin:
 
         return sorted(config_protect)
 
-    def inject_entropy_database_into_package(self, package_filename, data, treeupdates_actions = None):
-        dbpath = self.get_tmp_dbpath()
-        dbconn = self.open_generic_database(dbpath)
+    def inject_entropy_database_into_package(self, package_filename, data,
+        treeupdates_actions = None):
+        tmp_fd, tmp_path = tempfile.mkstemp()
+        os.close(tmp_fd)
+        dbconn = self.open_generic_database(tmp_path)
         dbconn.initializeDatabase()
         dbconn.addPackage(data, revision = data['revision'])
         if treeupdates_actions != None:
             dbconn.bumpTreeUpdatesActions(treeupdates_actions)
         dbconn.commitChanges()
         dbconn.closeDB()
-        self.entropyTools.aggregate_edb(tbz2file = package_filename, dbfile = dbpath)
-        return dbpath
-
-    def get_tmp_dbpath(self):
-        dbpath = etpConst['packagestmpdir']+"/"+str(self.entropyTools.get_random_number())
-        while os.path.isfile(dbpath):
-            dbpath = etpConst['packagestmpdir']+"/"+str(self.entropyTools.get_random_number())
-        return dbpath
+        entropy.tools.aggregate_edb(tbz2file = package_filename,
+            dbfile = tmp_path)
+        os.remove(tmp_path)
 
     def quickpkg(self, atomstring, savedir = None):
         if savedir == None:
@@ -1555,10 +1521,13 @@ class MiscMixin:
                 if arcname.startswith("/"):
                     arcname = arcname[1:] # remove trailing /
                 ftype = pkgdata['content'][encoded_path]
-                if str(ftype) == '0': ftype = 'dir' # force match below, '0' means databases without ftype
+                if str(ftype) == '0':
+                    # force match below, '0' means databases without ftype
+                    ftype = 'dir'
                 if 'dir' == ftype and \
                     not stat.S_ISDIR(exist.st_mode) and \
-                    os.path.isdir(path): # workaround for directory symlink issues
+                    os.path.isdir(path):
+                    # workaround for directory symlink issues
                     path = os.path.realpath(path)
 
                 tarinfo = tar.gettarinfo(path, arcname)
@@ -1606,8 +1575,11 @@ class MatchMixin:
 
         installed_idpackage = results[0][0]
         pkgver, pkgtag, pkgrev = dbconn.getVersioningData(match[0])
-        installedVer, installedTag, installedRev = self.clientDbconn.getVersioningData(installed_idpackage)
-        pkgcmp = self.entropyTools.entropy_compare_versions((pkgver, pkgtag, pkgrev), (installedVer, installedTag, installedRev))
+        installed_ver, installed_tag, installed_rev = \
+            self.clientDbconn.getVersioningData(installed_idpackage)
+        pkgcmp = entropy.tools.entropy_compare_versions(
+            (pkgver, pkgtag, pkgrev),
+            (installed_ver, installed_tag, installed_rev))
         if pkgcmp == 0:
             # check digest, if it differs, we should mark pkg as update
             # we don't want users to think that they are "reinstalling" stuff
@@ -1626,7 +1598,8 @@ class MatchMixin:
         dbconn = self.open_repository(repoid)
         idpackage, idreason = dbconn.idpackageValidator(idpackage)
         masked = False
-        if idpackage == -1: masked = True
+        if idpackage == -1:
+            masked = True
         return masked, idreason, self.SystemSettings['pkg_masking_reasons'].get(idreason)
 
     def get_match_conflicts(self, match):
@@ -1660,7 +1633,8 @@ class MatchMixin:
         idpackage, idreason = dbconn.idpackageValidator(m_id, live = live_check)
         if idpackage != -1: return False #,False
         myr = self.SystemSettings['pkg_masking_reference']
-        user_masks = [myr['user_package_mask'], myr['user_license_mask'], myr['user_live_mask']]
+        user_masks = [myr['user_package_mask'], myr['user_license_mask'],
+            myr['user_live_mask']]
         if idreason in user_masks:
             return True #,True
         return False #,True
@@ -1674,20 +1648,24 @@ class MatchMixin:
         if idpackage == -1: return False #,False
         myr = self.SystemSettings['pkg_masking_reference']
         user_masks = [
-            myr['user_package_unmask'], myr['user_live_unmask'], myr['user_package_keywords'],
-            myr['user_repo_package_keywords_all'], myr['user_repo_package_keywords']
+            myr['user_package_unmask'], myr['user_live_unmask'],
+            myr['user_package_keywords'], myr['user_repo_package_keywords_all'],
+            myr['user_repo_package_keywords']
         ]
         if idreason in user_masks:
             return True #,True
         return False #,True
 
-    def mask_match(self, match, method = 'atom', dry_run = False, clean_all_cache = False):
-        if self.is_match_masked(match, live_check = False): return True
+    def mask_match(self, match, method = 'atom', dry_run = False,
+        clean_all_cache = False):
+        if self.is_match_masked(match, live_check = False):
+            return True
         methods = {
             'atom': self.mask_match_by_atom,
             'keyslot': self.mask_match_by_keyslot,
         }
-        rc = self._mask_unmask_match(match, method, methods, dry_run = dry_run, clean_all_cache = clean_all_cache)
+        rc = self._mask_unmask_match(match, method, methods, dry_run = dry_run,
+            clean_all_cache = clean_all_cache)
         if dry_run: # inject if done "live"
             self.SystemSettings['live_packagemasking']['unmask_matches'].discard(match)
             self.SystemSettings['live_packagemasking']['mask_matches'].add(match)
@@ -1699,17 +1677,20 @@ class MatchMixin:
             'atom': self.unmask_match_by_atom,
             'keyslot': self.unmask_match_by_keyslot,
         }
-        rc = self._mask_unmask_match(match, method, methods, dry_run = dry_run, clean_all_cache = clean_all_cache)
+        rc = self._mask_unmask_match(match, method, methods, dry_run = dry_run,
+            clean_all_cache = clean_all_cache)
         if dry_run: # inject if done "live"
             self.SystemSettings['live_packagemasking']['unmask_matches'].add(match)
             self.SystemSettings['live_packagemasking']['mask_matches'].discard(match)
         return rc
 
-    def _mask_unmask_match(self, match, method, methods_reference, dry_run = False, clean_all_cache = False):
+    def _mask_unmask_match(self, match, method, methods_reference,
+        dry_run = False, clean_all_cache = False):
 
         f = methods_reference.get(method)
         if not hasattr(f, '__call__'):
-            raise IncorrectParameter('IncorrectParameter: %s: %s' % (_("not a valid method"), method,) )
+            raise IncorrectParameter('IncorrectParameter: %s: %s' % (
+                _("not a valid method"), method,) )
 
         self.Cacher.discard()
         done = f(match, dry_run)
@@ -1718,16 +1699,16 @@ class MatchMixin:
 
         # clear atomMatch cache anyway
         if clean_all_cache and not dry_run:
-            self.clear_dump_cache(etpCache['world_available'])
-            self.clear_dump_cache(etpCache['world_update'])
-            self.clear_dump_cache(etpCache['critical_update'])
+            self.clear_dump_cache(etpConst['cache_ids']['world_available'])
+            self.clear_dump_cache(etpConst['cache_ids']['world_update'])
+            self.clear_dump_cache(etpConst['cache_ids']['critical_update'])
 
-        self.clear_dump_cache(etpCache['check_package_update'])
-        self.clear_dump_cache(etpCache['filter_satisfied_deps'])
+        self.clear_dump_cache(etpConst['cache_ids']['check_package_update'])
+        self.clear_dump_cache(etpConst['cache_ids']['filter_satisfied_deps'])
         self.clear_dump_cache(self.atomMatchCacheKey)
-        self.clear_dump_cache(etpCache['dep_tree'])
-        self.clear_dump_cache(etpCache['library_breakage'])
-        self.clear_dump_cache("%s/%s%s/" % (etpCache['dbMatch'],
+        self.clear_dump_cache(etpConst['cache_ids']['dep_tree'])
+        self.clear_dump_cache(etpConst['cache_ids']['library_breakage'])
+        self.clear_dump_cache("%s/%s%s/" % (etpConst['cache_ids']['dbMatch'],
             etpConst['dbnamerepoprefix'], match[1],))
 
         cl_id = self.sys_settings_client_plugin_id
@@ -1761,12 +1742,14 @@ class MatchMixin:
     def unmask_match_generic(self, match, keyword, dry_run = False):
         self.clear_match_mask(match, dry_run)
         m_file = self.SystemSettings.get_setting_files_data()['unmask']
-        return self._mask_unmask_match_generic(keyword, m_file, dry_run = dry_run)
+        return self._mask_unmask_match_generic(keyword, m_file,
+            dry_run = dry_run)
 
     def mask_match_generic(self, match, keyword, dry_run = False):
         self.clear_match_mask(match, dry_run)
         m_file = self.SystemSettings.get_setting_files_data()['mask']
-        return self._mask_unmask_match_generic(keyword, m_file, dry_run = dry_run)
+        return self._mask_unmask_match_generic(keyword, m_file,
+            dry_run = dry_run)
 
     def _mask_unmask_match_generic(self, keyword, m_file, dry_run = False):
         exist = False
@@ -1799,41 +1782,45 @@ class MatchMixin:
     def clear_match_mask(self, match, dry_run = False):
         setting_data = self.SystemSettings.get_setting_files_data()
         masking_list = [setting_data['mask'], setting_data['unmask']]
-        return self._clear_match_generic(match, masking_list = masking_list, dry_run = dry_run)
+        return self._clear_match_generic(match, masking_list = masking_list,
+            dry_run = dry_run)
 
-    def _clear_match_generic(self, match, masking_list = [], dry_run = False):
+    def _clear_match_generic(self, match, masking_list = None, dry_run = False):
 
-        self.SystemSettings['live_packagemasking']['unmask_matches'].discard(match)
-        self.SystemSettings['live_packagemasking']['mask_matches'].discard(match)
+        if dry_run:
+            return
 
-        if dry_run: return
+        if masking_list is None:
+            masking_list = []
 
-        for mask_file in masking_list:
-            if not (os.path.isfile(mask_file) and os.access(mask_file, os.W_OK)): continue
-            f = open(mask_file, "r")
-            newf = self.entropyTools.open_buffer()
-            line = f.readline()
-            while line:
-                line = line.strip()
-                if line.startswith("#"):
-                    newf.write(line+"\n")
-                    line = f.readline()
-                    continue
-                elif not line:
-                    newf.write("\n")
-                    line = f.readline()
-                    continue
-                mymatch = self.atom_match(line, packagesFilter = False)
-                if mymatch == match:
-                    line = f.readline()
-                    continue
-                newf.write(line+"\n")
-                line = f.readline()
-            f.close()
-            tmpfile = mask_file+".w_tmp"
-            f = open(tmpfile, "w")
-            f.write(newf.getvalue())
-            f.flush()
-            f.close()
-            newf.close()
-            shutil.move(tmpfile, mask_file)
+        self.SystemSettings['live_packagemasking']['unmask_matches'].discard(
+            match)
+        self.SystemSettings['live_packagemasking']['mask_matches'].discard(
+            match)
+
+        new_mask_list = [x for x in masking_list if os.path.isfile(x) \
+            and os.access(x, os.W_OK)]
+
+        for mask_file in new_mask_list:
+
+            tmp_fd, tmp_path = tempfile.mkstemp()
+            os.close(tmp_fd)
+
+            with open(mask_file, "r") as mask_f:
+                with open(tmp_path, "w") as tmp_f:
+                    for line in mask_f.readlines():
+                        strip_line = line.strip()
+
+                        if not (strip_line.startswith("#") or not strip_line):
+                            mymatch = self.atom_match(strip_line,
+                                packagesFilter = False)
+                            if mymatch == match:
+                                continue
+
+                        tmp_f.write(line)
+
+            try:
+                os.rename(tmp_path, mask_file)
+            except OSError:
+                shutil.copy2(tmp_path, mask_file)
+                os.remove(tmp_path)

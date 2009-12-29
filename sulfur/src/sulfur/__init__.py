@@ -1089,7 +1089,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def clean_entropy_caches(self, alone = False):
         if alone:
             self.progress.total.hide()
-        self.Equo.generate_cache(depcache = True, configcache = False)
+        self.Equo._purge_cache()
         # clear views
         self.etpbase.clear_groups()
         self.etpbase.clear_cache()
@@ -1338,12 +1338,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.disable_ugc = True
         self.set_busy()
         bootstrap = False
-        if (self.Equo.get_updates_cache(empty_deps = False) == None):
+        if (self.Equo._get_updates_cache(empty_deps = False) == None):
             if self.do_debug:
                 print_generic("show_packages: bootstrap True due to empty world cache")
             bootstrap = True
             self.switch_notebook_page('output')
-        elif (self.Equo.get_available_packages_cache() == None) and \
+        elif (self.Equo._get_available_packages_cache() is None) and \
             (('available' in masks) or ('updates' in masks)):
             if self.do_debug:
                 print_generic("show_packages: bootstrap True due to empty avail cache")

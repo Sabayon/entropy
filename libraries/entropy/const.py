@@ -15,7 +15,7 @@
     the SystemSettings interface. So, make sure to read the documentation
     of SystemSettings in the "entropy.core" module.
 
-    Even if possible, etpConst, etpUi, etpCache and etpSys objects
+    Even if possible, etpConst, etpUi, and etpSys objects
     *SHOULD* be I{never ever modified manually}. This freedom could change
     in future, so, if you want to produce a stable code, DON'T do that at all!
 
@@ -80,21 +80,6 @@ if ("--debug" in sys.argv) or os.getenv("ETP_DEBUG"):
     etpUi['debug'] = True
 if os.getenv('ETP_MUTE'):
     etpUi['mute'] = True
-
-# on-disk cache identifiers
-etpCache = {
-    'dbMatch': 'match/db', # db atom match cache
-    'dep_tree': 'deptree/dep_tree_',
-    # used to store info about repository dependencies solving
-    'atomMatch': 'atom_match/atom_match_',
-    'world_update': 'world_update/world_cache_',
-    'critical_update': 'critical_update/critical_cache_',
-    'world_available': 'world_available/available_cache_',
-    'check_package_update': 'check_update/package_update_',
-    'depends_tree': 'depends/depends_tree_',
-    'filter_satisfied_deps': 'depfilter/filter_satisfied_deps_',
-    'library_breakage': 'libs_break/library_breakage_',
-}
 
 etpConst = {}
 
@@ -191,6 +176,19 @@ def const_default_settings(rootdir):
         'logging': {
             'normal_loglevel_id': 1,
             'verbose_loglevel_id': 2,
+        },
+        'cache_ids': {
+            'dbMatch': 'match/db', # db atom match cache
+            'dep_tree': 'deptree/dep_tree_',
+            # used to store info about repository dependencies solving
+            'atomMatch': 'atom_match/atom_match_',
+            'world_update': 'world_update/world_cache_',
+            'critical_update': 'critical_update/critical_cache_',
+            'world_available': 'world_available/available_cache_',
+            'check_package_update': 'check_update/package_update_',
+            'depends_tree': 'depends/depends_tree_',
+            'filter_satisfied_deps': 'depfilter/filter_satisfied_deps_',
+            'library_breakage': 'libs_break/library_breakage_',
         },
         'server_repositories': {},
         'community': {
@@ -711,8 +709,8 @@ def const_extract_cli_repo_params(repostring, branch = None, product = None):
     repodatabase = repostring.split("|")[4].strip()
 
     eapi3_uri = None
-    eapi3_port = int(etpConst['socket_service']['port'])
-    eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
+    eapi3_port = etpConst['socket_service']['port']
+    eapi3_ssl_port = etpConst['socket_service']['ssl_port']
     eapi3_formatcolon = repodatabase.rfind("#")
 
     # Support for custom EAPI3 ports
@@ -724,8 +722,8 @@ def const_extract_cli_repo_params(repostring, branch = None, product = None):
             if len(ports) > 1:
                 eapi3_ssl_port = int(ports[1])
         except (ValueError, IndexError,):
-            eapi3_port = int(etpConst['socket_service']['port'])
-            eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
+            eapi3_port = etpConst['socket_service']['port']
+            eapi3_ssl_port = etpConst['socket_service']['ssl_port']
         repodatabase = repodatabase[:eapi3_formatcolon]
 
     # Support for custom database file compression
@@ -1150,8 +1148,8 @@ def const_extract_srv_repo_params(repostring, product = None):
     repouris = repostring.split("|")[3].strip()
 
     service_url = None
-    eapi3_port = int(etpConst['socket_service']['port'])
-    eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
+    eapi3_port = etpConst['socket_service']['port']
+    eapi3_ssl_port = etpConst['socket_service']['ssl_port']
     if len(repostring.split("|")) > 4:
         service_url = repostring.split("|")[4].strip()
 
@@ -1164,8 +1162,8 @@ def const_extract_srv_repo_params(repostring, product = None):
                     eapi3_ssl_port = int(ports[1])
                 service_url = service_url[:eapi3_formatcolon]
             except (ValueError, IndexError,):
-                eapi3_port = int(etpConst['socket_service']['port'])
-                eapi3_ssl_port = int(etpConst['socket_service']['ssl_port'])
+                eapi3_port = etpConst['socket_service']['port']
+                eapi3_ssl_port = etpConst['socket_service']['ssl_port']
 
     mydata = {}
     mydata['repoid'] = repoid

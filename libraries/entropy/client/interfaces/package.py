@@ -14,7 +14,7 @@ import os
 import errno
 import stat
 import shutil
-from entropy.const import etpConst, etpSys, etpCache, const_setup_perms, \
+from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_isunicode, const_convert_to_unicode
 from entropy.exceptions import PermissionDenied, InvalidData, \
     IncorrectParameter, SPMError
@@ -711,18 +711,18 @@ class Package:
 
     def __clear_cache(self):
         self.Entropy.clear_dump_cache(SystemSecurity.CACHE_ID)
-        self.Entropy.clear_dump_cache(etpCache['filter_satisfied_deps'])
-        self.Entropy.clear_dump_cache(etpCache['depends_tree'])
-        self.Entropy.clear_dump_cache(etpCache['check_package_update'])
-        self.Entropy.clear_dump_cache(etpCache['dep_tree'])
-        self.Entropy.clear_dump_cache(etpCache['library_breakage'])
-        self.Entropy.clear_dump_cache(etpCache['dbMatch'] + \
+        self.Entropy.clear_dump_cache(etpConst['cache_ids']['filter_satisfied_deps'])
+        self.Entropy.clear_dump_cache(etpConst['cache_ids']['depends_tree'])
+        self.Entropy.clear_dump_cache(etpConst['cache_ids']['check_package_update'])
+        self.Entropy.clear_dump_cache(etpConst['cache_ids']['dep_tree'])
+        self.Entropy.clear_dump_cache(etpConst['cache_ids']['library_breakage'])
+        self.Entropy.clear_dump_cache(etpConst['cache_ids']['dbMatch'] + \
             etpConst['clientdbid']+"/")
 
         # clear caches, the bad way
-        self.Entropy.clear_dump_cache(etpCache['world_available'])
-        self.Entropy.clear_dump_cache(etpCache['world_update'])
-        self.Entropy.clear_dump_cache(etpCache['critical_update'])
+        self.Entropy.clear_dump_cache(etpConst['cache_ids']['world_available'])
+        self.Entropy.clear_dump_cache(etpConst['cache_ids']['world_update'])
+        self.Entropy.clear_dump_cache(etpConst['cache_ids']['critical_update'])
 
     def __install_package(self):
 

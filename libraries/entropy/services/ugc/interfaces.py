@@ -18,7 +18,7 @@ import subprocess
 import shutil
 from entropy.services.skel import RemoteDatabase
 from entropy.exceptions import *
-from entropy.const import etpConst, etpUi, etpCache, const_setup_perms, \
+from entropy.const import etpConst, etpUi, const_setup_perms, \
     const_set_chmod, const_setup_file, const_get_stringtype, \
     const_convert_to_rawstring, const_convert_to_unicode, const_debug_write
 from entropy.output import brown, bold, blue, darkred, darkblue

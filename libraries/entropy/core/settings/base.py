@@ -23,7 +23,7 @@ from threading import RLock
 
 from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, \
-    const_extract_cli_repo_params, etpCache, const_isunicode, \
+    const_extract_cli_repo_params, const_isunicode, \
     const_convert_to_unicode, const_convert_to_rawstring
 from entropy.core import Singleton, EntropyPluginStore
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
@@ -976,7 +976,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
             'transfer_limit': etpConst['downloadspeedlimit'],
             'timeout': etpConst['default_download_timeout'],
             'security_advisories_url': etpConst['securityurl'],
-	    'developer_repo': False,
+            'developer_repo': False,
         }
 
         repo_conf = etpConst['repositoriesconf']
@@ -1110,17 +1110,17 @@ class SystemSettings(Singleton, EntropyPluginStore):
         Internal method, go away!
         """
         self.__cacher.discard()
-        self._clear_dump_cache(etpCache['world_available'])
-        self._clear_dump_cache(etpCache['world_update'])
-        self._clear_dump_cache(etpCache['critical_update'])
-        self._clear_dump_cache(etpCache['check_package_update'])
-        self._clear_dump_cache(etpCache['filter_satisfied_deps'])
-        self._clear_dump_cache(etpCache['atomMatch'])
-        self._clear_dump_cache(etpCache['dep_tree'])
-        self._clear_dump_cache(etpCache['library_breakage'])
+        self._clear_dump_cache(etpConst['cache_ids']['world_available'])
+        self._clear_dump_cache(etpConst['cache_ids']['world_update'])
+        self._clear_dump_cache(etpConst['cache_ids']['critical_update'])
+        self._clear_dump_cache(etpConst['cache_ids']['check_package_update'])
+        self._clear_dump_cache(etpConst['cache_ids']['filter_satisfied_deps'])
+        self._clear_dump_cache(etpConst['cache_ids']['atomMatch'])
+        self._clear_dump_cache(etpConst['cache_ids']['dep_tree'])
+        self._clear_dump_cache(etpConst['cache_ids']['library_breakage'])
         if repoid is not None:
             self._clear_dump_cache("%s/%s%s/" % (
-                etpCache['dbMatch'], etpConst['dbnamerepoprefix'], repoid,))
+                etpConst['cache_ids']['dbMatch'], etpConst['dbnamerepoprefix'], repoid,))
 
     def _clear_dump_cache(self, dump_name, skip = []):
         """

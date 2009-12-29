@@ -427,7 +427,8 @@ class UpdatesDaemon(dbus.service.Object):
                             "get_repo_status: repo needs to be updated: %s" % (
                                 repoid,))
 
-                    entropy.repository_move_clear_cache(repoid)
+                    entropy.SystemSettings._clear_repository_cache(
+                        repoid = repoid)
                     repos[repoid] = {
                         'local': repo_rev,
                         'remote': online_rev,

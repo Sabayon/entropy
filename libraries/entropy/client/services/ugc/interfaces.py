@@ -13,7 +13,7 @@
 import os
 from entropy.core import Singleton
 from entropy.exceptions import *
-from entropy.const import etpConst, etpCache, const_setup_file, const_setup_perms
+from entropy.const import etpConst, const_setup_file, const_setup_perms
 from entropy.i18n import _
 
 class Client:

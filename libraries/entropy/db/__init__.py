@@ -28,7 +28,7 @@
 import sys
 import os
 import shutil
-from entropy.const import etpConst, etpCache, const_setup_file, \
+from entropy.const import etpConst, const_setup_file, \
     const_isunicode, const_convert_to_unicode, const_get_buffer, \
     const_convert_to_rawstring, const_cmp
 from entropy.exceptions import IncorrectParameter, InvalidAtom, \
@@ -412,7 +412,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         self.dbclosed = True
         self.SystemSettings = SystemSettings()
-        self.dbMatchCacheKey = etpCache['dbMatch']
+        self.dbMatchCacheKey = etpConst['cache_ids']['dbMatch']
         self.client_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         self.db_branch = self.SystemSettings['repositories']['branch']
@@ -3311,10 +3311,10 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         do_clear("%s/%s/" % (self.dbMatchCacheKey, self.dbname,))
         if depends:
-            do_clear(etpCache['depends_tree'])
-            do_clear(etpCache['dep_tree'])
-            do_clear(etpCache['library_breakage'])
-            do_clear(etpCache['filter_satisfied_deps'])
+            do_clear(etpConst['cache_ids']['depends_tree'])
+            do_clear(etpConst['cache_ids']['dep_tree'])
+            do_clear(etpConst['cache_ids']['library_breakage'])
+            do_clear(etpConst['cache_ids']['filter_satisfied_deps'])
 
     def retrieveRepositoryUpdatesDigest(self, repository):
         """

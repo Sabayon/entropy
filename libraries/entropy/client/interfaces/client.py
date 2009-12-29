@@ -22,7 +22,7 @@ from entropy.client.interfaces.methods import RepositoryMixin, MiscMixin, \
     MatchMixin
 from entropy.client.interfaces.fetch import FetchersMixin
 from entropy.client.interfaces.noticeboard import NoticeBoardMixin
-from entropy.const import etpConst, etpCache, etpUi, const_debug_write, \
+from entropy.const import etpConst, etpUi, const_debug_write, \
     const_convert_to_unicode
 from entropy.core.settings.base import SystemSettings
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
@@ -563,7 +563,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self.sys_settings_client_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         self.__instance_destroyed = False
-        self.atomMatchCacheKey = etpCache['atomMatch']
+        self.atomMatchCacheKey = etpConst['cache_ids']['atomMatch']
         self.dbapi2 = dbapi2 # export for third parties
         self.FileUpdates = None
         self.validRepositories = []
@@ -641,10 +641,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             do_validate_repo_cache = True
 
         if not self.xcache and (self.entropyTools.is_user_in_entropy_group()):
-            try:
-                self.purge_cache(False)
-            except:
-                pass
+            self._purge_cache()
 
         if self.openclientdb:
             self.open_client_repository()
@@ -659,7 +656,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             self.Cacher.start()
 
         if do_validate_repo_cache:
-            self.validate_repositories_cache()
+            self._validate_repositories_cache()
 
         if self.repo_validation:
             self.validate_repositories()
