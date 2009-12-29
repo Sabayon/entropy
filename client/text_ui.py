@@ -35,6 +35,9 @@ EQUO_CACHE_IDS = {
     'world': 'resume/resume_world', # resume cache (world)
 }
 
+def get_file_pager():
+    return os.getenv("PAGER")
+
 def package(options):
 
     if not options:
@@ -1326,7 +1329,7 @@ def install_packages(packages = None, atomsdata = None, deps = True,
                     return 0, 0
                 elif choice == 1: # read
                     filename = E_CLIENT.get_text_license(key, match[1])
-                    viewer = E_CLIENT.get_file_viewer()
+                    viewer = get_file_pager()
                     if viewer == None:
                         print_info(red("    %s ! %s %s " % (_("No file viewer"), _("License saved into"), filename,) ))
                         continue

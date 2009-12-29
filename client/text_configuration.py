@@ -226,7 +226,7 @@ def update(entropy_client, cmd = None):
                             darkgreen(etpConst['systemroot']+scandata[cmd]['source'])
                         )
 
-                        editor = entropy_client.get_file_editor()
+                        editor = os.getenv("EDITOR")
                         if editor == None:
                             print_error(" %s" % (_("Cannot find a suitable editor. Can't edit file directly."),) )
                             comeback = True
