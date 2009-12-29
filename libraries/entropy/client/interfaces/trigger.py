@@ -304,7 +304,7 @@ class Trigger:
                 "ETP_API": etpSys['api'],
                 "ETP_LOG": self.Entropy.clientLog.get_fpath(),
                 "ETP_STAGE": stage, # entropy trigger stage
-                "ETP_PHASE": self.__get_sh_stage(), # entropy trigger phase
+                "ETP_PHASE": self.__get_sh_stage(stage), # entropy trigger phase
                 "ETP_BRANCH": etp_branch,
                 "CATEGORY": category, # package category
                 "PN": pn, # package name
