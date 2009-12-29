@@ -2414,6 +2414,8 @@ class Server(Singleton, TextInterface):
             # update signatures
             signatures = data['signatures'].copy()
             for hash_key in sorted(signatures):
+                if hash_key == "gpg":
+                    continue # skip gpg
                 hash_func = getattr(self.entropyTools, hash_key)
                 signatures[hash_key] = hash_func(package_path)
             dbconn.setSignatures(idpackage, signatures['sha1'],
