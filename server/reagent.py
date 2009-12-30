@@ -235,7 +235,7 @@ elif main_cmd == "cleanup":
 # deptest tool
 elif main_cmd == "spm":
     import server_reagent
-    rc = server_reagent.spm(options[1:])
+    rc = server_reagent.spm(options)
     server_reagent.Entropy.close_server_databases()
 
 if rc == -10:
