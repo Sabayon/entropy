@@ -861,7 +861,7 @@ def spm_compile_categories(options, do_list = False):
     if do_list:
         print_generic(' '.join(["="+x for x in packages]))
     else:
-        return spm.compile_atoms(["="+x for x in packages],
+        return spm.compile_packages(["="+x for x in packages],
             ask = True, verbose = True)
     return 0
 
