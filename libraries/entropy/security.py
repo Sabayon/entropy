@@ -1128,8 +1128,7 @@ class Repository:
             ["--list-%s" % (which,), "--fixed-list-mode", "--fingerprint",
                 "--with-colons"]
 
-        proc = subprocess.Popen(args, stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE)
+        proc = subprocess.Popen(args, **self.__default_popen_args())
 
         # wait for process to terminate
         proc_rc = proc.wait()
@@ -1238,8 +1237,7 @@ class Repository:
 
         const_debug_write(__name__, "Repository.__gen_key args => %s" % (
             args,))
-        proc = subprocess.Popen(args, stdout = subprocess.PIPE,
-            stderr = subprocess.STDOUT, stdin = subprocess.PIPE)
+        proc = subprocess.Popen(args, **self.__default_popen_args())
 
         # feed gpg with data
         proc_stdout, proc_stderr = proc.communicate(input = key_input)
@@ -1331,8 +1329,7 @@ class Repository:
 
         const_debug_write(__name__, "Repository.__delete_key args => %s" % (
             args,))
-        proc = subprocess.Popen(args, stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE)
+        proc = subprocess.Popen(args, **self.__default_popen_args())
 
         # wait for process to terminate
         proc_rc = proc.wait()
@@ -1422,8 +1419,7 @@ class Repository:
             args += ["--export"]
         args.append(fingerprint)
 
-        proc = subprocess.Popen(args, stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE)
+        proc = subprocess.Popen(args, **self.__default_popen_args())
 
         # wait for process to terminate
         proc_rc = proc.wait()
@@ -1490,8 +1486,7 @@ class Repository:
             ["--import", key_path]
         current_keys = set([x['fingerprint'] for x in self.__list_keys()])
 
-        proc = subprocess.Popen(args, stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE)
+        proc = subprocess.Popen(args, **self.__default_popen_args())
 
         # wait for process to terminate
         proc_rc = proc.wait()
@@ -1551,6 +1546,15 @@ class Repository:
             args.append("--preserve-permissions")
         return args
 
+    def __default_popen_args(self):
+        kwargs = {
+            'stdout': subprocess.PIPE,
+            'stdin': subprocess.PIPE,
+        }
+        if not etpUi['debug']:
+            kwargs['stderr'] = subprocess.PIPE
+        return kwargs
+
     def __sign_file(self, file_path, fingerprint):
 
         args = self.__default_gpg_args() + ["-sa", "--detach-sign"]
@@ -1568,8 +1572,7 @@ class Repository:
                 "Repository.__sign_file had to rm %s" % (asc_path,))
             os.remove(asc_path)
 
-        proc = subprocess.Popen(args, stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE)
+        proc = subprocess.Popen(args, **self.__default_popen_args())
 
         # wait for process to terminate
         proc_rc = proc.wait()
@@ -1608,8 +1611,7 @@ class Repository:
         const_debug_write(__name__, "Repository.__verify_file args => %s" % (
             args,))
 
-        proc = subprocess.Popen(args, stdout = subprocess.PIPE,
-            stderr = subprocess.PIPE)
+        proc = subprocess.Popen(args, **self.__default_popen_args())
 
         # wait for process to terminate
         proc_rc = proc.wait()
