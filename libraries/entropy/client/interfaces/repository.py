@@ -71,7 +71,7 @@ class Repository:
         if self._developer_repo:
             const_debug_write(__name__, "__init__: developer repo mode enabled")
 
-        self.reset_dbformat_eapi(None)
+        self._reset_dbformat_eapi(None)
         self.current_repository_got_locked = False
         self.updated_repos = set()
 
@@ -118,7 +118,7 @@ class Repository:
             return False
         return True
 
-    def reset_dbformat_eapi(self, repository):
+    def _reset_dbformat_eapi(self, repository):
 
         self.dbformat_eapi = 2
         if repository != None:
@@ -147,7 +147,7 @@ class Repository:
             # developer_repo mode
             self._developer_repo = False
             const_debug_write(__name__,
-                "reset_dbformat_eapi: developer repo mode disabled FORCE_EAPI")
+                "_reset_dbformat_eapi: developer repo mode disabled FORCE_EAPI")
         elif self.dbformat_eapi > 1 and self._developer_repo:
             # enforce EAPI=1
             self.dbformat_eapi = 1
@@ -383,9 +383,10 @@ class Repository:
             return False
         return True
 
-    def clear_repository_cache(self, repo):
+    def _clear_repository_cache(self, repo):
         self.__validate_repository_id(repo)
-        self.Entropy.clear_dump_cache("%s/%s%s/" % (etpConst['cache_ids']['dbMatch'],
+        self.Entropy.clear_dump_cache("%s/%s%s/" % (
+            etpConst['cache_ids']['dbMatch'],
             etpConst['dbnamerepoprefix'], repo,))
 
     def download_item(self, item, repo, cmethod = None, lock_status_func = None,
@@ -420,7 +421,7 @@ class Repository:
         self.Entropy.setup_default_file_perms(filepath)
         return True
 
-    def check_downloaded_database(self, repo, cmethod):
+    def _check_downloaded_database(self, repo, cmethod):
 
         dbitem = 'dblight'
         if self.dbformat_eapi == 2:
@@ -490,7 +491,7 @@ class Repository:
         return 0
 
 
-    def show_repository_information(self, repo, count_info):
+    def _show_repository_information(self, repo, count_info):
 
         avail_data = self.Entropy.SystemSettings['repositories']['available']
         repo_data = avail_data[repo]
@@ -573,7 +574,7 @@ class Repository:
             return {}
         return data
 
-    def handle_eapi3_database_sync(self, repo, threshold = 300,
+    def _handle_eapi3_database_sync(self, repo, threshold = 300,
         chunk_size = 12):
 
         def prepare_exit(mysock, session = None):
@@ -953,7 +954,7 @@ class Repository:
         gpg_path = repo_data['gpg_pubkey']
 
         if not (os.path.isfile(gpg_path) and os.access(gpg_path, os.R_OK)):
-            return # gpg key not available
+            return False # gpg key not available
 
         try:
             repo_sec = self.Entropy.RepositorySecurity()
@@ -972,7 +973,7 @@ class Repository:
                 type = "warning",
                 header = "\t"
             )
-            return # GPG not available
+            return False # GPG not available
 
         if repo_sec.is_pubkey_available(repoid):
             mytxt = "%s: %s" % (
@@ -984,7 +985,7 @@ class Repository:
                 type = "info",
                 header = "\t"
             )
-            return # already installed
+            return True # already installed
 
         # actually install
         mytxt = "%s: %s" % (
@@ -1009,7 +1010,7 @@ class Repository:
                 type = "error",
                 header = "\t"
             )
-            return
+            return False
 
         mytxt = "%s: %s" % (
             purple(_("Successfully installed GPG key for repository")),
@@ -1029,6 +1030,77 @@ class Repository:
             type = "info",
             header = "\t"
         )
+        return True
+
+    def _gpg_verify_downloaded_files(self, repo, downloaded_files):
+
+        try:
+            repo_sec = self.Entropy.RepositorySecurity()
+        except RepositorySecurity.GPGError:
+            # wtf! it was available a while ago!
+            return 0 # GPG not available
+
+        gpg_sign_ext = etpConst['etpgpgextension']
+        sign_files = [x for x in downloaded_files if x.endswith(gpg_sign_ext)]
+
+        to_be_verified = []
+
+        for sign_path in sign_files:
+            target_path = sign_path[:-len(gpg_sign_ext)]
+            if os.path.isfile(target_path) and os.access(target_path, os.R_OK):
+                to_be_verified.append((target_path, sign_path,))
+
+        gpg_rc = 0
+
+        for target_path, sign_path in to_be_verified:
+
+            file_name = os.path.basename(target_path)
+
+            mytxt = "%s: %s ..." % (
+                darkgreen(_("Verifying GPG signature of")),
+                brown(file_name),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                type = "info",
+                header = "\t",
+                back = True
+            )
+
+            is_valid, err_msg = repo_sec.verify_file(repo, target_path,
+                sign_path)
+            if is_valid:
+                mytxt = "%s: %s" % (
+                    darkgreen(_("Verified GPG signature of")),
+                    brown(file_name),
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    type = "info",
+                    header = "\t  "
+                )
+            else:
+                mytxt = "%s: %s" % (
+                    darkred(_("Error during GPG verification of")),
+                    file_name,
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    type = "error",
+                    header = "\t%s  " % (bold("!!!"),)
+                )
+                mytxt = "%s: %s" % (
+                    purple(_("It could mean a potential security risk")),
+                    err_msg,
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    type = "error",
+                    header = "\t%s  " % (bold("!!!"),)
+                )
+                gpg_rc = 1
+
+        return gpg_rc
 
     def run_sync(self):
 
@@ -1038,24 +1110,24 @@ class Repository:
         for repo in self.reponames:
 
             repocount += 1
-            self.reset_dbformat_eapi(repo)
-            self.show_repository_information(repo, (repocount, repolength))
+            self._reset_dbformat_eapi(repo)
+            self._show_repository_information(repo, (repocount, repolength))
 
             if not self.forceUpdate:
-                updated = self.handle_repository_update(repo)
+                updated = self._handle_repository_update(repo)
                 if updated:
                     self.Entropy.cycleDone()
                     self.alreadyUpdated += 1
                     continue
 
-            locked = self.handle_repository_lock(repo)
+            locked = self._handle_repository_lock(repo)
             if locked:
                 self.notAvailable += 1
                 self.Entropy.cycleDone()
                 continue
 
             # clear database interface cache belonging to this repository
-            self.clear_repository_cache(repo)
+            self._clear_repository_cache(repo)
             self.__ensure_repository_path(repo)
 
             # dealing with EAPI
@@ -1085,7 +1157,7 @@ class Repository:
 
                 if self.dbformat_eapi < 3:
 
-                    down_status = self.handle_database_download(repo, cmethod)
+                    down_status = self._handle_database_download(repo, cmethod)
                     if not down_status:
                         self.Entropy.cycleDone()
                         self.notAvailable += 1
@@ -1093,7 +1165,7 @@ class Repository:
                         skip_this_repo = True
                         continue
                     db_checksum_down_status = \
-                        self.handle_database_checksum_download(repo, cmethod)
+                        self._handle_database_checksum_download(repo, cmethod)
                     break
 
                 elif self.dbformat_eapi == 3 and not \
@@ -1107,7 +1179,7 @@ class Repository:
 
                     status = False
                     try:
-                        status = self.handle_eapi3_database_sync(repo)
+                        status = self._handle_eapi3_database_sync(repo)
                     except socket.error as err:
                         mytxt = "%s: %s" % (
                             blue(_("EAPI3 Service error")),
@@ -1126,7 +1198,7 @@ class Repository:
 
                     if status is None: # remote db not available anymore ?
                         time.sleep(5)
-                        locked = self.handle_repository_lock(repo)
+                        locked = self._handle_repository_lock(repo)
                         if locked:
                             self.Entropy.cycleDone()
                             self.notAvailable += 1
@@ -1158,7 +1230,7 @@ class Repository:
                     self.Entropy.cycleDone()
                     continue
 
-                rc = self.check_downloaded_database(repo, cmethod)
+                rc = self._check_downloaded_database(repo, cmethod)
                 if rc != 0:
                     # delete all
                     self.__remove_repository_files(repo)
@@ -1178,7 +1250,7 @@ class Repository:
                         except OSError:
                             do_db_update_transfer = False
 
-                unpack_status = self.handle_downloaded_database_unpack(repo,
+                unpack_status = self._handle_downloaded_database_unpack(repo,
                     cmethod)
 
                 if not unpack_status:
@@ -1197,11 +1269,11 @@ class Repository:
                     os.remove(dbfile)
 
                 if self.dbformat_eapi == 2:
-                    rc = self.do_eapi2_inject_downloaded_dump(dumpfile,
+                    rc = self._eapi2_inject_downloaded_dump(dumpfile,
                         dbfile, cmethod)
 
                 if do_db_update_transfer:
-                    self.do_eapi1_eapi2_databases_alignment(dbfile, dbfile_old)
+                    self._eapi1_eapi2_databases_alignment(dbfile, dbfile_old)
 
                 if self.dbformat_eapi == 2:
                     # remove the dump
@@ -1224,7 +1296,14 @@ class Repository:
 
             # database is going to be updated
             self.dbupdated = True
-            self.do_standard_items_download(repo)
+            downloaded_files = self._standard_items_download(repo)
+
+            # GPG pubkey install hook
+            gpg_available = self._install_gpg_key_if_available(repo)
+            if gpg_available:
+                gpg_rc = self._gpg_verify_downloaded_files(repo,
+                    downloaded_files)
+
             self.Entropy.update_repository_revision(repo)
             if self.Entropy.indexing:
                 self.do_database_indexing(repo)
@@ -1233,20 +1312,17 @@ class Repository:
                 spm_class = self.Entropy.Spm_class()
                 spm_class.entropy_client_post_repository_update_hook(
                     self.Entropy, repo)
-            except Exception as e:
+            except Exception as err:
                 entropy.tools.print_traceback()
                 mytxt = "%s: %s" % (
                     blue(_("Configuration files update error, not critical, continuing")),
-                    darkred(repr(e)),
+                    err,
                 )
                 self.Entropy.updateProgress(mytxt, importance = 0,
                     type = "info", header = blue("  # "),)
 
             # execute post update repo hook
             self._run_post_update_repository_hook(repo)
-
-            # GPG pubkey install hook
-            self._install_gpg_key_if_available(repo)
 
             self.updated_repos.add(repo)
             self.Entropy.cycleDone()
@@ -1264,7 +1340,7 @@ class Repository:
         if self.dbupdated:
             self.Entropy._purge_cache()
             if self.fetchSecurity:
-                self.do_update_security_advisories()
+                self._update_security_advisories()
             # do treeupdates
             if isinstance(self.Entropy.clientDbconn, EntropyRepository) and \
                 entropy.tools.is_root(): # only as root due to Portage
@@ -1315,7 +1391,7 @@ class Repository:
                 header = bold(" !!! ")
             )
 
-    def handle_downloaded_database_unpack(self, repo, cmethod):
+    def _handle_downloaded_database_unpack(self, repo, cmethod):
 
         file_to_unpack = etpConst['etpdatabasedump']
         if self.dbformat_eapi == 1:
@@ -1344,7 +1420,7 @@ class Repository:
         return True
 
 
-    def handle_database_checksum_download(self, repo, cmethod):
+    def _handle_database_checksum_download(self, repo, cmethod):
 
         downitem = 'cklight'
         if self._developer_repo:
@@ -1402,7 +1478,7 @@ class Repository:
             self.LockScanner.kill()
 
     def repository_lock_scanner(self, repo):
-        locked = self.handle_repository_lock(repo)
+        locked = self._handle_repository_lock(repo)
         if locked:
             self.current_repository_got_locked = True
 
@@ -1412,7 +1488,7 @@ class Repository:
             mytxt = "Current repository got suddenly locked. Download aborted."
             raise RepositoryError('RepositoryError %s' % (mytxt,))
 
-    def handle_database_download(self, repo, cmethod):
+    def _handle_database_download(self, repo, cmethod):
 
         def show_repo_locked_message():
             mytxt = "%s: %s." % (
@@ -1455,7 +1531,7 @@ class Repository:
                 # if developer repo mode is enabled, fetch full-blown db
                 down_item = "db"
                 const_debug_write(__name__,
-                    "handle_database_download: developer repo mode enabled")
+                    "_handle_database_download: developer repo mode enabled")
             down_status = self.download_item(down_item, repo, cmethod,
                 lock_status_func = self.repository_lock_scanner_status,
                 disallow_redirect = True)
@@ -1477,7 +1553,7 @@ class Repository:
         self.kill_previous_repository_lock_scanner()
         return down_status
 
-    def handle_repository_update(self, repo):
+    def _handle_repository_update(self, repo):
         # check if database is already updated to the latest revision
         update = self.is_repository_updatable(repo)
         if not update:
@@ -1505,7 +1581,7 @@ class Repository:
                 return True
         return False
 
-    def handle_repository_lock(self, repo):
+    def _handle_repository_lock(self, repo):
         # get database lock
         unlocked = self.is_repository_unlocked(repo)
         if not unlocked:
@@ -1523,7 +1599,7 @@ class Repository:
             return True
         return False
 
-    def do_eapi1_eapi2_databases_alignment(self, dbfile, dbfile_old):
+    def _eapi1_eapi2_databases_alignment(self, dbfile, dbfile_old):
 
         dbconn = self.Entropy.open_generic_database(dbfile, xcache = False,
             indexing_override = False)
@@ -1543,7 +1619,7 @@ class Repository:
             os.rename(dbfile_old, dbfile)
         return upd_rc
 
-    def do_eapi2_inject_downloaded_dump(self, dumpfile, dbfile, cmethod):
+    def _eapi2_inject_downloaded_dump(self, dumpfile, dbfile, cmethod):
 
         # load the dump into database
         mytxt = "%s %s, %s %s" % (
@@ -1564,7 +1640,7 @@ class Repository:
         dbconn.closeDB()
         return rc
 
-    def do_update_security_advisories(self):
+    def _update_security_advisories(self):
         # update Security Advisories
         try:
             securityConn = self.Entropy.Security()
@@ -1579,7 +1655,7 @@ class Repository:
                 header = darkred(" @@ ")
             )
 
-    def do_standard_items_download(self, repo):
+    def _standard_items_download(self, repo):
 
         repos_data = self.Entropy.SystemSettings['repositories']
         repo_data = repos_data['available'][repo]
@@ -1639,6 +1715,8 @@ class Repository:
                 header = blue("\t  << ")
             )
 
+        downloaded_files = []
+
         for item, myfile, ignorable, mytxt in download_items:
 
             my_show_info(mytxt)
@@ -1662,6 +1740,7 @@ class Repository:
                 darkgreen(_("available, w00t!")))
             my_show_down_status(message, mytype)
             if item not in objects_to_unpack:
+                downloaded_files.append(mypath)
                 continue
             if not (os.path.isfile(mypath) and os.access(mypath, os.R_OK)):
                 continue
@@ -1699,7 +1778,7 @@ class Repository:
                                     os.remove(myfpath)
                                     my_show_file_rm(myfile)
                                 except OSError:
-                                    pass
+                                    continue
 
                 for myfile in sorted(myfiles_to_move):
                     from_mypath = os.path.join(tmpdir, myfile)
@@ -1715,6 +1794,8 @@ class Repository:
                             os.remove(from_mypath)
                         except (shutil.Error, IOError,):
                             continue
+                        continue
+                    downloaded_files.append(to_mypath)
 
             finally:
                 shutil.rmtree(tmpdir, True)
@@ -1730,6 +1811,8 @@ class Repository:
             type = "info",
             header = "\t"
         )
+
+        return downloaded_files
 
     def do_database_indexing(self, repo):
 
