@@ -1074,9 +1074,9 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         cached = None
         try:
             cached = self.etpbase.get_groups(meta_id)
-        except Exception as e:
+        except Exception, err:
             okDialog( self.ui.main, "%s: %s" % (
-                _("Error loading advisories"), e) )
+                _("Error loading advisories"), err) )
             cached = {}
 
         if cached:
