@@ -14,6 +14,8 @@ import os
 import errno
 import stat
 import shutil
+import tempfile
+
 from entropy.const import etpConst, etpSys, const_setup_perms, \
     const_isunicode, const_convert_to_unicode
 from entropy.exceptions import PermissionDenied, InvalidData, \
@@ -26,6 +28,7 @@ from entropy.db import dbapi2, EntropyRepository
 from entropy.client.interfaces.client import Client
 from entropy.cache import EntropyCacher
 from entropy.security import System as SystemSecurity
+
 import entropy.tools
 
 class Package:
@@ -112,6 +115,53 @@ class Package:
                 mt_f.write(cur_mtime)
                 mt_f.flush()
 
+        def do_compare_gpg(pkg_path, hash_val):
+
+            try:
+                repo_sec = self.Entropy.RepositorySecurity()
+            except RepositorySecurity.GPGServiceNotAvailable:
+                return None
+
+            # check if we have repository pubkey
+            if not repo_sec.is_pubkey_available(repository):
+                return None
+
+            # write gpg signature to disk for verification
+            tmp_fd, tmp_path = tempfile.mkstemp()
+            with open(tmp_path, "wb") as tmp_f:
+                tmp_f.write(hash_val)
+                tmp_f.flush()
+
+            try:
+                # actually verify
+                valid, err_msg = repo_sec.verify_file(repository, pkg_path,
+                    tmp_path)
+            finally:
+                os.remove(tmp_path)
+
+            if valid:
+                return True
+
+            if err_msg:
+                self.Entropy.updateProgress(
+                    "%s: %s, %s" % (
+                        darkred(_("Package signature verification error for")),
+                        purple(hash_type.upper()),
+                        err_msg,
+                    ),
+                    importance = 0,
+                    type = "error",
+                    header = darkred("   ## ")
+                )
+            return False
+
+        signature_vry_map = {
+            'sha1': entropy.tools.compare_sha1,
+            'sha256': entropy.tools.compare_sha256,
+            'sha512': entropy.tools.compare_sha512,
+            'gpg': do_compare_gpg,
+        }
+
         def do_signatures_validation(signatures):
             # check signatures, if available
             if isinstance(signatures, dict):
@@ -121,9 +171,9 @@ class Package:
                     # entropy versions
                     if hash_val in signatures:
                         continue
-                    elif hash_val is None:
+                    if hash_val is None:
                         continue
-                    elif hash_type not in enabled_hashes:
+                    if hash_type not in enabled_hashes:
                         self.Entropy.updateProgress(
                             "%s %s" % (
                                 purple(hash_type.upper()),
@@ -134,29 +184,40 @@ class Package:
                             header = "      : "
                         )
                         continue
-                    elif not hasattr(entropy.tools, 'compare_%s' % (hash_type,)):
+
+                    cmp_func = signature_vry_map.get(hash_type)
+                    if cmp_func is None:
                         continue
 
                     self.Entropy.updateProgress(
-                        "%s: %s" % (blue(_("Checking package hash")),
+                        "%s: %s" % (blue(_("Checking package signature")),
                             purple(hash_type.upper()),),
                         importance = 0,
                         type = "info",
                         header = red("   ## "),
                         back = True
                     )
-                    cmp_func = getattr(entropy.tools,
-                        'compare_%s' % (hash_type,))
                     valid = cmp_func(pkg_disk_path, hash_val)
+                    if valid is None:
+                        self.Entropy.updateProgress(
+                            "%s '%s' %s" % (
+                                darkred(_("Package signature verification")),
+                                purple(hash_type.upper()),
+                                darkred(_("temporarily unavailable")),
+                            ),
+                            importance = 0,
+                            type = "warning",
+                            header = darkred("   ## ")
+                        )
                     if not valid:
                         self.Entropy.updateProgress(
                             "%s: %s %s" % (
-                                darkred(_("Package hash")),
+                                darkred(_("Package signature")),
                                 purple(hash_type.upper()),
                                 darkred(_("does not match the recorded one")),
                             ),
                             importance = 0,
-                            type = "warning",
+                            type = "error",
                             header = darkred("   ## ")
                         )
                         return 1
