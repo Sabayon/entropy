@@ -48,12 +48,14 @@ class SecurityTest(unittest.TestCase):
         rand_file = _misc.get_random_file()
         asc_file = rand_file + ".asc"
         self._repository.sign_file("foo.org", rand_file)
-        self._repository.verify_file("foo.org", rand_file, asc_file)
+        self.assertEqual(
+            self._repository.verify_file("foo.org", rand_file, asc_file)[0],
+            True)
 
         # try to verify against wrong file
         wrong_rand_file = _misc.get_random_file_md5()
         self.assertEqual(
-            self._repository.verify_file("foo.org", wrong_rand_file, asc_file),
+            self._repository.verify_file("foo.org", wrong_rand_file, asc_file)[0],
             False)
 
         # now craft signature
@@ -62,7 +64,7 @@ class SecurityTest(unittest.TestCase):
             asc_f.flush()
 
         self.assertEqual(
-            self._repository.verify_file("foo.org", rand_file, asc_file),
+            self._repository.verify_file("foo.org", rand_file, asc_file)[0],
             False)
 
         os.remove(asc_file)

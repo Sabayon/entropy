@@ -1630,8 +1630,8 @@ class Repository:
         @type file_path: string
         @param signature_path: path to signature to verify
         @type signature_path: string
-        @return: True, if file is sane
-        @rtype: bool
+        @return: a tuple composed by (validity_bool, error message,)
+        @rtype: tuple
         """
         metadata = self.get_key_metadata(repository_identifier)
         try:
@@ -1639,5 +1639,5 @@ class Repository:
         except Repository.GPGError as err:
             const_debug_write(__name__, "Repository.verify_file error: %s" % (
                 err,))
-            return False
-        return True
+            return False, str(err)
+        return True, ''
