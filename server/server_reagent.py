@@ -862,7 +862,7 @@ def spm_compile_categories(options, do_list = False):
         print_generic(' '.join(["="+x for x in packages]))
     else:
         return spm.compile_packages(["="+x for x in packages],
-            ask = True, verbose = True)
+            ask = True, verbose = True, coloured_output = True)
     return 0
 
 def spm_compile_pkgset(pkgsets, do_rebuild = False, do_dbupdate = False,
@@ -900,7 +900,8 @@ def spm_compile_pkgset(pkgsets, do_rebuild = False, do_dbupdate = False,
             continue
 
         rc = spm.compile_packages(set_atoms, verbose = etpUi['verbose'],
-            ask = etpUi['ask'], pretend = etpUi['pretend'])
+            ask = etpUi['ask'], pretend = etpUi['pretend'],
+            coloured_output = True)
         if rc != 0:
             return rc
         done_atoms.update(set_atoms)
