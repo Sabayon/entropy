@@ -1036,7 +1036,7 @@ class Repository:
 
         try:
             repo_sec = self.Entropy.RepositorySecurity()
-        except RepositorySecurity.GPGError:
+        except RepositorySecurity.GPGServiceNotAvailable:
             # wtf! it was available a while ago!
             return 0 # GPG not available
 
