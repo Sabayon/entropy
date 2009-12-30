@@ -198,7 +198,7 @@ class PortagePlugin(SpmPlugin):
         'pretend_cmd': "--pretend",
         'verbose_cmd': "--verbose",
         'nocolor_cmd': "--color=n",
-        'source_profile_cmd': ["source", "/etc/profile"],
+        'source_profile_cmd': "source /etc/profile",
         'exec_cmd': "/usr/bin/emerge",
     }
 
