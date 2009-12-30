@@ -1755,6 +1755,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type sha256: string
         @param sha512: SHA512 hash for package file
         @type sha512: string
+        @keyword gpg: GPG signature file content
+        @type gpg: string
         """
         with self.__write_mutex:
             self.cursor.execute("""
@@ -2216,6 +2218,8 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type sha256: string
         @param sha512: SHA512 hash for package file
         @type sha512: string
+        @keyword gpg: GPG signature file content
+        @type gpg: string
         """
         with self.__write_mutex:
             self.cursor.execute("""
