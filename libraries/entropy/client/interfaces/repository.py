@@ -36,8 +36,11 @@ class Repository:
 
     EAPI3_CACHE_ID = 'eapi3/segment_'
 
-    def __init__(self, EquoInstance, reponames = [], forceUpdate = False,
-        noEquoCheck = False, fetchSecurity = True):
+    def __init__(self, EquoInstance, reponames = None, forceUpdate = False,
+        noEquoCheck = False, fetchSecurity = True, gpg = True):
+
+        if reponames is None:
+            reponames = []
 
         self.LockScanner = None
         from entropy.client.interfaces import Client
@@ -64,6 +67,7 @@ class Repository:
         self.alreadyUpdated = 0
         self.notAvailable = 0
         self.valid_eapis = [1, 2, 3]
+        self._gpg_feature = gpg
 
         # Developer Repository mode enabled?
         sys_set = self.Entropy.SystemSettings
@@ -1328,10 +1332,11 @@ class Repository:
                     continue
 
             # GPG pubkey install hook
-            gpg_available = self._install_gpg_key_if_available(repo)
-            if gpg_available:
-                gpg_rc = self._gpg_verify_downloaded_files(repo,
-                    downloaded_files)
+            if self._gpg_feature:
+                gpg_available = self._install_gpg_key_if_available(repo)
+                if gpg_available:
+                    gpg_rc = self._gpg_verify_downloaded_files(repo,
+                        downloaded_files)
 
             # Now we can unpack
             files_to_remove = []

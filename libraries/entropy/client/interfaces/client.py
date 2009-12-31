@@ -453,6 +453,7 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
             'filesbackup': etpConst['filesbackup'],
             'forcedupdates': etpConst['forcedupdates'],
             'packagehashes': etpConst['packagehashes'],
+            'gpg': True,
             'ignore_spm_downgrades': False,
             'collisionprotect': etpConst['collisionprotect'],
             'configprotect': etpConst['configprotect'][:],
@@ -497,6 +498,14 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                 if hashes:
                     data['packagehashes'] = tuple(hashes)
 
+            elif line.startswith("gpg|") and (split_line_len == 2):
+
+                compatopt = split_line[1].strip().lower()
+                if compatopt in ("disable", "disabled", "false", "0", "no",):
+                    data['gpg'] = False
+                else:
+                    data['gpg'] = True
+
             elif line.startswith("ignore-spm-downgrades|") and \
                 (split_line_len == 2):
 
@@ -533,6 +542,11 @@ class ClientSystemSettingsPlugin(SystemSettingsPlugin):
                     data['configprotectskip'].append(
                         etpConst['systemroot'] + \
                             const_convert_to_unicode(myprot))
+
+        # completely disable GPG feature
+        if not data['gpg'] and ("gpg" in data['packagehashes']):
+            data['packagehashes'] = tuple((x for x in data['packagehashes'] \
+                if x != "gpg"))
 
         return data
 

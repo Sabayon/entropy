@@ -67,10 +67,11 @@ class LoadersMixin:
     def Triggers(self, *args, **kwargs):
         return self.__TriggerLoader(self, *args, **kwargs)
 
-    def Repositories(self, reponames = [], forceUpdate = False, noEquoCheck = False, fetchSecurity = True):
-        return self.__RepositoryLoader(self, reponames = reponames,
-            forceUpdate = forceUpdate, noEquoCheck = noEquoCheck,
-            fetchSecurity = fetchSecurity)
+    def Repositories(self, *args, **kwargs):
+        cl_id = self.sys_settings_client_plugin_id
+        client_data = self.SystemSettings[cl_id]['misc']
+        kwargs['gpg'] = client_data['gpg']
+        return self.__RepositoryLoader(self, *args, **kwargs)
 
     def Spm(self):
         myroot = etpConst['systemroot']
