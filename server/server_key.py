@@ -155,9 +155,18 @@ def _export_key(entropy_srv, is_pubkey, repo, store_path):
         func_check = repo_sec.is_pubkey_available
         key_msg = _("Exporting public key for repository")
 
-    if not func_check(repo):
+    try:
+        if not func_check(repo):
+            entropy_srv.updateProgress("%s: %s" % (
+                    blue(_("No keypair available for repository")),
+                    purple(repo),
+                ),
+                type = "error"
+            )
+            return 1
+    except repo_sec.KeyExpired:
         entropy_srv.updateProgress("%s: %s" % (
-                blue(_("No keypair available for repository")),
+                darkred(_("Keypair is EXPIRED for repository")),
                 purple(repo),
             ),
             type = "error"
