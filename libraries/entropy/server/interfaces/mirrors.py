@@ -1443,6 +1443,17 @@ class Server:
             header = brown("    # ")
         )
 
+    def __get_repo_security_intf(self, repo):
+        try:
+            repo_sec = RepositorySecurity()
+            if not repo_sec.is_keypair_available(repo):
+                raise KeyError("no key avail")
+        except RepositorySecurity.GPGError:
+            return
+        except KeyError:
+            return
+        return repo_sec
+
     def _create_metafiles_file(self, compressed_dest_path, file_list, repo):
 
         found_file_list = [x for x in file_list if os.path.isfile(x) and \
@@ -1451,9 +1462,19 @@ class Server:
         not_found_file_list = ["%s\n" % (os.path.basename(x),) for x in \
             file_list if x not in found_file_list]
 
+        # GPG, also pack signature.asc inside
+        repo_sec = self.__get_repo_security_intf(repo)
+        if repo_sec is not None:
+            gpg_path = self.__write_gpg_pubkey(repo_sec, repo)
+            if gpg_path is not None:
+                found_file_list.append(gpg_path)
+            else:
+                gpg_path = \
+                    self.Entropy.get_local_database_gpg_signature_file(repo)
+                not_found_file_list.append(gpg_path) # not found
+
         metafile_not_found_file = \
             self.Entropy.get_local_database_metafiles_not_found_file(repo)
-
         f_meta = open(metafile_not_found_file, "w")
         f_meta.writelines(not_found_file_list)
         f_meta.flush()
@@ -1469,13 +1490,8 @@ class Server:
         This method creates .asc files for every path that is going to be
         uploaded. upload_data directly comes from upload_database()
         """
-        try:
-            repo_sec = RepositorySecurity()
-            if not repo_sec.is_keypair_available(repo):
-                raise KeyError("no key avail")
-        except RepositorySecurity.GPGError:
-            return
-        except KeyError:
+        repo_sec = self.__get_repo_security_intf(repo)
+        if repo_sec is None:
             return
 
         # for every item in upload_data, create a gpg signature
