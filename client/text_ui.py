@@ -441,8 +441,8 @@ def branch_hop(branch):
     status = True
 
     try:
-        repo_intf = E_CLIENT.Repositories([], forceUpdate = False,
-            fetchSecurity = False)
+        repo_intf = E_CLIENT.Repositories(None, force = False,
+            fetch_security = False)
     except AttributeError as err:
         print_error(darkred(" * ")+red("%s %s [%s]" % (
             _("No repositories specified in"),

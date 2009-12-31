@@ -1181,10 +1181,10 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.progress.total.hide()
 
         self.progress.set_mainLabel(_('Initializing Repository module...'))
-        forceUpdate = self.ui.forceRepoUpdate.get_active()
+        force = self.ui.forceRepoUpdate.get_active()
 
         try:
-            repoConn = self.Equo.Repositories(repos, forceUpdate = forceUpdate)
+            repoConn = self.Equo.Repositories(repos, force = force)
         except PermissionDenied:
             self.progress_log(_('You must run this application as root'),
                 extra = "repositories")
@@ -1225,23 +1225,23 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.gtk_loop()
         rc = self.__repo_update_rc
 
-        if repoConn.syncErrors or (rc != 0):
+        if repoConn.sync_errors or (rc != 0):
             self.progress.set_mainLabel(_('Errors updating repositories.'))
             self.progress.set_subLabel(
                 _('Please check logs below for more info'))
         else:
-            if repoConn.alreadyUpdated == 0:
+            if repoConn.already_updated == 0:
                 self.progress.set_mainLabel(
                     _('Repositories updated successfully'))
             else:
-                if len(repos) == repoConn.alreadyUpdated:
+                if len(repos) == repoConn.already_updated:
                     self.progress.set_mainLabel(
                         _('All the repositories were already up to date.'))
                 else:
-                    msg = "%s %s" % (repoConn.alreadyUpdated,
+                    msg = "%s %s" % (repoConn.already_updated,
                         _("repositories were already up to date. Others have been updated."),)
                     self.progress.set_mainLabel(msg)
-            if repoConn.newEquo:
+            if repoConn.new_entropy:
                 self.progress.set_extraLabel(
                     _('sys-apps/entropy needs to be updated as soon as possible.'))
 
@@ -1250,7 +1250,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.disable_ugc = False
         self.show_notebook_tabs_after_install()
-        return not repoConn.syncErrors
+        return not repoConn.sync_errors
 
     def reset_progress_text(self):
         self.progress.set_mainLabel(_('Nothing to do. I am idle.'))

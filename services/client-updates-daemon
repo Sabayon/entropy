@@ -245,7 +245,7 @@ class UpdatesDaemon(dbus.service.Object):
 
         try:
             repo_conn = entropy.Repositories(
-                repos, fetchSecurity = False, noEquoCheck = True)
+                repos, fetch_security = False, noEquoCheck = True)
             if DAEMON_DEBUG:
                 write_output("__run_sync: repository interface loaded")
         except MissingParameter, err:
@@ -409,7 +409,7 @@ class UpdatesDaemon(dbus.service.Object):
             repos = {}
             try:
                 repo_conn = entropy.Repositories(
-                    noEquoCheck = True, fetchSecurity = False)
+                    noEquoCheck = True, fetch_security = False)
             except MissingParameter:
                 return repos
             except Exception, e:

@@ -36,15 +36,16 @@ class Repository:
 
     EAPI3_CACHE_ID = 'eapi3/segment_'
 
-    def __init__(self, EquoInstance, reponames = None, forceUpdate = False,
-        noEquoCheck = False, fetchSecurity = True, gpg = True):
+    def __init__(self, entropy_client_instance, repo_identifiers = None,
+        force = False, entropy_updates_alert = True, fetch_security = True,
+        gpg = True):
 
-        if reponames is None:
-            reponames = []
+        if repo_identifiers is None:
+            repo_identifiers = []
 
-        self.LockScanner = None
+        self.__lock_scanner = None
         from entropy.client.interfaces import Client
-        if not isinstance(EquoInstance, Client):
+        if not isinstance(entropy_client_instance, Client):
             mytxt = "A valid Entropy Client instance or subclass is needed"
             raise AttributeError(mytxt)
 
@@ -53,20 +54,20 @@ class Repository:
             "lock", "dbdump", "dbdumplight", "dbdumplightck", "dbdumpck",
             "meta_file", "meta_file_gpg", "notice_board"
         )
-        self.big_socket_timeout = 10
-        self.Entropy = EquoInstance
+        self.__big_sock_timeout = 10
+        self.Entropy = entropy_client_instance
         self.Cacher = EntropyCacher()
-        self.dbapi2 = dbapi2
-        self.reponames = reponames
-        self.forceUpdate = forceUpdate
-        self.syncErrors = False
-        self.dbupdated = False
-        self.newEquo = False
-        self.fetchSecurity = fetchSecurity
-        self.noEquoCheck = noEquoCheck
-        self.alreadyUpdated = 0
-        self.notAvailable = 0
-        self.valid_eapis = [1, 2, 3]
+        self.__dbapi2 = dbapi2
+        self.repo_ids = repo_identifiers
+        self.force = force
+        self.sync_errors = False
+        self.updated = False
+        self.new_entropy = False
+        self.fetch_security = fetch_security
+        self.entropy_updates_alert = entropy_updates_alert
+        self.already_updated = 0
+        self.not_available = 0
+        self._valid_eapis = [1, 2, 3]
         self._gpg_feature = gpg
 
         # Developer Repository mode enabled?
@@ -75,8 +76,8 @@ class Repository:
         if self._developer_repo:
             const_debug_write(__name__, "__init__: developer repo mode enabled")
 
-        self._reset_dbformat_eapi(None)
-        self.current_repository_got_locked = False
+        self.__reset_dbformat_eapi(None)
+        self.__current_repo_locked = False
         self.updated_repos = set()
 
         avail_data = sys_set['repositories']['available']
@@ -86,34 +87,34 @@ class Repository:
                 etpConst['repositoriesconf'],)
             raise AttributeError(mytxt)
 
-        if not self.reponames:
-            self.reponames.extend(list(avail_data.keys()))
+        if not self.repo_ids:
+            self.repo_ids.extend(list(avail_data.keys()))
 
     def __del__(self):
-        if self.LockScanner != None:
-            self.LockScanner.kill()
+        if self.__lock_scanner is not None:
+            self.__lock_scanner.kill()
 
-    def get_eapi3_connection(self, repository):
+    def __get_eapi3_connection(self, repoid):
         # get database url
         avail_data = self.Entropy.SystemSettings['repositories']['available']
-        dburl = avail_data[repository].get('service_uri')
+        dburl = avail_data[repoid].get('service_uri')
         if dburl is None:
             return None
 
-        port = avail_data[repository]['service_port']
+        port = avail_data[repoid]['service_port']
         try:
             from entropy.services.ugc.interfaces import Client
             from entropy.client.services.ugc.commands import Client as \
                 CommandsClient
             eapi3_socket = Client(self.Entropy, CommandsClient,
-                output_header = "\t", socket_timeout = self.big_socket_timeout)
+                output_header = "\t", socket_timeout = self.__big_sock_timeout)
             eapi3_socket.connect(dburl, port)
             return eapi3_socket
         except (ConnectionError, socket.error,):
             return None
 
-    def check_eapi3_availability(self, repository):
-        conn = self.get_eapi3_connection(repository)
+    def __check_eapi3_availability(self, repoid):
+        conn = self.__get_eapi3_connection(repoid)
         if conn is None:
             return False
         try:
@@ -122,11 +123,11 @@ class Repository:
             return False
         return True
 
-    def _reset_dbformat_eapi(self, repository):
+    def __reset_dbformat_eapi(self, repoid):
 
         self.dbformat_eapi = 2
-        if repository != None:
-            eapi_avail = self.check_eapi3_availability(repository)
+        if repoid is not None:
+            eapi_avail = self.__check_eapi3_availability(repoid)
             if eapi_avail:
                 self.dbformat_eapi = 3
 
@@ -140,26 +141,26 @@ class Repository:
                 self.dbformat_eapi = 1
 
         eapi_env = os.getenv("FORCE_EAPI")
-        if eapi_env != None:
+        if eapi_env is not None:
             try:
                 myeapi = int(eapi_env)
             except (ValueError, TypeError,):
                 return
-            if myeapi in self.valid_eapis:
+            if myeapi in self._valid_eapis:
                 self.dbformat_eapi = myeapi
             # FORCE_EAPI is triggered, disable
             # developer_repo mode
             self._developer_repo = False
             const_debug_write(__name__,
-                "_reset_dbformat_eapi: developer repo mode disabled FORCE_EAPI")
+                "__reset_dbformat_eapi: developer repo mode disabled FORCE_EAPI")
         elif self.dbformat_eapi > 1 and self._developer_repo:
             # enforce EAPI=1
             self.dbformat_eapi = 1
 
 
     def __validate_repository_id(self, repoid):
-        if repoid not in self.reponames:
-            mytxt = "Repository is not listed in self.reponames"
+        if repoid not in self.repo_ids:
+            mytxt = "Repository is not listed in self.repo_ids"
             raise AttributeError(mytxt)
 
     def __validate_compression_method(self, repo):
@@ -223,7 +224,7 @@ class Repository:
         ec_cm7 = None
         ec_cm8 = None
         ec_cm9 = None
-        if cmethod != None:
+        if cmethod is not None:
             ec_cm2 = etpConst[cmethod[2]]
             ec_cm3 = etpConst[cmethod[3]]
             ec_cm4 = etpConst[cmethod[4]]
@@ -294,8 +295,8 @@ class Repository:
 
         url, path = mymap.get(item)
         if get_signature:
-            url = self._append_gpg_signature_to_path(url)
-            path = self._append_gpg_signature_to_path(path)
+            url = self.__append_gpg_signature_to_path(url)
+            path = self.__append_gpg_signature_to_path(path)
 
         return url, path
 
@@ -338,7 +339,7 @@ class Repository:
 
         return rc
 
-    def _verify_file_checksum(self, file_path, md5_checksum_path):
+    def __verify_file_checksum(self, file_path, md5_checksum_path):
         with open(md5_checksum_path, "r") as ck_f:
             md5hash = ck_f.readline().strip()
             md5hash = md5hash.split()[0]
@@ -370,19 +371,19 @@ class Repository:
         if not (os.access(md5file, os.R_OK) and os.path.isfile(md5file)):
             return -1
 
-        return self._verify_file_checksum(dbfile, md5file)
+        return self.__verify_file_checksum(dbfile, md5file)
 
     # @returns -1 if the file is not available
     # @returns int>0 if the revision has been retrieved
-    def get_online_repository_revision(self, repo):
+    def get_online_repository_revision(self, repoid):
 
-        self.__validate_repository_id(repo)
+        self.__validate_repository_id(repoid)
         avail_data = self.Entropy.SystemSettings['repositories']['available']
-        repo_data = avail_data[repo]
+        repo_data = avail_data[repoid]
 
         url = repo_data['database'] + "/" + etpConst['etpdatabaserevisionfile']
         status = entropy.tools.get_remote_data(url,
-            timeout = self.big_socket_timeout)
+            timeout = self.__big_sock_timeout)
         if status:
             status = status[0].strip()
             try:
@@ -393,7 +394,7 @@ class Repository:
         else:
             return -1
 
-    def get_online_eapi3_lock(self, repo):
+    def __get_online_eapi3_lock(self, repo):
         self.__validate_repository_id(repo)
 
         avail_data = self.Entropy.SystemSettings['repositories']['available']
@@ -405,28 +406,24 @@ class Repository:
             return False
         return True
 
-    def is_repository_eapi3_locked(self, repo):
-        self.__validate_repository_id(repo)
-        return self.get_online_eapi3_lock(repo)
-
-    def is_repository_updatable(self, repo):
+    def _is_repository_updatable(self, repo):
 
         self.__validate_repository_id(repo)
 
         onlinestatus = self.get_online_repository_revision(repo)
         if (onlinestatus != -1):
             localstatus = self.Entropy.get_repository_revision(repo)
-            if (localstatus == onlinestatus) and (not self.forceUpdate):
+            if (localstatus == onlinestatus) and (not self.force):
                 return False
         return True
 
-    def is_repository_unlocked(self, repo):
+    def _is_repository_unlocked(self, repo):
 
         self.__validate_repository_id(repo)
 
         rc = self._download_item("lock", repo, disallow_redirect = True)
         if rc: # cannot download database
-            self.syncErrors = True
+            self.sync_errors = True
             return False
         return True
 
@@ -436,7 +433,7 @@ class Repository:
             etpConst['cache_ids']['dbMatch'],
             etpConst['dbnamerepoprefix'], repo,))
 
-    def _append_gpg_signature_to_path(self, path):
+    def __append_gpg_signature_to_path(self, path):
         return path + etpConst['etpgpgextension']
 
     def _download_item(self, item, repo, cmethod = None,
@@ -447,8 +444,8 @@ class Repository:
         url, filepath = self._construct_paths(item, repo, cmethod)
 
         if get_signature:
-            url = self._append_gpg_signature_to_path(url)
-            filepath = self._append_gpg_signature_to_path(filepath)
+            url = self.__append_gpg_signature_to_path(url)
+            filepath = self.__append_gpg_signature_to_path(filepath)
 
         # to avoid having permissions issues
         # it's better to remove the file before,
@@ -585,7 +582,7 @@ class Repository:
             header = blue("  # ")
         )
 
-    def get_eapi3_local_database(self, repo):
+    def __get_eapi3_local_database(self, repo):
 
         avail_data = self.Entropy.SystemSettings['repositories']['available']
         repo_data = avail_data[repo]
@@ -597,15 +594,15 @@ class Repository:
                 xcache = False, indexing_override = False)
             mydbconn.validateDatabase()
         except (
-            self.Entropy.dbapi2.OperationalError,
-            self.Entropy.dbapi2.IntegrityError,
+            self.__dbapi2.OperationalError,
+            self.__dbapi2.IntegrityError,
             SystemDatabaseError,
             IOError,
             OSError,):
                 mydbconn = None
         return mydbconn
 
-    def get_eapi3_database_differences(self, eapi3_interface, repo, idpackages,
+    def __get_eapi3_database_differences(self, eapi3_interface, repo, idpackages,
         session):
 
         product = self.Entropy.SystemSettings['repositories']['product']
@@ -622,7 +619,7 @@ class Repository:
                 return None, None, None
         return data['added'], data['removed'], data['checksum']
 
-    def get_eapi3_repository_metadata(self, eapi3_interface, repo, session):
+    def __get_eapi3_repository_metadata(self, eapi3_interface, repo, session):
         product = self.Entropy.SystemSettings['repositories']['product']
         data = eapi3_interface.CmdInterface.get_repository_metadata(
             session, repo, etpConst['currentarch'], product
@@ -636,13 +633,13 @@ class Repository:
 
         def prepare_exit(mysock, session = None):
             try:
-                if session != None:
+                if session is not None:
                     mysock.close_session(session)
                 mysock.disconnect()
             except (socket.error,):
                 pass
 
-        eapi3_interface = self.get_eapi3_connection(repo)
+        eapi3_interface = self.__get_eapi3_connection(repo)
         if eapi3_interface is None:
             return False
 
@@ -650,20 +647,19 @@ class Repository:
 
         # AttributeError because mydbconn can be is None
         try:
-            mydbconn = self.get_eapi3_local_database(repo)
+            mydbconn = self.__get_eapi3_local_database(repo)
             myidpackages = mydbconn.listAllIdpackages()
-        except (self.dbapi2.DatabaseError, self.dbapi2.IntegrityError,
-            self.dbapi2.OperationalError, AttributeError,):
+        except (self.__dbapi2.DatabaseError, self.__dbapi2.IntegrityError,
+            self.__dbapi2.OperationalError, AttributeError,):
 
             prepare_exit(eapi3_interface, session)
             return False
 
-        added_ids, removed_ids, checksum = self.get_eapi3_database_differences(
-            eapi3_interface, repo,
-            myidpackages, session
-        )
+        added_ids, removed_ids, checksum = \
+            self.__get_eapi3_database_differences(eapi3_interface, repo,
+                myidpackages, session)
         if (None in (added_ids, removed_ids, checksum)) or \
-            (not added_ids and not removed_ids and self.forceUpdate):
+            (not added_ids and not removed_ids and self.force):
                 mydbconn.closeDB()
                 prepare_exit(eapi3_interface, session)
                 return False
@@ -800,7 +796,7 @@ class Repository:
 
         del added_segments
 
-        repo_metadata = self.get_eapi3_repository_metadata(eapi3_interface,
+        repo_metadata = self.__get_eapi3_repository_metadata(eapi3_interface,
             repo, session)
         metadata_elements = ("sets", "treeupdates_actions",
             "treeupdates_digest", "library_idpackages",)
@@ -826,7 +822,7 @@ class Repository:
                 repo_metadata['treeupdates_digest'])
             mydbconn.bumpTreeUpdatesActions(
                 repo_metadata['treeupdates_actions'])
-        except (self.dbapi2.Error,):
+        except (self.__dbapi2.Error,):
             mydbconn.closeDB()
             prepare_exit(eapi3_interface, session)
             mytxt = "%s: %s" % (
@@ -845,7 +841,7 @@ class Repository:
         try:
             mydbconn.clearPackageSets()
             mydbconn.insertPackageSets(repo_metadata['sets'])
-        except (self.dbapi2.Error,):
+        except (self.__dbapi2.Error,):
             mydbconn.closeDB()
             prepare_exit(eapi3_interface, session)
             mytxt = "%s: %s" % (
@@ -897,7 +893,7 @@ class Repository:
                     idpackage = idpackage, do_commit = False,
                     formatted_content = True
                 )
-            except (self.dbapi2.Error,) as err:
+            except (self.__dbapi2.Error,) as err:
                 if etpUi['debug']:
                     entropy.tools.print_traceback()
                 self.Entropy.updateProgress("%s: %s" % (
@@ -932,7 +928,7 @@ class Repository:
             try:
                 mydbconn.removePackage(idpackage, do_cleanup = False,
                     do_commit = False)
-            except (self.dbapi2.Error,):
+            except (self.__dbapi2.Error,):
                 self.Entropy.updateProgress(
                     blue(_("repository error while removing packages")),
                     importance = 1, type = "warning",
@@ -1182,25 +1178,25 @@ class Repository:
 
     def run_sync(self):
 
-        self.dbupdated = False
+        self.updated = False
         repocount = 0
-        repolength = len(self.reponames)
-        for repo in self.reponames:
+        repolength = len(self.repo_ids)
+        for repo in self.repo_ids:
 
             repocount += 1
-            self._reset_dbformat_eapi(repo)
+            self.__reset_dbformat_eapi(repo)
             self._show_repository_information(repo, (repocount, repolength))
 
-            if not self.forceUpdate:
-                updated = self._handle_repository_update(repo)
+            if not self.force:
+                updated = self.__handle_repository_update(repo)
                 if updated:
                     self.Entropy.cycleDone()
-                    self.alreadyUpdated += 1
+                    self.already_updated += 1
                     continue
 
-            locked = self._handle_repository_lock(repo)
+            locked = self.__handle_repository_lock(repo)
             if locked:
-                self.notAvailable += 1
+                self.not_available += 1
                 self.Entropy.cycleDone()
                 continue
 
@@ -1239,15 +1235,15 @@ class Repository:
                 if self.dbformat_eapi < 3:
 
                     down_status, sig_down_status, downloaded_db_item = \
-                        self._handle_database_download(repo, cmethod)
+                        self.__handle_database_download(repo, cmethod)
                     if not down_status:
                         self.Entropy.cycleDone()
-                        self.notAvailable += 1
+                        self.not_available += 1
                         do_skip = True
                         skip_this_repo = True
                         continue
                     db_checksum_down_status = \
-                        self._handle_database_checksum_download(repo, cmethod)
+                        self.__handle_database_checksum_download(repo, cmethod)
                     break
 
                 elif self.dbformat_eapi == 3 and not \
@@ -1280,10 +1276,10 @@ class Repository:
 
                     if status is None: # remote db not available anymore ?
                         time.sleep(5)
-                        locked = self._handle_repository_lock(repo)
+                        locked = self.__handle_repository_lock(repo)
                         if locked:
                             self.Entropy.cycleDone()
-                            self.notAvailable += 1
+                            self.not_available += 1
                             do_skip = True
                             skip_this_repo = True
                         else: # ah, well... dunno then...
@@ -1310,7 +1306,7 @@ class Repository:
                     repo, cmethod)
                 downloaded_files.append(dpath)
                 if sig_down_status:
-                    d_sig_path = self._append_gpg_signature_to_path(dpath)
+                    d_sig_path = self.__append_gpg_signature_to_path(dpath)
                     downloaded_files.append(d_sig_path)
 
                 # 1. we're always in EAPI1 or 2 here
@@ -1319,7 +1315,7 @@ class Repository:
                 if not db_checksum_down_status:
                     # delete all
                     self.__remove_repository_files(repo)
-                    self.syncErrors = True
+                    self.sync_errors = True
                     self.Entropy.cycleDone()
                     continue
 
@@ -1327,7 +1323,7 @@ class Repository:
                 if rc != 0:
                     # delete all
                     self.__remove_repository_files(repo)
-                    self.syncErrors = True
+                    self.sync_errors = True
                     self.Entropy.cycleDone()
                     continue
 
@@ -1355,12 +1351,12 @@ class Repository:
                             do_db_update_transfer = False
 
                 unpack_status, unpacked_item = \
-                    self._handle_downloaded_database_unpack(repo, cmethod)
+                    self.__handle_downloaded_database_unpack(repo, cmethod)
 
                 if not unpack_status:
                     # delete all
                     self.__remove_repository_files(repo)
-                    self.syncErrors = True
+                    self.sync_errors = True
                     self.Entropy.cycleDone()
                     continue
 
@@ -1377,11 +1373,11 @@ class Repository:
                     os.remove(dbfile)
 
                 if self.dbformat_eapi == 2:
-                    rc = self._eapi2_inject_downloaded_dump(dumpfile,
+                    rc = self.__eapi2_inject_downloaded_dump(dumpfile,
                         dbfile, cmethod)
 
                 if do_db_update_transfer:
-                    self._eapi1_eapi2_databases_alignment(dbfile, dbfile_old)
+                    self.__eapi1_eapi2_databases_alignment(dbfile, dbfile_old)
 
                 if self.dbformat_eapi == 2:
                     # remove the dump
@@ -1390,7 +1386,7 @@ class Repository:
             if rc != 0:
                 # delete all
                 self.__remove_repository_files(repo)
-                self.syncErrors = True
+                self.sync_errors = True
                 self.Entropy.cycleDone()
                 files_to_remove.append(dbfile_old)
                 for path in files_to_remove:
@@ -1404,7 +1400,7 @@ class Repository:
                 self.Entropy.setup_default_file_perms(dbfile)
 
             # database has been updated
-            self.dbupdated = True
+            self.updated = True
 
             # remove garbage left around
             for path in files_to_remove:
@@ -1415,7 +1411,7 @@ class Repository:
 
             self.Entropy.update_repository_revision(repo)
             if self.Entropy.indexing:
-                self.do_database_indexing(repo)
+                self._database_indexing(repo)
 
             try:
                 spm_class = self.Entropy.Spm_class()
@@ -1446,14 +1442,14 @@ class Repository:
         self.Entropy.close_all_repositories()
 
         # clean caches, fetch security
-        if self.dbupdated:
+        if self.updated:
             self.Entropy._purge_cache()
-            if self.fetchSecurity:
+            if self.fetch_security:
                 self._update_security_advisories()
             # do treeupdates
             if isinstance(self.Entropy.clientDbconn, EntropyRepository) and \
                 entropy.tools.is_root(): # only as root due to Portage
-                for repo in self.reponames:
+                for repo in self.repo_ids:
                     try:
                         dbc = self.Entropy.open_repository(repo)
                     except RepositoryError:
@@ -1462,34 +1458,34 @@ class Repository:
                     self.Entropy.repository_packages_spm_sync(repo, dbc)
                 self.Entropy.close_all_repositories()
 
-        if self.syncErrors:
+        if self.sync_errors:
             self.Entropy.updateProgress(
                 red(_("Something bad happened. Please have a look.")),
                 importance = 1,
                 type = "warning",
                 header = darkred(" @@ ")
             )
-            self.syncErrors = True
+            self.sync_errors = True
             self.Entropy.resources_remove_lock()
             return 128
 
-        if not self.noEquoCheck:
-            self.check_entropy_updates()
+        if self.entropy_updates_alert:
+            self._check_entropy_updates()
 
         return 0
 
-    def check_entropy_updates(self):
+    def _check_entropy_updates(self):
         rc = False
-        if not self.noEquoCheck:
+        if self.entropy_updates_alert:
             try:
                 rc, pkg_match = self.Entropy.check_package_update(
                     "sys-apps/entropy", deep = True)
             except:
                 pass
         if rc:
-            self.newEquo = True
+            self.new_entropy = True
             mytxt = "%s: %s. %s." % (
-                bold("Equo/Entropy"),
+                bold("Entropy"),
                 blue(_("a new release is available")),
                 darkred(_("Mind to install it before any other package")),
             )
@@ -1500,7 +1496,7 @@ class Repository:
                 header = bold(" !!! ")
             )
 
-    def _handle_downloaded_database_unpack(self, repo, cmethod):
+    def __handle_downloaded_database_unpack(self, repo, cmethod):
 
         file_to_unpack = etpConst['etpdatabasedump']
         if self.dbformat_eapi == 1:
@@ -1537,7 +1533,7 @@ class Repository:
         return True, myitem
 
 
-    def _handle_database_checksum_download(self, repo, cmethod):
+    def __handle_database_checksum_download(self, repo, cmethod):
 
         downitem = 'cklight'
         if self._developer_repo:
@@ -1583,29 +1579,30 @@ class Repository:
             )
         return db_down_status
 
-    def load_background_repository_lock_check(self, repo):
+    def __load_background_repository_lock_check(self, repo):
         # kill previous
-        self.current_repository_got_locked = False
-        self.kill_previous_repository_lock_scanner()
-        self.LockScanner = TimeScheduled(30, self.repository_lock_scanner, repo)
-        self.LockScanner.start()
+        self.__current_repo_locked = False
+        self.__kill_previous___repository_lock_scanner()
+        self.__lock_scanner = TimeScheduled(30, self.__repository_lock_scanner,
+            repo)
+        self.__lock_scanner.start()
 
-    def kill_previous_repository_lock_scanner(self):
-        if self.LockScanner != None:
-            self.LockScanner.kill()
+    def __kill_previous___repository_lock_scanner(self):
+        if self.__lock_scanner is not None:
+            self.__lock_scanner.kill()
 
-    def repository_lock_scanner(self, repo):
-        locked = self._handle_repository_lock(repo)
+    def __repository_lock_scanner(self, repo):
+        locked = self.__handle_repository_lock(repo)
         if locked:
-            self.current_repository_got_locked = True
+            self.__current_repo_locked = True
 
-    def repository_lock_scanner_status(self):
+    def __repository_lock_scanner_status(self):
         # raise an exception if repo got suddenly locked
-        if self.current_repository_got_locked:
+        if self.__current_repo_locked:
             mytxt = "Current repository got suddenly locked. Download aborted."
             raise RepositoryError('RepositoryError %s' % (mytxt,))
 
-    def _handle_database_download(self, repo, cmethod):
+    def __handle_database_download(self, repo, cmethod):
 
         def show_repo_locked_message():
             mytxt = "%s: %s." % (
@@ -1634,47 +1631,47 @@ class Repository:
         if self.dbformat_eapi == 2:
 
             # start a check in background
-            self.load_background_repository_lock_check(repo)
+            self.__load_background_repository_lock_check(repo)
             down_item = "dbdumplight"
 
             down_status = self._download_item(down_item, repo, cmethod,
-                lock_status_func = self.repository_lock_scanner_status,
+                lock_status_func = self.__repository_lock_scanner_status,
                 disallow_redirect = True)
             if down_status:
                 # get GPG file if available
                 sig_status = self._download_item(down_item, repo, cmethod,
-                    lock_status_func = self.repository_lock_scanner_status,
+                    lock_status_func = self.__repository_lock_scanner_status,
                     disallow_redirect = True, get_signature = True)
 
             downloaded_item = down_item
-            if self.current_repository_got_locked:
-                self.kill_previous_repository_lock_scanner()
+            if self.__current_repo_locked:
+                self.__kill_previous___repository_lock_scanner()
                 show_repo_locked_message()
                 return False, sig_status, downloaded_item
 
         if not down_status: # fallback to old db
 
             # start a check in background
-            self.load_background_repository_lock_check(repo)
+            self.__load_background_repository_lock_check(repo)
             self.dbformat_eapi = 1
             down_item = "dblight"
             if self._developer_repo:
                 # if developer repo mode is enabled, fetch full-blown db
                 down_item = "db"
                 const_debug_write(__name__,
-                    "_handle_database_download: developer repo mode enabled")
+                    "__handle_database_download: developer repo mode enabled")
 
             down_status = self._download_item(down_item, repo, cmethod,
-                lock_status_func = self.repository_lock_scanner_status,
+                lock_status_func = self.__repository_lock_scanner_status,
                 disallow_redirect = True)
             if down_status:
                 sig_status = self._download_item(down_item, repo, cmethod,
-                    lock_status_func = self.repository_lock_scanner_status,
+                    lock_status_func = self.__repository_lock_scanner_status,
                     disallow_redirect = True, get_signature = True)
 
             downloaded_item = down_item
-            if self.current_repository_got_locked:
-                self.kill_previous_repository_lock_scanner()
+            if self.__current_repo_locked:
+                self.__kill_previous___repository_lock_scanner()
                 show_repo_locked_message()
                 return False, sig_status, downloaded_item
 
@@ -1688,12 +1685,12 @@ class Repository:
                 header = "\t"
             )
 
-        self.kill_previous_repository_lock_scanner()
+        self.__kill_previous___repository_lock_scanner()
         return down_status, sig_status, downloaded_item
 
-    def _handle_repository_update(self, repo):
+    def __handle_repository_update(self, repo):
         # check if database is already updated to the latest revision
-        update = self.is_repository_updatable(repo)
+        update = self._is_repository_updatable(repo)
         if not update:
             mytxt = "%s: %s." % (bold(_("Attention")),
                 red(_("database is already up to date")),)
@@ -1706,7 +1703,7 @@ class Repository:
             return True
         # also check for eapi3 lock
         if self.dbformat_eapi == 3:
-            locked = self.is_repository_eapi3_locked(repo)
+            locked = self.__get_online_eapi3_lock(repo)
             if locked:
                 mytxt = "%s: %s." % (bold(_("Attention")),
                     red(_("database will be ready soon")),)
@@ -1719,9 +1716,9 @@ class Repository:
                 return True
         return False
 
-    def _handle_repository_lock(self, repo):
+    def __handle_repository_lock(self, repo):
         # get database lock
-        unlocked = self.is_repository_unlocked(repo)
+        unlocked = self._is_repository_unlocked(repo)
         if not unlocked:
             mytxt = "%s: %s. %s." % (
                 bold(_("Attention")),
@@ -1737,7 +1734,7 @@ class Repository:
             return True
         return False
 
-    def _eapi1_eapi2_databases_alignment(self, dbfile, dbfile_old):
+    def __eapi1_eapi2_databases_alignment(self, dbfile, dbfile_old):
 
         dbconn = self.Entropy.open_generic_database(dbfile, xcache = False,
             indexing_override = False)
@@ -1746,8 +1743,8 @@ class Repository:
         upd_rc = 0
         try:
             upd_rc = old_dbconn.alignDatabases(dbconn, output_header = "\t")
-        except (self.dbapi2.OperationalError, self.dbapi2.IntegrityError,
-            self.dbapi2.DatabaseError,):
+        except (self.__dbapi2.OperationalError, self.__dbapi2.IntegrityError,
+            self.__dbapi2.DatabaseError,):
             pass
         old_dbconn.closeDB()
         dbconn.closeDB()
@@ -1757,7 +1754,7 @@ class Repository:
             os.rename(dbfile_old, dbfile)
         return upd_rc
 
-    def _eapi2_inject_downloaded_dump(self, dumpfile, dbfile, cmethod):
+    def __eapi2_inject_downloaded_dump(self, dumpfile, dbfile, cmethod):
 
         # load the dump into database
         mytxt = "%s %s, %s %s" % (
@@ -1973,7 +1970,7 @@ class Repository:
 
         return downloaded_files
 
-    def do_database_indexing(self, repo):
+    def _database_indexing(self, repo):
 
         # renice a bit, to avoid eating resources
         old_prio = self.Entropy.set_priority(15)
@@ -1989,7 +1986,7 @@ class Repository:
         dbconn.commitChanges(force = True)
         # get list of indexes
         repo_indexes = dbconn.listAllIndexes()
-        if self.Entropy.clientDbconn != None:
+        if self.Entropy.clientDbconn is not None:
             try: # client db can be absent
                 client_indexes = self.Entropy.clientDbconn.listAllIndexes()
                 if repo_indexes != client_indexes:
@@ -2034,9 +2031,9 @@ class Repository:
         # remove lock
         self.Entropy.resources_remove_lock()
 
-        if (self.notAvailable >= len(self.reponames)):
+        if (self.not_available >= len(self.repo_ids)):
             return 2
-        elif (self.notAvailable > 0):
+        elif (self.not_available > 0):
             return 1
 
         return 0

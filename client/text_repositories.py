@@ -52,8 +52,8 @@ def repositories(options):
                 print_error(er_txt)
                 return 1
 
-            rc = _do_sync(entropy_client, reponames = repo_names,
-                forceUpdate = e_req_force_update)
+            rc = _do_sync(entropy_client, repo_identifiers = repo_names,
+                force = e_req_force_update)
 
         elif options[0] == "status":
             for repo in SystemSettings['repositories']['order']:
@@ -160,14 +160,14 @@ def _show_repository_info(entropy_client, reponame):
 
     return 0
 
-def _do_sync(entropy_client, reponames = None, forceUpdate = False):
+def _do_sync(entropy_client, repo_identifiers = None, force = False):
 
-    if reponames is None:
-        reponames = []
+    if repo_identifiers is None:
+        repo_identifiers = []
 
     # load repository class
     try:
-        repo_intf = entropy_client.Repositories(reponames, forceUpdate)
+        repo_intf = entropy_client.Repositories(repo_identifiers, force = force)
     except AttributeError:
         print_error(darkred(" * ")+red("%s %s" % (
             _("No repositories specified in"), etpConst['repositoriesconf'],)))
@@ -179,7 +179,7 @@ def _do_sync(entropy_client, reponames = None, forceUpdate = False):
 
     rc = repo_intf.sync()
     if not rc:
-        for reponame in reponames:
+        for reponame in repo_identifiers:
             _show_notice_board_summary(entropy_client, reponame)
     return rc
 
