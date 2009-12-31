@@ -15,6 +15,7 @@
 import os
 import shutil
 import subprocess
+import datetime
 from entropy.exceptions import IncorrectParameter, InvalidData
 from entropy.misc import LogFile
 from entropy.const import etpConst, etpUi, const_setup_perms, \
@@ -967,6 +968,9 @@ class Repository:
     class KeyAlreadyInstalled(GPGError):
         """Public/private key already installed"""
 
+    class KeyExpired(GPGError):
+        """Public/private key is expired!"""
+
     class ListKeys(list):
         ''' Handle status messages for --list-keys.
 
@@ -1058,8 +1062,7 @@ class Repository:
         """
         Given a time delta expressed in days, return new ISO date string.
         """
-        from datetime import timedelta, date
-        exp_date = date.today() + timedelta(days)
+        exp_date = datetime.date.today() + datetime.timedelta(days)
         year = str(exp_date.year)
         month = str(exp_date.month)
         day = str(exp_date.day)
@@ -1068,6 +1071,11 @@ class Repository:
         if len(month) < 2:
             month = '0' + month
         return "%s-%s-%s" % (year, month, day,)
+
+    def __is_str_unixtime_in_the_past(self, unixtime):
+        today = datetime.date.today()
+        unix_date = datetime.date.fromtimestamp(float(unixtime))
+        return today > unix_date
 
     def __get_keymap(self):
         """
@@ -1360,6 +1368,42 @@ class Repository:
         const_setup_perms(self.__keystore, etpConst['entropygid'],
             f_perms = 0o660)
 
+    def is_pubkey_expired(self, repository_identifier):
+        """
+        Return whether public key is expired.
+
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @return: True, if key is expired
+        @rtype: bool
+        @raise KeyError, if key is not available
+        """
+        ts = self.get_key_metadata(repository_identifier)
+        if not ts['expires']:
+            return False
+        try:
+            return self.__is_str_unixtime_in_the_past(ts['expires'])
+        except ValueError:
+            return False
+
+    def is_privkey_expired(self, repository_identifier):
+        """
+        Return whether private key is expired.
+
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @return: True, if key is expired
+        @rtype: bool
+        @raise KeyError, if key is not available
+        """
+        ts = self.get_key_metadata(repository_identifier, private = True)
+        if not ts['expires']:
+            return False
+        try:
+            return self.__is_str_unixtime_in_the_past(ts['expires'])
+        except ValueError:
+            return False
+
     def is_keypair_available(self, repository_identifier):
         """
         Return whether public and private key for given repository identifier
@@ -1369,6 +1413,7 @@ class Repository:
         @type repository_identifier: string
         @return: True, if public and private key is available
         @rtype: bool
+        @raise Repository.KeyExpired: if key is expired
         """
         try:
             self.get_key_metadata(repository_identifier)
@@ -1378,6 +1423,11 @@ class Repository:
             self.get_key_metadata(repository_identifier, private = True)
         except KeyError:
             return False
+
+        if self.is_privkey_expired(repository_identifier):
+            raise Repository.KeyExpired("Key for %s is expired !" % (
+                repository_identifier,))
+
         return True
 
     def is_pubkey_available(self, repository_identifier):
@@ -1388,11 +1438,17 @@ class Repository:
         @type repository_identifier: string
         @return: True, if public key is available
         @rtype: bool
+        @raise Repository.KeyExpired: if key is expired
         """
         try:
             key = self.get_pubkey(repository_identifier)
         except KeyError:
             return False
+
+        if self.is_pubkey_expired(repository_identifier):
+            raise Repository.KeyExpired("Key for %s is expired !" % (
+                repository_identifier,))
+
         return True
 
     def is_privkey_available(self, repository_identifier):
@@ -1403,11 +1459,17 @@ class Repository:
         @type repository_identifier: string
         @return: True, if private key is available
         @rtype: bool
+        @raise Repository.KeyExpired: if key is expired
         """
         try:
             self.get_privkey(repository_identifier)
         except KeyError:
             return False
+
+        if self.is_privkey_expired(repository_identifier):
+            raise Repository.KeyExpired("Key for %s is expired !" % (
+                repository_identifier,))
+
         return True
 
     def __export_key(self, fingerprint, key_type = "public"):
@@ -1468,22 +1530,6 @@ class Repository:
         keymap = self.__get_keymap()
         fingerprint = keymap[repository_identifier]
         pubkey = self.__export_key(fingerprint, key_type = "private")
-        return pubkey
-
-    def get_revokekey(self, repository_identifier):
-        """
-        Get revoke key for currently set repository, if any, otherwise raise
-        KeyError.
-
-        @param repository_identifier: repository identifier
-        @type repository_identifier: string
-        @return: private key
-        @rtype: string
-        @raise KeyError: if no keypair is set for repository
-        """
-        keymap = self.__get_keymap()
-        fingerprint = keymap[repository_identifier]
-        pubkey = self.__export_key(fingerprint, key_type = "revoke")
         return pubkey
 
     def install_key(self, repository_identifier, key_path,

@@ -40,6 +40,9 @@ class SecurityTest(unittest.TestCase):
         self._repository.create_keypair("foo.org", name_email = "foo@foo.org",
             expiration_days = 10)
 
+        self.assertEqual(self._repository.is_keypair_available("foo.org"),
+            True)
+
         # key created ?
         self.assertNotEqual(self._repository.get_keys(), {})
         self.assert_(self._repository.is_pubkey_available("foo.org"))
@@ -68,6 +71,7 @@ class SecurityTest(unittest.TestCase):
             False)
 
         os.remove(asc_file)
+
 
 if __name__ == '__main__':
     if "--debug" in sys.argv:
