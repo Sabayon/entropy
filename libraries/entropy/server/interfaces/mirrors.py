@@ -1756,10 +1756,6 @@ class Server:
 
             self.shrink_database_and_close(repo)
 
-            # always upload metafile, it's cheap and also used by EAPI1,2
-            self._create_metafiles_file(upload_data['metafiles_path'],
-                text_files, repo)
-
             # EAPI 3
             if 3 not in disabled_eapis:
                 self._show_eapi3_upload_messages(crippled_uri, database_path,
@@ -1821,6 +1817,9 @@ class Server:
                     upload_data['compressed_database_path_light'],
                     upload_data['compressed_database_path_digest_light'])
 
+            # always upload metafile, it's cheap and also used by EAPI1,2
+            self._create_metafiles_file(upload_data['metafiles_path'],
+                text_files, repo)
             # Setup GPG signatures for files that are going to be uploaded
             self._create_upload_gpg_signatures(upload_data, gpg_to_sign_files,
                 repo)
