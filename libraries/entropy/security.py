@@ -1281,7 +1281,9 @@ class Repository:
         kwargs = {
             'key_length': self.__encbits,
             'name_real': repository_identifier,
-            'name_comment': '%s repository key' % (repository_identifier,),
+            'name_comment': '%s [%s|%s] repository key' % (
+                repository_identifier, etpConst['currentarch'],
+                etpConst['product'],),
         }
         if name_email:
             kwargs['name_email'] = name_email
@@ -1407,16 +1409,18 @@ class Repository:
             return False
         return True
 
-    def __export_key(self, fingerprint, secret = False):
+    def __export_key(self, fingerprint, key_type = "public"):
         """
         Export GPG keys to string.
         """
 
         args = self.__default_gpg_args() + ["--armor"]
-        if secret:
+        if key_type == "public":
+            args += ["--export"]
+        elif key_type == "private":
             args += ["--export-secret-key"]
         else:
-            args += ["--export"]
+            raise AttributeError("invalid key_type")
         args.append(fingerprint)
 
         proc = subprocess.Popen(args, **self.__default_popen_args())
@@ -1462,7 +1466,23 @@ class Repository:
         """
         keymap = self.__get_keymap()
         fingerprint = keymap[repository_identifier]
-        pubkey = self.__export_key(fingerprint, secret = True)
+        pubkey = self.__export_key(fingerprint, key_type = "private")
+        return pubkey
+
+    def get_revokekey(self, repository_identifier):
+        """
+        Get revoke key for currently set repository, if any, otherwise raise
+        KeyError.
+
+        @param repository_identifier: repository identifier
+        @type repository_identifier: string
+        @return: private key
+        @rtype: string
+        @raise KeyError: if no keypair is set for repository
+        """
+        keymap = self.__get_keymap()
+        fingerprint = keymap[repository_identifier]
+        pubkey = self.__export_key(fingerprint, key_type = "revoke")
         return pubkey
 
     def install_key(self, repository_identifier, key_path,
