@@ -1237,7 +1237,8 @@ class Repository:
 
         const_debug_write(__name__, "Repository.__gen_key args => %s" % (
             args,))
-        proc = subprocess.Popen(args, **self.__default_popen_args())
+        proc = subprocess.Popen(args,
+            **self.__default_popen_args(stderr = True))
 
         # feed gpg with data
         proc_stdout, proc_stderr = proc.communicate(input = key_input)
@@ -1250,8 +1251,8 @@ class Repository:
                 "cannot generate key, exit status %s" % (proc_rc,))
 
         # now get fucking fingerprint
-        key_data = [x.strip() for x in proc_stdout.split("\n") if x.strip() \
-            and "KEY_CREATED" in x.split()]
+        key_data = [x.strip() for x in (proc_stdout+proc_stderr).split("\n") \
+            if x.strip() and "KEY_CREATED" in x.split()]
         if not key_data or len(key_data) > 1:
             raise Repository.GPGError(
                 "cannot grab fingerprint of newly created key, data: %s" % (
@@ -1389,7 +1390,7 @@ class Repository:
         @rtype: bool
         """
         try:
-            self.get_pubkey(repository_identifier)
+            key = self.get_pubkey(repository_identifier)
         except KeyError:
             return False
         return True
@@ -1566,12 +1567,12 @@ class Repository:
             args.append("--preserve-permissions")
         return args
 
-    def __default_popen_args(self):
+    def __default_popen_args(self, stderr = False):
         kwargs = {
             'stdout': subprocess.PIPE,
             'stdin': subprocess.PIPE,
         }
-        if not etpUi['debug']:
+        if (not etpUi['debug']) or stderr:
             kwargs['stderr'] = subprocess.PIPE
         return kwargs
 
