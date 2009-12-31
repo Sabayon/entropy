@@ -1044,7 +1044,14 @@ class Repository:
             )
             return False # GPG not available
 
-        if repo_sec.is_pubkey_available(repoid):
+        pk_expired = False
+        try:
+            pk_avail = repo_sec.is_pubkey_available(repoid)
+        except repo_sec.KeyExpired:
+            pk_avail = False
+            pk_expired = True
+
+        if pk_avail:
             mytxt = "%s: %s" % (
                 purple(_("GPG key already installed for")),
                 bold(repoid),
@@ -1057,6 +1064,18 @@ class Repository:
             fingerprint = repo_sec.get_key_metadata(repoid)['fingerprint']
             do_warn_user(fingerprint)
             return True # already installed
+
+        elif pk_expired:
+            mytxt = "%s: %s" % (
+                purple(_("GPG key EXPIRED for repository")),
+                bold(repoid),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                type = "warning",
+                header = "\t"
+            )
+
 
         # actually install
         mytxt = "%s: %s" % (

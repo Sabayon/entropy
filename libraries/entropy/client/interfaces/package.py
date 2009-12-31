@@ -123,7 +123,11 @@ class Package:
                 return None
 
             # check if we have repository pubkey
-            if not repo_sec.is_pubkey_available(repository):
+            try:
+                if not repo_sec.is_pubkey_available(repository):
+                    return None
+            except repo_sec.KeyExpired:
+                # key is expired
                 return None
 
             # write gpg signature to disk for verification
