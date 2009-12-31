@@ -1072,7 +1072,7 @@ class Server:
             f_out.flush()
         f_out.close()
 
-    def get_files_to_sync(self, cmethod, download = False, repo = None,
+    def _get_files_to_sync(self, cmethod, download = False, repo = None,
         disabled_eapis = None):
 
         if repo is None:
@@ -1083,6 +1083,7 @@ class Server:
 
         critical = []
         extra_text_files = []
+        gpg_signed_files = []
         data = {}
         db_rev_file = self.Entropy.get_local_database_revision_file(repo)
         data['database_revision_file'] = db_rev_file
@@ -1194,6 +1195,7 @@ class Server:
             data['gpg_file'] = gpg_file
             # no need to add to extra_text_files, it will be added
             # afterwards
+            gpg_signed_files.append(gpg_file)
 
         # EAPI 2,3
         if not download: # we don't need to get the dump
@@ -1202,6 +1204,7 @@ class Server:
             data['metafiles_path'] = \
                 self.Entropy.get_local_database_compressed_metafiles_file(repo)
             critical.append(data['metafiles_path'])
+            gpg_signed_files.append(data['metafiles_path'])
 
             if 2 not in disabled_eapis:
 
@@ -1209,11 +1212,13 @@ class Server:
                     self.Entropy.get_local_database_dir(repo),
                     etpConst[cmethod[5]])
                 critical.append(data['dump_path_light'])
+                gpg_signed_files.append(data['dump_path_light'])
 
                 data['dump_path_digest_light'] = os.path.join(
                     self.Entropy.get_local_database_dir(repo),
                     etpConst[cmethod[6]])
                 critical.append(data['dump_path_digest_light'])
+                gpg_signed_files.append(data['dump_path_digest_light'])
 
         # EAPI 1
         if 1 not in disabled_eapis:
@@ -1221,26 +1226,34 @@ class Server:
             data['compressed_database_path'] = os.path.join(
                 self.Entropy.get_local_database_dir(repo), etpConst[cmethod[2]])
             critical.append(data['compressed_database_path'])
+            gpg_signed_files.append(data['compressed_database_path'])
+
             data['compressed_database_path_light'] = os.path.join(
                 self.Entropy.get_local_database_dir(repo), etpConst[cmethod[7]])
+            critical.append(data['compressed_database_path_light'])
+            gpg_signed_files.append(data['compressed_database_path_light'])
 
             data['database_path_digest'] = os.path.join(
                 self.Entropy.get_local_database_dir(repo),
                 etpConst['etpdatabasehashfile']
             )
             critical.append(data['database_path_digest'])
+            gpg_signed_files.append(data['database_path_digest'])
 
             data['compressed_database_path_digest'] = os.path.join(
                 self.Entropy.get_local_database_dir(repo),
                 etpConst[cmethod[2]] + etpConst['packagesmd5fileext']
             )
             critical.append(data['compressed_database_path_digest'])
+            gpg_signed_files.append(data['compressed_database_path_digest'])
 
             data['compressed_database_path_digest_light'] = os.path.join(
                 self.Entropy.get_local_database_dir(repo),
                 etpConst[cmethod[8]]
             )
             critical.append(data['compressed_database_path_digest_light'])
+            gpg_signed_files.append(
+                data['compressed_database_path_digest_light'])
 
 
         # SSL cert file, just for reference
@@ -1286,7 +1299,7 @@ class Server:
                 data[symname] = mytmpfile
             extra_text_files.append(mytmpfile)
 
-        return data, critical, extra_text_files
+        return data, critical, extra_text_files, gpg_signed_files
 
     def _show_package_sets_messages(self, repo):
 
@@ -1494,7 +1507,7 @@ class Server:
 
         entropy.tools.compress_files(compressed_dest_path, found_file_list)
 
-    def _create_upload_gpg_signatures(self, upload_data, repo):
+    def _create_upload_gpg_signatures(self, upload_data, to_sign_files, repo):
         """
         This method creates .asc files for every path that is going to be
         uploaded. upload_data directly comes from upload_database()
@@ -1506,6 +1519,8 @@ class Server:
         # for every item in upload_data, create a gpg signature
         gpg_upload_data = {}
         for item_id, item_path in upload_data.items():
+            if item_path not in to_sign_files:
+                continue
             if os.path.isfile(item_path) and os.access(item_path, os.R_OK):
                 gpg_item_id = item_id + "_gpg_sign_part"
                 if gpg_item_id in upload_data:
@@ -1693,8 +1708,9 @@ class Server:
             # create pkglist service file
             self.Entropy.create_repository_pkglist(repo)
 
-            upload_data, critical, text_files = self.get_files_to_sync(cmethod,
-                repo = repo, disabled_eapis = disabled_eapis)
+            upload_data, critical, text_files, gpg_to_sign_files = \
+                self._get_files_to_sync(cmethod, repo = repo,
+                    disabled_eapis = disabled_eapis)
 
             if lock_check:
                 given_up = self.mirror_lock_check(uri, repo = repo)
@@ -1806,7 +1822,8 @@ class Server:
                     upload_data['compressed_database_path_digest_light'])
 
             # Setup GPG signatures for files that are going to be uploaded
-            self._create_upload_gpg_signatures(upload_data, repo)
+            self._create_upload_gpg_signatures(upload_data, gpg_to_sign_files,
+                repo)
 
             if not pretend:
                 # upload
@@ -1889,9 +1906,9 @@ class Server:
             database_path = self.Entropy.get_local_database_file(repo)
             database_dir_path = os.path.dirname(
                 self.Entropy.get_local_database_file(repo))
-            download_data, critical, text_files = self.get_files_to_sync(
-                cmethod, download = True,
-                repo = repo, disabled_eapis = disabled_eapis)
+            download_data, critical, text_files, gpg_to_verify_files = \
+                self._get_files_to_sync(cmethod, download = True,
+                    repo = repo, disabled_eapis = disabled_eapis)
             mytmpdir = entropy.tools.get_random_temp_file()
             os.makedirs(mytmpdir)
 
