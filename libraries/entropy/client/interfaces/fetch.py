@@ -11,38 +11,30 @@
 """
 import os
 from entropy.i18n import _
-from entropy.const import *
-from entropy.exceptions import *
-from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown, darkblue
+from entropy.const import etpConst, etpUi
+from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown, \
+    darkblue
 
 class FetchersMixin:
 
     def check_needed_package_download(self, filepath, checksum = None):
         # is the file available
-        if os.path.isfile(etpConst['entropyworkdir']+"/"+filepath):
+        pkg_path = os.path.join(etpConst['entropyworkdir'],
+            filepath)
+        if os.path.isfile(pkg_path):
+
             if checksum is None:
                 return 0
-            else:
-                # check digest
-                md5res = self.entropyTools.compare_md5(etpConst['entropyworkdir']+"/"+filepath, checksum)
-                if (md5res):
-                    return 0
-                else:
-                    return -2
-        else:
-            return -1
+            # check digest
+            md5res = self.entropyTools.compare_md5(pkg_path, checksum)
+            if md5res:
+                return 0
+            return -2
 
-    def fetch_files(self, url_data_list, checksum = True, resume = True, fetch_file_abort_function = None):
-        """
-            Fetch multiple files simultaneously on URLs.
+        return -1
 
-            @param url_data_list list
-                [(url,dest_path [or None],checksum ['ab86fff46f6ec0f4b1e0a2a4a82bf323' or None],branch,),..]
-            @param digest bool, digest check (checksum)
-            @param resume bool enable resume support
-            @param fetch_file_abort_function callable method that could raise exceptions
-            @return general_status_code, {'url': (status_code,checksum,resumed,)}, data_transfer
-        """
+    def fetch_files(self, url_data_list, checksum = True, resume = True,
+        fetch_file_abort_function = None):
         pkgs_bindir = etpConst['packagesbindir']
         url_path_list = []
         checksum_map = {}
@@ -61,20 +53,21 @@ class FetchersMixin:
             if cksum != None: checksum_map[count] = cksum
 
         # load class
-        fetchConn = self.MultipleUrlFetcher(url_path_list, resume = resume,
-            abort_check_func = fetch_file_abort_function, OutputInterface = self,
-            UrlFetcherClass = self.urlFetcher, checksum = checksum)
+        fetch_intf = self.MultipleUrlFetcher(url_path_list, resume = resume,
+            abort_check_func = fetch_file_abort_function,
+            OutputInterface = self, UrlFetcherClass = self.urlFetcher,
+            checksum = checksum)
         try:
-            data = fetchConn.download()
+            data = fetch_intf.download()
         except KeyboardInterrupt:
             return -100, {}, 0
 
         diff_map = {}
         if checksum_map and checksum: # verify checksums
-            diff_map = dict((url_path_list[x-1][0], checksum_map.get(x)) for x in checksum_map \
-                if checksum_map.get(x) != data.get(x))
+            diff_map = dict((url_path_list[x-1][0], checksum_map.get(x)) \
+                for x in checksum_map if checksum_map.get(x) != data.get(x))
 
-        data_transfer = fetchConn.get_data_transfer()
+        data_transfer = fetch_intf.get_data_transfer()
         if diff_map:
             defval = -1
             for key, val in list(diff_map.items()):
@@ -92,13 +85,12 @@ class FetchersMixin:
 
         return 0, diff_map, data_transfer
 
-    def fetch_files_on_mirrors(self, download_list, checksum = False, fetch_abort_function = None):
-        """
-            @param download_map list [(repository,branch,filename,checksum (digest),signatures,),..]
-            @param checksum bool verify checksum?
-            @param fetch_abort_function callable method that could raise exceptions
-        """
-        repo_uris = dict(((x[0], self.SystemSettings['repositories']['available'][x[0]]['packages'][::-1],) for x in download_list))
+    def fetch_files_on_mirrors(self, download_list, checksum = False,
+        fetch_abort_function = None):
+
+        avail_data = self.SystemSettings['repositories']['available']
+        repo_uris = dict(((x[0], avail_data[x[0]]['packages'][::-1],) for x \
+            in download_list))
         remaining = repo_uris.copy()
         my_download_list = download_list[:]
 
@@ -300,7 +292,8 @@ class FetchersMixin:
 
         filename = os.path.basename(url)
         if not filepath:
-            filepath = os.path.join(etpConst['packagesbindir'], branch, filename)
+            filepath = os.path.join(etpConst['packagesbindir'], branch,
+                filename)
         filepath_dir = os.path.dirname(filepath)
         # symlink support
         if not os.path.isdir(os.path.realpath(filepath_dir)):
@@ -315,17 +308,18 @@ class FetchersMixin:
             existed_before = True
 
         # load class
-        fetchConn = self.urlFetcher(url, filepath, resume = resume,
-            abort_check_func = fetch_file_abort_function, OutputInterface = self)
-        fetchConn.progress = self.progress
+        fetch_intf = self.urlFetcher(url, filepath, resume = resume,
+            abort_check_func = fetch_file_abort_function,
+            OutputInterface = self)
+        fetch_intf.progress = self.progress
 
         # start to download
         data_transfer = 0
         resumed = False
         try:
-            fetchChecksum = fetchConn.download()
-            data_transfer = fetchConn.get_transfer_rate()
-            resumed = fetchConn.is_resumed()
+            fetchChecksum = fetch_intf.download()
+            data_transfer = fetch_intf.get_transfer_rate()
+            resumed = fetch_intf.is_resumed()
         except KeyboardInterrupt:
             return -100, data_transfer, resumed
         except NameError:
@@ -349,7 +343,7 @@ class FetchersMixin:
             # timeout
             return -4, data_transfer, resumed
 
-        del fetchConn
+        del fetch_intf
 
         if digest and (fetchChecksum != digest):
             # not properly downloaded
@@ -363,7 +357,8 @@ class FetchersMixin:
     def fetch_file_on_mirrors(self, repository, branch, filename,
             digest = False, fetch_abort_function = None):
 
-        uris = self.SystemSettings['repositories']['available'][repository]['packages'][::-1]
+        avail_data = self.SystemSettings['repositories']['available']
+        uris = avail_data[repository]['packages'][::-1]
         remaining = set(uris)
 
         mirrorcount = 0
@@ -376,7 +371,7 @@ class FetchersMixin:
 
             self.MirrorStatus.set_working_mirror(uri)
             mirrorcount += 1
-            mirrorCountText = "( mirror #%s ) " % (mirrorcount,)
+            mirror_count_txt = "( mirror #%s ) " % (mirrorcount,)
             url = uri + "/" + filename
 
             # check if uri is sane
@@ -384,7 +379,7 @@ class FetchersMixin:
                 # ohohoh!
                 # set to 30 for convenience
                 self.MirrorStatus.set_failing_mirror_status(uri, 30)
-                mytxt = mirrorCountText
+                mytxt = mirror_count_txt
                 mytxt += blue(" %s: ") % (_("Mirror"),)
                 mytxt += red(self.entropyTools.spliturl(uri)[1])
                 mytxt += " - %s." % (_("maximum failure threshold reached"),)
@@ -414,7 +409,7 @@ class FetchersMixin:
             timeout_try_count = 50
             while True:
                 try:
-                    mytxt = mirrorCountText
+                    mytxt = mirror_count_txt
                     mytxt += blue("%s: ") % (_("Downloading from"),)
                     mytxt += red(self.entropyTools.spliturl(uri)[1])
                     # now fetch the new one
@@ -432,7 +427,7 @@ class FetchersMixin:
                         fetch_file_abort_function = fetch_abort_function
                     )
                     if rc == 0:
-                        mytxt = mirrorCountText
+                        mytxt = mirror_count_txt
                         mytxt += blue("%s: ") % (_("Successfully downloaded from"),)
                         mytxt += red(self.entropyTools.spliturl(uri)[1])
                         human_bytes = self.entropyTools.bytes_into_human(data_transfer)
@@ -450,7 +445,7 @@ class FetchersMixin:
                         do_resume = False
                         continue
                     else:
-                        error_message = mirrorCountText
+                        error_message = mirror_count_txt
                         error_message += blue("%s: %s") % (
                             _("Error downloading from"),
                             red(self.entropyTools.spliturl(uri)[1]),
