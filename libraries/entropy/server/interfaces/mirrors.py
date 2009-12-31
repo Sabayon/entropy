@@ -1508,7 +1508,6 @@ class Server:
 
         return found_file_list, not_found_file_list
 
-
     def _create_metafiles_file(self, compressed_dest_path, file_list, repo):
 
         # GPG sign every file in found_file_list, and add our pubkey, if avail
@@ -1535,6 +1534,31 @@ class Server:
             os.remove(compressed_dest_path)
 
         entropy.tools.compress_files(compressed_dest_path, found_file_list)
+
+    def _create_upload_gpg_signatures(self, upload_data, repo):
+        """
+        This method creates .asc files for every path that is going to be
+        uploaded. upload_data directly comes from upload_database()
+        """
+        try:
+            repo_sec = RepositorySecurity()
+            if not repo_sec.is_keypair_available(repo):
+                raise KeyError("no key avail")
+        except RepositorySecurity.GPGError:
+            return
+        except KeyError:
+            return
+
+        # for every item in upload_data, create a gpg signature
+        gpg_upload_data = {}
+        for item_id, item_path in upload_data.items():
+            if os.path.isfile(item_path) and os.access(item_path, os.R_OK):
+                gpg_item_id = item_id + "_gpg_sign_part"
+                if gpg_item_id in upload_data:
+                    raise KeyError("wtf!")
+                sign_path = repo_sec.sign_file(repo, item_path)
+            gpg_upload_data[gpg_item_id] = sign_path
+        upload_data.update(gpg_upload_data)
 
     def mirror_lock_check(self, uri, repo = None):
         """
@@ -1826,6 +1850,9 @@ class Server:
                 self.create_file_checksum(
                     upload_data['compressed_database_path_light'],
                     upload_data['compressed_database_path_digest_light'])
+
+            # Setup GPG signatures for files that are going to be uploaded
+            self._create_upload_gpg_signatures(upload_data, repo)
 
             if not pretend:
                 # upload
