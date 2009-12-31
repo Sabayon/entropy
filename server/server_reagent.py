@@ -882,7 +882,6 @@ def spm_compile_pkgset(pkgsets, do_rebuild = False, do_dbupdate = False,
             return 1
 
     spm = Entropy.Spm()
-    
 
     done_atoms = set()
 

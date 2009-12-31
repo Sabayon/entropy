@@ -9,12 +9,25 @@
     B{Entropy Package Manager Server GPG Keys text interface}.
 
 """
-from entropy.output import red, blue, purple, darkgreen, bold, brown, teal
-from entropy.const import etpConst, const_convert_to_rawstring
+from entropy.output import blue, purple, darkgreen, bold, brown, teal
+from entropy.const import const_convert_to_rawstring
 from entropy.server.interfaces import Server
 from entropy.security import Repository
 from entropy.i18n import _
 from entropy.tools import convert_unix_time_to_human_time
+
+GPG_MSG_SHOWN = False
+
+def get_gpg(entropy_srv):
+    obj = Repository()
+    global GPG_MSG_SHOWN
+    if not GPG_MSG_SHOWN:
+        entropy_srv.updateProgress("%s: %s" % (
+            blue(_("GPG interface loaded, home directory")),
+            brown(Repository.GPG_HOME),)
+        )
+        GPG_MSG_SHOWN = True
+    return obj
 
 def key(myopts):
 
@@ -23,8 +36,8 @@ def key(myopts):
     cmd = myopts.pop(0)
 
     rc = -10
-    Entropy = Server()
-    sys_set = Entropy.SystemSettings[Entropy.sys_settings_plugin_id]['server']
+    entropy_srv = Server()
+    sys_set = entropy_srv.SystemSettings[entropy_srv.sys_settings_plugin_id]['server']
     avail_repos = sys_set['repositories']
 
     def validate_repos(repos, entropy_srv):
@@ -43,58 +56,58 @@ def key(myopts):
             repos:
             return rc
         elif cmd in ("create", "delete", "sign",):
-            v_rc = validate_repos(repos, Entropy)
+            v_rc = validate_repos(repos, entropy_srv)
             if v_rc != 0:
                 return v_rc
 
         try:
-            repo_sec = Repository()
+            repo_sec = get_gpg(entropy_srv)
         except Repository.GPGError as err:
-            Entropy.updateProgress("%s: %s" % (
+            entropy_srv.updateProgress("%s: %s" % (
                 _("GnuPG not available"), err,),
                     type = "error")
             return 1
 
         if cmd == "create" and repos:
             for repo in repos:
-                rc = _create_keys(Entropy, repo)
+                rc = _create_keys(entropy_srv, repo)
                 if rc != 0:
                     break
 
         elif cmd == "delete" and repos:
             for repo in repos:
-                rc = _delete_keys(Entropy, repo)
+                rc = _delete_keys(entropy_srv, repo)
                 if rc != 0:
                     break
 
         elif cmd == "status":
             if not repos:
-                repo_sec = Repository()
+                repo_sec = get_gpg(entropy_srv)
                 repos = sorted(repo_sec.get_keys(private = True))
             for repo in repos:
-                rc = _show_status(Entropy, repo)
+                rc = _show_status(entropy_srv, repo)
                 if rc != 0:
                     break
 
         elif cmd == "sign" and repos:
             for repo in repos:
-                rc = _sign_packages(Entropy, repo)
+                rc = _sign_packages(entropy_srv, repo)
                 if rc != 0:
                     break
 
         elif cmd == "import" and len(repos) == 3:
-            rc = _import_key(Entropy, repos[0], repos[1], repos[2])
+            rc = _import_key(entropy_srv, repos[0], repos[1], repos[2])
 
         elif cmd == "export-public" and len(repos) == 2:
-            rc = _export_key(Entropy, True, repos[0], repos[1])
+            rc = _export_key(entropy_srv, True, repos[0], repos[1])
 
         elif cmd == "export-private" and len(repos) == 2:
-            rc = _export_key(Entropy, False, repos[0], repos[1])
+            rc = _export_key(entropy_srv, False, repos[0], repos[1])
 
     finally:
-        Entropy.destroy()
+        entropy_srv.destroy()
 
-    del Entropy
+    del entropy_srv
     return rc
 
 
@@ -103,7 +116,7 @@ def _import_key(entropy_srv, repo, privkey_path, pubkey_path):
     entropy_srv.updateProgress("%s: %s" % (
         blue(_("Importing keypair for repository")), purple(repo),))
 
-    repo_sec = Repository()
+    repo_sec = get_gpg(entropy_srv)
     if repo_sec.is_keypair_available(repo):
         entropy_srv.updateProgress("%s: %s" % (
                 blue(_("Another keypair already exists for repository")),
@@ -134,7 +147,7 @@ def _import_key(entropy_srv, repo, privkey_path, pubkey_path):
 
 def _export_key(entropy_srv, is_pubkey, repo, store_path):
 
-    repo_sec = Repository()
+    repo_sec = get_gpg(entropy_srv)
 
     key_msg = _("Exporting private key for repository")
     func_check = repo_sec.is_privkey_available
@@ -187,7 +200,7 @@ def _create_keys(entropy_srv, repo):
     entropy_srv.updateProgress("%s: %s" % (
         blue(_("Creating keys for repository")), purple(repo),))
 
-    repo_sec = Repository()
+    repo_sec = get_gpg(entropy_srv)
     if repo_sec.is_keypair_available(repo):
         entropy_srv.updateProgress("%s: %s" % (
                 blue(_("Another key already exists for repository")),
@@ -199,17 +212,17 @@ def _create_keys(entropy_srv, repo):
         if answer == _("No"):
             return 1
 
-    def mycb(s):
-        return s
+    def mycb(sstr):
+        return sstr
 
-    def mycb_int(s):
+    def mycb_int(sstr):
         try:
-            int(s)
+            int(sstr)
         except ValueError:
             return False
         return True
 
-    def mycb_ok(s):
+    def mycb_ok(sstr):
         return True
 
     input_data = [
@@ -247,6 +260,15 @@ def _create_keys(entropy_srv, repo):
         ),
         type = "warning"
     )
+    entropy_srv.updateProgress(
+        darkgreen(_("Make friggin' sure to generate a revoke key and store it in a very safe place.")),
+        type = "warning"
+    )
+    entropy_srv.updateProgress(
+        "# gpg --homedir '%s' --armor --output revoke.asc --gen-revoke '%s'" % (
+            Repository.GPG_HOME, key_fp),
+        type = "info"
+    )
 
     # remove signatures from repository database
     dbconn = entropy_srv.open_server_repository(repo = repo, read_only = False)
@@ -258,7 +280,7 @@ def _delete_keys(entropy_srv, repo):
     entropy_srv.updateProgress("%s: %s" % (
         blue(_("Deleting keys for repository")), purple(repo),))
 
-    repo_sec = Repository()
+    repo_sec = get_gpg(entropy_srv)
     if not repo_sec.is_keypair_available(repo):
         entropy_srv.updateProgress("%s: %s" % (
                 blue(_("No keys available for given repository")),
@@ -297,7 +319,7 @@ def _delete_keys(entropy_srv, repo):
     return 0
 
 def _show_status(entropy_srv, repo):
-    repo_sec = Repository()
+    repo_sec = get_gpg(entropy_srv)
 
     try:
         key_meta = repo_sec.get_key_metadata(repo)
