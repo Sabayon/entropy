@@ -1511,14 +1511,8 @@ class Server:
                 if gpg_item_id in upload_data:
                     raise KeyError("wtf!")
                 sign_path = repo_sec.sign_file(repo, item_path)
-            gpg_upload_data[gpg_item_id] = sign_path
+                gpg_upload_data[gpg_item_id] = sign_path
         upload_data.update(gpg_upload_data)
-
-        # also add GPG key to upload_data
-        gpg_path = self.__write_gpg_pubkey(repo_sec, repo)
-        if 'gpg_signature' in upload_data:
-            raise KeyError("cannot add gpg_signature to upload_data")
-        upload_data['gpg_signature'] = gpg_path
 
     def mirror_lock_check(self, uri, repo = None):
         """
