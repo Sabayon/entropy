@@ -48,7 +48,7 @@ class Repository:
         self.supported_download_items = (
             "db", "dbck", "dblight", "ck", "cklight", "compck",
             "lock", "dbdump", "dbdumplight", "dbdumplightck", "dbdumpck",
-            "meta_file", "notice_board"
+            "meta_file", "meta_file_gpg", "notice_board"
         )
         self.big_socket_timeout = 10
         self.Entropy = EquoInstance
@@ -185,7 +185,7 @@ class Repository:
         const_setup_perms(etpConst['etpdatabaseclientdir'],
             etpConst['entropygid'])
 
-    def _construct_paths(self, item, repo, cmethod):
+    def _construct_paths(self, item, repo, cmethod, get_signature = False):
 
         if item not in self.supported_download_items:
             mytxt = "Supported items: %s" % (self.supported_download_items,)
@@ -208,6 +208,8 @@ class Repository:
         repo_lock_file = etpConst['etpdatabasedownloadlockfile']
         notice_board_filename = os.path.basename(repo_data['notice_board'])
         meta_file = etpConst['etpdatabasemetafilesfile']
+        meta_file_gpg = etpConst['etpdatabasemetafilesfile'] + \
+            etpConst['etpgpgextension']
         md5_ext = etpConst['packagesmd5fileext']
         ec_cm2 = None
         ec_cm3 = None
@@ -228,29 +230,77 @@ class Repository:
             ec_cm9 = etpConst[cmethod[9]]
 
         mymap = {
-            'db': ("%s/%s" % (repo_db, ec_cm2,), "%s/%s" % (repo_dbpath, ec_cm2,),),
-            'dbck': ("%s/%s" % (repo_db, ec_cm9,), "%s/%s" % (repo_dbpath, ec_cm9,),),
-            'dblight': ("%s/%s" % (repo_db, ec_cm7,), "%s/%s" % (repo_dbpath, ec_cm7,),),
-            'dbdump': ("%s/%s" % (repo_db, ec_cm3,), "%s/%s" % (repo_dbpath, ec_cm3,),),
-            'dbdumplight': ("%s/%s" % (repo_db, ec_cm5,), "%s/%s" % (repo_dbpath, ec_cm5,),),
-            'ck': ("%s/%s" % (repo_db, ec_hash,), "%s/%s" % (repo_dbpath, ec_hash,),),
-            'cklight': ("%s/%s" % (repo_db, ec_cm8,), "%s/%s" % (repo_dbpath, ec_cm8,),),
-            'compck': ("%s/%s%s" % (repo_db, ec_cm2, md5_ext,), "%s/%s%s" % (repo_dbpath, ec_cm2, md5_ext,),),
-            'dbdumpck': ("%s/%s" % (repo_db, ec_cm4,), "%s/%s" % (repo_dbpath, ec_cm4,),),
-            'dbdumplightck': ("%s/%s" % (repo_db, ec_cm6,), "%s/%s" % (repo_dbpath, ec_cm6,),),
-            'lock': ("%s/%s" % (repo_db, repo_lock_file,), "%s/%s" % (repo_dbpath, repo_lock_file,),),
-            'notice_board': (repo_data['notice_board'], "%s/%s" % (repo_dbpath, notice_board_filename,),),
-            'meta_file': ("%s/%s" % (repo_db, meta_file,), "%s/%s" % (repo_dbpath, meta_file,),),
+            'db': (
+                "%s/%s" % (repo_db, ec_cm2,),
+                "%s/%s" % (repo_dbpath, ec_cm2,),
+            ),
+            'dbck': (
+                "%s/%s" % (repo_db, ec_cm9,),
+                "%s/%s" % (repo_dbpath, ec_cm9,),
+            ),
+            'dblight': (
+                "%s/%s" % (repo_db, ec_cm7,),
+                "%s/%s" % (repo_dbpath, ec_cm7,),
+            ),
+            'dbdump': (
+                "%s/%s" % (repo_db, ec_cm3,),
+                "%s/%s" % (repo_dbpath, ec_cm3,),
+            ),
+            'dbdumplight': (
+                "%s/%s" % (repo_db, ec_cm5,),
+                "%s/%s" % (repo_dbpath, ec_cm5,),
+            ),
+            'ck': (
+                "%s/%s" % (repo_db, ec_hash,),
+                "%s/%s" % (repo_dbpath, ec_hash,),
+            ),
+            'cklight': (
+                "%s/%s" % (repo_db, ec_cm8,),
+                "%s/%s" % (repo_dbpath, ec_cm8,),
+            ),
+            'compck': (
+                "%s/%s%s" % (repo_db, ec_cm2, md5_ext,),
+                "%s/%s%s" % (repo_dbpath, ec_cm2, md5_ext,),
+            ),
+            'dbdumpck': (
+                "%s/%s" % (repo_db, ec_cm4,),
+                "%s/%s" % (repo_dbpath, ec_cm4,),
+            ),
+            'dbdumplightck': (
+                "%s/%s" % (repo_db, ec_cm6,),
+                "%s/%s" % (repo_dbpath, ec_cm6,),
+            ),
+            'lock': (
+                "%s/%s" % (repo_db, repo_lock_file,),
+                "%s/%s" % (repo_dbpath, repo_lock_file,),
+            ),
+            'notice_board': (
+                repo_data['notice_board'],
+                "%s/%s" % (repo_dbpath, notice_board_filename,),
+            ),
+            'meta_file': (
+                "%s/%s" % (repo_db, meta_file,),
+                "%s/%s" % (repo_dbpath, meta_file,),
+            ),
+            'meta_file_gpg': (
+                "%s/%s" % (repo_db, meta_file_gpg,),
+                "%s/%s" % (repo_dbpath, meta_file_gpg,),
+            ),
         }
 
-        return mymap.get(item)
+        url, path = mymap.get(item)
+        if get_signature:
+            url = self._append_gpg_signature_to_path(url)
+            path = self._append_gpg_signature_to_path(path)
+
+        return url, path
 
     def __remove_repository_files(self, repo):
         sys_set = self.Entropy.SystemSettings
         repo_dbpath = sys_set['repositories']['available'][repo]['dbpath']
         shutil.rmtree(repo_dbpath, True)
 
-    def __unpack_downloaded_database(self, repo, cmethod):
+    def __unpack_downloaded_database(self, down_item, repo, cmethod):
 
         self.__validate_repository_id(repo)
         rc = 0
@@ -258,12 +308,7 @@ class Repository:
         sys_set_repos = self.Entropy.SystemSettings['repositories']['available']
         repo_data = sys_set_repos[repo]
 
-        myitem = 'dblight'
-        if self.dbformat_eapi == 2:
-            myitem = 'dbdumplight'
-        elif self._developer_repo:
-            myitem = 'db'
-        garbage, myfile = self._construct_paths(myitem, repo, cmethod)
+        garbage, myfile = self._construct_paths(down_item, repo, cmethod)
 
         if self.dbformat_eapi in (1, 2,):
             try:
@@ -279,8 +324,6 @@ class Repository:
 
             except (OSError, EOFError):
                 rc = 1
-            if os.path.isfile(myfile):
-                os.remove(myfile)
 
         else:
             mytxt = "self.dbformat_eapi must be in (1,2)"
@@ -377,7 +420,7 @@ class Repository:
 
         self.__validate_repository_id(repo)
 
-        rc = self.download_item("lock", repo, disallow_redirect = True)
+        rc = self._download_item("lock", repo, disallow_redirect = True)
         if rc: # cannot download database
             self.syncErrors = True
             return False
@@ -389,11 +432,19 @@ class Repository:
             etpConst['cache_ids']['dbMatch'],
             etpConst['dbnamerepoprefix'], repo,))
 
-    def download_item(self, item, repo, cmethod = None, lock_status_func = None,
-        disallow_redirect = True):
+    def _append_gpg_signature_to_path(self, path):
+        return path + etpConst['etpgpgextension']
+
+    def _download_item(self, item, repo, cmethod = None,
+        lock_status_func = None, disallow_redirect = True,
+        get_signature = False):
 
         self.__validate_repository_id(repo)
         url, filepath = self._construct_paths(item, repo, cmethod)
+
+        if get_signature:
+            url = self._append_gpg_signature_to_path(url)
+            filepath = self._append_gpg_signature_to_path(filepath)
 
         # to avoid having permissions issues
         # it's better to remove the file before,
@@ -401,7 +452,9 @@ class Repository:
         if os.path.isfile(filepath):
             os.remove(filepath)
         filepath_dir = os.path.dirname(filepath)
-        if not os.path.isdir(filepath_dir) and not os.path.lexists(filepath_dir):
+        if not os.path.isdir(filepath_dir) and not \
+            os.path.lexists(filepath_dir):
+
             os.makedirs(filepath_dir, 0o775)
             const_setup_perms(filepath_dir, etpConst['entropygid'])
 
@@ -1061,6 +1114,8 @@ class Repository:
 
         gpg_sign_ext = etpConst['etpgpgextension']
         sign_files = [x for x in downloaded_files if x.endswith(gpg_sign_ext)]
+        sign_files = [x for x in sign_files if os.path.isfile(x) and \
+            os.access(x, os.R_OK)]
 
         to_be_verified = []
 
@@ -1082,7 +1137,7 @@ class Repository:
             self.Entropy.updateProgress(
                 mytxt,
                 type = "info",
-                header = "\t",
+                header = blue("\t@@ "),
                 back = True
             )
 
@@ -1096,7 +1151,7 @@ class Repository:
                 self.Entropy.updateProgress(
                     mytxt,
                     type = "info",
-                    header = "\t  "
+                    header = blue("\t@@ ")
                 )
             else:
                 mytxt = "%s: %s" % (
@@ -1106,7 +1161,7 @@ class Repository:
                 self.Entropy.updateProgress(
                     mytxt,
                     type = "error",
-                    header = "\t%s  " % (bold("!!!"),)
+                    header = "\t%s " % (bold("!!!"),)
                 )
                 mytxt = "%s: %s" % (
                     purple(_("It could mean a potential security risk")),
@@ -1115,7 +1170,7 @@ class Repository:
                 self.Entropy.updateProgress(
                     mytxt,
                     type = "error",
-                    header = "\t%s  " % (bold("!!!"),)
+                    header = "\t%s " % (bold("!!!"),)
                 )
                 gpg_rc = 1
 
@@ -1174,9 +1229,12 @@ class Repository:
                 if do_skip:
                     break
 
+                downloaded_db_item = None
+                sig_down_status = False
                 if self.dbformat_eapi < 3:
 
-                    down_status = self._handle_database_download(repo, cmethod)
+                    down_status, sig_down_status, downloaded_db_item = \
+                        self._handle_database_download(repo, cmethod)
                     if not down_status:
                         self.Entropy.cycleDone()
                         self.notAvailable += 1
@@ -1238,6 +1296,7 @@ class Repository:
             if skip_this_repo:
                 continue
 
+            files_to_remove = []
             if self.dbformat_eapi in (1, 2,):
 
                 # new policy, always deny repository if
@@ -1269,8 +1328,8 @@ class Repository:
                         except OSError:
                             do_db_update_transfer = False
 
-                unpack_status = self._handle_downloaded_database_unpack(repo,
-                    cmethod)
+                unpack_status, unpacked_item = \
+                    self._handle_downloaded_database_unpack(repo, cmethod)
 
                 if not unpack_status:
                     # delete all
@@ -1278,6 +1337,10 @@ class Repository:
                     self.syncErrors = True
                     self.Entropy.cycleDone()
                     continue
+
+                unpack_url, unpack_path = self._construct_paths(unpacked_item,
+                    repo, cmethod)
+                files_to_remove.append(unpack_path)
 
                 # re-validate
                 if not os.path.isfile(dbfile):
@@ -1296,32 +1359,49 @@ class Repository:
 
                 if self.dbformat_eapi == 2:
                     # remove the dump
-                    os.remove(dumpfile)
+                    files_to_remove.append(dumpfile)
 
             if rc != 0:
                 # delete all
                 self.__remove_repository_files(repo)
                 self.syncErrors = True
                 self.Entropy.cycleDone()
-                if os.path.isfile(dbfile_old):
-                    os.remove(dbfile_old)
+                files_to_remove.append(dbfile_old)
+                for path in files_to_remove:
+                    try:
+                        os.remove(path)
+                    except OSError:
+                        continue
                 continue
 
             if os.path.isfile(dbfile) and os.access(dbfile, os.W_OK):
-                try:
-                    self.Entropy.setup_default_file_perms(dbfile)
-                except OSError: # notification applet
-                    pass
+                self.Entropy.setup_default_file_perms(dbfile)
 
             # database is going to be updated
             self.dbupdated = True
             downloaded_files = self._standard_items_download(repo)
+
+            # also add db file to downloaded item
+            if downloaded_db_item is not None:
+                durl, dpath = self._construct_paths(downloaded_db_item,
+                    repo, cmethod)
+                downloaded_files.append(dpath)
+                if sig_down_status:
+                    d_sig_path = self._append_gpg_signature_to_path(dpath)
+                    downloaded_files.append(d_sig_path)
 
             # GPG pubkey install hook
             gpg_available = self._install_gpg_key_if_available(repo)
             if gpg_available:
                 gpg_rc = self._gpg_verify_downloaded_files(repo,
                     downloaded_files)
+
+            # remove garbage left around
+            for path in files_to_remove:
+                try:
+                    os.remove(path)
+                except OSError:
+                    continue
 
             self.Entropy.update_repository_revision(repo)
             if self.Entropy.indexing:
@@ -1415,6 +1495,8 @@ class Repository:
         file_to_unpack = etpConst['etpdatabasedump']
         if self.dbformat_eapi == 1:
             file_to_unpack = etpConst['etpdatabasefile']
+        elif self.dbformat_eapi == 2:
+            file_to_unpack = etpConst['etpdatabasedumplight']
 
         mytxt = "%s %s %s" % (red(_("Unpacking database to")),
             darkgreen(file_to_unpack), red("..."),)
@@ -1425,7 +1507,13 @@ class Repository:
             header = "\t"
         )
 
-        myrc = self.__unpack_downloaded_database(repo, cmethod)
+        myitem = 'dblight'
+        if self.dbformat_eapi == 2:
+            myitem = 'dbdumplight'
+        elif self._developer_repo:
+            myitem = 'db'
+
+        myrc = self.__unpack_downloaded_database(myitem, repo, cmethod)
         if myrc != 0:
             mytxt = "%s %s !" % (red(_("Cannot unpack compressed package")),
                 red(_("Skipping repository")),)
@@ -1435,8 +1523,8 @@ class Repository:
                 type = "warning",
                 header = "\t"
             )
-            return False
-        return True
+            return False, myitem
+        return True, myitem
 
 
     def _handle_database_checksum_download(self, repo, cmethod):
@@ -1461,7 +1549,7 @@ class Repository:
             header = "\t"
         )
 
-        db_down_status = self.download_item(downitem, repo, cmethod,
+        db_down_status = self._download_item(downitem, repo, cmethod,
             disallow_redirect = True)
 
         if not db_down_status and (downitem not in ('cklight', 'dbck',)):
@@ -1469,7 +1557,7 @@ class Repository:
             retryitem = 'cklight'
             if self._developer_repo:
                 retryitem = 'dbck'
-            db_down_status = self.download_item(retryitem, repo, cmethod,
+            db_down_status = self._download_item(retryitem, repo, cmethod,
                 disallow_redirect = True)
 
         if not db_down_status:
@@ -1530,18 +1618,32 @@ class Repository:
             header = "\t"
         )
 
+        downloaded_item = None
         down_status = False
+        sig_status = False
         if self.dbformat_eapi == 2:
+
             # start a check in background
             self.load_background_repository_lock_check(repo)
-            down_status = self.download_item("dbdumplight", repo, cmethod,
+            down_item = "dbdumplight"
+
+            down_status = self._download_item(down_item, repo, cmethod,
                 lock_status_func = self.repository_lock_scanner_status,
                 disallow_redirect = True)
+            if down_status:
+                # get GPG file if available
+                sig_status = self._download_item(down_item, repo, cmethod,
+                    lock_status_func = self.repository_lock_scanner_status,
+                    disallow_redirect = True, get_signature = True)
+
+            downloaded_item = down_item
             if self.current_repository_got_locked:
                 self.kill_previous_repository_lock_scanner()
                 show_repo_locked_message()
-                return False
+                return False, sig_status, downloaded_item
+
         if not down_status: # fallback to old db
+
             # start a check in background
             self.load_background_repository_lock_check(repo)
             self.dbformat_eapi = 1
@@ -1551,13 +1653,20 @@ class Repository:
                 down_item = "db"
                 const_debug_write(__name__,
                     "_handle_database_download: developer repo mode enabled")
-            down_status = self.download_item(down_item, repo, cmethod,
+
+            down_status = self._download_item(down_item, repo, cmethod,
                 lock_status_func = self.repository_lock_scanner_status,
                 disallow_redirect = True)
+            if down_status:
+                sig_status = self._download_item(down_item, repo, cmethod,
+                    lock_status_func = self.repository_lock_scanner_status,
+                    disallow_redirect = True, get_signature = True)
+
+            downloaded_item = down_item
             if self.current_repository_got_locked:
                 self.kill_previous_repository_lock_scanner()
                 show_repo_locked_message()
-                return False
+                return False, sig_status, downloaded_item
 
         if not down_status:
             mytxt = "%s: %s." % (bold(_("Attention")),
@@ -1570,7 +1679,7 @@ class Repository:
             )
 
         self.kill_previous_repository_lock_scanner()
-        return down_status
+        return down_status, sig_status, downloaded_item
 
     def _handle_repository_update(self, repo):
         # check if database is already updated to the latest revision
@@ -1643,7 +1752,7 @@ class Repository:
         # load the dump into database
         mytxt = "%s %s, %s %s" % (
             red(_("Injecting downloaded dump")),
-            darkgreen(etpConst[cmethod[5]]),
+            darkgreen(etpConst['etpdatabasedumplight']),
             red(_("please wait")),
             red("..."),
         )
@@ -1679,17 +1788,30 @@ class Repository:
         repos_data = self.Entropy.SystemSettings['repositories']
         repo_data = repos_data['available'][repo]
         notice_board = os.path.basename(repo_data['local_notice_board'])
+        db_meta_file = etpConst['etpdatabasemetafilesfile']
+        db_meta_file_gpg = etpConst['etpdatabasemetafilesfile'] + \
+            etpConst['etpgpgextension']
 
         objects_to_unpack = ("meta_file",)
 
         download_items = [
             (
                 "meta_file",
-                etpConst['etpdatabasemetafilesfile'],
+                db_meta_file,
                 False,
                 "%s %s %s" % (
                     red(_("Downloading repository metafile")),
-                    darkgreen(etpConst['etpdatabasemetafilesfile']),
+                    darkgreen(db_meta_file),
+                    red("..."),
+                )
+            ),
+            (
+                "meta_file_gpg",
+                db_meta_file_gpg,
+                True,
+                "%s %s %s" % (
+                    red(_("Downloading GPG signature of repository metafile")),
+                    darkgreen(db_meta_file_gpg),
                     red("..."),
                 )
             ),
@@ -1739,8 +1861,9 @@ class Repository:
         for item, myfile, ignorable, mytxt in download_items:
 
             my_show_info(mytxt)
-            mystatus = self.download_item(item, repo, disallow_redirect = True)
+            mystatus = self._download_item(item, repo, disallow_redirect = True)
             mytype = 'info'
+            myurl, mypath = self._construct_paths(item, repo, None)
 
             # download failed, is it critical?
             if not mystatus:
@@ -1752,14 +1875,22 @@ class Repository:
                     message = "%s: %s." % (blue(myfile),
                         darkred(_("not available, not very ok!")))
                 my_show_down_status(message, mytype)
+
+                # remove garbage
+                if os.path.isfile(mypath):
+                    try:
+                        os.remove(mypath)
+                    except OSError:
+                        continue
+
                 continue
 
-            myurl, mypath = self._construct_paths(item, repo, None)
             message = "%s: %s." % (blue(myfile),
                 darkgreen(_("available, w00t!")))
             my_show_down_status(message, mytype)
+            downloaded_files.append(mypath)
+
             if item not in objects_to_unpack:
-                downloaded_files.append(mypath)
                 continue
             if not (os.path.isfile(mypath) and os.access(mypath, os.R_OK)):
                 continue
@@ -1814,7 +1945,6 @@ class Repository:
                         except (shutil.Error, IOError,):
                             continue
                         continue
-                    downloaded_files.append(to_mypath)
 
             finally:
                 shutil.rmtree(tmpdir, True)
