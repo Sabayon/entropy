@@ -1454,6 +1454,15 @@ class Server:
             return
         return repo_sec
 
+    def __write_gpg_pubkey(self, repo_sec, repo):
+        pubkey = repo_sec.get_pubkey(repo)
+        # write pubkey to file and add to data upload
+        gpg_path = self.Entropy.get_local_database_gpg_signature_file(repo)
+        with open(gpg_path, "w") as gpg_f:
+            gpg_f.write(pubkey)
+            gpg_f.flush()
+        return gpg_path
+
     def _create_metafiles_file(self, compressed_dest_path, file_list, repo):
 
         found_file_list = [x for x in file_list if os.path.isfile(x) and \
@@ -1506,13 +1515,7 @@ class Server:
         upload_data.update(gpg_upload_data)
 
         # also add GPG key to upload_data
-        pubkey = repo_sec.get_pubkey(repo)
-        # write pubkey to file and add to data upload
-        gpg_path = self.Entropy.get_local_database_gpg_signature_file(repo)
-        with open(gpg_path, "w") as gpg_f:
-            gpg_f.write(pubkey)
-            gpg_f.flush()
-
+        gpg_path = self.__write_gpg_pubkey(repo_sec, repo)
         if 'gpg_signature' in upload_data:
             raise KeyError("cannot add gpg_signature to upload_data")
         upload_data['gpg_signature'] = gpg_path
