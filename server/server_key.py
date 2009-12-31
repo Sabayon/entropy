@@ -142,7 +142,7 @@ def _import_key(entropy_srv, repo, privkey_path, pubkey_path):
         ),
         type = "warning"
     )
- 
+
     return 0
 
 def _export_key(entropy_srv, is_pubkey, repo, store_path):
@@ -267,6 +267,11 @@ def _create_keys(entropy_srv, repo):
     entropy_srv.updateProgress(
         "# gpg --homedir '%s' --armor --output revoke.asc --gen-revoke '%s'" % (
             Repository.GPG_HOME, key_fp),
+        type = "info"
+    )
+    entropy_srv.updateProgress("%s" % (
+            darkgreen(_("You may also want to send your keys to a key server")),
+        ),
         type = "info"
     )
 
