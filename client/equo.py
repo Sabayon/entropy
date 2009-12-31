@@ -810,7 +810,7 @@ def handle_exception(exc_class, exc_instance, exc_tb):
     print_generic("")
 
     print_error(darkgreen(_("Of course you are on the Internet...")))
-    rc = Text.askQuestion(_("Erm... Can I send the error, along with some information\n   about your hardware to my creators so they can fix me? (Your IP will be logged)"))
+    rc = Text.askQuestion(_("Erm... Can I send the error, along with some information\nabout your hardware to my creators so they can fix me? (Your IP will be logged)"))
     if rc == _("No"):
         print_error(darkgreen(_("Ok, ok ok ok... Sorry!")))
         raise SystemExit(2)
