@@ -1,10 +1,4 @@
 
-  0.99.20:
-
-    - reagent key import/export
-    - add entropy.security.Repository support to entropy.client
-    - add packagesignatures gpg column to python-2.5 entropy
-
   0.99.30:
 
     - entropy.output API names update
