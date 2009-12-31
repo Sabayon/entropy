@@ -1231,6 +1231,7 @@ class Repository:
 
                 downloaded_db_item = None
                 sig_down_status = False
+                db_checksum_down_status = False
                 if self.dbformat_eapi < 3:
 
                     down_status, sig_down_status, downloaded_db_item = \
@@ -1296,11 +1297,21 @@ class Repository:
             if skip_this_repo:
                 continue
 
-            files_to_remove = []
-            if self.dbformat_eapi in (1, 2,):
+            downloaded_files = self._standard_items_download(repo)
+            # also add db file to downloaded item
+            # and md5 check repository
+            if downloaded_db_item is not None:
 
-                # new policy, always deny repository if
-                # its database checksum cannot be fetched
+                durl, dpath = self._construct_paths(downloaded_db_item,
+                    repo, cmethod)
+                downloaded_files.append(dpath)
+                if sig_down_status:
+                    d_sig_path = self._append_gpg_signature_to_path(dpath)
+                    downloaded_files.append(d_sig_path)
+
+                # 1. we're always in EAPI1 or 2 here
+                # 2. new policy, always deny repository if
+                #    its database checksum cannot be fetched
                 if not db_checksum_down_status:
                     # delete all
                     self.__remove_repository_files(repo)
@@ -1315,6 +1326,16 @@ class Repository:
                     self.syncErrors = True
                     self.Entropy.cycleDone()
                     continue
+
+            # GPG pubkey install hook
+            gpg_available = self._install_gpg_key_if_available(repo)
+            if gpg_available:
+                gpg_rc = self._gpg_verify_downloaded_files(repo,
+                    downloaded_files)
+
+            # Now we can unpack
+            files_to_remove = []
+            if self.dbformat_eapi in (1, 2,):
 
                 # if do_db_update_transfer == False and not None
                 if (do_db_update_transfer is not None) and not \
@@ -1377,24 +1398,8 @@ class Repository:
             if os.path.isfile(dbfile) and os.access(dbfile, os.W_OK):
                 self.Entropy.setup_default_file_perms(dbfile)
 
-            # database is going to be updated
+            # database has been updated
             self.dbupdated = True
-            downloaded_files = self._standard_items_download(repo)
-
-            # also add db file to downloaded item
-            if downloaded_db_item is not None:
-                durl, dpath = self._construct_paths(downloaded_db_item,
-                    repo, cmethod)
-                downloaded_files.append(dpath)
-                if sig_down_status:
-                    d_sig_path = self._append_gpg_signature_to_path(dpath)
-                    downloaded_files.append(d_sig_path)
-
-            # GPG pubkey install hook
-            gpg_available = self._install_gpg_key_if_available(repo)
-            if gpg_available:
-                gpg_rc = self._gpg_verify_downloaded_files(repo,
-                    downloaded_files)
 
             # remove garbage left around
             for path in files_to_remove:
