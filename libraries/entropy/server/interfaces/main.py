@@ -2605,6 +2605,18 @@ class Server(Singleton, TextInterface):
         try:
             if not repo_sec.is_keypair_available(repo):
                 return None # GPG is not enabled
+        except RepositorySecurity.KeyExpired as err:
+            self.updateProgress(
+                "[repo:%s] %s: %s, %s." % (
+                    darkgreen(repo),
+                    darkred(_("GPG key expired")),
+                    err,
+                    darkred(_("please frigging fix")),
+                ),
+                importance = 1,
+                type = "warning",
+                header = bold(" !!! ")
+            )
         except RepositorySecurity.GPGError as err:
             self.updateProgress(
                 "[repo:%s] %s: %s, %s." % (
@@ -4161,7 +4173,24 @@ class Server(Singleton, TextInterface):
             )
             return False, 0, 0
 
-        if not repo_sec.is_keypair_available(repo):
+        kp_expired = False
+        try:
+            kp_avail = repo_sec.is_keypair_available(repo)
+        except RepositorySecurity.KeyExpired:
+            kp_avail = False
+            kp_expired = True
+
+        if kp_expired:
+            for x in (1, 2, 3):
+                # SPAM!
+                self.updateProgress("%s: %s" % (
+                        darkred(_("Keys for repository are expired")),
+                        bold(repo),
+                    ),
+                    type = "warning",
+                    header = bold(" !!! ")
+                )
+        elif not kp_avail:
             self.updateProgress("%s: %s" % (
                     darkgreen(_("Keys not available for")),
                     bold(repo),

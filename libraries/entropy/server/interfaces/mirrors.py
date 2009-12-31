@@ -1461,6 +1461,14 @@ class Server:
             repo_sec = RepositorySecurity()
             if not repo_sec.is_keypair_available(repo):
                 raise KeyError("no key avail")
+        except RepositorySecurity.KeyExpired:
+            self.Entropy.updateProgress("%s: %s" % (
+                    darkred(_("Keys for repository are expired")),
+                    bold(repo),
+                ),
+                type = "warning",
+                header = bold(" !!! ")
+            )
         except RepositorySecurity.GPGError:
             return
         except KeyError:
