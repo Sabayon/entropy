@@ -2,6 +2,7 @@
   0.99.30:
 
     - entropy.output API names update
+    - sulfur love (see planet)
     - entropy.tools API docs merge
     - entropy.server API rework
     - move sensible pkgs to alt dir
