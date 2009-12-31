@@ -956,6 +956,22 @@ class Repository:
         if not (os.path.isfile(gpg_path) and os.access(gpg_path, os.R_OK)):
             return False # gpg key not available
 
+        def do_warn_user(fingerprint):
+            mytxt = purple(_("Make sure to verify the imported key and set an appropriate trust level"))
+            self.Entropy.updateProgress(
+                mytxt + ":",
+                type = "warning",
+                header = "\t"
+            )
+            mytxt = brown("gpg --homedir '%s' --edit-key '%s'" % (
+                etpConst['etpclientgpgdir'], fingerprint,)
+            )
+            self.Entropy.updateProgress(
+                "$ " + mytxt,
+                type = "warning",
+                header = "\t"
+            )
+
         try:
             repo_sec = self.Entropy.RepositorySecurity()
         except RepositorySecurity.GPGError:
@@ -985,6 +1001,8 @@ class Repository:
                 type = "info",
                 header = "\t"
             )
+            fingerprint = repo_sec.get_key_metadata(repoid)['fingerprint']
+            do_warn_user(fingerprint)
             return True # already installed
 
         # actually install
@@ -1030,6 +1048,7 @@ class Repository:
             type = "info",
             header = "\t"
         )
+        do_warn_user(fingerprint)
         return True
 
     def _gpg_verify_downloaded_files(self, repo, downloaded_files):
