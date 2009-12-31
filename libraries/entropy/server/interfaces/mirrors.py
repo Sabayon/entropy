@@ -1443,84 +1443,13 @@ class Server:
             header = brown("    # ")
         )
 
-    def __gpg_sign_list_of_files(self, repo_sec, repo, file_list):
-
-        new_files = []
-        not_found_files = []
-        for found_path in file_list:
-
-            if not (os.path.isfile(found_path) and \
-                os.access(found_path, os.R_OK)):
-                not_found_files.append(found_path + \
-                    etpConst['etpgpgextension'])
-                continue
-
-            try:
-                found_path_asc = repo_sec.sign_file(repo, found_path)
-            except RepositorySecurity.GPGError:
-                # wtf?!?
-                entropy.tools.print_traceback()
-                continue
-
-            new_files.append(found_path_asc)
-
-        return new_files, not_found_files
-
-    def __write_gpg_pubkey(self, repo_sec, repo):
-        try:
-            pubkey = repo_sec.get_pubkey(repo)
-        except KeyError:
-            # key not available, bye
-            return
-
-        # write pubkey to file and add to data upload
-        gpg_path = self.Entropy.get_local_database_gpg_signature_file(repo)
-        with open(gpg_path, "w") as gpg_f:
-            gpg_f.write(pubkey)
-            gpg_f.flush()
-
-        return gpg_path
-
-    def __setup_metafiles_for_gpg(self, repo, file_list):
-
-        found_file_list = []
-        not_found_file_list = []
-
-        try:
-            repo_sec = RepositorySecurity()
-            if not repo_sec.is_keypair_available(repo):
-                raise KeyError("no key avail")
-        except RepositorySecurity.GPGError:
-            return found_file_list, not_found_file_list
-        except KeyError:
-            return found_file_list, not_found_file_list
-
-        found_file_list, not_found_file_list = \
-            self.__gpg_sign_list_of_files(repo_sec, repo, file_list)
-
-        gpg_path = self.__write_gpg_pubkey(repo_sec, repo)
-        if gpg_path is not None:
-            found_file_list.append(gpg_path)
-        else:
-            gpg_path = \
-                self.Entropy.get_local_database_gpg_signature_file(repo)
-            not_found_file_list.extend(gpg_path) # not found
-
-        return found_file_list, not_found_file_list
-
     def _create_metafiles_file(self, compressed_dest_path, file_list, repo):
-
-        # GPG sign every file in found_file_list, and add our pubkey, if avail
-        gpg_found_files, gpg_not_found_files = self.__setup_metafiles_for_gpg(
-            repo, file_list)
 
         found_file_list = [x for x in file_list if os.path.isfile(x) and \
             os.path.isfile(x) and os.access(x, os.R_OK)]
-        found_file_list.extend(gpg_found_files)
 
         not_found_file_list = ["%s\n" % (os.path.basename(x),) for x in \
             file_list if x not in found_file_list]
-        not_found_file_list.extend(gpg_not_found_files)
 
         metafile_not_found_file = \
             self.Entropy.get_local_database_metafiles_not_found_file(repo)
@@ -1559,6 +1488,18 @@ class Server:
                 sign_path = repo_sec.sign_file(repo, item_path)
             gpg_upload_data[gpg_item_id] = sign_path
         upload_data.update(gpg_upload_data)
+
+        # also add GPG key to upload_data
+        pubkey = repo_sec.get_pubkey(repo)
+        # write pubkey to file and add to data upload
+        gpg_path = self.Entropy.get_local_database_gpg_signature_file(repo)
+        with open(gpg_path, "w") as gpg_f:
+            gpg_f.write(pubkey)
+            gpg_f.flush()
+
+        if 'gpg_signature' in upload_data:
+            raise KeyError("cannot add gpg_signature to upload_data")
+        upload_data['gpg_signature'] = gpg_path
 
     def mirror_lock_check(self, uri, repo = None):
         """
