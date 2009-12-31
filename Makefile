@@ -23,11 +23,6 @@ entropy-install:
 	mkdir -p $(DESTDIR)/etc/init.d
 	mkdir -p $(DESTDIR)/$(LIBDIR)/entropy/services
 
-	mkdir -p $(DESTDIR)/etc/entropy/gpg-keys
-	mkdir -p $(DESTDIR)/etc/entropy/client-gpg-keys
-	chmod 775 $(DESTDIR)/etc/entropy/gpg-keys
-	chmod 775 $(DESTDIR)/etc/entropy/client-gpg-keys
-
 	cp libraries/entropy $(DESTDIR)/$(LIBDIR)/entropy/libraries/ -Ra
 	install -m 755 services/repository-admin-daemon $(DESTDIR)$(PREFIX)/sbin/
 	install -m 755 services/repository-services-daemon.example $(DESTDIR)$(PREFIX)/sbin/
