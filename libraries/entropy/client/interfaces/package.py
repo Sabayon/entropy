@@ -27,7 +27,8 @@ from entropy.misc import TimeScheduled
 from entropy.db import dbapi2, EntropyRepository
 from entropy.client.interfaces.client import Client
 from entropy.cache import EntropyCacher
-from entropy.security import System as SystemSecurity
+from entropy.security import System as SystemSecurity, \
+    Repository as RepositorySecurity
 
 import entropy.tools
 
@@ -150,7 +151,7 @@ class Package:
                 self.Entropy.updateProgress(
                     "%s: %s, %s" % (
                         darkred(_("Package signature verification error for")),
-                        purple(hash_type.upper()),
+                        purple("GPG"),
                         err_msg,
                     ),
                     importance = 0,
