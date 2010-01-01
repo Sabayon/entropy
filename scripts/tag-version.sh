@@ -23,4 +23,5 @@ echo "Tagging version: $new_tag"
 git tag $new_tag HEAD
 
 # Push changes upstream
-git push && git push --tags
+git push
+git push --tags
