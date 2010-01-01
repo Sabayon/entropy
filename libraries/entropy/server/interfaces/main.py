@@ -2297,7 +2297,7 @@ class Server(Singleton, TextInterface):
             data['signatures']['gpg'] = None
             try:
                 repo_sec = RepositorySecurity()
-            except RepositorySecurity.GPGError:
+            except RepositorySecurity.GPGError as err:
                 if old_gpg:
                     self.updateProgress(
                         "[repo:%s] %s %s: %s." % (
