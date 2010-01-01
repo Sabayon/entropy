@@ -1,3 +1,69 @@
+commit 0f71962e86b89b40b685b3e97da8c01c15cf3c04
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 1 16:44:06 2010 +0100
+
+    [reagent] fix return code of query functions
+
+commit 771043b6ef11f9f8b537a91b91b2c94242ed795b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 1 14:00:27 2010 +0100
+
+    [todo] update TODO
+
+commit 5d422347838af509fabc0374a26859c873ad3b10
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 1 13:59:27 2010 +0100
+
+    [entropy.server] fix undefined variable "err"
+
+commit ed794fdaee9ed9a041153e73e2afe150b6a4a94b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 1 13:53:17 2010 +0100
+
+    [entropy.server] when moving packages from repo A to B, also re-GPG-sign package file
+
+commit bb3b622a932959c687baad0adc26fdee49357257
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 1 13:50:46 2010 +0100
+
+    [entropy.server] fix missing return
+
+commit a6cbaa1ab8945ee7cdc6642ee31ab655cee5a843
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 1 10:43:16 2010 +0100
+
+    [equo] when a package in masked, make sure to also print belonging repository
+
+commit 1a4894ced50c12cc8f1991f95f4e84b9cda833c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 1 10:13:30 2010 +0100
+
+    [entropy.db] trivial whitespaces cleanup
+
+commit 51951d1f3d5108ce704857eb20af3bc9856500a2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 1 10:12:49 2010 +0100
+
+    [entropy.server] execute an extra repository metadata cleanup before packing up :-)
+
+commit f5d3b0ef2ad6532b35a96a861c5630b96059dbe8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 1 09:20:07 2010 +0100
+
+    [entropy.server] when moving/copying packages over repos, execute metadata cleanup at the end
+
+commit b4b9bd36e20a7b1c73486950bdc5829a852be13b
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 1 01:01:35 2010 +0100
+
+    [scripts] fix tag-version.sh script
+
+commit d53b99c9808beee7d80ec1e60c8ea9a24b9298e6
+Author: Fabio Erculiani <lxnay@sabayonlinux.org>
+Date:   Fri Jan 1 01:00:25 2010 +0100
+
+    Update ChangeLog for version 0.99.20
+
 commit 3a8781711a27b650cf8c271de50e98117a790aa4
 Author: Fabio Erculiani <lxnay@sabayonlinux.org>
 Date:   Fri Jan 1 01:00:08 2010 +0100
