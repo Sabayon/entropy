@@ -2669,7 +2669,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         with self.__write_mutex:
             self.cursor.execute("""
-            DELETE FROM useflagsreference 
+            DELETE FROM useflagsreference
             WHERE idflag NOT IN (SELECT idflag FROM useflags)""")
 
     def cleanupSources(self):
@@ -2678,7 +2678,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         with self.__write_mutex:
             self.cursor.execute("""
-            DELETE FROM sourcesreference 
+            DELETE FROM sourcesreference
             WHERE idsource NOT IN (SELECT idsource FROM sources)""")
 
     def cleanupEclasses(self):
@@ -2687,7 +2687,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         with self.__write_mutex:
             self.cursor.execute("""
-            DELETE FROM eclassesreference 
+            DELETE FROM eclassesreference
             WHERE idclass NOT IN (SELECT idclass FROM eclasses)""")
 
     def cleanupNeeded(self):
@@ -2696,7 +2696,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         with self.__write_mutex:
             self.cursor.execute("""
-            DELETE FROM neededreference 
+            DELETE FROM neededreference
             WHERE idneeded NOT IN (SELECT idneeded FROM needed)""")
 
     def cleanupDependencies(self):
@@ -2705,7 +2705,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         with self.__write_mutex:
             self.cursor.execute("""
-            DELETE FROM dependenciesreference 
+            DELETE FROM dependenciesreference
             WHERE iddependency NOT IN (SELECT iddependency FROM dependencies)
             """)
 
@@ -2715,7 +2715,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         """
         with self.__write_mutex:
             self.cursor.execute("""
-            DELETE FROM packagechangelogs 
+            DELETE FROM packagechangelogs
             WHERE category || "/" || name NOT IN 
             (SELECT categories.category || "/" || baseinfo.name
                 FROM baseinfo, categories 
