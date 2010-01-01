@@ -2621,6 +2621,7 @@ class Server(Singleton, TextInterface):
                 type = "warning",
                 header = bold(" !!! ")
             )
+            return None
         except RepositorySecurity.GPGError as err:
             self.updateProgress(
                 "[repo:%s] %s: %s, %s." % (
