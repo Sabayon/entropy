@@ -485,6 +485,95 @@ def branch_hop(branch):
         print_error(mytxt)
         return 3, -2
 
+def _show_masked_pkg_info(package, from_user = True):
+
+    masked_matches = E_CLIENT.atom_match(package, packagesFilter = False,
+        multiMatch = True)
+    if masked_matches[1] == 0:
+
+        mytxt = "%s %s %s %s." % (
+            bold("!!!"),
+            # every package matching app-foo is masked
+            red(_("Every package matching")),
+            bold(package),
+            red(_("is masked")),
+        )
+        print_warning(mytxt)
+
+        m_reasons = {}
+        for match in masked_matches[0]:
+            masked, idreason, reason = E_CLIENT.get_masked_package_reason(
+                match)
+            if not masked:
+                continue
+            reason_obj = (idreason, reason,)
+            obj = m_reasons.setdefault(reason_obj, [])
+            obj.append(match)
+
+        for idreason, reason in sorted(m_reasons.keys()):
+            print_warning(bold("    # ")+red("Reason: ")+blue(reason))
+            for m_idpackage, m_repo in m_reasons[(idreason, reason)]:
+                dbconn = E_CLIENT.open_repository(m_repo)
+                try:
+                    m_atom = dbconn.retrieveAtom(m_idpackage)
+                except TypeError:
+                    m_atom = "idpackage: %s %s %s %s" % (
+                        m_idpackage,
+                        _("matching"),
+                        package,
+                        _("is broken"),
+                    )
+                print_warning("%s %s: %s %s %s" % (
+                    blue("      <>"),
+                    red(_("atom")),
+                    brown(m_atom),
+                    red(_("in")),
+                    purple(m_repo),
+                ))
+
+    elif from_user:
+
+        mytxt = "%s %s %s %s." % (
+            bold("!!!"),
+            red(_("No match for")),
+            bold(package),
+            red(_("in repositories")),
+        )
+        print_warning(mytxt)
+        # search similar packages
+        # you meant...?
+        if len(package) > 3:
+            items = E_CLIENT.get_meant_packages(package)
+            if items:
+                mytxt = "%s %s %s %s %s" % (
+                    bold("   ?"),
+                    red(_("When you wrote")),
+                    bold(package),
+                    darkgreen(_("You Meant(tm)")),
+                    red(_("one of these below?")),
+                )
+                print_info(mytxt)
+                items_cache = set()
+                for m_idpackage, m_repo in items:
+                    dbc = E_CLIENT.open_repository(m_repo)
+                    key, slot = dbc.retrieveKeySlot(m_idpackage)
+                    if (key, slot) not in items_cache:
+                        print_info(red("    # ")+blue(key)+":" + \
+                            brown(str(slot))+red(" ?"))
+                    items_cache.add((key, slot))
+
+    else:
+        print_error(red("    # ")+blue("%s: " % (_("Not found"),) ) + \
+            brown(package))
+        crying_atoms = E_CLIENT.find_belonging_dependency([package])
+        if crying_atoms:
+            print_error(red("      # ") + \
+                blue("%s:" % (_("Probably needed by"),) ))
+            for c_atom, c_repo in crying_atoms:
+                print_error(red("        # ")+" ["+blue(_("from"))+":" + \
+                    brown(c_repo)+"] "+darkred(c_atom))
+
+
 def _scan_packages(packages, etp_pkg_files):
 
     found_pkg_atoms = []
@@ -495,77 +584,11 @@ def _scan_packages(packages, etp_pkg_files):
     for package in packages:
         # clear masking reasons
         match = E_CLIENT.atom_match(package)
-        if match[0] == -1:
-            masked_matches = E_CLIENT.atom_match(package, packagesFilter = False,
-                multiMatch = True)
-            if masked_matches[1] == 0:
-
-                mytxt = "%s %s %s %s." % (
-                    bold("!!!"),
-                    red(_("Every package matching")), # every package matching app-foo is masked
-                    bold(package),
-                    red(_("is masked")),
-                )
-                print_warning(mytxt)
-
-                m_reasons = {}
-                for match in masked_matches[0]:
-                    masked, idreason, reason = E_CLIENT.get_masked_package_reason(match)
-                    if not masked:
-                        continue
-                    if (idreason, reason,) not in m_reasons:
-                        m_reasons[(idreason, reason,)] = []
-                    m_reasons[(idreason, reason,)].append(match)
-
-                for idreason, reason in sorted(m_reasons.keys()):
-                    print_warning(bold("    # ")+red("Reason: ")+blue(reason))
-                    for m_idpackage, m_repo in m_reasons[(idreason, reason)]:
-                        dbconn = E_CLIENT.open_repository(m_repo)
-                        try:
-                            m_atom = dbconn.retrieveAtom(m_idpackage)
-                        except TypeError:
-                            m_atom = "idpackage: %s %s %s %s" % (
-                                m_idpackage,
-                                _("matching"),
-                                package,
-                                _("is broken"),
-                            )
-                        print_warning(blue("      <> ") + \
-                            red("%s: " % (_("atom"),) )+brown(m_atom))
-            else:
-                mytxt = "%s %s %s %s." % (
-                    bold("!!!"),
-                    red(_("No match for")),
-                    bold(package),
-                    red(_("in repositories")),
-                )
-                print_warning(mytxt)
-                # search similar packages
-                # you meant...?
-                if len(package) < 4:
-                    continue
-                items = E_CLIENT.get_meant_packages(package)
-                if items:
-                    items_cache = set()
-                    mytxt = "%s %s %s %s %s" % (
-                        bold("   ?"),
-                        red(_("When you wrote")),
-                        bold(package),
-                        darkgreen(_("You Meant(tm)")),
-                        red(_("one of these below?")),
-                    )
-                    print_info(mytxt)
-                    for m_idpackage, m_repo in items:
-                        dbc = E_CLIENT.open_repository(m_repo)
-                        key, slot = dbc.retrieveKeySlot(m_idpackage)
-                        if (key, slot) not in items_cache:
-                            print_info(red("    # ")+blue(key)+":" + \
-                                brown(str(slot))+red(" ?"))
-                        items_cache.add((key, slot))
-                    del items_cache
+        if match[0] != -1:
+            if match not in found_pkg_atoms:
+                found_pkg_atoms.append(match)
             continue
-        if match not in found_pkg_atoms:
-            found_pkg_atoms.append(match)
+        _show_masked_pkg_info(package)
 
     if etp_pkg_files:
         for pkg in etp_pkg_files:
@@ -704,59 +727,17 @@ def _generate_run_queue(found_pkg_atoms, deps, emptydeps, deepdeps, relaxeddeps)
     removal_queue = []
 
     if deps:
-        print_info(red(" @@ ")+blue("%s ...") % (_("Calculating dependencies"),) )
-        run_queue, removal_queue, status = E_CLIENT.get_install_queue(found_pkg_atoms, emptydeps, deepdeps,
-            relaxed_deps = relaxeddeps)
+        print_info(red(" @@ ")+blue("%s ...") % (
+            _("Calculating dependencies"),) )
+        run_queue, removal_queue, status = E_CLIENT.get_install_queue(
+            found_pkg_atoms, emptydeps, deepdeps, relaxed_deps = relaxeddeps)
         if status == -2:
-
-            print_error(red(" @@ ")+blue("%s: " % (_("Cannot find needed dependencies"),) ))
+            print_error(red(" @@ ") + blue("%s: " % (
+                _("Cannot find needed dependencies"),) ))
             for package in run_queue:
-
-                masked_matches = E_CLIENT.atom_match(package, packagesFilter = False, multiMatch = True)
-                if masked_matches[1] == 0:
-
-                    mytxt = "%s %s %s %s." % (
-                        bold("!!!"),
-                        red(_("Every package matching")), # every package matching app-foo is masked
-                        bold(package),
-                        red(_("is masked")),
-                    )
-                    print_warning(mytxt)
-
-                    m_reasons = {}
-                    for match in masked_matches[0]:
-                        masked, idreason, reason = E_CLIENT.get_masked_package_reason(match)
-                        if not masked:
-                            continue
-                        if (idreason, reason,) not in m_reasons:
-                            m_reasons[(idreason, reason,)] = []
-                        m_reasons[(idreason, reason,)].append(match)
-
-                    for idreason, reason in sorted(m_reasons.keys()):
-                        print_warning(bold("    # ")+red("Reason: ")+blue(reason))
-                        for m_idpackage, m_repo in m_reasons[(idreason, reason)]:
-                            dbconn = E_CLIENT.open_repository(m_repo)
-                            try:
-                                m_atom = dbconn.retrieveAtom(m_idpackage)
-                            except TypeError:
-                                m_atom = "idpackage: %s %s %s %s" % (
-                                    m_idpackage,
-                                    _("matching"),
-                                    package,
-                                    _("is broken"),
-                                )
-                            print_warning(blue("      <> ")+red("%s: " % (_("atom"),) )+brown(m_atom))
-
-                else:
-
-                    print_error(red("    # ")+blue("%s: " % (_("Not found"),) )+brown(package))
-                    crying_atoms = E_CLIENT.find_belonging_dependency([package])
-                    if crying_atoms:
-                        print_error(red("      # ")+blue("%s:" % (_("Probably needed by"),) ))
-                        for crying_atomdata in crying_atoms:
-                            print_error(red("        # ")+" ["+blue(_("from"))+":"+brown(crying_atomdata[1])+"] "+darkred(crying_atomdata[0]))
-
+                _show_masked_pkg_info(package, from_user = False)
             return True, (125, -1), []
+
     else:
         for atomInfo in found_pkg_atoms:
             run_queue.append(atomInfo)
