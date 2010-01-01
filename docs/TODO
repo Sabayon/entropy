@@ -1,8 +1,9 @@
 
   0.99.30:
 
-    - entropy.output API names update
+    - equo bashcomp
     - sulfur love (see planet)
+    - entropy.output API names update
     - entropy.tools API docs merge
     - entropy.server API rework
     - move sensible pkgs to alt dir
