@@ -12,6 +12,7 @@
 import sys
 import os
 import shutil
+import copy
 from entropy.core import Singleton
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError
@@ -2289,6 +2290,31 @@ class Server(Singleton, TextInterface):
 
             todbconn = self.open_server_repository(read_only = False,
                 no_upload = True, repo = to_repo)
+
+            # GPG
+            # before inserting new pkg, drop GPG signature and re-sign
+            old_gpg = copy.copy(data['signatures']['gpg'])
+            data['signatures']['gpg'] = None
+            try:
+                repo_sec = RepositorySecurity()
+            except RepositorySecurity.GPGError:
+                if old_gpg:
+                    self.updateProgress(
+                        "[repo:%s] %s %s: %s." % (
+                            darkgreen(to_repo),
+                            darkred(_("GPG key was available in")),
+                            bold(from_repo),
+                            err,
+                        ),
+                        importance = 1,
+                        type = "warning",
+                        header = bold(" !!! ")
+                    )
+                repo_sec = None
+
+            if repo_sec is not None:
+                data['signatures']['gpg'] = self.__get_gpg_signature(repo_sec,
+                    to_repo, to_file)
 
             self.updateProgress(
                 "[%s=>%s|%s] %s: %s" % (
