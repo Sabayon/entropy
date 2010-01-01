@@ -2340,6 +2340,10 @@ class Server(Singleton, TextInterface):
             )
             switched.add((idpackage, repo,))
 
+        todbconn = self.open_server_repository(read_only = False,
+            no_upload = True, repo = to_repo)
+        todbconn.doCleanups()
+
         # just run this to make dev aware
         self.dependencies_test(to_repo)
 
