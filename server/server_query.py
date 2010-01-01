@@ -51,40 +51,40 @@ def query(myopts):
         rc = 0
 
     elif cmd == "tags":
-        search_tagged_packages(myopts, dbconn, Entropy)
+        rc = search_tagged_packages(myopts, dbconn, Entropy)
     elif cmd == "sets":
-        text_query.search_package_sets(myopts, Equo = Entropy)
+        rc = text_query.search_package_sets(myopts, Equo = Entropy)
     elif cmd == "files":
-        text_query.search_files(myopts, dbconn = dbconn, Equo = Entropy)
+        rc = text_query.search_files(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "belongs":
-        text_query.search_belongs(myopts, dbconn = dbconn, Equo = Entropy)
+        rc = text_query.search_belongs(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "description":
-        text_query.search_descriptions(myopts, dbconn = dbconn, Equo = Entropy)
+        rc = text_query.search_descriptions(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "needed":
-        text_query.search_needed_libraries(myopts, dbconn = dbconn,
+        rc = text_query.search_needed_libraries(myopts, dbconn = dbconn,
             Equo = Entropy)
     elif cmd == "revdeps":
-        text_query.search_reverse_dependencies(myopts, dbconn = dbconn,
+        rc = text_query.search_reverse_dependencies(myopts, dbconn = dbconn,
             Equo = Entropy)
     elif cmd == "eclass":
-        text_query.search_eclass(myopts, dbconn = dbconn, Equo = Entropy)
+        rc = text_query.search_eclass(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "list":
-        text_query.search_installed_packages(myopts, dbconn = dbconn,
+        rc = text_query.search_installed_packages(myopts, dbconn = dbconn,
             Equo = Entropy)
     elif cmd == "changelog":
-        text_query.search_changelog(myopts, dbconn = dbconn, Equo = Entropy)
+        rc = text_query.search_changelog(myopts, dbconn = dbconn, Equo = Entropy)
     elif cmd == "graph":
         complete_graph = False
         if "--complete" in myopts:
             complete_grah = True
             myopts = [x for x in myopts if x != "--complete"]
-        text_query.graph_packages(myopts, complete = complete_graph)
+        rc = text_query.graph_packages(myopts, complete = complete_graph)
     elif cmd == "revgraph":
         complete_graph = False
         if "--complete" in myopts:
             complete_grah = True
             myopts = [x for x in myopts if x != "--complete"]
-        text_query.revgraph_packages(myopts, complete = complete_graph)
+        rc = text_query.revgraph_packages(myopts, complete = complete_graph)
 
     del Entropy
     return rc
