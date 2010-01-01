@@ -1745,7 +1745,7 @@ class Server:
             self._show_package_sets_messages(repo)
 
             # Final tweaks
-            repo_dbconn = self.Entropy.open_server_database(repo = repo,
+            repo_dbconn = self.Entropy.open_server_repository(repo = repo,
                 read_only = False)
             repo_dbconn.doCleanups()
 
