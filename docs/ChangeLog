@@ -1,3 +1,15 @@
+commit a7651a843bfb6444c88b91641ce8fa72455bf6bd
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 1 16:51:04 2010 +0100
+
+    [entropy.server] fix typo
+
+commit b4ffa625a1d87864f062f3223ac5bc06389c338c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 1 16:45:22 2010 +0100
+
+    Update ChangeLog for version 0.99.20.1
+
 commit 0f71962e86b89b40b685b3e97da8c01c15cf3c04
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jan 1 16:44:06 2010 +0100
