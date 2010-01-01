@@ -1743,6 +1743,12 @@ class Server:
 
             # Package Sets info
             self._show_package_sets_messages(repo)
+
+            # Final tweaks
+            repo_dbconn = self.Entropy.open_server_database(repo = repo,
+                read_only = False)
+            repo_dbconn.doCleanups()
+
             self.sync_database_treeupdates(repo)
             self.Entropy.update_database_package_sets(repo)
             self.Entropy.close_server_databases()
