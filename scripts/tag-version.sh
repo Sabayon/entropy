@@ -15,6 +15,7 @@ done
 # Update ChangeLog
 echo "Updating ChangeLog for $new_tag"
 git log > docs/ChangeLog
+git add docs/ChangeLog
 git commit -m "Update ChangeLog for version $new_tag" docs/ChangeLog
 
 # tag version
