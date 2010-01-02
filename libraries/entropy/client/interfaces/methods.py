@@ -212,9 +212,9 @@ class RepositoryMixin:
                 if updated:
                     self.Cacher.discard()
                     EntropyCacher.clear_cache_item(
-                        etpConst['cache_ids']['world_update'])
+                        EntropyCacher.CACHE_IDS['world_update'])
                     EntropyCacher.clear_cache_item(
-                        etpConst['cache_ids']['critical_update'])
+                        EntropyCacher.CACHE_IDS['critical_update'])
         return conn
 
     def get_repository_revision(self, reponame):

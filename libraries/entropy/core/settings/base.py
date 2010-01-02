@@ -1273,15 +1273,15 @@ class SystemSettings(Singleton, EntropyPluginStore):
         Internal method, go away!
         """
         self.__cacher.discard()
-        for key, value in etpConst['cache_ids'].items():
+        for key, value in EntropyCacher.CACHE_IDS.items():
             if key == "db_match":
                 continue
             EntropyCacher.clear_cache_item(value)
 
         if repoid is not None:
             EntropyCacher.clear_cache_item("%s/%s%s/" % (
-                etpConst['cache_ids']['db_match'], etpConst['dbnamerepoprefix'],
-                    repoid,))
+                EntropyCacher.CACHE_IDS['db_match'],
+                    etpConst['dbnamerepoprefix'], repoid,))
 
     def __generic_parser(self, filepath):
         """

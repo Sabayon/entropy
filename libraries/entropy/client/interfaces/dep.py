@@ -13,6 +13,7 @@ from entropy.const import *
 from entropy.exceptions import *
 from entropy.graph import Graph
 from entropy.misc import Lifo
+from entropy.cache import EntropyCacher
 from entropy.output import bold, darkgreen, darkred, blue, red, purple
 from entropy.i18n import _
 
@@ -510,7 +511,7 @@ class CalculatorsMixin:
             client_checksum = self.clientDbconn.checksum()
             c_hash = hash("%s|%s|%s|%s" % (c_data, deep_deps,
                 client_checksum, relaxed_deps,))
-            c_hash = "%s%s" % (etpConst['cache_ids']['filter_satisfied_deps'], c_hash,)
+            c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['filter_satisfied_deps'], c_hash,)
             cached = self.Cacher.pop(c_hash)
             if cached is not None:
                 return cached
@@ -1187,7 +1188,7 @@ class CalculatorsMixin:
             match,
             clientmatch,
         )
-        c_hash = "%s%s" % (etpConst['cache_ids']['library_breakage'], hash(c_hash),)
+        c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['library_breakage'], hash(c_hash),)
         if self.xcache:
             cached = self.Cacher.pop(c_hash)
             if cached is not None:
@@ -1281,7 +1282,7 @@ class CalculatorsMixin:
         deep_deps = False, relaxed_deps = False, quiet = False):
 
         c_hash = "%s%s" % (
-            etpConst['cache_ids']['dep_tree'],
+            EntropyCacher.CACHE_IDS['dep_tree'],
             hash("%s|%s|%s|%s|%s|%s" % (
                 hash(frozenset(sorted(matched_atoms))),
                 empty_deps,
@@ -1401,7 +1402,7 @@ class CalculatorsMixin:
     def generate_reverse_dependency_tree(self, idpackages, deep = False):
 
         c_hash = "%s%s" % (
-            etpConst['cache_ids']['depends_tree'],
+            EntropyCacher.CACHE_IDS['depends_tree'],
             hash("%s|%s" % (
                     tuple(sorted(idpackages)),
                     deep,
@@ -1550,7 +1551,7 @@ class CalculatorsMixin:
 
         if self.xcache:
             self.Cacher.push("%s%s" % (
-                etpConst['cache_ids']['world_available'], c_hash), available)
+                EntropyCacher.CACHE_IDS['world_available'], c_hash), available)
         return available
 
     def calculate_critical_updates(self, use_cache = True):
@@ -1587,7 +1588,7 @@ class CalculatorsMixin:
 
         if self.xcache:
             c_hash = self._get_critical_update_cache_hash(db_digest)
-            self.Cacher.push("%s%s" % (etpConst['cache_ids']['critical_update'], c_hash,),
+            self.Cacher.push("%s%s" % (EntropyCacher.CACHE_IDS['critical_update'], c_hash,),
                 data, async = False)
 
         return data
@@ -1763,7 +1764,7 @@ class CalculatorsMixin:
 
     def check_package_update(self, atom, deep = False):
 
-        c_hash = "%s%s" % (etpConst['cache_ids']['check_package_update'],
+        c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['check_package_update'],
                 hash("%s%s" % (atom, deep,)
             ),
         )

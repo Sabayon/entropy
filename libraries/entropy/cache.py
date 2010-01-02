@@ -26,6 +26,21 @@ import entropy.dump
 import entropy.tools
 
 class EntropyCacher(Singleton):
+
+    CACHE_IDS = {
+            'db_match': 'match/db', # db atom match cache
+            'dep_tree': 'deptree/dep_tree_',
+            # used to store info about repository dependencies solving
+            'atomMatch': 'atom_match/atom_match_',
+            'world_update': 'world_update/world_cache_',
+            'critical_update': 'critical_update/critical_cache_',
+            'world_available': 'world_available/available_cache_',
+            'check_package_update': 'check_update/package_update_',
+            'depends_tree': 'depends/depends_tree_',
+            'filter_satisfied_deps': 'depfilter/filter_satisfied_deps_',
+            'library_breakage': 'libs_break/library_breakage_',
+        }
+
     """
         Entropy asynchronous and synchronous cache writer
         and reader. This class is a Singleton and contains

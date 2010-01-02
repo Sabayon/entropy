@@ -411,7 +411,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         self.dbclosed = True
         self.SystemSettings = SystemSettings()
-        self.dbMatchCacheKey = etpConst['cache_ids']['db_match']
+        self.dbMatchCacheKey = EntropyCacher.CACHE_IDS['db_match']
         self.client_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         self.db_branch = self.SystemSettings['repositories']['branch']

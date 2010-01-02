@@ -95,7 +95,7 @@ class CacheMixin:
         if myhash is None:
             myhash = self._get_available_packages_chash()
         return self.Cacher.pop("%s%s" % (
-            etpConst['cache_ids']['world_available'], myhash))
+            EntropyCacher.CACHE_IDS['world_available'], myhash))
 
     def _get_updates_cache(self, empty_deps, db_digest = None):
 
@@ -125,14 +125,14 @@ class CacheMixin:
             # manually (branch setting)
             self.SystemSettings['repositories']['branch'],
         )))
-        return "%s%s" % (etpConst['cache_ids']['world_update'], c_hash,)
+        return "%s%s" % (EntropyCacher.CACHE_IDS['world_update'], c_hash,)
 
     def _get_critical_updates_cache(self, db_digest = None):
 
         if self.xcache:
             if db_digest is None:
                 db_digest = self._all_repositories_checksum()
-            c_hash = "%s%s" % (etpConst['cache_ids']['critical_update'],
+            c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['critical_update'],
                 self._get_critical_update_cache_hash(db_digest),)
 
             return self.Cacher.pop(c_hash)
