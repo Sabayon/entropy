@@ -219,7 +219,7 @@ def _database_resurrect(entropy_client):
         return 0
 
     # clean caches
-    entropy_client._purge_cache()
+    entropy_client.clear_cache()
 
     # ok, he/she knows it... hopefully
     # if exist, copy old database
@@ -598,7 +598,7 @@ def _database_generate(entropy_client):
         return 0
 
     # clean caches
-    entropy_client._purge_cache()
+    entropy_client.clear_cache()
 
     # try to collect current installed revisions if possible
     revisions_match = {}

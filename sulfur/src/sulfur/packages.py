@@ -839,26 +839,31 @@ class EntropyPackages:
         return [x for x in map(fm, filtered) if not isinstance(x, int)]
 
     def _pkg_get_masked(self):
-        gp_call = self.get_package_item
+
         gmp_action = self.get_masked_package_action
         gi_match = self.get_installed_idpackage
         def fm(match):
+
             match, idreason = match
             try:
-                yp, new = gp_call(match)
+                yp, new = self.get_package_item(match)
             except RepositoryError:
                 return 0
-            action = gmp_action(match)
-            yp.action = action
-            if action == 'rr': # setup reinstallables
-                idpackage = gi_match(match)
-                if idpackage == None: # wtf!?
-                    yp.installed_match = None
-                else:
-                    yp.installed_match = (idpackage, 0)
-            yp.masked = idreason
-            yp.color = SulfurConf.color_install
+
+            if yp.action is None:
+                yp.action = gmp_action(match)
+                if yp.action == 'rr': # setup reinstallables
+                    idpackage = gi_match(match)
+                    if idpackage is None: # wtf!?
+                        yp.installed_match = None
+                    else:
+                        yp.installed_match = (idpackage, 0)
+
+                yp.masked = idreason
+                yp.color = SulfurConf.color_install
+
             return yp
+
         return [x for x in map(fm, self.get_masked_packages()) \
             if not isinstance(x, int)]
 
@@ -1063,6 +1068,15 @@ class EntropyPackages:
                     return ((idpackage, repoid,), idreason)
                 return 0
             maskdata += [x for x in map(fm, repodata) if not isinstance(x, int)]
+
+        # add live unmasked elements too
+        unmasks = self.Entropy.SystemSettings['live_packagemasking']['unmask_matches']
+        live_idreason = etpConst['pkg_masking_reference']['user_live_unmask']
+        for idpackage, repoid in unmasks:
+            match_data = ((idpackage, repoid), live_idreason,)
+            if match_data in maskdata:
+                continue
+            maskdata.append(match_data)
 
         return maskdata
 

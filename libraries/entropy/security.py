@@ -16,7 +16,7 @@ import os
 import shutil
 import subprocess
 import datetime
-from entropy.exceptions import IncorrectParameter, InvalidData
+from entropy.exceptions import InvalidData
 from entropy.misc import LogFile
 from entropy.const import etpConst, etpUi, const_setup_perms, \
     const_debug_write
@@ -43,7 +43,7 @@ class System:
     about unapplied advisories, etc.
 
     """
-    CACHE_ID = 'security/advisories_cache_'
+    _CACHE_ID = 'security/advisories_cache_'
 
     def __init__(self, entropy_client_instance):
 
@@ -58,8 +58,8 @@ class System:
         # disabled for now
         from entropy.client.interfaces import Client
         if not isinstance(entropy_client_instance, Client):
-            mytxt = _("A valid Client interface instance is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            raise AttributeError(
+                "entropy.client.interfaces.Client instance expected")
 
         self.Entropy = entropy_client_instance
         from entropy.cache import EntropyCacher
@@ -91,6 +91,8 @@ class System:
             self.SystemSettings['repositories']['security_advisories_url']
         security_file = os.path.basename(security_url)
         md5_ext = etpConst['packagesmd5fileext']
+        sec_dir = etpConst['securitydir']
+        dmp_dir = etpConst['dumpstoragedir']
 
         self.unpackdir = os.path.join(etpConst['entropyunpackdir'],
             "security-%s" % (entropy.tools.get_random_number(),))
@@ -101,35 +103,34 @@ class System:
         self.download_package = os.path.join(self.unpackdir, security_file)
         self.download_package_checksum = self.download_package + md5_ext
         self.old_download_package_checksum = os.path.join(
-            etpConst['dumpstoragedir'], os.path.basename(security_url)
-        ) + md5_ext
+            dmp_dir, os.path.basename(security_url)) + md5_ext
 
-        self.security_package = os.path.join(etpConst['securitydir'],
+        self.security_package = os.path.join(sec_dir,
             os.path.basename(security_url))
         self.security_package_checksum = self.security_package + md5_ext
 
         try:
-
-            if os.path.isfile(etpConst['securitydir']) or \
-                os.path.islink(etpConst['securitydir']):
-                os.remove(etpConst['securitydir'])
-
-            if not os.path.isdir(etpConst['securitydir']):
-                os.makedirs(etpConst['securitydir'], 0o775)
-
+            if os.path.isfile(sec_dir) or os.path.islink(sec_dir):
+                os.remove(sec_dir)
+            if not os.path.isdir(sec_dir):
+                os.makedirs(sec_dir, 0o775)
         except OSError:
             pass
-        const_setup_perms(etpConst['securitydir'], etpConst['entropygid'])
+        const_setup_perms(sec_dir, etpConst['entropygid'])
 
         if os.access(self.old_download_package_checksum, os.R_OK) and \
             os.path.isfile(self.old_download_package_checksum):
 
-            f_down = open(self.old_download_package_checksum)
-            try:
-                self.previous_checksum = f_down.readline().strip().split()[0]
-            except (IndexError, OSError, IOError,):
-                pass
-            f_down.close()
+            with open(self.old_download_package_checksum, "r") as f_down:
+                try:
+                    self.previous_checksum = \
+                        f_down.readline().strip().split()[0]
+                except (IndexError, OSError, IOError,):
+                    pass
+
+        # validate cache
+        self.__validate_cache()
+
 
     def __prepare_unpack(self):
         """
@@ -256,16 +257,26 @@ class System:
         """
         shutil.rmtree(self.unpackdir, True)
 
-    def clear(self, xcache = False):
+    def __validate_cache(self):
+        """
+        Validate cache by looking at some checksum data
+        """
+        inst_pkgs_cksum = self.Entropy.clientDbconn.checksum(do_order = True,
+            strict = False, strings = True)
+        repo_cksum = self.Entropy._all_repositories_checksum()
+        sys_hash = str(hash(repo_cksum + inst_pkgs_cksum))
+
+        cached = self.__cacher.pop(sys_hash)
+        if cached is None:
+            self.clear() # kill the cache
+        self.__cacher.push(sys_hash, True)
+
+    def clear(self):
         """
         Clear instance cache (RAM and on-disk).
-
-        @keyword xcache: also remove Entropy on-disk cache if True
-        @type xcache: bool
         """
         self.adv_metadata = None
-        if xcache:
-            self.Entropy.clear_dump_cache(System.CACHE_ID)
+        self.Entropy.clear_dump_cache(System._CACHE_ID)
 
     def get_advisories_cache(self):
         """
@@ -280,7 +291,7 @@ class System:
             dir_checksum = entropy.tools.md5sum_directory(
                 etpConst['securitydir'])
             c_hash = "%s%s" % (
-                System.CACHE_ID, hash("%s|%s|%s" % (
+                System._CACHE_ID, hash("%s|%s|%s" % (
                     hash(self.SystemSettings['repositories']['branch']),
                     hash(dir_checksum),
                     hash(etpConst['systemroot']),
@@ -302,7 +313,7 @@ class System:
             dir_checksum = entropy.tools.md5sum_directory(
                 etpConst['securitydir'])
             c_hash = "%s%s" % (
-                System.CACHE_ID, hash("%s|%s|%s" % (
+                System._CACHE_ID, hash("%s|%s|%s" % (
                     hash(self.SystemSettings['repositories']['branch']),
                     hash(dir_checksum),
                     hash(etpConst['systemroot']),
@@ -729,7 +740,7 @@ class System:
 
         mytxt = "%s: %s %s" % (
             bold(_("Security Advisories")),
-            blue(_("getting latest GLSAs")),
+            blue(_("getting latest advisories")),
             red("..."),
         )
         self.Entropy.updateProgress(
@@ -767,14 +778,14 @@ class System:
                 bold(_("Security Advisories")),
                 darkgreen(_("updated successfully")),
             )
+            if do_cache and self.Entropy.xcache:
+                self.get_advisories_metadata()
         else:
             advtext = "%s: %s" % (
                 bold(_("Security Advisories")),
                 darkgreen(_("already up to date")),
             )
 
-        if do_cache and self.Entropy.xcache:
-            self.get_advisories_metadata()
         self.Entropy.updateProgress(
             advtext,
             importance = 2,
@@ -936,6 +947,8 @@ class System:
         self.__put_advisories_in_place()
         # remove temp stuff
         self.__cleanup_garbage()
+        # clear cache
+        self.clear()
         return 0
 
 

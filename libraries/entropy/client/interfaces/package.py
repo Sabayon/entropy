@@ -27,6 +27,7 @@ from entropy.misc import TimeScheduled
 from entropy.db import dbapi2, EntropyRepository
 from entropy.client.interfaces.client import Client
 from entropy.cache import EntropyCacher
+from entropy.core.settings.base import SystemSettings
 from entropy.security import System as SystemSecurity, \
     Repository as RepositorySecurity
 
@@ -41,6 +42,7 @@ class Package:
             raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
         self.Entropy = EquoInstance
 
+        self._system_settings = SystemSettings()
         self.Cacher = EntropyCacher()
         self.pkgmeta = {}
         self.__prepared = False
@@ -82,7 +84,7 @@ class Package:
 
         self.error_on_not_prepared()
 
-        sys_settings = self.Entropy.SystemSettings
+        sys_settings = self._system_settings
 
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
@@ -464,10 +466,11 @@ class Package:
 
     def __remove_package(self):
 
-        self.__clear_cache()
+        self.Entropy.clear_cache()
 
-        self.Entropy.clientLog.log("[Package]", etpConst['logging']['normal_loglevel_id'],
-            "Removing package: %s" % (self.pkgmeta['removeatom'],))
+        self.Entropy.clientLog.log("[Package]",
+            etpConst['logging']['normal_loglevel_id'],
+                "Removing package: %s" % (self.pkgmeta['removeatom'],))
 
         mytxt = "%s: %s" % (
             blue(_("Removing from Entropy")),
@@ -544,7 +547,7 @@ class Package:
 
         sys_root = etpConst['systemroot']
         # load CONFIG_PROTECT and CONFIG_PROTECT_MASK
-        sys_settings = self.Entropy.SystemSettings
+        sys_settings = self._system_settings
         protect = self.Entropy.get_installed_package_config_protect(idpackage)
         mask = self.Entropy.get_installed_package_config_protect(idpackage,
             mask = True)
@@ -776,25 +779,10 @@ class Package:
             pass
         return 0
 
-    def __clear_cache(self):
-        self.Entropy.clear_dump_cache(SystemSecurity.CACHE_ID)
-        self.Entropy.clear_dump_cache(etpConst['cache_ids']['filter_satisfied_deps'])
-        self.Entropy.clear_dump_cache(etpConst['cache_ids']['depends_tree'])
-        self.Entropy.clear_dump_cache(etpConst['cache_ids']['check_package_update'])
-        self.Entropy.clear_dump_cache(etpConst['cache_ids']['dep_tree'])
-        self.Entropy.clear_dump_cache(etpConst['cache_ids']['library_breakage'])
-        self.Entropy.clear_dump_cache(etpConst['cache_ids']['dbMatch'] + \
-            etpConst['clientdbid']+"/")
-
-        # clear caches, the bad way
-        self.Entropy.clear_dump_cache(etpConst['cache_ids']['world_available'])
-        self.Entropy.clear_dump_cache(etpConst['cache_ids']['world_update'])
-        self.Entropy.clear_dump_cache(etpConst['cache_ids']['critical_update'])
-
     def __install_package(self):
 
         # clear on-disk cache
-        self.__clear_cache()
+        self.Entropy.clear_cache()
 
         self.Entropy.clientLog.log(
             "[Package]",
@@ -1041,7 +1029,7 @@ class Package:
         data['counter'] = -1
         # branch must be always set properly, it could happen it's not
         # when installing packages through their .tbz2s
-        data['branch'] = self.Entropy.SystemSettings['repositories']['branch']
+        data['branch'] = self._system_settings['repositories']['branch']
         # there is no need to store needed paths into db
         if "needed_paths" in data:
             del data['needed_paths']
@@ -1142,7 +1130,7 @@ class Package:
             etpConst['systemroot']
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
-        misc_data = self.Entropy.SystemSettings[sys_set_plg_id]['misc']
+        misc_data = self._system_settings[sys_set_plg_id]['misc']
         col_protect = misc_data['collisionprotect']
         items_installed = set()
 
@@ -1554,7 +1542,7 @@ class Package:
 
         sys_set_plg_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
-        client_settings = self.Entropy.SystemSettings[sys_set_plg_id]
+        client_settings = self._system_settings[sys_set_plg_id]
         misc_settings = client_settings['misc']
 
         # check if protection is disabled for this element
@@ -2565,7 +2553,7 @@ class Package:
                 self.__prepared = False
                 return -1
 
-            repo_data = self.Entropy.SystemSettings['repositories']
+            repo_data = self._system_settings['repositories']
             repo_meta = repo_data['available'][self.pkgmeta['repository']]
             self.pkgmeta['smartpackage'] = repo_meta['smartpackage']
             self.pkgmeta['pkgpath'] = repo_meta['pkgpath']

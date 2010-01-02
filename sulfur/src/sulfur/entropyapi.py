@@ -87,21 +87,24 @@ class QueueExecutor:
             selected_by_user = set()
 
         # unmask packages
-        for match in self.Sulfur.etpbase.unmaskingPackages:
-            result = self.Entropy.unmask_match(match)
-            if not result or self.Entropy.is_match_masked(match):
-                dbconn = self.Entropy.open_repository(match[1])
-                atom = dbconn.retrieveAtom(match[0])
-                self.ok_dialog("%s: %s" % (
-                    _("Error enabling masked package"), atom))
-                return 2
+        if (not fetch_only) and (not download_sources):
+            for match in self.Sulfur.etpbase.unmaskingPackages:
+                result = self.Entropy.unmask_match(match)
+                if not result or self.Entropy.is_match_masked(match):
+                    dbconn = self.Entropy.open_repository(match[1])
+                    atom = dbconn.retrieveAtom(match[0])
+                    self.ok_dialog("%s: %s" % (
+                        _("Error enabling masked package"), atom))
+                    return 2
 
         removalQueue = []
-        runQueue = []
+        runQueue = install_queue
         conflicts_queue = []
-        if install_queue:
+        if (not fetch_only) and (not download_sources):
             runQueue, conflicts_queue, status = self.Entropy.get_install_queue(
-                install_queue, False, False, relaxed_deps = (SulfurConf.relaxed_deps == 1))
+                install_queue, False, False,
+                relaxed_deps = (SulfurConf.relaxed_deps == 1)
+            )
         if removal_queue:
             removalQueue += [(x, False) for x in removal_queue if x \
                 not in conflicts_queue]

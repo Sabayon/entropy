@@ -184,13 +184,13 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         dmp_dir = etpConst['dumpstoragedir']
         self.__mtime_files.update({
-            'keywords_mtime': dmp_dir+"/keywords.mtime",
-            'unmask_mtime': dmp_dir+"/unmask.mtime",
-            'mask_mtime': dmp_dir+"/mask.mtime",
-            'satisfied_mtime': dmp_dir+"/satisfied.mtime",
-            'license_mask_mtime': dmp_dir+"/license_mask.mtime",
-            'license_accept_mtime': dmp_dir+"/license_accept.mtime",
-            'system_mask_mtime': dmp_dir+"/system_mask.mtime",
+            'keywords_mtime': os.path.join(dmp_dir, "keywords.mtime"),
+            'unmask_mtime': os.path.join(dmp_dir, "unmask.mtime"),
+            'mask_mtime': os.path.join(dmp_dir, "mask.mtime"),
+            'satisfied_mtime': os.path.join(dmp_dir, "satisfied.mtime"),
+            'license_mask_mtime': os.path.join(dmp_dir, "license_mask.mtime"),
+            'license_accept_mtime': os.path.join(dmp_dir, "license_accept.mtime"),
+            'system_mask_mtime': os.path.join(dmp_dir, "system_mask.mtime"),
         })
 
 
@@ -1011,6 +1011,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
                     except (OSError, IOError,):
                         continue
 
+        repoids = set()
         for line in repositoriesconf:
 
             split_line = line.split("|")
@@ -1030,6 +1031,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
                 reponame, repodata = const_extract_cli_repo_params(line,
                     data['branch'], data['product'])
+                repoids.add(reponame)
                 if reponame in my_repodata:
 
                     my_repodata[reponame]['plain_packages'].extend(
@@ -1104,8 +1106,25 @@ class SystemSettings(Singleton, EntropyPluginStore):
             data['transfer_limit'] = tx_limit
 
         # validate using mtime
-        for repoid in data['order']:
-            
+        dmp_path = etpConst['dumpstoragedir']
+        for repoid in repoids:
+            if repoid in data['available']:
+                repo_data = data['available'][repoid]
+            elif repoid in data['excluded']:
+                repo_data = data['excluded'][repoid]
+            else:
+                continue
+
+            repo_db_path = os.path.join(repo_data['dbpath'],
+                etpConst['etpdatabasefile'])
+            repo_mtime_fn = "%s_%s_%s.mtime" % (repoid, data['branch'],
+                data['product'],)
+
+            repo_db_path_mtime = os.path.join(dmp_path, repo_mtime_fn)
+            if os.path.isfile(repo_db_path) and \
+                os.access(repo_db_path, os.R_OK):
+                self.validate_entropy_cache(repo_db_path, repo_db_path_mtime,
+                    repoid = repoid)
 
         return data
 
@@ -1114,22 +1133,23 @@ class SystemSettings(Singleton, EntropyPluginStore):
         Internal method, go away!
         """
         self.__cacher.discard()
-        self._clear_dump_cache(etpConst['cache_ids']['world_available'])
-        self._clear_dump_cache(etpConst['cache_ids']['world_update'])
-        self._clear_dump_cache(etpConst['cache_ids']['critical_update'])
-        self._clear_dump_cache(etpConst['cache_ids']['check_package_update'])
-        self._clear_dump_cache(etpConst['cache_ids']['filter_satisfied_deps'])
-        self._clear_dump_cache(etpConst['cache_ids']['atomMatch'])
-        self._clear_dump_cache(etpConst['cache_ids']['dep_tree'])
-        self._clear_dump_cache(etpConst['cache_ids']['library_breakage'])
+        for key, value in etpConst['cache_ids'].items():
+            if key == "db_match":
+                continue
+            self._clear_dump_cache(value)
+
         if repoid is not None:
             self._clear_dump_cache("%s/%s%s/" % (
-                etpConst['cache_ids']['dbMatch'], etpConst['dbnamerepoprefix'], repoid,))
+                etpConst['cache_ids']['db_match'], etpConst['dbnamerepoprefix'],
+                    repoid,))
 
-    def _clear_dump_cache(self, dump_name, skip = []):
+    def _clear_dump_cache(self, dump_name, skip = None):
         """
         Internal method, go away!
         """
+        if skip is None:
+            skip = []
+
         dump_path = os.path.join(etpConst['dumpstoragedir'], dump_name)
         dump_dir = os.path.dirname(dump_path)
         #dump_file = os.path.basename(dump_path)
@@ -1141,7 +1161,8 @@ class SystemSettings(Singleton, EntropyPluginStore):
                     if path.find(myskip) != -1:
                         found = True
                         break
-                if found: continue
+                if found:
+                    continue
             for item in files:
                 if item.endswith(etpConst['cachedumpext']):
                     item = os.path.join(path, item)
@@ -1251,28 +1272,33 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @rtype: None
         """
 
+        def revalidate():
+            try:
+                self.__remove_repo_cache(repoid = repoid)
+                self.__save_file_mtime(settingfile, mtimefile)
+            except (OSError, IOError):
+                return
+
         # handle on-disk cache validation
         # in this case, repositories cache
         # if file is changed, we must destroy cache
         if not os.path.isfile(mtimefile):
             # we can't know if it has been updated
             # remove repositories caches
-            self.__remove_repo_cache(repoid = repoid)
-            self.__save_file_mtime(settingfile, mtimefile)
-        else:
-            # check mtime
-            try:
-                mtime_f = open(mtimefile, "r")
-                mtime = mtime_f.readline().strip()
-                mtime_f.close()
-                # compare with current mtime
-                try:
-                    currmtime = str(os.path.getmtime(settingfile))
-                except OSError:
-                    currmtime = "0.0"
-                if mtime != currmtime:
-                    self.__remove_repo_cache(repoid = repoid)
-                    self.__save_file_mtime(settingfile, mtimefile)
-            except (OSError, IOError,):
-                self.__remove_repo_cache(repoid = repoid)
-                self.__save_file_mtime(settingfile, mtimefile)
+            revalidate()
+            return
+
+        # check mtime
+        try:
+            with open(mtimefile, "r") as mtime_f:
+                mtime = str(mtime_f.readline().strip())
+        except (OSError, IOError,):
+            mtime = "0.0"
+
+        try:
+            currmtime = str(os.path.getmtime(settingfile))
+        except (OSError, IOError,):
+            currmtime = "0.0"
+
+        if mtime != currmtime:
+            revalidate()

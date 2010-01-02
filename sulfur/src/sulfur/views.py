@@ -1153,7 +1153,7 @@ class EntropyPackageView:
         result = confirmDialog.run()
         confirmDialog.destroy()
         if result != -5: return
-        for obj in objs: self.Equo.mask_match(obj.matched_atom, clean_all_cache = True)
+        for obj in objs: self.Equo.mask_match(obj.matched_atom)
         # clear cache
         self.clear()
         self.etpbase.clear_groups()

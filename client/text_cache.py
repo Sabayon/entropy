@@ -30,7 +30,7 @@ def cache(options):
                 header = brown(" @@ "),
                 back = True
             )
-            entropy_client._purge_cache()
+            entropy_client.clear_cache()
             entropy_client.updateProgress(
                 darkgreen(_("Entropy cache cleaned.")),
                 type = "info",

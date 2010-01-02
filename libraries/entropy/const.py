@@ -178,7 +178,7 @@ def const_default_settings(rootdir):
             'verbose_loglevel_id': 2,
         },
         'cache_ids': {
-            'dbMatch': 'match/db', # db atom match cache
+            'db_match': 'match/db', # db atom match cache
             'dep_tree': 'deptree/dep_tree_',
             # used to store info about repository dependencies solving
             'atomMatch': 'atom_match/atom_match_',

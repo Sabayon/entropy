@@ -655,7 +655,7 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
             do_validate_repo_cache = True
 
         if not self.xcache and (self.entropyTools.is_user_in_entropy_group()):
-            self._purge_cache()
+            self.clear_cache()
 
         if self.openclientdb:
             self.open_client_repository()

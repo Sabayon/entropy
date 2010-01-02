@@ -36,7 +36,7 @@ class CacheMixin:
             self.SystemSettings['repositories']['order'],
             async = False)
 
-    def _purge_cache(self):
+    def clear_cache(self):
         self.Cacher.stop()
         try:
             shutil.rmtree(etpConst['dumpstoragedir'], True)

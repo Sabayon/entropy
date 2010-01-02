@@ -411,7 +411,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
         self.dbclosed = True
         self.SystemSettings = SystemSettings()
-        self.dbMatchCacheKey = etpConst['cache_ids']['dbMatch']
+        self.dbMatchCacheKey = etpConst['cache_ids']['db_match']
         self.client_settings_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         self.db_branch = self.SystemSettings['repositories']['branch']
@@ -3275,12 +3275,9 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
             content += x
         return content
 
-    def clearCache(self, depends = False):
+    def clearCache(self):
         """
         Clear on-disk repository cache.
-
-        @keyword depends: if True, clear reverse dependencies cache
-        @type depends: bool
         """
 
         plugins = self.get_plugins()
@@ -3293,31 +3290,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                         plug_inst.get_id(), exec_rc,))
 
         self.live_cache.clear()
-        def do_clear(name):
-            """
-            docstring_title
-
-            @param name:
-            @type name:
-            @return:
-            @rtype:
-
-            """
-            dump_path = os.path.join(etpConst['dumpstoragedir'], name)
-            dump_dir = os.path.dirname(dump_path)
-            if os.path.isdir(dump_dir):
-                for item in os.listdir(dump_dir):
-                    try:
-                        os.remove(os.path.join(dump_dir, item))
-                    except OSError:
-                        pass
-
-        do_clear("%s/%s/" % (self.dbMatchCacheKey, self.dbname,))
-        if depends:
-            do_clear(etpConst['cache_ids']['depends_tree'])
-            do_clear(etpConst['cache_ids']['dep_tree'])
-            do_clear(etpConst['cache_ids']['library_breakage'])
-            do_clear(etpConst['cache_ids']['filter_satisfied_deps'])
 
     def retrieveRepositoryUpdatesDigest(self, repository):
         """

@@ -427,12 +427,6 @@ class Repository:
             return False
         return True
 
-    def _clear_repository_cache(self, repo):
-        self.__validate_repository_id(repo)
-        self.Entropy.clear_dump_cache("%s/%s%s/" % (
-            etpConst['cache_ids']['dbMatch'],
-            etpConst['dbnamerepoprefix'], repo,))
-
     def __append_gpg_signature_to_path(self, path):
         return path + etpConst['etpgpgextension']
 
@@ -1220,7 +1214,6 @@ class Repository:
                 continue
 
             # clear database interface cache belonging to this repository
-            self._clear_repository_cache(repo)
             self.__ensure_repository_path(repo)
 
             # dealing with EAPI
@@ -1462,7 +1455,7 @@ class Repository:
 
         # clean caches, fetch security
         if self.updated:
-            self.Entropy._purge_cache()
+            self.Entropy.clear_cache()
             if self.fetch_security:
                 self._update_security_advisories()
             # do treeupdates

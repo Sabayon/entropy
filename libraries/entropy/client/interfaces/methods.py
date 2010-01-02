@@ -264,7 +264,7 @@ class RepositoryMixin:
             entropy.tools.save_repository_settings(repodata)
             self.SystemSettings._clear_repository_cache(repoid = repoid)
             self.close_all_repositories()
-            self._purge_cache()
+            self.clear_cache()
             self.SystemSettings.clear()
 
         self.validate_repositories()
@@ -682,7 +682,7 @@ class RepositoryMixin:
                 header = blue(" @@ "),
                 back = True
             )
-        self._purge_cache()
+        self.clear_cache()
         return True, _("All fine")
 
     def list_backedup_client_databases(self, client_dbdir = None):
@@ -1129,7 +1129,7 @@ class MiscMixin:
 
     def switch_chroot(self, chroot = ""):
         # clean caches
-        self._purge_cache()
+        self.clear_cache()
         self.close_all_repositories()
         if chroot.endswith("/"):
             chroot = chroot[:-1]
@@ -1284,7 +1284,7 @@ class MiscMixin:
         """
         self.Cacher.discard()
         self.Cacher.stop()
-        self._purge_cache()
+        self.clear_cache()
         self.close_all_repositories()
         # etpConst should be readonly but we override the rule here
         # this is also useful when no config file or parameter into it exists
@@ -1656,36 +1656,34 @@ class MatchMixin:
             return True #,True
         return False #,True
 
-    def mask_match(self, match, method = 'atom', dry_run = False,
-        clean_all_cache = False):
+    def mask_match(self, match, method = 'atom', dry_run = False):
         if self.is_match_masked(match, live_check = False):
             return True
         methods = {
             'atom': self.mask_match_by_atom,
             'keyslot': self.mask_match_by_keyslot,
         }
-        rc = self._mask_unmask_match(match, method, methods, dry_run = dry_run,
-            clean_all_cache = clean_all_cache)
+        rc = self._mask_unmask_match(match, method, methods, dry_run = dry_run)
         if dry_run: # inject if done "live"
             self.SystemSettings['live_packagemasking']['unmask_matches'].discard(match)
             self.SystemSettings['live_packagemasking']['mask_matches'].add(match)
         return rc
 
-    def unmask_match(self, match, method = 'atom', dry_run = False, clean_all_cache = False):
-        if not self.is_match_masked(match, live_check = False): return True
+    def unmask_match(self, match, method = 'atom', dry_run = False):
+        if not self.is_match_masked(match, live_check = False):
+            return True
         methods = {
             'atom': self.unmask_match_by_atom,
             'keyslot': self.unmask_match_by_keyslot,
         }
-        rc = self._mask_unmask_match(match, method, methods, dry_run = dry_run,
-            clean_all_cache = clean_all_cache)
+        rc = self._mask_unmask_match(match, method, methods, dry_run = dry_run)
         if dry_run: # inject if done "live"
             self.SystemSettings['live_packagemasking']['unmask_matches'].add(match)
             self.SystemSettings['live_packagemasking']['mask_matches'].discard(match)
         return rc
 
     def _mask_unmask_match(self, match, method, methods_reference,
-        dry_run = False, clean_all_cache = False):
+        dry_run = False):
 
         f = methods_reference.get(method)
         if not hasattr(f, '__call__'):
@@ -1693,23 +1691,10 @@ class MatchMixin:
                 _("not a valid method"), method,) )
 
         self.Cacher.discard()
+        self.SystemSettings._clear_repository_cache(match[1])
         done = f(match, dry_run)
         if done and not dry_run:
             self.SystemSettings.clear()
-
-        # clear atomMatch cache anyway
-        if clean_all_cache and not dry_run:
-            self.clear_dump_cache(etpConst['cache_ids']['world_available'])
-            self.clear_dump_cache(etpConst['cache_ids']['world_update'])
-            self.clear_dump_cache(etpConst['cache_ids']['critical_update'])
-
-        self.clear_dump_cache(etpConst['cache_ids']['check_package_update'])
-        self.clear_dump_cache(etpConst['cache_ids']['filter_satisfied_deps'])
-        self.clear_dump_cache(self.atomMatchCacheKey)
-        self.clear_dump_cache(etpConst['cache_ids']['dep_tree'])
-        self.clear_dump_cache(etpConst['cache_ids']['library_breakage'])
-        self.clear_dump_cache("%s/%s%s/" % (etpConst['cache_ids']['dbMatch'],
-            etpConst['dbnamerepoprefix'], match[1],))
 
         cl_id = self.sys_settings_client_plugin_id
         self.SystemSettings[cl_id]['masking_validation']['cache'].clear()

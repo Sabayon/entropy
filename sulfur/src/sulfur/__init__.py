@@ -116,11 +116,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                     os.kill(self._ugc_pid, signal.SIGKILL)
                 except OSError:
                     pass
-        if hasattr(self, 'ugcTask'):
-            if self.__ugc_task != None:
-                self.__ugc_task.kill()
-                while self.__ugc_task.isAlive():
-                    time.sleep(0.2)
         if hasattr(self, 'Equo'):
             self.Equo.destroy()
 
@@ -262,7 +257,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.disable_ugc = False
         self._ugc_pid = None
 
-        self.__ugc_task = None
         self._spawning_ugc = False
         self._preferences = None
         self.skipMirrorNow = False
@@ -279,7 +273,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.setup_repoView()
         self.firstTime = True
         # setup app
-        self.setup_application()
+        self.setup_application(on_init = True)
 
         self.console.set_pty(self.pty[0])
         self.reset_progress_text()
@@ -621,31 +615,44 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
     def setup_user_generated_content(self):
 
-        self.__ugc_task = TimeScheduled(30, self.spawn_user_generated_content)
-        self.__ugc_task.set_delay_before(True)
         if "--nougc" not in sys.argv:
-            self.__ugc_task.start()
+            gobject.timeout_add(30*1000,
+                self.spawn_user_generated_content_first)
+            self.__ugc_task_id = gobject.timeout_add(600*1000,
+                self.spawn_user_generated_content)
+
+    def spawn_user_generated_content_first(self):
+        self.spawn_user_generated_content()
+        # this makes the whole thing to terminate
+        return False
 
     def spawn_user_generated_content(self):
-        self.__ugc_task.set_delay(300)
         if self.do_debug:
             print_generic("entering UGC")
 
-        def write_pid_func(pid):
+        pid = os.fork()
+        if pid != 0:
             self._ugc_pid = pid
             if self.do_debug:
                 print_generic("written UGC pid %s" % (pid,))
 
-        try:
-            entropy.tools.spawn_function(self.ugc_update,
-                write_pid_func = write_pid_func)
+            os.waitpid(pid, 0)
+
+            if self.do_debug:
+                print_generic("UGC pid %s done, syncing cache" % (pid,))
             self.Cacher.sync(wait = True)
-        except (SystemExit,):
-            raise
-        except:
-            pass
+            if self.do_debug:
+                print_generic("Cache sync done")
+            self._ugc_pid = None
+
+        else:
+            self.ugc_update()
+            os._exit(0)
+
         if self.do_debug:
             print_generic("quitting UGC")
+
+        return True
 
     def ugc_update(self):
 
@@ -1067,13 +1074,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.progressVBox.grab_remove()
         normal_cursor(self.ui.main)
 
-    def setup_application(self):
+    def setup_application(self, on_init = False):
         msg = _('Generating metadata. Please wait.')
         self.set_status_ticker(msg)
         count = 30
         while count:
             try:
-                self.show_packages()
+                self.show_packages(on_init = on_init)
             except self.Equo.dbapi2.ProgrammingError as e:
                 self.set_status_ticker("%s: %s, %s" % (
                         _("Error during list population"),
@@ -1089,7 +1096,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def clean_entropy_caches(self, alone = False):
         if alone:
             self.progress.total.hide()
-        self.Equo._purge_cache()
+        self.Equo.clear_cache()
         # clear views
         self.etpbase.clear_groups()
         self.etpbase.clear_cache()
@@ -1326,7 +1333,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.ui.skipMirror.hide()
         self.skipMirror = False
 
-    def show_packages(self, back_to_page = None):
+    def show_packages(self, back_to_page = None, on_init = False):
 
         self.ui_lock(True)
         action = self.lastPkgPB
@@ -1353,8 +1360,12 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         if bootstrap:
             if self.do_debug:
-                print_generic("show_packages: bootstrap is enabled, clearing ALL cache")
-            self.etpbase.clear_cache()
+                if on_init:
+                    print_generic("show_packages: bootstrap is enabled, clearing ALL cache")
+                else:
+                    print_generic("show_packages: bootstrap is enabled, and cache has been removed. I won't touch anything")
+            if on_init:
+                self.etpbase.clear_cache()
             self.start_working()
 
         allpkgs = []
