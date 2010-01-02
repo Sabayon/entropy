@@ -129,7 +129,7 @@
 .\" ========================================================================
 .\"
 .IX Title "REAGENT 1"
-.TH REAGENT 1 "2009-12-29" "perl v5.8.8" "Entropy"
+.TH REAGENT 1 "2010-01-02" "perl v5.8.8" "Entropy"
 .SH "NAME"
 \&\fBreagent\fR \- Official Sabayon Linux Server\-Side Package Management tool
 .SH "SYNOPSIS"
@@ -348,19 +348,22 @@ show currently configured keys information for given repositories
 .IP "\fBsign [repos]\fR" 4
 .IX Item "sign [repos]"
 sign (or re\-sign) packages in repository using currently set keypair
-.IP "\fBimport <repo_id\fR <pubkey_path>>" 4
-.IX Item "import <repo_id <pubkey_path>>"
-import public key, bind to given repository
-.IP "\fBexport <repo_id\fR <pubkey_path>>" 4
-.IX Item "export <repo_id <pubkey_path>>"
+.IP "\fBimport <repo_id\fR <privkey_path> <pubkey_path>>" 4
+.IX Item "import <repo_id <privkey_path> <pubkey_path>>"
+import keypair, bind to given repository
+.IP "\fBexport-public <repo_id\fR <key_path>>" 4
+.IX Item "export-public <repo_id <key_path>>"
 export public key of given repository
 .RE
 .RS 4
 .RE
-.IP "\fBspm\fR" 4
+.IP "\fBexport-private <repo_id\fR <key_path>>" 4
+.IX Item "export-private <repo_id <key_path>>"
+export private key of given repository
+.RE
+.IP "\fBspm\fR"
 .IX Item "spm"
 source package manager functions
-.RS 4
 .IP "\fBcompile\fR" 4
 .IX Item "compile"
 compilation function
@@ -401,31 +404,30 @@ run mirror sync if all went fine
 .IX Item "orphans"
 scan orphaned packages on \s-1SPM\s0
 .RE
-.RS 4
-.RE
-.IP "\fBdeptest\fR" 4
+.IP "\fBdeptest\fR"
 .IX Item "deptest"
 look for unsatisfied dependencies
-.IP "\fBlibtest\fR" 4
+.RE
+.IP "\fBlibtest\fR"
 .IX Item "libtest"
 look for missing libraries
-.RS 4
 .IP "\fB\-\-dump\fR" 4
 .IX Item "--dump"
 dump results to files
 .RE
-.RS 4
-.RE
-.IP "\fBpkgtest\fR" 4
+.IP "\fBpkgtest\fR"
 .IX Item "pkgtest"
 verify the integrity of local package files
-.IP "\fBrevdeps\fR" 4
+.RE
+.IP "\fBrevdeps\fR"
 .IX Item "revdeps"
 regenerate reverse dependencies metadata
-.IP "\fBlibpaths\fR" 4
+.RE
+.IP "\fBlibpaths\fR"
 .IX Item "libpaths"
 regenerate the library paths table
-.IP "\fBcleanup\fR" 4
+.RE
+.IP "\fBcleanup\fR"
 .IX Item "cleanup"
 remove downloaded packages and clean temp. directories)
 .SH "ENVIRONMENT"

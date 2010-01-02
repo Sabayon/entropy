@@ -198,6 +198,14 @@ security infrastructure functions
 
 download the latest Security Advisories
 
+=over
+
+=item B<--force>
+
+force download even if already up-to-date
+
+=back
+
 =item B<list>
 
 list all the available Security Advisories
@@ -1193,8 +1201,6 @@ verify the integrity of local package files
 =item B<revdeps>
 
 regenerate reverse dependencies metadata
-
-=back
 
 
 =item B<ugc>

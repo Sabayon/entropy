@@ -408,8 +408,6 @@ regenerate the library paths table
 remove downloaded packages and clean temp. directories)
 
 
-=back
-
 =head1 ENVIRONMENT
 
 -B<ETP_REPO>=valid repository id: on-the-fly switch default Entropy repository.
