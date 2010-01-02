@@ -47,7 +47,8 @@ if E_GID == None:
     E_GID = 0
 
 
-def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True):
+def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True,
+    dump_dir = None):
     """
     Dump pickable object to file
 
@@ -62,6 +63,8 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True):
     @keyword ignore_exceptions: ignore any possible exception
         (EOFError, IOError, OSError,)
     @type ignore_exceptions: bool
+    @keyword dump_dir: alternative dump directory
+    @type dump_dir: string
     @return: None
     @rtype: None
     @raise EOFError: could be caused by pickle.dump, ignored if
@@ -71,17 +74,20 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True):
     @raise OSError: could be caused by pickle.dump, ignored if
         ignore_exceptions is True
     """
+    if dump_dir is None:
+        dump_dir = D_DIR
+
     while True: # trap ctrl+C
         try:
             if complete_path:
                 dmpfile = name
-                dump_dir = os.path.dirname(name)
+                c_dump_dir = os.path.dirname(name)
             else:
-                _dmp_path = os.path.join(D_DIR, name)
+                _dmp_path = os.path.join(dump_dir, name)
                 dmpfile = _dmp_path+D_EXT
-                dump_dir = os.path.dirname(_dmp_path)
+                c_dump_dir = os.path.dirname(_dmp_path)
 
-            my_dump_dir = dump_dir
+            my_dump_dir = c_dump_dir
             d_paths = []
             while not os.path.isdir(my_dump_dir):
                 d_paths.append(my_dump_dir)
@@ -190,7 +196,7 @@ def serialize_string(myobj):
     else:
         return pickle.dumps(myobj)
 
-def loadobj(name, complete_path = False):
+def loadobj(name, complete_path = False, dump_dir = None):
     """
     Load object from a file
     @param name: name of the object to load
@@ -198,17 +204,21 @@ def loadobj(name, complete_path = False):
     @keyword complete_path: determine whether name argument
         is a complete disk path to serialized object
     @type complete_path: bool
+    @keyword dump_dir: alternative dump directory
+    @type dump_dir: string
     @return: object or None
     @rtype: any Python pickable object or None
     """
+    if dump_dir is None:
+        dump_dir = D_DIR
+
     while True:
         if complete_path:
             dmpfile = name
         else:
-            dump_path = os.path.join(D_DIR, name)
-            #dump_dir = os.path.dirname(dump_path)
-            #dump_name = os.path.basename(dump_path)
+            dump_path = os.path.join(dump_dir, name)
             dmpfile = dump_path+D_EXT
+
         if os.path.isfile(dmpfile) and os.access(dmpfile, os.R_OK):
             try:
                 with open(dmpfile, "rb") as dmp_f:
@@ -228,34 +238,42 @@ def loadobj(name, complete_path = False):
                 pass
         break
 
-def getobjmtime(name):
+def getobjmtime(name, dump_dir = None):
     """
     Get dumped object mtime
 
     @param name: object name
     @type name: string
+    @keyword dump_dir: alternative dump directory
+    @type dump_dir: string
     @return: mtime of the file containing the serialized object or 0
         if not found
     @rtype: int
     """
+    if dump_dir is None:
+        dump_dir = D_DIR
     mtime = 0
-    dump_path = os.path.join(D_DIR, name+D_EXT)
+    dump_path = os.path.join(dump_dir, name+D_EXT)
     if os.path.isfile(dump_path) and os.access(dump_path, os.R_OK):
         mtime = os.path.getmtime(dump_path)
     return int(mtime)
 
-def removeobj(name):
+def removeobj(name, dump_dir = None):
     """
     Remove cached object referenced by its object name
 
     @param name: object name
     @type name: string
+    @keyword dump_dir: alternative dump directory
+    @type dump_dir: string
     @return: bool representing whether object has been
         removed or not
     @rtype: bool
     @raise OSError: in case of troubles with os.remove()
     """
-    filepath = D_DIR+"/"+name+D_EXT
+    if dump_dir is None:
+        dump_dir = D_DIR
+    filepath = dump_dir+"/"+name+D_EXT
     if os.path.isfile(filepath) and os.access(filepath, os.W_OK):
         os.remove(filepath)
         return True
