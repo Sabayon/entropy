@@ -20,6 +20,7 @@
 
   1.0_beta1:
 
+    - entropy package metadata .dtd specs
     - complete API documentation
     - Transform Sulfur into Entropy Store:
         - UGC for more coolness
@@ -33,7 +34,7 @@
     - ditch entropyTools, dumpTools
     - _databaseStructureUpdates (missing tables creation)
     - type argument in updateProgress
-    - clientDbconn => clientdb
+    - clientDbconn => installed_repo
 
   2.0:
 
