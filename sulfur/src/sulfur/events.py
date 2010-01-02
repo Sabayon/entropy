@@ -29,8 +29,8 @@ except ImportError:
 
 from entropy.exceptions import QueueError
 import entropy.tools
-from entropy.const import etpConst, const_extract_cli_repo_params, \
-    initconfig_entropy_constants, const_isunicode, const_convert_to_unicode
+from entropy.const import etpConst, initconfig_entropy_constants, \
+    const_isunicode, const_convert_to_unicode
 from entropy.output import print_generic
 from entropy.i18n import _
 from entropy.misc import TimeScheduled, ParallelTask

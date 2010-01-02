@@ -213,8 +213,9 @@ class AddRepositoryWindow(MenuSkel):
             if (text.startswith("repository|")) and (len(text.split("|")) == 5):
                 current_branch = self.Equo.SystemSettings['repositories']['branch']
                 current_product = self.Equo.SystemSettings['repositories']['product']
-                repoid, repodata = const_extract_cli_repo_params(text,
-                    current_branch, current_product)
+                repoid, repodata = \
+                    self.Equo.SystemSettings._analyze_client_repo_string(text,
+                        current_branch, current_product)
                 self._load_repo_data(repodata)
             else:
                 okDialog( self.addrepo_ui.addRepoWin,

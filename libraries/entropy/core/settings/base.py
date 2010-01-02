@@ -22,8 +22,7 @@ import sys
 from threading import RLock
 
 from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
-    const_secure_config_file, const_set_nice_level, \
-    const_extract_cli_repo_params, const_isunicode, \
+    const_secure_config_file, const_set_nice_level, const_isunicode, \
     const_convert_to_unicode, const_convert_to_rawstring
 from entropy.core import Singleton, EntropyPluginStore
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
@@ -956,6 +955,146 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
         return data
 
+    def _analyze_client_repo_string(self, repostring, branch = None,
+        product = None):
+        """
+        Extract repository information from the provided repository string,
+        usually contained in the repository settings file, repositories.conf.
+
+        @param repostring: valid repository identifier
+        @type repostring: string
+        @rtype: tuple (string, dict)
+        @return: tuple composed by (repository identifier, extracted repository
+            metadata)
+        """
+
+        if branch == None:
+            branch = etpConst['branch']
+        if product == None:
+            product = etpConst['product']
+
+        reponame = repostring.split("|")[1].strip()
+        repodesc = repostring.split("|")[2].strip()
+        repopackages = repostring.split("|")[3].strip()
+        repodatabase = repostring.split("|")[4].strip()
+
+        eapi3_uri = None
+        eapi3_port = etpConst['socket_service']['port']
+        eapi3_ssl_port = etpConst['socket_service']['ssl_port']
+        eapi3_formatcolon = repodatabase.rfind("#")
+
+        # Support for custom EAPI3 ports
+        if eapi3_formatcolon != -1:
+            try:
+                ports = repodatabase[eapi3_formatcolon+1:].split(",")
+                if ports:
+                    eapi3_port = int(ports[0])
+                if len(ports) > 1:
+                    eapi3_ssl_port = int(ports[1])
+            except (ValueError, IndexError,):
+                eapi3_port = etpConst['socket_service']['port']
+                eapi3_ssl_port = etpConst['socket_service']['ssl_port']
+            repodatabase = repodatabase[:eapi3_formatcolon]
+
+        # Support for custom database file compression
+        dbformat = etpConst['etpdatabasefileformat']
+        dbformatcolon = repodatabase.rfind("#")
+        if dbformatcolon != -1:
+            if dbformat in etpConst['etpdatabasesupportedcformats']:
+                try:
+                    dbformat = repodatabase[dbformatcolon+1:]
+                except (IndexError, ValueError, TypeError,):
+                    pass
+            repodatabase = repodatabase[:dbformatcolon]
+
+        # Support for custom EAPI3 service URI
+        eapi3_uricolon = repodatabase.rfind(",")
+        if eapi3_uricolon != -1:
+
+            found_eapi3_uri = repodatabase[eapi3_uricolon+1:]
+            if found_eapi3_uri:
+                eapi3_uri = found_eapi3_uri
+            repodatabase = repodatabase[:eapi3_uricolon]
+
+        mydata = {}
+        mydata['repoid'] = reponame
+        mydata['service_port'] = eapi3_port
+        mydata['ssl_service_port'] = eapi3_ssl_port
+
+        if not repodatabase.endswith("file://") and (eapi3_uri is None):
+            try:
+                # try to cope with the fact that no specific EAPI3 URI has been
+                # provided
+                eapi3_uri = repodatabase.split("/")[2]
+            except IndexError:
+                eapi3_uri = None
+        mydata['service_uri'] = eapi3_uri
+        mydata['description'] = repodesc
+        mydata['packages'] = []
+        mydata['plain_packages'] = []
+
+        mydata['dbpath'] = etpConst['etpdatabaseclientdir'] + os.path.sep + \
+            reponame + os.path.sep + product + os.path.sep + \
+            etpConst['currentarch'] + os.path.sep + branch
+
+        mydata['dbcformat'] = dbformat
+        if not dbformat in etpConst['etpdatabasesupportedcformats']:
+            mydata['dbcformat'] = etpConst['etpdatabasesupportedcformats'][0]
+
+        mydata['plain_database'] = repodatabase
+
+        mydata['database'] = repodatabase + os.path.sep + product + \
+            os.path.sep + reponame + "/database/" + etpConst['currentarch'] + \
+            os.path.sep + branch
+
+        mydata['notice_board'] = mydata['database'] + os.path.sep + \
+            etpConst['rss-notice-board']
+
+        mydata['local_notice_board'] = mydata['dbpath'] + os.path.sep + \
+            etpConst['rss-notice-board']
+
+        mydata['local_notice_board_userdata'] = mydata['dbpath'] + \
+            os.path.sep + etpConst['rss-notice-board-userdata']
+
+        mydata['dbrevision'] = "0"
+        dbrevision_file = os.path.join(mydata['dbpath'],
+            etpConst['etpdatabaserevisionfile'])
+        if os.path.isfile(dbrevision_file) and \
+            os.access(dbrevision_file, os.R_OK):
+            with open(dbrevision_file, "r") as dbrev_f:
+                mydata['dbrevision'] = dbrev_f.readline().strip()
+
+        # setup GPG key path
+        mydata['gpg_pubkey'] = mydata['dbpath'] + os.path.sep + \
+            etpConst['etpdatabasegpgfile']
+
+        # setup script paths
+        mydata['post_branch_hop_script'] = mydata['dbpath'] + os.path.sep + \
+            etpConst['etp_post_branch_hop_script']
+        mydata['post_branch_upgrade_script'] = mydata['dbpath'] + \
+            os.path.sep + etpConst['etp_post_branch_upgrade_script']
+        mydata['post_repo_update_script'] = mydata['dbpath'] + os.path.sep + \
+            etpConst['etp_post_repo_update_script']
+
+        # initialize CONFIG_PROTECT
+        # will be filled the first time the db will be opened
+        mydata['configprotect'] = None
+        mydata['configprotectmask'] = None
+        repopackages = [x.strip() for x in repopackages.split() if x.strip()]
+        repopackages = [x for x in repopackages if (x.startswith('http://') or \
+            x.startswith('ftp://') or x.startswith('file://'))]
+
+        for repo_package in repopackages:
+            try:
+                repo_package = str(repo_package)
+            except (UnicodeDecodeError, UnicodeEncodeError,):
+                continue
+            mydata['plain_packages'].append(repo_package)
+            mydata['packages'].append(
+                repo_package + os.path.sep + product + os.path.sep + reponame)
+
+        return reponame, mydata
+
     def _repositories_parser(self):
 
         """
@@ -1029,7 +1168,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
                     my_repodata = data['excluded']
                     line = line[1:]
 
-                reponame, repodata = const_extract_cli_repo_params(line,
+                reponame, repodata = self._analyze_client_repo_string(line,
                     data['branch'], data['product'])
                 repoids.add(reponame)
                 if reponame in my_repodata:

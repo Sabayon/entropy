@@ -17,7 +17,7 @@ from entropy.core import Singleton
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError
 from entropy.const import etpConst, etpSys, const_setup_perms, \
-    const_create_working_dirs, const_extract_srv_repo_params, etpUi, \
+    const_create_working_dirs, etpUi, \
     const_setup_file, const_get_stringtype, const_debug_write
 from entropy.output import TextInterface, purple, red, darkgreen, \
     bold, brown, blue, darkred
@@ -381,6 +381,58 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
 class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
+    def _analyze_server_repo_string(repostring, product = None):
+        """
+        Analyze a server repository string (usually contained in server.conf),
+        extracting all the parameters.
+
+        @param repostring: repository string
+        @type repostring: string
+        @keyword product: system product which repository belongs to
+        @rtype: None
+        @return: None
+        """
+
+        if product == None:
+            product = etpConst['product']
+
+        mydata = {}
+        repoid = repostring.split("|")[1].strip()
+        repodesc = repostring.split("|")[2].strip()
+        repouris = repostring.split("|")[3].strip()
+
+        service_url = None
+        eapi3_port = etpConst['socket_service']['port']
+        eapi3_ssl_port = etpConst['socket_service']['ssl_port']
+        if len(repostring.split("|")) > 4:
+            service_url = repostring.split("|")[4].strip()
+
+            eapi3_formatcolon = service_url.rfind("#")
+            if eapi3_formatcolon != -1:
+                try:
+                    ports = service_url[eapi3_formatcolon+1:].split(",")
+                    eapi3_port = int(ports[0])
+                    if len(ports) > 1:
+                        eapi3_ssl_port = int(ports[1])
+                    service_url = service_url[:eapi3_formatcolon]
+                except (ValueError, IndexError,):
+                    eapi3_port = etpConst['socket_service']['port']
+                    eapi3_ssl_port = etpConst['socket_service']['ssl_port']
+
+        mydata = {}
+        mydata['repoid'] = repoid
+        mydata['description'] = repodesc
+        mydata['mirrors'] = []
+        mydata['community'] = False
+        mydata['service_url'] = service_url
+        mydata['service_port'] = eapi3_port
+        mydata['ssl_service_port'] = eapi3_ssl_port
+        uris = repouris.split()
+        for uri in uris:
+            mydata['mirrors'].append(uri)
+
+        return repoid, mydata
+
     def server_parser(self, sys_set):
 
         """
@@ -479,7 +531,7 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             elif line.startswith("repository|") and (split_line_len in (5, 6)) \
                 and (not fake_instance):
 
-                repoid, repodata = const_extract_srv_repo_params(line,
+                repoid, repodata = self._analyze_server_repo_string(line,
                     product = sys_set['repositories']['product'])
                 if repoid in data['repositories']:
                     # just update mirrors
