@@ -513,6 +513,26 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         for w, tag in widgets:
             w.connect('toggled', self.populate_advisories, tag)
             w.set_mode(False)
+        self.background_security_adv_cache_gen()
+
+    def background_security_adv_cache_gen(self):
+
+        security = self.Equo.Security()
+        # launch security advisories cache generation in background
+        def background_security_cache_gen():
+            pid = os.fork()
+            if pid != 0:
+                if self.do_debug:
+                    print_generic("background_spawn_security_adv_cache_gen: enter")
+                os.waitpid(pid, 0)
+                if self.do_debug:
+                    print_generic("background_spawn_security_adv_cache_gen: leave")
+                self.populate_advisories(None, "affected", background = True)
+            else:
+                security.get_advisories_metadata()
+                os._exit(0)
+
+        gobject.idle_add(background_security_cache_gen)
 
     def setup_packages_filter(self):
 
@@ -1104,7 +1124,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if alone:
             self.progress.total.show()
 
-    def populate_advisories(self, widget, show):
+    def populate_advisories(self, widget, show, background = False):
 
         if widget is not None:
             if not widget.get_active():
@@ -1114,7 +1134,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         meta_id = "glsa_metadata"
         meta_cached = self.etpbase.is_cached(meta_id)
 
-        if not meta_cached:
+        if not meta_cached and not background:
             self.set_busy()
             self.wait_window.show()
 
@@ -1129,7 +1149,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             self.advisoriesView.populate(self.Equo.Security(), cached, show,
                 use_cache = meta_cached)
 
-        if not meta_cached:
+        if not meta_cached and not background:
             self.unset_busy()
             self.wait_window.hide()
 
