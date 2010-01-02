@@ -1,3 +1,21 @@
+commit b105af10fbd0dd4dadea5d538401d6484487518d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 08:19:34 2010 +0100
+
+    [entropy.client.interfaces] fix GPG verification when GPG is not available
+
+commit c17ef0f152fc8f2be85e5d55e0857b91656ad37f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 1 17:00:26 2010 +0100
+
+    [todo] update TODO
+
+commit f5212665010cff94fa95ab470614c6954864cb4f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Fri Jan 1 16:51:37 2010 +0100
+
+    Update ChangeLog for version 0.99.20.2
+
 commit a7651a843bfb6444c88b91641ce8fa72455bf6bd
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Fri Jan 1 16:51:04 2010 +0100
