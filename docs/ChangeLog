@@ -1,3 +1,21 @@
+commit 8a333e4fa4443f0ee6918d51534bc1323f5d850a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 17:49:01 2010 +0100
+
+    [entropy.server] fix analyze_server_repo_string()
+
+commit 562f0c251c97aa56e5796f849938cfc104a6efca
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 17:19:01 2010 +0100
+
+    [po] update translations
+
+commit 64ed1796d8e45aed9a2d98d419f08aeddc654320
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 17:14:11 2010 +0100
+
+    Update ChangeLog for version 0.99.20.5
+
 commit 100eac3390c15f3c6d58ed34b6f79c498d640942
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jan 2 17:12:17 2010 +0100
