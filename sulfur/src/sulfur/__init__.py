@@ -681,15 +681,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self._is_working = True
         self._spawning_ugc = True
-        if self.do_debug: print_generic("are we connected?")
-        connected = entropy.tools.get_remote_data(
-            etpConst['distro_website_url'])
-        if self.do_debug:
-            cr = False
-            if connected: cr = True
-            print_generic("conn result", cr)
-        if (isinstance(connected, bool) and (not connected)) or \
-            (self.Equo.UGC == None):
+
+        if self.Equo.UGC == None:
             self._is_working = False
             self._spawning_ugc = False
             return
