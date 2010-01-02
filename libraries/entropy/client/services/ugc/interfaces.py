@@ -13,9 +13,10 @@
 import os
 from entropy.core import Singleton
 from entropy.exceptions import *
-from entropy.cache import EntropyCacher
 from entropy.const import etpConst, const_setup_file, const_setup_perms
 from entropy.i18n import _
+
+import entropy.dump
 
 class Client:
 
@@ -79,7 +80,8 @@ class Client:
 
     def is_repository_eapi3_aware(self, repository):
 
-        aware = self.UGCCache._get_live_cache_item(repository, 'is_repository_eapi3_aware')
+        aware = self.UGCCache._get_live_cache_item(repository,
+            'is_repository_eapi3_aware')
         if aware != None:
             return aware
 
@@ -96,7 +98,8 @@ class Client:
             else:
                 aware = False
 
-        self.UGCCache._set_live_cache_item(repository, 'is_repository_eapi3_aware', aware)
+        self.UGCCache._set_live_cache_item(repository,
+            'is_repository_eapi3_aware', aware)
         return aware
 
     def read_login(self, repository):
@@ -127,7 +130,8 @@ class Client:
                 ('password', _('Password'), fake_callback, True)
             ]
             login_data = self.Entropy.inputBox(
-                "%s %s %s" % (_('Please login against'), repository, _('repository'),),
+                "%s %s %s" % (
+                    _('Please login against'), repository, _('repository'),),
                 input_params,
                 cancel_button = True
             )
@@ -139,7 +143,8 @@ class Client:
             if srv == None:
                 return False, _('connection issues')
             session = srv.open_session()
-            login_status, login_msg = srv.CmdInterface.service_login(login_data['username'], login_data['password'], session)
+            login_status, login_msg = srv.CmdInterface.service_login(
+                login_data['username'], login_data['password'], session)
             if not login_status:
                 srv.close_session(session)
                 srv.disconnect()
@@ -205,7 +210,8 @@ class Client:
                     else:
                         stored_pass = True
                         username, password = login_data
-                    logged, error = srv.CmdInterface.service_login(username, password, session)
+                    logged, error = srv.CmdInterface.service_login(username,
+                        password, session)
                     if not logged:
                         if stored_pass:
                             stored_pass = False
@@ -233,18 +239,22 @@ class Client:
         return self.do_cmd(repository, False, "ugc_get_textdocs", [pkgkey], {})
 
     def get_comments_by_identifiers(self, repository, identifiers):
-        return self.do_cmd(repository, False, "ugc_get_textdocs_by_identifiers", [identifiers], {})
+        return self.do_cmd(repository, False,
+            "ugc_get_textdocs_by_identifiers", [identifiers], {})
 
     def get_documents_by_identifiers(self, repository, identifiers):
-        return self.do_cmd(repository, False, "ugc_get_documents_by_identifiers", [identifiers], {})
+        return self.do_cmd(repository, False,
+            "ugc_get_documents_by_identifiers", [identifiers], {})
 
     def add_comment(self, repository, pkgkey, comment, title, keywords):
         self.UGCCache.clear_alldocs_cache(repository)
-        return self.do_cmd(repository, True, "ugc_add_comment", [pkgkey, comment, title, keywords], {})
+        return self.do_cmd(repository, True, "ugc_add_comment",
+            [pkgkey, comment, title, keywords], {})
 
     def edit_comment(self, repository, iddoc, new_comment, new_title, new_keywords):
         self.UGCCache.clear_alldocs_cache(repository)
-        return self.do_cmd(repository, True, "ugc_edit_comment", [iddoc, new_comment, new_title, new_keywords], {})
+        return self.do_cmd(repository, True, "ugc_edit_comment",
+            [iddoc, new_comment, new_title, new_keywords], {})
 
     def remove_comment(self, repository, iddoc):
         self.UGCCache.clear_alldocs_cache(repository)
@@ -293,7 +303,8 @@ class Client:
 
     def send_file(self, repository, pkgkey, file_path, title, description, keywords):
         self.UGCCache.clear_alldocs_cache(repository)
-        return self.do_cmd(repository, True, "ugc_send_file", [pkgkey, file_path, etpConst['ugc_doctypes']['generic_file'], title, description, keywords], {})
+        return self.do_cmd(repository, True, "ugc_send_file",
+            [pkgkey, file_path, etpConst['ugc_doctypes']['generic_file'], title, description, keywords], {})
 
     def remove_file(self, repository, iddoc):
         self.UGCCache.clear_alldocs_cache(repository)
@@ -301,7 +312,8 @@ class Client:
 
     def send_image(self, repository, pkgkey, image_path, title, description, keywords):
         self.UGCCache.clear_alldocs_cache(repository)
-        return self.do_cmd(repository, True, "ugc_send_file", [pkgkey, image_path, etpConst['ugc_doctypes']['image'], title, description, keywords], {})
+        return self.do_cmd(repository, True, "ugc_send_file",
+            [pkgkey, image_path, etpConst['ugc_doctypes']['image'], title, description, keywords], {})
 
     def remove_image(self, repository, iddoc):
         self.UGCCache.clear_alldocs_cache(repository)
@@ -309,7 +321,8 @@ class Client:
 
     def send_youtube_video(self, repository, pkgkey, video_path, title, description, keywords):
         self.UGCCache.clear_alldocs_cache(repository)
-        return self.do_cmd(repository, True, "ugc_send_file", [pkgkey, video_path, etpConst['ugc_doctypes']['youtube_video'], title, description, keywords], {})
+        return self.do_cmd(repository, True, "ugc_send_file",
+            [pkgkey, video_path, etpConst['ugc_doctypes']['youtube_video'], title, description, keywords], {})
 
     def remove_youtube_video(self, repository, iddoc):
         self.UGCCache.clear_alldocs_cache(repository)
@@ -459,22 +472,20 @@ class AuthStore(Singleton):
 class Cache:
 
     CACHE_KEYS = {
-        'ugc_votes': 'ugc/ugc_votes',
-        'ugc_downloads': 'ugc/ugc_downloads',
-        'ugc_docs': 'ugc/ugc_docs',
+        'ugc_votes': 'ugc_votes',
+        'ugc_downloads': 'ugc_downloads',
+        'ugc_docs': 'ugc_docs',
     }
+    CACHE_DIR = os.path.join(etpConst['entropyworkdir'], "ugc_caches")
 
     def __init__(self, UGCClientInstance):
 
         if not isinstance(UGCClientInstance, Client):
-            mytxt = _("A valid UGC Client interface based instance is needed")
-            raise IncorrectParameter("IncorrectParameter: %s" % (mytxt,))
+            raise AttributeError(
+                "entropy.client.services.ugc.Client instance required")
 
         import threading
-        import entropy.dump as dumpTools
-        self.__cacher = EntropyCacher()
         self.CacheLock = threading.Lock()
-        self.dumpTools = dumpTools
         self.Service = UGCClientInstance
         self.xcache = {}
 
@@ -502,7 +513,8 @@ class Cache:
         del self.xcache[repository][item]
 
     def _get_store_cache_file(self, iddoc, repository, doc_url):
-        return "%s/%s/iddoc_%s/%s" % (Cache.CACHE_KEYS['ugc_docs'], repository, iddoc, doc_url,)
+        return "%s/%s/iddoc_%s/%s" % (Cache.CACHE_KEYS['ugc_docs'],
+            repository, iddoc, doc_url,)
 
     def _get_vote_cache_file(self, repository):
         return self._get_vote_cache_dir(repository)
@@ -531,43 +543,52 @@ class Cache:
     def _get_alldocs_cache_key(self, repository):
         return 'get_package_alldocs_cache_'+repository
 
+    def _clear_cache_dir(self, cache_dir):
+        try:
+            shutil.rmtree(cache_dir, True)
+        except (shutil.Error, OSError, IOError,):
+            return
+
+    def _complete_cache_path(self, cache_file):
+        return os.path.join(Cache.CACHE_DIR, cache_file)
+
     def store_document(self, iddoc, repository, doc_url):
-        cache_file = os.path.join(etpConst['dumpstoragedir'], self._get_store_cache_file(iddoc, repository, doc_url))
+        cache_file = os.path.join(Cache.CACHE_DIR,
+            self._get_store_cache_file(iddoc, repository, doc_url))
         cache_dir = os.path.dirname(cache_file)
 
-        try:
-            if not os.path.isdir(cache_dir):
-                os.makedirs(cache_dir, 0o775)
-                if etpConst['entropygid'] != None:
-                    const_setup_perms(cache_dir, etpConst['entropygid'])
-        except OSError:
-            raise PermissionDenied("PermissionDenied: %s %s" % (_("Cannot setup cache directory"), cache_dir,))
         if not os.access(cache_dir, os.W_OK):
-            raise PermissionDenied("PermissionDenied: %s %s" % (_("Cannot write to cache directory"), cache_dir,))
+            raise PermissionDenied("PermissionDenied: %s %s" % (
+                _("Cannot write to cache directory"), cache_dir,))
 
         if os.path.isfile(cache_file) or os.path.islink(cache_file):
             try:
                 os.remove(cache_file)
             except OSError:
-                raise PermissionDenied("PermissionDenied: %s %s" % (_("Cannot remove cache file"), cache_file,))
+                raise PermissionDenied("PermissionDenied: %s %s" % (
+                    _("Cannot remove cache file"), cache_file,))
 
         fetcher = self.Service.Entropy.urlFetcher(doc_url, cache_file, resume = False)
         rc = fetcher.download()
-        if rc in ("-1", "-2", "-3", "-4"): return None
-        if not os.path.isfile(cache_file): return None
+        if rc in ("-1", "-2", "-3", "-4"):
+            return None
+        if not os.path.isfile(cache_file):
+            return None
 
         try:
             os.chmod(cache_file, 0o664)
             if etpConst['entropygid'] != None:
                 os.chown(cache_file, -1, etpConst['entropygid'])
         except OSError:
-            raise PermissionDenied("PermissionDenied: %s %s" % (_("Cannot write to cache file"), cache_file,))
+            raise PermissionDenied("PermissionDenied: %s %s" % (
+                _("Cannot write to cache file"), cache_file,))
 
         del fetcher
         return cache_file
 
     def get_stored_document(self, iddoc, repository, doc_url):
-        cache_file = os.path.join(etpConst['dumpstoragedir'], self._get_store_cache_file(iddoc, repository, doc_url))
+        cache_file = os.path.join(Cache.CACHE_DIR,
+            self._get_store_cache_file(iddoc, repository, doc_url))
         if os.path.isfile(cache_file) and os.access(cache_file, os.R_OK):
             return cache_file
 
@@ -592,26 +613,24 @@ class Cache:
 
     def clear_alldocs_cache(self, repository):
         with self.CacheLock:
-            self.__cacher.discard()
-            EntropyCacher.clear_cache_item(
+            self._clear_cache_dir(
                 self._get_alldocs_cache_dir(repository))
             self._clear_live_cache_item(repository,
                 self._get_alldocs_cache_key(repository))
 
     def clear_downloads_cache(self, repository):
         with self.CacheLock:
-            self.__cacher.discard()
-            EntropyCacher.clear_cache_item(
+            self._clear_cache_dir(
                 self._get_downloads_cache_dir(repository))
             self._clear_live_cache_item(repository,
                 self._get_downloads_cache_key(repository))
 
     def clear_vote_cache(self, repository):
         with self.CacheLock:
-            self.__cacher.discard()
-            EntropyCacher.clear_cache_item(
+            self._clear_cache_dir(
                 self._get_vote_cache_dir(repository))
-            self._clear_live_cache_item(repository, self._get_vote_cache_key(repository))
+            self._clear_live_cache_item(repository,
+                self._get_vote_cache_key(repository))
 
     def clear_cache(self, repository):
         self.clear_alldocs_cache(repository)
@@ -627,7 +646,9 @@ class Cache:
         with self.CacheLock:
             cache_file = self._get_vote_cache_file(repository)
             try:
-                data = self.dumpTools.loadobj(cache_file)
+                data = entropy.dump.loadobj(
+                    self._complete_cache_path(cache_file),
+                    complete_path = True)
                 if data != None:
                     self._set_live_cache_item(repository, cache_key, data)
             except (IOError, EOFError, OSError):
@@ -642,7 +663,9 @@ class Cache:
         with self.CacheLock:
             cache_file = self._get_downloads_cache_file(repository)
             try:
-                data = self.dumpTools.loadobj(cache_file)
+                data = entropy.dump.loadobj(
+                    self._complete_cache_path(cache_file),
+                    complete_path = True)
                 if data != None:
                     self._set_live_cache_item(repository, cache_key, data)
             except (IOError, EOFError, OSError):
@@ -659,7 +682,9 @@ class Cache:
         with self.CacheLock:
             cache_file = self._get_alldocs_cache_file(pkgkey, repository)
             try:
-                data = self.dumpTools.loadobj(cache_file)
+                data = entropy.dump.loadobj(
+                    self._complete_cache_path(cache_file),
+                    complete_path = True)
                 if data != None:
                     cached[pkgkey] = data
                     self._set_live_cache_item(repository, cache_key, cached)
@@ -669,18 +694,28 @@ class Cache:
 
     def save_vote_cache(self, repository, vote_dict):
         with self.CacheLock:
-            self._clear_live_cache_item(repository, self._get_vote_cache_key(repository))
-            self.dumpTools.dumpobj(self._get_vote_cache_file(repository), vote_dict)
+            self._clear_live_cache_item(repository,
+                self._get_vote_cache_key(repository))
+
+            cache_file = self._get_vote_cache_file(repository)
+            entropy.dump.dumpobj(self._complete_cache_path(cache_file),
+                vote_dict, complete_path = True)
 
     def save_downloads_cache(self, repository, down_dict):
         with self.CacheLock:
-            self._clear_live_cache_item(repository, self._get_downloads_cache_key(repository))
-            self.dumpTools.dumpobj(self._get_downloads_cache_file(repository), down_dict)
+            self._clear_live_cache_item(repository,
+                self._get_downloads_cache_key(repository))
+            cache_file = self._get_downloads_cache_file(repository)
+            entropy.dump.dumpobj(self._complete_cache_path(cache_file),
+                down_dict, complete_path = True)
 
     def save_alldocs_cache(self, pkgkey, repository, alldocs_dict):
         with self.CacheLock:
-            self._clear_live_cache_item(repository, self._get_alldocs_cache_key(repository))
-            self.dumpTools.dumpobj(self._get_alldocs_cache_file(pkgkey, repository), alldocs_dict)
+            self._clear_live_cache_item(repository,
+                self._get_alldocs_cache_key(repository))
+            cache_file = self._get_alldocs_cache_file(pkgkey, repository)
+            entropy.dump.dumpobj(self._complete_cache_path(cache_file),
+                alldocs_dict, complete_path = True)
 
     def get_package_vote(self, repository, pkgkey):
         cache = self.get_vote_cache(repository)
