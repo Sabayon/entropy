@@ -11,6 +11,7 @@
 """
 
 import os
+import shutil
 from entropy.core import Singleton
 from entropy.exceptions import *
 from entropy.const import etpConst, const_setup_file, const_setup_perms
