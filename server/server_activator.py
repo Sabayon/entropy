@@ -318,7 +318,10 @@ def notice(options):
                 break
 
         if changed:
-            status = Entropy.MirrorsService.upload_notice_board()
+            if counter == 0:
+                status = Entropy.MirrorsService.remove_notice_board()
+            else:
+                status = Entropy.MirrorsService.upload_notice_board()
             if not status:
                 return 1
         return 0
