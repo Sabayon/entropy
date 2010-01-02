@@ -24,7 +24,8 @@ else:
 import threading
 from entropy.const import etpConst, etpUi, const_isunicode, const_isstring, \
     const_isfileobj
-from entropy.core.settings.base import SystemSettings
+
+import entropy.tools
 
 class Lifo(object):
 
@@ -657,7 +658,6 @@ class RSS:
     """
 
     # this is a relative import to avoid circular deps
-    import entropy.tools as entropyTools
     def __init__(self, filename, title, description, maxentries = 100):
 
         """
@@ -673,6 +673,7 @@ class RSS:
         @type maxentries: int
         """
 
+        from entropy.core.settings.base import SystemSettings
         self.__system_settings = SystemSettings()
         self.__feed_title = title
         self.__feed_title = self.__feed_title.strip()
@@ -687,7 +688,7 @@ class RSS:
             self.__feed_editor = srv_settings['server']['rss']['editor']
         self.__feed_copyright = "%s - (C) %s" % (
             self.__system_settings['system']['name'],
-            self.entropyTools.get_year(),
+            entropy.tools.get_year(),
         )
 
         self.__file = filename

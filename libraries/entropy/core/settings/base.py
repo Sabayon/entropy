@@ -25,6 +25,7 @@ from entropy.const import etpConst, etpUi, etpSys, const_setup_perms, \
     const_secure_config_file, const_set_nice_level, const_isunicode, \
     const_convert_to_unicode, const_convert_to_rawstring
 from entropy.core import Singleton, EntropyPluginStore
+from entropy.cache import EntropyCacher
 from entropy.core.settings.plugins.skel import SystemSettingsPlugin
 
 class SystemSettings(Singleton, EntropyPluginStore):
@@ -1275,45 +1276,12 @@ class SystemSettings(Singleton, EntropyPluginStore):
         for key, value in etpConst['cache_ids'].items():
             if key == "db_match":
                 continue
-            self._clear_dump_cache(value)
+            EntropyCacher.clear_cache_item(value)
 
         if repoid is not None:
-            self._clear_dump_cache("%s/%s%s/" % (
+            EntropyCacher.clear_cache_item("%s/%s%s/" % (
                 etpConst['cache_ids']['db_match'], etpConst['dbnamerepoprefix'],
                     repoid,))
-
-    def _clear_dump_cache(self, dump_name, skip = None):
-        """
-        Internal method, go away!
-        """
-        if skip is None:
-            skip = []
-
-        dump_path = os.path.join(etpConst['dumpstoragedir'], dump_name)
-        dump_dir = os.path.dirname(dump_path)
-        #dump_file = os.path.basename(dump_path)
-        for currentdir, subdirs, files in os.walk(dump_dir):
-            path = os.path.join(dump_dir, currentdir)
-            if skip:
-                found = False
-                for myskip in skip:
-                    if path.find(myskip) != -1:
-                        found = True
-                        break
-                if found:
-                    continue
-            for item in files:
-                if item.endswith(etpConst['cachedumpext']):
-                    item = os.path.join(path, item)
-                    try:
-                        os.remove(item)
-                    except (OSError, IOError,):
-                        pass
-            try:
-                if not os.listdir(path):
-                    os.rmdir(path)
-            except (OSError, IOError,):
-                pass
 
     def __generic_parser(self, filepath):
         """

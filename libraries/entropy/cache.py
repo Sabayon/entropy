@@ -15,7 +15,9 @@
     entropy.client.interfaces.cache mixin methods)
 
 """
+import os
 import sys
+from entropy.const import etpConst
 from entropy.core import Singleton
 from entropy.misc import TimeScheduled, Lifo
 import time
@@ -248,3 +250,27 @@ class EntropyCacher(Singleton):
                 return
             return l_o(key)
 
+    @staticmethod
+    def clear_cache_item(cache_item):
+        """
+        Clear Entropy Cache item from on-disk cache.
+
+        @param cache_item: Entropy Cache item identifier
+        @type cache_item: string
+        """
+        dump_path = os.path.join(etpConst['dumpstoragedir'], cache_item)
+        dump_dir = os.path.dirname(dump_path)
+        for currentdir, subdirs, files in os.walk(dump_dir):
+            path = os.path.join(dump_dir, currentdir)
+            for item in files:
+                if item.endswith(etpConst['cachedumpext']):
+                    item = os.path.join(path, item)
+                    try:
+                        os.remove(item)
+                    except (OSError, IOError,):
+                        pass
+            try:
+                if not os.listdir(path):
+                    os.rmdir(path)
+            except (OSError, IOError,):
+                pass

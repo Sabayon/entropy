@@ -13,6 +13,7 @@
 import os
 from entropy.core import Singleton
 from entropy.exceptions import *
+from entropy.cache import EntropyCacher
 from entropy.const import etpConst, const_setup_file, const_setup_perms
 from entropy.i18n import _
 
@@ -168,7 +169,6 @@ class Client:
 
         with self.TxLocks[repository]:
             return self.do_login(repository, force = force)
-
 
     def logout(self, repository):
         return self.store.remove_login(repository)
@@ -472,6 +472,7 @@ class Cache:
 
         import threading
         import entropy.dump as dumpTools
+        self.__cacher = EntropyCacher()
         self.CacheLock = threading.Lock()
         self.dumpTools = dumpTools
         self.Service = UGCClientInstance
@@ -591,17 +592,25 @@ class Cache:
 
     def clear_alldocs_cache(self, repository):
         with self.CacheLock:
-            self.Service.Entropy.clear_dump_cache(self._get_alldocs_cache_dir(repository))
-            self._clear_live_cache_item(repository, self._get_alldocs_cache_key(repository))
+            self.__cacher.discard()
+            EntropyCacher.clear_cache_item(
+                self._get_alldocs_cache_dir(repository))
+            self._clear_live_cache_item(repository,
+                self._get_alldocs_cache_key(repository))
 
     def clear_downloads_cache(self, repository):
         with self.CacheLock:
-            self.Service.Entropy.clear_dump_cache(self._get_alldocs_cache_dir(repository))
-            self._clear_live_cache_item(repository, self._get_downloads_cache_key(repository))
+            self.__cacher.discard()
+            EntropyCacher.clear_cache_item(
+                self._get_downloads_cache_dir(repository))
+            self._clear_live_cache_item(repository,
+                self._get_downloads_cache_key(repository))
 
     def clear_vote_cache(self, repository):
         with self.CacheLock:
-            self.Service.Entropy.clear_dump_cache(self._get_vote_cache_dir(repository))
+            self.__cacher.discard()
+            EntropyCacher.clear_cache_item(
+                self._get_vote_cache_dir(repository))
             self._clear_live_cache_item(repository, self._get_vote_cache_key(repository))
 
     def clear_cache(self, repository):

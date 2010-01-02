@@ -29,6 +29,7 @@ from entropy.const import etpConst, const_debug_write, etpSys, \
 from entropy.exceptions import RepositoryError, InvalidData, InvalidPackageSet,\
     IncorrectParameter, SystemDatabaseError
 from entropy.db import dbapi2, EntropyRepository
+from entropy.cache import EntropyCacher
 from entropy.client.interfaces.db import ClientEntropyRepositoryPlugin
 from entropy.output import purple, bold, red, blue, darkgreen, darkred, brown
 
@@ -209,8 +210,11 @@ class RepositoryMixin:
                 except (self.dbapi2.OperationalError, self.dbapi2.DatabaseError):
                     updated = False
                 if updated:
-                    self.clear_dump_cache(etpConst['cache_ids']['world_update'])
-                    self.clear_dump_cache(etpConst['cache_ids']['critical_update'])
+                    self.Cacher.discard()
+                    EntropyCacher.clear_cache_item(
+                        etpConst['cache_ids']['world_update'])
+                    EntropyCacher.clear_cache_item(
+                        etpConst['cache_ids']['critical_update'])
         return conn
 
     def get_repository_revision(self, reponame):

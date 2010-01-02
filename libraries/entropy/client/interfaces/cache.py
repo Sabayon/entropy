@@ -14,6 +14,7 @@ import shutil
 from entropy.const import etpConst, const_setup_perms
 from entropy.exceptions import RepositoryError
 from entropy.output import red, darkred, darkgreen
+from entropy.cache import EntropyCacher
 from entropy.i18n import _
 
 class CacheMixin:
@@ -47,12 +48,6 @@ class CacheMixin:
             pass # ignore cache purge errors?
         finally:
             self.Cacher.start()
-
-    def clear_dump_cache(self, dump_name, skip = None):
-        if skip is None:
-            skip = []
-        self.Cacher.discard()
-        self.SystemSettings._clear_dump_cache(dump_name, skip = skip)
 
     def update_ugc_cache(self, repository):
         if not self.UGC.is_repository_eapi3_aware(repository):

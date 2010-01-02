@@ -22,6 +22,7 @@ from entropy.const import etpConst, etpUi, const_setup_perms, \
     const_debug_write
 from entropy.i18n import _
 from entropy.output import blue, bold, red, darkgreen, darkred
+from entropy.cache import EntropyCacher
 import entropy.tools
 
 class System:
@@ -276,7 +277,8 @@ class System:
         Clear instance cache (RAM and on-disk).
         """
         self.adv_metadata = None
-        self.Entropy.clear_dump_cache(System._CACHE_ID)
+        self.__cacher.discard()
+        EntropyCacher.clear_cache_item(System._CACHE_ID)
 
     def get_advisories_cache(self):
         """

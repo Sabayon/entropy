@@ -16,6 +16,7 @@ from entropy.services.interfaces import SocketHost
 from entropy.output import TextInterface, blue, brown, darkred, darkgreen
 from entropy.const import etpConst
 from entropy.misc import TimeScheduled
+from entropy.cache import EntropyCacher
 from entropy.i18n import _
 
 import entropy.dump
@@ -40,6 +41,7 @@ class Server(SocketHost):
         self.dbapi2 = dbapi2
         from entropy.client.interfaces import Client
         self.Entropy = Client(noclientdb = 2)
+        self.__cacher = EntropyCacher()
         self.do_ssl = do_ssl
         self.LockScanner = None
         self.syscache = {
@@ -212,12 +214,15 @@ class Server(SocketHost):
                     type = "info"
                 )
                 mydb.closeDB()
-                self.Entropy.clear_dump_cache(Server.CACHE_ID+"/"+repository+"/")
+                self.__cacher.discard()
+                EntropyCacher.clear_cache_item(
+                    Server.CACHE_ID+"/"+repository+"/")
                 self.repositories[x]['locked'] = False
                 self.eapi3_unlock_repo(*x)
 
+        self.__cacher.discard()
         for repo in do_clear:
-            self.Entropy.clear_dump_cache(Server.CACHE_ID+"/"+repo+"/")
+            EntropyCacher.clear_cache_item(Server.CACHE_ID+"/"+repo+"/")
 
     def eapi3_lock_repo(self, repository, arch, product, branch):
         lock_file = os.path.join(self.repositories[(repository, arch, product, branch,)]['dbpath'], etpConst['etpdatabaseeapi3lockfile'])
