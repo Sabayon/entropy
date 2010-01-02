@@ -102,16 +102,36 @@ class Repository(SocketCommands):
             return valid
 
         dbpath = self.get_database_path(repository, arch, product, branch)
-        dbconn = self.HostInterface.open_db(dbpath, docache = False)
-        mychecksum = dbconn.checksum(do_order = True, strict = False, strings = True)
-        myids = dbconn.listAllIdpackages()
-        dbconn.closeDB()
+
+        cached = self.HostInterface.get_dcache(x + ('docmd_dbdiff',),
+            repository)
+        if cached is not None:
+            std_checksum, secure_checksum, myids = cached
+        else:
+            dbconn = self.HostInterface.open_db(dbpath, docache = False)
+            std_checksum = dbconn.checksum(do_order = True, strict = False,
+                strings = True)
+            secure_checksum = dbconn.checksum(do_order = True, strict = False,
+                strings = True, include_signatures = True)
+            myids = dbconn.listAllIdpackages()
+            cached = std_checksum, secure_checksum, myids
+            self.HostInterface.set_dcache(x + ('docmd_dbdiff',), cached,
+                repository)
+            dbconn.closeDB()
+
         foreign_idpackages = set(foreign_idpackages)
 
         removed_ids = foreign_idpackages - myids
         added_ids = myids - foreign_idpackages
 
-        return {'removed': removed_ids, 'added': added_ids, 'checksum': mychecksum}
+        data = {
+            'removed': removed_ids,
+            'added': added_ids,
+            'checksum': std_checksum,
+            'secure_checksum': secure_checksum,
+        }
+
+        return data
 
     def docmd_repository_metadata(self, myargs):
 
