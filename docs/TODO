@@ -1,8 +1,8 @@
 
   0.99.30:
 
-    - entropy.server: when signing packages, also bump idpackage (for EAPI3)
-        or add a table representing internal metadata rev and send over
+    - entropy.security do not fetch security advisories pkg every time, and
+      perhaps sign with GPG if avail.
     - equo bashcomp
     - sulfur love (see planet)
     - entropy.output API names update
