@@ -44,7 +44,8 @@ class System:
     about unapplied advisories, etc.
 
     """
-    _CACHE_ID = 'security/advisories_cache_'
+    _CACHE_ID = 'advisories_cache_'
+    _CACHE_DIR = os.path.join(etpConst['entropyworkdir'], "security_cache")
 
     def __init__(self, entropy_client_instance):
 
@@ -93,7 +94,6 @@ class System:
         security_file = os.path.basename(security_url)
         md5_ext = etpConst['packagesmd5fileext']
         sec_dir = etpConst['securitydir']
-        dmp_dir = etpConst['dumpstoragedir']
 
         self.unpackdir = os.path.join(etpConst['entropyunpackdir'],
             "security-%s" % (entropy.tools.get_random_number(),))
@@ -104,7 +104,7 @@ class System:
         self.download_package = os.path.join(self.unpackdir, security_file)
         self.download_package_checksum = self.download_package + md5_ext
         self.old_download_package_checksum = os.path.join(
-            dmp_dir, os.path.basename(security_url)) + md5_ext
+            System._CACHE_DIR, os.path.basename(security_url)) + md5_ext
 
         self.security_package = os.path.join(sec_dir,
             os.path.basename(security_url))
@@ -187,25 +187,27 @@ class System:
         self.Entropy.setup_default_file_perms(save_to)
         return True
 
+    def __get_downloaded_package_checksum(self):
+
+        if not os.path.isfile(self.download_package_checksum) or \
+            not os.access(self.download_package_checksum, os.R_OK):
+            return None
+
+        with open(self.download_package_checksum, "r") as f_down:
+            try:
+                return f_down.readline().strip().split()[0]
+            except (OSError, IOError, IndexError,):
+                return None
+
     def __verify_checksum(self):
         """
         Verify downloaded GLSA checksum against downloaded GLSA package.
         """
         # read checksum
-        if not os.path.isfile(self.download_package_checksum) or \
-            not os.access(self.download_package_checksum, os.R_OK):
+
+        checksum = self.__get_downloaded_package_checksum()
+        if checksum is None:
             return 1
-
-        f_down = open(self.download_package_checksum)
-        read_err = False
-        try:
-            checksum = f_down.readline().strip().split()[0]
-        except (OSError, IOError, IndexError,):
-            read_err = True
-
-        f_down.close()
-        if read_err:
-            return 2
 
         self.advisories_changed = True
         if checksum == self.previous_checksum:
@@ -267,10 +269,10 @@ class System:
         repo_cksum = self.Entropy._all_repositories_checksum()
         sys_hash = str(hash(repo_cksum + inst_pkgs_cksum))
 
-        cached = self.__cacher.pop(sys_hash)
+        cached = self.__cacher.pop(sys_hash, cache_dir = System._CACHE_DIR)
         if cached is None:
             self.clear() # kill the cache
-        self.__cacher.push(sys_hash, True)
+        self.__cacher.push(sys_hash, True, cache_dir = System._CACHE_DIR)
 
     def clear(self):
         """
@@ -278,7 +280,8 @@ class System:
         """
         self.adv_metadata = None
         self.__cacher.discard()
-        EntropyCacher.clear_cache_item(System._CACHE_ID)
+        EntropyCacher.clear_cache_item(System._CACHE_ID,
+            cache_dir = System._CACHE_DIR)
 
     def get_advisories_cache(self):
         """
@@ -299,7 +302,8 @@ class System:
                     hash(etpConst['systemroot']),
                 )),
             )
-            adv_metadata = self.__cacher.pop(c_hash)
+            adv_metadata = self.__cacher.pop(c_hash,
+                cache_dir = System._CACHE_DIR)
             if adv_metadata != None:
                 self.adv_metadata = adv_metadata.copy()
                 return self.adv_metadata
@@ -321,7 +325,8 @@ class System:
                     hash(etpConst['systemroot']),
                 )),
             )
-            self.__cacher.push(c_hash, adv_metadata)
+            self.__cacher.push(c_hash, adv_metadata,
+                cache_dir = System._CACHE_DIR)
 
     def _get_advisories_list(self):
         """
@@ -719,7 +724,7 @@ class System:
             return True
         return False
 
-    def fetch_advisories(self, do_cache = True):
+    def fetch_advisories(self, do_cache = True, force = False):
         """
         This is the service method for remotely fetch advisories metadata.
 
@@ -766,7 +771,7 @@ class System:
         if not acquired:
             return 4 # app locked during lock acquire
         try:
-            rc_lock = self.__run_fetch()
+            rc_lock = self.__run_fetch(force = force)
         except:
             self.Entropy.resources_remove_lock()
             raise
@@ -797,9 +802,32 @@ class System:
 
         return 0
 
-    def __run_fetch(self):
+    def __run_fetch(self, force = False):
         # prepare directories
         self.__prepare_unpack()
+
+        # download digest
+        status = self.__download_glsa_package_cksum()
+        if not status:
+            mytxt = "%s: %s." % (
+                bold(_("Security Advisories")),
+                darkred(_("cannot download checksum, sorry")),
+            )
+            self.Entropy.updateProgress(
+                mytxt,
+                importance = 2,
+                type = "error",
+                header = red("   ## ")
+            )
+            self.Entropy.resources_remove_lock()
+            return 2
+
+        # check if we need to go further
+        checksum = self.__get_downloaded_package_checksum()
+        if (checksum == self.previous_checksum) and not force:
+            # we're done
+            self.advisories_changed = False
+            return 0
 
         # download package
         status = self.__download_glsa_package()
@@ -807,7 +835,7 @@ class System:
         if not status:
             mytxt = "%s: %s." % (
                 bold(_("Security Advisories")),
-                darkred(_("unable to download the package, sorry")),
+                darkred(_("unable to download advisories, sorry")),
             )
             self.Entropy.updateProgress(
                 mytxt,
@@ -830,22 +858,6 @@ class System:
             header = red("   # "),
             back = True
         )
-
-        # download digest
-        status = self.__download_glsa_package_cksum()
-        if not status:
-            mytxt = "%s: %s." % (
-                bold(_("Security Advisories")),
-                darkred(_("cannot download the checksum, sorry")),
-            )
-            self.Entropy.updateProgress(
-                mytxt,
-                importance = 2,
-                type = "error",
-                header = red("   ## ")
-            )
-            self.Entropy.resources_remove_lock()
-            return 2
 
         # verify digest
         status = self.__verify_checksum()
