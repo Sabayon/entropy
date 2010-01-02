@@ -378,6 +378,11 @@ class NoticeBoardWindow(MenuSkel):
         colors = ["#CDEEFF", "#AFCBDA"]
         avail_repos = self.Entropy.SystemSettings['repositories']['available']
         for repoid in self.repoids:
+
+            items = self.Entropy.get_noticeboard(repoid).copy()
+            if not items:
+                continue
+
             counter = 0
             master_dict = {
                 'is_repo': True,
@@ -389,7 +394,6 @@ class NoticeBoardWindow(MenuSkel):
                 'repoid': repoid,
             }
             parent = self.model.append( None, (master_dict,) )
-            items = self.Entropy.get_noticeboard(repoid).copy()
             read_items = self.Entropy.get_noticeboard_item_read_status(repoid)
             for key in sorted(items):
                 counter += 1
