@@ -868,6 +868,61 @@ class Server:
 
         return downloaded
 
+    def remove_notice_board(self, repo = None):
+
+        if repo is None:
+            repo = self.Entropy.default_repository
+        mirrors = self.Entropy.get_remote_mirrors(repo)
+        rss_path = self.Entropy.get_local_database_notice_board_file(repo)
+        rss_file = os.path.basename(rss_path)
+
+        self.Entropy.updateProgress(
+            "[repo:%s] %s %s" % (
+                    brown(repo),
+                    blue(_("removing notice board from")),
+                    red(rss_file),
+            ),
+            importance = 1,
+            type = "info",
+            header = blue(" @@ ")
+        )
+
+        destroyer = self.TransceiverServerHandler(
+            self.Entropy,
+            mirrors,
+            [rss_file],
+            critical_files = [rss_file],
+            remove = True,
+            repo = repo
+        )
+        errors, m_fine_uris, m_broken_uris = destroyer.go()
+        if errors:
+            m_broken_uris = sorted(m_broken_uris)
+            m_broken_uris = [EntropyTransceiver.get_uri_name(x) \
+                for x in m_broken_uris]
+            self.Entropy.updateProgress(
+                "[repo:%s] %s %s" % (
+                        brown(repo),
+                        blue(_("notice board removal failed on")),
+                        red(', '.join(m_broken_uris)),
+                ),
+                importance = 1,
+                type = "info",
+                header = blue(" @@ ")
+            )
+            return False
+        self.Entropy.updateProgress(
+            "[repo:%s] %s" % (
+                    brown(repo),
+                    blue(_("notice board removal success")),
+            ),
+            importance = 1,
+            type = "info",
+            header = blue(" @@ ")
+        )
+        return True
+
+
     def upload_notice_board(self, repo = None):
 
         if repo is None:
@@ -935,7 +990,11 @@ class Server:
             maxentries = 20)
         rss_main.add_item(title, link, description = notice_text)
         rss_main.write_changes()
-        status = self.upload_notice_board(repo)
+        dict_list, items = rss_main.get_entries()
+        if items == 0:
+            status = self.remove_notice_board(repo = repo)
+        else:
+            status = self.upload_notice_board(repo = repo)
         return status
 
     def read_notice_board(self, do_download = True, repo = None):
