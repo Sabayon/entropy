@@ -1,3 +1,45 @@
+commit a04e51f6c49992c6a5191faed3c81ec95a94876b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 10:03:41 2010 +0100
+
+    [todo] update TODO
+
+commit e3c62fdf09ef671a67c7ef04f12c4c7ac49df501
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 10:03:16 2010 +0100
+
+    [entropy.client] trivial code style update
+
+commit 6842e86392cb7875de3a9eb818bc7d6b86fe3edf
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 09:56:38 2010 +0100
+
+    [entropy.client.interfaces.repository] When EAPI=3 syncing repos, use the newly available secure_checksum metadatum
+
+commit e72dda3ec22d56ea536ebf2ade289106102b2ba8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 09:40:00 2010 +0100
+
+    [entropy.services] (to be backported): improve speed of dbdiff command, add extra checksum metadatum
+
+commit 6d6f3f30b4bbcc87bbefdacdce67c6067bdea779
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 08:53:46 2010 +0100
+
+    [entropy.db] (to be backported): add include_signatures argument to checksum()
+
+commit 5486a92b27c839f37c63a2dfef653dc93a3021c4
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 08:53:08 2010 +0100
+
+    [entropy.db] pysqlite is dead, only check inside Python package
+
+commit fab3ded0e4f24da5ee5c7dd8f0f5218075d35f90
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 08:20:53 2010 +0100
+
+    Update ChangeLog for version 0.99.20.3
+
 commit b105af10fbd0dd4dadea5d538401d6484487518d
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jan 2 08:19:34 2010 +0100
