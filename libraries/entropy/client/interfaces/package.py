@@ -214,6 +214,7 @@ class Package:
                             type = "warning",
                             header = darkred("   ## ")
                         )
+                        continue
                     if not valid:
                         self.Entropy.updateProgress(
                             "%s: %s %s" % (
