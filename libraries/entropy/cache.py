@@ -258,12 +258,12 @@ class EntropyCacher(Singleton):
         @param cache_item: Entropy Cache item identifier
         @type cache_item: string
         """
-        dump_path = os.path.join(etpConst['dumpstoragedir'], cache_item)
+        dump_path = os.path.join(entropy.dump.D_DIR, cache_item)
         dump_dir = os.path.dirname(dump_path)
         for currentdir, subdirs, files in os.walk(dump_dir):
             path = os.path.join(dump_dir, currentdir)
             for item in files:
-                if item.endswith(etpConst['cachedumpext']):
+                if item.endswith(entropy.dump.D_EXT):
                     item = os.path.join(path, item)
                     try:
                         os.remove(item)
