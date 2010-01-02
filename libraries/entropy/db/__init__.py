@@ -41,19 +41,16 @@ from entropy.core.settings.base import SystemSettings
 from entropy.spm.plugins.factory import get_default_instance as get_spm
 from entropy.db.plugin_store import EntropyRepositoryPluginStore
 
-try: # try with sqlite3 from >=python 2.5
+try:
     from sqlite3 import dbapi2
-except ImportError: # fallback to pysqlite
-    try:
-        from pysqlite2 import dbapi2
-    except ImportError as e:
-        raise SystemError(
-            "%s. %s: %s" % (
-                _("Entropy needs Python compiled with sqlite3 support"),
-                _("Error"),
-                e,
-            )
+except ImportError as err:
+    raise SystemError(
+        "%s. %s: %s" % (
+            _("Entropy needs Python compiled with sqlite3 support"),
+            _("Error"),
+            err,
         )
+    )
 
 class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
 
