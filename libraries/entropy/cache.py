@@ -106,11 +106,11 @@ class EntropyCacher(Singleton):
                 except (ValueError, TypeError,):
                     # TypeError is when objects are being destroyed
                     break # stack empty
-            key, data = data
+            (key, cache_dir), data = data
             d_o = entropy.dump.dumpobj
             if not d_o:
                 break
-            d_o(key, data)
+            d_o(key, data, dump_dir = cache_dir)
 
     def __del__(self):
         self.stop()
@@ -203,7 +203,7 @@ class EntropyCacher(Singleton):
         with self.__cache_lock:
             self.__cache_buffer.clear() # make sure twice
 
-    def push(self, key, data, async = True):
+    def push(self, key, data, async = True, cache_dir = None):
         """
         This is the place where data is either added
         to the write queue or written to disk (if async == False)
@@ -215,15 +215,22 @@ class EntropyCacher(Singleton):
         @type data: any picklable object
         @keyword async: store cache asynchronously or not
         @type async: bool
+        @keyword cache_dir: alternative cache directory
+        @type cache_dir: string
         @rtype: None
         @return: None
         """
         if not self.__alive:
             return
+
+        if cache_dir is None:
+            cache_dir = entropy.dump.D_DIR
+
         if async:
             with self.__cache_lock:
                 try:
-                    self.__cache_buffer.push((key, self.__copy_obj(data),))
+                    self.__cache_buffer.push(((key, cache_dir,),
+                        self.__copy_obj(data),))
                 except TypeError:
                     # sometimes, very rarely, copy.deepcopy() is unable
                     # to properly copy an object (blame Python bug)
@@ -231,9 +238,9 @@ class EntropyCacher(Singleton):
                         key,))
                     sys.stdout.flush()
         else:
-            entropy.dump.dumpobj(key, data)
+            entropy.dump.dumpobj(key, data, dump_dir = cache_dir)
 
-    def pop(self, key):
+    def pop(self, key, cache_dir = None):
         """
         This is the place where data is retrieved from cache.
         You must know the cache identifier used when push()
@@ -241,24 +248,34 @@ class EntropyCacher(Singleton):
 
         @param key: cache data identifier
         @type key: string
+        @keyword cache_dir: alternative cache directory
+        @type cache_dir: string
         @rtype: Python object
         @return: object stored into the stack or None (if stack is empty)
         """
+        if cache_dir is None:
+            cache_dir = entropy.dump.D_DIR
+
         with self.__cache_lock:
             l_o = entropy.dump.loadobj
             if not l_o:
                 return
-            return l_o(key)
+            return l_o(key, dump_dir = cache_dir)
 
     @staticmethod
-    def clear_cache_item(cache_item):
+    def clear_cache_item(cache_item, cache_dir = None):
         """
         Clear Entropy Cache item from on-disk cache.
 
         @param cache_item: Entropy Cache item identifier
         @type cache_item: string
+        @keyword cache_dir: alternative cache directory
+        @type cache_dir: string
         """
-        dump_path = os.path.join(entropy.dump.D_DIR, cache_item)
+        if cache_dir is None:
+            cache_dir = entropy.dump.D_DIR
+        dump_path = os.path.join(cache_dir, cache_item)
+
         dump_dir = os.path.dirname(dump_path)
         for currentdir, subdirs, files in os.walk(dump_dir):
             path = os.path.join(dump_dir, currentdir)
