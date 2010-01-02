@@ -381,7 +381,8 @@ class ServerEntropyRepositoryPlugin(EntropyRepositoryPlugin):
 
 class ServerSystemSettingsPlugin(SystemSettingsPlugin):
 
-    def _analyze_server_repo_string(repostring, product = None):
+    @staticmethod
+    def analyze_server_repo_string(repostring, product = None):
         """
         Analyze a server repository string (usually contained in server.conf),
         extracting all the parameters.
@@ -531,8 +532,9 @@ class ServerSystemSettingsPlugin(SystemSettingsPlugin):
             elif line.startswith("repository|") and (split_line_len in (5, 6)) \
                 and (not fake_instance):
 
-                repoid, repodata = self._analyze_server_repo_string(line,
-                    product = sys_set['repositories']['product'])
+                repoid, repodata = \
+                    ServerSystemSettingsPlugin.analyze_server_repo_string(line,
+                        product = sys_set['repositories']['product'])
                 if repoid in data['repositories']:
                     # just update mirrors
                     data['repositories'][repoid]['mirrors'].extend(
