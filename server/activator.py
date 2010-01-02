@@ -117,26 +117,28 @@ if not entropy.tools.is_root():
     print_error("you must be root in order to run activator")
     rc = 2
 
-elif (options[0] == "sync"):
-    import server_activator
-    rc = server_activator.sync(options[1:])
+main_cmd = options.pop(0)
 
-elif (options[0] == "tidy"):
+elif main_cmd == "sync":
     import server_activator
-    rc = server_activator.sync(options[1:], just_tidy = True)
+    rc = server_activator.sync(options)
 
-elif (options[0] == "database"):
+elif main_cmd == "tidy":
     import server_activator
-    rc = server_activator.database(options[1:])
+    rc = server_activator.sync(options, just_tidy = True)
 
-elif (options[0] == "packages"):
+elif main_cmd == "database":
     import server_activator
-    rc = server_activator.packages(options[1:])
+    rc = server_activator.database(options)
+
+elif main_cmd == "packages":
+    import server_activator
+    rc = server_activator.packages(options)
 
 # database tool
-elif (options[0] == "notice"):
+elif main_cmd == "notice":
     import server_activator
-    rc = server_activator.notice(options[1:])
+    rc = server_activator.notice(options)
 
 if rc == -10:
     print_menu(help_opts)
