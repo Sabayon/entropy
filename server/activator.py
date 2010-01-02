@@ -119,7 +119,7 @@ if not entropy.tools.is_root():
 
 main_cmd = options.pop(0)
 
-elif main_cmd == "sync":
+if main_cmd == "sync":
     import server_activator
     rc = server_activator.sync(options)
 
