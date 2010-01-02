@@ -6816,7 +6816,7 @@ class EntropyRepository:
         return False
 
     def checksum(self, do_order = False, strict = True,
-        strings = False):
+        strings = False, include_signatures = False):
         """
         Get Repository metadata checksum, useful for integrity verification.
         Note: result is cached in EntropyRepository.live_cache (dict).
@@ -6831,7 +6831,7 @@ class EntropyRepository:
         @rtype: string
         """
 
-        c_tup = ("checksum", do_order, strict, strings,)
+        c_tup = ("checksum", do_order, strict, strings, include_signatures,)
         cache = self.live_cache.get(c_tup)
         if cache is not None:
             return cache
@@ -6876,6 +6876,14 @@ class EntropyRepository:
         else:
             b_hash = hash(tuple(cur.fetchall()))
 
+        if include_signatures:
+            cur = self.cursor.execute("""
+            SELECT idpackage, sha1, gpg FROM
+            packagesignatures %s""" % (idpackage_order,))
+            if strings:
+                do_update_md5(m, cur)
+            else:
+                b_hash = "%s%s" % (b_hash, hash(tuple(cur.fetchall())),)
 
         cur = self.cursor.execute("""
         SELECT category FROM categories %s
