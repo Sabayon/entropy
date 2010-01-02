@@ -317,7 +317,7 @@ def notice(options):
             elif sel == -1:
                 break
 
-        if changed:
+        if changed or (counter == 0):
             if counter == 0:
                 status = Entropy.MirrorsService.remove_notice_board()
             else:
