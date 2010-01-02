@@ -1620,12 +1620,10 @@ class PortagePlugin(SpmPlugin):
         portage_tmpdir_created = False # for pkg_postrm, pkg_prerm
 
         if portage_tmpdir is None:
-            portage_tmpdir = entropy.tools.get_random_temp_file()
+            portage_tmpdir = tempfile.mkdtemp()
+            portage_tmpdir_created = True
 
         if portage_tmpdir:
-            if not os.path.isdir(portage_tmpdir):
-                os.makedirs(portage_tmpdir)
-                portage_tmpdir_created = True
             mysettings['PORTAGE_TMPDIR'] = str(portage_tmpdir)
             mysettings.backup_changes("PORTAGE_TMPDIR")
 

@@ -13,6 +13,8 @@ import sys
 import os
 import shutil
 import copy
+import tempfile
+
 from entropy.core import Singleton
 from entropy.exceptions import OnlineMirrorError, PermissionDenied, \
     SystemDatabaseError
@@ -1571,7 +1573,7 @@ class Server(Singleton, TextInterface):
 
         pkg_list_path = None
         if dump_results_to_file:
-            tmp_dir = os.path.dirname(entropy.tools.get_random_temp_file())
+            tmp_dir = tempfile.mkdtemp()
             pkg_list_path = os.path.join(tmp_dir, "libtest_broken.txt")
             dmp_data = [
                 (_("Broken and matched packages list"), pkg_list_path,),
@@ -1894,8 +1896,7 @@ class Server(Singleton, TextInterface):
 
 
         all_fine = True
-        tmp_down_dir = entropy.tools.get_random_temp_file()
-        os.makedirs(tmp_down_dir)
+        tmp_down_dir = tempfile.mkdtemp()
 
         download_queue = {}
         local_up_dir = self.get_local_upload_directory(repo)

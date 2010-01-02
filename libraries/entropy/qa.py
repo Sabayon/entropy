@@ -462,7 +462,7 @@ class QAInterface(EntropyPluginStore):
         files_list_path = None
         if dump_results_to_file:
 
-            tmp_dir = os.path.dirname(self.entropyTools.get_random_temp_file())
+            tmp_dir = tempfile.mkdtemp()
             syms_list_path = os.path.join(tmp_dir, "libtest_syms.txt")
             files_list_path = os.path.join(tmp_dir, "libtest_files.txt")
 

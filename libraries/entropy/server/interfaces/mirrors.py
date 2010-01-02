@@ -824,8 +824,7 @@ class Server:
             repo = self.Entropy.default_repository
         mirrors = self.Entropy.get_remote_mirrors(repo)
         rss_path = self.Entropy.get_local_database_notice_board_file(repo)
-        mytmpdir = entropy.tools.get_random_temp_file()
-        os.makedirs(mytmpdir)
+        mytmpdir = tempfile.mkdtemp()
 
         self.Entropy.updateProgress(
             "[repo:%s] %s %s" % (
@@ -1981,8 +1980,7 @@ class Server:
             download_data, critical, text_files, gpg_to_verify_files = \
                 self._get_files_to_sync(cmethod, download = True,
                     repo = repo, disabled_eapis = disabled_eapis)
-            mytmpdir = entropy.tools.get_random_temp_file()
-            os.makedirs(mytmpdir)
+            mytmpdir = tempfile.mkdtemp()
 
             self.Entropy.updateProgress(
                 "[repo:%s|%s|%s] %s" % (
