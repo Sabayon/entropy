@@ -1003,11 +1003,11 @@ class SystemSettings(Singleton, EntropyPluginStore):
 
                 branch = split_line[1].strip()
                 data['branch'] = branch
-                if not os.path.isdir(etpConst['packagesbindir']+"/"+branch) \
-                    and (etpConst['uid'] == 0):
-
+                branch_dir = os.path.join(etpConst['packagesbindir'], branch)
+                if not os.path.isdir(branch_dir):
                     try:
-                        os.makedirs(etpConst['packagesbindir']+"/"+branch)
+                        os.makedirs(branch_dir, 0o775)
+                        const_setup_perms(branch_dir, etpConst['entropygid'])
                     except (OSError, IOError,):
                         continue
 
@@ -1102,6 +1102,10 @@ class SystemSettings(Singleton, EntropyPluginStore):
             tx_limit = None
         if tx_limit is not None:
             data['transfer_limit'] = tx_limit
+
+        # validate using mtime
+        for repoid in data['order']:
+            
 
         return data
 
@@ -1246,11 +1250,6 @@ class SystemSettings(Singleton, EntropyPluginStore):
         @return: None
         @rtype: None
         """
-
-        # can't validate if running as user, moreover
-        # users can't make changes, so...
-        if os.getuid() != 0:
-            return
 
         # handle on-disk cache validation
         # in this case, repositories cache
