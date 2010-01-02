@@ -476,7 +476,7 @@ class Cache:
         'ugc_downloads': 'ugc_downloads',
         'ugc_docs': 'ugc_docs',
     }
-    CACHE_DIR = os.path.join(etpConst['entropyworkdir'], "ugc_caches")
+    CACHE_DIR = os.path.join(etpConst['entropyworkdir'], "ugc_cache")
 
     def __init__(self, UGCClientInstance):
 
