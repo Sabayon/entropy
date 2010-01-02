@@ -1,8 +1,7 @@
 
   0.99.30:
 
-    - entropy.security do not fetch security advisories pkg every time, and
-      perhaps sign with GPG if avail.
+    - entropy.security, move security advisories to entropy.server (and GPG sign)
     - equo bashcomp
     - sulfur love (see planet)
     - entropy.output API names update
@@ -31,6 +30,7 @@
 
   1.0 - deprecations:
 
+    - ditch entropyTools, dumpTools
     - _databaseStructureUpdates (missing tables creation)
     - type argument in updateProgress
     - clientDbconn => clientdb
