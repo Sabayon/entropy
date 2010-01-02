@@ -325,8 +325,10 @@ class System:
                     hash(etpConst['systemroot']),
                 )),
             )
+            # async false to allow 3rd-party applications to not wait
+            # before getting cached results.
             self.__cacher.push(c_hash, adv_metadata,
-                cache_dir = System._CACHE_DIR)
+                cache_dir = System._CACHE_DIR, async = False)
 
     def _get_advisories_list(self):
         """
