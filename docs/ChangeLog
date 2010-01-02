@@ -1,3 +1,93 @@
+commit 100eac3390c15f3c6d58ed34b6f79c498d640942
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 17:12:17 2010 +0100
+
+    [todo] update TODO
+
+commit 37466a6834e77690e6305c5c9cbfb5ae67e5f535
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 17:11:56 2010 +0100
+
+    [man] update man pages
+
+commit 8ffd4f19474cac4797761379559002eb322ca539
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 17:11:41 2010 +0100
+
+    [equo] "equo security update", allow --force
+
+commit 707d27dede8dfb4aa394349b1a78c672d2b8c05a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 17:11:02 2010 +0100
+
+    [entropy.security] use alternative cache directory
+
+commit 4c84a2ea7d414ea32d03c2650573af93a24ad1da
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 17:10:39 2010 +0100
+
+    [entropy.client.services.ugc] change CACHE_DIR path
+
+commit 4c3d9fef604cecbeeb7e404fb96fbc91c9154be0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 17:10:15 2010 +0100
+
+    [entropy.cache] EntropyCacher: make possible to specify an alternative cache directory
+
+commit c2617870f62b6bab995af31f44213ac90f9917ff
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 17:09:49 2010 +0100
+
+    [entropy.dump] make possible to specifify an alternative dump directory
+
+commit a707f3d214d93bd6bc5e3d0ebc1302afc3a3e8f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 16:26:15 2010 +0100
+
+    [entropy.client.ugc] use autonomous cache directory, there is no need to trash UGC cache every single fart
+
+commit 8f45d18dcfb4bb4e4e867b279adf7d4c2746d2ea
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 16:25:38 2010 +0100
+
+    [entropy.cache] do not use etpConst directly but rather use entropy.dump values
+
+commit 5ea68c69f05ac573c40854ba5448bf0fd86e7651
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 16:25:05 2010 +0100
+
+    [entropy.dump] improve dumpobj()
+
+commit 6e65a7a88e69386c77c2f66babffe0edbe28f90b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 15:36:27 2010 +0100
+
+    [entropy*] move cache functions to EntropyCacher, remove spaghetti code around
+
+commit c2c989dee22b67d3c9af6b2dd844e4b34b9d571c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 15:11:20 2010 +0100
+
+    [entropy.const] move const_extract_{cli,srv}* away from entropy.const
+
+commit e57b0641218f16e5e9d6f18ef244aaf2332b9dbb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 15:00:27 2010 +0100
+
+    [entropy*] big caching routines cleanup, drop old and duplicated code
+
+commit 77d66c2e263c100f06e6182ed63fd35a97ffcd8c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 11:53:04 2010 +0100
+
+    [entropy.core] SystemSettings._repositories_parser(): always try to properly setup permissions and cache
+
+commit 82bebbfaf8f93dbded50279e41d27bc87ec3d43b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 11:43:14 2010 +0100
+
+    Update ChangeLog for version 0.99.20.4
+
 commit a04e51f6c49992c6a5191faed3c81ec95a94876b
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jan 2 10:03:41 2010 +0100
