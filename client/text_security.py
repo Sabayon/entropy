@@ -24,6 +24,7 @@ def security(options):
     only_affected = False
     only_unaffected = False
     fetch = False
+    force = False
     for opt in options:
         if opt == "--affected":
             only_affected = True
@@ -31,6 +32,8 @@ def security(options):
             only_unaffected = True
         elif opt == "--fetch":
             fetch = True
+        elif opt == "--force":
+            force = True
 
     from entropy.client.interfaces import Client
     entropy_client = Client()
@@ -43,7 +46,7 @@ def security(options):
             if not entropy.tools.is_user_in_entropy_group():
                 print_error(er_txt)
                 return 1
-            rc = security_intf.fetch_advisories()
+            rc = security_intf.fetch_advisories(force = force)
 
         elif options[0] == "list":
             security_intf = entropy_client.Security()

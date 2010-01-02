@@ -104,6 +104,7 @@ help_opts = [
     None,
     (1, 'security', 1, _('security infrastructure functions')),
     (2, 'update', 2, _('download the latest Security Advisories')),
+    (3, '--force', 1, _('force download even if already up-to-date')),
     (2, 'list', 2, _('list all the available Security Advisories')),
     (3, '--affected', 1, _('list only affected')),
     (3, '--unaffected', 1, _('list only unaffected')),
