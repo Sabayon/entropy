@@ -28,6 +28,8 @@
 import sys
 import os
 import shutil
+import hashlib
+
 from entropy.const import etpConst, const_setup_file, \
     const_isunicode, const_convert_to_unicode, const_get_buffer, \
     const_convert_to_rawstring, const_cmp
@@ -6516,7 +6518,7 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         return False
 
     def checksum(self, do_order = False, strict = True,
-        strings = False):
+        strings = False, include_signatures = False):
         """
         Get Repository metadata checksum, useful for integrity verification.
         Note: result is cached in EntropyRepository.live_cache (dict).
@@ -6527,11 +6529,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         @type strict: bool
         @keyword strings: return checksum in md5 hex form
         @type strings: bool
+        @keyword include_signatures: also include packages signatures (GPG,
+            SHA1, SHA2, etc) into returned hash
+        @type include_signatures: bool
         @return: repository checksum
         @rtype: string
         """
 
-        c_tup = ("checksum", do_order, strict, strings,)
+        c_tup = ("checksum", do_order, strict, strings, include_signatures,)
         cache = self.live_cache.get(c_tup)
         if cache is not None:
             return cache
@@ -6553,7 +6558,6 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
                     m.update(const_convert_to_rawstring(item))
 
         if strings:
-            import hashlib
             m = hashlib.md5()
 
 
@@ -6576,6 +6580,14 @@ class EntropyRepository(EntropyRepositoryPluginStore, TextInterface):
         else:
             b_hash = hash(tuple(cur.fetchall()))
 
+        if include_signatures:
+            cur = self.cursor.execute("""
+            SELECT idpackage, sha1, gpg FROM
+            packagesignatures %s""" % (idpackage_order,))
+            if strings:
+                do_update_md5(m, cur)
+            else:
+                b_hash = "%s%s" % (b_hash, hash(tuple(cur.fetchall())),)
 
         cur = self.cursor.execute("""
         SELECT category FROM categories %s
