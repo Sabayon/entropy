@@ -615,9 +615,9 @@ class Repository:
             return None, None, None
         elif 'added' not in data or \
             'removed' not in data or \
-            'checksum' not in data:
+            'secure_checksum' not in data:
                 return None, None, None
-        return data['added'], data['removed'], data['checksum']
+        return data['added'], data['removed'], data['secure_checksum']
 
     def __get_eapi3_repository_metadata(self, eapi3_interface, repo, session):
         product = self.Entropy.SystemSettings['repositories']['product']
@@ -655,16 +655,16 @@ class Repository:
             prepare_exit(eapi3_interface, session)
             return False
 
-        added_ids, removed_ids, checksum = \
+        added_ids, removed_ids, secure_checksum = \
             self.__get_eapi3_database_differences(eapi3_interface, repo,
                 myidpackages, session)
-        if (None in (added_ids, removed_ids, checksum)) or \
+        if (None in (added_ids, removed_ids, secure_checksum)) or \
             (not added_ids and not removed_ids and self.force):
                 mydbconn.closeDB()
                 prepare_exit(eapi3_interface, session)
                 return False
 
-        elif not checksum: # {added_ids, removed_ids, checksum} == False
+        elif not secure_checksum: # {added_ids, removed_ids, secure_checksum} == False
             mydbconn.closeDB()
             prepare_exit(eapi3_interface, session)
             mytxt = "%s: %s" % ( blue(_("EAPI3 Service status")),
@@ -948,8 +948,8 @@ class Repository:
         # now verify if both checksums match
         result = False
         mychecksum = mydbconn.checksum(do_order = True,
-            strict = False, strings = True)
-        if checksum == mychecksum:
+            strict = False, strings = True, include_signatures = True)
+        if secure_checksum == mychecksum:
             result = True
         else:
             self.Entropy.updateProgress(
@@ -961,7 +961,7 @@ class Repository:
                 mytxt, importance = 0,
                 type = "info", header = "\t",
             )
-            mytxt = "%s: %s" % (_('remote'), checksum,)
+            mytxt = "%s: %s" % (_('remote'), secure_checksum,)
             self.Entropy.updateProgress(
                 mytxt, importance = 0,
                 type = "info", header = "\t",
