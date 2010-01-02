@@ -75,22 +75,23 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True):
         try:
             if complete_path:
                 dmpfile = name
+                dump_dir = os.path.dirname(name)
             else:
-                dump_path = os.path.join(D_DIR, name)
-                dump_dir = os.path.dirname(dump_path)
-                #dump_name = os.path.basename(dump_path)
-                my_dump_dir = dump_dir
-                d_paths = []
-                while not os.path.isdir(my_dump_dir):
-                    d_paths.append(my_dump_dir)
-                    my_dump_dir = os.path.dirname(my_dump_dir)
-                if d_paths:
-                    d_paths = sorted(d_paths)
-                    for d_path in d_paths:
-                        os.mkdir(d_path)
-                        const_setup_file(d_path, E_GID, 0o775)
+                _dmp_path = os.path.join(D_DIR, name)
+                dmpfile = _dmp_path+D_EXT
+                dump_dir = os.path.dirname(_dmp_path)
 
-                dmpfile = dump_path+D_EXT
+            my_dump_dir = dump_dir
+            d_paths = []
+            while not os.path.isdir(my_dump_dir):
+                d_paths.append(my_dump_dir)
+                my_dump_dir = os.path.dirname(my_dump_dir)
+            if d_paths:
+                d_paths = sorted(d_paths)
+                for d_path in d_paths:
+                    os.mkdir(d_path)
+                    const_setup_file(d_path, E_GID, 0o775)
+
             with open(dmpfile, "wb") as dmp_f:
                 if sys.hexversion >= 0x3000000:
                     pickle.dump(my_object, dmp_f,
@@ -99,6 +100,7 @@ def dumpobj(name, my_object, complete_path = False, ignore_exceptions = True):
                     pickle.dump(my_object, dmp_f)
                 dmp_f.flush()
             const_setup_file(dmpfile, E_GID, 0o664)
+
         except RuntimeError:
             try:
                 os.remove(dmpfile)
