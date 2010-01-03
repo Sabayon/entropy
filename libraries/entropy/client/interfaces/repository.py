@@ -1448,6 +1448,10 @@ class Repository:
             # database has been updated
             self.updated = True
 
+            # inform UGC that we are syncing this repo
+            if self.Entropy.UGC is not None:
+                self.Entropy.UGC.add_download_stats(repo, [repo])
+
             # remove garbage left around
             for path in files_to_remove:
                 try:
