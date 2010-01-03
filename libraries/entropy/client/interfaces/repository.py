@@ -1223,7 +1223,7 @@ class Repository:
 
         return gpg_rc
 
-    def run_sync(self):
+    def _run_sync(self):
 
         self.updated = False
         repocount = 0
@@ -1447,10 +1447,6 @@ class Repository:
 
             # database has been updated
             self.updated = True
-
-            # inform UGC that we are syncing this repo
-            if self.Entropy.UGC is not None:
-                self.Entropy.UGC.add_download_stats(repo, [repo])
 
             # remove garbage left around
             for path in files_to_remove:
@@ -2072,7 +2068,7 @@ class Repository:
         if not acquired:
             return 4 # app locked during lock acquire
         try:
-            rc = self.run_sync()
+            rc = self._run_sync()
         finally:
             self.Entropy.resources_remove_lock()
         if rc:

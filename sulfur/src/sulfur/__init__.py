@@ -1205,26 +1205,13 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         try:
             repoConn = self.Equo.Repositories(repos, force = force)
-        except PermissionDenied:
-            self.progress_log(_('You must run this application as root'),
-                extra = "repositories")
-            self.disable_ugc = False
-            self.show_notebook_tabs_after_install()
-            return 1
-        except MissingParameter:
+        except AttributeError:
             msg = "%s: %s" % (_('No repositories specified in'),
                 etpConst['repositoriesconf'],)
             self.progress_log( msg, extra = "repositories")
             self.disable_ugc = False
             self.show_notebook_tabs_after_install()
             return 127
-        except OnlineMirrorError:
-            self.progress_log(
-                _('You are not connected to the Internet. You should.'),
-                extra = "repositories")
-            self.disable_ugc = False
-            self.show_notebook_tabs_after_install()
-            return 126
         except Exception as e:
             msg = "%s: %s" % (_('Unhandled exception'), e,)
             self.progress_log(msg, extra = "repositories")
@@ -1244,6 +1231,11 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 print_generic("update_repositories: update thread still alive")
             self.gtk_loop()
         rc = self.__repo_update_rc
+
+        for repo in repos:
+            # inform UGC that we are syncing this repo
+            if self.Equo.UGC is not None:
+                self.Equo.UGC.add_download_stats(repo, [repo])
 
         if repoConn.sync_errors or (rc != 0):
             self.progress.set_mainLabel(_('Errors updating repositories.'))

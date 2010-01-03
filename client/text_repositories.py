@@ -180,7 +180,13 @@ def _do_sync(entropy_client, repo_identifiers = None, force = False):
     rc = repo_intf.sync()
     if not rc:
         for reponame in repo_identifiers:
+            # inform UGC that we are syncing this repo
+            if entropy_client.UGC is not None:
+                entropy_client.UGC.add_download_stats(reponame, [reponame])
+
+        for reponame in repo_identifiers:
             _show_notice_board_summary(entropy_client, reponame)
+
     return rc
 
 def _check_notice_board_availability(entropy_client, reponame):
