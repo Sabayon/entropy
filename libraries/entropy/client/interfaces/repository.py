@@ -69,6 +69,9 @@ class Repository:
         self.not_available = 0
         self._valid_eapis = [1, 2, 3]
         self._gpg_feature = gpg
+        env_gpg = os.getenv('ETP_DISBLE_GPG')
+        if env_gpg is not None:
+            self._gpg_feature = False
 
         # Developer Repository mode enabled?
         sys_set = self.Entropy.SystemSettings
