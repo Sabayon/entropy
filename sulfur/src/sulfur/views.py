@@ -816,12 +816,24 @@ class EntropyPackageView:
                 distance += col.get_width()
             if (event_x > distance) and (event_x < (distance+self.stars_col_size)):
                 vote = int((event_x - distance)/self.stars_col_size*5)+1
-                obj.voted = float(vote)
-                # submit vote
-                self.spawn_vote_submit(obj)
+                # this is required to fix idiotic GTK behaviour
+                self.delayed_vote_submit(widget, vote)
                 return True
 
         return False
+
+    def delayed_vote_submit(self, widget, vote):
+
+        def go(widget, vote):
+            objs = self.collect_selected_items(widget)
+            if len(objs) == 1:
+                obj = objs[0]
+                obj.voted = float(vote)
+                # submit vote
+                self.spawn_vote_submit(obj)
+            return False
+
+        gobject.timeout_add(1000, go, widget, vote)
 
     def reposition_menu(self, menu):
         # devo tradurre x=0,y=20 in posizioni assolute
