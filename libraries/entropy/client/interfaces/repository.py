@@ -1825,7 +1825,7 @@ class Repository:
         # update Security Advisories
         try:
             security_intf = self.Entropy.Security()
-            security_intf.fetch_advisories()
+            security_intf.sync()
         except Exception as e:
             entropy.tools.print_traceback(f = self.Entropy.clientLog)
             mytxt = "%s: %s" % (red(_("Advisories fetch error")), e,)

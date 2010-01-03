@@ -46,7 +46,7 @@ def security(options):
             if not entropy.tools.is_user_in_entropy_group():
                 print_error(er_txt)
                 return 1
-            rc = security_intf.fetch_advisories(force = force)
+            rc = security_intf.sync(force = force)
 
         elif options[0] == "list":
             security_intf = entropy_client.Security()

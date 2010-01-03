@@ -16,7 +16,7 @@ import os
 import shutil
 import subprocess
 import datetime
-from entropy.exceptions import InvalidData
+from entropy.exceptions import EntropyException
 from entropy.misc import LogFile
 from entropy.const import etpConst, etpUi, const_setup_perms, \
     const_debug_write
@@ -43,9 +43,34 @@ class System:
     It can be used to retrieve security advisories, get information
     about unapplied advisories, etc.
 
+    For specifications about security advisories metadata format, please see
+    docs/metadata/glsa.dtd. Your Source Package Manager must implement
+    advisories in this format, with file names ordered by your own criteria,
+    which will be matched 1:1 here.
+    You should provide a compressed .tar.gz or .tar.bz2 package containing such
+    xml files in a way that can be downloaded and installed by this class.
+    Your distribution should expose a publicly available URL as well as a valid
+    "securityurl" parameter inside repositories.conf.
+
+    To sum up, you as distributor should:
+        1. implement your security advisories xml files by looking at
+           docs/metadata/glsa.dtd specifications.
+        2. setup a cronjob that compresses your unpacked list of advisories
+           to a file inside a publicly available URL as well as a valid .md5
+           file.
+        3. provide a default repositories.conf file with securityurl| pointing
+           to that file (HTTP, FTP and FILE protocols supported).
+        4. Optionally, in the same dir you could make available a GPG public
+           key and a GPG signature of your security advisories .tar.* file.
+           The former MUST be named signature.asc while the latter must match
+           securityurl value plus ".asc"
+
     """
     _CACHE_ID = 'advisories_cache_'
     _CACHE_DIR = os.path.join(etpConst['entropyworkdir'], "security_cache")
+
+    class UpdateError(EntropyException):
+        """Raised when security advisories couldn't be updated correctly"""
 
     def __init__(self, entropy_client_instance):
 
@@ -326,7 +351,8 @@ class System:
                 )),
             )
             # async false to allow 3rd-party applications to not wait
-            # before getting cached results.
+            # before getting cached results. A straight example: sulfur
+            # and its security cache generation separate thread.
             self.__cacher.push(c_hash, adv_metadata,
                 cache_dir = System._CACHE_DIR, async = False)
 
@@ -726,7 +752,7 @@ class System:
             return True
         return False
 
-    def fetch_advisories(self, do_cache = True, force = False):
+    def sync(self, do_cache = True, force = False):
         """
         This is the service method for remotely fetch advisories metadata.
 
@@ -772,15 +798,13 @@ class System:
         acquired = self.Entropy.resources_create_lock()
         if not acquired:
             return 4 # app locked during lock acquire
+
         try:
             rc_lock = self.__run_fetch(force = force)
-        except:
+            if rc_lock != 0:
+                return rc_lock
+        finally:
             self.Entropy.resources_remove_lock()
-            raise
-        if rc_lock != 0:
-            return rc_lock
-
-        self.Entropy.resources_remove_lock()
 
         if self.advisories_changed:
             advtext = "%s: %s" % (
