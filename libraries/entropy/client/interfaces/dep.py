@@ -21,7 +21,7 @@ class CalculatorsMixin:
 
     def dependencies_test(self, dbconn = None):
 
-        if dbconn == None:
+        if dbconn is None:
             dbconn = self.clientDbconn
         # get all the installed packages
         installed_packages = dbconn.listAllIdpackages()
@@ -203,13 +203,13 @@ class CalculatorsMixin:
     def atom_match(self, atom, caseSensitive = True, matchSlot = None,
             matchTag = None, packagesFilter = True,
             multiMatch = False, multiRepo = False, matchRevision = None,
-            matchRepo = None, server_repos = [], serverInstance = None,
+            matchRepo = None, server_repos = None, serverInstance = None,
             extendedResults = False, useCache = True):
 
         # support match in repository from shell
         # atom@repo1,repo2,repo3
         atom, repos = self.entropyTools.dep_get_match_in_repos(atom)
-        if (matchRepo == None) and (repos is not None):
+        if (matchRepo is None) and (repos is not None):
             matchRepo = repos
 
         u_hash = ""
@@ -228,14 +228,14 @@ class CalculatorsMixin:
 
         c_hash = "%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s|%s" % (
             repos_ck,
-            atom, k_ms, k_mt, hash(packagesFilter),
+            atom, k_ms, k_mt, packagesFilter,
             hash(frozenset(self.validRepositories)),
             hash(frozenset(self.SystemSettings['repositories']['available'])),
-            hash(multiMatch), hash(multiRepo), hash(caseSensitive),
-            k_mr, hash(extendedResults),
+            multiMatch, multiRepo, caseSensitive,
+            k_mr, extendedResults,
             u_hash,
         )
-        c_hash = "%s%s" % (self.atomMatchCacheKey, hash(c_hash),)
+        c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['atom_match'], hash(c_hash),)
 
         if self.xcache and useCache:
             cached = self.Cacher.pop(c_hash)
@@ -248,17 +248,16 @@ class CalculatorsMixin:
             if cached is not None:
                 return cached
 
-        if server_repos:
+        if server_repos is not None:
             if not serverInstance:
-                t = _("server_repos needs serverInstance")
-                raise IncorrectParameter("IncorrectParameter: %s" % (t,))
+                raise AttributeError("entropy.server.interfaces.Server instance required")
             valid_repos = server_repos[:]
         else:
             valid_repos = self.validRepositories
         if matchRepo and (type(matchRepo) in (list, tuple, set)):
             valid_repos = list(matchRepo)
 
-        repoResults = {}
+        repo_results = {}
         for repo in valid_repos:
 
             # search
@@ -279,10 +278,10 @@ class CalculatorsMixin:
                     if query_rc == 0:
                         # package found, add to our dictionary
                         if extendedResults:
-                            repoResults[repo] = (query_data[0], query_data[2],
+                            repo_results[repo] = (query_data[0], query_data[2],
                                 query_data[3], query_data[4])
                         else:
-                            repoResults[repo] = query_data
+                            repo_results[repo] = query_data
                 except TypeError:
                     if not use_cache:
                         raise
@@ -297,22 +296,22 @@ class CalculatorsMixin:
         if extendedResults:
             dbpkginfo = ((-1, None, None, None), 1)
 
-        if multiRepo and repoResults:
+        if multiRepo and repo_results:
 
             data = set()
-            for repoid in repoResults:
-                data.add((repoResults[repoid], repoid))
+            for repoid in repo_results:
+                data.add((repo_results[repoid], repoid))
             dbpkginfo = (data, 0)
 
-        elif len(repoResults) == 1:
+        elif len(repo_results) == 1:
             # one result found
-            repo = list(repoResults.keys())[0]
-            dbpkginfo = (repoResults[repo], repo)
+            repo = list(repo_results.keys())[0]
+            dbpkginfo = (repo_results[repo], repo)
 
-        elif len(repoResults) > 1:
+        elif len(repo_results) > 1:
 
             # we have to decide which version should be taken
-            mypkginfo = self.__handle_multi_repo_matches(repoResults,
+            mypkginfo = self.__handle_multi_repo_matches(repo_results,
                 extendedResults, valid_repos, serverInstance)
             if mypkginfo is not None:
                 dbpkginfo = mypkginfo
@@ -373,8 +372,9 @@ class CalculatorsMixin:
 
             # expand package sets
             if package.startswith(etpConst['packagesetprefix']):
-                set_pkgs = sorted(self.package_set_expand(package, raise_exceptions = False))
-                new_packages.extend([x for x in set_pkgs if x not in packages]) # atomMatch below will filter dupies
+                set_pkgs = sorted(self.package_set_expand(package,
+                    raise_exceptions = False))
+                new_packages.extend([x for x in set_pkgs if x not in packages])
             else:
                 new_packages.append(package)
 
@@ -407,40 +407,48 @@ class CalculatorsMixin:
             package_set = "%s%s" % (etpConst['packagesetprefix'], package_set,)
 
         try:
-            mylist = do_expand(package_set, recursion_level, max_recursion_level)
+            mylist = do_expand(package_set, recursion_level,
+                max_recursion_level)
         except InvalidPackageSet:
-            if raise_exceptions: raise
+            if raise_exceptions:
+                raise
             mylist = set()
 
         return mylist
 
-    def package_set_list(self, server_repos = [], serverInstance = None, matchRepo = None):
-        return self.package_set_match('', matchRepo = matchRepo, server_repos = server_repos, serverInstance = serverInstance, search = True)[0]
+    def package_set_list(self, server_repos = None, serverInstance = None,
+        matchRepo = None):
+        return self.package_set_match('', matchRepo = matchRepo,
+            server_repos = server_repos, serverInstance = serverInstance,
+            search = True)[0]
 
-    def package_set_search(self, package_set, server_repos = [], serverInstance = None, matchRepo = None):
+    def package_set_search(self, package_set, server_repos = None,
+        serverInstance = None, matchRepo = None):
         # search support
-        if package_set == '*': package_set = ''
-        return self.package_set_match(package_set, matchRepo = matchRepo, server_repos = server_repos, serverInstance = serverInstance, search = True)[0]
+        if package_set == '*':
+            package_set = ''
+        return self.package_set_match(package_set, matchRepo = matchRepo,
+            server_repos = server_repos, serverInstance = serverInstance,
+            search = True)[0]
 
     def __package_set_match_open_db(self, repoid, server_inst):
         if server_inst is not None:
-            dbconn = server_inst.open_server_repository(just_reading = True, repo = repoid)
-        else:
-            dbconn = self.open_repository(repoid)
-        return dbconn
+            return server_inst.open_server_repository(just_reading = True,
+                repo = repoid)
+        return self.open_repository(repoid)
 
     def package_set_match(self, package_set, multiMatch = False,
-        matchRepo = None, server_repos = [], serverInstance = None,
+        matchRepo = None, server_repos = None, serverInstance = None,
         search = False):
 
         # support match in repository from shell
         # set@repo1,repo2,repo3
         package_set, repos = self.entropyTools.dep_get_match_in_repos(
             package_set)
-        if (matchRepo == None) and (repos is not None):
+        if (matchRepo is None) and (repos is not None):
             matchRepo = repos
 
-        if server_repos:
+        if server_repos is not None:
             if not serverInstance:
                 t = _("server_repos needs serverInstance")
                 raise IncorrectParameter("IncorrectParameter: %s" % (t,))
@@ -511,7 +519,9 @@ class CalculatorsMixin:
             client_checksum = self.clientDbconn.checksum()
             c_hash = hash("%s|%s|%s|%s" % (c_data, deep_deps,
                 client_checksum, relaxed_deps,))
-            c_hash = "%s%s" % (EntropyCacher.CACHE_IDS['filter_satisfied_deps'], c_hash,)
+            c_hash = "%s%s" % (
+                EntropyCacher.CACHE_IDS['filter_satisfied_deps'], c_hash,)
+
             cached = self.Cacher.pop(c_hash)
             if cached is not None:
                 return cached
@@ -1541,11 +1551,15 @@ class CalculatorsMixin:
                 try:
                     key, slot = dbconn.retrieveKeySlot(idpackage)
                     matches = self.clientDbconn.searchKeySlot(key, slot)
-                except (self.dbapi2.DatabaseError, self.dbapi2.IntegrityError, self.dbapi2.OperationalError,):
+                except (self.dbapi2.DatabaseError, self.dbapi2.IntegrityError,
+                    self.dbapi2.OperationalError,):
+
                     self.cycleDone()
                     do_break = True
                     continue
-                if not matches: myavailable.append((idpackage, repo))
+                if not matches:
+                    myavailable.append((idpackage, repo))
+
             available += myavailable[:]
             self.cycleDone()
 
@@ -1588,8 +1602,9 @@ class CalculatorsMixin:
 
         if self.xcache:
             c_hash = self._get_critical_update_cache_hash(db_digest)
-            self.Cacher.push("%s%s" % (EntropyCacher.CACHE_IDS['critical_update'], c_hash,),
-                data, async = False)
+            self.Cacher.push(
+                "%s%s" % (EntropyCacher.CACHE_IDS['critical_update'], c_hash,),
+                    data, async = False)
 
         return data
 
@@ -1828,7 +1843,8 @@ class CalculatorsMixin:
         queue = []
         if not idpackages:
             return queue
-        treeview = self.generate_reverse_dependency_tree(idpackages, deep = deep)
+        treeview = self.generate_reverse_dependency_tree(idpackages,
+            deep = deep)
         for x in sorted(treeview, reverse = True):
             queue.extend(treeview[x])
         return queue
@@ -1867,4 +1883,3 @@ class CalculatorsMixin:
                 removal.discard(myremmatch.get(testtuple))
 
         return install, sorted(removal), 0
-

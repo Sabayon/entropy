@@ -578,7 +578,6 @@ class Client(Singleton, TextInterface, LoadersMixin, CacheMixin, CalculatorsMixi
         self.sys_settings_client_plugin_id = \
             etpConst['system_settings_plugins_ids']['client_plugin']
         self.__instance_destroyed = False
-        self.atomMatchCacheKey = EntropyCacher.CACHE_IDS['atomMatch']
         self.dbapi2 = dbapi2 # export for third parties
         self.FileUpdates = None
         self.validRepositories = []
