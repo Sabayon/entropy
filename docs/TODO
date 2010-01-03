@@ -2,15 +2,22 @@
   0.99.30:
 
     - entropy.security: GPG signing support
+    - entropy.output API rework
     - equo bashcomp
-    - sulfur love (see planet)
-    - entropy.output API names update
+    - sulfur: tbz2 files matter, context tips
     - entropy.tools API docs merge
     - entropy.server API rework
     - move sensible pkgs to alt dir
 
   0.99.40:
 
+    - entropy.client API rework
+        - entropy.client.interfaces.dep:
+            - atom_match without serverInstance & bullshit
+                (add repo_opener argument instead)
+            - remove "server_repos", use "matchRepo"
+        - entropy.client, rename validRepositories into enabled_repositories
+        - entropy.client, rename clientDbconn into installed_db
     - PackageKit integration
     - ability to also install build dependencies
     - Spm.extract_package_metadata, define metadata format (to make easier
@@ -34,7 +41,6 @@
     - ditch entropyTools, dumpTools
     - _databaseStructureUpdates (missing tables creation)
     - type argument in updateProgress
-    - clientDbconn => installed_repo
 
   2.0:
 
