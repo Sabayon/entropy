@@ -247,7 +247,7 @@ def install_packages(entropy_client, security_intf, fetch = False):
 
     import text_ui
     print_info(red(" @@ ")+blue("%s..." % (_("Calculating security updates"),)))
-    affected_atoms = security_intf.get_affected_atoms()
+    affected_atoms = security_intf.get_affected_packages()
     # match in client database
     valid_matches = set()
     for atom in affected_atoms:

@@ -537,11 +537,11 @@ class System:
                     del adv_data[adv]['affected'][key]
         return adv_data
 
-    def get_affected_atoms(self):
+    def get_affected_packages(self):
         """
-        Return a list of package atoms affected by vulnerabilities.
+        Return a list of package names affected by vulnerabilities.
 
-        @return: list (set) of package atoms affected by vulnerabilities
+        @return: list (set) of package names affected by vulnerabilities
         @rtype: set
         """
         adv_data = self.get_advisories_metadata()
