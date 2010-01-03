@@ -28,10 +28,9 @@ import entropy.tools
 class EntropyCacher(Singleton):
 
     CACHE_IDS = {
-            'db_match': 'match/db', # db atom match cache
+            'db_match': 'match/db',
             'dep_tree': 'deptree/dep_tree_',
-            # used to store info about repository dependencies solving
-            'atomMatch': 'atom_match/atom_match_',
+            'atom_match': 'atom_match/atom_match_',
             'world_update': 'world_update/world_cache_',
             'critical_update': 'critical_update/critical_cache_',
             'world_available': 'world_available/available_cache_',
@@ -42,39 +41,39 @@ class EntropyCacher(Singleton):
         }
 
     """
-        Entropy asynchronous and synchronous cache writer
-        and reader. This class is a Singleton and contains
-        a thread doing the cache writes asynchronously, thus
-        it must be stopped before your application is terminated
-        calling the stop() method.
+    Entropy asynchronous and synchronous cache writer
+    and reader. This class is a Singleton and contains
+    a thread doing the cache writes asynchronously, thus
+    it must be stopped before your application is terminated
+    calling the stop() method.
 
-        Sample code:
+    Sample code:
 
-            >>> # import module
-            >>> from entropy.cache import EntropyCacher
-            ...
-            >>> # first EntropyCacher load, start it
-            >>> cacher = EntropyCacher()
-            >>> cacher.start()
-            ...
-            >>> # now store something into its cache
-            >>> cacher.push('my_identifier1', [1, 2, 3])
-            >>> # now store something synchronously
-            >>> cacher.push('my_identifier2', [1, 2, 3], async = False)
-            ...
-            >>> # now flush all the caches to disk, and make sure all
-            >>> # is written
-            >>> cacher.sync(wait = True)
-            ...
-            >>> # now fetch something from the cache
-            >>> data = cacher.pop('my_identifier1')
-            [1, 2, 3]
-            ...
-            >>> # now discard all the cached (async) writes
-            >>> cacher.discard()
-            ...
-            >>> # and stop EntropyCacher
-            >>> cacher.stop()
+        >>> # import module
+        >>> from entropy.cache import EntropyCacher
+        ...
+        >>> # first EntropyCacher load, start it
+        >>> cacher = EntropyCacher()
+        >>> cacher.start()
+        ...
+        >>> # now store something into its cache
+        >>> cacher.push('my_identifier1', [1, 2, 3])
+        >>> # now store something synchronously
+        >>> cacher.push('my_identifier2', [1, 2, 3], async = False)
+        ...
+        >>> # now flush all the caches to disk, and make sure all
+        >>> # is written
+        >>> cacher.sync(wait = True)
+        ...
+        >>> # now fetch something from the cache
+        >>> data = cacher.pop('my_identifier1')
+        [1, 2, 3]
+        ...
+        >>> # now discard all the cached (async) writes
+        >>> cacher.discard()
+        ...
+        >>> # and stop EntropyCacher
+        >>> cacher.stop()
 
     """
 
@@ -306,3 +305,20 @@ class EntropyCacher(Singleton):
                     os.rmdir(path)
             except (OSError, IOError,):
                 pass
+
+    @staticmethod
+    def clear_cache(excluded_items = None, cache_dir = None):
+        """
+        Clear all the on-disk cache items included in EntropyCacher.CACHE_IDS.
+
+        @keyword excluded_items: list of items to exclude from cleaning
+        @type excluded_items: list
+        @keyword cache_dir: alternative cache directory
+        @type cache_dir: string
+        """
+        if excluded_items is None:
+            excluded_items = []
+        for key, value in EntropyCacher.CACHE_IDS.items():
+            if key in excluded_items:
+                continue
+            EntropyCacher.clear_cache_item(value, cache_dir = cache_dir)

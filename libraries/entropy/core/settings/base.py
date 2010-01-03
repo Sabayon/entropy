@@ -1273,10 +1273,7 @@ class SystemSettings(Singleton, EntropyPluginStore):
         Internal method, go away!
         """
         self.__cacher.discard()
-        for key, value in EntropyCacher.CACHE_IDS.items():
-            if key == "db_match":
-                continue
-            EntropyCacher.clear_cache_item(value)
+        EntropyCacher.clear_cache(excluded_items = ["db_match"])
 
         if repoid is not None:
             EntropyCacher.clear_cache_item("%s/%s%s/" % (
