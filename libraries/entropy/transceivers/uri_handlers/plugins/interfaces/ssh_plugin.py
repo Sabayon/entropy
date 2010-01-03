@@ -13,6 +13,7 @@ import os
 import time
 import tempfile
 
+from entropy.const import const_isnumber
 from entropy.output import brown, darkgreen
 from entropy.i18n import _
 from entropy.exceptions import ConnectionError
@@ -50,6 +51,7 @@ class EntropySshUriHandler(EntropyUriHandler):
     def __init__(self, uri):
         EntropyUriHandler.__init__(self, uri)
 
+        self._timeout = EntropySshUriHandler._DEFAULT_TIMEOUT
         import socket, subprocess, pty
         self._socket, self._subprocess = socket, subprocess
         self._pty = pty
@@ -193,6 +195,8 @@ class EntropySshUriHandler(EntropyUriHandler):
 
     def _setup_common_args(self, remote_path):
         args = []
+        if const_isnumber(self._timeout):
+            args += ["-o", "ConnectTimeout=%s" % (self._timeout,)]
         if self._speed_limit:
             args += ["-l", str(self._speed_limit*8)] # scp wants kbits/sec
         remote_ptr = os.path.join(self.__dir, remote_path)
