@@ -971,9 +971,7 @@ class EntropyPackages:
 
     def _pkg_get_fake_updates(self):
 
-        msg2 = _("Try clicking the %s button in the %s page") % (
-            _("Update Repositories"), _("Repository Selection"),)
-
+        msg2 = _("Try to update your repositories")
         msg = "<big><b><span foreground='%s'>%s</span></b></big>\n%s.\n%s" % (
             SulfurConf.color_title,
             _('No updates available'),

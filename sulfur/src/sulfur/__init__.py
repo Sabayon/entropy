@@ -1407,17 +1407,24 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             allpkgs = self.etpbase.get_groups('fake_updates')
             empty = True
 
-        #if bootstrap: time.sleep(1)
         self.set_status_ticker("%s: %s %s" % (_("Showing"), len(allpkgs), _("items"),))
 
         show_pkgsets = False
         if action == "pkgsets":
             show_pkgsets = True
 
+        if empty:
+            self.ui.updatesButtonboxAddRemove.hide()
+            self.ui.pkgSearchArea.hide()
+        else:
+            self.ui.updatesButtonboxAddRemove.show()
+            self.ui.pkgSearchArea.show()
+
         self.pkgView.populate(allpkgs, empty = empty, pkgsets = show_pkgsets)
         self.progress.total.show()
 
-        if self.doProgress: self.progress.hide() #Hide Progress
+        if self.doProgress:
+            self.progress.hide() #Hide Progress
         if back_to_page:
             self.switch_notebook_page(back_to_page)
         elif bootstrap:

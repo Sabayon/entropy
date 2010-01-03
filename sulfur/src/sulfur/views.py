@@ -1659,7 +1659,7 @@ class EntropyPackageView:
             return False
         self.ui.pkgFilter.set_text(filter_string)
         if run_it:
-            self.ui.pkgSearch.clicked()
+            self.ui.pkgFilter.activate()
         return True
 
     def get_installed_pkg_objs_for_selected(self):

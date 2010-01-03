@@ -652,7 +652,6 @@ class SulfurApplicationEventsMixin:
                     # Package Category Group
                     self.pkgView.set_filtering_string(obj.onlyname,
                         run_it = False)
-                    self.ui.pkgClr.show()
                 else:
                     self.pkgView.set_filtering_string(obj.onlyname + "/")
                 break
@@ -708,6 +707,7 @@ class SulfurApplicationEventsMixin:
         self.wait_window.hide()
 
     def on_deselect_clicked(self, widget):
+        self.ui.pkgFilter.set_text("")
         self.on_clear_clicked(widget)
         self.wait_window.show()
         self.set_busy()
@@ -727,34 +727,31 @@ class SulfurApplicationEventsMixin:
                 print_generic("on_abortQueue_clicked: abort is now on")
             self.abortQueueNow = True
 
-    def on_search_clicked(self, widget):
-        self.etpbase.set_filter(Filter.processFilters)
-        ''' Search entry+button handler'''
-        txt = self.ui.pkgFilter.get_text()
-        flt = Filter.get('KeywordFilter')
-        if txt != '':
-            flt.activate()
-            lst = txt.split()
-            flt.setKeys(lst, self.Equo.get_package_groups())
-            self.ui.pkgClr.show()
-        else:
-            flt.activate(False)
+    def on_pkg_search_change(self, entry):
 
-        action = self.lastPkgPB
-        rb = self.packageRB[action]
-        self.on_pkgFilter_toggled(rb, action)
+        def go(entry, old_txt):
 
-        if txt != '':
-            # always keep expanded on search
-            self.pkgView.expand()
+            txt = entry.get_text()
+            if old_txt != txt:
+                return False
 
+            flt = Filter.get('KeywordFilter')
+            self.etpbase.set_filter(Filter.processFilters)
 
-    def on_clear_clicked(self, widget):
-        self.etpbase.set_filter()
-        ''' Search Clear button handler'''
-        self.ui.pkgFilter.set_text("")
-        self.on_search_clicked(None)
-        self.ui.pkgClr.hide()
+            if not txt:
+                self.etpbase.set_filter()
+                flt.activate(False)
+            else:
+                flt.activate()
+                flt.setKeys(txt.split(), self.Equo.get_package_groups())
+                self.pkgView.expand()
+
+            action = self.lastPkgPB
+            rb = self.packageRB[action]
+            self.on_pkgFilter_toggled(rb, action)
+            return False
+
+        gobject.timeout_add(600, go, entry, entry.get_text())
 
     def on_FileQuit( self, widget ):
         self.wait_window.show()

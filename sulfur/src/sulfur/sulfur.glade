@@ -491,7 +491,7 @@
                             <property name="xscale">0</property>
                             <property name="yscale">0</property>
                             <child>
-                              <widget class="GtkVBox" id="vbox10">
+                              <widget class="GtkVBox" id="pkgSearchArea">
                                 <property name="visible">True</property>
                                 <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
                                 <child>
@@ -501,7 +501,6 @@
                                     <property name="xalign">1</property>
                                     <property name="yalign">0</property>
                                     <property name="xscale">0</property>
-                                    <property name="yscale">0</property>
                                     <child>
                                       <widget class="GtkHBox" id="hbox2">
                                         <property name="visible">True</property>
@@ -510,54 +509,12 @@
                                           <widget class="GtkEntry" id="pkgFilter">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
-                                            <signal name="activate" handler="on_search_clicked"/>
+                                            <property name="secondary_icon_stock">gtk-find</property>
+                                            <property name="secondary_icon_sensitive">True</property>
+                                            <signal name="changed" handler="on_pkg_search_change"/>
                                           </widget>
                                           <packing>
                                             <property name="position">0</property>
-                                          </packing>
-                                        </child>
-                                        <child>
-                                          <widget class="GtkButton" id="pkgSearch">
-                                            <property name="width_request">32</property>
-                                            <property name="height_request">32</property>
-                                            <property name="visible">True</property>
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">False</property>
-                                            <signal name="clicked" handler="on_search_clicked"/>
-                                            <child>
-                                              <widget class="GtkEventBox" id="pkgSearchButtonEvent">
-                                                <property name="visible">True</property>
-                                                <child>
-                                                  <widget class="GtkImage" id="pkgSearchButtonImg">
-                                                    <property name="visible">True</property>
-                                                    <property name="stock">gtk-find</property>
-                                                  </widget>
-                                                </child>
-                                              </widget>
-                                            </child>
-                                          </widget>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">False</property>
-                                            <property name="position">1</property>
-                                          </packing>
-                                        </child>
-                                        <child>
-                                          <widget class="GtkButton" id="pkgClr">
-                                            <property name="can_focus">True</property>
-                                            <property name="receives_default">False</property>
-                                            <signal name="clicked" handler="on_clear_clicked"/>
-                                            <child>
-                                              <widget class="GtkImage" id="image178">
-                                                <property name="visible">True</property>
-                                                <property name="stock">gtk-cancel</property>
-                                              </widget>
-                                            </child>
-                                          </widget>
-                                          <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">False</property>
-                                            <property name="position">2</property>
                                           </packing>
                                         </child>
                                       </widget>
