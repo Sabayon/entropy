@@ -1,7 +1,7 @@
 
   0.99.30:
 
-    - entropy.security, move security advisories to entropy.server (and GPG sign)
+    - entropy.security: GPG signing support
     - equo bashcomp
     - sulfur love (see planet)
     - entropy.output API names update
