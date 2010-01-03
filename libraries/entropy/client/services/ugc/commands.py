@@ -403,15 +403,6 @@ class Client(Base):
 
         return data
 
-    def ugc_do_downloads(self, session_id, pkgkeys):
-
-        cmd = "%s %s %s" % (
-            session_id,
-            'ugc:do_downloads',
-            ' '.join(pkgkeys),
-        )
-        return self.do_generic_handler(cmd, session_id)
-
     def ugc_do_download_stats(self, session_id, package_names):
 
         sub_lists = self.entropyTools.split_indexable_into_chunks(

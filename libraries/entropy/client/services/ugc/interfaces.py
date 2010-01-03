@@ -281,9 +281,6 @@ class Client:
             self.UGCCache.update_vote_cache(repository, votes_dict)
         return votes_dict, err_msg
 
-    def add_downloads(self, repository, pkgkeys):
-        return self.do_cmd(repository, False, "ugc_do_downloads", [pkgkeys], {})
-
     def get_downloads(self, repository, pkgkey):
         data = self.do_cmd(repository, False, "ugc_get_downloads", [pkgkey], {})
         if isinstance(data, tuple): downloads, err_msg = data

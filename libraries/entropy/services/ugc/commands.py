@@ -150,16 +150,6 @@ class UGC(SocketCommands):
                 'syntax': "<SESSION_ID> ugc:do_vote app-foo/foo <0..5>",
                 'from': str(self), # from what class
             },
-            'ugc:do_downloads':    {
-                'auth': False,
-                'built_in': False,
-                'cb': self.docmd_do_downloads,
-                'args': ["authenticator", "myargs"],
-                'as_user': False,
-                'desc': "inform the system of downloaded applications",
-                'syntax': "<SESSION_ID> ugc:do_downloads app-foo/foo1 app-foo/foo2 <...>",
-                'from': str(self), # from what class
-            },
             'ugc:add_comment':    {
                 'auth': True,
                 'built_in': False,
@@ -573,18 +563,6 @@ class UGC(SocketCommands):
         if not voted:
             return voted, 'already voted'
         return voted, 'ok'
-
-    def docmd_do_downloads(self, authenticator, myargs):
-
-        if not myargs:
-            return None, 'wrong arguments'
-
-        ip_addr = self._get_session_ip_address(authenticator)
-        ugc = self._load_ugc_interface()
-        done = ugc.do_downloads(myargs, ip_addr = ip_addr)
-        if not done:
-            return done, 'download not stored'
-        return done, 'ok'
 
     def docmd_do_download_stats(self, authenticator, myargs):
 
