@@ -1,7 +1,8 @@
 
   0.99.30:
 
-    - entropy.security: GPG signing support
+    - entropy.transceivers: ssh timeout doesn't work
+    - entropy.server.transceivers: atomic upload/download
     - entropy.output API rework
     - equo bashcomp
     - sulfur: tbz2 files matter, context tips
