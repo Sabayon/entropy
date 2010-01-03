@@ -1046,18 +1046,52 @@ class Repository:
             pk_expired = True
 
         if pk_avail:
-            mytxt = "%s: %s" % (
-                purple(_("GPG key already installed for")),
-                bold(repoid),
-            )
-            self.Entropy.updateProgress(
-                mytxt,
-                type = "info",
-                header = "\t"
-            )
+
+            tmp_dir = tempfile.mkdtemp()
+            repo_tmp_sec = self.Entropy.RepositorySecurity(
+                keystore_dir = tmp_dir)
+            # try to install and get fingerprint
+            try:
+                downloaded_key_fp = repo_tmp_sec.install_key(repoid, gpg_path)
+            except RepositorySecurity.GPGError:
+                downloaded_key_fp = None
+
             fingerprint = repo_sec.get_key_metadata(repoid)['fingerprint']
-            do_warn_user(fingerprint)
-            return True # already installed
+            shutil.rmtree(tmp_dir, True)
+
+            if downloaded_key_fp != fingerprint and \
+                (downloaded_key_fp is not None):
+                mytxt = "%s: %s !!!" % (
+                    purple(_("GPG key changed for")),
+                    bold(repoid),
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    type = "warning",
+                    header = "\t"
+                )
+                mytxt = "[%s => %s]" % (
+                    darkgreen(fingerprint),
+                    purple(downloaded_key_fp),
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    type = "warning",
+                    header = "\t"
+                )
+                do_warn_user(downloaded_key_fp)
+            else:
+                mytxt = "%s: %s" % (
+                    purple(_("GPG key already installed for")),
+                    bold(repoid),
+                )
+                self.Entropy.updateProgress(
+                    mytxt,
+                    type = "info",
+                    header = "\t"
+                )
+                do_warn_user(fingerprint)
+                return True # already installed
 
         elif pk_expired:
             mytxt = "%s: %s" % (
