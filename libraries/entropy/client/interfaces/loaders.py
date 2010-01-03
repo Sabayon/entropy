@@ -46,13 +46,15 @@ class LoadersMixin:
         self.__security_cache[chroot] = cached
         return cached
 
-    def RepositorySecurity(self):
+    def RepositorySecurity(self, keystore_dir = None):
         """
         @raise RepositorySecurity.GPGError: GPGError based instances in case
             of problems.
         """
+        if keystore_dir is None:
+            keystore_dir = etpConst['etpclientgpgdir']
         return self.__RepositorySecurityLoader(
-            keystore_dir = etpConst['etpclientgpgdir'])
+            keystore_dir = keystore_dir)
 
     def QA(self):
         chroot = etpConst['systemroot']
