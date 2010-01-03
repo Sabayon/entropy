@@ -1224,6 +1224,8 @@ def const_convert_to_rawstring(obj, from_enctype = 'raw_unicode_escape'):
     @return: raw string
     @rtype: bytes
     """
+    if obj is None:
+        return const_convert_to_rawstring("None")
     if const_isnumber(obj):
         if sys.hexversion >= 0x3000000:
             return bytes(str(obj), from_enctype)
