@@ -210,18 +210,39 @@ class EntropySshUriHandler(EntropyUriHandler):
         return args, remote_str
 
     def download(self, remote_path, save_path):
+
         args = [EntropySshUriHandler._TXC_CMD]
         c_args, remote_str = self._setup_common_args(remote_path)
+        tmp_save_path = save_path + EntropyUriHandler.TMP_TXC_FILE_EXT
         args.extend(c_args)
-        args += ["-B", "-P", str(self.__port), remote_str, save_path]
-        return self._fork_cmd(args) == 0
+        args += ["-B", "-P", str(self.__port), remote_str, tmp_save_path]
+
+        down_sts = self._fork_cmd(args) == 0
+        if not down_sts:
+            try:
+                os.remove(tmp_save_path)
+            except OSError:
+                return False
+            return False
+
+        os.rename(tmp_save_path, save_path)
+        return True
 
     def upload(self, load_path, remote_path):
+
         args = [EntropySshUriHandler._TXC_CMD]
-        c_args, remote_str = self._setup_common_args(remote_path)
+        tmp_remote_path = remote_path + EntropyUriHandler.TMP_TXC_FILE_EXT
+        c_args, remote_str = self._setup_common_args(tmp_remote_path)
         args.extend(c_args)
         args += ["-B", "-P", str(self.__port), load_path, remote_str]
-        return self._fork_cmd(args) == 0
+
+        upload_sts = self._fork_cmd(args) == 0
+        if not upload_sts:
+            self.delete(tmp_remote_path)
+            return False
+
+        # atomic rename
+        return self.rename(tmp_remote_path, remote_path)
 
     def _setup_fs_args(self):
         args = [EntropySshUriHandler._SSH_CMD]
