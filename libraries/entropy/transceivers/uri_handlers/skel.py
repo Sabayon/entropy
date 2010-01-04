@@ -16,6 +16,8 @@ class EntropyUriHandler(object, TextInterface):
 
     BASE_PLUGIN_API_VERSION = 0
 
+    TMP_TXC_FILE_EXT = ".tmp-entropy-txc"
+
     """
     Base class for EntropyTransceiver URI handler interfaces. This provides
     a common API for implementing custom URI handlers.

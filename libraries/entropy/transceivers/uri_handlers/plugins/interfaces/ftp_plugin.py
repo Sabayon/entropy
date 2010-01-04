@@ -331,7 +331,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
 
         self.__connect_if_not()
         path = os.path.join(self.__ftpdir, remote_path)
-        tmp_save_path = save_path + ".dtmp"
+        tmp_save_path = save_path + EntropyUriHandler.TMP_TXC_FILE_EXT
 
         def writer(buf):
             # writing file buffer
@@ -394,7 +394,7 @@ class EntropyFtpUriHandler(EntropyUriHandler):
         self.__connect_if_not()
         path = os.path.join(self.__ftpdir, remote_path)
 
-        tmp_path = path + ".dtmp"
+        tmp_path = path + EntropyUriHandler.TMP_TXC_FILE_EXT
         tries = 0
 
         def updater(buf):
