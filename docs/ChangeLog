@@ -1,3 +1,15 @@
+commit d3f7efd5995409ae85e3f5d2877c1084cdc200d2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 14:55:39 2010 +0100
+
+    [equo] fix error codes handling in text_ui
+
+commit 236779aa338f70259296235e918285a1fc0a34c3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 14:26:31 2010 +0100
+
+    Update ChangeLog for version 0.99.20.10
+
 commit ec10871f14b7f7aad26e44796ef0bf707771382c
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jan 4 14:26:00 2010 +0100
