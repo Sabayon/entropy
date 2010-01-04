@@ -141,7 +141,7 @@ def package(options):
         elif (options[0] == "source"):
 
             if myopts or my_etp_pkg_paths:
-                status, rc = download_sources(myopts, deps = e_req_deps,
+                rc, status = download_sources(myopts, deps = e_req_deps,
                     deepdeps = e_req_deep, pkgs = my_etp_pkg_paths,
                     savecwd = e_req_save_here,
                     relaxed_deps = e_req_relaxed)
@@ -152,7 +152,7 @@ def package(options):
         elif (options[0] == "fetch"):
 
             if myopts or my_etp_pkg_paths:
-                status, rc = download_packages(myopts, deps = e_req_deps,
+                rc, status = download_packages(myopts, deps = e_req_deps,
                     deepdeps = e_req_deep,
                     multifetch = e_req_multifetch,
                     dochecksum = e_req_checksum,
@@ -184,7 +184,7 @@ def package(options):
                     blue(_("is deprecated, please use")),
                     darkgreen("equo upgrade"),))
                 print_warning("")
-            status, rc = upgrade_packages(onlyfetch = e_req_only_fetch,
+            rc, status = upgrade_packages(onlyfetch = e_req_only_fetch,
                 replay = (e_req_replay or e_req_empty_deps),
                 resume = e_req_resume,
                 skipfirst = e_req_skipfirst, human = True,
@@ -193,14 +193,14 @@ def package(options):
 
         elif (options[0] == "hop"):
             if myopts:
-                status, rc = branch_hop(myopts[0])
+                rc, status = branch_hop(myopts[0])
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
 
         elif (options[0] == "remove"):
             if myopts or e_req_resume:
-                status, rc = remove_packages(myopts, deps = e_req_deps,
+                rc, status = remove_packages(myopts, deps = e_req_deps,
                 deep = e_req_deep, remove_config_files = e_req_config_files,
                 resume = e_req_resume)
             else:
@@ -209,7 +209,7 @@ def package(options):
 
         elif (options[0] == "config"):
             if myopts:
-                status, rc = configure_packages(myopts)
+                rc, status = configure_packages(myopts)
             else:
                 print_error(red(" %s." % (_("Nothing to do"),) ))
                 rc = 126
@@ -219,7 +219,7 @@ def package(options):
 
         conf_cache_excl = ("hop", "fetch", "source", "deptest", "libtest",
             "unusedpackages",)
-        if (options[0] not in conf_cache_excl) and (status not in (125, 126, -10)) \
+        if (options[0] not in conf_cache_excl) and (rc not in (125, 126, -10)) \
             and (not etpUi['pretend']) and (not etpUi['quiet']):
             show_config_files_to_update()
 
