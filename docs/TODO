@@ -1,7 +1,6 @@
 
   0.99.30:
 
-    - entropy.transceivers: ssh timeout doesn't work
     - entropy.server.transceivers: atomic upload/download
     - entropy.output API rework
     - equo bashcomp
