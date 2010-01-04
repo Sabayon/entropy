@@ -476,7 +476,7 @@ class SulfurApplicationEventsMixin:
         # do not put here actions for 'packages' and 'output'
         # but use on_PageButton_pressed
         if page == "filesconf":
-            self.populate_files_update()
+            self._populate_files_update()
         elif page == "glsa":
             self.populate_advisories(None, 'affected')
         if do_set:

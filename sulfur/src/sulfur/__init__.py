@@ -110,12 +110,17 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         self.packages_install()
 
     def quit(self, widget = None, event = None, sysexit = True):
+        def do_kill(pid):
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except OSError:
+                pass
         if hasattr(self, "_ugc_pid"):
             if isinstance(self._ugc_pid, int):
-                try:
-                    os.kill(self._ugc_pid, signal.SIGKILL)
-                except OSError:
-                    pass
+                do_kill(self._ugc_pid)
+        if hasattr(self, '_fork_pids'):
+            for pid in self._fork_pids:
+                do_kill(pid)
         if hasattr(self, 'Equo'):
             self.Equo.destroy()
 
@@ -134,6 +139,28 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
     def gtk_loop(self):
         while gtk.events_pending():
            gtk.main_iteration()
+
+    def _fork_function(self, child_function, parent_function):
+        # Uber suber optimized stuffffz
+
+        def do_wait(pid):
+            os.waitpid(pid, 0)
+            self._fork_pids.remove(pid)
+            gobject.idle_add(parent_function)
+
+        pid = os.fork()
+        if pid != 0:
+            if self.do_debug:
+                print_generic("_fork_function: enter %s" % (child_function,))
+            self._fork_pids.append(pid)
+            if parent_function is not None:
+                task = ParallelTask(do_wait, pid)
+                task.start()
+            if self.do_debug:
+                print_generic("_fork_function: leave %s" % (child_function,))
+        else:
+            child_function()
+            os._exit(0)
 
     def setup_gui(self):
 
@@ -256,6 +283,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         # init flags
         self.disable_ugc = False
         self._ugc_pid = None
+        self._fork_pids = []
 
         self._spawning_ugc = False
         self._preferences = None
@@ -295,6 +323,25 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         self.setup_preferences()
         self.setup_events_handling()
+
+        self.setup_background_cache_generators()
+
+    def setup_background_cache_generators(self):
+
+        # security cache generation
+        security = self.Equo.Security()
+        def advisories_populate():
+            self.populate_advisories(None, "affected", background = True)
+
+        self._fork_function(security.get_advisories_metadata,
+            advisories_populate)
+
+        # configuration files update cache generation
+        def file_updates_cache_gen():
+            self.Equo.FileUpdates.scanfs(quiet = True)
+            self.Cacher.sync(wait = True)
+
+        self._fork_function(file_updates_cache_gen, None)
 
     def setup_events_handling(self):
 
@@ -513,26 +560,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         for w, tag in widgets:
             w.connect('toggled', self.populate_advisories, tag)
             w.set_mode(False)
-        self.background_security_adv_cache_gen()
-
-    def background_security_adv_cache_gen(self):
-
-        security = self.Equo.Security()
-        # launch security advisories cache generation in background
-        def background_security_cache_gen():
-            pid = os.fork()
-            if pid != 0:
-                if self.do_debug:
-                    print_generic("background_spawn_security_adv_cache_gen: enter")
-                os.waitpid(pid, 0)
-                if self.do_debug:
-                    print_generic("background_spawn_security_adv_cache_gen: leave")
-                self.populate_advisories(None, "affected", background = True)
-            else:
-                security.get_advisories_metadata()
-                os._exit(0)
-
-        gobject.idle_add(background_security_cache_gen)
 
     def setup_packages_filter(self):
 
@@ -638,7 +665,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if "--nougc" not in sys.argv:
             gobject.timeout_add(30*1000,
                 self.spawn_user_generated_content_first)
-            self.__ugc_task_id = gobject.timeout_add(600*1000,
+            gobject.timeout_add(600*1000,
                 self.spawn_user_generated_content)
 
     def spawn_user_generated_content_first(self):
@@ -647,26 +674,44 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         return False
 
     def spawn_user_generated_content(self):
+
         if self.do_debug:
             print_generic("entering UGC")
+
+        if self._ugc_pid is not None:
+            # flush defunct process
+            try:
+                dead, return_code = os.waitpid(self._ugc_pid, os.WNOHANG)
+            except OSError:
+                dead = True
+            if self.do_debug:
+                print_generic("Previous UGC pid %s dead? => %s" % (
+                    self._ugc_pid, dead,))
+            if const_pid_exists(self._ugc_pid):
+                if self.do_debug:
+                    print_generic("UGC pid %s still running" % (self._ugc_pid,))
+                return
+            elif self.do_debug:
+                print_generic("Previous UGC pid %s DEAD" % (self._ugc_pid,))
+
+        def emit_ugc_update():
+            # emit ugc update signal
+            SulfurSignals.emit('ugc_data_update')
+            if self.do_debug:
+                print_generic("UGC data update signal emitted")
+            return False
 
         pid = os.fork()
         if pid != 0:
             self._ugc_pid = pid
-            if self.do_debug:
-                print_generic("written UGC pid %s" % (pid,))
-
-            os.waitpid(pid, 0)
-
-            if self.do_debug:
-                print_generic("UGC pid %s done, syncing cache" % (pid,))
-            self.Cacher.sync(wait = True)
-            if self.do_debug:
-                print_generic("Cache sync done")
-            self._ugc_pid = None
-
+            # since this is multiprocess and GTK signals are not multiprocess
+            # we need to "guess" when the UGC sync is complete and spawn an
+            # ugc_data_update signal.
+            gobject.timeout_add(45*1000, emit_ugc_update)
         else:
-            self.ugc_update()
+            self._ugc_update()
+            self.Cacher.sync(wait = True)
+            print_generic("UGC child process done")
             os._exit(0)
 
         if self.do_debug:
@@ -674,7 +719,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
 
         return True
 
-    def ugc_update(self):
+    def _ugc_update(self):
 
         if self._spawning_ugc or self._is_working or self.disable_ugc:
             return
@@ -696,9 +741,6 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
                 t2 = time.time()
                 td = t2 - t1
                 print_generic("completed UGC update for", repo, "took", td)
-
-        # emit ugc update signal
-        SulfurSignals.emit('ugc_data_update')
 
         self._is_working = False
         self._spawning_ugc = False
@@ -1149,7 +1191,7 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
         if widget is not None:
             widget.grab_remove()
 
-    def populate_files_update(self):
+    def _populate_files_update(self):
         # load filesUpdate interface and fill self.filesView
         cached = None
         try:
@@ -1852,7 +1894,8 @@ class SulfurApplication(Controller, SulfurApplicationEventsMixin):
             repodata = avail_repos.get(repoid)
             if repodata == None:
                 repodata = repo_excluded.get(repoid)
-            if repodata == None: continue # wtf?
+            if repodata == None:
+                continue # wtf?
             self.ugcRepositoriesModel.append([repodata])
 
     def load_color_settings(self):
