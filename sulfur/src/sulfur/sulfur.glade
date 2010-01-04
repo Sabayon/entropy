@@ -114,13 +114,7 @@
           </packing>
         </child>
         <child>
-          <widget class="GtkHPaned" id="hpaned1">
-            <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <child>
-              <placeholder/>
-            </child>
-            <child>
+
               <widget class="GtkNotebook" id="notebook">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
@@ -5427,15 +5421,6 @@ Relaxed</property>
                   </packing>
                 </child>
               </widget>
-              <packing>
-                <property name="resize">True</property>
-                <property name="shrink">True</property>
-              </packing>
-            </child>
-          </widget>
-          <packing>
-            <property name="position">1</property>
-          </packing>
         </child>
         <child>
           <widget class="GtkStatusbar" id="status">
