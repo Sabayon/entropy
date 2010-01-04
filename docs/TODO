@@ -3,7 +3,7 @@
 
     - entropy.output API rework
     - equo bashcomp
-    - sulfur: tbz2 files matter, context tips
+    - sulfur: context tips
     - entropy.tools API docs merge
     - entropy.server API rework
     - move sensible pkgs to alt dir
