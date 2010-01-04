@@ -1596,7 +1596,7 @@ class CalculatorsMixin:
                 atom_matches[atom] = (match_id, match_repo,)
                 atoms.add(atom)
 
-        atoms = self._get_unsatisfied_dependencies(atoms)
+        atoms = self._get_unsatisfied_dependencies(atoms, relaxed_deps = True)
         matches = [atom_matches.get(atom) for atom in atoms]
         data = (atoms, matches)
 
