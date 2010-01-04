@@ -1,3 +1,261 @@
+commit ec10871f14b7f7aad26e44796ef0bf707771382c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 14:26:00 2010 +0100
+
+    [todo] update TODO
+
+commit 7fd3254c5b0d0323846c883475f9d883c3fd096a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 14:25:22 2010 +0100
+
+    [equo] actually make tricky way to call config files update cache generation working
+
+commit ca32c9cbaa18fdf415b331725c4a784983e2a3d3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 14:09:38 2010 +0100
+
+    [tests] update txc standalone test
+
+commit 3b87f4ff017fc3b7680e0acdd10beacebe175d49
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 14:08:35 2010 +0100
+
+    [entropy.transceivers] EntropySshUriHandler: download/upload functions are now atomic
+
+commit 191ad0910e0aa7e29840f0124a723a71ce776cb3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 14:08:08 2010 +0100
+
+    [entropy.transceivers] define a common EntropyTransceiver temporary files extension
+
+commit 7a4127b24d926708a4e7b66a4ac738825eb46f8e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 09:39:11 2010 +0100
+
+    [todo] update TODO
+
+commit deb2aebe3c30a332ce87b6b6cd46f62239dde587
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 09:37:53 2010 +0100
+
+    [entropy.transceivers] EntropySshUriHandler: fix timeout handling
+
+commit 04267f1fb2737406113d04c1de18d3520d41eac0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 00:34:02 2010 +0100
+
+    [entropy.const] convert None types correctly in const_convert_to_rawstring
+
+commit 3c825a7724f4ecf0a4e474520213c220ee29f4c7
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 00:25:38 2010 +0100
+
+    [todo] update TODO
+
+commit d25f05feb4cd07c1371443ff4941f96942e51e33
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 00:25:10 2010 +0100
+
+    [entropy.security] add GPG support
+
+commit 91626d9039db0fe817a06f98495ba660cd9db6f0
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 00:24:39 2010 +0100
+
+    [entropy.client.interfaces.repository] make possible to disable GPG via env
+
+commit f3b56746fbc238aa7ed289d0b250032ad7754b55
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 00:24:15 2010 +0100
+
+    [conf] remove mirror.holland.sabayonlinux.org from mirror list
+
+commit 6d89177836b5d0dc531dca0e3b7309da815a2eee
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 23:18:41 2010 +0100
+
+    [entropy.client] move UGC information storage outside the main entropy lib
+
+commit df1829e076a351a2526b50bbb4a169c465594a00
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 23:05:49 2010 +0100
+
+    [entropy.client] inform UGC that we just updated a repo
+
+commit 404911da8710a18555010cdc3508bbf716a22619
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 22:33:38 2010 +0100
+
+    [entropy.security] rename fetch_advisories() into sync(), add more docs and small fixes
+
+commit 412245155743d4fc095783803342c545fcce9608
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 22:32:11 2010 +0100
+
+    [entropy.services] remove unused UGC command
+
+commit fa8cbd69f5b352f954031995b69f6ef45353731b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 17:30:08 2010 +0100
+
+    [entropy.transceivers] EntropySshUriHandler: add timeout handling
+
+commit 3fc81800420028873ce9787b27adba3e427573cb
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 12:52:24 2010 +0100
+
+    [todo] update TODO
+
+commit 57ead71eef9b55d249ee96789b6e35ad63fac500
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 12:51:46 2010 +0100
+
+    [entropy.client] some initial code cleanup and style update
+
+commit 5b45d6cf65c15ccad7668e8467f474a2c44d6a93
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 12:50:50 2010 +0100
+
+    [entropy.cache] add new static method "clear_cache"
+
+commit f10578b63bf759f304300e70ba9f63de64326675
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 10:15:19 2010 +0100
+
+    [sulfur] more love, transform search bar into filter bar
+
+commit e7367386b104038c3788c6c2b19dd8b3f33e57a9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 01:26:21 2010 +0100
+
+    [todo] update TODO
+
+commit aa82e5f671304f028c544721bc642b8b56501a9c
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 01:24:22 2010 +0100
+
+    [todo] update TODO
+
+commit 457090e38493a3ae4b310dc4f27181bc3820878f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 01:23:16 2010 +0100
+
+    [entropy.client.interfaces.repository] warn if GPG key for repository has changed
+
+commit ec2b49a5f0fbab41a4e20e8ad71fdc4904e1a47e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 01:22:33 2010 +0100
+
+    [entropy.client.interfaces.loaders] RepositorySecurity() add keystore_dir argument
+
+commit df408c14188f7d95645d5087e0d8b1c8719db7a1
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 01:10:14 2010 +0100
+
+    [entropy.security] rename get_affected_atoms into get_affected_packages
+
+commit 6ca3e04c690dc870e9c74059b0dd2146d0d646fc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 01:04:48 2010 +0100
+
+    [sulfur] delay UGC on-click vote, fix GTK oddity
+
+commit 61093dc48f1169d8f18e36c076413ea29316a77f
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 00:42:29 2010 +0100
+
+    [sulfur] disable connection test before checking UGC
+
+commit f26cd6033eead075e9a8d5a813d86f7564d1168b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 00:41:58 2010 +0100
+
+    [sulfur] preload advisories cache, make security advisories tab init faster
+
+commit f82ef26e29e4d67389d047fd6ee3829c57b36a02
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 00:31:45 2010 +0100
+
+    [entropy.security] write cache in sync mode
+
+commit d1cef2623ef2be3109e606969d63fa4438237076
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sun Jan 3 00:31:03 2010 +0100
+
+    [entropy.client] import shutil (missing)
+
+commit 866f1702e6f9602fb1751af41b42eed3d141cea8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 23:53:06 2010 +0100
+
+    [activator] when notice board is empty, always remove online
+
+commit ec2293f2407d51a6b06b0729468c7b05f7e52fed
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 23:51:27 2010 +0100
+
+    [entropy.const] move etpConst['cache_ids'] to EntropyCacher
+
+commit bdcd4d696c46d29edf35a59666c29460e661eaa9
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 23:43:49 2010 +0100
+
+    [activator] actually remove notice board
+
+commit c109118b0cb09284e38fa73cfd8fb0d712b9a66e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 23:39:35 2010 +0100
+
+    [entropy*] do not use entropy.tools.get_random_temp_file() for creating dirs
+
+commit 4db3908f4cf3f8578d6dc8d07804f0da248845e2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 23:31:31 2010 +0100
+
+    [activator] fix syntax error
+
+commit 152040e3200a026a97ab8c157bb5b33fc7afa339
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 23:30:41 2010 +0100
+
+    [sulfur] do not list empty notice boards
+
+commit d596dee2bf089077e725611dcb3886a7cd07ecc2
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 23:30:21 2010 +0100
+
+    [entropy.server] remove notice board if empty
+
+commit 493e364b6397e431278b782b18ff18ed4423b8ef
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 23:30:03 2010 +0100
+
+    [activator] code style update
+
+commit 7bf96b85c03affc0c505ab930520dfa764dad8d8
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 20:59:46 2010 +0100
+
+    [todo] update TODO
+
+commit 2f7aacafed8b54ffedd6bb7de0452797f528da05
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 20:59:18 2010 +0100
+
+    [conf] update repositories.conf.example
+
+commit 45fa5603a7c1bb92f7a96c29888f0a444f4ba495
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 19:46:58 2010 +0100
+
+    [docs] add Entropy security advisories metadata specifications (inherited from Gentoo)
+
+commit 6c93f807555f2aadf362fb498ddab29a1185182e
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Sat Jan 2 17:49:26 2010 +0100
+
+    Update ChangeLog for version 0.99.20.6
+
 commit 8a333e4fa4443f0ee6918d51534bc1323f5d850a
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Sat Jan 2 17:49:01 2010 +0100
