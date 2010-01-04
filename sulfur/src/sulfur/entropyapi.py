@@ -20,6 +20,7 @@
 import gtk
 import sys
 import time
+import thread
 from sulfur.setup import const, SulfurConf
 from sulfur.dialogs import LicenseDialog, okDialog, choiceDialog, inputDialog
 import gobject
@@ -296,6 +297,10 @@ class Equo(EquoInterface):
         self.xcache = True # force xcache enabling
         if "--debug" in sys.argv:
             self.UGC.quiet = False
+        self._mthread_rc = {
+            'askQuestion': {},
+            'inputBox': {},
+        }
 
     def connect_to_gui(self, application):
         self.progress = application.progress
@@ -352,7 +357,7 @@ class Equo(EquoInterface):
         gobject.timeout_add(0, update_gui)
 
     def askQuestion(self, question, importance = 0, responses = None,
-        parent = None):
+        parent = None, from_myself = False):
 
         if responses is None:
             responses = (_("Yes"), _("No"),)
@@ -363,29 +368,45 @@ class Equo(EquoInterface):
             except AttributeError:
                 parent = None
 
-        choice = choiceDialog(parent, question,
-            _("Entropy needs your attention"), [_(x) for x in responses])
-        try:
-            return responses[choice]
-        except IndexError:
-            return responses[0]
+        th_id = thread.get_ident()
+
+        def do_ask():
+            choice = choiceDialog(parent, question,
+                _("Entropy needs your attention"),
+                [_(x) for x in responses]
+            )
+            try:
+                result = responses[choice]
+            except IndexError:
+                result = responses[0]
+            self._mthread_rc['askQuestion'][th_id] = result
+
+        gobject.idle_add(do_ask)
+        while th_id not in self._mthread_rc['askQuestion']:
+            time.sleep(0.4)
+        return self._mthread_rc['askQuestion'].pop(th_id)
 
     def inputBox(self, title, input_parameters, cancel_button = True,
         parent = None):
-        # @ title: title of the input box
-        # @ input_parameters: [('identifier 1','input text 1',
-        #       input_verification_callback,False),
-        #       ('password','Password',input_verification_callback,True)]
-        # @ cancel_button: show cancel button ?
-        # @ output: dictionary as follows:
-        #   {'identifier 1': result, 'identifier 2': result}
+
         if parent is None:
             try:
                 parent = self.ui.main
             except AttributeError:
                 parent = None
-        return inputDialog(parent, title, input_parameters,
-            cancel = cancel_button)
+
+        th_id = thread.get_ident()
+
+        def do_ask():
+            result = inputDialog(parent, title, input_parameters,
+                cancel = cancel_button)
+            self._mthread_rc['inputBox'][th_id] = result
+
+        gobject.idle_add(do_ask)
+        while th_id not in self._mthread_rc['inputBox']:
+            time.sleep(0.4)
+        return self._mthread_rc['inputBox'].pop(th_id)
+
 
 class GuiUrlFetcher(UrlFetcher):
 
