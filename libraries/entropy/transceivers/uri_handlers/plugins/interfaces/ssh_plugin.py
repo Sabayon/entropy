@@ -196,7 +196,9 @@ class EntropySshUriHandler(EntropyUriHandler):
     def _setup_common_args(self, remote_path):
         args = []
         if const_isnumber(self._timeout):
-            args += ["-o", "ConnectTimeout=%s" % (self._timeout,)]
+            args += ["-o", "ConnectTimeout=%s" % (self._timeout,),
+                "-o", "ServerAliveCountMax=4", # hardcoded
+                "-o", "ServerAliveInterval=15"] # hardcoded
         if self._speed_limit:
             args += ["-l", str(self._speed_limit*8)] # scp wants kbits/sec
         remote_ptr = os.path.join(self.__dir, remote_path)
