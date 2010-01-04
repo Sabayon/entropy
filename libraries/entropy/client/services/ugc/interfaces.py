@@ -450,10 +450,13 @@ class AuthStore(Singleton):
             store.appendChild(repo)
 
         self.xmldoc.appendChild(store)
-        f = open(self.access_file, "w")
-        f.writelines(self.xmldoc.toprettyxml(indent="    "))
-        f.flush()
-        f.close()
+	try:
+            f = open(self.access_file, "w")
+            f.writelines(self.xmldoc.toprettyxml(indent="    "))
+            f.flush()
+            f.close()
+        except IOError:
+            pass # wtf! no permissions?
         self.setup_permissions()
         self.parse_document()
 
