@@ -1,3 +1,99 @@
+commit f8442505a6618f5334a33bcde9be741f57b28bf3
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Tue Jan 5 00:00:04 2010 +0100
+
+    [sulfur] complete filter bar with icon-click action handling
+
+commit b21fe54ea70cf70628e77dba33467fbe84d19c04
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 23:48:48 2010 +0100
+
+    [todo] update TODO
+
+commit bbf4d93895f65145330d22f7c1d9ff1031ee8630
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 23:48:09 2010 +0100
+
+    [sulfur] complete filter bar implementation, improve general usability
+
+commit 3ed9c1b18059521d32dd0c33c9a463d2b993d3a6
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 23:07:03 2010 +0100
+
+    [entropy.client.services.ugc] do not annoy user if password can't be saved on-disk
+
+commit b6ce7ab53786e57f808fa3a1c0d2f6759205969b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 23:06:27 2010 +0100
+
+    [sulfur] make Sulfur Entropy Client interface thread-safe on askQuestion and inputBox
+
+commit 63c7f5ce7318ff203e89636775384f9572a0739d
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 22:18:04 2010 +0100
+
+    [entropy.client.services.ugc] catch IOError when it's impossible to save password data
+
+commit 916bd74bed9d4618efb6db394dcca99ba4e0739a
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 22:00:57 2010 +0100
+
+    [docs] re-add API docs, we cannot drop it yet
+
+commit 016d9ff10deebd6868464dcffb4ed17a87cc8d15
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 21:45:48 2010 +0100
+
+    [docs] remove statically generated documentation, please use gendocs.sh to generate
+
+commit 258b5576c9e7e41cb99cfdfd3f2f8ce2be4ca605
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 21:33:51 2010 +0100
+
+    [sulfur] update glade file
+
+commit d6716bbf7f028733b90a88fea848388c3e9e7807
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 21:33:25 2010 +0100
+
+    [sulfur] improve speed of background cache generators, reorganize some code
+
+commit 88ce22b7b2f70659779ae9bfc3e11a67569724dc
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 20:12:30 2010 +0100
+
+    [sulfur] make sulfur.glade working with latest glade editor (fix VBox orientation)
+
+commit 0759f2be2f3987b09a632e3ac2dbbb945b9647ec
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 19:26:18 2010 +0100
+
+    [sulfur] make sulfur once again the first candidate for handling .tbz2 files
+
+commit c636ec1922206bee050964ec87d11b94deaee61b
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 17:50:09 2010 +0100
+
+    [entropy.client.interfaces.dep] when calculating critical updates, use "relaxed_deps" algo
+
+commit 0057270eda0ccf27b22a6b15b685f2c5635f9cbd
+Author: Daniel Halens Rodríguez <dhalens@lappie.(none)>
+Date:   Mon Jan 4 16:10:20 2010 +0000
+
+    [i18n] fix French (CA) translation (bug 1124)
+
+commit 5a5e22c0389bf8a89ea9b52ccc5a1fbe8560825b
+Author: Daniel Halens Rodríguez <dhalens@lappie.(none)>
+Date:   Mon Jan 4 15:44:22 2010 +0000
+
+    [i18n] fix French translation (bug 1124)
+
+commit 4f25e83ad4c1b04ae9643443ee2345d51b751d76
+Author: Fabio Erculiani <lxnay@sabayon.org>
+Date:   Mon Jan 4 14:56:02 2010 +0100
+
+    Update ChangeLog for version 0.99.20.11
+
 commit d3f7efd5995409ae85e3f5d2877c1084cdc200d2
 Author: Fabio Erculiani <lxnay@sabayon.org>
 Date:   Mon Jan 4 14:55:39 2010 +0100
