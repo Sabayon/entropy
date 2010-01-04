@@ -219,7 +219,7 @@ def package(options):
 
         conf_cache_excl = ("hop", "fetch", "source", "deptest", "libtest",
             "unusedpackages",)
-        if (options[0] not in conf_cache_excl) and (rc not in (125, 126, -10)) \
+        if (options[0] not in conf_cache_excl) and (status not in (125, 126, -10)) \
             and (not etpUi['pretend']) and (not etpUi['quiet']):
             show_config_files_to_update()
 
