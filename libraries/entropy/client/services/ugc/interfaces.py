@@ -455,9 +455,9 @@ class AuthStore(Singleton):
             f.writelines(self.xmldoc.toprettyxml(indent="    "))
             f.flush()
             f.close()
+            self.setup_permissions()
         except IOError:
             pass # wtf! no permissions?
-        self.setup_permissions()
         self.parse_document()
 
     def remove_login(self, repository, save = True):
