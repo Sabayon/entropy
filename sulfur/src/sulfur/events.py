@@ -727,6 +727,9 @@ class SulfurApplicationEventsMixin:
                 print_generic("on_abortQueue_clicked: abort is now on")
             self.abortQueueNow = True
 
+    def on_pkgFilter_icon_release(self, entry, icon_pos, event):
+        entry.set_text("")
+
     def on_pkg_search_change(self, entry):
 
         def go(entry, old_txt):

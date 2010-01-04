@@ -530,6 +530,7 @@
                         <property name="top_padding">3</property>
                         <child>
                           <widget class="GtkEntry" id="pkgFilter">
+                            <property name="height_request">26</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="invisible_char">&#x25CF;</property>
@@ -537,6 +538,7 @@
                             <property name="primary_icon_sensitive">True</property>
                             <property name="secondary_icon_sensitive">True</property>
                             <signal name="changed" handler="on_pkg_search_change"/>
+                            <signal name="icon_release" handler="on_pkgFilter_icon_release"/>
                           </widget>
                         </child>
                       </widget>
